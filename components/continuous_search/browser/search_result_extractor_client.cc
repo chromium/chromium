@@ -31,6 +31,7 @@ SearchResultExtractorClient::~SearchResultExtractorClient() = default;
 
 void SearchResultExtractorClient::RequestData(
     content::WebContents* web_contents,
+    const std::vector<mojom::ResultType>& result_types,
     RequestDataCallback callback) {
   if (!web_contents || !web_contents->GetMainFrame() ||
       !web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()) {
@@ -53,6 +54,7 @@ void SearchResultExtractorClient::RequestData(
 
   mojom::SearchResultExtractor* extractor_ptr = extractor.get();
   extractor_ptr->ExtractCurrentSearchResults(
+      result_types,
       base::BindOnce(&SearchResultExtractorClient::RequestDataCallbackAdapter,
                      weak_ptr_factory_.GetWeakPtr(), std::move(extractor), url,
                      std::move(callback)));

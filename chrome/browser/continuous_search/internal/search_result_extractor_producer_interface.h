@@ -30,8 +30,7 @@ class SearchResultExtractorProducerInterface {
       const base::android::JavaRef<jobject>& url,
       const base::android::JavaRef<jstring>& query,
       jint result_type,
-      const base::android::JavaRef<jobjectArray>& group_label,
-      const base::android::JavaRef<jbooleanArray>& is_ad_group,
+      const base::android::JavaRef<jintArray>& group_type,
       const base::android::JavaRef<jintArray>& group_size,
       const base::android::JavaRef<jobjectArray>& titles,
       const base::android::JavaRef<jobjectArray>& urls) = 0;

@@ -95,8 +95,7 @@ public class SearchResultExtractorProducerTest {
         GURL url5 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
         mSearchResultProducer.onResultsAvailable(mTestUrl, TEST_QUERY, TEST_RESULT_TYPE,
-                new String[] {"Foo", "Bar", "Baz"}, new boolean[] {true, false, false},
-                new int[] {1, 3, 1},
+                new int[] {1, 0, 0}, new int[] {1, 3, 1},
                 new String[] {"Foo.com 1", "Bar.com 1", "Bar.com 2", "Bar.com 3", "Baz.com 1"},
                 new GURL[] {url1, url2, url3, url4, url5});
 
@@ -111,10 +110,10 @@ public class SearchResultExtractorProducerTest {
         results2.add(new PageItem(url2, "Bar.com 1"));
         results2.add(new PageItem(url3, "Bar.com 2"));
         results2.add(new PageItem(url4, "Bar.com 3"));
-        groups.add(new PageGroup("Bar", false, results2));
+        groups.add(new PageGroup("", false, results2));
         List<PageItem> results3 = new ArrayList<PageItem>();
         results3.add(new PageItem(url5, "Baz.com 1"));
-        groups.add(new PageGroup("Baz", false, results3));
+        groups.add(new PageGroup("", false, results3));
 
         verify(mListenerMock, times(1))
                 .onResult(new ContinuousNavigationMetadata(

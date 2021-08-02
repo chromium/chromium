@@ -83,16 +83,15 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
      * @param url The URL of SRP data was fetched for.
      * @param query The query associated with the SRP.
      * @param resultCategory The type of results: news, organic, etc.
-     * @param groupLabel One entry per group (g) naming the type of results.
-     * @param isAdGroup One entry per group (g) specifying the size of the group.
+     * @param groupType One entry per group (g) specifying the type of results.
      * @param groupSize One entry per group (g) specifying the number (n_g) of titles and urls in
      *     the respective group.
      * @param titles One title per item ordered by group. There will be (sum n_g forall g) entries.
      * @param urls One URL per item ordered by group. There will be (sum n_g forall g) entries.
      */
     @CalledByNative
-    void onResultsAvailable(GURL url, String query, int resultCategory, String[] groupLabel,
-            boolean[] isAdGroup, int[] groupSize, String[] titles, GURL[] urls) {
+    void onResultsAvailable(GURL url, String query, int resultCategory, int[] groupType,
+            int[] groupSize, String[] titles, GURL[] urls) {
         final int oldState = mState;
         mState = State.READY;
         if (oldState == State.CANCELLED) return;
@@ -100,8 +99,9 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         int groupOffset = 0;
         int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
-        for (int i = 0; i < groupLabel.length; i++) {
-            if (isAdGroup[i]) {
+        for (int i = 0; i < groupType.length; i++) {
+            boolean isAdGroup = groupType[i] == 1; // continuous_search::mojom::ResultType::kAds.
+            if (isAdGroup) {
                 // Account for the resulting group offset to ensure proper indexing.
                 groupOffset += groupSize[i];
                 continue;
@@ -118,7 +118,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             }
 
             groupOffset += groupSize[i];
-            groups.add(new PageGroup(groupLabel[i], isAdGroup[i], results));
+            groups.add(new PageGroup(/*label=*/"", isAdGroup, results));
         }
 
         if (urlCount < mMinimumUrlCount) {

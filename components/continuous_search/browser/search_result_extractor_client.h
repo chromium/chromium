@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTINUOUS_SEARCH_BROWSER_SEARCH_RESULT_EXTRACTOR_CLIENT_H_
 #define COMPONENTS_CONTINUOUS_SEARCH_BROWSER_SEARCH_RESULT_EXTRACTOR_CLIENT_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/continuous_search/browser/search_result_extractor_client_status.h"
@@ -33,8 +35,11 @@ class SearchResultExtractorClient {
                               mojom::CategoryResultsPtr)>;
 
   // Requests extraction of SRP data from the main frame of `web_contents`.
-  // Results are returned to `callback`.
+  // Results are returned to `callback`. `result_types` is list of result types
+  // to extract. The extraction will fail and no results will be generated if
+  // any of the types (except mojom::ResultType::kAds) cannot be extracted.
   void RequestData(content::WebContents* web_contents,
+                   const std::vector<mojom::ResultType>& result_types,
                    RequestDataCallback callback);
 
  private:

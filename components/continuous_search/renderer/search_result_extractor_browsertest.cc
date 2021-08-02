@@ -26,6 +26,7 @@ class SearchResultExtractorImplRenderViewTest : public content::RenderViewTest {
   // once the provided `html` is loaded.
   void LoadHtmlAndExpectExtractedOutput(
       base::StringPiece html,
+      const std::vector<mojom::ResultType>& result_types,
       mojom::SearchResultExtractor::Status expected_status,
       mojom::CategoryResultsPtr expected_results) {
     LoadHTML(html.data());
@@ -37,18 +38,19 @@ class SearchResultExtractorImplRenderViewTest : public content::RenderViewTest {
     {
       auto* extractor = SearchResultExtractorImpl::Create(GetMainRenderFrame());
       EXPECT_NE(extractor, nullptr);
-      extractor->ExtractCurrentSearchResults(base::BindOnce(
-          [](base::OnceClosure quit,
-             mojom::SearchResultExtractor::Status* out_status,
-             mojom::CategoryResultsPtr* out_results,
-             mojom::SearchResultExtractor::Status status,
-             mojom::CategoryResultsPtr results) {
-            *out_status = status;
-            *out_results = std::move(results);
-            std::move(quit).Run();
-          },
-          loop.QuitClosure(), base::Unretained(&out_status),
-          base::Unretained(&out_results)));
+      extractor->ExtractCurrentSearchResults(
+          result_types, base::BindOnce(
+                            [](base::OnceClosure quit,
+                               mojom::SearchResultExtractor::Status* out_status,
+                               mojom::CategoryResultsPtr* out_results,
+                               mojom::SearchResultExtractor::Status status,
+                               mojom::CategoryResultsPtr results) {
+                              *out_status = status;
+                              *out_results = std::move(results);
+                              std::move(quit).Run();
+                            },
+                            loop.QuitClosure(), base::Unretained(&out_status),
+                            base::Unretained(&out_results)));
       loop.Run();
     }
     EXPECT_EQ(expected_status, out_status);
@@ -66,17 +68,13 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractAdsOnly) {
   result2->title = u"World";
 
   auto ad_group = mojom::ResultGroup::New();
-  ad_group->label = "Ads";
-  ad_group->is_ad_group = true;
+  ad_group->type = mojom::ResultType::kAds;
   ad_group->results.push_back(std::move(result1));
   ad_group->results.push_back(std::move(result2));
 
   auto expected_results = mojom::CategoryResults::New();
   expected_results->groups.push_back(std::move(ad_group));
 
-  // If only ads are present the status reports that there are no results as the
-  // organic search result extraction working is a requirement. However, the
-  // results for the ad group are still stored in the response.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
          <body>
@@ -102,8 +100,21 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractAdsOnly) {
              </div>
            </div>
          </body>)",
-      mojom::SearchResultExtractor::Status::kNoResults,
+      {mojom::ResultType::kAds}, mojom::SearchResultExtractor::Status::kSuccess,
       std::move(expected_results));
+}
+
+TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoAds) {
+  // If only ads are requested but ads are not present, the status still reports
+  // success because extracting ads is not a requirement.
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div>
+           </div>
+         </body>)",
+      {mojom::ResultType::kAds}, mojom::SearchResultExtractor::Status::kSuccess,
+      mojom::CategoryResults::New());
 }
 
 TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractAdsAndResults) {
@@ -112,8 +123,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractAdsAndResults) {
   ad_result->title = u"Hello";
 
   auto ad_group = mojom::ResultGroup::New();
-  ad_group->label = "Ads";
-  ad_group->is_ad_group = true;
+  ad_group->type = mojom::ResultType::kAds;
   ad_group->results.push_back(std::move(ad_result));
 
   auto result1 = mojom::SearchResult::New();
@@ -125,8 +135,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractAdsAndResults) {
   result2->title = u"Bar";
 
   auto result_group = mojom::ResultGroup::New();
-  result_group->label = "Search Results";
-  result_group->is_ad_group = false;
+  result_group->type = mojom::ResultType::kSearchResults;
   result_group->results.push_back(std::move(result1));
   result_group->results.push_back(std::move(result2));
 
@@ -180,11 +189,78 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractAdsAndResults) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kAds, mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kSuccess,
       std::move(expected_results));
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsOnly) {}
+TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsOnly) {
+  auto result1 = mojom::SearchResult::New();
+  result1->link = GURL("https://www.foo.com/");
+  result1->title = u"Foo";
+
+  auto result2 = mojom::SearchResult::New();
+  result2->link = GURL("https://www.bar.com/");
+  result2->title = u"Bar";
+
+  auto result_group = mojom::ResultGroup::New();
+  result_group->type = mojom::ResultType::kSearchResults;
+  result_group->results.push_back(std::move(result1));
+  result_group->results.push_back(std::move(result2));
+
+  auto expected_results = mojom::CategoryResults::New();
+  expected_results->category_type = mojom::Category::kOrganic;
+  expected_results->groups.push_back(std::move(result_group));
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div>
+             <div></div>
+             <div id="tads">
+               <div>
+                 <div class="mnr-c foo">
+                   <a href="https://www.example.com/">
+                     <div></div>
+                     <div role="heading">
+                       <div>Hello</div>
+                     </div>
+                   </a>
+                 </div>
+               </div>
+             </div>
+             <div id="rso">
+               <div class="mnr-c">
+                 <div></div>
+                 <div>
+                   <a href="https://www.foo.com/">
+                     <div role="heading">Foo </div>
+                   </a>
+                 </div>
+               </div>
+               <div class="mnr-c">
+                 <div></div>
+                 <div>
+                   <a href="https://www.bar.com/">
+                     <div role="heading">Bar
+                     </div>
+                   </a>
+                 </div>
+               </div>
+               <div class="alpha">
+                 <div></div>
+                 <div>
+                   <a href="https://www.beta.com/">
+                     <div role="heading">Beta</div>
+                   </a>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </body>)",
+      {mojom::ResultType::kSearchResults},
+      mojom::SearchResultExtractor::Status::kSuccess,
+      std::move(expected_results));
+}
 
 // The tests below this line are intended to test the branching of the
 // extractor. The goal is to ensure there are no scenarios where the extraction
@@ -203,6 +279,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestNoRso) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -218,6 +295,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoDivs) {
              </a>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -235,6 +313,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoMnrCardNoClass) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -253,6 +332,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest,
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -270,6 +350,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkNoAnchor) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -287,6 +368,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkNoHref) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -304,6 +386,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkEmptyHref) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -321,6 +404,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkWrongScheme) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -338,6 +422,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoDiv) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -355,6 +440,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoRole) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -373,6 +459,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest,
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }
@@ -390,6 +477,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoText) {
              </div>
            </div>
          </body>)",
+      {mojom::ResultType::kSearchResults},
       mojom::SearchResultExtractor::Status::kNoResults,
       mojom::CategoryResults::New());
 }

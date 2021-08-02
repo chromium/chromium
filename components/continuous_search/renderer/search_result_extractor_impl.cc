@@ -105,8 +105,7 @@ bool ExtractAds(blink::WebDocument document,
   }
 
   auto group = mojom::ResultGroup::New();
-  group->is_ad_group = true;
-  group->label = "Ads";
+  group->type = mojom::ResultType::kAds;
   if (!ExtractResultCards(ads, group)) {
     return false;
   }
@@ -123,8 +122,7 @@ bool ExtractResults(blink::WebDocument document,
   }
 
   auto group = mojom::ResultGroup::New();
-  group->is_ad_group = false;
-  group->label = "Search Results";
+  group->type = mojom::ResultType::kSearchResults;
   if (!ExtractResultCards(cards, group)) {
     return false;
   }
@@ -154,17 +152,28 @@ SearchResultExtractorImpl::SearchResultExtractorImpl(
 SearchResultExtractorImpl::~SearchResultExtractorImpl() = default;
 
 void SearchResultExtractorImpl::ExtractCurrentSearchResults(
+    const std::vector<mojom::ResultType>& result_types,
     ExtractCurrentSearchResultsCallback callback) {
   auto category_result = mojom::CategoryResults::New();
 
   blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   category_result->document_url = GURL(document.Url());
 
-  ExtractAds(document, category_result);
-  if (!ExtractResults(document, category_result)) {
-    std::move(callback).Run(mojom::SearchResultExtractor::Status::kNoResults,
-                            std::move(category_result));
-    return;
+  for (const auto& result_type : result_types) {
+    switch (result_type) {
+      case mojom::ResultType::kAds:
+        ExtractAds(document, category_result);
+        break;
+      case mojom::ResultType::kSearchResults:
+        if (!ExtractResults(document, category_result)) {
+          // Extracting search results is a requirement, if requested.
+          std::move(callback).Run(
+              mojom::SearchResultExtractor::Status::kNoResults,
+              std::move(category_result));
+          return;
+        }
+        break;
+    }
   }
 
   std::move(callback).Run(mojom::SearchResultExtractor::Status::kSuccess,
