@@ -1106,9 +1106,6 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 #define TRACE_EVENT_FLAG_HAS_PROCESS_ID (static_cast<unsigned int>(1 << 10))
 #define TRACE_EVENT_FLAG_HAS_LOCAL_ID (static_cast<unsigned int>(1 << 11))
 #define TRACE_EVENT_FLAG_HAS_GLOBAL_ID (static_cast<unsigned int>(1 << 12))
-// TODO(eseckler): Remove once we have native support for typed proto events in
-// TRACE_EVENT macros.
-#define TRACE_EVENT_FLAG_TYPED_PROTO_ARGS (static_cast<unsigned int>(1 << 15))
 #define TRACE_EVENT_FLAG_JAVA_STRING_LITERALS \
   (static_cast<unsigned int>(1 << 16))
 

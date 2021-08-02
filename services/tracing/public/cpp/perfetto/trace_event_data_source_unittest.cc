@@ -523,9 +523,21 @@ class TraceEventDataSourceTest : public TracingUnitTest {
     return packet_index;
   }
 
+  struct StringOrIid {
+    // implicit
+    StringOrIid(uint32_t iid) : iid(iid) {}
+    // implicit
+    StringOrIid(std::string value) : value(value) {}
+    // implicit
+    StringOrIid(const char* value) : value(value) {}
+
+    std::string value;
+    uint32_t iid = 0;
+  };
+
   void ExpectTraceEvent(const perfetto::protos::TracePacket* packet,
                         uint32_t category_iid,
-                        uint32_t name_iid,
+                        StringOrIid name,
                         char phase,
                         uint32_t flags = 0,
                         uint64_t id = 0,
@@ -611,8 +623,10 @@ class TraceEventDataSourceTest : public TracingUnitTest {
       EXPECT_EQ(packet->track_event().category_iids_size(), 0);
     }
 
-    if (name_iid > 0) {
-      EXPECT_EQ(packet->track_event().name_iid(), name_iid);
+    if (name.iid > 0) {
+      EXPECT_EQ(packet->track_event().name_iid(), name.iid);
+    } else if (!name.value.empty()) {
+      EXPECT_EQ(packet->track_event().name(), name.value);
     }
 
     TrackEvent::Type track_event_type;
@@ -770,7 +784,7 @@ class TraceEventDataSourceTest : public TracingUnitTest {
 #endif
   }
 
-  void ExpectEventNames(
+  void ExpectInternedEventNames(
       const perfetto::protos::TracePacket* packet,
       std::initializer_list<std::pair<uint32_t, std::string>> entries,
       base::Location from_here = base::Location::Current()) {
@@ -778,7 +792,7 @@ class TraceEventDataSourceTest : public TracingUnitTest {
                         from_here);
   }
 
-  void ExpectDebugAnnotationNames(
+  void ExpectInternedDebugAnnotationNames(
       const perfetto::protos::TracePacket* packet,
       std::initializer_list<std::pair<uint32_t, std::string>> entries,
       base::Location from_here = base::Location::Current()) {
@@ -791,6 +805,7 @@ class TraceEventDataSourceTest : public TracingUnitTest {
       const google::protobuf::RepeatedPtrField<T>& field,
       std::initializer_list<std::pair<uint32_t, std::string>> expected_entries,
       base::Location from_here = base::Location::Current()) {
+    SCOPED_TRACE(from_here.ToString());
     std::vector<std::pair<uint32_t, std::string>> entries;
     for (int i = 0; i < field.size(); ++i) {
       entries.emplace_back(field[i].iid(), field[i].name());
@@ -1007,7 +1022,7 @@ TEST_F(TraceEventDataSourceTest, BasicTraceEvent) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
 }
 
 TEST_F(TraceEventDataSourceTest, TimestampedTraceEvent) {
@@ -1032,7 +1047,7 @@ TEST_F(TraceEventDataSourceTest, TimestampedTraceEvent) {
       perfetto::ThreadTrack::ForThread(4242));
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
 }
 
 TEST_F(TraceEventDataSourceTest, InstantTraceEvent) {
@@ -1047,7 +1062,7 @@ TEST_F(TraceEventDataSourceTest, InstantTraceEvent) {
                    TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
 }
 
 TEST_F(TraceEventDataSourceTest, InstantTraceEventOnOtherThread) {
@@ -1075,7 +1090,7 @@ TEST_F(TraceEventDataSourceTest, InstantTraceEventOnOtherThread) {
                    perfetto::ThreadTrack::ForThread(1));
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
 }
 
 TEST_F(TraceEventDataSourceTest, EventWithStringArgs) {
@@ -1098,8 +1113,9 @@ TEST_F(TraceEventDataSourceTest, EventWithStringArgs) {
   EXPECT_EQ(annotations[1].string_value(), "arg2_val");
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
-  ExpectDebugAnnotationNames(e_packet, {{1u, "arg1_name"}, {2u, "arg2_name"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedDebugAnnotationNames(e_packet,
+                                     {{1u, "arg1_name"}, {2u, "arg2_name"}});
 }
 
 TEST_F(TraceEventDataSourceTest, EventWithCopiedStrings) {
@@ -1112,20 +1128,20 @@ TEST_F(TraceEventDataSourceTest, EventWithCopiedStrings) {
   size_t packet_index = ExpectStandardPreamble();
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
-  ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/1u,
+  ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name=*/"bar",
                    TRACE_EVENT_PHASE_INSTANT,
                    TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY);
 
+  EXPECT_EQ(e_packet->track_event().name(), "bar");
+
   const auto& annotations = e_packet->track_event().debug_annotations();
   EXPECT_EQ(annotations.size(), 2);
-  EXPECT_EQ(annotations[0].name_iid(), 1u);
+  EXPECT_EQ(annotations[0].name(), "arg1_name");
   EXPECT_EQ(annotations[0].string_value(), "arg1_val");
-  EXPECT_EQ(annotations[1].name_iid(), 2u);
+  EXPECT_EQ(annotations[1].name(), "arg2_name");
   EXPECT_EQ(annotations[1].string_value(), "arg2_val");
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
-  ExpectDebugAnnotationNames(e_packet, {{1u, "arg1_name"}, {2u, "arg2_name"}});
 }
 
 TEST_F(TraceEventDataSourceTest, EventWithUIntArgs) {
@@ -1181,7 +1197,7 @@ TEST_F(TraceEventDataSourceTest, EventWithBoolArgs) {
   EXPECT_TRUE(annotations[0].has_bool_value());
   EXPECT_EQ(annotations[0].bool_value(), true);
   EXPECT_TRUE(annotations[1].has_bool_value());
-  EXPECT_EQ(annotations[1].int_value(), false);
+  EXPECT_EQ(annotations[1].bool_value(), false);
 }
 
 TEST_F(TraceEventDataSourceTest, EventWithDoubleArgs) {
@@ -1534,7 +1550,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEndWithLambda) {
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
-  ExpectEventNames(b_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(b_packet, {{1u, "bar"}});
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   auto* t_packet = GetFinalizedPacket(packet_index++);
@@ -1543,7 +1559,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEndWithLambda) {
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
 
-  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0,
+  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0u,
                    TRACE_EVENT_PHASE_END, /*flags=*/0, /*id=*/0,
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 }
@@ -1570,7 +1586,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEnd) {
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
-  ExpectEventNames(b_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(b_packet, {{1u, "bar"}});
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   auto* t_packet = GetFinalizedPacket(packet_index++);
@@ -1579,7 +1595,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEnd) {
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
 
-  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0,
+  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0u,
                    TRACE_EVENT_PHASE_END, /*flags=*/0, /*id=*/0,
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 }
@@ -1609,7 +1625,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportWithTimestamp) {
       /*tid_override=*/0, track);
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
-  ExpectEventNames(b_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(b_packet, {{1u, "bar"}});
 }
 
 TEST_F(TraceEventDataSourceTest, TrackSupportWithTimestampAndLambda) {
@@ -1641,7 +1657,7 @@ TEST_F(TraceEventDataSourceTest, TrackSupportWithTimestampAndLambda) {
       /*tid_override=*/0, track);
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
-  ExpectEventNames(b_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(b_packet, {{1u, "bar"}});
 }
 
 // TODO(ddrone): following tests should be re-enabled once we figure out how
@@ -1661,10 +1677,10 @@ TEST_F(TraceEventDataSourceTest, DISABLED_TrackSupport) {
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
-  ExpectEventNames(b_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(b_packet, {{1u, "bar"}});
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
-  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0,
+  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0u,
                    TRACE_EVENT_PHASE_END, /*flags=*/0, /*id=*/0,
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 }
@@ -1690,10 +1706,10 @@ TEST_F(TraceEventDataSourceTest, DISABLED_TrackSupportWithLambda) {
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
-  ExpectEventNames(b_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(b_packet, {{1u, "bar"}});
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
-  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0,
+  ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0u,
                    TRACE_EVENT_PHASE_END, /*flags=*/0, /*id=*/0,
                    /*absolute_timestamp=*/0, /*tid_override=*/0, track);
 }
@@ -1726,8 +1742,8 @@ TEST_F(TraceEventDataSourceTest, InternedStrings) {
     EXPECT_EQ(annotations1[0].int_value(), 4);
 
     ExpectEventCategories(e_packet1, {{1u, "browser"}});
-    ExpectEventNames(e_packet1, {{1u, "e1"}});
-    ExpectDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
+    ExpectInternedEventNames(e_packet1, {{1u, "e1"}});
+    ExpectInternedDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
 
     // Second packet refers to the interning entries from packet 1.
     auto* e_packet2 = GetFinalizedPacket(packet_index++);
@@ -1740,8 +1756,8 @@ TEST_F(TraceEventDataSourceTest, InternedStrings) {
     EXPECT_EQ(annotations2[0].int_value(), 2);
 
     ExpectEventCategories(e_packet2, {});
-    ExpectEventNames(e_packet2, {});
-    ExpectDebugAnnotationNames(e_packet2, {});
+    ExpectInternedEventNames(e_packet2, {});
+    ExpectInternedDebugAnnotationNames(e_packet2, {});
 
     // Third packet uses different names, so emits new entries.
     auto* e_packet3 = GetFinalizedPacket(packet_index++);
@@ -1754,8 +1770,8 @@ TEST_F(TraceEventDataSourceTest, InternedStrings) {
     EXPECT_EQ(annotations3[0].int_value(), 1);
 
     ExpectEventCategories(e_packet3, {{2u, "ui"}});
-    ExpectEventNames(e_packet3, {{2u, "e2"}});
-    ExpectDebugAnnotationNames(e_packet3, {{2u, "arg2"}});
+    ExpectInternedEventNames(e_packet3, {{2u, "e2"}});
+    ExpectInternedDebugAnnotationNames(e_packet3, {{2u, "arg2"}});
 
     // Resetting the interning state causes ThreadDescriptor and interning
     // entries to be emitted again, with the same interning IDs.
@@ -1785,8 +1801,8 @@ TEST_F(TraceEventDataSourceTest, FilteringSimpleTraceEvent) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
-  ExpectDebugAnnotationNames(e_packet, {});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedDebugAnnotationNames(e_packet, {});
 }
 
 TEST_F(TraceEventDataSourceTest, FilteringEventWithArgs) {
@@ -1806,8 +1822,8 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithArgs) {
   EXPECT_EQ(annotations.size(), 0);
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
-  ExpectDebugAnnotationNames(e_packet, {});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedDebugAnnotationNames(e_packet, {});
 }
 
 TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
@@ -1825,25 +1841,23 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
       /*privacy_filtering_enabled=*/true);
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
-  ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/1u,
+  ExpectTraceEvent(e_packet, /*category_iid=*/1u, "PRIVACY_FILTERED",
                    TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
 
   const auto& annotations = e_packet->track_event().debug_annotations();
   EXPECT_EQ(annotations.size(), 0);
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
-  ExpectEventNames(e_packet, {{1u, "PRIVACY_FILTERED"}});
-  ExpectDebugAnnotationNames(e_packet, {});
+  ExpectInternedDebugAnnotationNames(e_packet, {});
 
   e_packet = GetFinalizedPacket(packet_index++);
-  ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/2u,
+  ExpectTraceEvent(e_packet, /*category_iid=*/1u, "javaName",
                    TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
 
   const auto& annotations2 = e_packet->track_event().debug_annotations();
   EXPECT_EQ(annotations2.size(), 0);
 
-  ExpectEventNames(e_packet, {{2u, "javaName"}});
-  ExpectDebugAnnotationNames(e_packet, {});
+  ExpectInternedDebugAnnotationNames(e_packet, {});
 }
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -1936,8 +1950,8 @@ TEST_F(TraceEventDataSourceNoInterningTest, MAYBE_InterningScopedToPackets) {
   EXPECT_EQ(annotations1[0].int_value(), 4);
 
   ExpectEventCategories(e_packet1, {{1u, "browser"}});
-  ExpectEventNames(e_packet1, {{1u, "e1"}});
-  ExpectDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
+  ExpectInternedEventNames(e_packet1, {{1u, "e1"}});
+  ExpectInternedDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
 
   // Second packet reemits the entries the same way.
   auto* e_packet2 = GetFinalizedPacket(packet_index++);
@@ -1950,8 +1964,8 @@ TEST_F(TraceEventDataSourceNoInterningTest, MAYBE_InterningScopedToPackets) {
   EXPECT_EQ(annotations2[0].int_value(), 2);
 
   ExpectEventCategories(e_packet1, {{1u, "browser"}});
-  ExpectEventNames(e_packet1, {{1u, "e1"}});
-  ExpectDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
+  ExpectInternedEventNames(e_packet1, {{1u, "e1"}});
+  ExpectInternedDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
 
   // Third packet emits entries with the same IDs but different strings.
   auto* e_packet3 = GetFinalizedPacket(packet_index++);
@@ -1964,8 +1978,8 @@ TEST_F(TraceEventDataSourceNoInterningTest, MAYBE_InterningScopedToPackets) {
   EXPECT_EQ(annotations3[0].int_value(), 1);
 
   ExpectEventCategories(e_packet3, {{1u, "ui"}});
-  ExpectEventNames(e_packet3, {{1u, "e2"}});
-  ExpectDebugAnnotationNames(e_packet3, {{1u, "arg2"}});
+  ExpectInternedEventNames(e_packet3, {{1u, "e2"}});
+  ExpectInternedDebugAnnotationNames(e_packet3, {{1u, "arg2"}});
 }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -2084,7 +2098,7 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnBegin) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(), 42u);
 }
@@ -2128,7 +2142,7 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnBeginAndEnd) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(), 42u);
 
@@ -2154,7 +2168,7 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnInstant) {
                    TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(), 42u);
 }
@@ -2177,7 +2191,7 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnScoped) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(), 42u);
 
@@ -2206,7 +2220,7 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnScopedCapture) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(), 42u);
 
@@ -2238,7 +2252,7 @@ TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOnScopedMultipleEvents) {
                    TRACE_EVENT_PHASE_BEGIN);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(), 42u);
 
@@ -2275,7 +2289,7 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigEmpty) {
 
   ExpectEventCategories(e_packet,
                         {{1u, TRACE_DISABLED_BY_DEFAULT("histogram_samples")}});
-  ExpectEventNames(e_packet, {{1u, "HistogramSample"}});
+  ExpectInternedEventNames(e_packet, {{1u, "HistogramSample"}});
   ASSERT_TRUE(e_packet->track_event().has_chrome_histogram_sample());
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().sample(), 1u);
   ASSERT_TRUE(e_packet->has_interned_data());
@@ -2303,7 +2317,7 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
 
   ExpectEventCategories(e_packet,
                         {{1u, TRACE_DISABLED_BY_DEFAULT("histogram_samples")}});
-  ExpectEventNames(e_packet, {{1u, "HistogramSample"}});
+  ExpectInternedEventNames(e_packet, {{1u, "HistogramSample"}});
   ASSERT_TRUE(e_packet->track_event().has_chrome_histogram_sample());
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_hash(),
             base::HashMetricName("Foo1.Bar1"));
@@ -2316,7 +2330,7 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
   e_packet = GetFinalizedPacket(packet_index++);
 
   ExpectEventCategories(e_packet, {});
-  ExpectEventNames(e_packet, {});
+  ExpectInternedEventNames(e_packet, {});
   ASSERT_TRUE(e_packet->track_event().has_chrome_histogram_sample());
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_hash(),
             base::HashMetricName("Foo3.Bar3"));
@@ -2346,7 +2360,7 @@ TEST_F(TraceEventDataSourceTest, UserActionEvent) {
 
   ExpectEventCategories(
       e_packet, {{1u, TRACE_DISABLED_BY_DEFAULT("user_action_samples")}});
-  ExpectEventNames(e_packet, {{1u, "UserAction"}});
+  ExpectInternedEventNames(e_packet, {{1u, "UserAction"}});
   ASSERT_TRUE(e_packet->track_event().has_chrome_user_event());
   EXPECT_EQ(e_packet->track_event().chrome_user_event().action_hash(),
             base::HashMetricName("Test_Action"));
@@ -2383,7 +2397,7 @@ TEST_F(TraceEventDataSourceTest, TypedEventInterning) {
   auto* e_packet = GetFinalizedPacket(packet_index++);
 
   ExpectEventCategories(e_packet, {{1u, "browser"}});
-  ExpectEventNames(e_packet, {{1u, "bar"}});
+  ExpectInternedEventNames(e_packet, {{1u, "bar"}});
   ASSERT_TRUE(e_packet->track_event().has_log_message());
   ASSERT_TRUE(e_packet->has_interned_data());
   EXPECT_EQ(e_packet->track_event().log_message().body_iid(),
@@ -2403,13 +2417,13 @@ TEST_F(TraceEventDataSourceTest, TypedAndUntypedEventsWithDebugAnnotations) {
   auto* e_packet1 = GetFinalizedPacket(packet_index++);
 
   ExpectEventCategories(e_packet1, {{1u, "browser"}});
-  ExpectEventNames(e_packet1, {{1u, "Event1"}});
-  ExpectDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
+  ExpectInternedEventNames(e_packet1, {{1u, "Event1"}});
+  ExpectInternedDebugAnnotationNames(e_packet1, {{1u, "arg1"}});
 
   auto* e_packet2 = GetFinalizedPacket(packet_index++);
 
-  ExpectEventNames(e_packet2, {{2u, "Event2"}});
-  ExpectDebugAnnotationNames(e_packet2, {{2u, "arg2"}});
+  ExpectInternedEventNames(e_packet2, {{2u, "Event2"}});
+  ExpectInternedDebugAnnotationNames(e_packet2, {{2u, "arg2"}});
 }
 
 // TODO(eseckler): Add startup tracing unittests.
