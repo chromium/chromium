@@ -462,6 +462,11 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
   DCHECK(omit_non_user_gestures_is_enabled ||
          out_referrer_chain->size() <= kReferrerChainMaxLength);
   if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = out_referrer_chain->size() - kReferrerChainMaxLength;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "ClientRedirect",
+        extra_entries);
     MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
                                              kReferrerChainMaxLength);
   }
@@ -496,6 +501,11 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
   DCHECK(omit_non_user_gestures_is_enabled ||
          out_referrer_chain->size() <= kReferrerChainMaxLength);
   if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = out_referrer_chain->size() - kReferrerChainMaxLength;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "ClientRedirect",
+        extra_entries);
     MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
                                              kReferrerChainMaxLength);
   }
@@ -565,6 +575,11 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
   DCHECK(omit_non_user_gestures_is_enabled ||
          out_referrer_chain->size() <= kReferrerChainMaxLength);
   if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = out_referrer_chain->size() - kReferrerChainMaxLength;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "ClientRedirect",
+        extra_entries);
     MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
                                              kReferrerChainMaxLength);
   }
@@ -672,6 +687,11 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
   DCHECK(omit_non_user_gestures_is_enabled ||
          (size_t)navigation_chain.size() <= recent_navigation_count);
   if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = navigation_chain.size() - recent_navigation_count;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "RecentNavigation",
+        extra_entries);
     MaybeRemoveNonUserGestureReferrerEntries(&navigation_chain,
                                              recent_navigation_count);
   }

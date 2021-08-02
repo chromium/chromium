@@ -925,6 +925,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.ClientRedirect"
+    units="units" expires_after="2022-07-23">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the number of extra client redirect referrer chain entries that were
+    cleared. This is logged when the referrer chain is being created for Safe
+    Browsing pings (i.e. Phishguard, CSD).
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.RecentNavigation"
+    units="units" expires_after="2022-07-23">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the number of extra recent navigation (non-user gestured) referrer
+    chain entries that were cleared. This is logged when the referrer chain is
+    being created for Safe Browsing pings (i.e. Phishguard, CSD).
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.NavigationObserver.IdentifyReferrerChainByEventURLTime"
     units="ms" expires_after="2022-01-23">
   <owner>xinghuilu@chromium.org</owner>

@@ -11,7 +11,6 @@ namespace safe_browsing {
 void MaybeRemoveNonUserGestureReferrerEntries(ReferrerChain* referrer_chain,
                                               int max_allowed_length) {
   int extra_entries = referrer_chain->size() - max_allowed_length;
-  // TODO(bdea): Log number of extra entries of the referrer chain.
   if (extra_entries > 0) {
     RemoveNonUserGestureReferrerEntries(referrer_chain, max_allowed_length);
   }
