@@ -266,6 +266,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // This does not consider inner frame trees.
   virtual bool IsDescendantOf(RenderFrameHost* ancestor) = 0;
 
+  // Fenced frames (meta-bug https://crbug.com/1111084):
+  // Returns if this document is directly hosted by a fenced frame.
+  //
+  // In particular, this always returns false for document loaded inside an
+  // <iframe>, even if the <iframe> is part of a document loaded inside a fenced
+  // iframe.
+  virtual bool HostedByFencedFrame() = 0;
+
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
   // descendants, including frames in any inner frame trees, in breadth-first
   // order. Examples of features that have inner frame trees are portals or

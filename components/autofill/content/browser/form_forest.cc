@@ -17,7 +17,7 @@
 
 // AFCHECK(condition[, error_handler]) creates a crash dump and executes
 // |error_handler| if |condition| is false.
-// TODO(crbug/1187842): Replace AFCHECK() with DCHECK().
+// TODO(https://crbug.com/1187842): Replace AFCHECK() with DCHECK().
 #if DCHECK_IS_ON()
 #define AFCHECK(condition, ...) DCHECK(condition)
 #else
@@ -36,27 +36,24 @@ namespace internal {
 
 namespace {
 
-// Shall indicate if |rfh| is a fenced frame (crbug/1111084), to be implemented
-// if and when fencedframes ship.
+// Indicates if |rfh| is a fenced frame (https://crbug.com/1111084).
 //
 // We do not want to fill across the boundary of a fenced frame. Hence, a fenced
 // frame's FrameData must be disconnected (in terms of FormData::child_frames
 // and FrameData::parent_form) from its parent form. This is already guaranteed
 // because FormData::child_frames does not contain fenced frames. However,
 // UpdateTreeOfRendererForm() would still invoke TriggerReparse() to detect the
-// parent form. IsFencedFrame() should be implemented to suppress this.
+// parent form. HostedByFencedFrame() should be implemented to suppress this.
 //
 // We also do not want to fill across iframes with the disallowdocumentaccess
-// attribute (crbug/961448). Since disallowdocumentaccess is currently not going
-// to ship and supporting it requires significant additional work in
-// UpdateTreeOfRendererForm() to remove FormData::child_frame and unset
+// attribute (https://crbug.com/961448). Since disallowdocumentaccess is
+// currently not going to ship and supporting it requires significant additional
+// work in UpdateTreeOfRendererForm() to remove FormData::child_frame and unset
 // FrameData::parent_form for frames that disallow document access, there is no
-// immediate need to support it.
-//
-// TODO(crbug/1201854): Implement if and when fencedframes ship, and/or extend
-// it to disallowdocumentaccess if and when disallowdocumentaccess ships.
-constexpr bool IsFencedFrame(content::RenderFrameHost* rfh) {
-  return false;
+// immediate need to support it. See https://crrev.com/c/3055422 for a draft
+// implementation.
+bool HostedByFencedFrame(content::RenderFrameHost* rfh) {
+  return rfh->HostedByFencedFrame();
 }
 
 }  // namespace
@@ -427,7 +424,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // UpdateTreeOfRendererForm() will be called for the parent form, whose
   // FormData::child_frames now include |frame|.
   content::RenderFrameHost* parent_rfh = rfh->GetParent();
-  if (!frame->parent_form && parent_rfh && !IsFencedFrame(rfh)) {
+  if (!frame->parent_form && parent_rfh && !HostedByFencedFrame(rfh)) {
     LocalFrameToken parent_frame_token(
         LocalFrameToken(parent_rfh->GetFrameToken().value()));
     FrameData* parent_frame = GetFrameData(parent_frame_token);

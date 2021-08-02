@@ -1939,6 +1939,10 @@ bool RenderFrameHostImpl::IsDescendantOf(RenderFrameHost* ancestor) {
   return false;
 }
 
+bool RenderFrameHostImpl::HostedByFencedFrame() {
+  return frame_tree_node_->IsFencedFrame();
+}
+
 void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationCallback on_frame) {
   ForEachRenderFrameHost(FrameIterationWrapper(on_frame));

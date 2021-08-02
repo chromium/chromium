@@ -220,14 +220,16 @@ class FormForest {
   // The |field_type_map| should contain the field types of the fields in
   // |browser_form|.
   //
-  // A field is *safe to fill* iff at least one of the following conditions
-  // holds:
+  // A field is *safe to fill* iff at least one of the conditions (1), (2), (3)
+  // and additionally condition (4) hold:
   // (1) The field's origin is the |triggered_origin|.
   // (2) The field's origin is the main origin and the field's type in
   //     |field_type_map| is not sensitive (see is_sensitive_field_type()).
   // (3) The |triggered_origin| is main origin and the field's frame's
   //     permissions policy allows shared-autofill.
-  // See below for a future additional necessary condition.
+  // (4) No frame on the shortest path from the field on which Autofill was
+  //     triggered to the field in question, except perhaps the shallowest
+  //     frame, is a fenced frame.
   //
   // The *origin of a field* is the origin of the frame that contains the
   // corresponding form-control element.
@@ -237,15 +239,6 @@ class FormForest {
   // A frame's *permissions policy allows shared-autofill* if that frame is a
   // main frame or its embedding <iframe> element lists "shared-autofill" in
   // its "allow" attribute (see https://www.w3.org/TR/permissions-policy-1/).
-  //
-  // When fenced frames (crbug/1111084) or disallowdocumentaccess (crbug/961448)
-  // ships, a necessary requirement for a field to be *safe to fill* will be:
-  // (4) No frame on the shortest path from the field on from which Autofill was
-  //     triggered to the field in question frame in the frame tree, except
-  //     perhaps the shallowest frame, is a fenced frame or has the has the
-  //     disallowdocumentaccess attribute.
-  // TODO(crbug/1201854): Implement fenced frames and/or disallowdocumentaccess
-  // if and when they ship.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
       const FormData& browser_form,
       const url::Origin& triggered_origin,
