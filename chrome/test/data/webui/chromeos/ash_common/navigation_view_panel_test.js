@@ -60,14 +60,26 @@ export function navigationViewPanelTestSuite() {
     return navElements;
   }
 
-  test('oneEntry', async () => {
+  /**
+   * Adds a section to the navigation element.
+   * @param {string} name
+   * @param {string} pageType
+   * @param {string} icon
+   * @param {?string} id
+   * @param {!Array<SelectorItem>} subItems
+   * @return {!Promise}
+   */
+  function addNavigationSection(
+      name, pageType, icon = '', id = null, subItems = []) {
+    viewElement.addSelector(name, pageType, icon, id, subItems);
+    return flushTasks();
+  }
+
+  test('twoEntries', async () => {
     const dummyPage1 = 'dummy-page1';
     const dummyPage2 = 'dummy-page2';
-
-    viewElement.addSelector('dummyPage1', dummyPage1);
-    viewElement.addSelector('dummyPage2', dummyPage2);
-
-    await flushTasks();
+    await addNavigationSection('dummyPage1', dummyPage1);
+    await addNavigationSection('dummyPage2', dummyPage2);
 
     // Click the first menu item. Expect that the dummyPage1 to be created and
     // not hidden.
@@ -105,10 +117,7 @@ export function navigationViewPanelTestSuite() {
 
   test('notifyEvent', async () => {
     const dummyPage1 = 'dummy-page1';
-
-    viewElement.addSelector('dummyPage1', dummyPage1);
-
-    await flushTasks();
+    await addNavigationSection('dummyPage1', dummyPage1);
 
     // Create the element.
     const navElements = getNavElements();
@@ -131,9 +140,8 @@ export function navigationViewPanelTestSuite() {
     const dummyPage1 = 'dummy-page1';
     const dummyPage2 = 'dummy-page2';
 
-    viewElement.addSelector('dummyPage1', dummyPage1);
-    viewElement.addSelector('dummyPage2', dummyPage2);
-    await flushTasks();
+    await addNavigationSection('dummyPage1', dummyPage1);
+    await addNavigationSection('dummyPage2', dummyPage2);
 
     assertFalse(viewElement.shadowRoot.querySelector(`#${dummyPage1}`).hidden);
     assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
@@ -145,9 +153,8 @@ export function navigationViewPanelTestSuite() {
     const id2 = 'id2';
 
     // Add two pages of the the same type with different ids.
-    viewElement.addSelector('Page 1', pageType, /*icon=*/ '', 'id1');
-    viewElement.addSelector('Page 2', pageType, /*icon=*/ '', 'id2');
-    await flushTasks();
+    await addNavigationSection('Page 1', pageType, /*icon=*/ '', 'id1');
+    await addNavigationSection('Page 2', pageType, /*icon=*/ '', 'id2');
 
     // First page should be created by default.
     assertTrue(!!viewElement.shadowRoot.querySelector(`#${id1}`));
@@ -176,15 +183,11 @@ export function navigationViewPanelTestSuite() {
         /** @type {SelectorItem} */ (
             {'name': 'subItem', 'pageIs': subPage, 'id': subid});
 
-    viewElement.addSelector('dummyPage1', dummyPage1, '', id1, [subItem]);
-    viewElement.addSelector('dummyPage2', dummyPage2);
-    await flushTasks();
+    await addNavigationSection('dummyPage1', dummyPage1, '', id1, [subItem]);
+    await addNavigationSection('dummyPage2', dummyPage2);
 
-    // Sub page of selected item will be created but hidden.
-    assertTrue(!!viewElement.shadowRoot.querySelector(`#${subid}`));
-    assertFalse(viewElement.shadowRoot.querySelector(`#${subid}`).hidden);
-
-    // Second page won't be created yet.
+    // The pages are not created yet.
+    assertFalse(!!viewElement.shadowRoot.querySelector(`#${id1}`));
     assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
   });
 }
