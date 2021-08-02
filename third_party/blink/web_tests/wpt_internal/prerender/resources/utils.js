@@ -88,3 +88,39 @@ function loadInitiatorPage() {
     window.close();
   });
 }
+
+// Returns messages received from the given BroadcastChannel
+// so that callers do not need to add their own event listeners.
+// nextMessage() returns a promise which resolves with the next message.
+//
+// Usage:
+//   const channel = new BroadcastChannel('channel-name');
+//   const messageQueue = new BroadcastMessageQueue(channel);
+//   const message1 = await messageQueue.nextMessage();
+//   const message2 = await messageQueue.nextMessage();
+//   message1 and message2 are the messages received.
+class BroadcastMessageQueue {
+  constructor(broadcastChannel) {
+    this.messages = [];
+    this.resolveFunctions = [];
+    this.channel = broadcastChannel;
+    this.channel.addEventListener('message', e => {
+      if (this.resolveFunctions.length > 0) {
+        const fn = this.resolveFunctions.shift();
+        fn(e.data);
+      } else {
+        this.messages.push(e.data);
+      }
+    });
+  }
+
+  // Returns a promise that resolves with the next message from this queue.
+  nextMessage() {
+    return new Promise(resolve => {
+      if (this.messages.length > 0)
+        resolve(this.messages.shift())
+      else
+        this.resolveFunctions.push(resolve);
+    });
+  }
+}
