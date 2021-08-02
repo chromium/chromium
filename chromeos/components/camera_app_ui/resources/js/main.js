@@ -315,11 +315,13 @@ export class App {
       });
       const results = await Promise.allSettled(
           preloadImagesList.map((name) => loadImage(`/images/${name}`)));
-      const failure = results.find(({status}) => status === 'rejected');
-      if (failure !== undefined) {
-        reportError(
-            ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
-            assertInstanceof(failure.reason, Error));
+      for (const result of results) {
+        if (result.status === 'rejected') {
+          reportError(
+              ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
+              assertInstanceof(result.reason, Error));
+          break;
+        }
       }
     })();
 
