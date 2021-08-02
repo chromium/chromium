@@ -79,6 +79,17 @@ void NGMathMLPainter::PaintOperator(const PaintInfo& info,
   auto padding = box_fragment_.Padding();
   physical_offset.left += borders.left + padding.left;
   physical_offset.top += borders.top + padding.top;
+
+  // TODO(http://crbug.com/1124301): NGMathOperatorLayoutAlgorithm::Layout
+  // passes the operator's inline size but this does not match the width of the
+  // box fragment, which relies on the min-max sizes instead. Shift the paint
+  // offset to work around that issue, splitting the size error symmetrically.
+  DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
+  physical_offset.left +=
+      (box_fragment_.Size().width - borders.HorizontalSum() -
+       padding.HorizontalSum() - parameters.operator_inline_size) /
+      2;
+
   PaintStretchyOrLargeOperator(info, paint_offset + physical_offset);
 }
 

@@ -135,6 +135,17 @@ bool HasAccent(const NGBlockNode& node, bool accent_under) {
   return attribute_value && *attribute_value;
 }
 
+static bool IsStretchyOperatorWithInlineStretchAxis(const NGBlockNode& node) {
+  if (auto* core_operator =
+          DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
+    // TODO(crbug.com/1124298): Implement embellished operators.
+    return core_operator->HasBooleanProperty(
+               MathMLOperatorElement::kStretchy) &&
+           !core_operator->GetOperatorContent().is_vertical;
+  }
+  return false;
+}
+
 }  // namespace
 
 NGMathUnderOverLayoutAlgorithm::NGMathUnderOverLayoutAlgorithm(
@@ -211,11 +222,67 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   }
   UnderOverVerticalParameters parameters = GetUnderOverVerticalParameters(
       Style(), is_base_large_operator, is_base_stretchy_in_inline_axis);
-  // TODO(crbug.com/1124301): handle stretchy operators.
+
+  // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-inline-axis
+  LayoutUnit inline_stretch_size;
+  auto UpdateInlineStretchSize =
+      [&](const scoped_refptr<const NGLayoutResult>& result) {
+        NGFragment fragment(
+            ConstraintSpace().GetWritingDirection(),
+            To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+        inline_stretch_size =
+            std::max(inline_stretch_size, fragment.InlineSize());
+      };
+
+  // "Perform layout without any stretch size constraint on all the items of
+  // LNotToStretch"
+  bool layout_remaining_items_with_zero_inline_stretch_size = true;
+  for (NGLayoutInputNode child = Node().FirstChild(); child;
+       child = child.NextSibling()) {
+    if (child.IsOutOfFlowPositioned() ||
+        IsStretchyOperatorWithInlineStretchAxis(To<NGBlockNode>(child)))
+      continue;
+    const auto child_constraint_space = CreateConstraintSpaceForMathChild(
+        Node(), ChildAvailableSize(), ConstraintSpace(), child,
+        NGCacheSlot::kMeasure);
+    const auto child_layout_result = To<NGBlockNode>(child).Layout(
+        child_constraint_space, nullptr /* break_token */);
+    UpdateInlineStretchSize(child_layout_result);
+    layout_remaining_items_with_zero_inline_stretch_size = false;
+  }
+
+  if (UNLIKELY(layout_remaining_items_with_zero_inline_stretch_size)) {
+    // "If LNotToStretch is empty, perform layout with stretch size constraint 0
+    // on all the items of LToStretch.
+    for (NGLayoutInputNode child = Node().FirstChild(); child;
+         child = child.NextSibling()) {
+      if (child.IsOutOfFlowPositioned())
+        continue;
+      DCHECK(IsStretchyOperatorWithInlineStretchAxis(To<NGBlockNode>(child)));
+      LayoutUnit zero_stretch_size;
+      const auto child_constraint_space = CreateConstraintSpaceForMathChild(
+          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          NGCacheSlot::kMeasure, absl::nullopt, zero_stretch_size);
+      const auto child_layout_result = To<NGBlockNode>(child).Layout(
+          child_constraint_space, nullptr /* break_token */);
+      UpdateInlineStretchSize(child_layout_result);
+    }
+  }
+
+  auto CreateConstraintSpaceForUnderOverChild = [&](const NGBlockNode child) {
+    // TODO(crbug.com/1124298): If there is a stretch constraint, use it.
+    return IsStretchyOperatorWithInlineStretchAxis(child)
+               ? CreateConstraintSpaceForMathChild(
+                     Node(), ChildAvailableSize(), ConstraintSpace(), child,
+                     NGCacheSlot::kLayout, absl::nullopt, inline_stretch_size)
+               : CreateConstraintSpaceForMathChild(Node(), ChildAvailableSize(),
+                                                   ConstraintSpace(), child,
+                                                   NGCacheSlot::kLayout);
+  };
+
   // TODO(crbug.com/1125136): take into account italic correction.
 
-  auto base_space = CreateConstraintSpaceForMathChild(
-      Node(), ChildAvailableSize(), ConstraintSpace(), base);
+  const auto base_space = CreateConstraintSpaceForUnderOverChild(base);
   auto base_layout_result = base.Layout(base_space);
   auto base_margins =
       ComputeMarginsFor(base_space, base.Style(), ConstraintSpace());
@@ -228,8 +295,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   // All children are positioned centered relative to the container (and
   // therefore centered relative to themselves).
   if (over) {
-    auto over_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), over);
+    const auto over_space = CreateConstraintSpaceForUnderOverChild(over);
     scoped_refptr<const NGLayoutResult> over_layout_result =
         over.Layout(over_space);
     NGBoxStrut over_margins =
@@ -277,8 +343,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
   block_offset += base_fragment.BlockSize() + base_margins.block_end;
 
   if (under) {
-    auto under_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), under);
+    const auto under_space = CreateConstraintSpaceForUnderOverChild(under);
     scoped_refptr<const NGLayoutResult> under_layout_result =
         under.Layout(under_space);
     NGBoxStrut under_margins =

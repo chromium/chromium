@@ -23,7 +23,8 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
     const NGLayoutInputNode& child,
     NGCacheSlot cache_slot,
     const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
-        target_stretch_block_sizes) {
+        target_stretch_block_sizes,
+    const absl::optional<LayoutUnit> target_stretch_inline_size) {
   const ComputedStyle& parent_style = parent_node.Style();
   const ComputedStyle& child_style = child.Style();
   DCHECK(child.CreatesNewFormattingContext());
@@ -35,8 +36,9 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
   builder.SetCacheSlot(cache_slot);
   if (target_stretch_block_sizes)
     builder.SetTargetStretchBlockSizes(*target_stretch_block_sizes);
+  if (target_stretch_inline_size)
+    builder.SetTargetStretchInlineSize(*target_stretch_inline_size);
 
-  // TODO(crbug.com/1124301): add target inline stretch size.
   // TODO(crbug.com/1125137): add ink metrics.
   return builder.ToConstraintSpace();
 }
@@ -246,9 +248,7 @@ bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
             base_code_point))
       return false;
 
-    // TODO(crbug.com/1124301) Implement horizontal stretchy operators.
-    if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy) &&
-        element->GetOperatorContent().is_vertical)
+    if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy))
       return true;
 
     if (element->HasBooleanProperty(MathMLOperatorElement::kLargeOp) &&

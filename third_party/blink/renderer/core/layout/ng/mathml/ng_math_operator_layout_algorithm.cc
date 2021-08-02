@@ -59,61 +59,66 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
-    // TODO(http://crbug.com/1124301) Implement horizontal stretchy operators.
-    DCHECK(element->GetOperatorContent().is_vertical);
-    // "Otherwise, the stretch axis of the operator is block."
-    if (auto target_stretch_block_sizes =
-            ConstraintSpace().TargetStretchBlockSizes()) {
-      target_stretch_ascent = target_stretch_block_sizes->ascent;
-      target_stretch_descent = target_stretch_block_sizes->descent;
-      if (element->HasBooleanProperty(MathMLOperatorElement::kSymmetric)) {
-        // "If the operator has the symmetric property then set the target
-        // sizes Tascent and Tdescent to Sascent and Sdescent respectively:
-        // Sascent = max( Uascent − AxisHeight, Udescent + AxisHeight ) +
-        // AxisHeight
-        // Sdescent = max( Uascent − AxisHeight, Udescent + AxisHeight ) −
-        // AxisHeight"
-        LayoutUnit axis = MathAxisHeight(Style());
-        LayoutUnit half_target_stretch_size = std::max(
-            target_stretch_ascent - axis, target_stretch_descent + axis);
-        target_stretch_ascent = half_target_stretch_size + axis;
-        target_stretch_descent = half_target_stretch_size - axis;
+    if (!element->GetOperatorContent().is_vertical) {
+      // "If the stretch axis of the operator is inline."
+      if (ConstraintSpace().HasTargetStretchInlineSize())
+        operator_target_size = ConstraintSpace().TargetStretchInlineSize();
+    } else {
+      // "Otherwise, the stretch axis of the operator is block."
+      if (auto target_stretch_block_sizes =
+              ConstraintSpace().TargetStretchBlockSizes()) {
+        target_stretch_ascent = target_stretch_block_sizes->ascent;
+        target_stretch_descent = target_stretch_block_sizes->descent;
+        if (element->HasBooleanProperty(MathMLOperatorElement::kSymmetric)) {
+          // "If the operator has the symmetric property then set the target
+          // sizes Tascent and Tdescent to Sascent and Sdescent respectively:
+          // Sascent = max( Uascent − AxisHeight, Udescent + AxisHeight ) +
+          // AxisHeight
+          // Sdescent = max( Uascent − AxisHeight, Udescent + AxisHeight ) −
+          // AxisHeight"
+          LayoutUnit axis = MathAxisHeight(Style());
+          LayoutUnit half_target_stretch_size = std::max(
+              target_stretch_ascent - axis, target_stretch_descent + axis);
+          target_stretch_ascent = half_target_stretch_size + axis;
+          target_stretch_descent = half_target_stretch_size - axis;
+        }
+        operator_target_size = target_stretch_ascent + target_stretch_descent;
+        // "If minsize < 0 then set minsize to 0."
+        LayoutUnit min_size =
+            (Style().GetMathMinSize().GetType() == Length::kAuto
+                 ? LayoutUnit(Style().FontSize())
+                 : ValueForLength(Style().GetMathMinSize(),
+                                  operator_target_size))
+                .ClampNegativeToZero();
+        // "If maxsize < minsize then set maxsize to minsize."
+        LayoutUnit max_size = std::max<LayoutUnit>(
+            (Style().GetMathMaxSize().GetType() == Length::kAuto
+                 ? LayoutUnit(kIntMaxForLayoutUnit)
+                 : ValueForLength(Style().GetMathMaxSize(),
+                                  operator_target_size)),
+            min_size);
+        // "Then 0 ≤ minsize ≤ maxsize:"
+        DCHECK(LayoutUnit() <= min_size && min_size <= max_size);
+        if (operator_target_size <= LayoutUnit()) {
+          // "If T ≤ 0 then set Tascent to minsize/2 and then set Tdescent to
+          // minsize - Tascent."
+          target_stretch_ascent = min_size / 2;
+          target_stretch_descent = min_size - target_stretch_ascent;
+        } else if (operator_target_size < min_size) {
+          // "Otherwise, if 0 < T < minsize then first multiply Tascent by
+          // minsize / T and then set Tdescent to minsize - Tascent."
+          target_stretch_ascent =
+              target_stretch_ascent.MulDiv(min_size, operator_target_size);
+          target_stretch_descent = min_size - target_stretch_ascent;
+        } else if (max_size < operator_target_size) {
+          // "Otherwise, if maxsize < T then first multiply Tascent by maxsize
+          // / T and then set Tdescent to maxsize − Tascent."
+          target_stretch_ascent =
+              target_stretch_descent.MulDiv(max_size, operator_target_size);
+          target_stretch_descent = max_size - target_stretch_ascent;
+        }
+        operator_target_size = target_stretch_ascent + target_stretch_descent;
       }
-      operator_target_size = target_stretch_ascent + target_stretch_descent;
-      // "If minsize < 0 then set minsize to 0."
-      LayoutUnit min_size =
-          (Style().GetMathMinSize().GetType() == Length::kAuto
-               ? LayoutUnit(Style().FontSize())
-               : ValueForLength(Style().GetMathMinSize(), operator_target_size))
-              .ClampNegativeToZero();
-      // "If maxsize < minsize then set maxsize to minsize."
-      LayoutUnit max_size = std::max<LayoutUnit>(
-          (Style().GetMathMaxSize().GetType() == Length::kAuto
-               ? LayoutUnit(kIntMaxForLayoutUnit)
-               : ValueForLength(Style().GetMathMaxSize(),
-                                operator_target_size)),
-          min_size);
-      // "Then 0 ≤ minsize ≤ maxsize:"
-      DCHECK(LayoutUnit() <= min_size && min_size <= max_size);
-      if (operator_target_size <= LayoutUnit()) {
-        // "If T ≤ 0 then set Tascent to minsize/2 and then set Tdescent to
-        // minsize - Tascent."
-        target_stretch_ascent = min_size / 2;
-        target_stretch_descent = min_size - target_stretch_ascent;
-      } else if (operator_target_size < min_size) {
-        // "Otherwise, if 0 < T < minsize then first multiply Tascent by
-        // minsize / T and then set Tdescent to minsize - Tascent."
-        target_stretch_ascent =
-            target_stretch_ascent.MulDiv(min_size, operator_target_size);
-        target_stretch_descent = min_size - target_stretch_ascent;
-      } else if (max_size < operator_target_size) {
-        // "Otherwise, if maxsize < T then first multiply Tascent by maxsize /
-        // T and then set Tdescent to maxsize − Tascent."
-        target_stretch_ascent =
-            target_stretch_descent.MulDiv(max_size, operator_target_size);
-        target_stretch_descent = max_size - target_stretch_ascent;
-      }
-      operator_target_size = target_stretch_ascent + target_stretch_descent;
     }
   } else {
     // "If the operator has the largeop property and if math-style on the <mo>
@@ -142,7 +147,8 @@ scoped_refptr<const NGLayoutResult> NGMathOperatorLayoutAlgorithm::Layout() {
   // TODO(http://crbug.com/1124301): The spec says the inline size should be
   // the one of the stretched glyph, but LayoutNG currently relies on the
   // min-max sizes. This means there can be excessive gap around vertical
-  // stretchy operators.
+  // stretchy operators and that unstretched size will be used for horizontal
+  // stretchy operators. See also NGMathMLPainter::PaintOperator.
   LayoutUnit operator_ascent = LayoutUnit::FromFloatFloor(metrics.ascent);
   LayoutUnit operator_descent = LayoutUnit::FromFloatFloor(metrics.descent);
 
@@ -182,11 +188,21 @@ MinMaxSizesResult NGMathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());
   if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy)) {
     // "If the operator has the stretchy property:"
-    // TODO(http://crbug.com/1124301) Implement horizontal stretchy operators.
-    DCHECK(element->GetOperatorContent().is_vertical);
-    // "Otherwise, the stretch axis of the operator is block."
-    sizes =
-        GetMinMaxSizesForVerticalStretchyOperator(Style(), GetBaseCodePoint());
+    if (!element->GetOperatorContent().is_vertical) {
+      // "If the stretch axis of the operator is inline."
+      // The spec current says we should rely on the layout algorithm of
+      // § 3.2.1.1 Layout of <mtext>. Instead, we perform horizontal stretching
+      // with target size of 0 so that the size of the base glyph is used.
+      StretchyOperatorShaper shaper(GetBaseCodePoint(),
+                                    OpenTypeMathStretchData::Horizontal);
+      StretchyOperatorShaper::Metrics metrics;
+      shaper.Shape(&Style().GetFont(), 0, &metrics);
+      sizes.Encompass(LayoutUnit(metrics.advance));
+    } else {
+      // "Otherwise, the stretch axis of the operator is block."
+      sizes = GetMinMaxSizesForVerticalStretchyOperator(Style(),
+                                                        GetBaseCodePoint());
+    }
   } else {
     // "If the operator has the largeop property and if math-style on the <mo>
     // element is normal."
