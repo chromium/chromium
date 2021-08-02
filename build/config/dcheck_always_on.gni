@@ -30,7 +30,7 @@ declare_args() {
   # down to:
   # (build_with_chromium && !is_official_builds) || dcheck_is_configurable
   dcheck_always_on = (build_with_chromium && !is_official_build &&
-                      !is_fuchsia && !is_chromeos) || dcheck_is_configurable
+                      !is_fuchsia) || dcheck_is_configurable
 }
 
 declare_args() {
