@@ -34,6 +34,8 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
 
   String GetURL() const override { return url_; }
 
+  bool IsPendingDataUrl() const override;
+
   const FontCustomPlatformData* GetCustomPlaftormData() const override {
     return custom_font_data_.get();
   }

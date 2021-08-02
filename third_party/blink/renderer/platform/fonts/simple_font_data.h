@@ -143,6 +143,9 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
   bool IsLoadingFallback() const override {
     return custom_font_data_ ? custom_font_data_->IsLoadingFallback() : false;
   }
+  bool IsPendingDataUrlCustomFont() const {
+    return custom_font_data_ ? custom_font_data_->IsPendingDataUrl() : false;
+  }
   bool IsSegmented() const override;
   bool ShouldSkipDrawing() const override {
     return custom_font_data_ && custom_font_data_->ShouldSkipDrawing();

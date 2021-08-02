@@ -423,6 +423,10 @@ void RemoteFontFaceSource::FontLoadHistograms::LongLimitExceeded() {
   MaySetDataSource(kFromNetwork);
 }
 
+bool RemoteFontFaceSource::IsPendingDataUrl() const {
+  return GetResource() && GetResource()->Url().ProtocolIsData();
+}
+
 void RemoteFontFaceSource::FontLoadHistograms::RecordFallbackTime() {
   if (blank_paint_time_.is_null() || blank_paint_time_recorded_)
     return;
