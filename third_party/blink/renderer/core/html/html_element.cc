@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -140,10 +141,9 @@ bool IsEditableOrEditingHost(const Node& node) {
     return true;
   if (IsA<SVGSVGElement>(node))
     return true;
-  auto* element = DynamicTo<Element>(node);
-  if (element && element->HasTagName(mathml_names::kMathTag))
-    return true;
-  return !element && node.parentNode()->IsHTMLElement();
+  if (auto* mathml_element = DynamicTo<MathMLElement>(node))
+    return mathml_element->HasTagName(mathml_names::kMathTag);
+  return !IsA<Element>(node) && node.parentNode()->IsHTMLElement();
 }
 
 const WebFeature kNoWebFeature = static_cast<WebFeature>(0);

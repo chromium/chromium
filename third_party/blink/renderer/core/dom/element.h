@@ -384,6 +384,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool HasTagName(const HTMLQualifiedName& tag_name) const {
     return ContainerNode::HasTagName(tag_name);
   }
+  bool HasTagName(const MathMLQualifiedName& tag_name) const {
+    return ContainerNode::HasTagName(tag_name);
+  }
   bool HasTagName(const SVGQualifiedName& tag_name) const {
     return ContainerNode::HasTagName(tag_name);
   }
