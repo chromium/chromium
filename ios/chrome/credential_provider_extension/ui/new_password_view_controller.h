@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class ArchivableCredential;
+@protocol Credential;
 @class NewPasswordViewController;
 
 @protocol NewPasswordViewControllerDelegate <NSObject>
@@ -15,6 +17,22 @@
 - (void)navigationCancelButtonWasPressedInNewPasswordViewController:
     (NewPasswordViewController*)viewController;
 
+// Called when the user selects a given credential
+- (void)userSelectedCredential:(id<Credential>)credential;
+
+@end
+
+@protocol NewCredentialHandler
+
+// Called when the user wants to create a new credential.
+- (ArchivableCredential*)createNewCredentialWithUsername:(NSString*)username
+                                                password:(NSString*)password;
+
+// Saves the given credential to disk and calls |completion| once the operation
+// is finished.
+- (void)saveNewCredential:(ArchivableCredential*)credential
+               completion:(void (^)(NSError* error))completion;
+
 @end
 
 // View Controller where a user can create a new credential and use a suggested
@@ -22,6 +40,8 @@
 @interface NewPasswordViewController : UITableViewController
 
 @property(nonatomic, weak) id<NewPasswordViewControllerDelegate> delegate;
+
+@property(nonatomic, weak) id<NewCredentialHandler> credentialHandler;
 
 @end
 

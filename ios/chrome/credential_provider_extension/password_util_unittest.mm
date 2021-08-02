@@ -112,4 +112,26 @@ TEST_F(PasswordUtilKeychainTest, NilArgument) {
   ASSERT_TRUE([PasswordWithKeychainIdentifier(nil) isEqualToString:@""]);
 }
 
+// Tests storing passwords with StorePassword.
+TEST_F(PasswordUtilKeychainTest, CheckSavingPasswords) {
+  EXPECT_TRUE(StorePasswordInKeychain(kCredentialPassword1,
+                                      KeyWithPrefix(kCredentialKey1)));
+  EXPECT_TRUE(StorePasswordInKeychain(kCredentialPassword2,
+                                      KeyWithPrefix(kCredentialKey2)));
+
+  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2))
+      isEqualToString:kCredentialPassword2]);
+  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey1))
+      isEqualToString:kCredentialPassword1]);
+  RemovePasswordForKey(kCredentialKey1);
+  ASSERT_TRUE([PasswordWithKeychainIdentifier(KeyWithPrefix(kCredentialKey2))
+      isEqualToString:kCredentialPassword2]);
+  RemovePasswordForKey(kCredentialKey2);
+}
+
+// Tests storing a password with an empty identifier
+TEST_F(PasswordUtilKeychainTest, StoreEmptyIdentifier) {
+  EXPECT_FALSE(StorePasswordInKeychain(kCredentialPassword1, @""));
+}
+
 }  // credential_provider_extension
