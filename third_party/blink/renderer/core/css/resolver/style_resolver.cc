@@ -1876,15 +1876,14 @@ void StyleResolver::PropagateStyleToViewport() {
   // Overflow
   {
     const ComputedStyle* overflow_style = document_element_style;
-    if (body_style &&
-        document_element_style->IsOverflowVisibleAlongBothAxes()) {
-      overflow_style = body_style;
-
-      // The body element has its own scrolling box, independent from the
-      // viewport.  This is a bit of a weird edge case in the CSS spec that we
-      // might want to try to eliminate some day (eg. for ScrollTopLeftInterop
-      // - see http://crbug.com/157855).
-      if (body_style && body_style->IsScrollContainer()) {
+    if (body_style) {
+      if (document_element_style->IsOverflowVisibleAlongBothAxes()) {
+        overflow_style = body_style;
+      } else if (body_style->IsScrollContainer()) {
+        // The body element has its own scrolling box, independent from the
+        // viewport.  This is a bit of a weird edge case in the CSS spec that
+        // we might want to try to eliminate some day (e.g. for
+        // ScrollTopLeftInterop - see http://crbug.com/157855).
         UseCounter::Count(GetDocument(),
                           WebFeature::kBodyScrollsInAdditionToViewport);
       }
