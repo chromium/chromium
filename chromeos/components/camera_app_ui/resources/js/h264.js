@@ -97,22 +97,21 @@ let LevelLimit;  // eslint-disable-line no-unused-vars
  * @type {!Map<!Level, !LevelLimit>}
  */
 const levelLimits = (() => {
-  const limit =
-      (level, processRate, frameSize,
-       mainBitrate) => [level, {processRate, frameSize, mainBitrate}];
+  const limit = (processRate, frameSize, mainBitrate) =>
+      ({processRate, frameSize, mainBitrate});
   return new Map([
-    limit(Level.LV30, 40500, 1620, 10000),
-    limit(Level.LV31, 108000, 3600, 14000),
-    limit(Level.LV32, 216000, 5120, 20000),
-    limit(Level.LV40, 245760, 8192, 20000),
-    limit(Level.LV41, 245760, 8192, 50000),
-    limit(Level.LV42, 522240, 8704, 50000),
-    limit(Level.LV50, 589824, 22080, 135000),
-    limit(Level.LV51, 983040, 36864, 240000),
-    limit(Level.LV52, 2073600, 36864, 240000),
-    limit(Level.LV60, 4177920, 139264, 240000),
-    limit(Level.LV61, 8355840, 139264, 480000),
-    limit(Level.LV62, 16711680, 139264, 800000),
+    [Level.LV30, limit(40500, 1620, 10000)],
+    [Level.LV31, limit(108000, 3600, 14000)],
+    [Level.LV32, limit(216000, 5120, 20000)],
+    [Level.LV40, limit(245760, 8192, 20000)],
+    [Level.LV41, limit(245760, 8192, 50000)],
+    [Level.LV42, limit(522240, 8704, 50000)],
+    [Level.LV50, limit(589824, 22080, 135000)],
+    [Level.LV51, limit(983040, 36864, 240000)],
+    [Level.LV52, limit(2073600, 36864, 240000)],
+    [Level.LV60, limit(4177920, 139264, 240000)],
+    [Level.LV61, limit(8355840, 139264, 480000)],
+    [Level.LV62, limit(16711680, 139264, 800000)],
   ]);
 })();
 
