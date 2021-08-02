@@ -153,11 +153,11 @@
     # MM emulator CQ builder currently has limited capacity so some composition
     # test suites cannot be fullly enabled at once.
     'android_marshmallow_emulator_limited_capacity_gtests': {
-      # Tests from chromium_gtests_for_devices_with_graphical_output
-      'unit_tests': {
-        'android_swarming': {
-          'shards': 2,
-        },
+      # Tests from android_specific_chromium_gtests
+      'android_sync_integration_tests': {
+        'args': [
+          '--test-launcher-batch-limit=1',
+        ],
       },
 
       # Tests from chromium_gtests
@@ -5723,7 +5723,7 @@
 
     # List gtests that run on android-marshmallow-x86-rel builder.
     # Test suites will be gradually moved from
-    # android_marshmallow_wpr_gtests
+    # android_marshmallow_emulator_non_cq_gtests
     # to this one, when there are more GCE capacity.
     'android_marshmallow_emulator_gtests': [
       'android_emulator_specific_chrome_public_tests',
@@ -5736,8 +5736,8 @@
       #'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'android_wpr_record_replay_tests',
       #'chromium_gtests',
-      #'chromium_gtests_for_devices_with_graphical_output',
-      #'linux_flavor_specific_chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'linux_flavor_specific_chromium_gtests',
       #'weblayer_android_gtests',
       #'weblayer_gtests',
     ],
@@ -5745,14 +5745,13 @@
     # Note that tests here are gradually moved to
     # android_marshmallow_emulator_gtests (crbug.com/1127110)
     #
-    # The diff between android_lollipop_marshmallow_gtests and (
-    # android_marshmallow_wpr_gtests + android_marshmallow_emulator_gtests)
+    # The diff between android_lollipop_marshmallow_gtests and
+    # (android_marshmallow_emulator_non_cq_gtests +
+    # android_marshmallow_emulator_gtests)
     # is android_wpr_record_replay_tests
-    'android_marshmallow_wpr_gtests': [
+    'android_marshmallow_emulator_non_cq_gtests': [
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
       'weblayer_android_gtests',
       'weblayer_gtests',
     ],

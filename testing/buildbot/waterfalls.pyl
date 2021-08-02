@@ -818,7 +818,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_marshmallow_wpr_gtests',
+          'gtest_tests': 'android_marshmallow_emulator_non_cq_gtests',
           'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
         }
       },

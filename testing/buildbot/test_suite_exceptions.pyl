@@ -61,9 +61,11 @@
   },
   'android_sync_integration_tests': {
    'remove_from': [
-     # Remove from CQ bots due to capacity.
-     'android-marshmallow-arm64-rel',
-     'android-lollipop-arm-rel',
+      # Remove from CQ bots due to capacity.
+      'android-marshmallow-arm64-rel',
+      'android-lollipop-arm-rel',
+
+      'android-marshmallow-x86-rel-non-cq', # runs on MM-x86-rel already
    ],
   },
   'android_webview_unittests': {
@@ -768,7 +770,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.cc_unittests.filter',
         ],
       },
-      'android-marshmallow-x86-rel-non-cq': {
+      'android-marshmallow-x86-rel': {
         # https://crbug.com/1039860
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
@@ -2491,7 +2493,7 @@
           '--shard-timeout=300',
         ],
       },
-      'android-marshmallow-x86-rel-non-cq': {
+      'android-marshmallow-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter',
         ]
@@ -2977,7 +2979,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.viz_unittests.filter',
         ],
       },
-      'android-marshmallow-x86-rel-non-cq': {
+      'android-marshmallow-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
         ],
