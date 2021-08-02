@@ -28,9 +28,16 @@ found in the LICENSE file.
          breaks test listing. See
          https://developer.android.com/training/data-storage#scoped-storage and
          https://developer.android.com/training/data-storage/compatibility. -->
+    {% if allow_cleartext_traffic == 'true' %}
+    <application android:label="NativeTests"
+            android:usesCleartextTraffic="true"
+            android:requestLegacyExternalStorage="true"
+            android:name="org.chromium.native_test.NativeTestApplication">
+    {% else %}
     <application android:label="NativeTests"
             android:requestLegacyExternalStorage="true"
             android:name="org.chromium.native_test.NativeTestApplication">
+    {% endif %}
         <uses-library android:name="android.test.runner"/>
         {% if use_native_activity == 'true' %}
         <activity android:name=".NativeUnitTestNativeActivity"

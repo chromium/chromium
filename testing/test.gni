@@ -52,6 +52,8 @@ if (is_android) {
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
+#   allow_cleartext_traffic: (Android, optional) whether to allow cleartext
+#      network requests during the test.
 template("test") {
   # Ensures the rts file exists and if not, creates a dummy file
   if (use_rts) {
@@ -68,6 +70,11 @@ template("test") {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
            "is_xctest can be set only for iOS builds")
   }
+  if (!is_android) {
+    assert(!defined(invoker.allow_cleartext_traffic),
+           "allow_cleartext_traffic can be set only for Android tests")
+  }
+
   if (is_android) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
@@ -168,6 +175,7 @@ template("test") {
       _library_target = "${target_name}__library"
       _apk_target = "${target_name}__apk"
       _apk_specific_vars = [
+        "allow_cleartext_traffic",
         "android_manifest",
         "android_manifest_dep",
         "android_manifest_template",

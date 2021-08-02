@@ -3873,9 +3873,11 @@ if (enable_java_templates) {
   #     resource dependencies of the apk.
   #   shared_library: shared_library target that contains the unit tests.
   #   apk_name: The name of the produced apk. If unspecified, it uses the name
-  #             of the shared_library target suffixed with "_apk"
+  #             of the shared_library target suffixed with "_apk".
   #   use_default_launcher: Whether the default activity (NativeUnitTestActivity)
   #     should be used for launching tests.
+  #   allow_cleartext_traffic: (Optional) Whether to allow cleartext network
+  #     requests during the test.
   #   use_native_activity: Test implements ANativeActivity_onCreate().
   #
   # Example
@@ -3895,6 +3897,8 @@ if (enable_java_templates) {
     assert(_use_native_activity != "" && _android_manifest != "")
 
     if (!defined(invoker.android_manifest)) {
+      _allow_cleartext_traffic = defined(invoker.allow_cleartext_traffic) &&
+                                 invoker.allow_cleartext_traffic
       jinja_template("${target_name}_manifest") {
         _native_library_name = get_label_info(invoker.shared_library, "name")
         if (defined(invoker.android_manifest_template)) {
@@ -3908,6 +3912,7 @@ if (enable_java_templates) {
           "is_component_build=${is_component_build}",
           "native_library_name=${_native_library_name}",
           "use_native_activity=${_use_native_activity}",
+          "allow_cleartext_traffic=${_allow_cleartext_traffic}",
         ]
       }
     }
