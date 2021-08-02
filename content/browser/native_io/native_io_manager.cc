@@ -254,10 +254,9 @@ void NativeIOManager::GetStorageKeysForType(
           // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
-      base::BindOnce(&DoGetStorageKeys, root_path_),
-      base::BindOnce(&NativeIOManager::DidGetStorageKeysForType,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&DoGetStorageKeys, root_path_), std::move(callback));
 }
+
 void NativeIOManager::GetStorageKeysForHost(
     blink::mojom::StorageType type,
     const std::string& host,
@@ -279,9 +278,19 @@ void NativeIOManager::GetStorageKeysForHost(
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
       base::BindOnce(&DoGetStorageKeys, root_path_),
-      base::BindOnce(&NativeIOManager::DidGetStorageKeysForHost,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(host)));
+      base::BindOnce(
+          [](const std::string& host,
+             storage::mojom::QuotaClient::GetStorageKeysForTypeCallback
+                 callback,
+             std::vector<blink::StorageKey> storage_keys) {
+            std::vector<blink::StorageKey> host_storage_keys;
+            for (blink::StorageKey& storage_key : storage_keys) {
+              if (host == storage_key.origin().host())
+                host_storage_keys.push_back(std::move(storage_key));
+            }
+            std::move(callback).Run(std::move(host_storage_keys));
+          },
+          host, std::move(callback)));
 }
 
 void NativeIOManager::GetStorageKeyUsage(
@@ -307,8 +316,7 @@ void NativeIOManager::GetStorageKeyUsage(
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
       base::BindOnce(&DoGetStorageKeyUsage, storage_key_root),
-      base::BindOnce(&NativeIOManager::DidGetStorageKeyUsage,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+      std::move(callback));
 }
 
 void NativeIOManager::GetStorageKeyUsageMap(
@@ -328,39 +336,7 @@ void NativeIOManager::GetStorageKeyUsageMap(
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
       base::BindOnce(&DoGetStorageKeyUsageMap, root_path_),
-      base::BindOnce(&NativeIOManager::DidGetStorageKeyUsageMap,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void NativeIOManager::DidGetStorageKeysForType(
-    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-    std::vector<blink::StorageKey> storage_keys) {
-  std::move(callback).Run(storage_keys);
-}
-
-void NativeIOManager::DidGetStorageKeysForHost(
-    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-    const std::string& host,
-    std::vector<blink::StorageKey> storage_keys) {
-  std::vector<blink::StorageKey> out_storage_keys;
-  for (const blink::StorageKey& storage_key : storage_keys) {
-    if (host == storage_key.origin().host())
-      out_storage_keys.push_back(storage_key);
-  }
-  std::move(callback).Run(std::move(out_storage_keys));
-}
-
-void NativeIOManager::DidGetStorageKeyUsage(
-    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
-    int64_t usage) {
-  std::move(callback).Run(usage);
-}
-
-void NativeIOManager::DidGetStorageKeyUsageMap(
-    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
-        callback,
-    const std::map<blink::StorageKey, int64_t>& usage_map) {
-  std::move(callback).Run(usage_map);
+      std::move(callback));
 }
 
 base::FilePath NativeIOManager::RootPathForStorageKey(

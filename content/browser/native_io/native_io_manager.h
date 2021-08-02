@@ -140,28 +140,6 @@ class CONTENT_EXPORT NativeIOManager {
   // `host` must be owned by this manager.
   void MaybeDeleteHost(NativeIOHost* host);
 
-  // Called after the I/O part of GetStorageKeysForType() completed.
-  void DidGetStorageKeysForType(
-      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-      std::vector<blink::StorageKey> storage_keys);
-
-  // Called after the I/O part of GetStorageKeysForHost() completed.
-  void DidGetStorageKeysForHost(
-      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-      const std::string& host,
-      std::vector<blink::StorageKey> storage_keys);
-
-  // Called after the I/O part of GetStorageKeyUsage() completed.
-  void DidGetStorageKeyUsage(
-      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
-      int64_t usage);
-
-  // Called after the I/O part of GetStorageKeyUsageMap() completed.
-  void DidGetStorageKeyUsageMap(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
-          callback,
-      const std::map<blink::StorageKey, int64_t>& usage_map);
-
   // Points to the root directory for NativeIO files.
   //
   // This path is empty for in-memory (Incognito) profiles.
@@ -186,8 +164,6 @@ class CONTENT_EXPORT NativeIOManager {
   // reason, it's preferable to have the receiver be destroyed as early as
   // possible during the NativeIOManager destruction process.
   mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;
-
-  base::WeakPtrFactory<NativeIOManager> weak_factory_{this};
 };
 
 }  // namespace content
