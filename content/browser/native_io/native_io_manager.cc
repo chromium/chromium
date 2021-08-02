@@ -10,8 +10,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/native_io/native_io_host.h"
@@ -186,6 +188,7 @@ void NativeIOManager::OnDeleteStorageKeyDataCompleted(
     base::File::Error result,
     NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   MaybeDeleteHost(host);
   blink::mojom::QuotaStatusCode quota_result =
       result == base::File::FILE_OK ? blink::mojom::QuotaStatusCode::kOk
@@ -196,6 +199,9 @@ void NativeIOManager::OnDeleteStorageKeyDataCompleted(
 void NativeIOManager::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
   auto it = hosts_.find(storage_key);
   if (it == hosts_.end()) {
     // TODO(rstz): Consider turning these checks into DCHECKS when NativeIO is
@@ -228,9 +234,11 @@ void NativeIOManager::DeleteStorageKeyData(
     DCHECK(insert_succeeded);
   }
 
-  // base::Unretained is safe here because this NativeIOManager owns the
-  // NativeIOHost. So, the unretained NativeIOManager is guaranteed to outlive
-  // the  NativeIOHost and the closure that it uses.
+  // base::Unretained is safe here NativeIOHost::DeleteAllData() guarantees that
+  // the callback will only be called while the NativeIOHost is alive, and this
+  // NativeIOManager owns the NativeIOHost. So, the unretained NativeIOManager
+  // will only be referenced if the NativeIOHost is still alive, which implies
+  // that this NativeIOManager is still alive.
   it->second->DeleteAllData(
       base::BindOnce(&NativeIOManager::OnDeleteStorageKeyDataCompleted,
                      base::Unretained(this), std::move(callback)));
@@ -239,7 +247,10 @@ void NativeIOManager::DeleteStorageKeyData(
 void NativeIOManager::GetStorageKeysForType(
     blink::mojom::StorageType type,
     storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK(callback);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {
@@ -261,7 +272,9 @@ void NativeIOManager::GetStorageKeysForHost(
     blink::mojom::StorageType type,
     const std::string& host,
     storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK(callback);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -297,7 +310,9 @@ void NativeIOManager::GetStorageKeyUsage(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
     storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK(callback);
 
   base::FilePath storage_key_root = RootPathForStorageKey(storage_key);
 
@@ -322,6 +337,9 @@ void NativeIOManager::GetStorageKeyUsage(
 void NativeIOManager::GetStorageKeyUsageMap(
     base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {

@@ -7,11 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "content/browser/native_io/native_io_quota_client.h"
@@ -133,12 +136,12 @@ class CONTENT_EXPORT NativeIOManager {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
   // Deletes the NativeIOHost if it serves no further purpose.
   //
   // `host` must be owned by this manager.
   void MaybeDeleteHost(NativeIOHost* host);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Points to the root directory for NativeIO files.
   //
@@ -154,16 +157,18 @@ class CONTENT_EXPORT NativeIOManager {
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
-  std::map<blink::StorageKey, std::unique_ptr<NativeIOHost>> hosts_;
+  std::map<blink::StorageKey, std::unique_ptr<NativeIOHost>> hosts_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  NativeIOQuotaClient quota_client_;
+  NativeIOQuotaClient quota_client_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Once the QuotaClient receiver is destroyed, the underlying mojo connection
   // is closed. Callbacks associated with mojo calls received over this
   // connection may only be dropped after the connection is closed. For this
   // reason, it's preferable to have the receiver be destroyed as early as
   // possible during the NativeIOManager destruction process.
-  mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;
+  mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content
