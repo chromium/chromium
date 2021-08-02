@@ -191,7 +191,13 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (NSArray*)accessibilityCustomActions {
-  // Each cell has 2 custom actions, which is accessible through swiping. The
+  if (IsTabsBulkActionsEnabled() && self.isInSelectionMode) {
+    // If the cell is in tab grid selection mode, only allow toggling the
+    // selection state.
+    return nil;
+  }
+
+  // In normal cell mode, there are 2 actions, accessible through swiping. The
   // default is to select the cell. Another is to close the cell.
   return @[ [[UIAccessibilityCustomAction alloc]
       initWithName:l10n_util::GetNSString(IDS_IOS_TAB_SWITCHER_CLOSE_TAB)
