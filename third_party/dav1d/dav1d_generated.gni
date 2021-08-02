@@ -16,6 +16,7 @@ x86_asm_sources = [
   "libdav1d/src/x86/film_grain_avx2.asm",
   "libdav1d/src/x86/film_grain_sse.asm",
   "libdav1d/src/x86/ipred16_avx2.asm",
+  "libdav1d/src/x86/ipred16_sse.asm",
   "libdav1d/src/x86/ipred_avx2.asm",
   "libdav1d/src/x86/ipred_sse.asm",
   "libdav1d/src/x86/itx16_avx2.asm",
