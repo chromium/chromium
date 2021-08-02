@@ -7396,6 +7396,25 @@
             ]
         }
     ],
+    "SafeBrowsingCTDownloadWarning": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingCTDownloadWarning"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingCsdComponentVersion25": [
         {
             "platforms": [
