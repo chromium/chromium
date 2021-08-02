@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
+#include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_highlight.h"
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
@@ -1556,6 +1558,56 @@ Response InspectorDOMAgent::getContainerForNode(
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
   return Response::Success();
+}
+
+Response InspectorDOMAgent::getQueryingDescendantsForContainer(
+    int node_id,
+    std::unique_ptr<protocol::Array<int>>* node_ids) {
+  Element* container = nullptr;
+  Response response = AssertElement(node_id, container);
+  if (!response.IsSuccess())
+    return response;
+
+  // This won't work for edge cases with display locking
+  // (https://crbug.com/1235306).
+  container->GetDocument().UpdateStyleAndLayoutTreeForSubtree(container);
+
+  *node_ids = std::make_unique<protocol::Array<int>>();
+  NodeToIdMap* nodes_map = document_node_to_id_map_.Get();
+  for (Element& element : ElementTraversal::DescendantsOf(*container)) {
+    if (ContainerQueriedByElement(container, &element)) {
+      int id = PushNodePathToFrontend(&element, nodes_map);
+      (*node_ids)->push_back(id);
+    }
+  }
+
+  return Response::Success();
+}
+
+bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
+                                                  Element* element) {
+  const ComputedStyle* style = element->GetComputedStyle();
+  if (!style || !style->DependsOnContainerQueries())
+    return false;
+
+  StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
+  RuleIndexList* matched_rules =
+      style_resolver.CssRulesForElement(element, StyleResolver::kAllCSSRules);
+  for (auto it = matched_rules->rbegin(); it != matched_rules->rend(); ++it) {
+    CSSRule* parent_rule = it->first;
+    while (parent_rule) {
+      auto* container_rule = DynamicTo<CSSContainerRule>(parent_rule);
+      if (container_rule) {
+        if (container == style_resolver.FindContainerForElement(
+                             element, container_rule->Name()))
+          return true;
+      }
+
+      parent_rule = parent_rule->parentRule();
+    }
+  }
+
+  return false;
 }
 
 // static

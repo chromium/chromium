@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<style>
+#container-unnamed {
+  container-type: inline-size block-size;
+  width: 100px;
+  height: 100px;
+}
+
+#container-named {
+  container-name: container-named;
+  container-type: inline-size;
+  width: 100px;
+  height: 100px;
+}
+
+@container (min-width: 50px) and (min-height: 50px) {
+  .query-unnamed { margin-top: 5px; }
+}
+
+@container container-named (min-width: 50px) {
+  .query-named { margin-top: 10px; }
+}
+
+@container (min-width: 50px) {
+  .query-unnamed-inline { margin-top: 15px; }
+}
+
+@container container-named-other (min-height: 50px) {
+  .query-named-other { margin-top: 20px; }
+}
+</style>
+<body>
+<div id="container-unnamed">
+  <div class="query-unnamed desc-unnamed"></div>
+  <div class="query-unnamed desc-unnamed" id="container-named">    
+    <div class="query-named-other">
+      <div class="query-unnamed"></div>
+      <div class="query-unnamed-inline desc-named"></div>
+    </div>
+    <div class="query-named desc-named"></div>
+  </div>
+  <div>
+    <div class="query-unnamed desc-unnamed"></div>
+  </div>
+</div>
+</body>

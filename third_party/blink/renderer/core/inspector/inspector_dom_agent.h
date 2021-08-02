@@ -258,6 +258,9 @@ class CORE_EXPORT InspectorDOMAgent final
       int node_id,
       protocol::Maybe<String> container_name,
       protocol::Maybe<int>* container_node_id) override;
+  protocol::Response getQueryingDescendantsForContainer(
+      int node_id,
+      std::unique_ptr<protocol::Array<int>>* node_ids) override;
 
   bool Enabled() const;
   void ReleaseDanglingNodes();
@@ -372,6 +375,8 @@ class CORE_EXPORT InspectorDOMAgent final
   BuildArrayForPseudoElements(Element*, NodeToIdMap* nodes_map);
   std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
   BuildDistributedNodesForSlot(HTMLSlotElement*);
+
+  bool ContainerQueriedByElement(Element* container, Element* element);
 
   Node* NodeForPath(const String& path);
 

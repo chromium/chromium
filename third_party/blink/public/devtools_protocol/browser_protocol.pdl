@@ -2635,6 +2635,16 @@ domain DOM
       # The container node for the given node, or null if not found.
       optional NodeId nodeId
 
+  # Returns the descendants of a container query container that have
+  # container queries against this container.
+  experimental command getQueryingDescendantsForContainer
+    parameters
+      # Id of the container node to find querying descendants from.
+      NodeId nodeId
+    returns
+      # Descendant nodes with container queries against the given container.
+      array of NodeId nodeIds
+
   # Fired when `Element`'s attribute is modified.
   event attributeModified
     parameters
