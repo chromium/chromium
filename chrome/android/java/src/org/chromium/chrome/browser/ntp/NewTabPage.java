@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -140,6 +141,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private boolean mIsDestroyed;
 
     private final int mTabStripAndToolbarHeight;
+
+    private final Supplier<Toolbar> mToolbarSupplier;
 
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
@@ -302,6 +305,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param shareDelegateSupplier Supplies the Delegate used to open SharingHub.
      * @param windowAndroid The containing window of this page.
      * @param jankTracker {@link JankTracker} object to measure jankiness while NTP is visible.
+     * @param toolbarSupplier Supplies the {@link Toolbar}.
      */
     public NewTabPage(Activity activity, BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider, SnackbarManager snackbarManager,
@@ -310,7 +314,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             NativePageHost nativePageHost, Tab tab, String url,
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
-            JankTracker jankTracker) {
+            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -319,6 +323,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTab = tab;
         mNewTabPageUma = uma;
         mJankTracker = jankTracker;
+        mToolbarSupplier = toolbarSupplier;
         mMostVisitedTileClickObservers = new ObserverList<>();
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
@@ -461,7 +466,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 /* isPlaceholderShownInitially= */ false, bottomSheetController,
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
                 NewTabPageUtils.decodeOriginFromNtpUrl(url),
-                PrivacyPreferencesManagerImpl.getInstance(),
+                PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
                 new FeedLaunchReliabilityLoggingState(SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs),
                 FeedSwipeRefreshLayout.create(activity));
 

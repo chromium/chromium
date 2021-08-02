@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -239,6 +240,7 @@ public interface TabManagementDelegate {
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while tab switcher is visible.
+     * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @return the {@link StartSurface}
      */
     StartSurface createStartSurface(@NonNull Activity activity,
@@ -260,7 +262,7 @@ public interface TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull JankTracker jankTracker);
+            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier);
 
     /**
      * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.
