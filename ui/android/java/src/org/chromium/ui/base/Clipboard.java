@@ -262,6 +262,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         // we will access the clipboard content and valid by URLUtil#isValidUrl.
         if (BuildInfo.isAtLeastS()) {
             ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+            if (description == null) return false;
+
             float score = ApiHelperForS.getConfidenceScore(description, TextClassifier.TYPE_URL);
             return score > CONFIDENCE_THRESHOLD_FOR_URL_DETECTION;
         } else {
