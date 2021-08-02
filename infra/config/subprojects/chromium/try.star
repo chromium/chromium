@@ -1289,7 +1289,7 @@ try_.chromium_linux_builder(
     },
     service_account = "chromium-mini-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     tryjob = try_.job(
-        experiment_percentage = 20,
+        experiment_percentage = 100,
     ),
 )
 
