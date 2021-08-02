@@ -73,8 +73,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   virtual bool IsAllUserInfoFetched() const;
   virtual bool AreAllAccountCapabilitiesFetched() const;
 
-  void ForceRefreshOfAccountInfo(const CoreAccountId& account_id);
-
   AccountTrackerService* account_tracker_service() const {
     return account_tracker_service_;
   }
@@ -100,6 +98,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void EnableAccountCapabilitiesFetcherForTest(bool enabled);
 
 #if defined(OS_ANDROID)
+  // Refresh the AccountInfo if the existing one is stale
+  void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
+
   // Called by ChildAccountInfoFetcherAndroid.
   void SetIsChildAccount(const CoreAccountId& account_id,
                          bool is_child_account);

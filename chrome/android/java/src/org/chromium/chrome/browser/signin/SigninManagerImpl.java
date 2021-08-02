@@ -153,7 +153,7 @@ class SigninManagerImpl
     @Override
     public void onAccountsSeeded(List<CoreAccountInfo> accountInfos) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
-            mIdentityManager.forceRefreshOfExtendedAccountInfo(accountInfos);
+            mIdentityManager.refreshAccountInfoIfStale(accountInfos);
         }
     }
 
