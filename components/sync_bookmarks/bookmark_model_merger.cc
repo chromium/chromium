@@ -457,13 +457,22 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
     return node;
   }
 
+  // Check to prevent creating empty lists in |updates_per_parent_id| and
+  // unnecessary rehashing.
+  auto updates_per_parent_id_iter =
+      updates_per_parent_id->find(node.entity().id);
+  if (updates_per_parent_id_iter == updates_per_parent_id->end()) {
+    return node;
+  }
+  DCHECK(!updates_per_parent_id_iter->second.empty());
+
   // Only folders may have descendants (ignore them otherwise). Treat
   // permanent nodes as folders explicitly.
   if (!node.update_.entity.is_folder &&
       node.update_.entity.server_defined_unique_tag.empty()) {
     // Children of a non-folder are ignored.
     for (UpdateResponseData& child_update :
-         (*updates_per_parent_id)[node.entity().id]) {
+         updates_per_parent_id_iter->second) {
       LogProblematicBookmark(RemoteBookmarkUpdateError::kParentNotFolder);
       // To avoid double-counting later for bucket |kMissingParentEntity|,
       // clear the update from the list as if it would have been moved.
@@ -473,8 +482,8 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
   }
 
   // Populate descendants recursively.
-  for (UpdateResponseData& child_update :
-       (*updates_per_parent_id)[node.entity().id]) {
+  node.children_.reserve(updates_per_parent_id_iter->second.size());
+  for (UpdateResponseData& child_update : updates_per_parent_id_iter->second) {
     DCHECK_EQ(child_update.entity.parent_id, node.entity().id);
     DCHECK(IsValidBookmarkSpecifics(child_update.entity.specifics.bookmark(),
                                     child_update.entity.is_folder));
@@ -484,8 +493,8 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
   }
 
   // Sort the children according to their unique position.
-  std::stable_sort(node.children_.begin(), node.children_.end(),
-                   UniquePositionLessThan);
+  std::sort(node.children_.begin(), node.children_.end(),
+            UniquePositionLessThan);
 
   return node;
 }
