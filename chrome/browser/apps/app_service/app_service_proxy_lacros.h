@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -59,7 +60,8 @@ struct IntentLaunchInfo {
 class AppServiceProxyLacros : public KeyedService,
                               public apps::IconLoader,
                               public apps::mojom::Subscriber,
-                              public apps::AppRegistryCache::Observer {
+                              public apps::AppRegistryCache::Observer,
+                              public crosapi::mojom::AppServiceSubscriber {
  public:
   explicit AppServiceProxyLacros(Profile* profile);
   AppServiceProxyLacros(const AppServiceProxyLacros&) = delete;
@@ -364,6 +366,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   std::unique_ptr<FakeLacrosWebAppsHost> fake_lacros_web_apps_host_;
   std::unique_ptr<web_app::WebAppsPublisherHost> web_apps_publisher_host_;
+  mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};
 };

@@ -88,6 +88,12 @@ interface Crosapi {
   [MinVersion=4]
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
 
+  // Bind the app service proxy, which allows the Lacros Browser to
+  // interact with all apps installed in App Service in ash-chrome.
+  // Added in M93.
+  [MinVersion=40]
+  BindAppServiceProxy@45(pending_receiver<AppServiceProxy> receiver);
+
   // Binds the BrowserServiceHost interface to prepare registering
   // a BrowserService to crosapi.
   // This is a part of lacros-chrome bootstrap sequence. First, Crosapi

@@ -191,6 +191,9 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::AutomationFactory, &Crosapi::BindAutomationFactory,
       Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion>();
+  ConstructRemote<crosapi::mojom::AppServiceProxy,
+                  &Crosapi::BindAppServiceProxy,
+                  Crosapi::MethodMinVersions::kBindAppServiceProxyMinVersion>();
   ConstructRemote<
       crosapi::mojom::BrowserServiceHost, &Crosapi::BindBrowserServiceHost,
       Crosapi::MethodMinVersions::kBindBrowserServiceHostMinVersion>();

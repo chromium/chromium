@@ -9,9 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -22,12 +27,17 @@ namespace apps {
 // crosapi and App Service.
 //
 // See components/services/app_service/README.md.
-class SubscriberCrosapi : public KeyedService, public apps::mojom::Subscriber {
+class SubscriberCrosapi : public KeyedService,
+                          public apps::mojom::Subscriber,
+                          public crosapi::mojom::AppServiceProxy {
  public:
   explicit SubscriberCrosapi(Profile* profile);
   SubscriberCrosapi(const SubscriberCrosapi&) = delete;
   SubscriberCrosapi& operator=(const SubscriberCrosapi&) = delete;
   ~SubscriberCrosapi() override;
+
+  void RegisterAppServiceProxyFromCrosapi(
+      mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver);
 
  protected:
   // apps::mojom::Subscriber overrides.
@@ -44,6 +54,18 @@ class SubscriberCrosapi : public KeyedService, public apps::mojom::Subscriber {
       apps::mojom::IntentFilterPtr intent_filter) override;
   void InitializePreferredApps(
       PreferredAppsList::PreferredApps preferred_apps) override;
+  void OnCrosapiDisconnected();
+
+  // crosapi::mojom::AppServiceProxy overrides.
+  void RegisterAppServiceSubscriber(
+      mojo::PendingRemote<crosapi::mojom::AppServiceSubscriber> subscriber)
+      override;
+
+  void OnSubscriberDisconnected();
+
+  mojo::Receiver<crosapi::mojom::AppServiceProxy> crosapi_receiver_{this};
+  mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
+  mojo::Remote<crosapi::mojom::AppServiceSubscriber> subscriber_;
 };
 
 }  // namespace apps

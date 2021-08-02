@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
+#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
+#include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
@@ -171,6 +173,14 @@ void CrosapiAsh::BindAccountManager(
           ->GetAccountManagerMojoService(
               /*profile_path=*/GetAshProfile()->GetPath().value());
   account_manager_mojo_service->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindAppServiceProxy(
+    mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* subscriber_crosapi =
+      apps::SubscriberCrosapiFactory::GetForProfile(profile);
+  subscriber_crosapi->RegisterAppServiceProxyFromCrosapi(std::move(receiver));
 }
 
 void CrosapiAsh::BindBrowserServiceHost(

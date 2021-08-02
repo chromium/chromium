@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/services/app_service/app_service_impl.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -146,6 +147,20 @@ void AppServiceProxyLacros::Initialize() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&AppServiceProxyLacros::AddAppIconSource,
                                 weak_ptr_factory_.GetWeakPtr(), profile_));
+
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service) {
+    return;
+  }
+
+  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()
+      ->RegisterAppServiceSubscriber(
+          crosapi_receiver_.BindNewPipeAndPassRemote());
 }
 
 void AppServiceProxyLacros::ReInitializeForTesting(Profile* profile) {
