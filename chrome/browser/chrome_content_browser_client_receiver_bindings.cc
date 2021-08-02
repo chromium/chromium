@@ -396,6 +396,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (interface_name == extensions::mojom::LocalFrameHost::Name_) {
+    extensions::ExtensionWebContentsObserver::BindLocalFrameHost(
+        mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
   if (interface_name == lite_video::mojom::LiteVideoService::Name_) {
     LiteVideoObserver::BindLiteVideoService(
         mojo::PendingAssociatedReceiver<lite_video::mojom::LiteVideoService>(

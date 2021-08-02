@@ -39,6 +39,22 @@ ExtensionWebContentsObserver* ExtensionWebContentsObserver::GetForWebContents(
       web_contents);
 }
 
+// static
+void ExtensionWebContentsObserver::BindLocalFrameHost(
+    mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* observer = GetForWebContents(web_contents);
+  if (!observer)
+    return;
+  auto* efh = observer->extension_frame_host_.get();
+  if (!efh)
+    return;
+  efh->BindLocalFrameHost(std::move(receiver), rfh);
+}
+
 std::unique_ptr<ExtensionFrameHost>
 ExtensionWebContentsObserver::CreateExtensionFrameHost(
     content::WebContents* web_contents) {

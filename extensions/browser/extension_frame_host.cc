@@ -13,12 +13,15 @@
 namespace extensions {
 
 ExtensionFrameHost::ExtensionFrameHost(content::WebContents* web_contents)
-    : web_contents_(web_contents),
-      receivers_(web_contents,
-                 this,
-                 content::WebContentsFrameReceiverSetPassKey()) {}
+    : web_contents_(web_contents), receivers_(web_contents, this) {}
 
 ExtensionFrameHost::~ExtensionFrameHost() = default;
+
+void ExtensionFrameHost::BindLocalFrameHost(
+    mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
+    content::RenderFrameHost* rfh) {
+  receivers_.Bind(rfh, std::move(receiver));
+}
 
 void ExtensionFrameHost::RequestScriptInjectionPermission(
     const std::string& extension_id,

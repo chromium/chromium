@@ -59,6 +59,12 @@ class ExtensionWebContentsObserver
   static ExtensionWebContentsObserver* GetForWebContents(
       content::WebContents* web_contents);
 
+  // Binds the LocalFrameHost interface to the ExtensionFrameHost associated
+  // with the RenderFrameHost.
+  static void BindLocalFrameHost(
+      mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
+      content::RenderFrameHost* rfh);
+
   // This must be called by clients directly after the EWCO has been created.
   void Initialize();
 

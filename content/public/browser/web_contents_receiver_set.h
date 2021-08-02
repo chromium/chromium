@@ -23,9 +23,6 @@ class EmbeddedSearchClientFactoryImpl;
 namespace chrome_browser_net {
 class NetErrorTabHelper;
 }
-namespace extensions {
-class ExtensionFrameHost;
-}  // namespace extensions
 namespace printing {
 class PrintManager;
 }
@@ -100,7 +97,6 @@ class WebContentsFrameReceiverSetPassKey {
 
   friend class ::EmbeddedSearchClientFactoryImpl;
   friend class ::chrome_browser_net::NetErrorTabHelper;
-  friend class ::extensions::ExtensionFrameHost;
   friend class ::printing::PrintManager;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
   friend class ScreenOrientationProvider;
