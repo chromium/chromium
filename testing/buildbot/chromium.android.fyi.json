@@ -10430,7 +10430,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.net_unittests.filter"
         ],
         "merge": {
           "args": [

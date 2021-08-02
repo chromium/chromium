@@ -224,6 +224,7 @@ source_set("media_unittests_filters") {
 source_set("net_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.net_unittests.filter",
+    "//testing/buildbot/filters/android.emulator_10.net_unittests.filter",
     "//testing/buildbot/filters/android.emulator_11.net_unittests.filter",
   ]
 }
