@@ -165,7 +165,7 @@
                                                      password:password];
 
   if (!credential) {
-    // TODO (crbug.com/1223966): Show UI to alert the user to the problem.
+    [self savePasswordFailed];
     return;
   }
 
@@ -175,12 +175,33 @@
                if (error) {
                  UpdateUMACountForKey(
                      app_group::kCredentialExtensionSaveCredentialFailureCount);
-                 // TODO (crbug.com/1223966): Show UI to alert the user to the
-                 // problem.
+                 [self savePasswordFailed];
                  return;
                }
                [self.delegate userSelectedCredential:credential];
              }];
+}
+
+// Alerts the user that saving their password failed.
+- (void)savePasswordFailed {
+  UIAlertController* ac = [UIAlertController
+      alertControllerWithTitle:
+          NSLocalizedString(
+              @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_ERROR_TITLE",
+              @"Title for password save error")
+                       message:NSLocalizedString(
+                                   @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_"
+                                   @"ERROR_MESSAGE",
+                                   @"Message for password save error")
+                preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction* defaultAction = [UIAlertAction
+      actionWithTitle:NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_OK",
+                                        @"OK")
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action){
+              }];
+  [ac addAction:defaultAction];
+  [self presentViewController:ac animated:YES completion:nil];
 }
 
 // Returns a new cancel button for the navigation bar.
