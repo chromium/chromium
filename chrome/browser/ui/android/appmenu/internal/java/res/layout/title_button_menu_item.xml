@@ -27,7 +27,8 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingStart="16dp"
-        android:background="@color/menu_item_bg_color" />
+        android:background="@color/menu_item_bg_color"
+        android:foreground="?attr/listChoiceBackgroundIndicator"/>
 
     <!-- Checkbox.  Paddings account for built-in padding from the Android resource. -->
     <org.chromium.chrome.browser.ui.appmenu.AppMenuItemIcon
@@ -35,6 +36,7 @@
         android:layout_width="56dp"
         android:layout_height="match_parent"
         android:background="@color/menu_item_bg_color"
+        android:foreground="?attr/listChoiceBackgroundIndicator"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:paddingTop="8dp"
@@ -51,6 +53,7 @@
         android:layout_width="56dp"
         android:layout_height="match_parent"
         android:background="@color/menu_item_bg_color"
+        android:foreground="?attr/listChoiceBackgroundIndicator"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingTop="12dp"
