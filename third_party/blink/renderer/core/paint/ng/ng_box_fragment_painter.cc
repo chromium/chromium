@@ -1454,7 +1454,9 @@ void NGBoxFragmentPainter::PaintLineBoxChildren(
       paint_info.phase != PaintPhase::kTextClip &&
       paint_info.phase != PaintPhase::kMask &&
       paint_info.phase != PaintPhase::kDescendantOutlinesOnly &&
-      paint_info.phase != PaintPhase::kOutline)
+      paint_info.phase != PaintPhase::kOutline &&
+      // When block-in-inline, block backgrounds need to be painted.
+      !ShouldPaintDescendantBlockBackgrounds(paint_info.phase))
     return;
 
   // The only way an inline could paint like this is if it has a layer.
