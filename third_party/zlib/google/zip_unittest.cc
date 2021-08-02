@@ -798,4 +798,37 @@ TEST_F(ZipTest, NestedZip) {
   EXPECT_LT(dest_file_size, src_size + 300);
 }
 
+// Tests that there is no 2GB or 4GB limits. Tests that big files can be zipped
+// (crbug.com/1207737) and that big ZIP files can be created
+// (crbug.com/1221447).
+TEST_F(ZipTest, DISABLED_BigFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath src_dir = temp_dir.GetPath().AppendASCII("input");
+  EXPECT_TRUE(base::CreateDirectory(src_dir));
+
+  // Create a big dummy ZIP file. This is not a valid ZIP file, but for the
+  // purpose of this test, it doesn't really matter.
+  const int64_t src_size = 5'000'000'000;
+
+  {
+    base::File f(src_dir.AppendASCII("src.zip"),
+                 base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(f.SetLength(src_size));
+  }
+
+  // Zip the dummy ZIP file.
+  const base::FilePath dest_file = temp_dir.GetPath().AppendASCII("dest.zip");
+  EXPECT_TRUE(zip::Zip({.src_dir = src_dir, .dest_file = dest_file}));
+
+  // Since the dummy source (inner) ZIP file should simply be stored in the
+  // destination (outer) ZIP file, the destination file should be bigger than
+  // the source file, but not much bigger.
+  int64_t dest_file_size;
+  ASSERT_TRUE(base::GetFileSize(dest_file, &dest_file_size));
+  EXPECT_GT(dest_file_size, src_size + 100);
+  EXPECT_LT(dest_file_size, src_size + 300);
+}
+
 }  // namespace
