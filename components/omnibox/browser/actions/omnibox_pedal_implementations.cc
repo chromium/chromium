@@ -1085,7 +1085,7 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
-    return client.GetPrefs()->GetBoolean("AllowDinosaurEasterEgg");
+    return client.GetPrefs()->GetBoolean("allow_dinosaur_easter_egg");
   }
 
  protected:
