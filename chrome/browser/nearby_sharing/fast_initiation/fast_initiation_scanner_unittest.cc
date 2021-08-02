@@ -51,8 +51,8 @@ class NearbySharingFastInitiationScannerTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(
         mock_bluetooth_adapter_);
 
-    scanner_ = std::make_unique<FastInitiationScanner>(
-        mock_bluetooth_adapter_,
+    scanner_ = FastInitiationScanner::Factory::Create(mock_bluetooth_adapter_);
+    scanner_->StartScanning(
         base::BindRepeating(
             &NearbySharingFastInitiationScannerTest::OnDevicesDetected,
             weak_ptr_factory_.GetWeakPtr()),

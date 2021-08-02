@@ -2174,8 +2174,9 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
 void NearbySharingServiceImpl::StartFastInitiationScanning() {
   DCHECK(!fast_initiation_scanner_);
   NS_LOG(VERBOSE) << __func__ << ": Starting background scanning.";
-  fast_initiation_scanner_ = std::make_unique<FastInitiationScanner>(
-      bluetooth_adapter_,
+  fast_initiation_scanner_ =
+      FastInitiationScanner::Factory::Create(bluetooth_adapter_);
+  fast_initiation_scanner_->StartScanning(
       base::BindRepeating(
           &NearbySharingServiceImpl::OnFastInitiationDeviceFound,
           weak_ptr_factory_.GetWeakPtr()),

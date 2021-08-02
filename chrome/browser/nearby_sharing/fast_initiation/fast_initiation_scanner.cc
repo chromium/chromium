@@ -22,26 +22,41 @@ constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
 
 }  // namespace
 
+// static
+FastInitiationScanner::Factory*
+    FastInitiationScanner::Factory::factory_instance_ = nullptr;
+
+// static
+std::unique_ptr<FastInitiationScanner> FastInitiationScanner::Factory::Create(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  if (factory_instance_)
+    return factory_instance_->CreateInstance(adapter);
+
+  return std::make_unique<FastInitiationScanner>(adapter);
+}
+
+// static
+void FastInitiationScanner::Factory::SetFactoryForTesting(
+    FastInitiationScanner::Factory* factory) {
+  factory_instance_ = factory;
+}
+
 FastInitiationScanner::FastInitiationScanner(
-    scoped_refptr<device::BluetoothAdapter> adapter,
-    base::RepeatingClosure device_found_callback,
-    base::RepeatingClosure device_lost_callback,
-    base::OnceClosure scanner_invalidated_callback)
-    : adapter_(adapter),
-      device_found_callback_(std::move(device_found_callback)),
-      device_lost_callback_(std::move(device_lost_callback)),
-      scanner_invalidated_callback_(std::move(scanner_invalidated_callback)) {
+    scoped_refptr<device::BluetoothAdapter> adapter)
+    : adapter_(adapter) {
   DCHECK(adapter_ && adapter_->IsPresent() && adapter_->IsPowered());
-  StartScanning();
 }
 
 FastInitiationScanner::~FastInitiationScanner() {}
 
-bool FastInitiationScanner::AreFastInitiationDevicesDetected() const {
-  return !devices_attempting_to_share_.empty();
-}
+void FastInitiationScanner::StartScanning(
+    base::RepeatingClosure device_found_callback,
+    base::RepeatingClosure device_lost_callback,
+    base::OnceClosure scanner_invalidated_callback) {
+  device_found_callback_ = std::move(device_found_callback);
+  device_lost_callback_ = std::move(device_lost_callback);
+  scanner_invalidated_callback_ = std::move(scanner_invalidated_callback);
 
-void FastInitiationScanner::StartScanning() {
   std::vector<uint8_t> pattern_value;
   // Add the service UUID in reversed byte order.
   pattern_value.insert(pattern_value.begin(),
@@ -69,6 +84,10 @@ void FastInitiationScanner::StartScanning() {
 
   background_scan_session_ = adapter_->StartLowEnergyScanSession(
       std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());
+}
+
+bool FastInitiationScanner::AreFastInitiationDevicesDetected() const {
+  return !devices_attempting_to_share_.empty();
 }
 
 void FastInitiationScanner::OnSessionStarted(

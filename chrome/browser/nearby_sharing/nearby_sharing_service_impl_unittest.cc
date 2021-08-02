@@ -39,6 +39,7 @@
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_advertiser.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
@@ -80,6 +81,8 @@ using SendSurfaceState = NearbySharingService::SendSurfaceState;
 
 using NearbyProcessShutdownReason =
     chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
+
+namespace {
 
 class FakeFastInitiationAdvertiser : public FastInitiationAdvertiser {
  public:
@@ -172,6 +175,81 @@ class FakeFastInitiationAdvertiserFactory
       this};
 };
 
+class FakeFastInitiationScanner : public FastInitiationScanner {
+ public:
+  FakeFastInitiationScanner(scoped_refptr<device::BluetoothAdapter> adapter,
+                            base::OnceClosure destructor_callback)
+      : FastInitiationScanner(adapter),
+        destructor_callback_(std::move(destructor_callback)) {}
+
+  ~FakeFastInitiationScanner() override {
+    std::move(destructor_callback_).Run();
+  }
+
+  void StartScanning(base::RepeatingClosure device_found_callback,
+                     base::RepeatingClosure device_lost_callback,
+                     base::OnceClosure scanner_invalidated_callback) override {
+    ++start_scanning_call_count_;
+    device_found_callback_ = std::move(device_found_callback);
+    device_lost_callback_ = std::move(device_lost_callback);
+    scanner_invalidated_callback_ = std::move(scanner_invalidated_callback);
+  }
+
+  bool AreFastInitiationDevicesDetected() const override {
+    return are_fast_initiation_devices_detected_;
+  }
+
+  void SetAreFastInitiationDevicesDetected(
+      bool are_fast_initiation_devices_detected) {
+    are_fast_initiation_devices_detected_ =
+        are_fast_initiation_devices_detected;
+  }
+
+  void DeviceFound() { device_found_callback_.Run(); }
+
+  void DeviceLost() { device_lost_callback_.Run(); }
+
+  void ScannerInvalidated() { std::move(scanner_invalidated_callback_).Run(); }
+
+ private:
+  base::OnceClosure destructor_callback_;
+  base::RepeatingClosure device_found_callback_;
+  base::RepeatingClosure device_lost_callback_;
+  base::OnceClosure scanner_invalidated_callback_;
+  bool are_fast_initiation_devices_detected_ = false;
+  size_t start_scanning_call_count_ = 0u;
+};
+
+class FakeFastInitiationScannerFactory : public FastInitiationScanner::Factory {
+ public:
+  std::unique_ptr<FastInitiationScanner> CreateInstance(
+      scoped_refptr<device::BluetoothAdapter> adapter) override {
+    ++scanner_created_count_;
+    auto scanner = std::make_unique<FakeFastInitiationScanner>(
+        adapter,
+        base::BindOnce(&FakeFastInitiationScannerFactory::OnScannerDestroyed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    last_fake_fast_initiation_scanner_ = scanner.get();
+    return std::move(scanner);
+  }
+
+  FakeFastInitiationScanner* last_fake_fast_initiation_scanner() {
+    return last_fake_fast_initiation_scanner_;
+  }
+  size_t scanner_created_count() { return scanner_created_count_; }
+  size_t scanner_destroyed_count() { return scanner_destroyed_count_; }
+
+ private:
+  void OnScannerDestroyed() { ++scanner_destroyed_count_; }
+
+  FakeFastInitiationScanner* last_fake_fast_initiation_scanner_ = nullptr;
+  size_t scanner_created_count_ = 0u;
+  size_t scanner_destroyed_count_ = 0u;
+
+  base::WeakPtrFactory<FakeFastInitiationScannerFactory> weak_ptr_factory_{
+      this};
+};
+
 class MockTransferUpdateCallback : public TransferUpdateCallback {
  public:
   ~MockTransferUpdateCallback() override = default;
@@ -208,6 +286,8 @@ class FakeArcNearbyShareSession {
  private:
   bool callback_called = false;
 };
+
+}  // namespace
 
 namespace NearbySharingServiceUnitTests {
 
@@ -445,6 +525,7 @@ class NearbySharingServiceImplTest : public testing::Test {
               return mock_reference_ptr;
             });
 
+    SetFakeFastInitiationScannerFactory();
     service_ = CreateService();
     SetFakeFastInitiationAdvertiserFactory(/*should_succeed_on_start=*/true);
 
@@ -527,6 +608,13 @@ class NearbySharingServiceImplTest : public testing::Test {
             should_succeed_on_start);
     FastInitiationAdvertiser::Factory::SetFactoryForTesting(
         fast_initiation_advertiser_factory_.get());
+  }
+
+  void SetFakeFastInitiationScannerFactory() {
+    fast_initiation_scanner_factory_ =
+        std::make_unique<FakeFastInitiationScannerFactory>();
+    FastInitiationScanner::Factory::SetFactoryForTesting(
+        fast_initiation_scanner_factory_.get());
   }
 
   bool IsBluetoothPresent() { return is_bluetooth_present_; }
@@ -1089,6 +1177,8 @@ class NearbySharingServiceImplTest : public testing::Test {
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<FakeFastInitiationAdvertiserFactory>
       fast_initiation_advertiser_factory_;
+  std::unique_ptr<FakeFastInitiationScannerFactory>
+      fast_initiation_scanner_factory_;
   std::unique_ptr<FakeArcNearbyShareSession> arc_nearby_share_session_;
   bool is_bluetooth_present_ = true;
   bool is_bluetooth_powered_ = true;
@@ -1183,6 +1273,12 @@ class TestObserver : public NearbySharingService::Observer {
     on_start_advertising_failure_called_ = true;
   }
 
+  void OnFastInitiationDeviceFound() override { device_found_called_ = true; }
+  void OnFastInitiationDeviceLost() override { device_lost_called_ = true; }
+  void OnFastInitiationScanningStopped() override {
+    scanning_stopped_called_ = true;
+  }
+
   void OnShutdown() override {
     shutdown_called_ = true;
     service_->RemoveObserver(this);
@@ -1192,6 +1288,9 @@ class TestObserver : public NearbySharingService::Observer {
   bool shutdown_called_ = false;
   bool process_stopped_called_ = false;
   bool on_start_advertising_failure_called_ = false;
+  bool device_found_called_ = false;
+  bool device_lost_called_ = false;
+  bool scanning_stopped_called_ = false;
   NearbySharingService* service_;
 };
 
@@ -4520,11 +4619,68 @@ TEST_F(NearbySharingServiceImplTest, NoShutdownTimerWithoutProcessRef) {
   EXPECT_FALSE(IsProcessShutdownTimerRunning());
 }
 
-TEST_F(NearbySharingServiceImplTest, FastInitiationScanningStartAndStop) {
+TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_StartAndStop) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
-  EXPECT_TRUE(mock_scan_session_);
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  // Trigger a call to StopFastInitiationScanning().
   SetBluetoothIsPowered(false);
-  EXPECT_FALSE(mock_scan_session_);
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  // Trigger a call to StartFastInitiationScanning().
+  SetBluetoothIsPowered(true);
+  EXPECT_EQ(2u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       FastInitiationScanning_MultipleReceiveSurfaces) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  // Registering a background receive surface should not create a scanner since
+  // we're already scanning.
+  MockTransferUpdateCallback callback;
+  service_->RegisterReceiveSurface(
+      &callback, NearbySharingService::ReceiveSurfaceState::kBackground);
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+}
+
+TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_NotifyObservers) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  TestObserver observer(service_.get());
+  ASSERT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+
+  FakeFastInitiationScanner* scanner =
+      fast_initiation_scanner_factory_->last_fake_fast_initiation_scanner();
+  scanner->DeviceFound();
+  EXPECT_TRUE(observer.device_found_called_);
+  scanner->DeviceLost();
+  EXPECT_TRUE(observer.device_lost_called_);
+  scanner->ScannerInvalidated();
+  EXPECT_TRUE(observer.scanning_stopped_called_);
+
+  // Remove the observer before it goes out of scope.
+  service_->RemoveObserver(&observer);
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       FastInitiationScanning_AreDevicesDetected) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  ASSERT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+
+  FakeFastInitiationScanner* scanner =
+      fast_initiation_scanner_factory_->last_fake_fast_initiation_scanner();
+  scanner->SetAreFastInitiationDevicesDetected(true);
+  EXPECT_EQ(scanner->AreFastInitiationDevicesDetected(),
+            service_->AreFastInitiationDevicesDetected());
+  scanner->SetAreFastInitiationDevicesDetected(false);
+  EXPECT_EQ(scanner->AreFastInitiationDevicesDetected(),
+            service_->AreFastInitiationDevicesDetected());
 }
 
 }  // namespace NearbySharingServiceUnitTests

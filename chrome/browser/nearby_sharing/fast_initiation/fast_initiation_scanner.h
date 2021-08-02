@@ -15,22 +15,48 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 
+// FastInitiationScanner will scan for BLE advertisements using a
+// BluetoothLowEnergyScanSession. It will filter for advertisements containing
+// the Fast Initiation UUID 0xFE2C and service data 0xFC128E. Remote devices
+// will broacast these advertisements when they are attempting to share (see
+// FastInitiationAdvertiser). We use this as a signal to prompt the user to
+// enable high visibility mode.
 class FastInitiationScanner
     : public device::BluetoothLowEnergyScanSession::Delegate {
  public:
-  FastInitiationScanner(scoped_refptr<device::BluetoothAdapter> adapter,
-                        base::RepeatingClosure device_found_callback,
-                        base::RepeatingClosure device_lost_callback,
-                        base::OnceClosure scanner_invalidated_callback);
+  class Factory {
+   public:
+    Factory() = default;
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
+    static std::unique_ptr<FastInitiationScanner> Create(
+        scoped_refptr<device::BluetoothAdapter> adapter);
+
+    static void SetFactoryForTesting(Factory* factory);
+
+   protected:
+    virtual ~Factory() = default;
+    virtual std::unique_ptr<FastInitiationScanner> CreateInstance(
+        scoped_refptr<device::BluetoothAdapter> adapter) = 0;
+
+   private:
+    static Factory* factory_instance_;
+  };
+
+  explicit FastInitiationScanner(
+      scoped_refptr<device::BluetoothAdapter> adapter);
   ~FastInitiationScanner() override;
   FastInitiationScanner(const FastInitiationScanner&) = delete;
   FastInitiationScanner& operator=(const FastInitiationScanner&) = delete;
 
-  bool AreFastInitiationDevicesDetected() const;
+  virtual void StartScanning(base::RepeatingClosure device_found_callback,
+                             base::RepeatingClosure device_lost_callback,
+                             base::OnceClosure scanner_invalidated_callback);
+
+  virtual bool AreFastInitiationDevicesDetected() const;
 
  private:
-  void StartScanning();
-
   // device::BluetoothLowEnergyScanSession::Delegate:
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
