@@ -63,8 +63,7 @@ void CaptioningController::RenderViewHostChanged(RenderViewHost* old_host,
   if (old_host) {
     old_pid = GetRenderProcessIdFromRenderViewHost(old_host);
   }
-  int new_pid =
-      GetRenderProcessIdFromRenderViewHost(web_contents()->GetRenderViewHost());
+  int new_pid = GetRenderProcessIdFromRenderViewHost(new_host);
   if (new_pid != old_pid) {
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
