@@ -6451,40 +6451,6 @@ static_library("browser") {
       "local_discovery/service_discovery_shared_client.cc",
       "local_discovery/service_discovery_shared_client.h",
     ]
-    if (enable_basic_printing) {
-      sources += [
-        "printing/cloud_print/cloud_print_printer_list.cc",
-        "printing/cloud_print/cloud_print_printer_list.h",
-        "printing/cloud_print/device_description.cc",
-        "printing/cloud_print/device_description.h",
-        "printing/cloud_print/gcd_api_flow.cc",
-        "printing/cloud_print/gcd_api_flow.h",
-        "printing/cloud_print/gcd_api_flow_impl.cc",
-        "printing/cloud_print/gcd_api_flow_impl.h",
-        "printing/cloud_print/gcd_constants.cc",
-        "printing/cloud_print/gcd_constants.h",
-        "printing/cloud_print/privet_confirm_api_flow.cc",
-        "printing/cloud_print/privet_confirm_api_flow.h",
-        "printing/cloud_print/privet_constants.cc",
-        "printing/cloud_print/privet_constants.h",
-        "printing/cloud_print/privet_device_lister.cc",
-        "printing/cloud_print/privet_device_lister.h",
-        "printing/cloud_print/privet_device_lister_impl.cc",
-        "printing/cloud_print/privet_device_lister_impl.h",
-        "printing/cloud_print/privet_http.cc",
-        "printing/cloud_print/privet_http.h",
-        "printing/cloud_print/privet_http_asynchronous_factory.cc",
-        "printing/cloud_print/privet_http_asynchronous_factory.h",
-        "printing/cloud_print/privet_http_asynchronous_factory_impl.cc",
-        "printing/cloud_print/privet_http_asynchronous_factory_impl.h",
-        "printing/cloud_print/privet_http_impl.cc",
-        "printing/cloud_print/privet_http_impl.h",
-        "printing/cloud_print/privet_local_printer_lister.cc",
-        "printing/cloud_print/privet_local_printer_lister.h",
-        "printing/cloud_print/privet_url_loader.cc",
-        "printing/cloud_print/privet_url_loader.h",
-      ]
-    }
 
     if (enable_mdns) {
       sources += [
@@ -6493,12 +6459,6 @@ static_library("browser") {
         "local_discovery/service_discovery_client_mdns.cc",
         "local_discovery/service_discovery_client_mdns.h",
       ]
-      if (enable_basic_printing) {
-        sources += [
-          "printing/cloud_print/privet_traffic_detector.cc",
-          "printing/cloud_print/privet_traffic_detector.h",
-        ]
-      }
     }
   }
 
