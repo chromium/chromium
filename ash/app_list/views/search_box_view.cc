@@ -18,6 +18,7 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
@@ -395,7 +396,9 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
   if (state == AppListState::kStateSearchResults) {
-    if (features::IsDarkLightModeEnabled())
+    // Search box background is transparent when search results are shown.
+    if (features::IsDarkLightModeEnabled() &&
+        contents_view_->search_result_page_view()->GetVisible())
       return SK_ColorTRANSPARENT;
     return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
   }

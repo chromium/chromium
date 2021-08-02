@@ -119,6 +119,9 @@ class ASH_EXPORT SearchResultPageView
   // Returns background color for the given state.
   SkColor GetBackgroundColorForState(AppListState state) const;
 
+  // Hide zero state search result view when AppListBubble is enabled.
+  bool ShouldShowSearchResultView() const;
+
   PrivacyContainerView* GetPrivacyContainerViewForTest();
   SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
   SearchResultListView* GetSearchResultListViewForTest();
