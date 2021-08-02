@@ -114,7 +114,7 @@ MediaNotificationContainerImpl* MediaDialogView::ShowMediaSession(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   auto container = std::make_unique<MediaNotificationContainerImplView>(
-      id, item, service_, entry_point_);
+      id, item, service_, entry_point_, profile_);
   MediaNotificationContainerImplView* container_ptr = container.get();
   container_ptr->AddObserver(this);
   observed_containers_[id] = container_ptr;

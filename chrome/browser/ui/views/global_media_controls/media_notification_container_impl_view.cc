@@ -102,6 +102,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     MediaNotificationService* service,
     GlobalMediaControlsEntryPoint entry_point,
+    Profile* profile,
     absl::optional<media_message_center::NotificationTheme> theme)
     : views::Button(base::BindRepeating(
           [](MediaNotificationContainerImplView* view) {
@@ -116,7 +117,8 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       background_color_(kDefaultBackgroundColor),
       service_(service),
       is_cros_(theme.has_value()),
-      entry_point_(entry_point) {
+      entry_point_(entry_point),
+      profile_(profile) {
   DCHECK(item);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -195,17 +197,18 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     SetPreferredSize(kNormalSize);
   }
   view_ = swipeable_container_->AddChildView(std::move(view));
-
-  // Show a stop cast button for cast notifications.
-  if (is_cast_notification &&
+  bool gmc_cast_start_stop_enabled =
       media_router::GlobalMediaControlsCastStartStopEnabled() &&
+      media_router::MediaRouterEnabled(profile_);
+  // Show a stop cast button for cast notifications.
+  if (is_cast_notification && gmc_cast_start_stop_enabled &&
       !base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
     AddStopCastButton(cast_item);
   }
 
   // Show a device selector view for media and supplemental notifications.
   if (!is_cast_notification &&
-      (media_router::GlobalMediaControlsCastStartStopEnabled() ||
+      (gmc_cast_start_stop_enabled ||
        base::FeatureList::IsEnabled(
            media::kGlobalMediaControlsSeamlessTransfer))) {
     AddDeviceSelectorView(
@@ -549,7 +552,8 @@ void MediaNotificationContainerImplView::AddDeviceSelectorView(
     bool is_local_media_session,
     bool show_expand_button) {
   std::unique_ptr<media_router::CastDialogController> cast_controller;
-  if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
+      media_router::MediaRouterEnabled(profile_)) {
     cast_controller =
         is_local_media_session
             ? service_->CreateCastDialogControllerForSession(id_)

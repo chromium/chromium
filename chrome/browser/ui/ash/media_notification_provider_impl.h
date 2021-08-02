@@ -16,6 +16,7 @@
 class MediaNotificationService;
 class MediaNotificationListView;
 class MediaNotificationContainerImplView;
+class Profile;
 
 class MediaNotificationProviderImpl
     : public ash::MediaNotificationProvider,
@@ -75,6 +76,8 @@ class MediaNotificationProviderImpl
   base::ObserverList<ash::MediaNotificationProviderObserver> observers_;
 
   MediaNotificationListView* active_session_view_ = nullptr;
+
+  Profile* profile_ = nullptr;
 
   MediaNotificationService* service_ = nullptr;
 

@@ -87,7 +87,7 @@ MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
     return nullptr;
 
   auto container = std::make_unique<MediaNotificationContainerImplView>(
-      id, item, service_, GlobalMediaControlsEntryPoint::kSystemTray,
+      id, item, service_, GlobalMediaControlsEntryPoint::kSystemTray, profile_,
       color_theme_);
   MediaNotificationContainerImplView* container_ptr = container.get();
   container_ptr->AddObserver(this);
@@ -136,13 +136,12 @@ void MediaNotificationProviderImpl::OnContainerDestroyed(
 
 void MediaNotificationProviderImpl::OnUserProfileLoaded(
     const AccountId& account_id) {
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  profile_ = chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
 
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
-    service_ = MediaNotificationServiceFactory::GetForProfile(profile);
+    service_ = MediaNotificationServiceFactory::GetForProfile(profile_);
     service_->AddObserver(this);
   }
 }

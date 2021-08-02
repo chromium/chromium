@@ -37,6 +37,7 @@ class MediaNotificationDeviceSelectorView;
 class MediaNotificationContainerObserver;
 class MediaNotificationFooterView;
 class MediaNotificationService;
+class Profile;
 
 // MediaNotificationContainerImplView holds a media notification for display
 // within the MediaDialogView. The media notification shows metadata for a media
@@ -56,6 +57,7 @@ class MediaNotificationContainerImplView
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       MediaNotificationService* service,
       GlobalMediaControlsEntryPoint entry_point,
+      Profile* profile,
       absl::optional<media_message_center::NotificationTheme> theme =
           absl::nullopt);
   MediaNotificationContainerImplView(
@@ -227,6 +229,7 @@ class MediaNotificationContainerImplView
 
   const bool is_cros_;
   const GlobalMediaControlsEntryPoint entry_point_;
+  Profile* const profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_
