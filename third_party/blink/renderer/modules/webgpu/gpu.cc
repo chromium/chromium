@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -70,6 +73,20 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
         Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
   } else {
     context_provider = CreateContextProviderOnMainThread(url);
+  }
+
+  // Note that we check for API blocking *after* creating the context. This is
+  // because context creation synchronizes against GpuProcessHost lifetime in
+  // the browser process, and GpuProcessHost destruction is what updates API
+  // blocking state on a GPU process crash. See https://crbug.com/1215907#c10
+  // for more details.
+  bool blocked = true;
+  mojo::Remote<mojom::blink::GpuDataManager> gpu_data_manager;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      gpu_data_manager.BindNewPipeAndPassReceiver());
+  gpu_data_manager->Are3DAPIsBlockedForUrl(url, &blocked);
+  if (blocked) {
+    return nullptr;
   }
 
   // TODO(kainino): we will need a better way of accessing the GPU interface

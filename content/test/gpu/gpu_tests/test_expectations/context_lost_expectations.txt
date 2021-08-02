@@ -121,9 +121,21 @@ crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure
 
 # Webgpu not fully supported on Linux, Android, ChromeOS, and Fuchsia
 [ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ linux ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+[ linux ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+[ linux ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 [ fuchsia ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ fuchsia ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+[ fuchsia ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+[ fuchsia ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 [ android ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ android ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+[ android ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+[ android ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 [ chromeos ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ chromeos ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+[ chromeos ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+[ chromeos ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
