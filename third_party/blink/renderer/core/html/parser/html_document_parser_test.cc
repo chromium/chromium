@@ -34,8 +34,7 @@ class MockNoStatePrefetchClient : public NoStatePrefetchClient {
 
 class HTMLDocumentParserTest
     : public PageTestBase,
-      public testing::WithParamInterface<
-          testing::tuple<ParserSynchronizationPolicy, int>>,
+      public testing::WithParamInterface<ParserSynchronizationPolicy>,
       private ScopedForceSynchronousHTMLParsingForTest {
  protected:
   HTMLDocumentParserTest()
@@ -59,9 +58,8 @@ class HTMLDocumentParserTest
   }
 
   HTMLDocumentParser* CreateParser(HTMLDocument& document) {
-    auto* parser = MakeGarbageCollected<HTMLDocumentParser>(
-        document, testing::get<0>(GetParam()));
-    parser->SetMaxTokenizationBudgetForTesting(testing::get<1>(GetParam()));
+    auto* parser =
+        MakeGarbageCollected<HTMLDocumentParser>(document, GetParam());
     std::unique_ptr<TextResourceDecoder> decoder(
         BuildTextResourceDecoderFor(&document, "text/html", g_null_atom));
     parser->SetDecoder(std::move(decoder));
@@ -69,21 +67,17 @@ class HTMLDocumentParserTest
   }
 
  private:
-  ParserSynchronizationPolicy Policy() const {
-    return testing::get<0>(GetParam());
-  }
+  ParserSynchronizationPolicy Policy() const { return GetParam(); }
 
   bool original_threaded_parsing_;
 };
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(
-    HTMLDocumentParserTest,
-    HTMLDocumentParserTest,
-    testing::Combine(testing::Values(kForceSynchronousParsing,
-                                     kAllowDeferredParsing),
-                     testing::Values(250, 500, 1000)));
+INSTANTIATE_TEST_SUITE_P(HTMLDocumentParserTest,
+                         HTMLDocumentParserTest,
+                         testing::Values(kForceSynchronousParsing,
+                                         kAllowDeferredParsing));
 
 TEST_P(HTMLDocumentParserTest, StopThenPrepareToStopShouldNotCrash) {
   auto& document = To<HTMLDocument>(GetDocument());
@@ -165,7 +159,7 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   HTMLParserScriptRunnerHost* script_runner_host =
       parser->AsHTMLParserScriptRunnerHostForTesting();
   EXPECT_EQ(script_runner_host->HasPreloadScanner(),
-            testing::get<0>(GetParam()) == kAllowDeferredParsing);
+            GetParam() == kAllowDeferredParsing);
   EXPECT_EQ(HTMLTokenizer::kTagNameState, parser->Tokenizer()->GetState());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
