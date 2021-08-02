@@ -154,9 +154,8 @@ const ui::ThemeProvider* AppBrowserController::GetThemeProvider() const {
   return theme_provider_.get();
 }
 
-AppBrowserController::AppBrowserController(
-    Browser* browser,
-    absl::optional<web_app::AppId> app_id)
+AppBrowserController::AppBrowserController(Browser* browser,
+                                           web_app::AppId app_id)
     : content::WebContentsObserver(nullptr),
       app_id_(std::move(app_id)),
       browser_(browser),
