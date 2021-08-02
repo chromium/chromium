@@ -31,7 +31,8 @@ TEST_NAME_RELEASE_APP_PATTERN = re.compile(
 # of all EarlGrey/EarlGrey2 test classes. 'appConfigurationForTestCase' is a
 # class method. They have no real tests.
 IGNORED_CLASSES = [
-    'BaseEarlGreyTestCase', 'ChromeTestCase', 'appConfigurationForTestCase'
+    'BaseEarlGreyTestCase', 'ChromeTestCase', 'appConfigurationForTestCase',
+    'setUpForTestCase'
 ]
 
 

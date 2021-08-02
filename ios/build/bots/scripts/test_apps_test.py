@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Unittests for test_apps.py."""
 
+from test_runner import TestRunner
 import mock
 import unittest
 
@@ -39,6 +40,24 @@ class GetGTestFilterTest(test_runner_test.TestCase):
     expected = '-test.1:test.2'
 
     self.assertEqual(test_apps.get_gtest_filter(tests, invert=True), expected)
+
+
+class EgtestsAppGetAllTestsTest(test_runner_test.TestCase):
+  """Tests to get_all_tests methods of EgtestsApp."""
+
+  @mock.patch('os.path.exists', return_value=True)
+  @mock.patch('shard_util.fetch_test_names')
+  def testNonTestsFiltered(self, mock_fetch, _):
+    mock_fetch.return_value = [
+        ('ATestCase', 'testB'),
+        ('setUpForTestCase', 'testForStartup'),
+        ('ChromeTestCase', 'testServer'),
+        ('FindInPageTestCase', 'testURL'),
+        ('CTestCase', 'testD'),
+    ]
+    test_app = test_apps.EgtestsApp(_TEST_APP_PATH)
+    tests = test_app.get_all_tests()
+    self.assertEqual(set(tests), set(['ATestCase/testB', 'CTestCase/testD']))
 
 
 class DeviceXCTestUnitTestsAppTest(test_runner_test.TestCase):

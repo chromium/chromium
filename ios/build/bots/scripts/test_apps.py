@@ -219,7 +219,10 @@ class GTestsApp(object):
     # Method names that starts with test* and also are in *TestCase classes
     # but they are not test-methods.
     # TODO(crbug.com/982435): Rename not test methods with test-suffix.
-    none_tests = ['ChromeTestCase/testServer', 'FindInPageTestCase/testURL']
+    non_test_prefixes = [
+        'ChromeTestCase/testServer', 'FindInPageTestCase/testURL',
+        'setUpForTestCase'
+    ]
     # TODO(crbug.com/1123681): Move all_tests to class var. Set all_tests,
     # disabled_tests values in initialization to avoid multiple calls to otool.
     all_tests = []
@@ -232,7 +235,8 @@ class GTestsApp(object):
         self.release,
         enabled_tests_only=False):
       test_name = '%s/%s' % (test_class, test_method)
-      if (test_name not in none_tests and
+      if ((not any(
+          test_name.startswith(prefix) for prefix in non_test_prefixes)) and
           # |self.initial_included_tests| contains the tests to execute, which
           # may be a subset of all tests b/c of the iOS test sharding logic in
           # run.py. Filter by |self.initial_included_tests| if specified.

@@ -61,10 +61,11 @@ RELEASE_APP_OTOOL_OUTPUT = '\n'.join([
     'types 0x1064cc3e1 v16@0:8', 'name 0x1075e6887 testE',
     'name 0x1075e6887 testF', 'baseProtocols 0x0',
     'name 0x1064b8438 ChromeTestCase', 'name 0x1064b8438 setUp',
-    'baseProtocols 0x0', 'name 0x1064b8438 ToolBarTestCase',
-    'name 0x1075e6887 testG', 'name 0x1075e6887 testH',
-    'name 0x1075e6887 DISABLED_testI', 'name 0x1075e6887 FLAKY_testJ',
-    'baseProtocols 0x0', 'version 0'
+    'baseProtocols 0x0', 'name 0x1064b8438 setUpForTestCase',
+    'name 0x1064b8438 testPort', 'baseProtocols 0x0',
+    'name 0x1064b8438 ToolBarTestCase', 'name 0x1075e6887 testG',
+    'name 0x1075e6887 testH', 'name 0x1075e6887 DISABLED_testI',
+    'name 0x1075e6887 FLAKY_testJ', 'baseProtocols 0x0', 'version 0'
 ])
 
 # Release app otool output format in Xcode 11.4 toolchain.
@@ -79,9 +80,10 @@ RELEASE_APP_OTOOL_OUTPUT_114 = '\n'.join([
     '    types   0x1064cc3e1 v16@0:8', '    name    0x1075e6887 testE',
     '    name    0x1075e6887 testF', 'baseProtocols 0x0',
     '    name    0x1064b8438 ChromeTestCase', '    name    0x1064b8438 setUp',
-    'baseProtocols 0x0', '    name    0x1064b8438 ToolBarTestCase',
-    '    name    0x1075e6887 testG', '    name    0x1075e6887 testH',
-    '    name    0x1075e6893 DISABLED_testI',
+    'baseProtocols 0x0', '    name 0x1064b8438 setUpForTestCase',
+    '    name 0x1064b8438 testPort', 'baseProtocols 0x0',
+    '    name    0x1064b8438 ToolBarTestCase', '    name    0x1075e6887 testG',
+    '    name    0x1075e6887 testH', '    name    0x1075e6893 DISABLED_testI',
     '    name    0x1075e723f FLAKY_testJ', 'baseProtocols 0x0', 'version 0'
 ])
 

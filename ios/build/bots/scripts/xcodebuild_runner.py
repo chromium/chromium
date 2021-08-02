@@ -39,6 +39,15 @@ class LaunchCommandPoolCreationError(test_runner.TestRunnerError):
     super(LaunchCommandPoolCreationError, self).__init__(message)
 
 
+def _tests_decided_at_runtime(app_name):
+  """Return if tests in app are selected at runtime by app_name.
+
+  This works for suites defined in chromium infra.
+  """
+  suite_name_fragments = ['ios_chrome_multitasking_eg', '_flaky_eg']
+  return any(fragment in app_name for fragment in suite_name_fragments)
+
+
 def erase_all_simulators(path=None):
   """Erases all simulator devices.
 
@@ -218,19 +227,32 @@ class LaunchCommand(object):
         break
 
       # Exclude passed tests in next test attempt.
-      passed_tests = passed_tests.union(
-          set(self.test_results['attempts'][-1]['passed']))
-      self.egtests_app.included_tests = list(running_tests - passed_tests)
+      passed_tests = passed_tests | set(
+          self.test_results['attempts'][-1]['passed'])
+      tests_to_include = set()
+      # |running_tests| are compiled tests in target intersecting with swarming
+      # sharding. For some suites, they are more than what's needed to run.
+      if not _tests_decided_at_runtime(self.egtests_app.test_app_path):
+        tests_to_include = tests_to_include | (running_tests - passed_tests)
+      # Add failed tests from last round for runtime decided suites and device
+      # suites.
+      tests_to_include = tests_to_include | (
+          set(self.test_results['attempts'][-1]['failed'].keys()) -
+          cancelled_statuses)
+      self.egtests_app.included_tests = list(tests_to_include)
 
       # crbug.com/987664 - for the case when
       # all tests passed but build was interrupted,
       # passed tests are equal to tests to run.
-      if passed_tests == running_tests:
-        for status in cancelled_statuses:
-          failure = self.test_results['attempts'][-1]['failed'].pop(
-              status, None)
-          if failure:
-            LOGGER.info('Failure for passed tests %s: %s' % (status, failure))
+      if passed_tests == running_tests or not self.egtests_app.included_tests:
+        # Keep cancelled status for these, since some tests might be skipped
+        # don't appear in test results.
+        if not _tests_decided_at_runtime(self.egtests_app.test_app_path):
+          for status in cancelled_statuses:
+            failure = self.test_results['attempts'][-1]['failed'].pop(
+                status, None)
+            if failure:
+              LOGGER.info('Failure for passed tests %s: %s' % (status, failure))
         break
 
       # If tests are not completed(interrupted or did not start)
@@ -243,7 +265,10 @@ class LaunchCommand(object):
       # should be confined in this method. Real tests affected by these statuses
       # will be marked timeout in results.
       for status in cancelled_statuses:
-        self.test_results['attempts'][-1]['failed'].pop(status, None)
+        # Keep cancelled status for these, since some tests might be skipped
+        # don't appear in test results.
+        if not _tests_decided_at_runtime(self.egtests_app.test_app_path):
+          self.test_results['attempts'][-1]['failed'].pop(status, None)
 
       if (not cancelled_attempt
           # If need to re-run less than 20 tests, 1 shard should be enough.
@@ -428,8 +453,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     # from otool output is incorrect. For multitasking or any flaky test suite,
     # the list contains more tests than what actually runs.
     if (self.__class__.__name__ != 'DeviceXcodeTestRunner' and
-        'ios_chrome_multitasking_eg' not in self.app_path and
-        '_flaky_eg' not in self.app_path):
+        not _tests_decided_at_runtime(self.app_path)):
       aborted_tests = list(all_tests_to_run - set(self.logs['failed tests']) -
                            set(self.logs['passed tests']))
     aborted_tests.sort()
