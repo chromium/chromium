@@ -33,8 +33,10 @@ class RuntimeService final : public GrpcServer,
                              public RuntimeServiceDelegate,
                              public MetricsRecorderGrpc {
  public:
-  RuntimeService(content::BrowserContext* browser_context,
-                 CastWindowManager* window_manager);
+  RuntimeService(
+      content::BrowserContext* browser_context,
+      CastWindowManager* window_manager,
+      CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory);
   ~RuntimeService() override;
 
   // Starts and stops the runtime service, including the gRPC completion queue.
@@ -109,8 +111,7 @@ class RuntimeService final : public GrpcServer,
 
   // Allows histogram and action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.
-  // TODO: Initialize this variable.
-  std::unique_ptr<CastRuntimeMetricsRecorder> metrics_recorder_;
+  CastRuntimeMetricsRecorder metrics_recorder_;
   CastRuntimeActionRecorder action_recorder_;
 
   std::string runtime_id_;

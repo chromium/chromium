@@ -61,7 +61,7 @@ class CastRuntimeService
   // Returns current instance of CastRuntimeService in the browser process.
   static CastRuntimeService* GetInstance();
 
-  explicit CastRuntimeService(NetworkContextGetter network_context_getter);
+  CastRuntimeService();
   ~CastRuntimeService() override;
 
   virtual WebCryptoServer* GetWebCryptoServer();
@@ -75,14 +75,6 @@ class CastRuntimeService
 
   // CastRuntimeAudioChannelEndpointManager overrides.
   const std::string& GetAudioChannelEndpoint() override;
-
- protected:
-  NetworkContextGetter network_context_getter() {
-    return network_context_getter_;
-  }
-
- private:
-  NetworkContextGetter network_context_getter_;
 };
 
 }  // namespace chromecast

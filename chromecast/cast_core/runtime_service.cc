@@ -46,13 +46,16 @@ void RuntimeService::AsyncMetricsRecord::StepGRPC(grpc::Status status) {
   delete this;
 }
 
-RuntimeService::RuntimeService(content::BrowserContext* browser_context,
-                               CastWindowManager* window_manager)
+RuntimeService::RuntimeService(
+    content::BrowserContext* browser_context,
+    CastWindowManager* window_manager,
+    CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory)
     : GrpcServer(base::SequencedTaskRunnerHandle::Get()),
       web_view_factory_(std::make_unique<CastWebViewFactory>(browser_context)),
       web_service_(std::make_unique<CastWebService>(browser_context,
                                                     web_view_factory_.get(),
-                                                    window_manager)) {
+                                                    window_manager)),
+      metrics_recorder_(event_builder_factory) {
   shell::CastBrowserProcess::GetInstance()->SetWebViewFactory(
       web_view_factory_.get());
 }
@@ -205,7 +208,7 @@ void RuntimeService::StartMetricsRecorder(
       std::move(metrics_channel));
   metrics_recorder_service_ =
       std::make_unique<CastRuntimeMetricsRecorderService>(
-          metrics_recorder_.get(), &action_recorder_, this,
+          &metrics_recorder_, &action_recorder_, this,
           kDefaultMetricsReportInterval);
   DVLOG(2) << "MetricsRecorderService started";
   callback->StepGRPC(grpc::Status::OK);

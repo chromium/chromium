@@ -221,10 +221,6 @@ cast_source_set("runtime_service") {
     "cast_runtime_service.h",
   ]
 
-  if (chromecast_branding == "public") {
-    sources += [ "cast_runtime_service_simple.cc" ]
-  }
-
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",
@@ -232,6 +228,26 @@ cast_source_set("runtime_service") {
   ]
 
   public_deps = [ "//chromecast/media/cma/backend/proxy:headers" ]
+
+  if (!enable_cast_media_runtime) {
+    sources += [ "cast_runtime_service_simple.cc" ]
+  } else {
+    sources += [
+      "cast_runtime_service_impl.cc",
+      "cast_runtime_service_impl.h",
+    ]
+
+    public_deps += [
+      ":core_runtime",
+      ":metrics_recorder",
+    ]
+
+    deps += [ "//chromecast/metrics:cast_event_builder_simple" ]
+
+    if (chromecast_branding == "public") {
+      sources += [ "cast_runtime_service_impl_factory.cc" ]
+    }
+  }
 }
 
 cast_source_set("cast_core") {
