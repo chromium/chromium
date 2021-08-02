@@ -7,6 +7,8 @@ package org.chromium.weblayer_private;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -429,6 +431,27 @@ class BrowserControlsContainerView extends FrameLayout {
         // Cancel the runnable when detached as calls to removeCallback() after this completes will
         // attempt to remove from the wrong handler.
         cancelDelayedFullscreenRunnable();
+    }
+
+    // Don't forward any events to the ContentView as the BrowserControlsContainerView should be
+    // considered opaque and shouldn't pass position based events to views below it. Website content
+    // has been moved to not overlap BrowserControlsContainerView anyway.
+    @Override
+    public boolean onDragEvent(DragEvent event) {
+        return true;
+    }
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        return true;
+    }
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        return true;
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return true;
     }
 
     /* package */ State getState() {

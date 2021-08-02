@@ -9,9 +9,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.app.Instrumentation;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -31,6 +33,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TestWebLayer;
@@ -100,6 +103,22 @@ public class BrowserControlsTest {
 
         mTopViewHeight = mBrowserControlsHelper.getTopViewHeight();
         mPageHeightWithTopView = getVisiblePageHeight();
+    }
+
+    private View createBottomView() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        View bottomView = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TextView view = new TextView(activity);
+            view.setText("BOTTOM");
+            activity.getBrowser().setBottomView(view);
+            return view;
+        });
+        mBrowserControlsHelper.waitForBrowserControlsViewToBeVisible(bottomView);
+        int bottomViewHeight =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return bottomView.getHeight(); });
+        mBrowserControlsHelper.waitForBrowserControlsMetadataState(
+                mTopViewHeight, bottomViewHeight);
+        return bottomView;
     }
 
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
@@ -245,6 +264,42 @@ public class BrowserControlsTest {
         mBrowserControlsHelper.waitForBrowserControlsViewToBeVisible(topView);
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(getVisiblePageHeight(), Matchers.is(mPageHeightWithTopView));
+        });
+    }
+
+    @MinWebLayerVersion(94)
+    @Test
+    @SmallTest
+    public void testEvents() throws Exception {
+        createActivityWithTopView();
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        View topView = activity.getTopContentsContainer();
+        View bottomView = createBottomView();
+
+        int fragmentHeight = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getFragment().getView().getHeight(); });
+        int pageHeight = getVisiblePageHeight();
+
+        // Record the maximum y position of clicks to detect if we clicked at the top or bottom.
+        mActivityTestRule.executeScriptSync(
+                "var max = 0; document.onclick = (e) => { max = Math.max(max, e.pageY); };",
+                true /* useSeparateIsolate */);
+
+        // Clicks on the bottom view should not propagate to the content layer.
+        TestTouchUtils.singleClickView(instrumentation, bottomView, 0, 0);
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Click below the top view inside the content layer in the middle of the page.
+        TestTouchUtils.singleClickView(
+                instrumentation, topView, 0, topView.getHeight() + fragmentHeight / 2);
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Wait until we see the click from the middle of the page.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            int max = mActivityTestRule.executeScriptAndExtractInt("max");
+            Criteria.checkThat(max, Matchers.greaterThan(pageHeight * 1 / 4));
+            Criteria.checkThat(max, Matchers.lessThan(pageHeight * 3 / 4));
         });
     }
 
