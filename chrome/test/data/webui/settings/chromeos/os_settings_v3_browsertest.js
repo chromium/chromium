@@ -370,7 +370,6 @@ TEST_F(
  ['PersonalizationPage', 'personalization_page_test.m.js'],
  ['PrintingPage', 'os_printing_page_tests.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
- ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
  ['SearchEngine', 'search_engine_test.m.js'],
  ['SearchSubpage', 'search_subpage_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],

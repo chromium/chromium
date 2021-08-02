@@ -373,7 +373,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_files_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_languages_page_v2_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/app_notifications_subpage_tests.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/settings_scheduler_slider_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_settings_main_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_settings_ui_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_settings_ui_test_2.m.js",

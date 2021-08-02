@@ -12,6 +12,7 @@ import './device_page/display.m.js';
 import './device_page/display_layout.m.js';
 import './device_page/display_overscan_dialog.m.js';
 import './device_page/keyboard.m.js';
+import './device_page/night_light_slider.m.js';
 import './device_page/pointers.m.js';
 import './device_page/power.m.js';
 import './device_page/storage.m.js';
@@ -81,7 +82,6 @@ import './os_settings_search_box/os_search_result_row.m.js';
 import './os_settings_search_box/os_settings_search_box.m.js';
 import './os_toolbar/os_toolbar.m.js';
 import './parental_controls_page/parental_controls_page.m.js';
-import './settings_scheduler_slider/settings_scheduler_slider.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';

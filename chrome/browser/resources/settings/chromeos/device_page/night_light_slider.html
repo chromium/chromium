@@ -1,0 +1,197 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
+
+<dom-module id="night-light-slider">
+  <template>
+    <style>
+      :host {
+        cursor: default;
+        font-weight: 500;
+        text-align: center;
+        user-select: none;
+      }
+
+      #sliderContainer {
+        display: inline-block;
+        position: relative;
+        user-select: none;
+        width: 100%;
+      }
+
+      #sliderBar {
+        background-color: rgba(var(--google-blue-600-rgb), .24);
+        background-size: 100%;
+        display: inline-block;
+        height: 2px;
+        position: relative;
+        width: inherit;
+      }
+
+      .knob {
+        height: 32px;
+        margin-left: -16px;
+        margin-top: -15px;
+        position: absolute;
+        width: 32px;
+        z-index: 3;
+      }
+
+      .knob:focus {
+        outline: none;
+      }
+
+      .knob-inner {
+        background: var(--google-blue-600);
+        border-radius: 6px;
+        height: 10px;
+        left: 0;
+        margin: 11px;
+        position: absolute;
+        width: 10px;
+        z-index: 3;
+      }
+
+      .knob-inner:focus {
+        outline: none;
+      }
+
+      #progressContainer {
+        height: 100%;
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+      }
+
+      .progress {
+        background: var(--google-blue-600);
+        height: 100%;
+        position: absolute;
+        z-index: 1;
+      }
+
+      #labelContainer {
+        height: 1.75em;
+      }
+
+      .label {
+        background: var(--google-blue-600);
+        border-radius: 14px;
+        color: white;
+        font-size: 12px;
+        left: 0;
+        line-height: 1.5em;
+        margin-left: -2.5em;
+        position: absolute;
+        text-align: center;
+        transition: margin-top 200ms cubic-bezier(0, 0, 0.2, 1);
+        vertical-align: middle;
+        width: 5em;
+      }
+
+      .end-label-overlap {
+        margin-top: -2em;
+      }
+
+      #markersContainer {
+        display: flex;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        width: 100%;
+      }
+
+      .active-marker,
+      .inactive-marker {
+        background-color: rgba(255, 255, 255, 0.54);
+        border-radius: 50%;
+        display: block;
+        height: 100%;
+        margin-left: -1px;
+        padding: 0;
+        position: absolute;
+        width: 2PX;
+        z-index: 2;
+      }
+
+      .inactive-marker {
+        background-color: rgba(26, 115, 232, 0.54);
+      }
+
+      #legendContainer {
+        height: 10px;
+        position: relative;
+        width: inherit;
+      }
+
+      #legendContainer > div {
+        color: rgb(100, 100, 100);
+        font-size: 12px;
+        margin-left: -2.5em;
+        position: absolute;
+        text-align: center;
+        top: 5px;
+        width: 5em;
+      }
+
+      paper-ripple {
+        color: var(--google-blue-600);
+      }
+    </style>
+
+    <div id="sliderContainer">
+      <div id="labelContainer">
+        <div id="startLabel" class="label"
+            aria-label="$i18n{displayNightLightStartTime}">
+          [[getTimeString_(prefs.ash.night_light.custom_start_time.value,
+                           shouldUse24Hours_)]]
+        </div>
+        <div id="endLabel" class="label"
+            aria-label="$i18n{displayNightLightStopTime}">
+          [[getTimeString_(prefs.ash.night_light.custom_end_time.value,
+                           shouldUse24Hours_)]]
+        </div>
+      </div>
+      <div id="sliderBar">
+        <div id="progressContainer">
+          <div id="endProgress" class="progress"></div>
+          <div id="startProgress" class="progress"></div>
+        </div>
+        <div id="markersContainer">
+        </div>
+        <div id="startKnob" class="knob" tabindex="1" on-down="startDrag_"
+            on-up="endDrag_" on-track="continueDrag_">
+          <div class="knob-inner" tabindex="-1"></div>
+        </div>
+        <div id="endKnob" class="knob" tabindex="2" on-down="startDrag_"
+            on-up="endDrag_" on-track="continueDrag_">
+          <div class="knob-inner" tabindex="-1"></div>
+        </div>
+      </div>
+      <div id="legendContainer">
+        <div style="[[getLegendStyle_(0, isRTL_)]]">
+          [[getLocaleTimeString_(18, 0, shouldUse24Hours_)]]
+        </div>
+        <div style="[[getLegendStyle_(25, isRTL_)]]">
+          [[getLocaleTimeString_(0, 0, shouldUse24Hours_)]]
+        </div>
+        <div style="[[getLegendStyle_(50, isRTL_)]]">
+          [[getLocaleTimeString_(6, 0, shouldUse24Hours_)]]
+        </div>
+        <div style="[[getLegendStyle_(75, isRTL_)]]">
+          [[getLocaleTimeString_(12, 0, shouldUse24Hours_)]]
+        </div>
+        <div style="[[getLegendStyle_(100, isRTL_)]]">
+          [[getLocaleTimeString_(18, 0, shouldUse24Hours_)]]
+        </div>
+      </div>
+      <div id="dummyRippleContainer" hidden></div>
+    </div>
+
+  </template>
+  <script src="night_light_slider.js"></script>
+</dom-module>

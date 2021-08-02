@@ -20,6 +20,7 @@ js_type_check("closure_compile_module") {
     ":drag_behavior.m",
     ":keyboard.m",
     ":layout_behavior.m",
+    ":night_light_slider.m",
     ":pointers.m",
     ":power.m",
     ":storage.m",
@@ -56,7 +57,6 @@ js_library("display.m") {
     "..:os_route.m",
     "../..:router",
     "../../controls:settings_slider",
-    "../settings_scheduler_slider:settings_scheduler_slider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:cr.m",
@@ -121,6 +121,16 @@ js_library("layout_behavior.m") {
     "$externs_path/system_display.js",
     "$externs_path/runtime.js",
   ]
+}
+
+js_library("night_light_slider.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/night_light_slider.m.js" ]
+  deps = [
+    "../../prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior",
+    "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
+  ]
+  extra_deps = [ ":night_light_slider_module" ]
 }
 
 js_library("pointers.m") {
@@ -211,6 +221,7 @@ group("polymer3_elements") {
     ":display_overscan_dialog_module",
     ":keyboard_module",
     ":modulize",
+    ":night_light_slider_module",
     ":pointers_module",
     ":power_module",
     ":storage_external_entry_module",
@@ -259,6 +270,15 @@ polymer_modulizer("display_overscan_dialog") {
 polymer_modulizer("keyboard") {
   js_file = "keyboard.js"
   html_file = "keyboard.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+}
+
+polymer_modulizer("night_light_slider") {
+  js_file = "night_light_slider.js"
+  html_file = "night_light_slider.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports

@@ -370,7 +370,6 @@ os_settings_migrated_imports = [
   "chrome/browser/resources/settings/chromeos/personalization_page/change_picture_browser_proxy.html",
   "chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_browser_proxy.html",
   "chrome/browser/resources/settings/chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.html",
-  "chrome/browser/resources/settings/chromeos/settings_scheduler_slider/settings_scheduler_slider.html",
   "chrome/browser/resources/settings/controls/controlled_button.html",
   "chrome/browser/resources/settings/controls/controlled_radio_button.html",
   "chrome/browser/resources/settings/controls/extension_controlled_indicator.html",

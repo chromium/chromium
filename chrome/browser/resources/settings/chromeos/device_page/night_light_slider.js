@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+(function() {
+
 /**
- * @fileoverview settings-scheduler-slider is used to set the custom automatic
- * schedule of the Night Light feature, so that users can set their desired
- * start and end times.
+ * @fileoverview
+ * night-light-slider is used to set the custom automatic schedule of the
+ * Night Light feature, so that users can set their desired start and end
+ * times.
  */
-
-import '../../settings_shared_css.js';
-
-import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
-import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 
 const HOURS_PER_DAY = 24;
 const MIN_KNOBS_DISTANCE_MINUTES = 60;
@@ -43,37 +38,15 @@ function modulo(x, y) {
 }
 
 Polymer({
-
-  _template: html`{__html_template__}`,
-
-  is: 'settings-scheduler-slider',
+  is: 'night-light-slider',
 
   behaviors: [
     PrefsBehavior,
-    IronResizableBehavior,
-    PaperRippleBehavior,
+    Polymer.IronResizableBehavior,
+    Polymer.PaperRippleBehavior,
   ],
 
   properties: {
-
-    /**
-     * The start time pref object being tracked.
-     * @type {!chrome.settingsPrivate.PrefObject}
-     */
-    prefStartTime: {
-      type: Object,
-      notify: true,
-    },
-
-    /**
-     * The end time pref object being tracked.
-     * @type {!chrome.settingsPrivate.PrefObject}
-     */
-    prefEndTime: {
-      type: Object,
-      notify: true,
-    },
-
     /**
      * Whether the element is ready and fully rendered.
      * @private
@@ -92,18 +65,6 @@ Polymer({
      * @private
      */
     shouldUse24Hours_: Boolean,
-
-    /**
-     * Start time in minute of the slider.
-     * @private
-     */
-    startTime_: Number,
-
-    /**
-     * End time in minute of the slider.
-     * @private
-     */
-    endTime_: Number,
   },
 
   listeners: {
@@ -114,9 +75,11 @@ Polymer({
   },
 
   observers: [
-    'updateKnobs_(prefs.*, isRTL_, isReady_)',
+    'updateKnobs_(prefs.ash.night_light.custom_start_time.*, ' +
+        'prefs.ash.night_light.custom_end_time.*, isRTL_, isReady_)',
     'hourFormatChanged_(prefs.settings.clock.use_24hour_clock.*)',
-    'updateMarkers_(prefs.*, isRTL_, isReady_)',
+    'updateMarkers_(prefs.ash.night_light.custom_start_time.*, ' +
+        'prefs.ash.night_light.custom_end_time.*, isRTL_, isReady_)',
   ],
 
   /**
@@ -127,14 +90,9 @@ Polymer({
   dragObject_: null,
 
   /** @override */
-  ready() {
-    this.startTime_ = /** @type {number} */ (this.prefStartTime.value);
-    this.endTime_ = /** @type {number} */ (this.prefEndTime.value);
-  },
-
-  /** @override */
   attached() {
     this.isRTL_ = window.getComputedStyle(this).direction === 'rtl';
+
     this.$.sliderContainer.addEventListener('contextmenu', function(e) {
       // Prevent the context menu from interfering with dragging the knobs using
       // touch.
@@ -156,8 +114,9 @@ Polymer({
    * @private
    */
   prefsAvailable() {
-    return [this.prefStartTime, this.prefEndTime].every(
-        pref => pref !== undefined);
+    return ['custom_start_time', 'custom_end_time']
+        .map(key => `prefs.ash.night_light.${key}.value`)
+        .every(path => this.get(path) !== undefined);
   },
 
   /** @private */
@@ -166,8 +125,13 @@ Polymer({
       return;
     }
 
-    const startHour = (/** @type {number} */ (this.prefStartTime.value)) / 60.0;
-    const endHour = (/** @type {number} */ (this.prefEndTime.value)) / 60.0;
+    const startHour =
+        /** @type {number} */ (
+            this.getPref('ash.night_light.custom_start_time').value) /
+        60.0;
+    const endHour = /** @type {number} */ (
+                        this.getPref('ash.night_light.custom_end_time').value) /
+        60.0;
 
     const markersContainer = this.$.markersContainer;
     markersContainer.innerHTML = '';
@@ -189,24 +153,6 @@ Polymer({
       markersContainer.appendChild(marker);
       marker.style.left = (i * 100 / HOURS_PER_DAY) + '%';
     }
-  },
-
-  /**
-   * Return true if the start knob is focused.
-   * @return {boolean}
-   * @private
-   */
-  isStartKnobFocused_() {
-    return (this.shadowRoot.activeElement === this.$.startKnob);
-  },
-
-  /**
-   * Return true if the end knob is focused.
-   * @return {boolean}
-   * @private
-   */
-  isEndKnobFocused_() {
-    return (this.shadowRoot.activeElement === this.$.endKnob);
   },
 
   /**
@@ -245,8 +191,10 @@ Polymer({
    * @private
    */
   blurAnyFocusedKnob_() {
-    if (this.isEitherKnobFocused_()) {
-      this.shadowRoot.activeElement.blur();
+    const activeElement = this.shadowRoot.activeElement;
+    if (activeElement === this.$.startKnob ||
+        activeElement === this.$.endKnob) {
+      activeElement.blur();
     }
   },
 
@@ -263,17 +211,17 @@ Polymer({
     if (event.target === this.$.startKnob ||
         event.target === this.$.startKnob.firstElementChild) {
       this.dragObject_ = this.$.startKnob;
-      this.valueAtDragStart_ = this.prefStartTime.value;
     } else if (
         event.target === this.$.endKnob ||
         event.target === this.$.endKnob.firstElementChild) {
       this.dragObject_ = this.$.endKnob;
-      this.valueAtDragStart_ = this.prefEndTime.value;
     } else {
       return;
     }
 
     this.handleKnobEvent_(event, this.dragObject_);
+
+    this.valueAtDragStart_ = this.getPrefValue_(this.dragObject_);
   },
 
   /**
@@ -389,6 +337,7 @@ Polymer({
   getTimeString_(offsetMinutes, shouldUse24Hours) {
     const hour = Math.floor(offsetMinutes / 60);
     const minute = Math.floor(offsetMinutes % 60);
+
     return this.getLocaleTimeString_(hour, minute, shouldUse24Hours);
   },
 
@@ -402,19 +351,12 @@ Polymer({
         this.$.sliderBar.offsetWidth === 0) {
       return;
     }
-
-    /** @type {number} */
-    const startOffsetMinutes =
-        /** @type {number} */ (this.prefStartTime.value);
+    const startOffsetMinutes = /** @type {number} */ (
+        this.getPref('ash.night_light.custom_start_time').value);
     this.updateKnobLeft_(this.$.startKnob, startOffsetMinutes);
-    this.startTime_ = startOffsetMinutes;
-
-    /** @type {number} */
-    const endOffsetMinutes =
-        /** @type {number} */ (this.prefEndTime.value);
+    const endOffsetMinutes = /** @type {number} */ (
+        this.getPref('ash.night_light.custom_end_time').value);
     this.updateKnobLeft_(this.$.endKnob, endOffsetMinutes);
-    this.endTime_ = endOffsetMinutes;
-
     this.refresh_();
   },
 
@@ -507,16 +449,20 @@ Polymer({
   },
 
   /**
-   * Return the value of the pref that corresponds to the other knob than
-   * `this.shadowRoot.activeElement`
+   * Given the |prefPath| that corresponds to one knob time, it gets the value
+   * of the pref that corresponds to the other knob.
+   * @param {string} prefPath
    * @return {number}
    * @private
    */
-  getOtherKnobPrefValue_() {
-    if (this.isStartKnobFocused_()) {
-      return /** @type {number} */ (this.prefEndTime.value);
+  getOtherKnobPrefValue_(prefPath) {
+    if (prefPath === 'ash.night_light.custom_start_time') {
+      return /** @type {number} */ (
+          this.getPref('ash.night_light.custom_end_time').value);
     }
-    return /** @type {number} */ (this.prefStartTime.value);
+
+    return /** @type {number} */ (
+        this.getPref('ash.night_light.custom_start_time').value);
   },
 
   /**
@@ -548,7 +494,8 @@ Polymer({
    * @private
    */
   updatePref_(updatedValue, fromUserGesture) {
-    const otherValue = this.getOtherKnobPrefValue_();
+    const prefPath = assert(this.getFocusedKnobPrefPathIfAny_());
+    const otherValue = this.getOtherKnobPrefValue_(prefPath);
 
     const totalMinutes = TOTAL_MINUTES_PER_DAY;
     const minDistance = MIN_KNOBS_DISTANCE_MINUTES;
@@ -559,13 +506,24 @@ Polymer({
     }
 
     // The knobs are allowed to wrap around.
-    if (this.isStartKnobFocused_()) {
-      this.set(
-          'prefStartTime.value', modulo(updatedValue, TOTAL_MINUTES_PER_DAY));
-    } else if (this.isEndKnobFocused_()) {
-      this.set(
-          'prefEndTime.value', modulo(updatedValue, TOTAL_MINUTES_PER_DAY));
+    this.setPrefValue(prefPath, modulo(updatedValue, TOTAL_MINUTES_PER_DAY));
+  },
+
+  /**
+   * @param {Element} knob
+   * @returns {?string}
+   * @private
+   */
+  getPrefPath_(knob) {
+    if (knob === this.$.startKnob) {
+      return 'ash.night_light.custom_start_time';
     }
+
+    if (knob === this.$.endKnob) {
+      return 'ash.night_light.custom_end_time';
+    }
+
+    return null;
   },
 
   /**
@@ -573,14 +531,19 @@ Polymer({
    * @returns {?number}
    * @private
    */
-  getPrefValue(knob) {
-    if (this.isStartKnobFocused_()) {
-      return /** @type {number} */ (this.prefStartTime.value);
-    } else if (this.isEndKnobFocused_()) {
-      return /** @type {number} */ (this.prefEndTime.value);
-    } else {
-      return null;
-    }
+  getPrefValue_(knob) {
+    const path = this.getPrefPath_(knob);
+    return path ? /** @type {number} */ (this.getPref(path).value) : null;
+  },
+
+  /**
+   * Gets the pref path of the currently focused knob. Returns null if no knob
+   * is currently focused.
+   * @return {?string}
+   * @private
+   */
+  getFocusedKnobPrefPathIfAny_() {
+    return this.getPrefPath_(this.shadowRoot.activeElement);
   },
 
   /**
@@ -588,7 +551,9 @@ Polymer({
    * @private
    */
   isEitherKnobFocused_() {
-    return this.isStartKnobFocused_() || this.isEndKnobFocused_();
+    const activeElement = this.shadowRoot.activeElement;
+    return activeElement === this.$.startKnob ||
+        activeElement === this.$.endKnob;
   },
 
   /**
@@ -607,7 +572,7 @@ Polymer({
       // to be created under a hidden element.
       this._rippleContainer = this.$.dummyRippleContainer;
     }
-    const ripple = PaperRippleBehavior._createRipple();
+    const ripple = Polymer.PaperRippleBehavior._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
@@ -677,13 +642,13 @@ Polymer({
   onKeyDown_(event) {
     const activeElement = this.shadowRoot.activeElement;
     if (event.key === 'Tab') {
-      if (event.shiftKey && this.isEndKnobFocused_()) {
+      if (event.shiftKey && this.$.endKnob === activeElement) {
         event.preventDefault();
         this.handleKnobEvent_(event, this.$.startKnob);
         return;
       }
 
-      if (!event.shiftKey && this.isStartKnobFocused_()) {
+      if (!event.shiftKey && this.$.startKnob === activeElement) {
         event.preventDefault();
         this.handleKnobEvent_(event, this.$.endKnob);
       }
@@ -707,8 +672,8 @@ Polymer({
       this.handleKnobEvent_(event);
 
       event.preventDefault();
-      const value = this.getPrefValue(activeElement);
-      if (value === null) {
+      const value = this.getPrefValue_(activeElement);
+      if (value == null) {
         return;
       }
 
@@ -717,3 +682,4 @@ Polymer({
     }
   },
 });
+})();

@@ -299,6 +299,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/device_page/drag_behavior.m.js",
     "chromeos/device_page/keyboard.m.js",
     "chromeos/device_page/layout_behavior.m.js",
+    "chromeos/device_page/night_light_slider.m.js",
     "chromeos/device_page/pointers.m.js",
     "chromeos/device_page/power.m.js",
     "chromeos/device_page/storage.m.js",
@@ -489,7 +490,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",
     "chromeos/search_handler.m.js",
-    "chromeos/settings_scheduler_slider/settings_scheduler_slider.js",
     "controls/controlled_button.js",
     "controls/controlled_radio_button.js",
     "controls/extension_controlled_indicator.js",
@@ -554,7 +554,6 @@ group("closure_compile_module") {
     "os_toolbar:closure_compile_module",
     "parental_controls_page:closure_compile_module",
     "personalization_page:closure_compile_module",
-    "settings_scheduler_slider:closure_compile_module",
   ]
 }
 
@@ -716,7 +715,6 @@ group("polymer3_elements") {
     "os_toolbar:polymer3_elements",
     "parental_controls_page:polymer3_elements",
     "personalization_page:polymer3_elements",
-    "settings_scheduler_slider:web_components",
 
     # Local targets
     ":modulize",
