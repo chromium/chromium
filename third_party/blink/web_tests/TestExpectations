@@ -4125,8 +4125,6 @@ crbug.com/1179585 [ Mac ] virtual/layout_ng_svg_text/paint/invalidation/svg/modi
 crbug.com/1179585 [ Mac ] virtual/layout_ng_svg_text/paint/invalidation/svg/repaint-non-scaling-stroke-text.html [ Failure ]
 crbug.com/1179585 [ Mac ] virtual/layout_ng_svg_text/paint/invalidation/svg/repaint-non-scaling-stroke-text-decoration.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/paint/invalidation/svg/text-match-svg.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/paint/invalidation/svg/text-rescale.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/paint/invalidation/svg/text-viewbox-rescale.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/paint/invalidation/svg/transform-text-element.html [ Failure Pass ]
 crbug.com/1179585 [ Mac ] virtual/layout_ng_svg_text/paint/invalidation/svg/tspan-dynamic-positioning.svg [ Failure ]
 crbug.com/1179585 [ Mac ] virtual/layout_ng_svg_text/paint/invalidation/svg/use-detach.svg [ Failure ]

@@ -155,8 +155,9 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
   UpdateNGBlockLayout();
   needs_update_bounding_box_ = true;
 
+  const bool bounds_changed = old_boundaries != ObjectBoundingBox();
   // If our bounds changed, notify the parents.
-  if (UpdateTransformAfterLayout(old_boundaries != ObjectBoundingBox()))
+  if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
     SetNeedsBoundariesUpdate();
 }
 
