@@ -72,7 +72,7 @@ constexpr CGFloat kCornerRadius = 12.;
 #pragma mark - Properties
 
 - (ConsistencySheetDisplayStyle)displayStyle {
-  return [self displayStyleWithTraitcollection:self.traitCollection];
+  return [self displayStyleWithTraitCollection:self.traitCollection];
 }
 
 #pragma mark - UIViewController
@@ -120,7 +120,7 @@ constexpr CGFloat kCornerRadius = 12.;
 
 // Updates the view according to the trait collection.
 - (void)updateViewWithTraitCollection:(UITraitCollection*)collection {
-  switch ([self displayStyleWithTraitcollection:collection]) {
+  switch ([self displayStyleWithTraitCollection:collection]) {
     case ConsistencySheetDisplayStyleBottom:
       self.view.layer.cornerRadius = 0;
       break;
@@ -130,21 +130,16 @@ constexpr CGFloat kCornerRadius = 12.;
   }
 }
 
-// Returns the display style.
-- (ConsistencySheetDisplayStyle)displayStyleWithTraitcollection:
+// Returns the display style based on the trait collection.
+- (ConsistencySheetDisplayStyle)displayStyleWithTraitCollection:
     (UITraitCollection*)collection {
-  switch (collection.horizontalSizeClass) {
-    case UIUserInterfaceSizeClassCompact:
-      return ConsistencySheetDisplayStyleBottom;
-      break;
-    case UIUserInterfaceSizeClassRegular:
-      return ConsistencySheetDisplayStyleCentered;
-      break;
-    case UIUserInterfaceSizeClassUnspecified:
-      NOTREACHED();
-      break;
-  }
-  return ConsistencySheetDisplayStyleBottom;
+  // If one trait dimension is compact, the returned style is bottom.
+  // Otherwise, the returned style is centered.
+  BOOL hasAtLeastOneCompactSize =
+      (collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) ||
+      (collection.verticalSizeClass == UIUserInterfaceSizeClassCompact);
+  return hasAtLeastOneCompactSize ? ConsistencySheetDisplayStyleBottom
+                                  : ConsistencySheetDisplayStyleCentered;
 }
 
 @end

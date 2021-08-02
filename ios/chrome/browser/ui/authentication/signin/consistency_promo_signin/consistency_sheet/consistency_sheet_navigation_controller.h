@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, ConsistencySheetDisplayStyle) {
 // ChildConsistencySheetViewController protocol.
 @interface ConsistencySheetNavigationController : UINavigationController
 
-// Display style according to the window size.
+// Display style according to the trait collection.
 @property(nonatomic, assign, readonly)
     ConsistencySheetDisplayStyle displayStyle;
 
