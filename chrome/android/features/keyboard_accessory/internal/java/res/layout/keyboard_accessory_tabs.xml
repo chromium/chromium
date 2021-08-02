@@ -14,4 +14,5 @@
     app:tabSelectedTextColor="@color/tab_layout_selected_tab_color"
     android:layout_gravity="end"
     android:layout_width="wrap_content"
-    android:layout_height="@dimen/keyboard_accessory_tab_size"/>
+    android:layout_height="@dimen/keyboard_accessory_tab_size"
+    android:background="@null"/>
