@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 #include <vector>
 
+#include "ui/compositor/layer_animation_element.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -34,23 +36,27 @@ class VIEWS_EXPORT AnimationBuilder {
   AnimationBuilder& SetRoundedCorners(views::View* view,
                                       gfx::RoundedCornersF& rounded_corners);
 
-  // No effect if called before StartSequence();
+  // No effect if called before NewSequence();
   AnimationBuilder& Repeat();
-  // Currently does not support nested sequences
-  AnimationBuilder& StartSequence();
+  AnimationBuilder& NewSequence();
   AnimationBuilder& EndSequence();
 
  private:
-  void CreateNewEntry(View* view);
-  void AddAnimation(View* view,
+  // We may want to change this to our own struct.
+  using AnimationKey =
+      std::pair<View*, ui::LayerAnimationElement::AnimatableProperty>;
+
+  void CreateNewEntry(const AnimationKey& key);
+  void AddAnimation(const AnimationKey& key,
                     std::unique_ptr<ui::LayerAnimationElement> element);
 
-  std::map<View*, std::vector<std::unique_ptr<ui::LayerAnimationSequence>>>
+  std::map<AnimationKey,
+           std::vector<std::unique_ptr<ui::LayerAnimationSequence>>>
       animation_sequences_;
-  bool in_sequence_ = false;
-  bool is_sequence_repeating_ = false;
+
   base::TimeDelta duration_ = base::TimeDelta::FromSeconds(1);
-  base::TimeDelta old_duration_;
+
+  bool is_sequence_repeating_ = false;
 };
 }  // namespace views
 

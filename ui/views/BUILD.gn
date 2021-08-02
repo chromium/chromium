@@ -1090,6 +1090,7 @@ test("views_unittests") {
 
   sources = [
     "accessible_pane_view_unittest.cc",
+    "animation/animation_builder_unittest.cc",
     "animation/bounds_animator_unittest.cc",
     "animation/bubble_slide_animator_unittest.cc",
     "animation/compositor_animation_runner_unittest.cc",
