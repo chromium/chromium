@@ -26,7 +26,6 @@ source_set("decoder") {
   deps = [
     ":constants",
     "//base",
-    "//chromeos/services/ime/public/cpp:buildflags",
     "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
   ]
 }
@@ -49,7 +48,6 @@ source_set("lib") {
     ":decoder",
     "//ash/constants",
     "//base",
-    "//chromeos/services/ime/public/cpp:buildflags",
     "//chromeos/services/ime/public/cpp:rulebased",
     "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
     "//chromeos/services/ime/public/mojom",
@@ -67,7 +65,6 @@ source_set("sandbox_hook") {
     ":constants",
     ":decoder",
     "//base",
-    "//chromeos/services/ime/public/cpp:buildflags",
     "//sandbox/linux:sandbox_services",
     "//sandbox/policy",
   ]

@@ -132,8 +132,6 @@ const char* ImeService::GetImeBundleDir() {
 }
 
 const char* ImeService::GetImeGlobalDir() {
-  // Global IME data is supported yet.
-  NOTIMPLEMENTED();
   return "";
 }
 
