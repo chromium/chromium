@@ -153,6 +153,9 @@ ToggleButton::ToggleButton(PressedCallback callback)
       },
       this));
 
+  // Even though ToggleButton doesn't paint anything, declare us as flipped in
+  // RTL mode so that FocusRing correctly flips as well.
+  SetFlipCanvasOnPaintForRTLUI(true);
   SetInstallFocusRingOnFocus(true);
   FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());

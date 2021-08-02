@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/focus_ring.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -158,8 +159,22 @@ void FocusRing::Layout() {
   // by the time layout happens. This may be due to synchronous Layout() calls.
   const SkPath path = GetPath();
   if (IsPathUsable(path)) {
-    focus_bounds.Union(
-        gfx::ToEnclosingRect(gfx::SkRectToRectF(path.getBounds())));
+    const gfx::Rect path_bounds =
+        gfx::ToEnclosingRect(gfx::SkRectToRectF(path.getBounds()));
+    const gfx::Rect expanded_bounds =
+        gfx::UnionRects(focus_bounds, path_bounds);
+    // These insets are how much we need to inset `focus_bounds` to enclose the
+    // path as well. They'll be either zero or negative (we're effectively
+    // outsetting).
+    gfx::Insets expansion_insets = focus_bounds.InsetsFrom(expanded_bounds);
+    // Make sure we extend the focus-ring bounds symmetrically on the X axis to
+    // retain the shared center point with parent(). This is required for canvas
+    // flipping to position the focus-ring path correctly after the RTL flip.
+    const int min_x_inset =
+        std::min(expansion_insets.left(), expansion_insets.right());
+    expansion_insets.set_left(min_x_inset);
+    expansion_insets.set_right(min_x_inset);
+    focus_bounds.Inset(expansion_insets);
   }
 
   focus_bounds.Inset(gfx::Insets(FocusRing::kHaloInset));
