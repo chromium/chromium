@@ -14,6 +14,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "cc/input/touch_action.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -399,6 +401,21 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     if (app_restore_data->intent.has_value() &&
         app_restore_data->intent.value()) {
       app_launch_info->intent = app_restore_data->intent.value()->Clone();
+    }
+  }
+
+  auto& app_registry_cache =
+      apps::AppServiceProxyFactory::GetForProfile(user_profile)
+          ->AppRegistryCache();
+  const apps::mojom::AppType app_type = app_registry_cache.GetAppType(app_id);
+  if (app_id != extension_misc::kChromeAppId &&
+      (app_type == apps::mojom::AppType::kExtension ||
+       app_type == apps::mojom::AppType::kWeb)) {
+    // If these values are not present, we will not be able to restore the
+    // application. See http://crbug.com/1232520 for more information.
+    if (!app_launch_info->container.has_value() ||
+        !app_launch_info->disposition.has_value()) {
+      return nullptr;
     }
   }
 
