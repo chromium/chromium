@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/form_parsing/address_field.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"

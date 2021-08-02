@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"

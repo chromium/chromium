@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/strike_database_integrator_test_strike_database.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"

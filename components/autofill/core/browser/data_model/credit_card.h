@@ -8,7 +8,6 @@
 #include <iosfwd>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"

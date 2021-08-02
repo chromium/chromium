@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
