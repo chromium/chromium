@@ -16,6 +16,7 @@ preprocess_folder_v3 = "preprocess_v3"
 
 preprocess_v3_manifest = "preprocessed_manifest.json"
 preprocess_gen_v3_manifest = "preprocessed_gen_manifest.json"
+browser_settings_tsc_manifest = "browser_settings_tsc_manifest.json"
 preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
@@ -193,6 +194,7 @@ generate_grd("build_grd") {
     ]
   } else {
     deps += [
+      ":copy_browser_settings_tsc",
       ":preprocess_gen_v3",
       ":preprocess_mojo_v3",
       ":preprocess_v3",
@@ -201,6 +203,7 @@ generate_grd("build_grd") {
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
     manifest_files += [
       "$target_gen_dir/$preprocess_gen_v3_manifest",
+      "$target_gen_dir/$browser_settings_tsc_manifest",
       "$target_gen_dir/$preprocess_v3_manifest",
       "$target_gen_dir/$preprocess_mojo_manifest",
     ]
@@ -241,7 +244,6 @@ preprocess_if_expr("preprocess_v3") {
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
     "extension_control_browser_proxy.js",
-    "i18n_setup.js",
     "languages_page/languages.js",
     "languages_page/languages_browser_proxy.js",
     "lifetime_browser_proxy.js",
@@ -258,7 +260,25 @@ preprocess_if_expr("preprocess_v3") {
     "privacy_page/privacy_page_browser_proxy.js",
     "router.js",
     "search_engines_page/search_engines_browser_proxy.js",
+  ]
+}
+
+# Since Browser Settings is migrating to TypeScript (crbug.com/1234307), and
+# some files are still shared with CrOS Settings, need to copy the transpiled
+# JS file from TS compiler's output.
+preprocess_if_expr("copy_browser_settings_tsc") {
+  defines = chrome_grit_defines
+  deps = [ "..:build_ts" ]
+  in_folder = "$root_gen_dir/chrome/browser/resources/settings/tsc"
+  out_folder = "$target_gen_dir/$preprocess_folder_v3"
+  out_manifest = "$target_gen_dir/$browser_settings_tsc_manifest"
+  in_files = [
+    "i18n_setup.js",
+    "icons.js",
     "setting_id_param_util.js",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "settings_vars_css.js",
   ]
 }
 
@@ -511,7 +531,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
-    "icons.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
     "people_page/sync_controls.js",
@@ -523,9 +542,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
-    "settings_page_css.js",
-    "settings_shared_css.js",
-    "settings_vars_css.js",
   ]
 }
 
