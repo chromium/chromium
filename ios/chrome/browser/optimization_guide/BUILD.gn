@@ -15,7 +15,6 @@ source_set("optimization_guide") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/google",
     "//ios/web",
   ]
 }
