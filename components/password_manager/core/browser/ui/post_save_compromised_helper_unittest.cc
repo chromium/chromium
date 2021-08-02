@@ -9,7 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -62,8 +62,7 @@ PasswordForm CreateForm(
 class PostSaveCompromisedHelperTest : public testing::Test {
  public:
   PostSaveCompromisedHelperTest() {
-    mock_profile_store_ = new MockPasswordStore;
-    EXPECT_TRUE(mock_profile_store_->Init(/*prefs=*/nullptr));
+    mock_profile_store_ = new MockPasswordStoreInterface;
     prefs_.registry()->RegisterDoublePref(kLastTimePasswordCheckCompleted, 0.0);
   }
 
@@ -84,8 +83,10 @@ class PostSaveCompromisedHelperTest : public testing::Test {
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
-  MockPasswordStore* profile_store() { return mock_profile_store_.get(); }
-  virtual MockPasswordStore* account_store() { return nullptr; }
+  MockPasswordStoreInterface* profile_store() {
+    return mock_profile_store_.get();
+  }
+  virtual MockPasswordStoreInterface* account_store() { return nullptr; }
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
  protected:
@@ -94,7 +95,7 @@ class PostSaveCompromisedHelperTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<MockPasswordStore> mock_profile_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
 };
 
 TEST_F(PostSaveCompromisedHelperTest, DefaultState) {
@@ -275,20 +276,17 @@ class PostSaveCompromisedHelperWithTwoStoreTest
     : public PostSaveCompromisedHelperTest {
  public:
   PostSaveCompromisedHelperWithTwoStoreTest() {
-    mock_account_store_ = new MockPasswordStore;
-    EXPECT_TRUE(mock_account_store_->Init(/*prefs=*/nullptr));
+    mock_account_store_ = new MockPasswordStoreInterface;
   }
 
-  ~PostSaveCompromisedHelperWithTwoStoreTest() override {
-    mock_account_store_->ShutdownOnUIThread();
-  }
+  ~PostSaveCompromisedHelperWithTwoStoreTest() override = default;
 
-  MockPasswordStore* account_store() override {
+  MockPasswordStoreInterface* account_store() override {
     return mock_account_store_.get();
   }
 
  private:
-  scoped_refptr<MockPasswordStore> mock_account_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_account_store_;
 };
 
 }  // namespace
