@@ -90,8 +90,9 @@ void DistillerPageWebContents::DistillPageImpl(const GURL& url,
   if (source_page_handle_ && source_page_handle_->web_contents() &&
       source_page_handle_->web_contents()->GetLastCommittedURL() == url) {
     if (source_page_handle_->web_contents()
-            ->GetMainFrame()
-            ->IsDOMContentLoaded()) {
+            ->GetPrimaryPage()
+            .GetMainDocument()
+            .IsDOMContentLoaded()) {
       // Main frame has already loaded for the current WebContents, so execute
       // JavaScript immediately.
       ExecuteJavaScript();
@@ -143,8 +144,9 @@ gfx::Size DistillerPageWebContents::GetSizeForNewRenderView(
 
 void DistillerPageWebContents::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host ==
-      source_page_handle_->web_contents()->GetMainFrame()) {
+  if (render_frame_host == &source_page_handle_->web_contents()
+                                ->GetPrimaryPage()
+                                .GetMainDocument()) {
     ExecuteJavaScript();
   }
 }
@@ -162,9 +164,8 @@ void DistillerPageWebContents::DidFailLoad(
 }
 
 void DistillerPageWebContents::ExecuteJavaScript() {
-  content::RenderFrameHost* frame =
-      source_page_handle_->web_contents()->GetMainFrame();
-  DCHECK(frame);
+  content::RenderFrameHost& frame =
+      source_page_handle_->web_contents()->GetPrimaryPage().GetMainDocument();
   DCHECK_EQ(LOADING_PAGE, state_);
   state_ = EXECUTING_JAVASCRIPT;
   content::WebContentsObserver::Observe(nullptr);
@@ -173,7 +174,7 @@ void DistillerPageWebContents::ExecuteJavaScript() {
   source_page_handle_->web_contents()->Stop();
   DVLOG(1) << "Beginning distillation";
   RunIsolatedJavaScript(
-      frame, script_,
+      &frame, script_,
       base::BindOnce(&DistillerPageWebContents::OnWebContentsDistillationDone,
                      weak_factory_.GetWeakPtr(),
                      source_page_handle_->web_contents()->GetLastCommittedURL(),
