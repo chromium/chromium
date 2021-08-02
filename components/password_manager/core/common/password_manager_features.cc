@@ -143,13 +143,22 @@ const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
 const base::Feature kUnifiedPasswordManagerAndroid{
     "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables support of sending votes on username first flow.
+// Enables support of sending votes on username first flow. The votes are sent
+// on single username forms and are based on user interaction with the save
+// prompt.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables support of filling and saving on username first flow.
 const base::Feature kUsernameFirstFlowFilling = {
     "UsernameFirstFlowFilling", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables support of sending additional votes on username first flow. The votes
+// are sent on single password forms and contain information about preceding
+// single username forms.
+const base::Feature kUsernameFirstFlowFallbackCrowdsourcing = {
+    "UsernameFirstFlowFallbackCrowdsourcing",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Field trial identifier for password generation requirements.
 const char kGenerationRequirementsFieldTrial[] =

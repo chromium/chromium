@@ -2199,7 +2199,10 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
 // flow both on password saving and updating.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlow,
+                            features::kUsernameFirstFlowFallbackCrowdsourcing},
+      /*disabled_features=*/{});
 
   for (bool is_password_update : {false, true}) {
     CreateFormManager(observed_form_only_password_fields_);
@@ -2287,7 +2290,10 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
       .WillByDefault(Return(&mock_field_manager));
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlow,
+                            features::kUsernameFirstFlowFallbackCrowdsourcing},
+      /*disabled_features=*/{});
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
@@ -2338,7 +2344,10 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 // sent for a nameless field.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotesNamelessField) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlow,
+                            features::kUsernameFirstFlowFallbackCrowdsourcing},
+      /*disabled_features=*/{});
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();

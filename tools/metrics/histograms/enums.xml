@@ -49724,6 +49724,8 @@ from previous Chrome versions.
   <int value="460475728" label="wake-on-wifi-packet"/>
   <int value="461306840"
       label="AdaptiveButtonInTopToolbarCustomization:disabled"/>
+  <int value="461523297"
+      label="UsernameFirstFlowFallbackCrowdsourcing:enabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
@@ -50220,6 +50222,8 @@ from previous Chrome versions.
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>
   <int value="859449217" label="MagnifierPanningImprovements:enabled"/>
+  <int value="859495772"
+      label="UsernameFirstFlowFallbackCrowdsourcing:disabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
   <int value="862453793" label="TranslateUI2016Q2:enabled"/>
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
