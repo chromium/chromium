@@ -19,7 +19,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -3879,10 +3878,8 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O,
-            message = "Flaky < P, https://crbug.com/1048827; Flaky on P, crbug.com/1181088")
-    public void
-    testLongpressExtendingSelectionExactResolve() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1048827, https://crbug.com/1181088")
+    public void testLongpressExtendingSelectionExactResolve() throws Exception {
         // Enabling Translations implicitly enables Longpress too.
         FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
 
