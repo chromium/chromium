@@ -3947,19 +3947,6 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
           &AutotestPrivateSetAppWindowStateFunction::WindowStateChanged, this,
           expected_state));
 
-  // TODO(crbug.com/990713): Make WMEvent trigger split view in tablet mode.
-  if (ash::TabletMode::Get()->InTabletMode()) {
-    if (expected_state == chromeos::WindowStateType::kPrimarySnapped) {
-      ash::SplitViewTestApi().SnapWindow(
-          window, ash::SplitViewTestApi::SnapPosition::LEFT);
-      return RespondLater();
-    } else if (expected_state == chromeos::WindowStateType::kSecondarySnapped) {
-      ash::SplitViewTestApi().SnapWindow(
-          window, ash::SplitViewTestApi::SnapPosition::RIGHT);
-      return RespondLater();
-    }
-  }
-
   const ash::WMEvent event(ToWMEventType(params->change.event_type));
   ash::WindowState::Get(window)->OnWMEvent(&event);
 
