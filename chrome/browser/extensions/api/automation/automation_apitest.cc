@@ -451,7 +451,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
+// TODO(http://crbug.com/1234340): flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_DesktopHitTestIframe DISABLED_DesktopHitTestIframe
+#else
+#define MAYBE_DesktopHitTestIframe DesktopHitTestIframe
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_DesktopHitTestIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "hit_test_iframe.html"}))
