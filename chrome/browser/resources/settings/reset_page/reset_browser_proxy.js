@@ -15,6 +15,7 @@ export class ResetBrowserProxy {
    * @return {!Promise} A promise firing once resetting has completed.
    */
   performResetProfileSettings(sendSettings, requestOrigin) {}
+
   /**
    * A method to be called when the reset profile dialog is hidden.
    */
@@ -42,18 +43,6 @@ export class ResetBrowserProxy {
    *     has been retrieved.
    */
   getTriggeredResetToolName() {}
-
-  // <if expr="chromeos">
-  /**
-   * A method to be called when the reset powerwash dialog is shown.
-   */
-  onPowerwashDialogShow() {}
-
-  /**
-   * Initiates a factory reset and restarts ChromeOS.
-   */
-  requestFactoryResetRestart() {}
-  // </if>
 }
 
 /**
@@ -99,18 +88,6 @@ export class ResetBrowserProxyImpl {
   getTriggeredResetToolName() {
     return sendWithPromise('getTriggeredResetToolName');
   }
-
-  // <if expr="chromeos">
-  /** @override */
-  onPowerwashDialogShow() {
-    chrome.send('onPowerwashDialogShow');
-  }
-
-  /** @override */
-  requestFactoryResetRestart() {
-    chrome.send('requestFactoryResetRestart');
-  }
-  // </if>
 }
 
 addSingletonGetter(ResetBrowserProxyImpl);

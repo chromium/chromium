@@ -14,7 +14,6 @@ export class TestResetBrowserProxy extends TestBrowserProxy {
       'onShowResetProfileDialog',
       'showReportedSettings',
       'getTriggeredResetToolName',
-      'onPowerwashDialogShow',
     ]);
   }
 
@@ -48,10 +47,5 @@ export class TestResetBrowserProxy extends TestBrowserProxy {
   getTriggeredResetToolName() {
     this.methodCalled('getTriggeredResetToolName');
     return Promise.resolve('WonderfulAV');
-  }
-
-  /** @override */
-  onPowerwashDialogShow() {
-    this.methodCalled('onPowerwashDialogShow');
   }
 }
