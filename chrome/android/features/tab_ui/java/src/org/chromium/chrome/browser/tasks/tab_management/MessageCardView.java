@@ -8,11 +8,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
@@ -152,6 +154,15 @@ class MessageCardView extends LinearLayout {
      */
     private void setBackground(boolean isIncognito) {
         setBackgroundResource(TabUiThemeProvider.getMessageCardBackgroundResourceId(isIncognito));
+        // Incognito colors should follow baseline.
+        // Use the color defined in drawable.
+        if (isIncognito) {
+            return;
+        }
+        // Set dynamic color.
+        GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
+        gradientDrawable.setColor(
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
     }
 
     /**

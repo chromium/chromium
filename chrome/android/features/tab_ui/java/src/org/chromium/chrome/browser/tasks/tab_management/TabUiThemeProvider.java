@@ -513,8 +513,7 @@ public class TabUiThemeProvider {
      * @return The background resource id for message card view.
      */
     public static int getMessageCardBackgroundResourceId(boolean isIncognito) {
-        return isIncognito ? R.drawable.message_card_background_with_inset_incognito
-                           : R.drawable.message_card_background_with_inset;
+        return isIncognito ? R.drawable.incognito_card_bg : R.drawable.card_with_corners_background;
     }
 
     /**
@@ -601,5 +600,14 @@ public class TabUiThemeProvider {
     /** Return if theme refactor is enabled. **/
     static boolean themeRefactorEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID);
+    }
+
+    /**
+     * Return the size represented by dimension for margin around message cards.
+     * @param context {@link Context} to retrieve dimension.
+     * @return The margin around message cards in float number.
+     */
+    public static float getMessageCardMarginDimension(Context context) {
+        return context.getResources().getDimension(R.dimen.tab_list_selected_inset);
     }
 }
