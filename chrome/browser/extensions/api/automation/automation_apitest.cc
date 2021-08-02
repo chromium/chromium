@@ -224,7 +224,15 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TableProperties) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TabsAutomationBooleanPermissions) {
+// Flaky on Mac: crbug.com/1235249
+#if defined(OS_MAC)
+#define MAYBE_TabsAutomationBooleanPermissions \
+  DISABLED_TabsAutomationBooleanPermissions
+#else
+#define MAYBE_TabsAutomationBooleanPermissions TabsAutomationBooleanPermissions
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest,
+                       MAYBE_TabsAutomationBooleanPermissions) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_boolean",
                                {.page_url = "permissions.html"}))
@@ -253,7 +261,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, CloseTab) {
+// Flaky on Mac: crbug.com/1235249
+#if defined(OS_MAC)
+#define MAYBE_CloseTab DISABLED_CloseTab
+#else
+#define MAYBE_CloseTab CloseTab
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_CloseTab) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
       RunExtensionTest("automation/tests/tabs", {.page_url = "close_tab.html"}))
