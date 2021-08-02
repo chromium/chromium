@@ -569,7 +569,7 @@ bool AutocompleteInput::ShouldUpgradeToHttps(const std::u16string& text,
       !base::StartsWith(text, base::ASCIIToUTF16(url.scheme()),
                         base::CompareCase::INSENSITIVE_ASCII) &&
       !url::HostIsIPAddress(url.host()) &&
-      !net::IsHostnameNonUnique(base::UTF16ToUTF8(text)) &&
+      !net::IsHostnameNonUnique(url.host()) &&
       (url.port().empty() || https_port_for_testing)) {
     // Use HTTPS as the default scheme for URLs that are typed without a scheme.
     // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
