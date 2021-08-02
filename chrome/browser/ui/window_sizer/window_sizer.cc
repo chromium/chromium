@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -312,10 +312,12 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
       !work_area.Contains(*bounds)) {
     bounds->set_width(std::min(bounds->width(), work_area.width()));
     bounds->set_height(std::min(bounds->height(), work_area.height()));
-    bounds->set_x(base::clamp(bounds->x(), work_area.x(),
-                              work_area.right() - bounds->width()));
-    bounds->set_y(base::clamp(bounds->y(), work_area.y(),
-                              work_area.bottom() - bounds->height()));
+    // TODO(crbug.com/1235666): Make sure these use correct ranges (lo <= hi)
+    // and migrate to base::clamp().
+    bounds->set_x(base::BrokenClampThatShouldNotBeUsed(
+        bounds->x(), work_area.x(), work_area.right() - bounds->width()));
+    bounds->set_y(base::BrokenClampThatShouldNotBeUsed(
+        bounds->y(), work_area.y(), work_area.bottom() - bounds->height()));
   }
 
 #if defined(OS_MAC)
@@ -343,8 +345,12 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   const int min_x = work_area.x() + kMinVisibleWidth - bounds->width();
   const int max_y = work_area.bottom() - kMinVisibleHeight;
   const int max_x = work_area.right() - kMinVisibleWidth;
-  bounds->set_y(base::clamp(bounds->y(), min_y, max_y));
-  bounds->set_x(base::clamp(bounds->x(), min_x, max_x));
+  // TODO(crbug.com/1235666): Make sure these use correct ranges (lo <= hi)
+  // and migrate to base::clamp().
+  bounds->set_y(
+      base::BrokenClampThatShouldNotBeUsed(bounds->y(), min_y, max_y));
+  bounds->set_x(
+      base::BrokenClampThatShouldNotBeUsed(bounds->x(), min_x, max_x));
 #endif  // defined(OS_MAC)
 }
 
