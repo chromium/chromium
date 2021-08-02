@@ -98,9 +98,8 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
     virtual net::EmbeddedTestServer* EmbeddedTestServer() = 0;
     virtual std::vector<Profile*> GetAllProfiles() = 0;
     virtual bool IsSyncTest() = 0;
-    virtual bool UserSigninInternal() = 0;
-    virtual void TurnSyncOff() = 0;
-    virtual void TurnSyncOn() = 0;
+    virtual void SyncTurnOff() = 0;
+    virtual void SyncTurnOn() = 0;
   };
 
   explicit WebAppIntegrationBrowserTestBase(TestDelegate* delegate);
@@ -119,7 +118,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   //  * site_c
   absl::optional<AppState> GetAppByScope(StateSnapshot* state_snapshot,
                                          Profile* profile,
-                                         const std::string& scope);
+                                         const std::string& action_scope);
 
   static absl::optional<TabState> GetStateForActiveTab(
       BrowserState browser_state);
@@ -137,21 +136,19 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
 
   void SetUp(base::FilePath test_data_dir);
   void SetUpOnMainThread();
+  void TearDownOnMainThread();
 
-  // Test Framework
-  static std::vector<std::string> BuildAllPlatformTestCaseSet(
-      base::FilePath test_data_dir,
-      const std::string& test_case_file_name);
-  void ExecuteAction(const std::string& action_string);
-  static std::vector<std::string> GetPlatformIgnoredTests(
-      base::FilePath test_data_dir,
-      const std::string& file_name);
-  static base::FilePath GetTestFilePath(base::FilePath test_data_dir,
-                                        const std::string& file_name);
-  void ParseParams(std::string action_strings);
-  static std::vector<std::string> ReadTestInputFile(
-      base::FilePath test_data_dir,
-      const std::string& file_name);
+  // Script-generated tests will call these methods right before/after calling
+  // each action. Useful for common code that should be executed by most or all
+  // actions, such as constructing state snapshots after state change actions.
+  // Adding a before/after call around each action call may look a bit messier,
+  // but this removes a burden of remembering to execute this test-framework
+  // related code for future authors of action imiplementations, allowing them
+  // to focus entirely on action-related code.
+  void BeforeStateChangeAction();
+  void AfterStateChangeAction();
+  void BeforeStateCheckAction();
+  void AfterStateCheckAction();
 
   // Automated Testing Actions
   //
@@ -164,32 +161,41 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   //
   // State change actions are declared (and implemented) above state check
   // actions.
-  void AddPolicyAppInternal(const std::string& action_param,
-                            base::Value default_launch_container,
-                            const bool create_shortcut);
-  void ClosePWA();
-  void InstallCreateShortcut(bool open_in_window);
+  void InstallPolicyAppInternal(const std::string& action_scope,
+                                base::Value default_launch_container,
+                                const bool create_shortcut);
+  void ClosePwa();
+  void InstallCreateShortcutTabbed(const std::string& action_scope = "SiteA");
+  void InstallCreateShortcutWindowed(const std::string& action_scope = "SiteA");
+  void InstallMenuOption(const std::string& action_scope = "SiteA");
   void InstallLocally();
-  web_app::AppId InstallOmnibox();
-  void LaunchInternal(const std::string& action_param);
+  void InstallOmniboxIcon(const std::string& action_scope = "SiteA");
+  void InstallPolicyAppTabbedNoShortcut(
+      const std::string& action_scope = "SiteA");
+  void InstallPolicyAppTabbedShortcut(
+      const std::string& action_scope = "SiteA");
+  void InstallPolicyAppWindowedNoShortcut(
+      const std::string& action_scope = "SiteA");
+  void InstallPolicyAppWindowedShortcut(
+      const std::string& action_scope = "SiteA");
+  void LaunchInternal(const std::string& action_scope = "SiteA");
   void ListAppsInternal();
   void NavigateTabbedBrowserToSite(const GURL& url);
-  void SetOpenInTabInternal(const std::string& action_param);
-  void SetOpenInWindowInternal(const std::string& action_param);
+  void NavigateBrowser(const std::string& action_scope = "SiteA");
+  void ManifestUpdateDisplayMinimal(const std::string& action_scope = "SiteA");
+  void SetOpenInTab(const std::string& action_scope = "SiteA");
+  void SetOpenInWindow(const std::string& action_scope = "SiteA");
   void SwitchProfileClients();
-  void TurnSyncOff();
-  void TurnSyncOn();
+  void SyncTurnOff();
+  void SyncTurnOn();
   void UninstallFromMenu();
-  void UninstallInternal(const std::string& action_param);
-  void UninstallPolicyApp(const std::string& action_param);
-  void ManifestUpdateDisplay(const std::string& action_scope,
-                             DisplayMode display_mode);
-  void UserSigninInternal();
+  void UninstallPolicyApp(const std::string& action_scope = "SiteA");
 
   // State Check Actions
   void CheckAppLocallyInstalledInternal();
-  void CheckAppNotLocallyInstalledInternal();
-  void CheckAppNotInList(const std::string& action_param);
+  void CheckAppInListNotLocallyInstalled(
+      const std::string& action_mode = "SiteA");
+  void CheckAppNotInList(const std::string& action_scope = "SiteA");
   void CheckInstallable();
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();
@@ -214,7 +220,7 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   //  * site_a/bar
   //  * site_b
   //  * site_c
-  GURL GetInstallableAppURL(const std::string& action_param);
+  GURL GetInstallableAppURL(const std::string& scope);
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
   // Allow test-driving classes to reset the ScopedObservation of the
@@ -235,14 +241,14 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   //  * site_a/bar
   //  * site_b
   //  * site_c
-  GURL GetAppURLForManifest(const std::string& action_scope,
-                            DisplayMode display_mode);
+  GURL GetAppURLForManifest(const std::string& scope, DisplayMode display_mode);
   content::WebContents* GetCurrentTab(Browser* browser);
-  GURL GetInScopeURL(const std::string& action_param);
+  GURL GetInScopeURL(const std::string& action_scope);
   GURL GetNonInstallableAppURL();
-  GURL GetOutOfScopeURL(const std::string& action_param);
+  GURL GetOutOfScopeURL(const std::string& action_scope);
   WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
-  GURL GetURLForScope(const std::string& action_param);
+  GURL GetURLForScope(const std::string& scope);
+  void InstallCreateShortcut(bool open_in_window);
 
   // This action only works if no navigations to the given app_url occur
   // between app installation and calls to this action.
@@ -250,6 +256,9 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   void ForceUpdateManifestContents(const std::string& app_scope,
                                    GURL app_url_with_manifest_param);
   void MaybeWaitForManifestUpdates(Profile* profile);
+  void MaybeNavigateTabbedBrowserInScope(const std::string& scope);
+  void SetOpenInTabInternal(const std::string& action_scope);
+  void SetOpenInWindowInternal(const std::string& action_scope);
 
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();

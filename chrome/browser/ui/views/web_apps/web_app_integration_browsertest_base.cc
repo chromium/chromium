@@ -58,7 +58,6 @@ namespace web_app {
 
 namespace {
 
-constexpr char kExpectationsFilename[] = "TestExpectations";
 constexpr char kPlatformName[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     "ChromeOS";
@@ -74,11 +73,12 @@ constexpr char kPlatformName[] =
 #error "Unknown platform"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Command-line switch that overrides test case input. Takes a comma
-// separated list of testing actions. This aids in development of tests
-// by allowing one to run a single test at a time, and avoid running every
-// test case in the suite.
-const char kWebAppIntegrationTestCase[] = "web-app-integration-test-case";
+const base::flat_map<std::string, std::string> scope_to_path = {
+    {"SiteA", "site_a"},
+    {"SiteB", "site_b"},
+    {"SiteC", "site_c"},
+    {"SiteAFoo", "site_a/foo"},
+    {"SiteABar", "site_a/bar"}};
 
 class TestAppLauncherHandler : public AppLauncherHandler {
  public:
@@ -91,29 +91,6 @@ class TestAppLauncherHandler : public AppLauncherHandler {
     set_web_ui(test_web_ui);
   }
 };
-
-bool IsStateCheckAction(const std::string& action) {
-  return base::StartsWith(action, "check_");
-}
-
-std::string GetCommandLineTestOverride() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kWebAppIntegrationTestCase)) {
-    return command_line->GetSwitchValueASCII(kWebAppIntegrationTestCase);
-  }
-  return "";
-}
-
-std::string StripAllWhitespace(std::string line) {
-  std::string output;
-  output.reserve(line.size());
-  for (const char& c : line) {
-    if (!isspace(c)) {
-      output += c;
-    }
-  }
-  return output;
-}
 
 }  // anonymous namespace
 
@@ -201,14 +178,14 @@ void WebAppIntegrationBrowserTestBase::OnWebAppManifestUpdated(
 absl::optional<AppState> WebAppIntegrationBrowserTestBase::GetAppByScope(
     StateSnapshot* state_snapshot,
     Profile* profile,
-    const std::string& action_param) {
+    const std::string& action_mode) {
   absl::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
     return absl::nullopt;
   }
 
-  GURL scope = GetURLForScope(action_param);
+  GURL scope = GetURLForScope(action_mode);
   auto it =
       std::find_if(profile_state->apps.begin(), profile_state->apps.end(),
                    [scope](std::pair<web_app::AppId, AppState>& app_entry) {
@@ -287,262 +264,47 @@ void WebAppIntegrationBrowserTestBase::SetUp(base::FilePath test_data_dir) {
 void WebAppIntegrationBrowserTestBase::SetUpOnMainThread() {
   os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   if (!delegate_->IsSyncTest()) {
+    observation_.Reset();
     observation_.Observe(&GetProvider()->registrar());
   }
 }
 
-std::vector<std::string>
-WebAppIntegrationBrowserTestBase::BuildAllPlatformTestCaseSet(
-    base::FilePath test_data_dir,
-    const std::string& test_case_file_name) {
-  std::vector<std::string> test_cases_all =
-      ReadTestInputFile(test_data_dir, test_case_file_name);
-  std::sort(test_cases_all.begin(), test_cases_all.end());
+void WebAppIntegrationBrowserTestBase::TearDownOnMainThread() {
+  observation_.Reset();
+}
 
-  std::vector<std::string> ignored_cases =
-      GetPlatformIgnoredTests(test_data_dir, kExpectationsFilename);
-  std::sort(ignored_cases.begin(), ignored_cases.end());
+void WebAppIntegrationBrowserTestBase::BeforeStateChangeAction() {
+  if (after_state_change_action_state_) {
+    before_state_change_action_state_ =
+        std::move(after_state_change_action_state_);
+  } else {
+    before_state_change_action_state_ =
+        std::make_unique<StateSnapshot>(ConstructStateSnapshot());
+  }
+}
 
-  std::vector<std::string> final_tests(test_cases_all.size());
-  auto iter = std::set_difference(test_cases_all.begin(), test_cases_all.end(),
-                                  ignored_cases.begin(), ignored_cases.end(),
-                                  final_tests.begin());
-  final_tests.resize(iter - final_tests.begin());
-  return final_tests;
+void WebAppIntegrationBrowserTestBase::AfterStateChangeAction() {
+  after_state_change_action_state_ =
+      std::make_unique<StateSnapshot>(ConstructStateSnapshot());
+  MaybeWaitForManifestUpdates(profile());
+}
+
+void WebAppIntegrationBrowserTestBase::BeforeStateCheckAction() {
+  DCHECK(after_state_change_action_state_);
+}
+
+void WebAppIntegrationBrowserTestBase::AfterStateCheckAction() {
+  DCHECK(!after_state_change_action_state_ ||
+         *after_state_change_action_state_ == ConstructStateSnapshot());
 }
 
 // State change actions implemented before state check actions. Implemented in
 // alphabetical order.
-void WebAppIntegrationBrowserTestBase::ExecuteAction(
-    const std::string& action_string) {
-  // Useful for sheriffs and developers in test failures since this test
-  // framework differs from that of traditional browser tests.
-  LOG(INFO) << base::StringPrintf("Current testing action: %s",
-                                  action_string.c_str());
-
-  std::string action_param;
-  RE2::PartialMatch(action_string, "(site_(a_foo|a_bar|a|b|c))", &action_param);
-  if (base::EndsWith(action_param, "_foo")) {
-    action_param = "site_a/foo";
-  } else if (base::EndsWith(action_param, "_bar")) {
-    action_param = "site_a/bar";
-  }
-  // Add 1 to `param_length` if a param is present to strip the preceding
-  // underscore.
-  const int param_length =
-      action_param.length() ? action_param.length() + 1 : 0;
-  std::string action_base =
-      action_string.substr(0, action_string.length() - param_length);
-
-  if (!IsStateCheckAction(action_base)) {
-    before_state_change_action_state_ =
-        std::move(after_state_change_action_state_);
-  }
-
-  if (action_base == "add_policy_app_internal_tabbed") {
-    AddPolicyAppInternal(action_param,
-                         base::Value(kDefaultLaunchContainerTabValue),
-                         /*create_shortcut=*/true);
-  } else if (action_base == "add_policy_app_internal_tabbed_no_shortcut") {
-    AddPolicyAppInternal(action_param,
-                         base::Value(kDefaultLaunchContainerTabValue),
-                         /*create_shortcut=*/false);
-  } else if (action_base == "add_policy_app_internal_windowed") {
-    AddPolicyAppInternal(action_param,
-                         base::Value(kDefaultLaunchContainerWindowValue),
-                         /*create_shortcut=*/true);
-  } else if (action_base == "add_policy_app_internal_windowed_no_shortcut") {
-    AddPolicyAppInternal(action_param,
-                         base::Value(kDefaultLaunchContainerWindowValue),
-                         /*create_shortcut=*/false);
-  } else if (action_base == "close_pwa") {
-    ClosePWA();
-  } else if (action_base == "install_create_shortcut_tabbed") {
-    InstallCreateShortcut(/*open_in_window=*/false);
-  } else if (action_base == "install_create_shortcut_windowed") {
-    InstallCreateShortcut(/*open_in_window=*/true);
-  } else if (action_base == "install_internal_windowed") {
-    InstallOmnibox();
-  } else if (action_base == "install_locally_internal") {
-    InstallLocally();
-  } else if (action_base == "install_omnibox") {
-    InstallOmnibox();
-  } else if (action_base == "launch_internal") {
-    LaunchInternal(action_param);
-  } else if (action_base == "list_apps_internal") {
-    ListAppsInternal();
-  } else if (action_base == "manifest_update_display_minimal") {
-    ManifestUpdateDisplay(action_param, blink::mojom::DisplayMode::kMinimalUi);
-  } else if (action_base == "navigate_browser_in_scope") {
-    NavigateTabbedBrowserToSite(GetInScopeURL(action_param));
-  } else if (action_base == "navigate_installable") {
-    NavigateTabbedBrowserToSite(GetInstallableAppURL(action_param));
-  } else if (action_base == "navigate_not_installable") {
-    NavigateTabbedBrowserToSite(GetNonInstallableAppURL());
-  } else if (action_base == "set_open_in_tab_internal") {
-    SetOpenInTabInternal(action_param);
-  } else if (action_base == "set_open_in_window_internal") {
-    SetOpenInWindowInternal(action_param);
-  } else if (action_base == "switch_profile_clients") {
-    SwitchProfileClients();
-  } else if (action_base == "sync_turned_off") {
-    TurnSyncOff();
-  } else if (action_base == "sync_turned_on") {
-    TurnSyncOn();
-  } else if (action_base == "uninstall_from_menu") {
-    UninstallFromMenu();
-  } else if (action_base == "uninstall_internal") {
-    UninstallInternal(action_param);
-  } else if (action_base == "uninstall_policy_app") {
-    UninstallPolicyApp(action_param.length() ? action_param : "site_a");
-  } else if (action_base == "user_signin_internal") {
-    UserSigninInternal();
-  } else if (action_base == "check_app_locally_installed_internal") {
-    CheckAppLocallyInstalledInternal();
-  } else if (action_base == "check_app_not_in_list") {
-    CheckAppNotInList(action_param);
-  } else if (action_base == "check_app_not_locally_installed_internal") {
-    CheckAppNotLocallyInstalledInternal();
-  } else if (action_base == "check_installable") {
-    CheckInstallable();
-  } else if (action_base == "check_install_icon_shown") {
-    CheckInstallIconShown();
-  } else if (action_base == "check_install_icon_not_shown") {
-    CheckInstallIconNotShown();
-  } else if (action_base == "check_launch_icon_shown") {
-    CheckLaunchIconShown();
-  } else if (action_base == "check_launch_icon_not_shown") {
-    CheckLaunchIconNotShown();
-  } else if (action_base == "check_manifest_display_mode_browser_internal") {
-    CheckManifestDisplayModeInternal(DisplayMode::kBrowser);
-  } else if (action_base == "check_manifest_display_mode_minimal_internal") {
-    CheckManifestDisplayModeInternal(DisplayMode::kMinimalUi);
-  } else if (action_base == "check_manifest_display_mode_standalone_internal") {
-    CheckManifestDisplayModeInternal(DisplayMode::kStandalone);
-  } else if (action_base == "check_no_crash") {
-  } else if (action_base == "check_tab_created") {
-    CheckTabCreated();
-  } else if (action_base == "check_user_display_mode_browser_internal") {
-    CheckUserDisplayModeInternal(DisplayMode::kBrowser);
-  } else if (action_base == "check_user_display_mode_standalone_internal") {
-    CheckUserDisplayModeInternal(DisplayMode::kStandalone);
-  } else if (action_base == "check_no_crash") {
-  } else if (action_base == "check_tab_created") {
-    CheckTabCreated();
-  } else if (action_base == "check_window_closed") {
-    CheckWindowClosed();
-  } else if (action_base == "check_window_created") {
-    CheckWindowCreated();
-  } else if (action_string == "check_window_display_minimal") {
-    CheckWindowDisplayMode(blink::mojom::DisplayMode::kMinimalUi);
-  } else if (action_string == "check_window_display_standalone") {
-    CheckWindowDisplayMode(blink::mojom::DisplayMode::kStandalone);
-  } else {
-    FAIL() << "Unimplemented action: " << action_base;
-  }
-
-  if (IsStateCheckAction(action_base)) {
-    DCHECK(!after_state_change_action_state_ ||
-           *after_state_change_action_state_ == ConstructStateSnapshot());
-  } else {
-    after_state_change_action_state_ =
-        std::make_unique<StateSnapshot>(ConstructStateSnapshot());
-    MaybeWaitForManifestUpdates(profile());
-  }
-}
-
-std::vector<std::string>
-WebAppIntegrationBrowserTestBase::GetPlatformIgnoredTests(
-    base::FilePath test_data_dir,
-    const std::string& file_name) {
-  base::FilePath file = GetTestFilePath(test_data_dir, file_name);
-  std::string contents;
-  std::vector<std::string> platform_expectations;
-  if (!base::ReadFileToString(file, &contents)) {
-    return platform_expectations;
-  }
-
-  std::vector<std::string> file_lines = base::SplitString(
-      contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& line : file_lines) {
-    if (line[0] == '#') {
-      continue;
-    }
-
-    std::string platform;
-    std::string expectation;
-    std::string test_case;
-    RE2::FullMatch(
-        line, "crbug.com/\\d* \\[ (\\w*) \\] \\[ (\\w*) \\] ([\\w*,\\s*]*)",
-        &platform, &expectation, &test_case);
-    if (platform == kPlatformName) {
-      if (expectation == "Skip") {
-        platform_expectations.push_back(StripAllWhitespace(test_case));
-      } else {
-        NOTREACHED() << "Unsupported expectation " << expectation;
-      }
-    }
-  }
-  return platform_expectations;
-}
-
-base::FilePath WebAppIntegrationBrowserTestBase::GetTestFilePath(
-    base::FilePath test_data_dir,
-    const std::string& file_name) {
-  return test_data_dir.AppendASCII(file_name);
-}
-
-void WebAppIntegrationBrowserTestBase::ParseParams(std::string action_strings) {
-  // Useful for debugging since all tests are run in a single parameterized
-  // test.
-  testing_actions_ = base::SplitString(
-      action_strings, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-}
-
-std::vector<std::string> WebAppIntegrationBrowserTestBase::ReadTestInputFile(
-    base::FilePath test_data_dir,
-    const std::string& file_name) {
-  std::vector<std::string> test_cases;
-  std::string command_line_test_case = GetCommandLineTestOverride();
-  if (!command_line_test_case.empty()) {
-    test_cases.push_back(StripAllWhitespace(command_line_test_case));
-    return test_cases;
-  }
-
-  base::FilePath file = GetTestFilePath(test_data_dir, file_name);
-  std::string contents;
-  if (!base::ReadFileToString(file, &contents)) {
-    return test_cases;
-  }
-
-  std::vector<std::string> file_lines = base::SplitString(
-      contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const auto& line : file_lines) {
-    if (line[0] == '#') {
-      continue;
-    }
-
-    if (line.find('|') == std::string::npos) {
-      test_cases.push_back(StripAllWhitespace(line));
-      continue;
-    }
-
-    std::vector<std::string> platforms_and_test = base::SplitString(
-        line, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (platforms_and_test[0].find(kPlatformName) != std::string::npos) {
-      test_cases.push_back(StripAllWhitespace(platforms_and_test[1]));
-    }
-  }
-
-  return test_cases;
-}
-
-// State Change Actions
-void WebAppIntegrationBrowserTestBase::AddPolicyAppInternal(
-    const std::string& action_param,
+void WebAppIntegrationBrowserTestBase::InstallPolicyAppInternal(
+    const std::string& action_mode,
     base::Value default_launch_container,
     const bool create_shortcut) {
-  GURL url = GetInstallableAppURL(action_param);
+  GURL url = GetInstallableAppURL(action_mode);
   auto* web_app_registrar =
       WebAppProvider::Get(profile())->registrar().AsWebAppRegistrar();
   base::RunLoop run_loop;
@@ -570,19 +332,33 @@ void WebAppIntegrationBrowserTestBase::AddPolicyAppInternal(
   run_loop.Run();
 }
 
-void WebAppIntegrationBrowserTestBase::ClosePWA() {
+void WebAppIntegrationBrowserTestBase::ClosePwa() {
   DCHECK(app_browser_);
   app_browser_->window()->Close();
   ui_test_utils::WaitForBrowserToClose(app_browser_);
 }
 
-void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
-    bool open_in_window) {
+void WebAppIntegrationBrowserTestBase::InstallCreateShortcutTabbed(
+    const std::string& action_scope) {
+  MaybeNavigateTabbedBrowserInScope(action_scope);
+  InstallCreateShortcut(/*open_in_window=*/false);
+}
+
+void WebAppIntegrationBrowserTestBase::InstallCreateShortcutWindowed(
+    const std::string& action_scope) {
+  MaybeNavigateTabbedBrowserInScope(action_scope);
+  InstallCreateShortcut(/*open_in_window=*/true);
+}
+
+void WebAppIntegrationBrowserTestBase::InstallMenuOption(
+    const std::string& action_scope) {
+  MaybeNavigateTabbedBrowserInScope(action_scope);
   chrome::SetAutoAcceptWebAppDialogForTesting(
       /*auto_accept=*/true,
-      /*auto_open_in_window=*/open_in_window);
+      /*auto_open_in_window=*/true);
+  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
   WebAppInstallObserver observer(profile());
-  CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   active_app_id_ = observer.AwaitNextInstall();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 }
@@ -608,7 +384,9 @@ void WebAppIntegrationBrowserTestBase::InstallLocally() {
   run_loop.Run();
 }
 
-web_app::AppId WebAppIntegrationBrowserTestBase::InstallOmnibox() {
+void WebAppIntegrationBrowserTestBase::InstallOmniboxIcon(
+    const std::string& action_scope) {
+  MaybeNavigateTabbedBrowserInScope(action_scope);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
   web_app::AppId app_id;
@@ -620,7 +398,7 @@ web_app::AppId WebAppIntegrationBrowserTestBase::InstallOmnibox() {
         run_loop.Quit();
       }));
 
-  DCHECK(pwa_install_view()->GetVisible());
+  ASSERT_TRUE(pwa_install_view()->GetVisible());
   pwa_install_view()->ExecuteForTesting();
 
   run_loop.Run();
@@ -630,16 +408,42 @@ web_app::AppId WebAppIntegrationBrowserTestBase::InstallOmnibox() {
   auto* browser_list = BrowserList::GetInstance();
   app_browser_ = browser_list->GetLastActive();
   DCHECK(AppBrowserController::IsWebApp(app_browser_));
+}
 
-  return app_id;
+void WebAppIntegrationBrowserTestBase::InstallPolicyAppTabbedNoShortcut(
+    const std::string& action_mode) {
+  InstallPolicyAppInternal(action_mode,
+                           base::Value(kDefaultLaunchContainerTabValue),
+                           /*create_shortcut=*/false);
+}
+
+void WebAppIntegrationBrowserTestBase::InstallPolicyAppTabbedShortcut(
+    const std::string& action_mode) {
+  InstallPolicyAppInternal(action_mode,
+                           base::Value(kDefaultLaunchContainerTabValue),
+                           /*create_shortcut=*/true);
+}
+
+void WebAppIntegrationBrowserTestBase::InstallPolicyAppWindowedNoShortcut(
+    const std::string& action_mode) {
+  InstallPolicyAppInternal(action_mode,
+                           base::Value(kDefaultLaunchContainerWindowValue),
+                           /*create_shortcut=*/false);
+}
+
+void WebAppIntegrationBrowserTestBase::InstallPolicyAppWindowedShortcut(
+    const std::string& action_mode) {
+  InstallPolicyAppInternal(action_mode,
+                           base::Value(kDefaultLaunchContainerWindowValue),
+                           /*create_shortcut=*/true);
 }
 
 void WebAppIntegrationBrowserTestBase::LaunchInternal(
-    const std::string& action_param) {
+    const std::string& action_mode) {
   absl::optional<AppState> app_state = GetAppByScope(
-      before_state_change_action_state_.get(), profile(), action_param);
+      before_state_change_action_state_.get(), profile(), action_mode);
   ASSERT_TRUE(app_state.has_value())
-      << "No app installed for scope: " << action_param;
+      << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
   auto* web_app_provider = GetProvider();
   WebAppRegistrar& app_registrar = web_app_provider->registrar();
@@ -672,12 +476,17 @@ void WebAppIntegrationBrowserTestBase::NavigateTabbedBrowserToSite(
   app_banner_manager->WaitForInstallableCheck();
 }
 
-void WebAppIntegrationBrowserTestBase::SetOpenInTabInternal(
-    const std::string& action_param) {
+void WebAppIntegrationBrowserTestBase::NavigateBrowser(
+    const std::string& scope) {
+  NavigateTabbedBrowserToSite(GetInScopeURL(scope));
+}
+
+void WebAppIntegrationBrowserTestBase::SetOpenInTab(
+    const std::string& action_mode) {
   absl::optional<AppState> app_state = GetAppByScope(
-      before_state_change_action_state_.get(), profile(), action_param);
+      before_state_change_action_state_.get(), profile(), action_mode);
   ASSERT_TRUE(app_state.has_value())
-      << "No app installed for scope: " << action_param;
+      << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
   auto& app_registry_controller =
       WebAppProvider::Get(profile())->registry_controller();
@@ -685,12 +494,12 @@ void WebAppIntegrationBrowserTestBase::SetOpenInTabInternal(
       app_id, blink::mojom::DisplayMode::kBrowser, true);
 }
 
-void WebAppIntegrationBrowserTestBase::SetOpenInWindowInternal(
-    const std::string& action_param) {
+void WebAppIntegrationBrowserTestBase::SetOpenInWindow(
+    const std::string& action_mode) {
   absl::optional<AppState> app_state = GetAppByScope(
-      before_state_change_action_state_.get(), profile(), action_param);
+      before_state_change_action_state_.get(), profile(), action_mode);
   ASSERT_TRUE(app_state.has_value())
-      << "No app installed for scope: " << action_param;
+      << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
   auto& app_registry_controller =
       WebAppProvider::Get(profile())->registry_controller();
@@ -714,12 +523,12 @@ void WebAppIntegrationBrowserTestBase::SwitchProfileClients() {
       active_profile_, /*match_original_profiles=*/false);
 }
 
-void WebAppIntegrationBrowserTestBase::TurnSyncOff() {
-  delegate_->TurnSyncOff();
+void WebAppIntegrationBrowserTestBase::SyncTurnOff() {
+  delegate_->SyncTurnOff();
 }
 
-void WebAppIntegrationBrowserTestBase::TurnSyncOn() {
-  delegate_->TurnSyncOn();
+void WebAppIntegrationBrowserTestBase::SyncTurnOn() {
+  delegate_->SyncTurnOn();
 }
 
 // TODO(https://crbug.com/1159651): Support this action on CrOS.
@@ -756,35 +565,17 @@ void WebAppIntegrationBrowserTestBase::UninstallFromMenu() {
   run_loop.Run();
 }
 
-void WebAppIntegrationBrowserTestBase::UninstallInternal(
-    const std::string& action_param) {
-  absl::optional<AppState> app_state = GetAppByScope(
-      before_state_change_action_state_.get(), profile(), action_param);
-  ASSERT_TRUE(app_state.has_value())
-      << "No app installed for scope: " << action_param;
-  auto app_id = app_state->id;
-  WebAppProvider* const provider = WebAppProvider::Get(profile());
-  base::RunLoop run_loop;
-
-  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
-  provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindLambdaForTesting([&](bool uninstalled) {
-        EXPECT_TRUE(uninstalled);
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
-}
-
 void WebAppIntegrationBrowserTestBase::UninstallPolicyApp(
-    const std::string& action_param) {
-  GURL url = GetInstallableAppURL(action_param);
+    const std::string& action_mode) {
+  GURL url = GetInstallableAppURL(action_mode);
+  auto policy_app = GetAppByScope(before_state_change_action_state_.get(),
+                                  profile(), action_mode);
+  DCHECK(policy_app);
   base::RunLoop run_loop;
   WebAppInstallObserver observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
-        if (active_app_id_ == app_id) {
+        if (policy_app->id == app_id) {
           run_loop.Quit();
         }
       }));
@@ -801,47 +592,39 @@ void WebAppIntegrationBrowserTestBase::UninstallPolicyApp(
   run_loop.Run();
 }
 
-void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplay(
-    const std::string& action_scope,
-    DisplayMode display_mode) {
+void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplayMinimal(
+    const std::string& action_scope) {
   // TODO(jarrydg): Create a map of supported manifest updates keyed on scope.
-  ASSERT_EQ("site_a", action_scope);
-  ASSERT_EQ(blink::mojom::DisplayMode::kMinimalUi, display_mode);
-  ForceUpdateManifestContents(action_scope,
-                              GetAppURLForManifest(action_scope, display_mode));
-}
-
-void WebAppIntegrationBrowserTestBase::UserSigninInternal() {
-  delegate_->UserSigninInternal();
+  ASSERT_EQ("SiteA", action_scope);
+  ForceUpdateManifestContents(
+      action_scope, GetAppURLForManifest(
+                        action_scope, blink::mojom::DisplayMode::kMinimalUi));
 }
 
 // State Check Actions
 void WebAppIntegrationBrowserTestBase::CheckAppLocallyInstalledInternal() {
-  DCHECK(after_state_change_action_state_);
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_TRUE(app_state->is_installed_locally);
 }
 
-void WebAppIntegrationBrowserTestBase::CheckAppNotLocallyInstalledInternal() {
-  DCHECK(after_state_change_action_state_);
-  absl::optional<AppState> app_state = GetStateForAppId(
-      after_state_change_action_state_.get(), profile(), active_app_id_);
+void WebAppIntegrationBrowserTestBase::CheckAppInListNotLocallyInstalled(
+    const std::string& action_mode) {
+  absl::optional<AppState> app_state = GetAppByScope(
+      after_state_change_action_state_.get(), profile(), action_mode);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_FALSE(app_state->is_installed_locally);
 }
 
 void WebAppIntegrationBrowserTestBase::CheckAppNotInList(
-    const std::string& action_param) {
-  DCHECK(after_state_change_action_state_);
+    const std::string& action_mode) {
   absl::optional<AppState> app_state = GetAppByScope(
-      after_state_change_action_state_.get(), profile(), action_param);
+      after_state_change_action_state_.get(), profile(), action_mode);
   EXPECT_FALSE(app_state.has_value());
 }
 
 void WebAppIntegrationBrowserTestBase::CheckInstallable() {
-  DCHECK(after_state_change_action_state_);
   absl::optional<BrowserState> browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
@@ -852,7 +635,6 @@ void WebAppIntegrationBrowserTestBase::CheckInstallable() {
 }
 
 void WebAppIntegrationBrowserTestBase::CheckInstallIconShown() {
-  DCHECK(after_state_change_action_state_);
   absl::optional<BrowserState> browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
@@ -869,7 +651,6 @@ void WebAppIntegrationBrowserTestBase::CheckInstallIconNotShown() {
 }
 
 void WebAppIntegrationBrowserTestBase::CheckLaunchIconShown() {
-  DCHECK(after_state_change_action_state_);
   absl::optional<BrowserState> browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
@@ -877,7 +658,6 @@ void WebAppIntegrationBrowserTestBase::CheckLaunchIconShown() {
 }
 
 void WebAppIntegrationBrowserTestBase::CheckLaunchIconNotShown() {
-  DCHECK(after_state_change_action_state_);
   absl::optional<BrowserState> browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
@@ -886,7 +666,6 @@ void WebAppIntegrationBrowserTestBase::CheckLaunchIconNotShown() {
 
 void WebAppIntegrationBrowserTestBase::CheckManifestDisplayModeInternal(
     DisplayMode display_mode) {
-  DCHECK(after_state_change_action_state_);
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
@@ -895,7 +674,6 @@ void WebAppIntegrationBrowserTestBase::CheckManifestDisplayModeInternal(
 
 void WebAppIntegrationBrowserTestBase::CheckTabCreated() {
   DCHECK(before_state_change_action_state_);
-  DCHECK(after_state_change_action_state_);
   absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
       after_state_change_action_state_.get(), profile(), browser());
   absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
@@ -912,7 +690,6 @@ void WebAppIntegrationBrowserTestBase::CheckTabCreated() {
 
 void WebAppIntegrationBrowserTestBase::CheckUserDisplayModeInternal(
     DisplayMode display_mode) {
-  DCHECK(after_state_change_action_state_);
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
@@ -921,7 +698,6 @@ void WebAppIntegrationBrowserTestBase::CheckUserDisplayModeInternal(
 
 void WebAppIntegrationBrowserTestBase::CheckWindowClosed() {
   DCHECK(before_state_change_action_state_);
-  DCHECK(after_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
@@ -934,7 +710,6 @@ void WebAppIntegrationBrowserTestBase::CheckWindowClosed() {
 
 void WebAppIntegrationBrowserTestBase::CheckWindowCreated() {
   DCHECK(before_state_change_action_state_);
-  DCHECK(after_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   absl::optional<ProfileState> before_action_profile =
@@ -998,10 +773,11 @@ std::vector<AppId> WebAppIntegrationBrowserTestBase::GetAppIdsForProfile(
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetInstallableAppURL(
-    const std::string& action_param) {
-  std::string scope = action_param;
+    const std::string& scope) {
+  DCHECK(scope_to_path.contains(scope));
+  auto scope_url_path = scope_to_path.find(scope)->second;
   return embedded_test_server()->GetURL(
-      base::StringPrintf("/web_apps/%s/basic.html", scope.c_str()));
+      base::StringPrintf("/web_apps/%s/basic.html", scope_url_path.c_str()));
 }
 
 WebAppProvider* WebAppIntegrationBrowserTestBase::GetProviderForProfile(
@@ -1070,14 +846,16 @@ StateSnapshot WebAppIntegrationBrowserTestBase::ConstructStateSnapshot() {
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetAppURLForManifest(
-    const std::string& action_scope,
+    const std::string& scope,
     DisplayMode display_mode) {
+  DCHECK(scope_to_path.contains(scope));
+  auto scope_url_path = scope_to_path.find(scope)->second;
   std::string str_template = "/web_apps/%s/basic.html";
   if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
     str_template += "?manifest=manifest_minimal_ui.json";
   }
   return embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), action_scope.c_str()));
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
 }
 
 content::WebContents* WebAppIntegrationBrowserTestBase::GetCurrentTab(
@@ -1086,8 +864,8 @@ content::WebContents* WebAppIntegrationBrowserTestBase::GetCurrentTab(
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetInScopeURL(
-    const std::string& action_param) {
-  return GetInstallableAppURL(action_param);
+    const std::string& action_mode) {
+  return GetInstallableAppURL(action_mode);
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetNonInstallableAppURL() {
@@ -1095,14 +873,27 @@ GURL WebAppIntegrationBrowserTestBase::GetNonInstallableAppURL() {
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetOutOfScopeURL(
-    const std::string& action_param) {
+    const std::string& action_mode) {
   return embedded_test_server()->GetURL("/out_of_scope/index.html");
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetURLForScope(
-    const std::string& action_param) {
+    const std::string& scope) {
+  DCHECK(scope_to_path.contains(scope));
+  auto scope_url_path = scope_to_path.find(scope)->second;
   return embedded_test_server()->GetURL(
-      base::StringPrintf("/web_apps/%s/", action_param.c_str()));
+      base::StringPrintf("/web_apps/%s/", scope_url_path.c_str()));
+}
+
+void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
+    bool open_in_window) {
+  chrome::SetAutoAcceptWebAppDialogForTesting(
+      /*auto_accept=*/true,
+      /*auto_open_in_window=*/open_in_window);
+  WebAppInstallObserver observer(profile());
+  CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  active_app_id_ = observer.AwaitNextInstall();
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 }
 
 bool WebAppIntegrationBrowserTestBase::AreNoAppWindowsOpen(
@@ -1160,6 +951,15 @@ void WebAppIntegrationBrowserTestBase::MaybeWaitForManifestUpdates(
         break;
       }
     }
+  }
+}
+
+void WebAppIntegrationBrowserTestBase::MaybeNavigateTabbedBrowserInScope(
+    const std::string& scope) {
+  auto browser_url = GetCurrentTab(browser())->GetURL();
+  auto dest_url = GetInScopeURL(scope);
+  if (browser_url.is_empty() || browser_url != dest_url) {
+    NavigateTabbedBrowserToSite(dest_url);
   }
 }
 
