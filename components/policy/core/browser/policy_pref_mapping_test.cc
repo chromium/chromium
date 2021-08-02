@@ -74,9 +74,6 @@ std::string GetPolicyName(const std::string& policy_name_decorated) {
   return policy_name_decorated;
 }
 
-// TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
-// touching lacros will get their handlers in place.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 PrefService* GetPrefServiceForLocation(PrefLocation location,
                                        PrefService* local_state,
                                        PrefService* user_prefs,
@@ -140,8 +137,6 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
   EXPECT_FALSE(pref->IsRecommended());
   CheckPrefHasValue(pref, expected_value);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Contains the testing details for a single pref affected by one or multiple
 // policies. This is part of the data loaded from
@@ -332,8 +327,10 @@ class PolicyTestCase {
   bool IsOsSupported() const {
 #if defined(OS_ANDROID)
     const std::string os("android");
-#elif defined(OS_CHROMEOS)
-    const std::string os("chromeos");
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    const std::string os("chromeos_ash");
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    const std::string os("chromeos_lacros");
 #elif defined(OS_IOS)
     const std::string os("ios");
 #elif defined(OS_LINUX)
@@ -346,6 +343,15 @@ class PolicyTestCase {
 #error "Unknown platform"
 #endif
     return base::Contains(supported_os_, os);
+  }
+
+  bool IsOsCovered() const {
+#if defined(OS_CHROMEOS)
+    return base::Contains(supported_os_, "chromeos_ash") ||
+           base::Contains(supported_os_, "chromeos_lacros");
+#else
+    return IsOsSupported();
+#endif
   }
 
   bool IsSupported() const {
@@ -422,9 +428,6 @@ class PolicyTestCases {
   PolicyTestCaseMap policy_test_cases_;
 };
 
-// TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
-// touching lacros will get their handlers in place.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 struct PolicySettings {
   PolicySource source = PolicySource::POLICY_SOURCE_CLOUD;
   PolicyScope scope = PolicyScope::POLICY_SCOPE_USER;
@@ -491,7 +494,6 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
   }
   provider->UpdateChromePolicy(policy_map);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 absl::optional<base::flat_set<std::string>> GetTestFilter() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -539,12 +541,11 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
              "tests or use reason_for_missing_test.";
 
       if (test_case->HasSupportedOs()) {
-        has_test_case_or_reason_for_this_os |= test_case->IsOsSupported();
+        has_test_case_or_reason_for_this_os |= test_case->IsOsCovered();
       } else {
         has_reason_for_all_os |= test_case->has_reason_for_missing_test();
       }
     }
-
     EXPECT_TRUE(has_test_case_or_reason_for_this_os || has_reason_for_all_os)
         << "Policy " << policy->first
         << " should either provide a test case for all supported operating "
@@ -592,9 +593,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
         continue;
       }
 
-// TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
-// touching lacros will get their handlers in place.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       for (size_t i = 0; i < test_case->policy_pref_mapping_tests().size();
            ++i) {
         const auto& pref_mapping = test_case->policy_pref_mapping_tests()[i];
@@ -680,7 +678,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           }
         }
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     }
   }
 }
