@@ -218,7 +218,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
 
     private @ColorInt int getNavigationBarDividerColor(boolean forceDarkNavigationBar) {
         return ApiCompatibilityUtils.getColor(mResources,
-                forceDarkNavigationBar ? R.color.hairline_stroke_color_dark
+                forceDarkNavigationBar ? R.color.bottom_system_nav_divider_color_light
                                        : R.color.bottom_system_nav_divider_color);
     }
 
