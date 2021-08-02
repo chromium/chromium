@@ -116,8 +116,8 @@ AppBrowserController::MaybeCreateWebAppController(Browser* browser) {
         extensions::ExtensionRegistry::Get(browser->profile())
             ->GetExtensionById(app_id,
                                extensions::ExtensionRegistry::EVERYTHING);
-    if (extension && extension->is_hosted_app()) {
-      DCHECK(!extension->from_bookmark());
+    if (extension && extension->is_hosted_app() &&
+        !extension->from_bookmark()) {
       controller =
           std::make_unique<extensions::HostedAppBrowserController>(browser);
     }
