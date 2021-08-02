@@ -505,7 +505,7 @@ bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
 
 void ArcAppLaunchHandler::MaybeLaunchApp() {
   // Check CanLaunchApp() first for record the system states.
-  if (CanLaunchApp() && !first_run_) {
+  if (!CanLaunchApp() && !first_run_) {
     MaybeReStartTimer(kAppLaunchCheckingDelay);
     return;
   }
