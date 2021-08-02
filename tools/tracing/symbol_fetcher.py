@@ -9,12 +9,12 @@ import os
 import sys
 import zipfile
 import logging
-import shutil
 
 import py_utils.cloud_storage as cloud_storage
 import metadata_extractor
 from metadata_extractor import OSName
 import breakpad_file_extractor
+import rename_breakpad
 
 ANDROID_X86_FOLDERS = {'x86', 'x86_64', 'next-x86', 'next-x86_64'}
 ANDROID_ARM_FOLDERS = {'arm', 'arm_64', 'next-arm', 'next-arm_64'}
@@ -55,13 +55,15 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
   if metadata.os_name == OSName.ANDROID:
     _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
     _ConvertSymbolsToBreakpad(breakpad_output_dir, dump_syms_path)
-    RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(breakpad_output_dir,
+                                        breakpad_output_dir)
   elif metadata.os_name == OSName.WINDOWS:
     raise Exception(
         'Windows platform is not currently supported for symbolization.')
   elif metadata.os_name == OSName.LINUX or metadata.os_name == OSName.MAC:
     _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
-    RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(breakpad_output_dir,
+                                        breakpad_output_dir)
   else:
     raise Exception('Trace OS "%s" is not supported: %s' %
                     (metadata.os_name, metadata.trace_file))
@@ -294,96 +296,3 @@ def _UnzipFile(zip_file, output_dir):
   """
   with zipfile.ZipFile(zip_file, 'r') as zip_f:
     zip_f.extractall(output_dir)
-
-
-def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
-  """Move breakpad files to new directory and rename them.
-
-  Breakpad files (files that contain '.breakpad') are renamed
-  to follow a '<module_id>.breakpad' with upper-case hexadecimal
-  naming scheme and moved to the |breakpad_output_dir| directory.
-  See perfetto::profiling::BreakpadSymbolizer for more naming
-  information. All other non-breakpad or misformatted breakpad files
-  remain in the same directory with the same filename.
-
-  Args:
-    breakpad_dir: local directory that stores symbol files in its subtree.
-    breakpad_output_dir: local path to store trace symbol breakpad file.
-
-  Raises:
-    AssertionError: if a file's module_id is None or repeated by
-      another file.
-  """
-  # TODO(rhuckleberry): Move this function to the script
-  # |breakpad_file_extractor_unittests.py|.
-
-  # Runs on every directory in the subtree. Scans directories from top-down
-  # (root to leaves) so that we don't rename files multiple times in the common
-  # case where |breakpad_dir| = |breakpad_output_dir|.
-  logging.debug('Renaming breakpad files.')
-  for subdir_path, _, filenames in os.walk(breakpad_dir, topdown=True):
-    for filename in filenames:
-      file_path = os.path.abspath(os.path.join(subdir_path, filename))
-
-      if not '.breakpad' in filename:
-        logging.debug("File is not a breakpad file: " + file_path)
-        continue
-
-      module_id = _ExtractModuleIdIfValidBreakpad(file_path)
-      if module_id is None:
-        logging.debug("Failed to extract file module id: " + file_path)
-        continue
-
-      new_filename = module_id + '.breakpad'
-      dest_path = os.path.abspath(
-          os.path.join(breakpad_output_dir, new_filename))
-
-      # Ensure all new filenames (module ids) are unique. If there is module id
-      # repetition, the first file with the same module_id has already been
-      # moved.
-      if os.path.exists(dest_path):
-        raise AssertionError(('Symbol file modules ids are not '
-                              'unique: %s\nSee these files: %s, %s' %
-                              (module_id, file_path, dest_path)))
-
-      shutil.move(file_path, dest_path)
-
-  # TODO(rhuckleberry): After moving breakpad files we can be left with empty
-  # dirs. Clean up these empty dirs if user specifies |breakpad_output_dir|.
-  # Doesn't matter if |breakpad_output_dir| is a temporary directory.
-
-
-def _ExtractModuleIdIfValidBreakpad(file_path):
-  """Extracts breakpad file's module id if the file is valid.
-
-  A breakpad file is valid for extracting its module id if it
-  has a valid MODULE record, formatted like so:
-  MODULE operatingsystem architecture id name
-
-  For example:
-  MODULE mac x86_64 1240DF90E9AC39038EF400 Chrome Name
-
-  See this for more information:
-  https://chromium.googlesource.com/breakpad/breakpad/+/HEAD/docs/symbol_files.md#records-1
-
-  Args:
-    file_path: Path to breakpad file to extract module id from.
-
-  Returns:
-    Module id if file is a valid breakpad file; None, otherwise.
-  """
-  # TODO(rhuckleberry): Move this function to the script
-  # |breakpad_file_extractor_unittests.py|.
-
-  module_id = None
-  with open(file_path, 'r') as file_handle:
-    # Reads a maximum of 200 bytes/characters. Malformed file or binary will
-    # not have '\n' character.
-    first_line = file_handle.readline(200)
-    fragments = first_line.rstrip().split()
-    if fragments and fragments[0] == 'MODULE' and len(fragments) >= 5:
-      # Symbolization script's input file format requires module id hexadecimal
-      # to be upper case.
-      module_id = fragments[3].upper()
-
-  return module_id

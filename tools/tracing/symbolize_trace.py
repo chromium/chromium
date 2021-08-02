@@ -21,6 +21,7 @@ from systrace import util
 import metadata_extractor
 import symbol_fetcher
 import breakpad_file_extractor
+import rename_breakpad
 
 
 def SymbolizeTrace(trace_file, options):
@@ -100,8 +101,8 @@ def _EnsureBreakpadSymbols(trace_file, options):
           (options.local_build_dir,
            os.path.join(options.local_build_dir, 'lib.unstripped')))
 
-    symbol_fetcher.RenameBreakpadFiles(options.breakpad_output_dir,
-                                       options.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(options.breakpad_output_dir,
+                                        options.breakpad_output_dir)
     return
 
   # Extract Metadata
