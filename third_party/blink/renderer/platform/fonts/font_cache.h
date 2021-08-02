@@ -247,6 +247,9 @@ class PLATFORM_EXPORT FontCache {
   static void AcceptLanguagesChanged(const String&);
 
 #if defined(OS_ANDROID)
+  static AtomicString GetGenericFamilyNameForScript(
+      const AtomicString& family_name,
+      const FontDescription&);
   // Locale-specific families can use different |SkTypeface| for a family name
   // if locale is different.
   static const char* GetLocaleSpecificFamilyName(
