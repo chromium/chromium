@@ -48,10 +48,6 @@
 #include "components/sync/model/type_entities_count.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace syncer {
 
 namespace {
@@ -261,24 +257,6 @@ void SyncServiceImpl::Initialize() {
     }
 #endif  // defined(OS_ANDROID)
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Chrome OS, sync auto-starts and `IsFirstSetupComplete` is marked as
-  // true automatically in the first run. Below code is needed to disable sync
-  // for minor mode users (e.g. under age of 18) when consent flow is abandoned
-  // (due to crash or system shutdown) as sync should not auto-starts for minor
-  // users. At the time when below is called, we are not sure whether user is in
-  // minor mode. Thus we turn off data types for all users, and turn back on
-  // when we are certain the user is not in minor mode in `SyncConsentScreen`
-  // during OOBE. Below code could be removed after launch of
-  // `SplitSettingsSync`, when sync won't be started automatically.
-  if (chromeos::features::IsMinorModeRestrictionEnabled() &&
-      !chromeos::features::IsSplitSettingsSyncEnabled() &&
-      !user_settings_->IsFirstSetupComplete()) {
-    UserSelectableTypeSet empty_set;
-    user_settings_->SetSelectedTypes(/*sync_everything=*/false, empty_set);
-  }
-#endif
 
   // Auto-start means the first time the profile starts up, sync should start up
   // immediately. Since IsSyncRequested() is false by default and nobody else
