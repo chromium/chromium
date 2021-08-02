@@ -94,6 +94,14 @@ CreateLowEnergyScanFilter() {
       kBackgroundScanningDeviceFoundTimeout,
       kBackgroundScanningDeviceLostTimeout, {pattern});
 }
+
+bluez::FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+GetAdvertisementMonitorApplicationManger() {
+  return static_cast<bluez::FakeBluetoothAdvertisementMonitorManagerClient*>(
+             bluez::BluezDBusManager::Get()
+                 ->GetBluetoothAdvertisementMonitorManagerClient())
+      ->application_provider();
+}
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace bluez {
@@ -165,19 +173,63 @@ class FakeBluetoothLowEnergyScanSessionDelegate
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
       absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
-          error_code) override {}
+          error_code) override {
+    sessions_started_.push_back(std::make_pair(scan_session, error_code));
+  }
   void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
-                     device::BluetoothDevice* device) override {}
+                     device::BluetoothDevice* device) override {
+    devices_found_.push_back(std::make_pair(scan_session, device));
+  }
   void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
-                    device::BluetoothDevice* device) override {}
+                    device::BluetoothDevice* device) override {
+    devices_lost_.push_back(std::make_pair(scan_session, device));
+  }
   void OnSessionInvalidated(
-      device::BluetoothLowEnergyScanSession* scan_session) override {}
+      device::BluetoothLowEnergyScanSession* scan_session) override {
+    sessions_invalidated_.push_back(scan_session);
+  }
+
+  const std::vector<std::pair<
+      device::BluetoothLowEnergyScanSession*,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>&
+  sessions_started() const {
+    return sessions_started_;
+  }
+
+  const std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                              device::BluetoothDevice*>>&
+  devices_found() const {
+    return devices_found_;
+  }
+
+  const std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                              device::BluetoothDevice*>>&
+  devices_lost() const {
+    return devices_lost_;
+  }
+
+  const std::vector<device::BluetoothLowEnergyScanSession*>&
+  sessions_invalidated() const {
+    return sessions_invalidated_;
+  }
 
   base::WeakPtr<FakeBluetoothLowEnergyScanSessionDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
+  std::vector<std::pair<
+      device::BluetoothLowEnergyScanSession*,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>
+      sessions_started_;
+  std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                        device::BluetoothDevice*>>
+      devices_found_;
+  std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                        device::BluetoothDevice*>>
+      devices_lost_;
+  std::vector<device::BluetoothLowEnergyScanSession*> sessions_invalidated_;
+
   base::WeakPtrFactory<FakeBluetoothLowEnergyScanSessionDelegate>
       weak_ptr_factory_{this};
 };
@@ -4657,11 +4709,7 @@ TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterPresent) {
   GetAdapter();
 
   FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
-      application_manager =
-          static_cast<FakeBluetoothAdvertisementMonitorManagerClient*>(
-              bluez::BluezDBusManager::Get()
-                  ->GetBluetoothAdvertisementMonitorManagerClient())
-              ->application_provider();
+      application_manager = GetAdvertisementMonitorApplicationManger();
 
   auto filter = CreateLowEnergyScanFilter();
   FakeBluetoothLowEnergyScanSessionDelegate delegate;
@@ -4684,11 +4732,7 @@ TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterAddedLater) {
   ASSERT_FALSE(adapter_->IsPresent());
 
   FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
-      application_manager =
-          static_cast<FakeBluetoothAdvertisementMonitorManagerClient*>(
-              bluez::BluezDBusManager::Get()
-                  ->GetBluetoothAdvertisementMonitorManagerClient())
-              ->application_provider();
+      application_manager = GetAdvertisementMonitorApplicationManger();
 
   auto filter = CreateLowEnergyScanFilter();
 
@@ -4717,11 +4761,7 @@ TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterBecomeNotPresent) {
   fake_bluetooth_adapter_client_->SetPresent(false);
 
   FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
-      application_manager =
-          static_cast<FakeBluetoothAdvertisementMonitorManagerClient*>(
-              bluez::BluezDBusManager::Get()
-                  ->GetBluetoothAdvertisementMonitorManagerClient())
-              ->application_provider();
+      application_manager = GetAdvertisementMonitorApplicationManger();
 
   auto filter = CreateLowEnergyScanFilter();
   FakeBluetoothLowEnergyScanSessionDelegate delegate;
@@ -4739,6 +4779,144 @@ TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterBecomeNotPresent) {
   // Check that queued advertisement monitor was added to d-bus after adapter
   // becomes present.
   ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceFound) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Simulate a device found event.
+  advertisement_monitor->delegate()->OnDeviceFound(
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kPairedDevicePath));
+  EXPECT_EQ(1u, delegate.devices_found().size());
+
+  std::pair<device::BluetoothLowEnergyScanSession*, device::BluetoothDevice*>
+      devices_found_pair = delegate.devices_found()[0];
+  EXPECT_EQ(background_scan_session.get(), devices_found_pair.first);
+  EXPECT_EQ(adapter_->GetDevice(
+                bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress),
+            devices_found_pair.second);
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceLost) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Simulate a device lost event.
+  advertisement_monitor->delegate()->OnDeviceLost(
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kPairedDevicePath));
+  EXPECT_EQ(1u, delegate.devices_lost().size());
+
+  std::pair<device::BluetoothLowEnergyScanSession*, device::BluetoothDevice*>
+      devices_lost_pair = delegate.devices_lost()[0];
+  EXPECT_EQ(background_scan_session.get(), devices_lost_pair.first);
+  EXPECT_EQ(adapter_->GetDevice(
+                bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress),
+            devices_lost_pair.second);
+}
+
+TEST_F(BluetoothBlueZTest,
+       BluetoothLowEnergyScanSessionBlueZStartThenInvalidate) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Successfully start scan session.
+  advertisement_monitor->delegate()->OnActivate();
+  EXPECT_EQ(1u, delegate.sessions_started().size());
+  std::pair<device::BluetoothLowEnergyScanSession*,
+            absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
+      session_started_pair = delegate.sessions_started()[0];
+
+  // Check that the correct scan session is started.
+  EXPECT_EQ(background_scan_session.get(), session_started_pair.first);
+
+  // Check that there was no error when starting the scan session.
+  EXPECT_FALSE(session_started_pair.second.has_value());
+
+  // Invalidate scan session after successful start.
+  advertisement_monitor->delegate()->OnRelease();
+  EXPECT_EQ(1u, delegate.sessions_invalidated().size());
+  EXPECT_EQ(background_scan_session.get(),
+            delegate.sessions_invalidated().front());
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZFailsToStart) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Scan session failed to start.
+  advertisement_monitor->delegate()->OnRelease();
+  EXPECT_EQ(1u, delegate.sessions_started().size());
+
+  std::pair<device::BluetoothLowEnergyScanSession*,
+            absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
+      session_started_pair = delegate.sessions_started()[0];
+
+  // Check that the correct scan session.
+  EXPECT_EQ(background_scan_session.get(), session_started_pair.first);
+
+  // Check that there was an error indicating failure to start.
+  EXPECT_TRUE(session_started_pair.second.has_value());
 }
 #endif
 

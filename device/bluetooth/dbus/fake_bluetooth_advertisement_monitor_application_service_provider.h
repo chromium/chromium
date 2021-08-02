@@ -40,11 +40,16 @@ class DEVICE_BLUETOOTH_EXPORT
 
   size_t AdvertisementMonitorsCount() const;
 
+  FakeBluetoothAdvertisementMonitorServiceProvider*
+  GetLastAddedAdvertisementMonitorServiceProvider();
+
  private:
   // Key is the object path of the AdvertisementMonitorServiceProvider
   std::map<std::string,
            std::unique_ptr<BluetoothAdvertisementMonitorServiceProvider>>
       advertisement_monitor_providers_;
+
+  std::string last_added_advertisement_monitor_provider_path_;
 };
 
 }  // namespace bluez

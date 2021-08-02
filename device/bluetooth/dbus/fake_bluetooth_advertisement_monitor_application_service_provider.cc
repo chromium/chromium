@@ -4,8 +4,10 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_application_service_provider.h"
 
+#include "base/containers/contains.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_service_provider.h"
 
 namespace bluez {
 
@@ -28,6 +30,9 @@ FakeBluetoothAdvertisementMonitorApplicationServiceProvider::
 void FakeBluetoothAdvertisementMonitorApplicationServiceProvider::AddMonitor(
     std::unique_ptr<BluetoothAdvertisementMonitorServiceProvider>
         advertisement_monitor_service_provider) {
+  last_added_advertisement_monitor_provider_path_ =
+      advertisement_monitor_service_provider->object_path().value();
+
   advertisement_monitor_providers_.insert(std::make_pair(
       advertisement_monitor_service_provider->object_path().value(),
       std::move(advertisement_monitor_service_provider)));
@@ -41,6 +46,20 @@ void FakeBluetoothAdvertisementMonitorApplicationServiceProvider::RemoveMonitor(
 size_t FakeBluetoothAdvertisementMonitorApplicationServiceProvider::
     AdvertisementMonitorsCount() const {
   return advertisement_monitor_providers_.size();
+}
+
+FakeBluetoothAdvertisementMonitorServiceProvider*
+FakeBluetoothAdvertisementMonitorApplicationServiceProvider::
+    GetLastAddedAdvertisementMonitorServiceProvider() {
+  if (!base::Contains(advertisement_monitor_providers_,
+                      last_added_advertisement_monitor_provider_path_)) {
+    return nullptr;
+  }
+
+  return static_cast<FakeBluetoothAdvertisementMonitorServiceProvider*>(
+      advertisement_monitor_providers_
+          [last_added_advertisement_monitor_provider_path_]
+              .get());
 }
 
 }  // namespace bluez

@@ -29,6 +29,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdvertisementMonitorServiceProvider
   // BluetoothAdvertisementMonitorServiceProvider override:
   const dbus::ObjectPath& object_path() const override;
 
+  BluetoothAdvertisementMonitorServiceProvider::Delegate* delegate() {
+    return delegate_.get();
+  }
+
  private:
   dbus::ObjectPath object_path_;
 
