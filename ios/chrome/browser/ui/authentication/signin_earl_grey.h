@@ -54,6 +54,9 @@
 // Induces a GREYAssert if there are no signed-in identities.
 - (void)verifyAuthenticated;
 
+// Induces a GREYAssert if the Sync state does not match |enabled|.
+- (void)verifySyncUIEnabled:(BOOL)enabled;
+
 // Triggers the reauth dialog. This is done through SigninEarlGreyAppInterface,
 // with ShowSigninCommand sent to SceneController, without any UI interaction
 // to open the dialog.

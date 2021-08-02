@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -34,6 +35,10 @@ using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::SettingsCollectionView;
+
+namespace {
+NSString* const kPassphrase = @"hello";
+}
 
 // Sign-in interaction tests that work with |kMobileIdentityConsistency|
 // enabled.
@@ -239,4 +244,44 @@ using chrome_test_util::SettingsCollectionView;
   [SigninEarlGrey verifySignedOut];
 }
 
+// Tests that Sync is on when introducing passphrase from settings, after
+// logging in.
+- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityValue(l10n_util::GetNSString(
+                         IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION)),
+                     grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                     nil)] performAction:grey_tap()];
+
+  // Scroll to bottom of Manage Sync Settings, if necessary.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kManageSyncTableViewAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Select Encryption item.
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_MANAGE_SYNC_ENCRYPTION)]
+      performAction:grey_tap()];
+
+  // Type and submit the sync passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Check Sync On label is visible.
+  [SigninEarlGrey verifySyncUIEnabled:YES];
+}
 @end
