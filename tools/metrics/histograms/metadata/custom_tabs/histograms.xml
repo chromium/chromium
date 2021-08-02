@@ -247,10 +247,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
-    expires_after="M94">
+    expires_after="M99">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
-  <summary>Records the location of the share option in the Custom Tab.</summary>
+  <summary>
+    Records the location of the share option in the Custom Tab. Recorded when
+    the share option is added while the Custom Tab is being constructed.
+  </summary>
 </histogram>
 
 <histogram name="CustomTabs.SpareWebContents.Status2"
