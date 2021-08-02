@@ -199,11 +199,15 @@ void Starter::DidFinishNavigation(
   // running (in which case, the trigger script will handle this event).
   if (IsStartupPending() && navigation_handle->HasCommitted() &&
       !trigger_script_coordinator_) {
-    bool navigated_to_target_domain = url_utils::IsSamePublicSuffixDomain(
-        navigation_handle->GetURL(),
+    const GURL& url_for_intent =
         StartupUtil()
             .ChooseStartupUrlForIntent(*GetPendingTriggerContext())
-            .value_or(GURL()));
+            .value_or(GURL());
+    bool navigated_to_target_domain =
+        url_utils::IsSamePublicSuffixDomain(url_for_intent,
+                                            navigation_handle->GetURL()) &&
+        url_utils::IsAllowedSchemaTransition(url_for_intent,
+                                             navigation_handle->GetURL());
 
     if (navigated_to_target_domain) {
       current_ukm_source_id_ =

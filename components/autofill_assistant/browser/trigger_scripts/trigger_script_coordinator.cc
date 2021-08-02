@@ -360,7 +360,8 @@ void TriggerScriptCoordinator::DidFinishNavigation(
 
   // The user has navigated away from the target domain. This will cancel the
   // current trigger script session.
-  if (!url_utils::IsSamePublicSuffixDomain(GetCurrentURL(), deeplink_url_) &&
+  if (!(url_utils::IsSamePublicSuffixDomain(deeplink_url_, GetCurrentURL()) &&
+        url_utils::IsAllowedSchemaTransition(deeplink_url_, GetCurrentURL())) &&
       !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
                                         additional_allowed_domains_)) {
 #ifndef NDEBUG
