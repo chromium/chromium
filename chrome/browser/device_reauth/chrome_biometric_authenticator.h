@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_CHROME_BIOMETRIC_AUTHENTICATOR_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_CHROME_BIOMETRIC_AUTHENTICATOR_H_
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_H_
 
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
 
 namespace content {
 class WebContents;
@@ -15,16 +15,16 @@ class WebContents;
 // provide an implementation for Create(), instantiating authenticators for a
 // given platform.
 class ChromeBiometricAuthenticator
-    : public password_manager::BiometricAuthenticator {
+    : public device_reauth::BiometricAuthenticator {
  public:
   // Create an instance of the ChromeBiometricAuthenticator. Trying to use this
   // API on platforms that do not provide an implementation will result in a
   // link error. So far only Android provides an implementation.
-  static scoped_refptr<password_manager::BiometricAuthenticator> Create(
+  static scoped_refptr<device_reauth::BiometricAuthenticator> Create(
       content::WebContents* web_contents);
 
  protected:
   ~ChromeBiometricAuthenticator() override = default;
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_BIOMETRIC_AUTHENTICATOR_H_
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_H_

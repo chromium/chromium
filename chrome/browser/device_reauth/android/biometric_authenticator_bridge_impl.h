@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
 
 #include "base/callback_forward.h"
-#include "chrome/browser/password_manager/android/biometric_authenticator_android.h"
+#include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
 #include "ui/android/window_android.h"
 
 class BiometricAuthenticatorBridgeImpl : public BiometricAuthenticatorBridge {
@@ -23,11 +23,11 @@ class BiometricAuthenticatorBridgeImpl : public BiometricAuthenticatorBridge {
   BiometricAuthenticatorBridgeImpl&& operator=(
       const BiometricAuthenticatorBridgeImpl&&) = delete;
 
-  password_manager::BiometricsAvailability CanAuthenticate() override;
+  device_reauth::BiometricsAvailability CanAuthenticate() override;
 
   // Starts the authentication.
   void Authenticate(
-      base::OnceCallback<void(password_manager::BiometricAuthUIResult)>
+      base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
           response_callback) override;
 
   // Cancels the ongoing authentication.
@@ -38,7 +38,7 @@ class BiometricAuthenticatorBridgeImpl : public BiometricAuthenticatorBridge {
 
  private:
   // Called when the authentication completes.
-  base::OnceCallback<void(password_manager::BiometricAuthUIResult)>
+  base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
       response_callback_;
 
   // This object is an instance of BiometricAuthenticatorBridge, i.e. the Java
@@ -46,4 +46,4 @@ class BiometricAuthenticatorBridgeImpl : public BiometricAuthenticatorBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_IMPL_H_

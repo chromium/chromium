@@ -13,8 +13,8 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
-#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -29,9 +29,9 @@
 namespace {
 
 using base::test::RunOnceCallback;
-using password_manager::BiometricAuthRequester;
-using password_manager::BiometricsAvailability;
-using password_manager::MockBiometricAuthenticator;
+using device_reauth::BiometricAuthRequester;
+using device_reauth::BiometricsAvailability;
+using device_reauth::MockBiometricAuthenticator;
 using testing::_;
 using testing::Eq;
 using testing::Pointee;
@@ -68,7 +68,7 @@ password_manager::PasswordFormData kFormData2 = {
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  MOCK_METHOD(scoped_refptr<password_manager::BiometricAuthenticator>,
+  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
               GetBiometricAuthenticator,
               (),
               (override));

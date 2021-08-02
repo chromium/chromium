@@ -218,7 +218,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Used to trigger a reauthentication prompt based on biometrics that needs
   // to be cleared before the password is filled. Currently only used
   // on Android.
-  scoped_refptr<BiometricAuthenticator> authenticator_;
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 

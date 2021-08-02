@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_BIOMETRIC_AUTHENTICATOR_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_BIOMETRIC_AUTHENTICATOR_H_
+#ifndef COMPONENTS_DEVICE_REAUTH_MOCK_BIOMETRIC_AUTHENTICATOR_H_
+#define COMPONENTS_DEVICE_REAUTH_MOCK_BIOMETRIC_AUTHENTICATOR_H_
 
 #include "base/callback.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace password_manager {
+namespace device_reauth {
 
 // Mocked BiometricAuthenticator used by unit tests.
 class MockBiometricAuthenticator : public BiometricAuthenticator {
@@ -27,6 +27,6 @@ class MockBiometricAuthenticator : public BiometricAuthenticator {
   ~MockBiometricAuthenticator() override;
 };
 
-}  // namespace password_manager
+}  // namespace device_reauth
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_BIOMETRIC_AUTHENTICATOR_H_
+#endif  // COMPONENTS_DEVICE_REAUTH_MOCK_BIOMETRIC_AUTHENTICATOR_H_

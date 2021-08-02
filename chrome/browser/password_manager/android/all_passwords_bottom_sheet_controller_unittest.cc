@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
-#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -36,9 +36,9 @@ using ::testing::UnorderedElementsAre;
 
 using autofill::mojom::FocusedFieldType;
 using base::test::RunOnceCallback;
-using password_manager::BiometricAuthRequester;
-using password_manager::BiometricsAvailability;
-using password_manager::MockBiometricAuthenticator;
+using device_reauth::BiometricAuthRequester;
+using device_reauth::BiometricsAvailability;
+using device_reauth::MockBiometricAuthenticator;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::UiCredential;
@@ -82,7 +82,7 @@ class MockPasswordManagerClient
  public:
   MOCK_METHOD(void, OnPasswordSelected, (const std::u16string&), (override));
 
-  MOCK_METHOD(scoped_refptr<password_manager::BiometricAuthenticator>,
+  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
               GetBiometricAuthenticator,
               (),
               (override));
@@ -157,7 +157,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     return *mock_pwd_manager_client_.get();
   }
 
-  scoped_refptr<password_manager::MockBiometricAuthenticator> authenticator() {
+  scoped_refptr<MockBiometricAuthenticator> authenticator() {
     return mock_authenticator_;
   }
 

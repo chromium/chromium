@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "chrome/browser/password_manager/android/biometric_authenticator_bridge.h"
-#include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "chrome/browser/device_reauth/android/biometric_authenticator_bridge.h"
+#include "chrome/browser/device_reauth/chrome_biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include "ui/android/window_android.h"
 
 // Android implementation of the BiometricAuthenticator interface.
 class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
@@ -19,25 +22,25 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
       std::unique_ptr<BiometricAuthenticatorBridge> bridge);
 
   // Checks whether biometrics are available.
-  password_manager::BiometricsAvailability CanAuthenticate() override;
+  device_reauth::BiometricsAvailability CanAuthenticate() override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication
   // request at a time.
-  void Authenticate(password_manager::BiometricAuthRequester requester,
+  void Authenticate(device_reauth::BiometricAuthRequester requester,
                     AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.
-  void Cancel(password_manager::BiometricAuthRequester requester) override;
+  void Cancel(device_reauth::BiometricAuthRequester requester) override;
 
  private:
   ~BiometricAuthenticatorAndroid() override;
 
   // Called when the authentication compeletes with the result
   void OnAuthenticationCompleted(
-      password_manager::BiometricAuthUIResult ui_result);
+      device_reauth::BiometricAuthUIResult ui_result);
 
   // Time of last successful re-auth. nullopt if there hasn't been an auth yet.
   absl::optional<base::TimeTicks> last_good_auth_timestamp_;
@@ -47,10 +50,10 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
 
   // Enum value representing the filling surface that has requested the current
   // authentication.
-  absl::optional<password_manager::BiometricAuthRequester> requester_;
+  absl::optional<device_reauth::BiometricAuthRequester> requester_;
 
   // Bridge used to call into the Java side.
   std::unique_ptr<BiometricAuthenticatorBridge> bridge_;
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_

@@ -8,8 +8,10 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/sync/protocol:protocol_java",
     "//content/public/android:content_java",
@@ -20,10 +22,8 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-  srcjar_deps = [ ":password_manager_android_java_enums_srcjar" ]
 
   sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/BiometricAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
@@ -42,7 +42,6 @@ android_library("java") {
 generate_jni("jni_headers") {
   visibility = [ "//chrome/browser" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/BiometricAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
@@ -74,8 +73,4 @@ android_resources("java_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
   ]
-}
-
-java_cpp_enum("password_manager_android_java_enums_srcjar") {
-  sources = [ "biometric_authenticator_bridge.h" ]
 }

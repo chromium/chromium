@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/biometric_authenticator_bridge_impl.h"
+#include "chrome/browser/device_reauth/android/biometric_authenticator_bridge_impl.h"
 
 #include "base/android/jni_android.h"
 #include "base/callback.h"
-#include "chrome/browser/password_manager/android/biometric_authenticator_android.h"
-#include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
+#include "chrome/browser/device_reauth/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "ui/android/window_android.h"
 
 using base::android::AttachCurrentThread;
-using password_manager::BiometricAuthUIResult;
-using password_manager::BiometricsAvailability;
+using device_reauth::BiometricAuthUIResult;
+using device_reauth::BiometricsAvailability;
 
 BiometricAuthenticatorBridgeImpl::BiometricAuthenticatorBridgeImpl(
     ui::WindowAndroid* window_android) {
@@ -34,7 +34,7 @@ BiometricsAvailability BiometricAuthenticatorBridgeImpl::CanAuthenticate() {
 }
 
 void BiometricAuthenticatorBridgeImpl::Authenticate(
-    base::OnceCallback<void(password_manager::BiometricAuthUIResult)>
+    base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
         response_callback) {
   response_callback_ = std::move(response_callback);
   Java_BiometricAuthenticatorBridge_authenticate(AttachCurrentThread(),

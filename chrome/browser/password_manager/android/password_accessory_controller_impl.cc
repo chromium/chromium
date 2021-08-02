@@ -36,10 +36,10 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -114,7 +114,7 @@ password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
   if (authenticator_) {
     authenticator_->Cancel(
-        password_manager::BiometricAuthRequester::kFallbackSheet);
+        device_reauth::BiometricAuthRequester::kFallbackSheet);
   }
 }
 
@@ -222,7 +222,7 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
   // |this| cancels the authentication when it is destroyed if one is ongoing,
   // which resets the callback, so it's safe to use base::Unretained(this) here.
   authenticator_->Authenticate(
-      password_manager::BiometricAuthRequester::kFallbackSheet,
+      device_reauth::BiometricAuthRequester::kFallbackSheet,
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
                      base::Unretained(this), selection));
 }
@@ -524,7 +524,7 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
   if (!selection.is_obfuscated())
     return false;
 
-  scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
       password_client_->GetBiometricAuthenticator();
   return password_manager_util::CanUseBiometricAuth(authenticator.get());
 }

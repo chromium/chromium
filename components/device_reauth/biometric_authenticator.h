@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BIOMETRIC_AUTHENTICATOR_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BIOMETRIC_AUTHENTICATOR_H_
+#ifndef COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
+#define COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 
-namespace password_manager {
+namespace device_reauth {
 
 // Different states for biometric availability for a given device. Either no
 // biometric hardware is available, hardware is available but the user has no
@@ -17,7 +17,7 @@ namespace password_manager {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
 enum class BiometricsAvailability {
   kOtherError = 0,
   kAvailable = 1,
@@ -89,7 +89,7 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool)>;
 
-  BiometricAuthenticator() = default;
+  BiometricAuthenticator();
   BiometricAuthenticator(const BiometricAuthenticator&) = delete;
   BiometricAuthenticator& operator=(const BiometricAuthenticator&) = delete;
 
@@ -115,6 +115,6 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   friend class base::RefCounted<BiometricAuthenticator>;
 };
 
-}  // namespace password_manager
+}  // namespace device_reauth
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BIOMETRIC_AUTHENTICATOR_H_
+#endif  // COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_

@@ -66,11 +66,14 @@ namespace safe_browsing {
 class PasswordProtectionService;
 }
 
+namespace device_reauth {
+class BiometricAuthenticator;
+}
+
 namespace password_manager {
 
 class FieldInfoManager;
 class PasswordFeatureManager;
-class BiometricAuthenticator;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 class PasswordManagerMetricsRecorder;
@@ -180,7 +183,8 @@ class PasswordManagerClient {
 
   // Returns a pointer to a BiometricAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
-  virtual scoped_refptr<BiometricAuthenticator> GetBiometricAuthenticator();
+  virtual scoped_refptr<device_reauth::BiometricAuthenticator>
+  GetBiometricAuthenticator();
 
   // Informs the embedder that the user has requested to generate a
   // password in the focused password field.

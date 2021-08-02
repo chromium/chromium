@@ -14,8 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
-#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -32,7 +32,9 @@ namespace {
 using ShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
 using base::test::RunOnceCallback;
-using password_manager::MockBiometricAuthenticator;
+using device_reauth::BiometricAuthRequester;
+using device_reauth::BiometricsAvailability;
+using device_reauth::MockBiometricAuthenticator;
 using password_manager::UiCredential;
 using ::testing::_;
 using ::testing::ElementsAreArray;
@@ -184,7 +186,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth_Available) {
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(*authenticator(), CanAuthenticate())
-      .WillOnce(Return(password_manager::BiometricsAvailability::kNoHardware));
+      .WillOnce(Return(BiometricsAvailability::kNoHardware));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
@@ -213,10 +215,9 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(*authenticator(), CanAuthenticate())
-      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
-  EXPECT_CALL(
-      *authenticator(),
-      Authenticate(password_manager::BiometricAuthRequester::kTouchToFill, _))
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator(),
+              Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(true));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -233,10 +234,9 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
 
   EXPECT_CALL(*authenticator(), CanAuthenticate())
-      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
-  EXPECT_CALL(
-      *authenticator(),
-      Authenticate(password_manager::BiometricAuthRequester::kTouchToFill, _))
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator(),
+              Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 }
@@ -287,7 +287,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Android_Credential) {
                                        std::u16string(u"s3cr3t")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(*authenticator(), CanAuthenticate())
-      .WillOnce(Return(password_manager::BiometricsAvailability::kNoHardware));
+      .WillOnce(Return(BiometricsAvailability::kNoHardware));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.NumCredentialsShown", 2, 1);
@@ -361,12 +361,10 @@ TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {
   touch_to_fill_controller().Show(credentials, driver().AsWeakPtr());
 
   EXPECT_CALL(*authenticator(), CanAuthenticate)
-      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
-  EXPECT_CALL(
-      *authenticator(),
-      Authenticate(password_manager::BiometricAuthRequester::kTouchToFill, _));
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator(),
+              Authenticate(BiometricAuthRequester::kTouchToFill, _));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  EXPECT_CALL(*authenticator(),
-              Cancel(password_manager::BiometricAuthRequester::kTouchToFill));
+  EXPECT_CALL(*authenticator(), Cancel(BiometricAuthRequester::kTouchToFill));
 }

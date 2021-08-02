@@ -12,7 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -86,7 +86,7 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
 
   // Authenticator used to trigger a biometric re-auth before passing the
   // credential to the site.
-  scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
   ManagePasswordsState passwords_data_;
   url::Origin origin_;

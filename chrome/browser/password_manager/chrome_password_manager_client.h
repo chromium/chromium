@@ -129,7 +129,7 @@ class ChromePasswordManagerClient
   // Returns a pointer to the BiometricAuthenticator which is created on demand.
   // This is currently only implemented for Android, on all other platforms this
   // will always be null.
-  scoped_refptr<password_manager::BiometricAuthenticator>
+  scoped_refptr<device_reauth::BiometricAuthenticator>
   GetBiometricAuthenticator() override;
   void GeneratePassword(
       autofill::password_generation::PasswordGenerationType type) override;
@@ -373,8 +373,7 @@ class ChromePasswordManagerClient
       generated_password_saved_message_delegate_;
 #endif  // defined(OS_ANDROID)
 
-  scoped_refptr<password_manager::BiometricAuthenticator>
-      biometric_authenticator_;
+  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator_;
 
   password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
 

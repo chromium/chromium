@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/biometric_authenticator_android.h"
+#include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
 
 #include <memory>
 
@@ -13,8 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/password_manager/android/biometric_authenticator_bridge.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "chrome/browser/device_reauth/android/biometric_authenticator_bridge.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,11 +23,11 @@ namespace {
 
 using base::Bucket;
 using base::test::RunOnceCallback;
-using password_manager::BiometricAuthenticator;
-using password_manager::BiometricAuthFinalResult;
-using password_manager::BiometricAuthRequester;
-using password_manager::BiometricAuthUIResult;
-using password_manager::BiometricsAvailability;
+using device_reauth::BiometricAuthenticator;
+using device_reauth::BiometricAuthFinalResult;
+using device_reauth::BiometricAuthRequester;
+using device_reauth::BiometricAuthUIResult;
+using device_reauth::BiometricsAvailability;
 using testing::_;
 using testing::ElementsAre;
 using testing::Return;
@@ -37,7 +37,7 @@ class MockBiometricAuthenticatorBridge : public BiometricAuthenticatorBridge {
   MOCK_METHOD(BiometricsAvailability, CanAuthenticate, (), (override));
   MOCK_METHOD(void,
               Authenticate,
-              (base::OnceCallback<void(password_manager::BiometricAuthUIResult)>
+              (base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
                    response_callback),
               (override));
   MOCK_METHOD(void, Cancel, (), (override));

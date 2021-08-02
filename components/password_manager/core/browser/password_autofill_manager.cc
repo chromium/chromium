@@ -32,9 +32,9 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -433,7 +433,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
         PasswordDropdownSelectedOption::kPassword,
         password_client_->IsIncognito());
 
-    scoped_refptr<BiometricAuthenticator> authenticator =
+    scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
         password_client_->GetBiometricAuthenticator();
     // Note: this is currently only implemented on Android. For desktop,
     // the `authenticator` will be null.
@@ -446,7 +446,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
       // invalidates the callback, so using base::Unretained here is safe.
       authenticator_ = std::move(authenticator);
       authenticator_->Authenticate(
-          BiometricAuthRequester::kAutofillSuggestion,
+          device_reauth::BiometricAuthRequester::kAutofillSuggestion,
           base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
                          base::Unretained(this), value, frontend_id));
     }
@@ -816,7 +816,8 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
 void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
   if (!authenticator_)
     return;
-  authenticator_->Cancel(BiometricAuthRequester::kAutofillSuggestion);
+  authenticator_->Cancel(
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion);
   authenticator_.reset();
 }
 
