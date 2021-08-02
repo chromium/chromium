@@ -31,7 +31,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
@@ -236,26 +236,28 @@ class ChromePasswordProtectionServiceTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    password_store_ =
-        base::WrapRefCounted(static_cast<password_manager::MockPasswordStore*>(
+    password_store_ = base::WrapRefCounted(
+        static_cast<password_manager::MockPasswordStoreInterface*>(
             PasswordStoreFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
                     profile(),
-                    base::BindRepeating(&password_manager::BuildPasswordStore<
-                                        content::BrowserContext,
-                                        password_manager::MockPasswordStore>))
+                    base::BindRepeating(
+                        &password_manager::BuildPasswordStoreInterface<
+                            content::BrowserContext,
+                            password_manager::MockPasswordStoreInterface>))
                 .get()));
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
       account_password_store_ = base::WrapRefCounted(
-          static_cast<password_manager::MockPasswordStore*>(
+          static_cast<password_manager::MockPasswordStoreInterface*>(
               AccountPasswordStoreFactory::GetInstance()
                   ->SetTestingFactoryAndUse(
                       profile(),
-                      base::BindRepeating(&password_manager::BuildPasswordStore<
-                                          content::BrowserContext,
-                                          password_manager::MockPasswordStore>))
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreInterface<
+                              content::BrowserContext,
+                              password_manager::MockPasswordStoreInterface>))
                   .get()));
     }
 
@@ -416,8 +418,9 @@ class ChromePasswordProtectionServiceTest
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   MockSecurityEventRecorder* security_event_recorder_;
-  scoped_refptr<password_manager::MockPasswordStore> password_store_;
-  scoped_refptr<password_manager::MockPasswordStore> account_password_store_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface>
+      account_password_store_;
   // Owned by KeyedServiceFactory.
   syncer::FakeUserEventService* fake_user_event_service_;
 #if !defined(OS_ANDROID)
