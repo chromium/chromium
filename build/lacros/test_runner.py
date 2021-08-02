@@ -274,6 +274,19 @@ def _RunTestWithAshChrome(args, forward_args):
   """
   if args.ash_chrome_path_override:
     ash_chrome_file = args.ash_chrome_path_override
+    if not os.path.exists(ash_chrome_file):
+      logging.error("""Can not find ash chrome at %s. Did you download \
+the ash from CIPD? If you don't plan to build your own ash, you need \
+to download first. Example commandlines:
+ $ cipd auth-login
+ $ echo "chromium/testing/linux-ash-chromium/x86_64/ash.zip \
+version:92.0.4515.130" > /tmp/ensure-file.txt
+ $ cipd ensure -ensure-file /tmp/ensure-file.txt \
+-root lacros_version_skew_tests_v92.0.4515.130
+ Then you can use --ash-chrome-path-override=\
+lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
+""" % ash_chrome_file)
+      return 1
   elif args.ash_chrome_path:
     ash_chrome_file = args.ash_chrome_path
   else:
