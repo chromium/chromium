@@ -27,14 +27,17 @@ class AccuracyTipUI {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class Interaction {
+    // The UI was closed without interaction. E.g. because the tab navigated
+    // to a different site.
     kNoAction = 0,
     // Learn more button pressed.
-    kLearnMorePressed = 1,
+    kLearnMore = 1,
     // Opt out button pressed.
-    kOptOutPressed = 2,
+    kOptOut = 2,
     // Pressed ESC or close button.
     kClosed = 3,
-    // Logged when the UI was not actually shown.
+    // Logged when the UI was not actually shown due to experiment
+    // configuration.
     kDisabledByExperiment = 4,
 
     kMaxValue = kDisabledByExperiment,

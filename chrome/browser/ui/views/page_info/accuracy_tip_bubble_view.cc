@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/notreached.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -173,7 +174,7 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
       // action_taken_ may be set. Otherwise, keep default of kNoAction.
       break;
     case ClosedReason::kAcceptButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
+      action_taken_ = AccuracyTipUI::Interaction::kLearnMore;
       break;
     case ClosedReason::kEscKeyPressed:
     case ClosedReason::kCloseButtonClicked:
@@ -189,7 +190,7 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
 
 void AccuracyTipBubbleView::OpenHelpCenter() {
   // TODO(crbug.com/1210891): Add link to the right info page.
-  action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
+  action_taken_ = AccuracyTipUI::Interaction::kLearnMore;
   web_contents()->OpenURL(content::OpenURLParams(
       GURL(accuracy_tips::features::kLearnMoreUrl.Get().empty()
                ? chrome::kSafetyTipHelpCenterURL
@@ -199,7 +200,7 @@ void AccuracyTipBubbleView::OpenHelpCenter() {
 }
 
 void AccuracyTipBubbleView::OnDontShowAgainClicked() {
-  action_taken_ = AccuracyTipUI::Interaction::kOptOutPressed;
+  action_taken_ = AccuracyTipUI::Interaction::kOptOut;
   GetWidget()->Close();
 }
 

@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -73,7 +74,15 @@ void OptOutClicked(
     content::WebContents*,
     AccuracyTipStatus,
     base::OnceCallback<void(AccuracyTipUI::Interaction)> callback) {
-  std::move(callback).Run(AccuracyTipUI::Interaction::kOptOutPressed);
+  std::move(callback).Run(AccuracyTipUI::Interaction::kOptOut);
+}
+
+// Handler that simulates a click on the learn more button.
+void LearnMoreClicked(
+    content::WebContents*,
+    AccuracyTipStatus,
+    base::OnceCallback<void(AccuracyTipUI::Interaction)> callback) {
+  std::move(callback).Run(AccuracyTipUI::Interaction::kLearnMore);
 }
 
 class AccuracyServiceTest : public ::testing::Test {
@@ -200,6 +209,34 @@ TEST_F(AccuracyServiceTest, OptOut) {
   // Forwarding |kTimeBetweenPrompts| days will also not show the prompt again.
   clock()->Advance(features::kTimeBetweenPrompts.Get());
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kOptOut);
+}
+
+TEST_F(AccuracyServiceTest, Histograms) {
+  {
+    base::HistogramTester t;
+    EXPECT_CALL(*ui(), ShowAccuracyTip(_, _, _))
+        .WillOnce(Invoke(&LearnMoreClicked));
+    service()->MaybeShowAccuracyTip(nullptr);
+    t.ExpectUniqueSample("Privacy.AccuracyTip.AccuracyTipInteraction",
+                         AccuracyTipUI::Interaction::kLearnMore, 1);
+    t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown", 1, 1);
+    t.ExpectTotalCount("Privacy.AccuracyTip.AccuracyTipTimeOpen", 1);
+    t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown.LearnMore", 1, 1);
+    t.ExpectTotalCount("Privacy.AccuracyTip.AccuracyTipTimeOpen.LearnMore", 1);
+  }
+
+  {
+    base::HistogramTester t;
+    EXPECT_CALL(*ui(), ShowAccuracyTip(_, _, _))
+        .WillOnce(Invoke(&OptOutClicked));
+    service()->MaybeShowAccuracyTip(nullptr);
+    t.ExpectUniqueSample("Privacy.AccuracyTip.AccuracyTipInteraction",
+                         AccuracyTipUI::Interaction::kOptOut, 1);
+    t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown", 2, 1);
+    t.ExpectTotalCount("Privacy.AccuracyTip.AccuracyTipTimeOpen", 1);
+    t.ExpectBucketCount("Privacy.AccuracyTip.NumDialogsShown.OptOut", 2, 1);
+    t.ExpectTotalCount("Privacy.AccuracyTip.AccuracyTipTimeOpen.OptOut", 1);
+  }
 }
 
 class AccuracyServiceDisabledUiTest : public AccuracyServiceTest {

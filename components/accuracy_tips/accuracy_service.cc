@@ -25,6 +25,24 @@
 
 namespace accuracy_tips {
 
+// Returns a suffix for accuracy tips histograms.
+// Needs to match AccuracyTipInteractions from histogram_suffixes_list.xml.
+const std::string GetHistogramSuffix(AccuracyTipUI::Interaction interaction) {
+  switch (interaction) {
+    case AccuracyTipUI::Interaction::kNoAction:
+      return "NoAction";
+    case AccuracyTipUI::Interaction::kLearnMore:
+      return "LearnMore";
+    case AccuracyTipUI::Interaction::kOptOut:
+      return "OptOut";
+    case AccuracyTipUI::Interaction::kClosed:
+      return "Closed";
+    case AccuracyTipUI::Interaction::kDisabledByExperiment:
+      NOTREACHED();  // We don't need specific histograms for this.
+      return "";
+  }
+}
+
 // Returns the preference to store feature state in. Uses a different pref if
 // the UI is disabled to avoid dark-launch experiments affecting real usage.
 const char* GetLastShownPrefName(bool disable_ui) {
@@ -84,7 +102,7 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
   const base::Value* last_interactions =
       pref_service_->Get(GetPreviousInteractionsPrefName(disable_ui_));
   const base::Value opt_out_value(
-      static_cast<int>(AccuracyTipUI::Interaction::kOptOutPressed));
+      static_cast<int>(AccuracyTipUI::Interaction::kOptOut));
   if (base::Contains(last_interactions->GetList(), opt_out_value)) {
     return std::move(callback).Run(AccuracyTipStatus::kOptOut);
   }
@@ -134,13 +152,22 @@ void AccuracyService::OnAccuracyTipClosed(
   base::Value* interaction_list = update.Get();
   interaction_list->Append(static_cast<int>(interaction));
 
+  // Record metrics.
   base::UmaHistogramEnumeration("Privacy.AccuracyTip.AccuracyTipInteraction",
                                 interaction);
   base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown",
                               interaction_list->GetList().size());
-  if (!time_opened.is_null()) {
+
+  if (interaction != AccuracyTipUI::Interaction::kDisabledByExperiment) {
+    const base::TimeDelta time_open = base::TimeTicks::Now() - time_opened;
     base::UmaHistogramMediumTimes("Privacy.AccuracyTip.AccuracyTipTimeOpen",
-                                  base::TimeTicks::Now() - time_opened);
+                                  time_open);
+
+    const std::string suffix = GetHistogramSuffix(interaction);
+    base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown." + suffix,
+                                interaction_list->GetList().size());
+    base::UmaHistogramMediumTimes(
+        "Privacy.AccuracyTip.AccuracyTipTimeOpen." + suffix, time_open);
   }
 }
 

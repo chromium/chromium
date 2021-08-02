@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
 
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
-      AccuracyTipUI::Interaction::kOptOutPressed, 1);
+      AccuracyTipUI::Interaction::kOptOut, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
 
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
-      AccuracyTipUI::Interaction::kLearnMorePressed, 1);
+      AccuracyTipUI::Interaction::kLearnMore, 1);
 }
 
 // Render test for accuracy tip ui.
