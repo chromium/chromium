@@ -440,7 +440,7 @@ static_library("test_support") {
     libs = [ "runtimeobject.lib" ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     deps += [ "//chromeos/dbus/constants" ]
   }
 
@@ -2587,7 +2587,7 @@ if (!is_android) {
       if (!is_chromeos_lacros) {
         sources += [ "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc" ]
       }
-      if (is_chromeos_ash || is_chromeos_lacros) {
+      if (is_chromeos) {
         sources +=
             [ "../browser/extensions/clipboard_extension_apitest_chromeos.cc" ]
       }
@@ -2798,7 +2798,7 @@ if (!is_android) {
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
       }
-      if (!is_chromeos_ash && !is_chromeos_lacros) {
+      if (!is_chromeos) {
         sources += [
           "../browser/ui/views/bookmarks/bookmark_bubble_sign_in_delegate_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
@@ -3757,7 +3757,7 @@ if (!is_android) {
         "../browser/printing/pwg_raster_converter_browsertest.cc",
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
-      if (!is_mac && !is_chromeos_ash && !is_chromeos_lacros) {
+      if (!is_mac && !is_chromeos) {
         sources += [
           # This test depends on GetCommandLineForRelaunch, which is not
           # available on Mac. It is also not intended to run on ChromeOS.
@@ -6653,30 +6653,6 @@ test("unit_tests") {
       "../renderer/extensions/tabs_hooks_delegate_unittest.cc",
     ]
 
-    if (is_mac) {
-      sources += [
-        "../browser/apps/app_shim/app_shim_host_mac_unittest.cc",
-        "../browser/apps/app_shim/app_shim_manager_mac_unittest.cc",
-        "../browser/apps/app_shim/web_app_shim_manager_delegate_mac_unittest.cc",
-      ]
-    }
-
-    if (is_chromeos_ash) {
-      sources += [
-        "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
-        "../browser/extensions/extension_garbage_collector_chromeos_unittest.cc",
-        "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
-        "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
-        "../browser/extensions/system_display/system_display_serialization_unittest.cc",
-        "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
-        "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
-      ]
-      deps += [
-        "../common/chromeos/extensions",
-        "//chromeos/dbus/image_burner",
-      ]
-    }
-
     allow_circular_includes_from = [
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",
@@ -6716,9 +6692,19 @@ test("unit_tests") {
       "//third_party/blink/common/privacy_budget:test_support",
       "//tools/json_schema_compiler/test:unit_tests",
     ]
+
     if (enable_service_discovery) {
       sources += [ "../browser/extensions/api/mdns/mdns_api_unittest.cc" ]
     }
+
+    if (is_mac) {
+      sources += [
+        "../browser/apps/app_shim/app_shim_host_mac_unittest.cc",
+        "../browser/apps/app_shim/app_shim_manager_mac_unittest.cc",
+        "../browser/apps/app_shim/web_app_shim_manager_delegate_mac_unittest.cc",
+      ]
+    }
+
     if (is_win) {
       sources += [
         "../browser/extensions/external_registry_loader_win_unittest.cc",
@@ -6726,6 +6712,7 @@ test("unit_tests") {
         "../browser/media_galleries/win/mtp_device_object_enumerator_unittest.cc",
       ]
     }
+
     if (is_chromeos_ash) {
       sources += [
         "../browser/ash/login/easy_unlock/easy_unlock_auth_attempt_unittest.cc",
@@ -6734,9 +6721,21 @@ test("unit_tests") {
         "../browser/ash/login/easy_unlock/smartlock_state_handler_unittest.cc",
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
+        "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
+        "../browser/extensions/extension_garbage_collector_chromeos_unittest.cc",
         "../browser/extensions/external_pref_loader_unittest.cc",
+        "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
+        "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
+        "../browser/extensions/system_display/system_display_serialization_unittest.cc",
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
         "../browser/ui/webui/about_ui_unittest.cc",
+        "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
+        "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
+      ]
+
+      deps += [
+        "//chrome/common/chromeos/extensions",
+        "//chromeos/dbus/image_burner",
       ]
     } else {
       sources += [
@@ -8162,7 +8161,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_chromeos_ash || is_chromeos_lacros) {
+    if (is_chromeos) {
       # These tests are not applicable on Chrome OS - Ash and Lacros.
       sources -=
           [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
