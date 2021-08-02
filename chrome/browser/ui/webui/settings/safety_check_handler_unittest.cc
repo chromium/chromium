@@ -181,12 +181,10 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
         base::flat_map<password_manager::InsecureType,
                        password_manager::InsecurityMetadata>();
     store_->AddLogin(form);
-    base::RunLoop().RunUntilIdle();
-
-    store_->AddInsecureCredential(password_manager::InsecureCredential(
-        form.signon_realm, form.username_value, base::Time(),
-        password_manager::InsecureType::kLeaked,
-        password_manager::IsMuted(false)));
+    form.password_issues = {
+        {password_manager::InsecureType::kLeaked,
+         password_manager::InsecurityMetadata(
+             base::Time(), password_manager::IsMuted(false))}};
     base::RunLoop().RunUntilIdle();
   }
 

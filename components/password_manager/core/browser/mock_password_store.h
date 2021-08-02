@@ -71,16 +71,6 @@ class MockPasswordStore : public PasswordStore {
               ReportMetricsImpl,
               (const std::string&, bool, BulkCheckDone),
               (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              AddInsecureCredentialImpl,
-              (const InsecureCredential&),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveInsecureCredentialsImpl,
-              (const std::string&,
-               const std::u16string&,
-               RemoveInsecureCredentialsReason),
-              (override));
   MOCK_METHOD(std::vector<InsecureCredential>,
               GetAllInsecureCredentialsImpl,
               (),

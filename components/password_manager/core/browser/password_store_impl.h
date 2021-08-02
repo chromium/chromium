@@ -52,12 +52,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
-  PasswordStoreChangeList AddInsecureCredentialImpl(
-      const InsecureCredential& insecure_credential) override;
-  PasswordStoreChangeList RemoveInsecureCredentialsImpl(
-      const std::string& signon_realm,
-      const std::u16string& username,
-      RemoveInsecureCredentialsReason reason) override;
   std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
   std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
@@ -85,8 +79,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
  private:
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest,
                            UpdatePasswordsStoredForAffiliatedWebsites);
-  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, AddInsecureCredentialsSync);
-  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, UpdateInsecureCredentialsSync);
 
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,

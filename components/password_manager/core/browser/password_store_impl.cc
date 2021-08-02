@@ -27,19 +27,6 @@ namespace {
 
 constexpr base::TimeDelta kSyncTaskTimeout = base::TimeDelta::FromSeconds(30);
 
-// Generates PasswordStoreChangeList for affected forms during
-// InsecureCredentials update.
-PasswordStoreChangeList BuildPasswordChangeListForInsecureCredentialsUpdate(
-    PrimaryKeyToFormMap key_to_form_map) {
-  PasswordStoreChangeList changes;
-  changes.reserve(key_to_form_map.size());
-  for (auto& pair : key_to_form_map) {
-    changes.emplace_back(PasswordStoreChange::UPDATE, std::move(*pair.second),
-                         pair.first);
-  }
-  return changes;
-}
-
 }  // namespace
 
 // TODO(crbug.com/1217071): Definition would clash with factory implementation
@@ -148,56 +135,6 @@ void PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal(
     login_db_->stats_table().RemoveStatsByOriginAndTime(
         origin_filter, delete_begin, delete_end);
   }
-}
-
-PasswordStoreChangeList PasswordStoreImpl::AddInsecureCredentialImpl(
-    const InsecureCredential& credential) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  if (!login_db_ ||
-      !login_db_->insecure_credentials_table().AddRow(credential)) {
-    return {};
-  }
-
-  PrimaryKeyToFormMap key_to_form_map;
-  if (login_db_->GetLoginsBySignonRealmAndUsername(
-          credential.signon_realm, credential.username, key_to_form_map) !=
-      FormRetrievalResult::kSuccess) {
-    return {};
-  }
-
-  PasswordStoreChangeList changes =
-      BuildPasswordChangeListForInsecureCredentialsUpdate(
-          std::move(key_to_form_map));
-  if (sync_bridge_ && !changes.empty())
-    sync_bridge_->ActOnPasswordStoreChanges(changes);
-
-  return changes;
-}
-
-PasswordStoreChangeList PasswordStoreImpl::RemoveInsecureCredentialsImpl(
-    const std::string& signon_realm,
-    const std::u16string& username,
-    RemoveInsecureCredentialsReason reason) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  if (!login_db_ || !login_db_->insecure_credentials_table().RemoveRows(
-                        signon_realm, username, reason)) {
-    return {};
-  }
-
-  PrimaryKeyToFormMap key_to_form_map;
-  if (login_db_->GetLoginsBySignonRealmAndUsername(signon_realm, username,
-                                                   key_to_form_map) !=
-      FormRetrievalResult::kSuccess) {
-    return {};
-  }
-
-  PasswordStoreChangeList changes =
-      BuildPasswordChangeListForInsecureCredentialsUpdate(
-          std::move(key_to_form_map));
-  if (sync_bridge_ && !changes.empty())
-    sync_bridge_->ActOnPasswordStoreChanges(changes);
-
-  return changes;
 }
 
 std::vector<InsecureCredential>

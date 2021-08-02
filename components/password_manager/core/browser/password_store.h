@@ -133,18 +133,6 @@ class PasswordStore : public PasswordStoreInterface {
                              bool custom_passphrase_sync_enabled,
                              bool is_under_advanced_protection);
 
-  // Adds information about credentials issue on
-  // |insecure_credential.url| for |insecure_credential.username|. The
-  // first |insecure_credential.create_time| is kept, so if the record for
-  // given url and username already exists, the new one will be ignored.
-  void AddInsecureCredential(const InsecureCredential& insecure_credential);
-
-  // Removes information about insecure credentials on |signon_realm| for
-  // |username|.
-  void RemoveInsecureCredentials(const std::string& signon_realm,
-                                 const std::u16string& username,
-                                 RemoveInsecureCredentialsReason reason);
-
   // Retrieves all insecure credentials and notifies |consumer| on
   // completion. The request will be cancelled if the consumer is destroyed.
   void GetAllInsecureCredentials(InsecureCredentialsConsumer* consumer);
@@ -195,12 +183,6 @@ class PasswordStore : public PasswordStoreInterface {
   // Synchronous implementation for manipulating with information about
   // insecure credentials.
   // Returns PasswordStoreChangeList for the updated password forms.
-  virtual PasswordStoreChangeList AddInsecureCredentialImpl(
-      const InsecureCredential& insecure_credential);
-  virtual PasswordStoreChangeList RemoveInsecureCredentialsImpl(
-      const std::string& signon_realm,
-      const std::u16string& username,
-      RemoveInsecureCredentialsReason reason);
   virtual std::vector<InsecureCredential> GetAllInsecureCredentialsImpl();
   virtual std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm);

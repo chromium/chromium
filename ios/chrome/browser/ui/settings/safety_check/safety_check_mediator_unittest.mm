@@ -177,8 +177,9 @@ class SafetyCheckMediatorTest : public PlatformTest {
     [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   }
 
-  // Creates and adds a saved password form.
-  void AddSavedForm() {
+  // Creates and adds a saved password form. If `is_leaked` is true it marks the
+  // credential as leaked.
+  void AddSavedForm(bool is_leaked = false) {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
@@ -190,11 +191,18 @@ class SafetyCheckMediatorTest : public PlatformTest {
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
-    // TODO(crbug.com/1223022): Once all places that operate changes on forms
-    // via UpdateLogin properly set |password_issues|, setting them to an empty
-    // map should be part of the default constructor.
-    form->password_issues =
-        base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
+    if (is_leaked) {
+      form->password_issues = {
+          {InsecureType::kLeaked,
+           password_manager::InsecurityMetadata(
+               base::Time::Now(), password_manager::IsMuted(false))}};
+    } else {
+      // TODO(crbug.com/1223022): Once all places that operate changes on forms
+      // via UpdateLogin properly set |password_issues|, setting them to an
+      // empty map should be part of the default constructor.
+      form->password_issues =
+          base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
+    }
     AddPasswordForm(std::move(form));
   }
 
@@ -203,13 +211,6 @@ class SafetyCheckMediatorTest : public PlatformTest {
         IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
-  }
-
-  void AddCompromisedCredential() {
-    GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
-        "http://www.example.com/", u"test@egmail.com", base::Time::Now(),
-        InsecureType::kLeaked, password_manager::IsMuted(false)));
-    RunUntilIdle();
   }
 
  protected:
@@ -376,16 +377,14 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUI) {
 }
 
 TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeCheck) {
-  AddSavedForm();
-  AddCompromisedCredential();
+  AddSavedForm(/*is_leaked=*/true);
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
   [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
   EXPECT_EQ(mediator_.passwordCheckRowState, PasswordCheckRowStateUnSafe);
 }
 
 TEST_F(SafetyCheckMediatorTest, PasswordCheckUnSafeUI) {
-  AddSavedForm();
-  AddCompromisedCredential();
+  AddSavedForm(/*is_leaked=*/true);
   mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,

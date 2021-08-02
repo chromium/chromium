@@ -118,12 +118,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
-  PasswordStoreChangeList AddInsecureCredentialImpl(
-      const InsecureCredential& insecure_credentials) override;
-  PasswordStoreChangeList RemoveInsecureCredentialsImpl(
-      const std::string& signon_realm,
-      const std::u16string& username,
-      RemoveInsecureCredentialsReason reason) override;
   std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
   std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;

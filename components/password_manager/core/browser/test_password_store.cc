@@ -251,50 +251,6 @@ void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
   NOTIMPLEMENTED();
 }
 
-PasswordStoreChangeList TestPasswordStore::AddInsecureCredentialImpl(
-    const InsecureCredential& insecure_credential) {
-  InsecureCredential cred = insecure_credential;
-  cred.in_store = IsAccountStore() ? PasswordForm::Store::kAccountStore
-                                   : PasswordForm::Store::kProfileStore;
-  if (!insecure_credentials_.insert(std::move(cred)).second)
-    return {};
-
-  PasswordStoreChangeList changes;
-  for (auto& form : stored_passwords_[insecure_credential.signon_realm]) {
-    if (form.username_value == insecure_credential.username) {
-      form.password_issues->insert(
-          {insecure_credential.insecure_type,
-           InsecurityMetadata(insecure_credential.create_time,
-                              insecure_credential.is_muted)});
-      changes.emplace_back(PasswordStoreChange::UPDATE, form);
-    }
-  }
-  return changes;
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveInsecureCredentialsImpl(
-    const std::string& signon_realm,
-    const std::u16string& username,
-    RemoveInsecureCredentialsReason reason) {
-  const size_t old_size = insecure_credentials_.size();
-  base::EraseIf(insecure_credentials_, [&](const auto& credential) {
-    return credential.signon_realm == signon_realm &&
-           credential.username == username;
-  });
-
-  if (old_size == insecure_credentials_.size())
-    return {};
-
-  PasswordStoreChangeList changes;
-  for (auto& form : stored_passwords_[signon_realm]) {
-    if (form.username_value == username) {
-      form.password_issues->clear();
-      changes.emplace_back(PasswordStoreChange::UPDATE, form);
-    }
-  }
-  return changes;
-}
-
 std::vector<InsecureCredential>
 TestPasswordStore::GetAllInsecureCredentialsImpl() {
   return std::vector<InsecureCredential>(insecure_credentials_.begin(),

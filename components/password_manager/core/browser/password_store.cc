@@ -323,27 +323,6 @@ void PasswordStore::ReportMetrics(const std::string& sync_username,
                                              base::TimeDelta::FromSeconds(30));
   }
 }
-void PasswordStore::AddInsecureCredential(
-    const InsecureCredential& insecure_credential) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  auto callback = base::BindOnce(&PasswordStore::AddInsecureCredentialImpl,
-                                 this, insecure_credential);
-  ScheduleTask(base::BindOnce(
-      &PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange, this,
-      std::move(callback)));
-}
-
-void PasswordStore::RemoveInsecureCredentials(
-    const std::string& signon_realm,
-    const std::u16string& username,
-    RemoveInsecureCredentialsReason reason) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  auto callback = base::BindOnce(&PasswordStore::RemoveInsecureCredentialsImpl,
-                                 this, signon_realm, username, reason);
-  ScheduleTask(base::BindOnce(
-      &PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange, this,
-      std::move(callback)));
-}
 
 void PasswordStore::GetAllInsecureCredentials(
     InsecureCredentialsConsumer* consumer) {
@@ -416,22 +395,6 @@ void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                       BulkCheckDone bulk_check_done) {
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
   LOG(ERROR) << "Called function without implementation: " << __func__;
-}
-
-PasswordStoreChangeList PasswordStore::AddInsecureCredentialImpl(
-    const InsecureCredential& insecure_credential) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return PasswordStoreChangeList();
-}
-
-PasswordStoreChangeList PasswordStore::RemoveInsecureCredentialsImpl(
-    const std::string& signon_realm,
-    const std::u16string& username,
-    RemoveInsecureCredentialsReason reason) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return PasswordStoreChangeList();
 }
 
 std::vector<InsecureCredential> PasswordStore::GetAllInsecureCredentialsImpl() {
