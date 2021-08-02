@@ -16175,6 +16175,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridSelectionShareTabs">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    Users in the iOS tab grid used the share button in the selection mode to
+    share multiple tabs at once.
+  </description>
+</action>
+
 <action name="MobileTabGridSelectRegularPanel">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>

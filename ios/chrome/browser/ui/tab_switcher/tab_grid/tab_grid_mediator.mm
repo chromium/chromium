@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -370,6 +371,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs {
   __block bool allTabsClosed = true;
 
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", itemIDs.count);
+
   self.webStateList->PerformBatchOperation(
       base::BindOnce(^(WebStateList* list) {
         for (NSString* itemID in itemIDs) {
@@ -470,7 +473,9 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
                                                     title:item.title];
     [URLs addObject:URL];
   }
-
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs", items.count);
   [self.delegate tabGridMediator:self shareURLs:URLs anchor:buttonAnchor];
 }
 
@@ -738,6 +743,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (!_readingListHandler) {
     return;
   }
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToReadingList",
+                              items.count);
 
   NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
 
@@ -753,6 +760,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (!bookmarkHandler) {
     return;
   }
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToBookmarks",
+                              items.count);
 
   NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
 

@@ -1244,14 +1244,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabGrid.Selection.AddToBookmarks" units="Tabs"
+    expires_after="2022-01-30">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The number of Tab Grid items bookmarked with a single add to bookmarks
+    operation from the tab grid selection mode.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabGrid.Selection.AddToReadingList" units="Tabs"
+    expires_after="2022-01-30">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The number of Tab Grid items added to reading list with a single add to
+    reading list operation from the tab grid selection mode.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
-    expires_after="M95">
+    expires_after="2022-01-30">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     The number of Tab Grid items closed with a single Close Tab(s) operation
     from the tab grid selection mode.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabGrid.Selection.ShareTabs" units="Tabs"
+    expires_after="2022-01-30">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The number of Tab Grid items shared with a single share operation from the
+    tab grid selection mode.
   </summary>
 </histogram>
 
