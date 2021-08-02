@@ -106,8 +106,6 @@ class ChromeBrowserProvider {
   virtual ChromeIdentityService* GetChromeIdentityService();
   // Returns an instance of a Chrome trusted vault service.
   virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
-  // Returns risk data used in Wallet requests.
-  virtual std::string GetRiskData();
   // Creates and returns a new styled text field.
   virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
 

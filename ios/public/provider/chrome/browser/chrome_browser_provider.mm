@@ -70,10 +70,6 @@ ChromeBrowserProvider::GetChromeTrustedVaultService() {
   return nullptr;
 }
 
-std::string ChromeBrowserProvider::GetRiskData() {
-  return std::string();
-}
-
 UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
   return nil;
 }
