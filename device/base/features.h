@@ -12,9 +12,9 @@
 
 namespace device {
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_MAC)
 DEVICE_BASE_EXPORT extern const base::Feature kNewUsbBackend;
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
 DEVICE_BASE_EXPORT extern const base::Feature kNewBLEWinImplementation;
