@@ -276,10 +276,18 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
+#if (defined(OS_WIN) && !defined(NDEBUG))
+// Test is flaky on Windows 7 (dbg): https://crbug.com/1234337
+#define MAYBE_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks \
+  DISABLED_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks
+#else
+#define MAYBE_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks \
+  TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks
+#endif
 // Tests tab fullscreen exits, but browser fullscreen remains, on navigation.
 IN_PROC_BROWSER_TEST_F(
     FullscreenControllerInteractiveTest,
-    TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks) {
+    MAYBE_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
