@@ -284,6 +284,8 @@ interface LocalPrinter {
   GetEulaUrl@2(string printer_id) => (url.mojom.Url url);
 
   // Gets the current status of a printer.
+  // Note: this method queries the printer directly instead of via CUPS.
+  // It may take several seconds for the printer to respond.
   GetStatus@3(string printer_id) => (PrinterStatus status);
 
   // Opens a system print settings window.
