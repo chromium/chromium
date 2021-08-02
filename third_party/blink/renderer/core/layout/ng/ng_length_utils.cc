@@ -870,7 +870,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     const LayoutUnit min_max_percentage_resolution_size =
         node.GetDocument().InQuirksMode()
             ? space.AvailableSize().block_size
-            : space.PercentageResolutionBlockSize();
+            : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
         ResolveMinBlockLength(
