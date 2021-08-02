@@ -142,8 +142,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
   self.locationBarSteadyView.colorScheme =
-      incognito ? [LocationBarSteadyViewColorScheme incognitoScheme]
-                : [LocationBarSteadyViewColorScheme standardScheme];
+      [LocationBarSteadyViewColorScheme standardScheme];
 }
 
 - (void)setDispatcher:(id<ActivityServiceCommands,

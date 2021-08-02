@@ -18,7 +18,6 @@
 @property(nonatomic, strong) UIColor* trailingButtonColor;
 
 + (LocationBarSteadyViewColorScheme*)standardScheme;
-+ (LocationBarSteadyViewColorScheme*)incognitoScheme;
 
 @end
 

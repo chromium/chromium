@@ -922,32 +922,13 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   [self updateLayerColors];
 }
 
-// CGColor doesn't support iOS 13 dynamic colors, so those must be resolved
-// more often.
+// Updates the colors based on the current trait collection. CGColor doesn't
+// support iOS 13 dynamic colors, so those must be resolved more often.
 - (void)updateLayerColors {
-  if (@available(iOS 13, *)) {
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      _selectionCircleLayer.fillColor =
-          [UIColor colorNamed:kTextfieldBackgroundColor].CGColor;
-    }];
-    return;
-  }
-
-  // Fallback for iOS 12.
-  if (self.incognito) {
-    UIColor* buttonColor = [UIColor colorNamed:kToolbarButtonDarkColor];
-    _addTabActionImageView.tintColor = buttonColor;
-    _reloadActionImageView.tintColor = buttonColor;
-    _closeTabActionImageView.tintColor = buttonColor;
-    _addTabLabel.textColor = buttonColor;
-    _reloadLabel.textColor = buttonColor;
-    _closeTabLabel.textColor = buttonColor;
-    _selectionCircleLayer.fillColor =
-        [UIColor colorNamed:kTextfieldBackgroundDarkColor].CGColor;
-  } else {
+  [self.traitCollection performAsCurrentTraitCollection:^{
     _selectionCircleLayer.fillColor =
         [UIColor colorNamed:kTextfieldBackgroundColor].CGColor;
-  }
+  }];
 }
 
 - (OverscrollAction)actionAtLocation:(CGPoint)location {

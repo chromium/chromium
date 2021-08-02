@@ -100,20 +100,6 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   return scheme;
 }
 
-+ (instancetype)incognitoScheme {
-  LocationBarSteadyViewColorScheme* scheme =
-      [[LocationBarSteadyViewColorScheme alloc] init];
-
-  // In iOS 12, the overridePreferredInterfaceStyle API is unavailable, so
-  // incognito colors need to be set specifically.
-  // TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
-  scheme.fontColor = [UIColor colorNamed:kTextPrimaryDarkColor];
-  scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderDarkColor];
-  scheme.trailingButtonColor = [UIColor colorNamed:kToolbarButtonDarkColor];
-
-  return scheme;
-}
-
 @end
 
 #pragma mark - LocationBarSteadyButton
