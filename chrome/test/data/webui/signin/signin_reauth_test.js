@@ -52,33 +52,22 @@ suite('SigninReauthTest', function() {
     return browserProxy.whenCalled('cancel');
   });
 
-  const requires_reauth_test_params = [
-    {
-      requires_reauth: true,
-    },
-    {
-      requires_reauth: false,
-    },
-  ];
+  test('ButtonsVisibilityAndFocus', async () => {
+    await browserProxy.whenCalled('initialize');
+    assertFalse(isVisible(app.$.confirmButton));
+    assertFalse(isVisible(app.$.cancelButton));
+    assertTrue(isVisible(app.$$('paper-spinner-lite')));
 
-  requires_reauth_test_params.forEach(function(params) {
-    test('ButtonsVisibilityAndFocus', async () => {
-      await browserProxy.whenCalled('initialize');
-      assertFalse(isVisible(app.$.confirmButton));
-      assertFalse(isVisible(app.$.cancelButton));
-      assertTrue(isVisible(app.$$('paper-spinner-lite')));
+    webUIListenerCallback('reauth-type-determined');
+    flush();
 
-      webUIListenerCallback('reauth-type-received', params.requires_reauth);
-      flush();
+    assertTrue(isVisible(app.$.confirmButton));
+    assertTrue(isVisible(app.$.cancelButton));
+    assertFalse(isVisible(app.$$('paper-spinner-lite')));
 
-      assertTrue(isVisible(app.$.confirmButton));
-      assertTrue(isVisible(app.$.cancelButton));
-      assertFalse(isVisible(app.$$('paper-spinner-lite')));
+    assertEquals(getDeepActiveElement(), app.$.confirmButton);
 
-      assertEquals(getDeepActiveElement(), app.$.confirmButton);
-
-      assertDefaultLocale();
-      assertEquals('Yes', app.$.confirmButton.textContent.trim());
-    });
+    assertDefaultLocale();
+    assertEquals('Yes', app.$.confirmButton.textContent.trim());
   });
 });

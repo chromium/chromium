@@ -58,10 +58,7 @@ void SigninReauthHandler::OnGaiaReauthTypeDetermined(
   if (!IsJavascriptAllowed())
     return;
 
-  DCHECK_NE(reauth_type, SigninReauthViewController::GaiaReauthType::kUnknown);
-  bool is_reauth_required =
-      reauth_type != SigninReauthViewController::GaiaReauthType::kAutoApproved;
-  FireWebUIListener("reauth-type-received", base::Value(is_reauth_required));
+  FireWebUIListener("reauth-type-determined");
 }
 
 void SigninReauthHandler::HandleInitialize(const base::ListValue* args) {

@@ -59,7 +59,7 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
     super.connectedCallback();
 
     this.addWebUIListener(
-        'reauth-type-received', this.onReauthTypeReceived_.bind(this));
+        'reauth-type-determined', this.onReauthTypeDetermined_.bind(this));
     this.signinReauthBrowserProxy_.initialize();
   }
 
@@ -73,11 +73,7 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
     this.signinReauthBrowserProxy_.cancel();
   }
 
-  /**
-   * @param requiresReauth Whether the user will be asked to
-   *     reauthenticate after clicking on the confirm button.
-   */
-  private onReauthTypeReceived_(_requiresReauth: boolean) {
+  private onReauthTypeDetermined_() {
     this.confirmButtonHidden_ = false;
     this.$.confirmButton.focus();
     this.cancelButtonHidden_ = false;
