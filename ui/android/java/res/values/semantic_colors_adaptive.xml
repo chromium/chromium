@@ -48,7 +48,7 @@
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
 
     <!-- Popup colors -->
-    <color name="popup_bg_color">@color/legacy_bg_color_elev_4</color>
+    <color name="popup_bg_color">@color/default_bg_color</color>
 
     <!-- Snackbar colors -->
     <color name="snackbar_background_color">@color/default_bg_color</color>
