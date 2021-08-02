@@ -86,7 +86,10 @@ scoped_refptr<MediaSourceAttachment> MediaSourceRegistryImpl::LookupMediaSource(
 
   DCHECK(IsMainThread());
   DCHECK(!url.IsEmpty());
-  return media_sources_.at(url);
+  auto iter = media_sources_.find(url);
+  if (iter == media_sources_.end())
+    return nullptr;
+  return iter->value;
 }
 
 MediaSourceRegistryImpl::MediaSourceRegistryImpl() {
