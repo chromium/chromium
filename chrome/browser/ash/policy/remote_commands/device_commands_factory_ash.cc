@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
+#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -27,15 +27,15 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-DeviceCommandsFactoryChromeOS::DeviceCommandsFactoryChromeOS(
+DeviceCommandsFactoryAsh::DeviceCommandsFactoryAsh(
     DeviceCloudPolicyManagerAsh* policy_manager)
     : policy_manager_(policy_manager) {}
 
-DeviceCommandsFactoryChromeOS::~DeviceCommandsFactoryChromeOS() = default;
+DeviceCommandsFactoryAsh::~DeviceCommandsFactoryAsh() = default;
 
-std::unique_ptr<RemoteCommandJob>
-DeviceCommandsFactoryChromeOS::BuildJobForType(em::RemoteCommand_Type type,
-                                               RemoteCommandsService* service) {
+std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
+    em::RemoteCommand_Type type,
+    RemoteCommandsService* service) {
   switch (type) {
     case em::RemoteCommand_Type_DEVICE_REBOOT:
       return std::make_unique<DeviceCommandRebootJob>(
@@ -64,14 +64,14 @@ DeviceCommandsFactoryChromeOS::BuildJobForType(em::RemoteCommand_Type type,
     case em::RemoteCommand_Type_DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE:
       return std::make_unique<DeviceCommandGetRoutineUpdateJob>();
     default:
-      // Other types of commands should be sent to UserCommandsFactoryChromeOS
+      // Other types of commands should be sent to UserCommandsFactoryAsh
       // instead of here.
       NOTREACHED();
       return nullptr;
   }
 }
 
-CRDHostDelegate* DeviceCommandsFactoryChromeOS::GetCRDHostDelegate() {
+CRDHostDelegate* DeviceCommandsFactoryAsh::GetCRDHostDelegate() {
   if (!crd_host_delegate_) {
     crd_host_delegate_ = std::make_unique<CRDHostDelegate>();
   }

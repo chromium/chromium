@@ -152,7 +152,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   absl::optional<std::string> oauth_token_for_test_;
 
   // The Delegate is used to interact with chrome services and CRD host.
-  // Owned by DeviceCommandsFactoryChromeOS.
+  // Owned by DeviceCommandsFactoryAsh.
   Delegate* delegate_;
 
   bool terminate_session_attempted_ = false;

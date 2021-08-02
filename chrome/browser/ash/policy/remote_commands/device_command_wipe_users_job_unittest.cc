@@ -16,7 +16,7 @@
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
+#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -39,7 +39,7 @@ constexpr base::TimeDelta kVeryoldCommandAge = base::TimeDelta::FromDays(175);
 class TestingRemoteCommandsService : public RemoteCommandsService {
  public:
   explicit TestingRemoteCommandsService(MockCloudPolicyClient* client)
-      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryChromeOS>(
+      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryAsh>(
                                   /*policy_manager=*/nullptr),
                               client,
                               /*store=*/nullptr,

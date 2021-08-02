@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
-#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
+#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
@@ -224,7 +224,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
 
   // Start remote commands services now that we have setup everything they need.
   core()->StartRemoteCommandsService(
-      std::make_unique<DeviceCommandsFactoryChromeOS>(this),
+      std::make_unique<DeviceCommandsFactoryAsh>(this),
       PolicyInvalidationScope::kDevice);
 
   // Enable device reporting and status monitoring for cloud managed devices. We

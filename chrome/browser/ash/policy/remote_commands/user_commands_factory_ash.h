@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_COMMANDS_FACTORY_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_COMMANDS_FACTORY_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_COMMANDS_FACTORY_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_COMMANDS_FACTORY_ASH_H_
 
 #include <memory>
 
@@ -14,10 +14,10 @@ class Profile;
 
 namespace policy {
 
-class UserCommandsFactoryChromeOS : public RemoteCommandsFactory {
+class UserCommandsFactoryAsh : public RemoteCommandsFactory {
  public:
-  explicit UserCommandsFactoryChromeOS(Profile* profile);
-  ~UserCommandsFactoryChromeOS() override;
+  explicit UserCommandsFactoryAsh(Profile* profile);
+  ~UserCommandsFactoryAsh() override;
 
   // RemoteCommandsFactory:
   std::unique_ptr<RemoteCommandJob> BuildJobForType(
@@ -27,9 +27,9 @@ class UserCommandsFactoryChromeOS : public RemoteCommandsFactory {
  private:
   Profile* const profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(UserCommandsFactoryChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(UserCommandsFactoryAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_COMMANDS_FACTORY_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_COMMANDS_FACTORY_ASH_H_

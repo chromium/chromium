@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
-#include "chrome/browser/ash/policy/remote_commands/user_commands_factory_chromeos.h"
+#include "chrome/browser/ash/policy/remote_commands/user_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_uploader.h"
 #include "chrome/browser/ash/policy/reporting/extension_install_event_log_uploader.h"
 #include "chrome/browser/browser_process.h"
@@ -808,7 +808,7 @@ void UserCloudPolicyManagerAsh::OnProfileAdded(Profile* profile) {
     return;
 
   core()->StartRemoteCommandsService(
-      std::make_unique<UserCommandsFactoryChromeOS>(profile_),
+      std::make_unique<UserCommandsFactoryAsh>(profile_),
       PolicyInvalidationScope::kUser);
   invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
       core(), base::DefaultClock::GetInstance(),

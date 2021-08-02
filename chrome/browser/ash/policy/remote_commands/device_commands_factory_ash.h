@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMANDS_FACTORY_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMANDS_FACTORY_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMANDS_FACTORY_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMANDS_FACTORY_ASH_H_
 
 #include <memory>
 
@@ -15,11 +15,11 @@ namespace policy {
 class CRDHostDelegate;
 class DeviceCloudPolicyManagerAsh;
 
-class DeviceCommandsFactoryChromeOS : public RemoteCommandsFactory {
+class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
  public:
-  explicit DeviceCommandsFactoryChromeOS(
+  explicit DeviceCommandsFactoryAsh(
       DeviceCloudPolicyManagerAsh* policy_manager);
-  ~DeviceCommandsFactoryChromeOS() override;
+  ~DeviceCommandsFactoryAsh() override;
 
   // RemoteCommandsFactory:
   std::unique_ptr<RemoteCommandJob> BuildJobForType(
@@ -32,9 +32,9 @@ class DeviceCommandsFactoryChromeOS : public RemoteCommandsFactory {
 
   CRDHostDelegate* GetCRDHostDelegate();
 
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandsFactoryChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(DeviceCommandsFactoryAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMANDS_FACTORY_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMANDS_FACTORY_ASH_H_
