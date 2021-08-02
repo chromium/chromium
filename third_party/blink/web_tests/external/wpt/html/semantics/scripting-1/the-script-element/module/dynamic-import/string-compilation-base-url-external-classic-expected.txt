@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL setTimeout should successfully import promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/imports-a.js?label=setTimeout"
+PASS eval should successfully import
+PASS Function should successfully import
+PASS reflected-inline-event-handlers should successfully import
+PASS inline-event-handlers-UA-code should successfully import
+Harness: the test ran to completion.
+
