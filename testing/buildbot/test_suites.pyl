@@ -3976,12 +3976,8 @@
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
-          # Disable parallel jobs to work around consistent test timeout flakes.
-          # Also, the first test is always flaky due to startup time, so force
-          # the order so we can suppress it.
-          # TODO(crbug.com/953991): Solve this and remove the workaround.
-          '--jobs=1',
-          '--order=natural',
+          # crbug.com/953991 Ensure WebGPU is ready before running tests
+          '--initialize-webgpu-adapter-at-startup',
           '--additional-driver-flag=--enable-dawn-backend-validation',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
@@ -4013,6 +4009,9 @@
         'resultdb': {
           'enable': True,
         },
+        'swarming': {
+          'shards': 4,
+        },
       },
     },
 
@@ -4021,12 +4020,8 @@
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests',
         'args': [
-          # Disable parallel jobs to work around consistent test timeout flakes.
-          # Also, the first test is always flaky due to startup time, so force
-          # the order so we can suppress it.
-          # TODO(crbug.com/953991): Solve this and remove the workaround.
-          '--jobs=1',
-          '--order=natural',
+          # crbug.com/953991 Ensure WebGPU is ready before running tests
+          '--initialize-webgpu-adapter-at-startup',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
           # We need this flag to initialize ANGLE so that we can explicitly tell
@@ -4055,6 +4050,9 @@
         'resultdb': {
           'enable': True,
         },
+        'swarming': {
+          'shards': 4,
+        },
       },
     },
 
@@ -4065,12 +4063,8 @@
         # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
-          # Disable parallel jobs to work around consistent test timeout flakes.
-          # Also, the first test is always flaky due to startup time, so force
-          # the order so we can suppress it.
-          # TODO(crbug.com/953991): Solve this and remove the workaround.
-          '--jobs=1',
-          '--order=natural',
+          # crbug.com/953991 Ensure WebGPU is ready before running tests
+          '--initialize-webgpu-adapter-at-startup',
           '--additional-driver-flag=--enable-dawn-backend-validation=partial',
           # Make Dawn allow "Unsafe APIs" so they can be tested with the WebGPU CTS.
           '--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis',
@@ -4101,6 +4095,9 @@
         'isolate_name': 'webgpu_blink_web_tests',
         'resultdb': {
           'enable': True,
+        },
+        'swarming': {
+          'shards': 4,
         },
       },
     },

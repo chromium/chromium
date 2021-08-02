@@ -251,8 +251,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -279,14 +278,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -315,7 +314,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -569,8 +569,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -597,14 +596,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -633,7 +632,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -887,8 +887,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -915,14 +914,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -951,7 +950,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -1205,8 +1205,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1233,14 +1232,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -1269,7 +1268,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -1542,8 +1542,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1572,14 +1571,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -1610,7 +1609,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -1863,8 +1863,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -1891,14 +1890,14 @@
               "os": "Mac-10.15.7"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -1927,7 +1926,8 @@
               "os": "Mac-10.15.7"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -2207,8 +2207,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2238,14 +2237,14 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -2277,7 +2276,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -2548,8 +2548,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2578,14 +2577,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -2616,7 +2615,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -2869,8 +2869,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -2897,14 +2896,14 @@
               "os": "Mac-10.15.7"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -2933,7 +2932,8 @@
               "os": "Mac-10.15.7"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -3160,8 +3160,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3193,7 +3192,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -3441,8 +3441,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3468,14 +3467,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -3503,7 +3502,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -3749,8 +3749,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -3776,14 +3775,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -3811,7 +3810,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -4057,8 +4057,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -4084,14 +4083,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -4119,7 +4118,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -4365,8 +4365,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator",
@@ -4392,14 +4391,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -4427,7 +4426,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -4675,8 +4675,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -4701,14 +4700,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -4735,7 +4734,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -4981,8 +4981,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -5007,14 +5006,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -5041,7 +5040,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -5287,8 +5287,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -5313,14 +5312,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -5347,7 +5346,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }
@@ -5593,8 +5593,7 @@
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--additional-driver-flag=--enable-dawn-features=use_tint_generator"
@@ -5619,14 +5618,14 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
         "args": [
-          "--jobs=1",
-          "--order=natural",
+          "--initialize-webgpu-adapter-at-startup",
           "--additional-driver-flag=--enable-dawn-backend-validation=partial",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
           "--additional-driver-flag=--use-gpu-in-tests",
@@ -5653,7 +5652,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       }

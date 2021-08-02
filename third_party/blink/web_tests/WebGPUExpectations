@@ -19,6 +19,9 @@
 # external/wpt/webgpu/cts.html, as the latter is not run.
 # ****************************************************************************
 
+# Workaround page loaded when content_shell starts, but not run as a test.
+crbug.com/1231599 wpt_internal/webgpu/000_run_me_first.html [ Skip ]
+
 ###
 ### Slow tests. Please prefer to split tests rather than adding to this section.
 ###
@@ -132,9 +135,6 @@ crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execu
 ###
 ### Platform-independent failures
 ###
-
-# This test runs first, and is often slow due to some browser startup not being complete.
-crbug.com/953991 wpt_internal/webgpu/000_run_me_first.html [ Slow ]
 
 crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
 crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
