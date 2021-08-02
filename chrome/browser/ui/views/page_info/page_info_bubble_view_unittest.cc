@@ -584,7 +584,7 @@ TEST_P(PageInfoBubbleViewTest, ResetBlockedInIncognitoPermission) {
   // permission changes, in production code this means the user interacted with
   // page info and is thus reported to the sentiment service, inflating the
   // expected interaction count.
-  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(5);
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(6);
 
   api_->SetOffTheRecordProfile();
 
@@ -700,7 +700,7 @@ TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
   if (!is_page_info_v2_enabled()) {
     return;
   }
-  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
 
   constexpr size_t kExpectedChildren = 0;
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));

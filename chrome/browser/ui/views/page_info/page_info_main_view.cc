@@ -218,6 +218,8 @@ void PageInfoMainView::SetPermissionInfo(
             }
             view->chosen_object_rows_.clear();
             view->PreferredSizeChanged();
+            view->presenter_->RecordPageInfoAction(
+                PageInfo::PageInfoAction::PAGE_INFO_PERMISSIONS_CLEARED);
           },
           base::Unretained(this))));
   reset_button_->SetProperty(views::kCrossAxisAlignmentKey,
