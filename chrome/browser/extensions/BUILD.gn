@@ -1259,6 +1259,13 @@ static_library("extensions") {
     ]
   }
 
+  if (is_fuchsia) {
+    sources += [
+      "api/image_writer_private/removable_storage_provider_fuchsia.cc",
+      "api/messaging/native_process_launcher_fuchsia.cc",
+    ]
+  }
+
   if (enable_plugins) {
     sources += [
       "plugin_manager.cc",

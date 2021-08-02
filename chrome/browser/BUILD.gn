@@ -7286,8 +7286,6 @@ static_library("test_support") {
 
   if (enable_extensions) {
     sources += [
-      "extensions/api/messaging/native_messaging_test_util.cc",
-      "extensions/api/messaging/native_messaging_test_util.h",
       "extensions/chrome_extension_test_notification_observer.cc",
       "extensions/chrome_extension_test_notification_observer.h",
       "extensions/chrome_test_extension_loader.cc",
@@ -7324,6 +7322,13 @@ static_library("test_support") {
       "//google_apis:test_support",
       "//services/data_decoder/public/cpp:test_support",
     ]
+    if (!is_fuchsia) {
+      # Native Messaging is not available under Fuchsia.
+      sources += [
+        "extensions/api/messaging/native_messaging_test_util.cc",
+        "extensions/api/messaging/native_messaging_test_util.h",
+      ]
+    }
     if (is_chromeos_ash) {
       deps += [ "//chrome/browser/chromeos" ]
     }

@@ -188,13 +188,14 @@ void ClearDevicePermissionEntries(ExtensionPrefs* prefs,
 scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
     const base::DictionaryValue* entry) {
   absl::optional<int> vendor_id = entry->FindIntKey(kDeviceVendorId);
-  if (!vendor_id || vendor_id.value() < 0 || vendor_id.value() > UINT16_MAX) {
+  if (!vendor_id || vendor_id.value() < 0 ||
+      vendor_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
   }
 
   absl::optional<int> product_id = entry->FindIntKey(kDeviceProductId);
   if (!product_id || product_id.value() < 0 ||
-      product_id.value() > UINT16_MAX) {
+      product_id.value() > static_cast<int>(UINT16_MAX)) {
     return nullptr;
   }
 

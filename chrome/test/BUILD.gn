@@ -6739,7 +6739,7 @@ test("unit_tests") {
 
       deps += [ "//components/enterprise:test_support" ]
     }
-    if (!is_chromeos_ash && !is_chromeos_lacros) {
+    if (!is_chromeos_ash && !is_chromeos_lacros && !is_fuchsia) {
       sources += [
         "../browser/extensions/api/messaging/native_message_process_host_unittest.cc",
         "../browser/extensions/api/messaging/native_messaging_launch_from_native_unittest.cc",

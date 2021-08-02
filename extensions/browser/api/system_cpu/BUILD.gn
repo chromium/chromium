@@ -22,6 +22,10 @@ source_set("system_cpu") {
     "//extensions/common/api",
   ]
 
+  if (is_fuchsia) {
+    sources += [ "cpu_info_provider_fuchsia.cc" ]
+  }
+
   if (is_mac) {
     sources += [ "cpu_info_provider_mac.cc" ]
   }
