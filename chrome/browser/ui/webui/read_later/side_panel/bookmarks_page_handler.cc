@@ -63,6 +63,10 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
     AddItem(IDC_BOOKMARK_BAR_REMOVE);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
+    AddItem(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK);
+    AddItem(IDC_BOOKMARK_BAR_NEW_FOLDER);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
     AddItem(IDC_BOOKMARK_MANAGER);
   }
   ~BookmarkContextMenu() override = default;
