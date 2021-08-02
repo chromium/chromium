@@ -14,6 +14,11 @@
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Debug"]
     },
+    "Mac10.12 Tests": {
+        "master": "chromium.mac",
+        "port_name": "mac-mac10.12",
+        "specifiers": ["Mac10.12", "Release"]
+    },
     "Mac10.13 Tests": {
         "master": "chromium.mac",
         "port_name": "mac-mac10.13",
@@ -82,6 +87,12 @@
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "has_webdriver_tests": true,
+        "is_try_builder": true
+    },
+    "mac10.12-blink-rel": {
+        "master": "tryserver.blink",
+        "port_name": "mac-mac10.12",
+        "specifiers": ["Mac10.12", "Release"],
         "is_try_builder": true
     },
     "mac10.13-blink-rel": {
