@@ -50,13 +50,8 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required by Permission Request Creator.
       GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope,
 
-#if defined(OS_IOS)
-      // TODO(1234406): Confirm why auth/android_checkin is needed for iOS.
-      GaiaConstants::kGCMGroupServerOAuth2Scope,
-      GaiaConstants::kGCMCheckinServerOAuth2Scope
-
     // Required by ChromeOS only.
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAccountsReauthOAuth2Scope,
       GaiaConstants::kAssistantOAuth2Scope,
       GaiaConstants::kAuditRecordingOAuth2Scope,

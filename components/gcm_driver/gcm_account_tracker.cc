@@ -276,6 +276,10 @@ void GCMAccountTracker::GetAllNeededTokens() {
   if (!driver_->IsConnected())
     return;
 
+  // Only start fetching access tokens if the user consented for sync.
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
+    return;
+
   for (auto iter = account_infos_.begin(); iter != account_infos_.end();
        ++iter) {
     if (iter->second.state == TOKEN_NEEDED)

@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -162,6 +163,7 @@ class GCMAccountTrackerTest : public testing::Test {
   // Helpers to pass fake info to the tracker.
   CoreAccountInfo AddAccount(const std::string& email);
   CoreAccountInfo SetPrimaryAccount(const std::string& email);
+  void ClearPrimaryAccount();
   void RemoveAccount(const CoreAccountId& account_id);
 
   // Helpers for dealing with OAuth2 access token requests.
@@ -221,6 +223,10 @@ CoreAccountInfo GCMAccountTrackerTest::SetPrimaryAccount(
   // expected.
   return identity_test_env_.MakePrimaryAccountAvailable(
       email, signin::ConsentLevel::kSync);
+}
+
+void GCMAccountTrackerTest::ClearPrimaryAccount() {
+  identity_test_env_.ClearPrimaryAccount();
 }
 
 void GCMAccountTrackerTest::RemoveAccount(const CoreAccountId& account_id) {
@@ -334,6 +340,29 @@ TEST_F(GCMAccountTrackerTest, AccountRemoved) {
   expected_accounts.push_back(MakeAccountToken(account1));
   VerifyAccountTokens(expected_accounts, driver()->accounts());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that clearing the primary account when having multiple accounts
+// does not crash the application.
+// Regression test for crbug.com/1234406
+TEST_F(GCMAccountTrackerTest, AccountRemovedWithoutSyncConsentNoCrash) {
+  CoreAccountInfo account1 = SetPrimaryAccount(kEmail1);
+  CoreAccountInfo account2 = AddAccount(kEmail2);
+
+  // Set last fetch time to now so that access token fetch is not required
+  // but not started.
+  driver()->SetLastTokenFetchTime(base::Time::Now());
+  tracker()->Start();
+  EXPECT_FALSE(driver()->update_accounts_called());
+
+  // Reset the last fetch time to verify that clearing the primary account
+  // will not trigger a token fetch.
+  driver()->SetLastTokenFetchTime(base::Time());
+  EXPECT_EQ(base::TimeDelta(), GetTimeToNextTokenReporting());
+  ClearPrimaryAccount();
+  EXPECT_TRUE(driver()->update_accounts_called());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(GCMAccountTrackerTest, GetTokenFailed) {
   CoreAccountInfo account1 = SetPrimaryAccount(kEmail1);
