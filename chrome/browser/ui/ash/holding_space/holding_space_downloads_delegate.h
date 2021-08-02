@@ -75,7 +75,7 @@ class HoldingSpaceDownloadsDelegate
 
   // crosapi::DownloadControllerAsh::DownloadControllerObserver:
   void OnLacrosDownloadUpdated(
-      const crosapi::mojom::DownloadEvent& event) override;
+      const crosapi::mojom::DownloadItem& download) override;
 
   // Invoked when the specified `in_progress_download` is updated.
   void OnDownloadUpdated(InProgressDownload* in_progress_download);

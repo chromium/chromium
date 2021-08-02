@@ -26,8 +26,8 @@ enum DownloadState {
 //
 // Next MinVersion: 2
 // Next ID: 13
-[Stable]
-struct DownloadEvent {
+[Stable, RenamedFrom="crosapi.mojom.DownloadEvent"]
+struct DownloadItem {
   DownloadState state@0;
   mojo_base.mojom.FilePath target_file_path@1;
   bool is_from_incognito_profile@2;
@@ -85,11 +85,11 @@ interface DownloadController {
 
   // Called when a download is created. Comes from `content::DownloadManager`,
   // and will only pass events once that's initialized.
-  OnDownloadCreated@0(crosapi.mojom.DownloadEvent event);
+  OnDownloadCreated@0(crosapi.mojom.DownloadItem download);
 
   // Called whenever a `download::DownloadItem` is updated.
-  OnDownloadUpdated@1(crosapi.mojom.DownloadEvent event);
+  OnDownloadUpdated@1(crosapi.mojom.DownloadItem download);
 
   // Called when a `download::DownloadItem` is destroyed.
-  OnDownloadDestroyed@2(crosapi.mojom.DownloadEvent event);
+  OnDownloadDestroyed@2(crosapi.mojom.DownloadItem download);
 };

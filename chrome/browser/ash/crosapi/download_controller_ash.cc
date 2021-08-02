@@ -20,21 +20,21 @@ void DownloadControllerAsh::BindClient(
 }
 
 void DownloadControllerAsh::OnDownloadCreated(
-    crosapi::mojom::DownloadEventPtr event) {
+    crosapi::mojom::DownloadItemPtr download) {
   for (auto& observer : observers_)
-    observer.OnLacrosDownloadCreated(*event);
+    observer.OnLacrosDownloadCreated(*download);
 }
 
 void DownloadControllerAsh::OnDownloadUpdated(
-    crosapi::mojom::DownloadEventPtr event) {
+    crosapi::mojom::DownloadItemPtr download) {
   for (auto& observer : observers_)
-    observer.OnLacrosDownloadUpdated(*event);
+    observer.OnLacrosDownloadUpdated(*download);
 }
 
 void DownloadControllerAsh::OnDownloadDestroyed(
-    crosapi::mojom::DownloadEventPtr event) {
+    crosapi::mojom::DownloadItemPtr download) {
   for (auto& observer : observers_)
-    observer.OnLacrosDownloadDestroyed(*event);
+    observer.OnLacrosDownloadDestroyed(*download);
 }
 
 void DownloadControllerAsh::AddObserver(DownloadControllerObserver* observer) {

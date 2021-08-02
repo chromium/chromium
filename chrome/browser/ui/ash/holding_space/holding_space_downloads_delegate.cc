@@ -30,8 +30,8 @@ content::DownloadManager* download_manager_for_testing = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns a download event state converted from the specified item `state`.
-crosapi::mojom::DownloadState ConvertToDownloadEventState(
+// Returns a mojo download state converted from the specified item `state`.
+crosapi::mojom::DownloadState ConvertToMojoDownloadState(
     download::DownloadItem::DownloadState state) {
   switch (state) {
     case download::DownloadItem::IN_PROGRESS:
@@ -47,41 +47,42 @@ crosapi::mojom::DownloadState ConvertToDownloadEventState(
   }
 }
 
-// Returns a download event converted from the specified `item`.
-crosapi::mojom::DownloadEventPtr ConvertToDownloadEvent(
+// Returns a mojo download item converted from the specified `item`.
+crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
     const download::DownloadItem* item) {
-  auto download_event = crosapi::mojom::DownloadEvent::New();
-  download_event->guid = item->GetGuid();
-  download_event->state = ConvertToDownloadEventState(item->GetState());
-  download_event->target_file_path = item->GetTargetFilePath();
-  download_event->full_path = item->GetFullPath();
-  download_event->is_paused = item->IsPaused();
-  download_event->has_is_paused = true;
-  download_event->open_when_complete = item->GetOpenWhenComplete();
-  download_event->has_open_when_complete = true;
-  download_event->received_bytes = item->GetReceivedBytes();
-  download_event->has_received_bytes = true;
-  download_event->total_bytes = item->GetTotalBytes();
-  download_event->has_total_bytes = true;
+  auto mojo_download_item = crosapi::mojom::DownloadItem::New();
+  mojo_download_item->guid = item->GetGuid();
+  mojo_download_item->state = ConvertToMojoDownloadState(item->GetState());
+  mojo_download_item->target_file_path = item->GetTargetFilePath();
+  mojo_download_item->full_path = item->GetFullPath();
+  mojo_download_item->is_paused = item->IsPaused();
+  mojo_download_item->has_is_paused = true;
+  mojo_download_item->open_when_complete = item->GetOpenWhenComplete();
+  mojo_download_item->has_open_when_complete = true;
+  mojo_download_item->received_bytes = item->GetReceivedBytes();
+  mojo_download_item->has_received_bytes = true;
+  mojo_download_item->total_bytes = item->GetTotalBytes();
+  mojo_download_item->has_total_bytes = true;
 
   // NOTE: `browser_context` may be `nullptr` in tests.
   auto* browser_context = content::DownloadItemUtils::GetBrowserContext(item);
-  download_event->is_from_incognito_profile =
+  mojo_download_item->is_from_incognito_profile =
       browser_context
           ? Profile::FromBrowserContext(browser_context)->IsIncognitoProfile()
           : false;
 
-  return download_event;
+  return mojo_download_item;
 }
 
-// Returns whether the underlying download for the given `event` is complete.
-bool IsComplete(const crosapi::mojom::DownloadEvent* event) {
-  return event->state == crosapi::mojom::DownloadState::kComplete;
+// Returns whether the specified `mojo_download_item` is complete.
+bool IsComplete(const crosapi::mojom::DownloadItem* mojo_download_item) {
+  return mojo_download_item->state == crosapi::mojom::DownloadState::kComplete;
 }
 
-// Returns whether the underlying download for the given `event` is in progress.
-bool IsInProgress(const crosapi::mojom::DownloadEvent* event) {
-  return event->state == crosapi::mojom::DownloadState::kInProgress;
+// Returns whether the specified `mojo_download_item` is in progress.
+bool IsInProgress(const crosapi::mojom::DownloadItem* mojo_download_item) {
+  return mojo_download_item->state ==
+         crosapi::mojom::DownloadState::kInProgress;
 }
 
 // Returns whether the specified `download_item` is in progress.
@@ -93,19 +94,20 @@ bool IsInProgress(const download::DownloadItem* download_item) {
 
 // HoldingSpaceDownloadsDelegate::InProgressDownload ---------------------------
 
-// A wrapper around an in-progress `crosapi::mojom::DownloadEvent` which
-// notifies its associated `delegate_` of changes in download state. Each
-// in-progress download is associated with a single in-progress holding space
-// item once the target file path for the in-progress download has been set.
-// NOTE: Instances of this class are immediately destroyed when the underlying
-// download is no longer in-progress or when the associated in-progress holding
-// space item is removed from the model.
+// A wrapper around an in-progress `crosapi::mojom::DownloadItem` which notifies
+// its associated `delegate_` of changes in download state. Each in-progress
+// download is associated with a single in-progress holding space item once the
+// target file path for the in-progress download has been set. NOTE: Instances
+// of this class are immediately destroyed when the underlying download is no
+// longer in-progress or when the associated in-progress holding space item is
+// removed from the model.
 class HoldingSpaceDownloadsDelegate::InProgressDownload {
  public:
   InProgressDownload(HoldingSpaceDownloadsDelegate* delegate,
-                     crosapi::mojom::DownloadEventPtr download_event)
-      : delegate_(delegate), download_event_(std::move(download_event)) {
-    DCHECK(IsInProgress(download_event_.get()));
+                     crosapi::mojom::DownloadItemPtr mojo_download_item)
+      : delegate_(delegate),
+        mojo_download_item_(std::move(mojo_download_item)) {
+    DCHECK(IsInProgress(mojo_download_item_.get()));
   }
 
   InProgressDownload(const InProgressDownload&) = delete;
@@ -128,23 +130,25 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   virtual void OpenWhenComplete() = 0;
 
   // Returns the number of bytes received for the underlying download.
-  int64_t GetReceivedBytes() const { return download_event_->received_bytes; }
+  int64_t GetReceivedBytes() const {
+    return mojo_download_item_->received_bytes;
+  }
 
   // Returns the file path associated with the underlying download.
   // NOTE: The file path may be empty before a target file path has been picked.
   base::FilePath GetFilePath() const {
-    return download_event_->full_path.value_or(base::FilePath());
+    return mojo_download_item_->full_path.value_or(base::FilePath());
   }
 
   // Returns the target file path associated with the underlying download.
   // NOTE: Returned path may be empty before a target file path has been picked.
   const base::FilePath& GetTargetFilePath() const {
-    return download_event_->target_file_path;
+    return mojo_download_item_->target_file_path;
   }
 
   // Returns the current progress of the underlying download.
   HoldingSpaceProgress GetProgress() const {
-    if (IsComplete(download_event_.get()))
+    if (IsComplete(mojo_download_item_.get()))
       return HoldingSpaceProgress();
     return HoldingSpaceProgress(GetReceivedBytes(), GetTotalBytes(),
                                 /*complete=*/false);
@@ -153,12 +157,12 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // Returns the number of total bytes for the underlying download.
   // NOTE: The total number of bytes will be absent if unknown.
   absl::optional<int64_t> GetTotalBytes() const {
-    const int64_t total_bytes = download_event_->total_bytes;
+    const int64_t total_bytes = mojo_download_item_->total_bytes;
     return total_bytes >= 0 ? absl::make_optional(total_bytes) : absl::nullopt;
   }
 
   // Returns whether the underlying download is paused.
-  bool IsPaused() const { return download_event_->is_paused; }
+  bool IsPaused() const { return mojo_download_item_->is_paused; }
 
   // Associates this in-progress download with the specified in-progress
   // `holding_space_item`. NOTE: This association may be performed only once.
@@ -187,7 +191,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
           return HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver()
               .Run(in_progress_download &&
                            IsInProgress(
-                               in_progress_download->download_event_.get())
+                               in_progress_download->mojo_download_item_.get())
                        ? in_progress_download->GetTargetFilePath()
                        : file_path,
                    size, dark_background, is_folder);
@@ -200,20 +204,20 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     // Only in-progress download items override primary text. In other cases,
     // the primary text will fall back to the lossy display name of the backing
     // file and be automatically updated in response to file system changes.
-    if (!IsInProgress(download_event_.get()))
+    if (!IsInProgress(mojo_download_item_.get()))
       return absl::nullopt;
-    return download_event_->target_file_path.BaseName().LossyDisplayName();
+    return mojo_download_item_->target_file_path.BaseName().LossyDisplayName();
   }
 
   // Returns the secondary text to display for the underlying download.
   absl::optional<std::u16string> GetSecondaryText() const {
     // Only in-progress download items have secondary text.
-    if (!IsInProgress(download_event_.get()))
+    if (!IsInProgress(mojo_download_item_.get()))
       return absl::nullopt;
 
     // In-progress download items which are marked to be opened when complete
     // have a special secondary text treatment.
-    if (download_event_->open_when_complete) {
+    if (mojo_download_item_->open_when_complete) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_OPEN_WHEN_COMPLETE);
     }
@@ -238,7 +242,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
       secondary_text = ui::FormatBytes(received_bytes);
     }
 
-    if (download_event_->is_paused) {
+    if (mojo_download_item_->is_paused) {
       // If the `item` is paused, prepend "Paused, " to the `secondary_text`
       // such that the string is of the form "Paused, 10/100 MB" or "Paused, 10
       // MB", depending on whether or not `total_bytes` is known.
@@ -251,18 +255,19 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   }
 
  protected:
-  // Updates the `download_event_` associated with this in-progress download,
-  // notifying `delegate_` of the change in state. Note that invoking this
-  // method may result in the destruction of `this`.
-  void UpdateDownloadEvent(crosapi::mojom::DownloadEventPtr download_event) {
-    download_event_ = std::move(download_event);
+  // Updates the `mojo_download_item_` associated with this in-progress
+  // download, notifying `delegate_` of the change in state. Note that invoking
+  // this method may result in the destruction of `this`.
+  void UpdateMojoDownloadItem(
+      crosapi::mojom::DownloadItemPtr mojo_download_item) {
+    mojo_download_item_ = std::move(mojo_download_item);
 
-    if (!download_event_) {
+    if (!mojo_download_item_) {
       delegate_->OnDownloadFailed(this);  // NOTE: Destroys `this`.
       return;
     }
 
-    switch (download_event_->state) {
+    switch (mojo_download_item_->state) {
       case crosapi::mojom::DownloadState::kInProgress:
         delegate_->OnDownloadUpdated(this);
         break;
@@ -281,7 +286,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
  private:
   HoldingSpaceDownloadsDelegate* const delegate_;  // NOTE: Owns `this`.
-  crosapi::mojom::DownloadEventPtr download_event_;
+  crosapi::mojom::DownloadItemPtr mojo_download_item_;
 
   // The in-progress holding space item associated with this in-progress
   // download. NOTE: This may be `nullptr` until the target file path for the
@@ -304,7 +309,7 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
  public:
   InProgressAshDownload(HoldingSpaceDownloadsDelegate* delegate,
                         download::DownloadItem* download_item)
-      : InProgressDownload(delegate, ConvertToDownloadEvent(download_item)),
+      : InProgressDownload(delegate, ConvertToMojoDownloadItem(download_item)),
         download_item_(download_item) {
     download_item_observation_.Observe(download_item);
   }
@@ -327,11 +332,11 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
   void OnDownloadUpdated(download::DownloadItem* download_item) override {
     // NOTE: This method invocation may result in destruction of `this`,
     // depending on the state of the underlying download.
-    UpdateDownloadEvent(ConvertToDownloadEvent(download_item));
+    UpdateMojoDownloadItem(ConvertToMojoDownloadItem(download_item));
   }
 
   void OnDownloadDestroyed(download::DownloadItem* download_item) override {
-    UpdateDownloadEvent(nullptr);  // NOTE: Destroys `this`.
+    UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
   }
 
   download::DownloadItem* const download_item_;
@@ -524,15 +529,15 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
 
 // TODO(crbug.com/1184438): Support in-progress downloads.
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
-    const crosapi::mojom::DownloadEvent& event) {
-  if (event.is_from_incognito_profile &&
+    const crosapi::mojom::DownloadItem& mojo_download_item) {
+  if (mojo_download_item.is_from_incognito_profile &&
       !features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     return;
   }
 
-  if (event.state == crosapi::mojom::DownloadState::kComplete) {
+  if (mojo_download_item.state == crosapi::mojom::DownloadState::kComplete) {
     service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
-                           event.target_file_path);
+                           mojo_download_item.target_file_path);
   }
 }
 

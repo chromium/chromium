@@ -805,8 +805,13 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
   }
 
   bool FromIncognitoProfile() const { return std::get<1>(GetParam()); }
-
   bool IncognitoDownloadsEnabled() const { return std::get<2>(GetParam()); }
+
+  crosapi::DownloadControllerAsh* download_controller() {
+    return crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->download_controller_ash();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -831,13 +836,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   // Create a test downloaded file.
   auto file_path = CreateTextFile(GetTestMountPoint(), "foo.txt");
 
-  // Create a corresponding `crosapi::mojom::DownloadEvent`.
-  crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
-  dle->target_file_path = file_path;
-  dle->is_from_incognito_profile = FromIncognitoProfile();
-
-  auto* download_controller =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->download_controller_ash();
+  // Create a corresponding `crosapi::mojom::DownloadItem`.
+  auto download = crosapi::mojom::DownloadItem::New();
+  download->target_file_path = file_path;
+  download->is_from_incognito_profile = FromIncognitoProfile();
 
   // Only `crosapi::mojom::DownloadState::kComplete` events should currently do
   // anything. The rest should all be ignored.
@@ -846,13 +848,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
        state <= static_cast<int>(DownloadState::kMaxValue); ++state) {
     if (state == static_cast<int>(crosapi::mojom::DownloadState::kComplete))
       continue;
-    dle->state = static_cast<DownloadState>(state);
-    download_controller->OnDownloadUpdated(dle.Clone());
+    download->state = static_cast<DownloadState>(state);
+    download_controller()->OnDownloadUpdated(download.Clone());
     ASSERT_EQ(0u, model->items().size());
   }
 
-  dle->state = crosapi::mojom::DownloadState::kComplete;
-  download_controller->OnDownloadUpdated(dle.Clone());
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  download_controller()->OnDownloadUpdated(download.Clone());
   // Holding space should ignore a completed download from an incognito profile
   // if the feature flag is not enabled.
   if (FromIncognitoProfile() && !IncognitoDownloadsEnabled()) {

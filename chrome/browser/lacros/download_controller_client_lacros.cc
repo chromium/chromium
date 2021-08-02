@@ -16,7 +16,7 @@
 
 namespace {
 
-crosapi::mojom::DownloadState ConvertDownloadState(
+crosapi::mojom::DownloadState ConvertMojoDownloadState(
     download::DownloadItem::DownloadState value) {
   switch (value) {
     case download::DownloadItem::IN_PROGRESS:
@@ -33,26 +33,26 @@ crosapi::mojom::DownloadState ConvertDownloadState(
   }
 }
 
-crosapi::mojom::DownloadEventPtr BuildDownloadEvent(
+crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
     download::DownloadItem* item) {
   auto* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
 
-  crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
-  dle->guid = item->GetGuid();
-  dle->state = ConvertDownloadState(item->GetState());
-  dle->full_path = item->GetFullPath();
-  dle->target_file_path = item->GetTargetFilePath();
-  dle->is_from_incognito_profile = profile->IsIncognitoProfile();
-  dle->is_paused = item->IsPaused();
-  dle->has_is_paused = true;
-  dle->open_when_complete = item->GetOpenWhenComplete();
-  dle->has_open_when_complete = true;
-  dle->received_bytes = item->GetReceivedBytes();
-  dle->has_received_bytes = true;
-  dle->total_bytes = item->GetTotalBytes();
-  dle->has_total_bytes = true;
-  return dle;
+  auto download = crosapi::mojom::DownloadItem::New();
+  download->guid = item->GetGuid();
+  download->state = ConvertMojoDownloadState(item->GetState());
+  download->full_path = item->GetFullPath();
+  download->target_file_path = item->GetTargetFilePath();
+  download->is_from_incognito_profile = profile->IsIncognitoProfile();
+  download->is_paused = item->IsPaused();
+  download->has_is_paused = true;
+  download->open_when_complete = item->GetOpenWhenComplete();
+  download->has_open_when_complete = true;
+  download->received_bytes = item->GetReceivedBytes();
+  download->has_received_bytes = true;
+  download->total_bytes = item->GetTotalBytes();
+  download->has_total_bytes = true;
+  return download;
 }
 
 }  // namespace
@@ -261,7 +261,7 @@ void DownloadControllerClientLacros::OnDownloadCreated(
     return;
 
   service->GetRemote<crosapi::mojom::DownloadController>()->OnDownloadCreated(
-      BuildDownloadEvent(item));
+      ConvertToMojoDownloadItem(item));
 }
 
 void DownloadControllerClientLacros::OnDownloadUpdated(
@@ -271,7 +271,7 @@ void DownloadControllerClientLacros::OnDownloadUpdated(
     return;
 
   service->GetRemote<crosapi::mojom::DownloadController>()->OnDownloadUpdated(
-      BuildDownloadEvent(item));
+      ConvertToMojoDownloadItem(item));
 }
 
 void DownloadControllerClientLacros::OnDownloadDestroyed(
@@ -281,5 +281,5 @@ void DownloadControllerClientLacros::OnDownloadDestroyed(
     return;
 
   service->GetRemote<crosapi::mojom::DownloadController>()->OnDownloadDestroyed(
-      BuildDownloadEvent(item));
+      ConvertToMojoDownloadItem(item));
 }

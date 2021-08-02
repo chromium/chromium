@@ -23,9 +23,9 @@ class DownloadControllerAsh : public mojom::DownloadController {
   // Allows ash classes to observe download events.
   class DownloadControllerObserver : public base::CheckedObserver {
    public:
-    virtual void OnLacrosDownloadCreated(const mojom::DownloadEvent& event) {}
-    virtual void OnLacrosDownloadUpdated(const mojom::DownloadEvent& event) {}
-    virtual void OnLacrosDownloadDestroyed(const mojom::DownloadEvent& event) {}
+    virtual void OnLacrosDownloadCreated(const mojom::DownloadItem&) {}
+    virtual void OnLacrosDownloadUpdated(const mojom::DownloadItem&) {}
+    virtual void OnLacrosDownloadDestroyed(const mojom::DownloadItem&) {}
   };
 
   DownloadControllerAsh();
@@ -40,9 +40,9 @@ class DownloadControllerAsh : public mojom::DownloadController {
   // mojom::DownloadController:
   void BindClient(
       mojo::PendingRemote<mojom::DownloadControllerClient> client) override;
-  void OnDownloadCreated(mojom::DownloadEventPtr event) override;
-  void OnDownloadUpdated(mojom::DownloadEventPtr event) override;
-  void OnDownloadDestroyed(mojom::DownloadEventPtr event) override;
+  void OnDownloadCreated(mojom::DownloadItemPtr download) override;
+  void OnDownloadUpdated(mojom::DownloadItemPtr download) override;
+  void OnDownloadDestroyed(mojom::DownloadItemPtr download) override;
 
   // Required for the below `base::ObserverList`:
   void AddObserver(DownloadControllerObserver* observer);
