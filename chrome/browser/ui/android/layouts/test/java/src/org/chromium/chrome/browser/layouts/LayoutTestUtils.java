@@ -21,8 +21,6 @@ public class LayoutTestUtils {
      */
     public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type)
             throws TimeoutException {
-        if (layoutManager.isLayoutVisible(type)) return;
-
         CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
         LayoutStateObserver observer = new LayoutStateObserver() {
             @Override
@@ -30,7 +28,13 @@ public class LayoutTestUtils {
                 finishedShowingCallbackHelper.notifyCalled();
             }
         };
-        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.addObserver(observer));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (layoutManager.isLayoutVisible(type)) {
+                finishedShowingCallbackHelper.notifyCalled();
+                return;
+            }
+            layoutManager.addObserver(observer);
+        });
 
         finishedShowingCallbackHelper.waitForFirst();
         TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
