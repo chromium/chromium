@@ -56,10 +56,6 @@ class ThumbnailLoader {
   // bitmap. On error, the bitmap will be null.
   void Load(const ThumbnailRequest& request, ImageCallback callback);
 
-  // Sets the `request_finished_callback_for_testing_` which is run whenever
-  // any request has finished, both in the case of success and failure.
-  void SetRequestFinishedCallbackForTesting(base::RepeatingClosure callback);
-
  private:
   class ThumbnailDecoder;
 
@@ -97,10 +93,6 @@ class ThumbnailLoader {
   // received from the image loder into a bitmap.
   std::map<base::UnguessableToken, std::unique_ptr<ThumbnailDecoder>>
       thumbnail_decoders_;
-
-  // An optional callback to be run whenever any request has finished, both in
-  // the case of success and failure.
-  base::RepeatingClosure request_finished_callback_for_testing_;
 
   base::WeakPtrFactory<ThumbnailLoader> weak_factory_{this};
 };

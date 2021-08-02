@@ -212,11 +212,6 @@ void ThumbnailLoader::Load(const ThumbnailRequest& request,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)));
 }
 
-void ThumbnailLoader::SetRequestFinishedCallbackForTesting(
-    base::RepeatingClosure callback) {
-  request_finished_callback_for_testing_ = std::move(callback);
-}
-
 void ThumbnailLoader::LoadForFileWithMetadata(
     const ThumbnailRequest& request,
     ImageCallback callback,
@@ -344,9 +339,6 @@ void ThumbnailLoader::RespondToRequest(const base::UnguessableToken& request_id,
   requests_.erase(request_it);
   std::move(callback).Run(cropped_bitmap.isNull() ? bitmap : &cropped_bitmap,
                           error);
-
-  if (!request_finished_callback_for_testing_.is_null())
-    request_finished_callback_for_testing_.Run();
 }
 
 }  // namespace ash

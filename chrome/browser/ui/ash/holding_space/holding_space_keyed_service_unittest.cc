@@ -1792,36 +1792,33 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   constexpr gfx::Size kImageSize(20, 20);
   constexpr bool kDarkBackground = false;
 
-  // Initially the holding space image should be an empty bitmap until the
-  // thumbnail loader finishes processing the request. Note that requesting the
-  // image is what spawns the initial request.
-  gfx::ImageSkia actual_image =
-      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
-  gfx::ImageSkia expected_image = image_util::CreateEmptyImage(kImageSize);
-  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
-
-  ThumbnailLoader* thumbnail_loader =
-      HoldingSpaceKeyedServiceFactory::GetInstance()
-          ->GetService(GetProfile())
-          ->thumbnail_loader_for_testing();
-
   {
-    // Wait for the `thumbnail_loader` to finish processing the request.
+    // Once the `ThumbnailLoader` has finished processing the initial request,
+    // the image should represent the file type of the *target* file for the
+    // underlying download, not its current backing file.
     base::RunLoop run_loop;
-    thumbnail_loader->SetRequestFinishedCallbackForTesting(
-        run_loop.QuitClosure());
-    run_loop.Run();
-    thumbnail_loader->SetRequestFinishedCallbackForTesting(
-        base::NullCallback());
-  }
+    auto image_skia_changed_subscription =
+        model->items()[0]->image().AddImageSkiaChangedCallback(
+            base::BindLambdaForTesting([&]() {
+              gfx::ImageSkia actual_image =
+                  model->items()[0]->image().GetImageSkia(kImageSize,
+                                                          kDarkBackground);
+              gfx::ImageSkia expected_image =
+                  GetIconForPath(current_target_path, kDarkBackground);
+              EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+              run_loop.Quit();
+            }));
 
-  // Once the `thumbnail_loader` has finished processing the request, the image
-  // should represent the file type of the *target* file for the underlying
-  // download, not its current backing file.
-  actual_image =
-      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
-  expected_image = GetIconForPath(current_target_path, kDarkBackground);
-  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+    // But initially the holding space image should be an empty bitmap. Note
+    // that requesting the image is what spawns the initial request.
+    gfx::ImageSkia actual_image =
+        model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+    gfx::ImageSkia expected_image = image_util::CreateEmptyImage(kImageSize);
+    EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+
+    // Wait for the `ThumbnailLoader` to finish processing the initial request.
+    run_loop.Run();
+  }
 
   // Update the total bytes for the download.
   current_total_bytes = -1;
@@ -1884,31 +1881,33 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_EQ(model->items()[0]->file_path(), current_path);
   EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.5f);
 
-  // Initially the holding space image should be an empty bitmap until the
-  // `thumbnail_loader` finishes processing the request. Note that requesting
-  // the image is what spawns the initial request.
-  actual_image =
-      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
-  expected_image = image_util::CreateEmptyImage(kImageSize);
-  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
-
   {
-    // Wait for the `thumbnail_loader` to finish processing the request.
+    // Once the `ThumbnailLoader` has finished processing the request, the image
+    // should represent the file type of the *target* file for the underlying
+    // download, not its current backing file.
     base::RunLoop run_loop;
-    thumbnail_loader->SetRequestFinishedCallbackForTesting(
-        run_loop.QuitClosure());
-    run_loop.Run();
-    thumbnail_loader->SetRequestFinishedCallbackForTesting(
-        base::NullCallback());
-  }
+    auto image_skia_changed_subscription =
+        model->items()[0]->image().AddImageSkiaChangedCallback(
+            base::BindLambdaForTesting([&]() {
+              gfx::ImageSkia actual_image =
+                  model->items()[0]->image().GetImageSkia(kImageSize,
+                                                          kDarkBackground);
+              gfx::ImageSkia expected_image =
+                  GetIconForPath(current_target_path, kDarkBackground);
+              EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+              run_loop.Quit();
+            }));
 
-  // Once the `thumbnail_loader` has finished processing the request, the image
-  // should represent the file type of the *target* file for the underlying
-  // download, not its current backing file.
-  actual_image =
-      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
-  expected_image = GetIconForPath(current_target_path, kDarkBackground);
-  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+    // But initially the holding space image should be an empty bitmap. Note
+    // that requesting the image is what spawns the initial request.
+    gfx::ImageSkia actual_image =
+        model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+    gfx::ImageSkia expected_image = image_util::CreateEmptyImage(kImageSize);
+    EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+
+    // Wait for the `ThumbnailLoader` to finish processing the initial request.
+    run_loop.Run();
+  }
 
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
@@ -1925,9 +1924,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   // The image should still be representative of the file type of the *target*
   // file for the underlying download which by this point is actually the same
   // file path as the backing file path.
-  actual_image =
+  gfx::ImageSkia actual_image =
       model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
-  expected_image = GetIconForPath(current_target_path, kDarkBackground);
+  gfx::ImageSkia expected_image =
+      GetIconForPath(current_target_path, kDarkBackground);
   EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 }
 
