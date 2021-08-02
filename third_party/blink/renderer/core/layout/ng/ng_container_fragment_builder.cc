@@ -347,6 +347,12 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
          additional_fixedpos_offset != LogicalOffset()) &&
         node.Style().GetPosition() == EPosition::kFixed) {
       static_position.offset += additional_fixedpos_offset;
+      // Relative offsets should be applied after fragmentation. However, if
+      // there is any relative offset that occurrend before the fixedpos reached
+      // its containing block, that relative offset should be applied to the
+      // static position (before fragmentation).
+      static_position.offset +=
+          relative_offset - fixedpos_containing_block->relative_offset;
       if (fixedpos_containing_block && fixedpos_containing_block->fragment) {
         AddOutOfFlowFragmentainerDescendant(
             {node, static_position, new_inline_container,
