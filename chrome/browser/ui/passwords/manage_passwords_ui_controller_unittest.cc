@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -51,7 +51,7 @@
 
 using password_manager::InsecureCredential;
 using password_manager::MockPasswordFormManagerForUI;
-using password_manager::MockPasswordStore;
+using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
 using ReauthSucceeded =
     password_manager::PasswordManagerClient::ReauthSucceeded;
@@ -114,11 +114,10 @@ class TestManagePasswordsIconView : public ManagePasswordsIconView {
 class TestPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  TestPasswordManagerClient() : mock_profile_store_(new MockPasswordStore()) {
-    mock_profile_store_->Init(nullptr);
-  }
+  TestPasswordManagerClient()
+      : mock_profile_store_(new MockPasswordStoreInterface()) {}
+
   ~TestPasswordManagerClient() override {
-    mock_profile_store_->ShutdownOnUIThread();
   }
 
   MOCK_METHOD(void,
@@ -127,12 +126,13 @@ class TestPasswordManagerClient
                base::OnceCallback<void(ReauthSucceeded)>),
               (override));
 
-  MockPasswordStore* GetProfilePasswordStore() const override {
+  MockPasswordStoreInterface* GetProfilePasswordStoreInterface()
+      const override {
     return mock_profile_store_.get();
   }
 
  private:
-  scoped_refptr<MockPasswordStore> mock_profile_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
 };
 
 // This subclass is used to disable some code paths which are not essential for
@@ -1465,7 +1465,8 @@ TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
       BuildFormFromLoginAndURL("user2", "password2", "http://b.com")};
 
   // Set expectations on the store.
-  MockPasswordStore* profile_store = client().GetProfilePasswordStore();
+  MockPasswordStoreInterface* profile_store =
+      client().GetProfilePasswordStoreInterface();
   EXPECT_CALL(*profile_store,
               AddLogin(MatchesLoginAndURL(credentials[0].username_value,
                                           credentials[0].password_value,
@@ -1493,7 +1494,8 @@ TEST_F(ManagePasswordsUIControllerTest, DiscardUnsyncedCredentials) {
   controller()->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
 
   // No save should happen on the profile store.
-  MockPasswordStore* profile_store = client().GetProfilePasswordStore();
+  MockPasswordStoreInterface* profile_store =
+      client().GetProfilePasswordStoreInterface();
   EXPECT_CALL(*profile_store, AddLogin).Times(0);
 
   // Discard.
@@ -1553,7 +1555,8 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
       .WillOnce(Return(saved));
   password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
 
-  EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
+  EXPECT_CALL(*client().GetProfilePasswordStoreInterface(),
+              GetAutofillableLogins)
       .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
         post_save_helper = consumer;
       }));
@@ -1596,7 +1599,8 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
 
   password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
 
-  EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
+  EXPECT_CALL(*client().GetProfilePasswordStoreInterface(),
+              GetAutofillableLogins)
       .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
         post_save_helper = consumer;
       }));
@@ -1647,12 +1651,6 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.
-  // There are insecure credentials to fix.
-  saved[0].username = u"another username";
-  EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllInsecureCredentialsImpl)
-      .Times(testing::AtMost(1))
-      .WillOnce(Return(saved));
   WaitForPasswordStore();
 
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
