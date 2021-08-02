@@ -762,6 +762,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DICTATION_CONFIRMATION_BODY" desc="The message shown the first time the user enables Dictation, explaining that the audio data will be sent to Google for transcription">
         Dictation sends your voice to Google to allow voice typing in any text field.
       </message>
+      <message name="IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE" desc="The message shown for existing Dictation users when their Dictation language has been upgraded in the background to work offline.">
+        <ph name="language">$1<ex>English</ex></ph> speech is now processed locally and works offline. You can change your Dictation language in Settings > Accessibility.
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables Switch Access, to confirm they meant to disable the feature.">
         Are you sure you want to turn off Switch Access?
       </message>

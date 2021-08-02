@@ -13,6 +13,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
+#include "ash/accessibility/dictation_nudge_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/accessibility/ui/accessibility_highlight_controller.h"
@@ -748,6 +749,9 @@ void AccessibilityControllerImpl::Shutdown() {
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
+  // Clean up any child windows and widgets that might be animating out.
+  dictation_nudge_controller_.reset();
+
   for (auto& observer : observers_)
     observer.OnAccessibilityControllerShutdown();
 }
@@ -1252,6 +1256,14 @@ void AccessibilityControllerImpl::ToggleDictationFromSource(
 
   dictation().SetEnabled(true);
   ToggleDictation();
+}
+
+void AccessibilityControllerImpl::ShowDictationLanguageUpgradedNudge(
+    const std::string& dictation_locale,
+    const std::string& application_locale) {
+  dictation_nudge_controller_ = std::make_unique<DictationNudgeController>(
+      dictation_locale, application_locale);
+  dictation_nudge_controller_->ShowNudge();
 }
 
 void AccessibilityControllerImpl::SilenceSpokenFeedback() {
@@ -2015,6 +2027,8 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       UpdateAccessibilityHighlightingFromPrefs();
       break;
     case FeatureType::kDictation:
+      if (!enabled)
+        dictation_nudge_controller_.reset();
       break;
     case FeatureType::kFloatingMenu:
       if (enabled && always_show_floating_menu_when_enabled_)

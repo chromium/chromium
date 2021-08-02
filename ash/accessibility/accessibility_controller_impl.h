@@ -44,6 +44,7 @@ class AccessibilityConfirmationDialog;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
+class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
@@ -382,6 +383,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       int point_scan_speed_dips_per_second) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
+  void ShowDictationLanguageUpgradedNudge(
+      const std::string& dictation_locale,
+      const std::string& application_locale) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;
   std::u16string GetBatteryDescription() const override;
@@ -421,6 +425,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool enable_chromevox_volume_slide_gesture() {
     return enable_chromevox_volume_slide_gesture_;
+  }
+  DictationNudgeController* GetDictationNudgeControllerForTest() {
+    return dictation_nudge_controller_.get();
   }
 
  private:
@@ -513,6 +520,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // Used to force the backlights off to darken the screen.
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
+
+  // Used to show the offline dictation language upgrade nudge. This is created
+  // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
+  // the Dictation feature is disabled.
+  std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
 
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;
