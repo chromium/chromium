@@ -39,6 +39,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /**
@@ -141,6 +142,23 @@ public class SigninCheckerTest {
                             .hasPrimaryAccount();
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+    }
+
+    @Test
+    @MediumTest
+    public void signoutWhenPrimaryAccountWithoutSyncConsentIsRemoved() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
+        final CoreAccountInfo oldAccount = mAccountManagerTestRule.addTestAccountThenSignin();
+
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                           .getIdentityManager(Profile.getLastUsedRegularProfile())
+                           .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                    == null;
+        });
     }
 
     @Test
