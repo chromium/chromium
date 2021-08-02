@@ -141,6 +141,12 @@
         }
 
         if ([weakSelf.contextMenuDelegate
+                respondsToSelector:@selector(selectTabs)]) {
+          [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                          [weakSelf.contextMenuDelegate selectTabs];
+                        }]];
+        }
+        if ([weakSelf.contextMenuDelegate
                 respondsToSelector:@selector(closeTabWithIdentifier:
                                                           incognito:)]) {
           [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{

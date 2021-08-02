@@ -1025,6 +1025,12 @@
   }
 }
 
+- (void)selectTabs {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
+  self.baseViewController.tabGridMode = TabGridModeSelection;
+}
+
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
   [self.baseViewController.remoteTabsViewController
       removeSessionAtTableSectionWithIdentifier:sectionIdentifier];
