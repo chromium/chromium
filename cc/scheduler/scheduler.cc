@@ -844,7 +844,8 @@ void Scheduler::ProcessScheduledActions() {
     action = state_machine_.NextAction();
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"),
                 "SchedulerStateMachine", [this](perfetto::EventContext ctx) {
-                  this->AsProtozeroInto(ctx.event()->set_cc_scheduler_state());
+                  this->AsProtozeroInto(ctx,
+                                        ctx.event()->set_cc_scheduler_state());
                 });
     base::AutoReset<SchedulerStateMachine::Action> mark_inside_action(
         &inside_action_, action);
@@ -931,6 +932,7 @@ void Scheduler::ProcessScheduledActions() {
 }
 
 void Scheduler::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::ChromeCompositorSchedulerState* state) const {
   base::TimeTicks now = Now();
 
@@ -957,14 +959,15 @@ void Scheduler::AsProtozeroInto(
   state->set_now_to_deadline_scheduled_at_delta_us(
       (deadline_scheduled_at_ - Now()).InMicroseconds());
 
-  begin_impl_frame_tracker_.AsProtozeroInto(now,
+  begin_impl_frame_tracker_.AsProtozeroInto(ctx, now,
                                             state->set_begin_impl_frame_args());
 
   BeginFrameObserverBase::AsProtozeroInto(
-      state->set_begin_frame_observer_state());
+      ctx, state->set_begin_frame_observer_state());
 
   if (begin_frame_source_) {
-    begin_frame_source_->AsProtozeroInto(state->set_begin_frame_source_state());
+    begin_frame_source_->AsProtozeroInto(ctx,
+                                         state->set_begin_frame_source_state());
   }
 }
 

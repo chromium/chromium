@@ -18,6 +18,7 @@
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 
 namespace perfetto {
+class EventContext;
 namespace protos {
 namespace pbzero {
 class BeginFrameObserverState;
@@ -108,6 +109,7 @@ class VIZ_COMMON_EXPORT BeginFrameObserverBase : public BeginFrameObserver {
   virtual bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) = 0;
 
   void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameObserverState* state) const;
 
   BeginFrameArgs last_begin_frame_args_;
@@ -192,6 +194,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   virtual void RemoveObserver(BeginFrameObserver* obs) = 0;
 
   virtual void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameSourceState* state) const;
 
  protected:
@@ -351,6 +354,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameSourceState* state) const override;
   void OnGpuNoLongerBusy() override;
 

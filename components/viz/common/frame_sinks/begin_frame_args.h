@@ -16,6 +16,7 @@
 #include "components/viz/common/viz_common_export.h"
 
 namespace perfetto {
+class EventContext;
 namespace protos {
 namespace pbzero {
 class BeginFrameArgs;
@@ -149,7 +150,8 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // these base::trace_event json dictionary functions.
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
   void AsValueInto(base::trace_event::TracedValue* dict) const;
-  void AsProtozeroInto(perfetto::protos::pbzero::BeginFrameArgs* args) const;
+  void AsProtozeroInto(perfetto::EventContext& ctx,
+                       perfetto::protos::pbzero::BeginFrameArgs* args) const;
 
   std::string ToString() const;
 

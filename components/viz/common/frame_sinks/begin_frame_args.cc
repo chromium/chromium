@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
@@ -152,6 +153,7 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
 }
 
 void BeginFrameArgs::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::BeginFrameArgs* state) const {
   state->set_type(TypeToProtozeroEnum(type));
   state->set_source_id(frame_id.source_id);
@@ -165,16 +167,8 @@ void BeginFrameArgs::AsProtozeroInto(
   state->set_on_critical_path(on_critical_path);
   state->set_animate_only(animate_only);
 #ifndef NDEBUG
-  auto* src_loc = state->set_source_location();
-  if (created_from.file_name()) {
-    src_loc->set_file_name(created_from.file_name());
-  }
-  if (created_from.function_name()) {
-    src_loc->set_function_name(created_from.function_name());
-  }
-  if (created_from.line_number() != -1) {
-    src_loc->set_line_number(created_from.line_number());
-  }
+  state->set_source_location_iid(base::trace_event::InternedSourceLocation::Get(
+      &ctx, base::trace_event::TraceSourceLocation(created_from)));
 #endif
 }
 

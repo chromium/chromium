@@ -97,10 +97,12 @@ void BeginFrameObserverBase::OnBeginFrame(const BeginFrameArgs& args) {
 }
 
 void BeginFrameObserverBase::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::BeginFrameObserverState* state) const {
   state->set_dropped_begin_frame_args(dropped_begin_frame_args_);
 
-  last_begin_frame_args_.AsProtozeroInto(state->set_last_begin_frame_args());
+  last_begin_frame_args_.AsProtozeroInto(ctx,
+                                         state->set_last_begin_frame_args());
 }
 
 BeginFrameArgs
@@ -186,6 +188,7 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
 }
 
 void BeginFrameSource::AsProtozeroInto(
+    perfetto::EventContext&,
     perfetto::protos::pbzero::BeginFrameSourceState* state) const {
   // The lower 32 bits of source_id are the interesting piece of |source_id_|.
   state->set_source_id(static_cast<uint32_t>(source_id_));
@@ -375,12 +378,14 @@ ExternalBeginFrameSource::~ExternalBeginFrameSource() {
 }
 
 void ExternalBeginFrameSource::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::BeginFrameSourceState* state) const {
-  BeginFrameSource::AsProtozeroInto(state);
+  BeginFrameSource::AsProtozeroInto(ctx, state);
 
   state->set_paused(paused_);
   state->set_num_observers(observers_.size());
-  last_begin_frame_args_.AsProtozeroInto(state->set_last_begin_frame_args());
+  last_begin_frame_args_.AsProtozeroInto(ctx,
+                                         state->set_last_begin_frame_args());
 }
 
 void ExternalBeginFrameSource::AddObserver(BeginFrameObserver* obs) {
