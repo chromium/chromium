@@ -592,11 +592,12 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
 void PDFiumEngine::ScrolledToXPosition(int position) {
   CancelPaints();
 
-  gfx::Vector2d diff(position_.x() - position, 0);
+  int old_x = position_.x();
   position_.set_x(position);
   CalculateVisiblePages();
 
-  client_->DidScroll(diff);
+  gfx::Vector2d diff(position - old_x, 0);
+  client_->DidScroll(-diff);
   caret_rect_ += diff;
   client_->CaretChanged(caret_rect_);
 
@@ -606,11 +607,12 @@ void PDFiumEngine::ScrolledToXPosition(int position) {
 void PDFiumEngine::ScrolledToYPosition(int position) {
   CancelPaints();
 
-  gfx::Vector2d diff(0, position_.y() - position);
+  int old_y = position_.y();
   position_.set_y(position);
   CalculateVisiblePages();
 
-  client_->DidScroll(diff);
+  gfx::Vector2d diff(0, position - old_y);
+  client_->DidScroll(-diff);
   caret_rect_ += diff;
   client_->CaretChanged(caret_rect_);
 
@@ -3933,12 +3935,7 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
                         rect_screen.y() - position_.y(), rect_screen.width(),
                         rect_screen.height());
 
-    // The caret rect will be cached in `TextInputManager`.
     client_->CaretChanged(caret_rect_);
-    // We need to explicitly clear the selected text, otherwise the selection
-    // range will be an InvalidRange, which does not match the cache in
-    // `TextInputManager`.
-    client_->SetSelectedText("");
   }
 }
 

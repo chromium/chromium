@@ -2575,11 +2575,7 @@ void PepperPluginInstanceImpl::UpdateCaretPosition(
     const PP_Rect& bounding_box) {
   if (!render_frame_)
     return;
-  PP_Rect caret_dip(caret), bounding_box_dip(bounding_box);
-  ConvertRectToDIP(&caret_dip);
-  ConvertRectToDIP(&bounding_box_dip);
-  TextInputCaretInfo info = {PP_ToGfxRect(caret_dip),
-                             PP_ToGfxRect(bounding_box_dip)};
+  TextInputCaretInfo info = {PP_ToGfxRect(caret), PP_ToGfxRect(bounding_box)};
   text_input_caret_info_ = std::move(info);
   render_frame_->PepperCaretPositionChanged(this);
 }
