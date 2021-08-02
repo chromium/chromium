@@ -170,7 +170,6 @@ struct GPU_EXPORT
     out->enable_threaded_texture_mailboxes =
         prefs.enable_threaded_texture_mailboxes();
     out->gl_shader_interm_output = prefs.gl_shader_interm_output();
-    out->emulate_shader_precision = prefs.emulate_shader_precision();
     out->enable_android_surface_control =
         prefs.enable_android_surface_control();
     out->enable_gpu_service_logging = prefs.enable_gpu_service_logging();
@@ -329,9 +328,6 @@ struct GPU_EXPORT
   }
   static bool gl_shader_interm_output(const gpu::GpuPreferences& prefs) {
     return prefs.gl_shader_interm_output;
-  }
-  static bool emulate_shader_precision(const gpu::GpuPreferences& prefs) {
-    return prefs.emulate_shader_precision;
   }
   static bool enable_android_surface_control(const gpu::GpuPreferences& prefs) {
     return prefs.enable_android_surface_control;

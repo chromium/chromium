@@ -147,8 +147,6 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kEnableThreadedTextureMailboxes);
   gpu_preferences.gl_shader_interm_output =
       command_line->HasSwitch(switches::kGLShaderIntermOutput);
-  gpu_preferences.emulate_shader_precision =
-      command_line->HasSwitch(switches::kEmulateShaderPrecision);
   gpu_preferences.enable_gpu_service_logging =
       command_line->HasSwitch(switches::kEnableGPUServiceLogging);
   gpu_preferences.enable_gpu_service_tracing =

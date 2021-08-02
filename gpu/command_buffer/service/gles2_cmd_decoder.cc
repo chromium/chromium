@@ -4597,9 +4597,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   if (!workarounds().dont_initialize_uninitialized_locals)
     driver_bug_workarounds |= SH_INITIALIZE_UNINITIALIZED_LOCALS;
 
-  resources.WEBGL_debug_shader_precision =
-      group_->gpu_preferences().emulate_shader_precision;
-
   ShShaderOutput shader_output_language =
       ShaderTranslator::GetShaderOutputLanguageForContext(gl_version_info());
 

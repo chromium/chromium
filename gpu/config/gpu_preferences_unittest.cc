@@ -59,7 +59,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_threaded_texture_mailboxes,
             right.enable_threaded_texture_mailboxes);
   EXPECT_EQ(left.gl_shader_interm_output, right.gl_shader_interm_output);
-  EXPECT_EQ(left.emulate_shader_precision, right.emulate_shader_precision);
   EXPECT_EQ(left.enable_gpu_service_logging, right.enable_gpu_service_logging);
   EXPECT_EQ(left.enable_gpu_service_tracing, right.enable_gpu_service_tracing);
   EXPECT_EQ(left.use_passthrough_cmd_decoder,
@@ -163,7 +162,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(disable_gpu_shader_disk_cache, true)
     GPU_PREFERENCES_FIELD(enable_threaded_texture_mailboxes, true)
     GPU_PREFERENCES_FIELD(gl_shader_interm_output, true)
-    GPU_PREFERENCES_FIELD(emulate_shader_precision, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_logging, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_tracing, true)
     GPU_PREFERENCES_FIELD(use_passthrough_cmd_decoder, true)
@@ -259,7 +257,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(disable_gpu_shader_disk_cache);
   PRINT_BOOL(enable_threaded_texture_mailboxes);
   PRINT_BOOL(gl_shader_interm_output);
-  PRINT_BOOL(emulate_shader_precision);
   PRINT_BOOL(enable_gpu_service_logging);
   PRINT_BOOL(enable_gpu_service_tracing);
   PRINT_BOOL(use_passthrough_cmd_decoder);
