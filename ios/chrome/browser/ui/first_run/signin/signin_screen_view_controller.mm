@@ -19,6 +19,7 @@
 namespace {
 // Width of the identity control if nothing is contraining it.
 const CGFloat kIdentityControlMaxWidth = 327;
+const CGFloat kIdentityTopMargin = 16;
 }  // namespace
 
 @interface SigninScreenViewController ()
@@ -62,7 +63,8 @@ const CGFloat kIdentityControlMaxWidth = 327;
 
   [NSLayoutConstraint activateConstraints:@[
     [self.identityControl.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor],
+        constraintEqualToAnchor:self.specificContentView.topAnchor
+                       constant:kIdentityTopMargin],
     [self.identityControl.centerXAnchor
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
     [self.identityControl.widthAnchor
