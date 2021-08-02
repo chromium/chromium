@@ -7,7 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
-#include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
+#include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"

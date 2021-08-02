@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
+#include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"

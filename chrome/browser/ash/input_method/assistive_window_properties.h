@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 
 namespace chromeos {
 struct AssistiveWindowProperties {
