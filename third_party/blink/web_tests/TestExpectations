@@ -6046,9 +6046,6 @@ crbug.com/1111287 http/tests/devtools/sources/debugger-breakpoints/breakpoint-wi
 # Sheriff 2020-08-03
 crbug.com/1106429 virtual/percent-based-scrolling/max-percent-delta-page-zoom.html [ Failure Pass ]
 
-# Flaky test
-crbug.com/1112778 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/alpha/base-url-worker.sub.html [ Failure Pass ]
-
 # Sheriff 2020-08-05
 crbug.com/1113050 fast/borders/border-radius-mask-video-ratio.html [ Failure Pass ]
 crbug.com/1113127 fast/canvas/downsample-quality.html [ Crash Failure Pass ]
