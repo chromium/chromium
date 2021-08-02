@@ -15,10 +15,10 @@ SCRIPT_NAME = "generate_ui_string_overrider.py"
 
 
 # Regular expression for parsing the #define macro format. Matches both the
-# version of the macro with whitelist support and the one without. For example,
-# Without generate whitelist flag:
+# version of the macro with allowlist support and the one without. For example,
+# Without generate allowlist flag:
 #   #define IDS_FOO_MESSAGE 1234
-# With generate whitelist flag:
+# With generate allowlist flag:
 #   #define IDS_FOO_MESSAGE (::ui::AllowlistedResource<1234>(), 1234)
 RESOURCE_EXTRACT_REGEX = re.compile('^#define (\S*).* (\d+)\)?$', re.MULTILINE)
 
