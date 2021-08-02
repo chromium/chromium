@@ -14,6 +14,15 @@ typedef NS_ENUM(NSInteger, NewPasswordTableCellType) {
   NewPasswordTableCellTypeNumRows,
 };
 
+@class NewPasswordTableCell;
+
+@protocol NewPasswordTableCellDelegate
+
+// Alerts the delegate every time the text field changes in this cell.
+- (void)textFieldDidChangeInCell:(NewPasswordTableCell*)cell;
+
+@end
+
 @interface NewPasswordTableCell : UITableViewCell
 
 // Reuse ID for registering this class in table views.
@@ -21,6 +30,9 @@ typedef NS_ENUM(NSInteger, NewPasswordTableCellType) {
 
 // Field that holds the user-entered text.
 @property(nonatomic, strong) UITextField* textField;
+
+// Delegate for this cell.
+@property(nonatomic, weak) id<NewPasswordTableCellDelegate> delegate;
 
 // Sets the cell up to show the given type.
 - (void)setCellType:(NewPasswordTableCellType)cellType;

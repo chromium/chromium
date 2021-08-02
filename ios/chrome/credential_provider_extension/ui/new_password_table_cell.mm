@@ -86,6 +86,9 @@ const CGFloat kButtonSpacing = 8;
     _textField.hidden = YES;
     _textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    [_textField addTarget:self
+                   action:@selector(textFieldDidChange:)
+         forControlEvents:UIControlEventEditingChanged];
 
     _hidePasswordButton = [UIButton buttonWithType:UIButtonTypeSystem];
     _hidePasswordButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -141,6 +144,8 @@ const CGFloat kButtonSpacing = 8;
 - (void)prepareForReuse {
   [super prepareForReuse];
 
+  self.delegate = nil;
+
   self.titleLabel.text = @"";
   self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   self.textField.hidden = YES;
@@ -178,6 +183,10 @@ const CGFloat kButtonSpacing = 8;
 
 - (void)hidePasswordTapped:(id)sender {
   self.passwordHidden = !self.passwordHidden;
+}
+
+- (void)textFieldDidChange:(id)sender {
+  [self.delegate textFieldDidChangeInCell:self];
 }
 
 #pragma mark - Accessors

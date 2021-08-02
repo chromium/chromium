@@ -15,7 +15,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface NewPasswordViewController () <UITableViewDataSource>
+@interface NewPasswordViewController () <UITableViewDataSource,
+                                         NewPasswordTableCellDelegate>
 @end
 
 @implementation NewPasswordViewController
@@ -81,6 +82,7 @@
   }
 
   [cell setCellType:cellType];
+  cell.delegate = self;
 
   return cell;
 }
@@ -124,16 +126,40 @@
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   // There is no need to check which cell has been selected because all the
   // other cells are unselectable from |-tableView:willSelectRowAtIndexPath:|.
-  NSIndexPath* passwordIndexPath =
-      [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
-                         inSection:0];
-  NewPasswordTableCell* passwordCell =
-      [tableView cellForRowAtIndexPath:passwordIndexPath];
+
+  NewPasswordTableCell* passwordCell = [self passwordCell];
 
   // TODO(crbug.com/1224986): Generate password and fill it in.
   passwordCell.textField.text = @"";
 
+  [self updateSaveButtonState];
+
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (NewPasswordTableCell*)passwordCell {
+  NSIndexPath* passwordIndexPath =
+      [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
+                         inSection:0];
+  NewPasswordTableCell* passwordCell =
+      [self.tableView cellForRowAtIndexPath:passwordIndexPath];
+
+  return passwordCell;
+}
+
+#pragma mark - NewPasswordTableCellDelegate
+
+- (void)textFieldDidChangeInCell:(NewPasswordTableCell*)cell {
+  if (cell == [self passwordCell]) {
+    [self updateSaveButtonState];
+  }
+}
+
+// Updates the save button state based on whether there is text in the password
+// cell.
+- (void)updateSaveButtonState {
+  self.navigationItem.rightBarButtonItem.enabled =
+      [self passwordCell].textField.text.length > 0;
 }
 
 #pragma mark - Private
@@ -216,12 +242,15 @@
 
 // Returns a new save button for the navigation bar.
 - (UIBarButtonItem*)navigationSaveButton {
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+  UIBarButtonItem* saveButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemSave
                            target:self
                            action:@selector(saveButtonWasPressed)];
-  cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
-  return cancelButton;
+  saveButton.tintColor = [UIColor colorNamed:kBlueColor];
+
+  // Save button should start disabled because no password has been entered.
+  saveButton.enabled = NO;
+  return saveButton;
 }
 
 @end
