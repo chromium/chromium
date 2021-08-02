@@ -295,7 +295,10 @@ static_library("renderer") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//ash/webui/file_manager:constants",
+    ]
   }
 
   if (enable_widevine_cdm_component) {

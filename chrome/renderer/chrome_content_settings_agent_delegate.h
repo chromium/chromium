@@ -52,6 +52,9 @@ class ChromeContentSettingsAgentDelegate
   // Whether the observed RenderFrame is for a platform app.
   bool IsPlatformApp();
 
+  // Whether the observed RenderFrame is an allow-listed System Web App.
+  bool IsAllowListedSystemWebApp();
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If |origin| corresponds to an installed extension, returns that extension.
   // Otherwise returns null.

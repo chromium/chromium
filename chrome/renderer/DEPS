@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/webui/file_manager/url_constants.h",
   "+chrome/grit",
   "+components/autofill/content/common",
   "+components/autofill/content/renderer",
