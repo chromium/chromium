@@ -6,6 +6,7 @@ import {assertEquals, assertNotEquals} from 'chrome://test/chai_assert.js';
 
 import {MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
@@ -167,6 +168,7 @@ export function setUp() {
   assertEquals(bannerContainer.childElementCount, 0);
 
   new MockChromeStorageAPI();
+  xfm.storage.local.clear();
   directoryModel = createFakeDirectoryModel();
   controller = new BannerController(directoryModel);
 

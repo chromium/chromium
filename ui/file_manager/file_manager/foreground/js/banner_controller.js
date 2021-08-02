@@ -86,27 +86,19 @@ export class BannerController extends EventTarget {
     }
 
     const cacheKeys = Object.keys(this.localStorageCache_);
-
-    // TODO(crbug.com/1233372): Update xfm.storage.local.get method to async
-    // friendly syntax once implemented.
-    return new Promise((resolve, reject) => {
-      xfm.storage.local.get(cacheKeys, values => {
-        if (chrome.runtime.lastError) {
-          reject(
-              'Failed to load banner data from storage: ' +
-              chrome.runtime.lastError.message);
-          return;
-        }
-        for (const key of cacheKeys) {
-          const storedValue = parseInt(values[key], 10);
-          if (storedValue) {
-            this.localStorageCache_[key] = storedValue;
-          }
-        }
-        this.reconcile();
-        resolve();
-      });
-    });
+    let values = {};
+    try {
+      values = await xfm.storage.local.getAsync(cacheKeys);
+    } catch (e) {
+      console.warn(e.message);
+    }
+    for (const key of cacheKeys) {
+      const storedValue = parseInt(values[key], 10);
+      if (storedValue) {
+        this.localStorageCache_[key] = storedValue;
+      }
+    }
+    this.reconcile();
   }
 
   /**
@@ -207,7 +199,6 @@ export class BannerController extends EventTarget {
           /** @type {!Banner} */ (document.createElement(tagName)));
     }
   }
-
 
   /**
    * Listens for localStorage changes to ensure instance cache is in sync.

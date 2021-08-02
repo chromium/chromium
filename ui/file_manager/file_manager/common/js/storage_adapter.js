@@ -6,6 +6,64 @@
 export const storage = {};
 
 /**
+ * StorageAreaAsync is a wrapper for existing storage implementations to
+ * include async/await compatible version of get/set.
+ * @extends {StorageArea}
+ */
+class StorageAreaAsync {
+  /**
+   * @param {?StorageArea} storageArea chrome.storage.{local,sync} or null
+   */
+  constructor(storageArea) {
+    this.storageArea_ = (storageArea) ? storageArea : this;
+
+    this.get = this.storageArea_.get.bind(this.storageArea_);
+    this.set = this.storageArea_.set.bind(this.storageArea_);
+    this.remove = this.storageArea_.remove.bind(this.storageArea_);
+    this.clear = this.storageArea_.clear.bind(this.storageArea_);
+  }
+
+  /**
+   * Convert the storage.{local,sync}.get method to return a Promise.
+   * @param {string|!Array<string>} keys
+   * @returns {!Promise<!Object<string, *>>}
+   */
+  async getAsync(keys) {
+    return new Promise((resolve, reject) => {
+      this.get(keys, (values) => {
+        if (chrome && chrome.runtime && chrome.runtime.lastError) {
+          const keysString = keys && keys.join(', ');
+          reject(`Failed to retrieve keys [${keysString}] from browser storage:
+              ${chrome.runtime.lastError.message}`);
+          return;
+        }
+        resolve(values);
+      });
+    });
+  }
+
+  /**
+   * Convert the storage.{local,sync}.set method to return a Promise.
+   * @param {!Object<string, *>} values
+   * @returns {!Promise<void>}
+   */
+  async setAsync(values) {
+    return new Promise((resolve, reject) => {
+      this.set(values, () => {
+        if (chrome && chrome.runtime && chrome.runtime.lastError) {
+          const keysString = values && Object.keys(values).join(', ');
+          reject(`Failed to update browser storage keys
+              [${keysString}] with supplied values:
+              ${chrome.runtime.lastError.message}`);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+}
+
+/**
  * If localStorage hasn't been loaded, read it and populate the storage
  * for the specified type ('sync' or 'local').
  * @param {string} type
@@ -36,13 +94,17 @@ storage.onChanged = (window.isSWA) ? {addListener(callback) {}} : {
 };
 
 /**
- * @extends {StorageArea}
+ * StorageAreaSWAImpl enables the SWA version of Files app to continue using the
+ * xfm.storage.* APIs by transparently switching them to use window.localStorage
+ * instead of the chrome.storage APIs.
  */
-class StorageAreaSWAImpl {
+class StorageAreaSWAImpl extends StorageAreaAsync {
   /**
    * @param {string} type
    */
   constructor(type) {
+    super(/** storageArea */ null);
+
     /** @private {boolean} */
     this.loaded_ = false;
     /** @private {!Object} */
@@ -90,6 +152,15 @@ class StorageAreaSWAImpl {
     flushIntoLocalStorage(this.type_, this.store_);
   }
 
+  /**
+   * @override
+   */
+  clear(callback) {
+    this.load_();
+    this.store_ = {};
+    flushIntoLocalStorage(this.type_, this.store_);
+  }
+
   load_() {
     if (!this.loaded_) {
       this.store_ = getFromLocalStorage(this.type_);
@@ -99,12 +170,12 @@ class StorageAreaSWAImpl {
 }
 
 /**
- * @type {!StorageArea}
+ * @type {!StorageAreaAsync}
  */
 storage.sync;
 
 /**
- * @type {!StorageArea}
+ * @type {!StorageAreaAsync}
  */
 storage.local;
 
@@ -112,8 +183,8 @@ if (window.isSWA) {
   storage.sync = new StorageAreaSWAImpl('sync');
   storage.local = new StorageAreaSWAImpl('local');
 } else if (chrome && chrome.storage) {
-  storage.sync = chrome.storage.sync;
-  storage.local = chrome.storage.local;
+  storage.sync = new StorageAreaAsync(chrome.storage.sync);
+  storage.local = new StorageAreaAsync(chrome.storage.local);
 } else {
   console.warn('Creating sync and local stubs for tests');
   storage.sync = new StorageAreaSWAImpl('test-sync');
