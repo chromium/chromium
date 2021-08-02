@@ -2758,6 +2758,17 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
+      # TODO(crbug.com/1235218): remove after the migration.
+      'chromeos-amd64-generic-rel (reclient compare)': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'browser_config': 'cros-chrome',
+        'mixins': [
+          'chromeos-amd64-generic',
+        ],
+        'os_type': 'chromeos',
+      },
       'chromeos-amd64-generic-rel (reclient)': {
         'additional_compile_targets': [
           'chromiumos_preflight',

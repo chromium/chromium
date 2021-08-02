@@ -18985,6 +18985,11 @@
       }
     ]
   },
+  "chromeos-amd64-generic-rel (reclient compare)": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  },
   "chromeos-amd64-generic-rel (reclient)": {
     "additional_compile_targets": [
       "chromiumos_preflight"

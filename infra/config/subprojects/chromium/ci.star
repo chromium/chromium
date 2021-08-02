@@ -4221,6 +4221,22 @@ ci.fyi_builder(
     reclient_rewrapper_env = {"RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"},
 )
 
+# TODO(crbug.com/1235218): remove after the migration.
+ci.fyi_builder(
+    name = "chromeos-amd64-generic-rel (reclient compare)",
+    console_view_entry = consoles.console_view_entry(
+        category = "cros x64",
+        short_name = "cmp",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_REMOVE,
+    reclient_rewrapper_env = {"RBE_compare": "true"},
+    description_html = "verify artifacts. removed after the migration. crbug.com/1235218",
+)
+
 ci.fyi_builder(
     name = "lacros-amd64-generic-rel (goma cache silo)",
     console_view_entry = consoles.console_view_entry(

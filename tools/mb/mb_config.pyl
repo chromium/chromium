@@ -314,6 +314,8 @@
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64',
       'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
+      # TODO(crbug.com/1235218): remove after the migration.
+      'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
