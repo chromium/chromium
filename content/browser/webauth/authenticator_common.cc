@@ -1020,13 +1020,8 @@ void AuthenticatorCommon::MakeCredential(
     request_delegate_->DisableUI();
   }
 
-  if (options->is_payment_credential_creation &&
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kPaymentCreate, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin);
-  } else if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-                 caller_origin)) {
+  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+          caller_origin)) {
     // Cryptotoken passes the real caller origin in |relying_party.name|.
     const url::Origin client_data_origin =
         url::Origin::Create(GURL(*options->relying_party.name));

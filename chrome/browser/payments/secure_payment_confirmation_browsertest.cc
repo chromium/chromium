@@ -582,14 +582,11 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
 
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
-          ? "payment.create"
-          : "webauthn.create",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("createCredentialAndReturnClientDataType($1)",
-                             GetDefaultIconURL())));
+  EXPECT_EQ("webauthn.create",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "createCredentialAndReturnClientDataType($1)",
+                                GetDefaultIconURL())));
 
   // Verify that credential id size gets recorded.
   histogram_tester_.ExpectTotalCount(

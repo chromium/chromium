@@ -719,12 +719,6 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
           true,
       },
       {
-          ClientDataRequestType::kPaymentCreate,
-          "origin",
-          {1, 2, 3},
-          false,
-      },
-      {
           ClientDataRequestType::kPaymentGet,
           "origin",
           {1, 2, 3},
@@ -759,10 +753,6 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
       case ClientDataRequestType::kWebAuthnGet:
         type_key = "type";
         expected_type = "webauthn.get";
-        break;
-      case ClientDataRequestType::kPaymentCreate:
-        type_key = "type";
-        expected_type = "payment.create";
         break;
       case ClientDataRequestType::kPaymentGet:
         type_key = "type";
