@@ -819,29 +819,6 @@ TEST_P(NativeIOManagerTest, GetStorageKeysByType_ReturnsActiveStorageKeys) {
   example_file_host.Close();
 }
 
-TEST_P(NativeIOManagerTest,
-       GetStorageKeysByType_EmptyForUnimplementedStorageTypes) {
-  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
-  base::File example_file =
-      example_host_
-          ->OpenFile("test_file",
-                     example_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-  example_file.Close();
-  NativeIOFileHostSync example_file_host(example_host_remote.get());
-  example_file_host.Close();
-
-  std::vector<StorageKey> storage_keys = sync_manager_->GetStorageKeysForType(
-      blink::mojom::StorageType::kPersistent);
-  EXPECT_EQ(0u, storage_keys.size());
-  storage_keys = sync_manager_->GetStorageKeysForType(
-      blink::mojom::StorageType::kSyncable);
-  EXPECT_EQ(0u, storage_keys.size());
-  storage_keys = sync_manager_->GetStorageKeysForType(
-      blink::mojom::StorageType::kQuotaNotManaged);
-  EXPECT_EQ(0u, storage_keys.size());
-}
-
 TEST_P(NativeIOManagerTest, GetStorageKeysByHost_ReturnsActiveStorageKeys) {
   mojo::Remote<blink::mojom::NativeIOFileHost> example_file_host_remote;
   base::File example_file =

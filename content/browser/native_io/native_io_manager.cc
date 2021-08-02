@@ -239,10 +239,7 @@ void NativeIOManager::DeleteStorageKeyData(
 void NativeIOManager::GetStorageKeysForType(
     blink::mojom::StorageType type,
     storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) {
-  if (type != blink::mojom::StorageType::kTemporary) {
-    std::move(callback).Run({});
-    return;
-  }
+  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {
@@ -265,10 +262,7 @@ void NativeIOManager::GetStorageKeysForHost(
     blink::mojom::StorageType type,
     const std::string& host,
     storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback) {
-  if (type != blink::mojom::StorageType::kTemporary) {
-    std::move(callback).Run({});
-    return;
-  }
+  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -294,10 +288,7 @@ void NativeIOManager::GetStorageKeyUsage(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
     storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) {
-  if (type != blink::mojom::StorageType::kTemporary) {
-    std::move(callback).Run(0);
-    return;
-  }
+  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
   base::FilePath storage_key_root = RootPathForStorageKey(storage_key);
 
