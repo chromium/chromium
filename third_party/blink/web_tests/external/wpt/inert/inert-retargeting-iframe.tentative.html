@@ -136,7 +136,7 @@ function movePointerOver(element) {
 
 function movePointerTo(x, y) {
   return new test_driver.Actions()
-      .pointerMove(x, y, { origin: "viewport" })
+      .pointerMove(Math.ceil(x), Math.ceil(y), { origin: "viewport" })
       .send();
 }
 
@@ -155,7 +155,7 @@ function expectEventsOn(events, element) {
         step_timeout(() => {
           element.removeEventListener(event, f, { capture: true });
           reject("did not get " + event + " on " + element.id);
-        }, 1000);
+        }, 5000);
       });
       promises.push(promise);
     })(event, element);

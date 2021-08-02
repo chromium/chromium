@@ -3114,7 +3114,6 @@ crbug.com/1050754 external/wpt/inert/inert-node-is-uneditable.tentative.html [ F
 crbug.com/1050754 external/wpt/inert/inert-node-is-unfocusable.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/inert/inert-node-is-unselectable.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/inert/inert-on-slots.tentative.html [ Failure ]
-crbug.com/1050754 external/wpt/inert/inert-retargeting-iframe.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/inert/inert-retargeting.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/assumptions/allowed-to-play.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/expected-fail/failing-test.html [ Failure Pass ]

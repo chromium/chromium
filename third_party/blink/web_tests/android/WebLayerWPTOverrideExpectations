@@ -1138,7 +1138,6 @@ crbug.com/1050754 external/wpt/idle-detection/idle-detection-allowed-by-feature-
 crbug.com/1050754 external/wpt/idle-detection/idle-detection-default-feature-policy.https.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/import-maps/data-driven/parsing-internal.https.html [ Failure ]
 crbug.com/1050754 external/wpt/import-maps/data-driven/resolving-internal.https.html [ Failure ]
-crbug.com/1050754 external/wpt/inert/inert-retargeting-iframe.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/inert/inert-retargeting.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/assumptions/non-local-ports.sub.window.html [ Timeout ]
 crbug.com/1050754 external/wpt/infrastructure/expected-fail/uncaught-exception-following-subtest.html [ Failure ]
