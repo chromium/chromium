@@ -33,7 +33,7 @@ if (state == 'start') {
   await promise;
   bc.postMessage('Done');
 } else if (state == 'frame') {
-  addEventListeners('frame', true);
+  addEventListeners('frame');
   bc.postMessage('request removal');
 }
 bc.close();

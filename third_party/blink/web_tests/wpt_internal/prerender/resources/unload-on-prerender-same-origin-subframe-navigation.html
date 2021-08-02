@@ -23,7 +23,7 @@ if (state === 'start') {
   addFrame(createTestUrl('same-origin-frame1'));
 } else if (state === 'same-origin-frame1') {
   // unload handler should be triggered after the frame navigation.
-  addEventListeners('same-origin-frame1', true);
+  addEventListeners('same-origin-frame1');
 
   // Run a same-origin navigation.
   document.location = createTestUrl('same-origin-frame2');

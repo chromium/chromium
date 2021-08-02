@@ -40,14 +40,7 @@ if (state === 'start') {
   bc.postMessage(message);
   bc.postMessage('Done');
 } else if (state === 'same-origin-frame') {
-  // unload handler should be triggered after the frame navigation.
-  // The deferred cross-origin navigation resumes when the browser process
-  // starts activation, and when Blink handles the unload event handler,
-  // document.prerendering state is unstable.
-  // TODO(https://crbug.com/1222547): Fix this unstable state by waiting for
-  // DidActivateForPrerendering() before proceeding with the subframe
-  // navigation.
-  addEventListeners('same-origin-frame', false);
+  addEventListeners('same-origin-frame');
 
   // Run a cross-origin navigation.
   document.location = createCrossOriginTestUrl('cross-origin-frame');

@@ -25,13 +25,12 @@ function addFrame(url) {
   return frame;
 }
 
-function addEventListeners(name, checkPrerenderingState) {
+function addEventListeners(name) {
   ['unload', 'pagehide', 'pageshow', 'visibilitychange'].forEach(eventName => {
     window.addEventListener(eventName, e => {
       const bc = openChannel();
       bc.postMessage(eventName + ' ' + name +
-          (checkPrerenderingState && document.prerendering ? ' in prerendering'
-                                                             : ''));
+          (document.prerendering ? ' in prerendering' : ''));
       bc.close();
     });
   });
