@@ -5,15 +5,19 @@
 """Implements commands for running and interacting with Fuchsia on devices."""
 
 import boot_data
+import filecmp
 import logging
 import os
 import pkg_repo
 import re
 import subprocess
+import sys
 import target
+import tempfile
 import time
+import uuid
 
-from common import EnsurePathExists, GetHostToolPathFromPlatform
+from common import SDK_ROOT, EnsurePathExists, GetHostToolPathFromPlatform
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -23,7 +27,11 @@ BOOT_DISCOVERY_ATTEMPTS = 30
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 
 # Number of seconds to wait for device discovery.
-BOOT_DISCOVERY_DELAY_SECS = 4
+BOOT_DISCOVERY_TIMEOUT_SECS = 2 * 60
+
+# The timeout limit for one call to the device-finder tool.
+_DEVICE_FINDER_TIMEOUT_LIMIT_SECS = \
+    BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
 
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
@@ -155,44 +163,64 @@ class DeviceTarget(target.Target):
                       'set and that remote serving is set up.')
 
   def _Discover(self):
-    """Resolves device IP by the |_node_name|. If |_node_name|
-    isn't specified, and there is only one device on the network,
-    then returns the IP address of that advice.
+    """Queries mDNS for the IP address of a booted Fuchsia instance whose name
+    matches |_node_name| on the local area network. If |_node_name| isn't
+    specified, and there is only one device on the network, then returns the
+    IP address of that advice.
 
     Sets |_host_name| and returns True if the device was found,
-    or returns False if the device couldn't be found."""
+    or waits up to |timeout| seconds and returns False if the device couldn't
+    be found."""
 
-    ffx_command = ['target', 'list']
+    dev_finder_path = GetHostToolPathFromPlatform('device-finder')
+
     if self._node_name:
-      ffx_command.append(self._node_name)
-    ffx_command.extend(['--format', 'simple'])
-    proc = self.RunFFXCommand(ffx_command,
-                              stdout=subprocess.PIPE,
-                              stderr=open(os.devnull, 'w'))
+      command = [
+          dev_finder_path,
+          'resolve',
+          '-timeout',
+          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS,
+          '-device-limit',
+          '1',  # Exit early as soon as a host is found.
+          self._node_name
+      ]
+    else:
+      command = [
+          dev_finder_path, 'list', '-full', '-timeout',
+          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS
+      ]
 
-    output = proc.communicate()[0].strip().split('\n')
-    if proc.returncode != 0 or len(output[0]) == 0:
+    proc = subprocess.Popen(command,
+                            stdout=subprocess.PIPE,
+                            stderr=open(os.devnull, 'w'))
+
+    output = set(proc.communicate()[0].strip().split('\n'))
+    if proc.returncode != 0:
       return False
 
     if self._node_name:
-      # With ffx, it is possible to enter part of a name and the device will
-      # show up, so we need to get the full name.
-      self._host, self._node_name = output[0].split()
+      # Handle the result of "device-finder resolve".
+      self._host = output.pop().strip()
+
     else:
-      if len(output) > 1:
-        logging.info('More than one device was discovered on the network. '
-                     'Use --node-name <name> to specify the device to use.')
-        logging.info('List of devices:')
-        logging.info(output)
+      name_host_pairs = [x.strip().split(' ') for x in output]
+
+      # Handle the output of "device-finder list".
+      if len(name_host_pairs) > 1:
+        print('More than one device was discovered on the network.')
+        print('Use --node-name <name> to specify the device to use.')
+        print('\nList of devices:')
+        for pair in name_host_pairs:
+          print('  ' + pair[1])
+        print()
         raise Exception('Ambiguous target device specification.')
-      assert len(output) == 1
-      name_host_pairs = output[0].split()
-      if len(name_host_pairs) < 2:  # Check if device has both address and name.
-        return False
-      self._host, self._node_name = name_host_pairs
+
+      assert len(name_host_pairs) == 1
+      self._host, self._node_name = name_host_pairs[0]
 
     logging.info('Found device "%s" at address %s.' % (self._node_name,
                                                        self._host))
+
     return True
 
   def Start(self):
@@ -208,8 +236,8 @@ class DeviceTarget(target.Target):
         self._pkg_repo = pkg_repo.ExternalPkgRepo(
             os.path.join(self._fuchsia_out_dir, 'amber-files'))
       else:
-        # Create an ephemeral package repository, then start both "pm serve" as well as
-        # the bootserver.
+        # Create an ephemeral package repository, then start both "pm serve" as
+        # well as the bootserver.
         self._pkg_repo = pkg_repo.ManagedPkgRepo(self)
 
     return self._pkg_repo
@@ -223,11 +251,11 @@ class DeviceTarget(target.Target):
     self._node_name = m.groupdict()['nodename']
     logging.info('Booted device "%s".' % self._node_name)
 
-    # Repeatedly search for a device
+    # Repeatdly query mDNS until we find the device, or we hit the timeout of
+    # DISCOVERY_TIMEOUT_SECS.
     logging.info('Waiting for device to join network.')
     for _ in xrange(BOOT_DISCOVERY_ATTEMPTS):
       if self._Discover():
-        time.sleep(BOOT_DISCOVERY_DELAY_SECS)
         break
 
     if not self._host:

@@ -12,8 +12,6 @@ import common
 import remote_cmd
 import runner_logs
 
-_FFX_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'ffx')
-
 _SHUTDOWN_CMD = ['dm', 'poweroff']
 _ATTACH_RETRY_INTERVAL = 1
 _ATTACH_RETRY_SECONDS = 120
@@ -322,14 +320,3 @@ class Target(object):
         if pkgctl_out != meta_far_merkel:
           raise Exception('Hash mismatch for %s after resolve (%s vs %s).' %
                           (package_name, pkgctl_out, meta_far_merkel))
-
-  def RunFFXCommand(self, ffx_args, **kwargs):
-    """Automatically gets the FFX path and runs FFX based on the
-    arguments provided. Extra args can be added to be used with Popen.
-
-    ffx_args: The arguments for a ffx command.
-    kwargs: A dictionary of parameters to be passed to subprocess.Popen().
-
-    Returns a Popen object for the command."""
-    command = [_FFX_PATH] + ffx_args
-    return subprocess.Popen(command, **kwargs)
