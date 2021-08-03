@@ -450,6 +450,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   ext.b_GL_NV_blend_equation_advanced =
       gfx::HasExtension(extensions, "GL_NV_blend_equation_advanced");
   ext.b_GL_NV_fence = gfx::HasExtension(extensions, "GL_NV_fence");
+  ext.b_GL_NV_framebuffer_blit =
+      gfx::HasExtension(extensions, "GL_NV_framebuffer_blit");
   ext.b_GL_NV_framebuffer_mixed_samples =
       gfx::HasExtension(extensions, "GL_NV_framebuffer_mixed_samples");
   ext.b_GL_NV_internalformat_sample_query =
@@ -654,6 +656,9 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       ext.b_GL_ARB_framebuffer_object) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
         GetGLProcAddress("glBlitFramebuffer"));
+  } else if (ext.b_GL_NV_framebuffer_blit) {
+    fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
+        GetGLProcAddress("glBlitFramebufferNV"));
   } else if (ext.b_GL_ANGLE_framebuffer_blit) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
         GetGLProcAddress("glBlitFramebufferANGLE"));

@@ -2041,6 +2041,7 @@ struct ExtensionsGL {
   bool b_GL_MESA_framebuffer_flip_y;
   bool b_GL_NV_blend_equation_advanced;
   bool b_GL_NV_fence;
+  bool b_GL_NV_framebuffer_blit;
   bool b_GL_NV_framebuffer_mixed_samples;
   bool b_GL_NV_internalformat_sample_query;
   bool b_GL_NV_path_rendering;
