@@ -25,7 +25,7 @@
     TestRunner.addResult('=== THROTTLING STATE ===');
     var {download, upload, latency} = SDK.multitargetNetworkManager.networkConditions();
     TestRunner.addResult(`Network throttling - download: ${Math.round(download)} upload: ${Math.round(upload)} latency: ${latency}`);
-    TestRunner.addResult('CPU throttling rate: ' + MobileThrottling.throttlingManager().cpuThrottlingRate());
+    TestRunner.addResult('CPU throttling rate: ' + SDK.CPUThrottlingManager.instance().cpuThrottlingRate());
     TestRunner.addResult('Device mode throttling: ' + deviceModeThrottling._text);
     TestRunner.addResult('Network panel throttling: ' + networkPanelThrottling.selectedOption().text);
     TestRunner.addResult('Network conditions drawer throttling: ' + networkConditionsDrawerThrottlingSelector.value);
@@ -58,11 +58,11 @@
   dumpThrottlingState();
 
   TestRunner.addResult('Change CPU throttling to low-end mobile');
-  MobileThrottling.throttlingManager().setCPUThrottlingRate(MobileThrottling.CPUThrottlingRates.LowEndMobile);
+  MobileThrottling.throttlingManager().setCPUThrottlingRate(SDK.CPUThrottlingManager.CPUThrottlingRates.LowEndMobile);
   dumpThrottlingState();
 
   TestRunner.addResult('Change CPU throttling to mid-tier mobile');
-  MobileThrottling.throttlingManager().setCPUThrottlingRate(MobileThrottling.CPUThrottlingRates.MidTierMobile);
+  MobileThrottling.throttlingManager().setCPUThrottlingRate(SDK.CPUThrottlingManager.CPUThrottlingRates.MidTierMobile);
   dumpThrottlingState();
 
   TestRunner.addResult('Change to no throttling in device mode');

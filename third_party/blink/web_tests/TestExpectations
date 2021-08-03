@@ -7079,9 +7079,6 @@ crbug.com/1218431 [ Fuchsia ] virtual/file-system-access-access-handle/external/
 crbug.com/1218431 [ Mac ] virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.html [ Failure Pass ]
 crbug.com/1218431 [ Mac ] virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Failure Pass ]
 
-# DevTools roll
-crbug.com/1187573 http/tests/devtools/throttling/mobile-throttling.js [ Skip ]
-
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
 
