@@ -193,7 +193,7 @@ void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
 
-  if (mark_as_read)
+  if (mark_as_read && !side_panel_enabled)
     reading_list_model_->SetReadStatus(url, true);
 
   base::RecordAction(base::UserMetricsAction(
