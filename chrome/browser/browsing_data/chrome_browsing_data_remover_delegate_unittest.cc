@@ -1438,8 +1438,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveHistoryProhibited) {
   EXPECT_TRUE(tester.HistoryContainsURL(kOrigin2));
 }
 
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_RemoveMultipleTypesHistoryProhibited \
+  DISABLED_RemoveMultipleTypesHistoryProhibited
+#else
+#define MAYBE_RemoveMultipleTypesHistoryProhibited \
+  RemoveMultipleTypesHistoryProhibited
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemoveMultipleTypesHistoryProhibited) {
+       MAYBE_RemoveMultipleTypesHistoryProhibited) {
   PrefService* prefs = GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
 
@@ -1994,7 +2002,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDownloads) {
       content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS, false);
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordStatistics) {
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_RemovePasswordStatistics DISABLED_RemovePasswordStatistics
+#else
+#define MAYBE_RemovePasswordStatistics RemovePasswordStatistics
+#endif
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, MAYBE_RemovePasswordStatistics) {
   RemovePasswordsTester tester(GetProfile());
   base::RepeatingCallback<bool(const GURL&)> empty_filter;
 
@@ -2047,7 +2061,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                               constants::DATA_TYPE_HISTORY, std::move(builder));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordsByTimeOnly) {
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_RemovePasswordsByTimeOnly DISABLED_RemovePasswordsByTimeOnly
+#else
+#define MAYBE_RemovePasswordsByTimeOnly RemovePasswordsByTimeOnly
+#endif
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, MAYBE_RemovePasswordsByTimeOnly) {
   RemovePasswordsTester tester(GetProfile());
 
   ExpectRemoveLoginsByURLAndTime(tester.profile_store());
@@ -2072,6 +2092,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                               std::move(builder));
 }
 
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_DisableAutoSignIn DISABLED_DisableAutoSignIn
+#else
+#define MAYBE_DisableAutoSignIn DisableAutoSignIn
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, DisableAutoSignIn) {
   RemovePasswordsTester tester(GetProfile());
   base::RepeatingCallback<bool(const GURL&)> empty_filter =
@@ -2089,8 +2115,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DisableAutoSignIn) {
                                 false);
 }
 
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_DisableAutoSignInAfterRemovingPasswords \
+  DISABLED_DisableAutoSignInAfterRemovingPasswords
+#else
+#define MAYBE_DisableAutoSignInAfterRemovingPasswords \
+  DisableAutoSignInAfterRemovingPasswords
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       DisableAutoSignInAfterRemovingPasswords) {
+       MAYBE_DisableAutoSignInAfterRemovingPasswords) {
   RemovePasswordsTester tester(GetProfile());
   base::RepeatingCallback<bool(const GURL&)> empty_filter =
       BrowsingDataFilterBuilder::BuildNoopFilter();
@@ -3135,8 +3169,16 @@ class ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest
   }
 };
 
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_RemovePasswordsByTimeOnly_WithAccountStore \
+  DISABLED_RemovePasswordsByTimeOnly_WithAccountStore
+#else
+#define MAYBE_RemovePasswordsByTimeOnly_WithAccountStore \
+  RemovePasswordsByTimeOnly_WithAccountStore
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
-       RemovePasswordsByTimeOnly_WithAccountStore) {
+       MAYBE_RemovePasswordsByTimeOnly_WithAccountStore) {
   RemovePasswordsTester tester(GetProfile());
 
   ExpectRemoveLoginsByURLAndTime(tester.profile_store());
@@ -3147,8 +3189,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
                                 constants::DATA_TYPE_PASSWORDS, false);
 }
 
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_RemoveAccountPasswordsByTimeOnly_WithAccountStore \
+  DISABLED_RemoveAccountPasswordsByTimeOnly_WithAccountStore
+#else
+#define MAYBE_RemoveAccountPasswordsByTimeOnly_WithAccountStore \
+  RemoveAccountPasswordsByTimeOnly_WithAccountStore
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
-       RemoveAccountPasswordsByTimeOnly_WithAccountStore) {
+       MAYBE_RemoveAccountPasswordsByTimeOnly_WithAccountStore) {
   RemovePasswordsTester tester(GetProfile());
 
   EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTime).Times(0);
@@ -3158,8 +3208,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
                                 constants::DATA_TYPE_ACCOUNT_PASSWORDS, false);
 }
 
+// TODO(crbug.com/1234803): Crashes on linux-ubsan-vptr
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure \
+  DISABLED_RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure
+#else
+#define MAYBE_RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure \
+  RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
-       RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure) {
+       MAYBE_RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure) {
   RemovePasswordsTester tester(GetProfile());
 
   EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTime).Times(0);
