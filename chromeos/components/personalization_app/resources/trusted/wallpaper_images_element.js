@@ -12,7 +12,7 @@
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {sendImages, sendSelectedWallpaperAssetId} from '../common/iframe_api.js';
+import {sendImages, sendSelectedWallpaperAssetId, sendVisible} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
 import {WallpaperType} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
@@ -56,6 +56,16 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      /**
+       * Hidden state of this element. Used to notify iframe of visibility
+       * changes.
+       */
+      hidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+        observer: 'onHiddenChanged_',
+      },
+
       /**
        * The current collection id to display.
        */
@@ -131,6 +141,16 @@ export class WallpaperImages extends WithPersonalizationStore {
     this.watch('collections_', state => state.backdrop.collections);
     this.watch('selected_', state => state.selected);
     this.updateFromStore();
+  }
+
+  /**
+   * Notify iframe that this element visibility has changed.
+   * @param {boolean} hidden
+   * @private
+   */
+  async onHiddenChanged_(hidden) {
+    const iframe = await this.iframePromise_;
+    sendVisible(/** @type {!Window} */ (iframe.contentWindow), !hidden);
   }
 
   /**

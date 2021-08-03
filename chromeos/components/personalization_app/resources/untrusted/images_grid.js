@@ -83,6 +83,20 @@ class ImagesGrid extends PolymerElement {
         this.selectedAssetId_ = validateReceivedData(
             message, EventType.SEND_SELECTED_WALLPAPER_ASSET_ID);
         return;
+      case EventType.SEND_VISIBLE:
+        const visible = validateReceivedData(message, EventType.SEND_VISIBLE);
+        if (!visible) {
+          // When the iframe is hidden, do some dom magic to hide old image
+          // content. This is in preparation for a user switching to a new
+          // wallpaper collection and loading a new set of images.
+          const ironList = this.shadowRoot.querySelector('iron-list');
+          const images = ironList.querySelectorAll('.photo-container img');
+          for (const image of images) {
+            image.src = '';
+          }
+          this.images_ = [];
+        }
+        return;
       default:
         throw new Error('unexpected event type');
     }

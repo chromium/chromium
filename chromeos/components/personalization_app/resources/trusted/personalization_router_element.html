@@ -42,11 +42,12 @@
   </wallpaper-breadcrumb>
   <wallpaper-selected path=[[path_]] collection-id="[[queryParams_.id]]">
   </wallpaper-selected>
+  <!-- do not use hidden$ here - need to listen on property change in
+       these elements. -->
   <wallpaper-collections hidden="[[!shouldShowCollections_(path_)]]">
   </wallpaper-collections>
   <wallpaper-images collection-id="[[queryParams_.id]]"
-    hidden$="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
-  <!-- do not use hidden$ here - need to listen on property change in element. -->
+    hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
   <local-images hidden="[[!shouldShowLocalCollection_(path_)]]"></local-images>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div id="rightspacer"></div>

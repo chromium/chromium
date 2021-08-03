@@ -92,6 +92,7 @@ styles.innerHTML = `
       outline: none;
     }
     .photo-images-container {
+      background-color: var(--google-grey-300);
       border-radius: 12px;
       box-sizing: border-box;
       display: flex;
