@@ -4,7 +4,7 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accelerator_edit_view.js';
-import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -24,15 +24,18 @@ export function acceleratorEditViewTest() {
   });
 
   test('LoadsBasicEditView', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerator = {
-      modifiers: Modifier.SHIFT | Modifier.CONTROL,
-      key: 'g',
-      rawKey: 0x0
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL | Modifier.SHIFT,
+        key: 71,
+        key_display: 'g',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
     };
 
-    editViewElement.accelerator = accelerator;
+    editViewElement.acceleratorInfo = acceleratorInfo;
     await flush();
 
     // Check that the edit buttons are visible.

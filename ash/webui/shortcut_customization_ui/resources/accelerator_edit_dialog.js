@@ -12,6 +12,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorInfo} from './shortcut_types.js';
+
 /**
  * @fileoverview
  * 'accelerator-edit-dialog' is a dialog that displays the accelerators for
@@ -34,12 +36,8 @@ export class AcceleratorEditDialogElement extends PolymerElement {
         value: '',
       },
 
-      /**
-       * TODO(jimmyxgong): Replace with proper mojom::Accelerator type and
-       * implement fetching the accelerators for this row.
-       * @type {!Array<!Object>}
-       */
-      accelerators: {
+      /** @type {!Array<!AcceleratorInfo>} */
+      acceleratorInfos: {
         type: Array,
         value: () => {},
       },

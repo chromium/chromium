@@ -4,7 +4,7 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/accelerator_view.js';
-import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
 
@@ -24,15 +24,18 @@ export function acceleratorViewTest() {
   });
 
   test('LoadsBasicAccelerator', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerator = {
-      modifiers: Modifier.SHIFT | Modifier.CONTROL,
-      key: 'g',
-      rawKey: 0x0,
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL | Modifier.SHIFT,
+        key: 71,
+        key_display: 'g',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
     };
 
-    viewElement.accelerator = accelerator;
+    viewElement.acceleratorInfo = acceleratorInfo;
     await flush();
     const keys = viewElement.shadowRoot.querySelectorAll('input-key');
     // Three keys: shift, control, g
@@ -47,15 +50,18 @@ export function acceleratorViewTest() {
   });
 
   test('EditableAccelerator', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerator = {
-      modifiers: Modifier.SHIFT | Modifier.CONTROL,
-      key: 'g',
-      rawKey: 0x0,
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL | Modifier.SHIFT,
+        key: 71,
+        key_display: 'g',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
     };
 
-    viewElement.accelerator = accelerator;
+    viewElement.acceleratorInfo = acceleratorInfo;
     await flush();
     // Enable the edit view.
     viewElement.isEditable = true;

@@ -31,7 +31,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
        * TODO(jimmyxgong): Fetch the shortcuts and it accelerators with the
        * mojom::source_id and mojom::subsection_id. This serves as a temporary
        * way to populate a subsection.
-       * @type {!Array<!Object>}
+       * @type {!Array<!{string, !Array<!AcceleratorInfo>}>}
        */
       acceleratorContainer: {
         type: Array,

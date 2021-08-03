@@ -9,6 +9,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorInfo} from './shortcut_types.js';
+
 /**
  * @fileoverview
  * 'accelerator-row' is a wrapper component for one shortcut. It features a
@@ -31,12 +33,8 @@ export class AcceleratorRowElement extends PolymerElement {
         value: '',
       },
 
-      /**
-       * TODO(jimmyxgong): Replace with proper mojom::Accelerator type and
-       * implement fetching the accelerators for this row.
-       * @type {!Array<!Object>}
-       */
-      accelerators: {
+      /** @type {!Array<!AcceleratorInfo>} */
+      acceleratorInfos: {
         type: Array,
         value: () => {},
       }
@@ -62,7 +60,7 @@ export class AcceleratorRowElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent(
         'show-edit-dialog', {bubbles: true, composed: true,
             detail: {description: this.description,
-                     accelerators: this.accelerators}},
+                     accelerators: this.acceleratorInfos}},
     ));
   }
 }

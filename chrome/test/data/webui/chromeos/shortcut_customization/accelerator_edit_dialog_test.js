@@ -4,7 +4,7 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/accelerator_edit_dialog.js';
-import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -24,15 +24,33 @@ export function acceleratorEditDialogTest() {
   });
 
   test('LoadsBasicDialog', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerators = [
-      {modifiers: Modifier.SHIFT | Modifier.CONTROL, key: 'g', rawKey: 0x0},
-      {modifiers: Modifier.CONTROL, key: 'c', rawKey: 0x0}
-    ];
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo1 = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL | Modifier.SHIFT,
+        key: 71,
+        key_display: 'g',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+    };
+
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo2 = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL,
+        key: 67,
+        key_display: 'c',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+    };
+
+    const accelerators = [acceleratorInfo1, acceleratorInfo2];
+
     const description = 'test shortcut';
 
-    viewElement.accelerators = accelerators;
+    viewElement.acceleratorInfos = accelerators;
     viewElement.description = description;
     await flush();
     const dialog = viewElement.shadowRoot.querySelector('cr-dialog');
@@ -72,15 +90,32 @@ export function acceleratorEditDialogTest() {
   });
 
   test('AddShortcut', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
-    const accelerators = [
-      {modifiers: Modifier.SHIFT | Modifier.CONTROL, key: 'g', rawKey: 0x0},
-      {modifiers: Modifier.CONTROL, key: 'c', rawKey: 0x0}
-    ];
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo1 = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL | Modifier.SHIFT,
+        key: 71,
+        key_display: 'g',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+    };
+
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo2 = {
+      accelerator: /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL,
+        key: 67,
+        key_display: 'c',
+      }),
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+    };
+
+    const acceleratorInfos = [acceleratorInfo1, acceleratorInfo2];
     const description = 'test shortcut';
 
-    viewElement.accelerators = accelerators;
+    viewElement.acceleratorInfos = acceleratorInfos;
     viewElement.description = description;
     await flush();
     const dialog = viewElement.shadowRoot.querySelector('cr-dialog');

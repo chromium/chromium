@@ -12,6 +12,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorInfo} from './shortcut_types.js';
+
 /**
  * @fileoverview
  * 'accelerator-edit-view' is a wrapper component for one accelerator. It is
@@ -29,11 +31,8 @@ export class AcceleratorEditViewElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * TODO(jimmyxgong): Replace with proper mojom::Accelerator type.
-       * @type {!Object}
-       */
-      accelerator: {
+      /** @type {!AcceleratorInfo} */
+      acceleratorInfo: {
         type: Object,
         value: () => {},
       },

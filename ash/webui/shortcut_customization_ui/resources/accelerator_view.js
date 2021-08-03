@@ -8,9 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Modifier} from './shortcut_types.js';
-
-
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from './shortcut_types.js';
 
 const ModifierRawKeys = [
   /*Shift=*/16,
@@ -48,6 +46,16 @@ function GetModifierString(modifier) {
   }
 }
 
+/** @return {!AcceleratorInfo} */
+function CreateEmptyAcceleratorInfo() {
+  return /** @type {!AcceleratorInfo} */ ({
+    accelerator: /* @type {!AcceleratorKeys} */(
+        {modifiers: 0, key: 0, key_display: ''}),
+    type: AcceleratorType.kDefault,
+    state: AcceleratorState.kEnabled,
+  });
+}
+
 /**
  * @fileoverview
  * 'accelerator-view' is wrapper component for an accelerator. It maintains both
@@ -65,22 +73,16 @@ export class AcceleratorViewElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * TODO(jimmyxgong): Update this type to be the actual mojom::accelerator.
-       * @type{!Object}
-       */
-      accelerator: {
+      /** @type {!AcceleratorInfo} */
+      acceleratorInfo: {
         type: Object,
-        value: {},
+        value: () => {},
       },
 
-      /**
-       * TODO(jimmyxgong): Update this type to be the actual mojom::accelerator.
-       * @type{!Object}
-       */
-      pendingAccelerator_: {
+      /** @type {!AcceleratorInfo} */
+      pendingAcceleratorInfo_: {
         type: Object,
-        value: {modifiers: 0, key: ''},
+        value: () => {},
       },
 
       isEditable: {
@@ -96,7 +98,7 @@ export class AcceleratorViewElement extends PolymerElement {
        */
       modifiers_: {
         type: Array,
-        computed: 'getModifiers_(accelerator)',
+        computed: 'getModifiers_(acceleratorInfo.accelerator.*)',
       },
 
       /** @private */
@@ -115,7 +117,7 @@ export class AcceleratorViewElement extends PolymerElement {
     let modifiers = [];
     for (const key in Modifier) {
       const modifier = Modifier[key];
-      if (this.accelerator.modifiers & modifier) {
+      if (this.acceleratorInfo.accelerator.modifiers & modifier) {
         modifiers.push(GetModifierString(modifier));
       }
     }
@@ -156,9 +158,8 @@ export class AcceleratorViewElement extends PolymerElement {
     if (this.isCapturing_) {
       return;
     }
-    // TODO(jimmyxgong): Update this to the proper mojom::Accelerator type
     // Disable ChromeOS accelerator handler when starting input capture.
-    this.pendingAccelerator_ = {modifiers: 0, key: ''};
+    this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
     this.isCapturing_ = true;
   }
 
@@ -169,7 +170,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }
 
     this.isCapturing_ = false;
-    this.pendingAccelerator_ = {modifiers: 0, key: ''};
+    this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
     this.isEditable = false;
   }
 
@@ -204,21 +205,22 @@ export class AcceleratorViewElement extends PolymerElement {
     if (!this.hasValidModifiers_(e)) {
       // TODO(jimmyxgong): Fire events for error handling, e.g. Shift cannot be
       // the only modifier.
-      this.pendingAccelerator_ = {modifiers: 0, key: ''};
+      this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
       return;
     }
-    this.pendingAccelerator_ = this.keystrokeToAccelerator_(e);
+    this.set('pendingAcceleratorInfo_.accelerator',
+        this.keystrokeToAccelerator_(e));
   }
 
   /**
    * Converts a keystroke event to an Accelerator Object.
-   * TODO(jimmyxgong): Convert return type to proper mojom::Accelerator type.
    * @param {!KeyboardEvent} e
-   * @return {!Object} The keystroke as an Acccelerator object.
+   * @return {!AcceleratorKeys} The keystroke as an Acccelerator object.
    * @private
    */
   keystrokeToAccelerator_(e) {
-    const output = {modifiers: 0, key: ''};
+    const output = /** @type {AcceleratorKeys} */({
+        modifiers: 0, key: 0, key_display: ''});
     if (e.metaKey) {
       output.modifiers = output.modifiers | Modifier.COMMAND;
     }
@@ -236,7 +238,8 @@ export class AcceleratorViewElement extends PolymerElement {
 
     // Only add non-modifier keys as the pending key.
     if (!this.isModifierKey_(e)) {
-      output.key = e.key;
+      output.key_display = e.key;
+      output.key = e.keyCode;
     }
 
     return output;
@@ -289,7 +292,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   getModifierState_(modifier) {
-    if (this.pendingAccelerator_.modifiers & modifier) {
+    if (this.pendingAcceleratorInfo_.accelerator.modifiers & modifier) {
       return KeyState.MODIFIER;
     }
     return KeyState.NOT_SELECTED;
@@ -300,7 +303,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @protected
    */
   getPendingKeyState_() {
-    if (this.pendingAccelerator_.key != '') {
+    if (this.pendingAcceleratorInfo_.accelerator.key_display != '') {
       return KeyState.ALPHANUMERIC;
     }
     return KeyState.NOT_SELECTED;
@@ -311,8 +314,8 @@ export class AcceleratorViewElement extends PolymerElement {
    * @protected
    */
   getPendingKey_() {
-    if (this.pendingAccelerator_.key != '') {
-      return this.pendingAccelerator_.key.toLowerCase();
+    if (this.pendingAcceleratorInfo_.accelerator.key_display != '') {
+      return this.pendingAcceleratorInfo_.accelerator.key_display.toLowerCase();
     }
     // TODO(jimmyxgong): Reset to a localized default empty state.
     return 'key';

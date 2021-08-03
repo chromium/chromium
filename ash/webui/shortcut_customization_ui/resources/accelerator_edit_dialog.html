@@ -11,8 +11,9 @@
   </div>
   <div slot="body">
     <div id="acceleratorViewList">
-      <template is="dom-repeat" items=[[accelerators]]>
-        <accelerator-edit-view class="acceleratorItem" accelerator=[[item]]>
+      <template is="dom-repeat" items=[[acceleratorInfos]]>
+        <accelerator-edit-view class="acceleratorItem"
+            accelerator-info=[[item]]>
         </accelerator-edit-view>
       </template>
     </div>
