@@ -1659,10 +1659,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CHROME_ADDITIONAL_TERMS_OF_SERVICE_URL" desc="URL for Chrome and Chrome OS additional terms of service" translateable="false">
         https://www.google.com/chrome/terms/
       </message>
-      <message name="IDS_PRIVACY_POLICY_TITLE" desc="Title for the Chrome privacy policy">
-        Chrome Privacy Policy
+      <message name="IDS_PRIVACY_POLICY_TITLE" desc="Title for the Google privacy policy">
+        Google Privacy Policy
       </message>
-      <message name="IDS_CHROME_PRIVACY_POLICY_URL" desc="URL for the Chrome privacy policy" translateable="false">
+      <message name="IDS_GOOGLE_PRIVACY_POLICY_URL" desc="URL for the Google privacy policy" translateable="false">
         https://policies.google.com/privacy
       </message>
       <message name="IDS_FAMILY_LINK_PRIVACY_POLICY_URL" desc="URL for the Family Link privacy policy" translateable="false">
