@@ -128,24 +128,20 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
   alternate_overflow.UniteEvenIfEmpty(AdjustOverflowForScrollOrigin(
       converter.ToPhysical(block_end_padding_rect)));
 
+  if (normal_overflow == alternate_overflow)
+    return normal_overflow;
+
   // We'd like everything to be |normal_overflow|, lets see what the impact
   // would be.
   if (node_.Style().OverflowInlineDirection() == EOverflow::kAuto ||
       node_.Style().OverflowInlineDirection() == EOverflow::kScroll) {
-    if (alternate_overflow.size.width != normal_overflow.size.width) {
-      if (alternate_overflow.size.width != padding_rect_.size.width) {
-        UseCounter::Count(
-            node_.GetDocument(),
-            node_.IsFlexibleBox()
-                ? WebFeature::kNewLayoutOverflowDifferentAndAlreadyScrollsFlex
-                : WebFeature::
-                      kNewLayoutOverflowDifferentAndAlreadyScrollsBlock);
-      } else {
-        UseCounter::Count(node_.GetDocument(),
-                          node_.IsFlexibleBox()
-                              ? WebFeature::kNewLayoutOverflowDifferentFlex
-                              : WebFeature::kNewLayoutOverflowDifferentBlock);
-      }
+    if (alternate_overflow.size.width != padding_rect_.size.width) {
+      UseCounter::Count(
+          node_.GetDocument(),
+          WebFeature::kNewLayoutOverflowDifferentAndAlreadyScrollsBlock);
+    } else {
+      UseCounter::Count(node_.GetDocument(),
+                        WebFeature::kNewLayoutOverflowDifferentBlock);
     }
   }
 

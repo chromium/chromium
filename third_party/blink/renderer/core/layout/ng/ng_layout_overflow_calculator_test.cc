@@ -9,22 +9,6 @@ namespace blink {
 class NGLayoutOverflowCalculatorTest : public RenderingTest {};
 
 TEST_F(NGLayoutOverflowCalculatorTest,
-       DISABLED_NewLayoutOverflowDifferentAndAlreadyScrollsFlex) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-  SetBodyInnerHTML(R"HTML(
-    <!DOCTYPE html>
-    <div style="display: flex; width: 100px; height: 100px; padding: 10px; overflow: auto;">
-      <div style="min-width: 120px; height: 10px;"></div>
-    </div>
-  )HTML");
-  RunDocumentLifecycle();
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kNewLayoutOverflowDifferentAndAlreadyScrollsFlex));
-}
-
-TEST_F(NGLayoutOverflowCalculatorTest,
        NewLayoutOverflowDifferentAndAlreadyScrollsBlock) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
@@ -38,22 +22,6 @@ TEST_F(NGLayoutOverflowCalculatorTest,
 
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kNewLayoutOverflowDifferentAndAlreadyScrollsBlock));
-}
-
-TEST_F(NGLayoutOverflowCalculatorTest,
-       DISABLED_NewLayoutOverflowDifferentFlex) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-  SetBodyInnerHTML(R"HTML(
-    <!DOCTYPE html>
-    <div style="display: flex; width: 100px; height: 100px; padding: 10px; overflow: auto;">
-      <div style="min-width: 110px; height: 10px;"></div>
-    </div>
-  )HTML");
-  RunDocumentLifecycle();
-
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kNewLayoutOverflowDifferentFlex));
 }
 
 TEST_F(NGLayoutOverflowCalculatorTest, NewLayoutOverflowDifferentBlock) {
