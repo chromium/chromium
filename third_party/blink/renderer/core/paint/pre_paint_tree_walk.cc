@@ -873,6 +873,16 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
            child->IsLayoutMultiColumnSpannerPlaceholder());
     child->GetMutableForPainting().ClearPaintFlags();
   }
+
+  // If we missed any nested fixpos elements during fragment traversal, that
+  // means that their containing block lives outside the fragmentation context
+  // root. Walk these missed fixepos elements now.
+  if (!pending_fixedpos_missables_.IsEmpty()) {
+    for (const auto* fixedpos : pending_fixedpos_missables_) {
+      DCHECK(!walked_fixedpos_.Contains(fixedpos));
+      Walk(*fixedpos, context, /* pre_paint_info */ nullptr);
+    }
+  }
 }
 
 void PrePaintTreeWalk::WalkLayoutObjectChildren(
@@ -899,8 +909,11 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
 
     // If we're in the middle of walking a missed OOF, don't enter nested OOFs
     // (but miss those as well, and handle them via fragment traversal).
-    if (context.is_inside_orphaned_object && child->IsOutOfFlowPositioned())
+    if (context.is_inside_orphaned_object && child->IsOutOfFlowPositioned()) {
+      if (child->IsFixedPositioned() && !walked_fixedpos_.Contains(child))
+        pending_fixedpos_missables_.insert(child);
       continue;
+    }
 
     // Perform an NGPhysicalBoxFragment-accompanied walk of the child
     // LayoutObject tree.
@@ -1000,9 +1013,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         }
         if (!search_fragment) {
           // Only walk unfragmented legacy-contained OOFs once.
-          if (context.is_inside_orphaned_object ||
-              (context.current_fragmentainer.fragment &&
-               !context.current_fragmentainer.fragment->IsFirstForNode()))
+          if (!parent_fragment->IsFirstForNode())
             continue;
         }
       }
@@ -1149,8 +1160,13 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   if (pre_paint_info) {
     physical_fragment = &pre_paint_info->box_fragment;
     if (physical_fragment && (physical_fragment->IsOutOfFlowPositioned() ||
-                              physical_fragment->IsFloating()))
+                              physical_fragment->IsFloating())) {
       pending_missables_.erase(physical_fragment);
+      if (object.IsFixedPositioned()) {
+        pending_fixedpos_missables_.erase(&object);
+        walked_fixedpos_.insert(&object);
+      }
+    }
     is_inside_fragment_child = pre_paint_info->is_inside_fragment_child;
   }
 
