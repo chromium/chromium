@@ -64,7 +64,11 @@ def main():
     trace_file = adb_profile_chrome_startup.ProfileChrome(options)
   else:
     raise Exception('Platform "%s" is not supported. '
-                    'Specify platform with the --platform flag.' % (options.platform))
+                    'Specify platform with the --platform flag.' 
+                    % (options.platform))
+
+  print('Wrote unsymbolized trace to {path}'.format(
+          path=os.path.abspath(trace_file)))
 
   # Symbolize Trace
   if options.symbolize:
