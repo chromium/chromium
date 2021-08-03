@@ -32,7 +32,6 @@ class TestBrowser : public Browser {
 
   // Browser.
   ChromeBrowserState* GetBrowserState() const override;
-  TabModel* GetTabModel() const override;
   WebStateList* GetWebStateList() const override;
   CommandDispatcher* GetCommandDispatcher() const override;
   void AddObserver(BrowserObserver* observer) override;
@@ -47,7 +46,6 @@ class TestBrowser : public Browser {
   // Used in all cases.
   __strong CommandDispatcher* command_dispatcher_ = nil;
   ChromeBrowserState* browser_state_ = nullptr;
-  TabModel* tab_model_ = nil;
   WebStateList* web_state_list_ = nullptr;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
 

@@ -151,6 +151,7 @@ source_set("scene") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/sessions:scene_util",
+    "//ios/chrome/browser/sessions:session_saving",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui:feature_flags",

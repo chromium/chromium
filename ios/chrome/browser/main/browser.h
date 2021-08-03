@@ -13,7 +13,6 @@
 class BrowserObserver;
 class ChromeBrowserState;
 @class CommandDispatcher;
-@class TabModel;
 class WebStateList;
 
 // Browser is the model for a window containing multiple tabs. Instances
@@ -30,10 +29,6 @@ class Browser : public base::SupportsUserData {
 
   // Accessor for the owning ChromeBrowserState.
   virtual ChromeBrowserState* GetBrowserState() const = 0;
-
-  // Accessor for the TabModel. DEPRECATED: prefer GetWebStateList() whenever
-  // possible.
-  virtual TabModel* GetTabModel() const = 0;
 
   // Accessor for the WebStateList.
   virtual WebStateList* GetWebStateList() const = 0;

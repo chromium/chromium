@@ -66,6 +66,7 @@
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
+#import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -299,6 +300,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
     [_sceneState
         addAgent:[[ReadingListBackgroundSessionSceneAgent alloc] init]];
+    [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   }
   return self;
 }
@@ -1135,6 +1137,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // agent).
   self.sceneState.UIEnabled = NO;
 
+  [[SessionSavingSceneAgent agentFromScene:self.sceneState]
+      saveSessionsIfNeeded];
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
 

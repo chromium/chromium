@@ -14,7 +14,6 @@
 
 class ChromeBrowserState;
 @class SceneState;
-@class TabModel;
 class WebStateList;
 class WebStateListDelegate;
 
@@ -35,7 +34,6 @@ class BrowserImpl : public Browser {
 
   // Browser.
   ChromeBrowserState* GetBrowserState() const override;
-  TabModel* GetTabModel() const override;
   WebStateList* GetWebStateList() const override;
   CommandDispatcher* GetCommandDispatcher() const override;
   void AddObserver(BrowserObserver* observer) override;
@@ -48,7 +46,6 @@ class BrowserImpl : public Browser {
               std::unique_ptr<WebStateList> web_state_list);
 
   ChromeBrowserState* browser_state_;
-  __strong TabModel* tab_model_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_;

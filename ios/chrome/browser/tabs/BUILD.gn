@@ -9,7 +9,6 @@ source_set("tabs") {
     "synced_window_delegate_browser_agent.h",
     "tab_helper_delegate_installer.h",
     "tab_helper_util.h",
-    "tab_model.h",
     "tab_parenting_browser_agent.h",
     "tab_parenting_browser_agent.mm",
     "tab_parenting_global_observer.cc",
@@ -36,7 +35,6 @@ source_set("tabs_internal") {
     "ios_synced_window_delegate_getter.mm",
     "synced_window_delegate_browser_agent.mm",
     "tab_helper_util.mm",
-    "tab_model.mm",
     "tab_title_util.h",
     "tab_title_util.mm",
   ]
@@ -126,7 +124,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "tab_helper_delegate_installer_unittest.mm",
-    "tab_model_unittest.mm",
     "tab_title_util_unittest.mm",
   ]
   deps = [

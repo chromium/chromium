@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
@@ -240,7 +239,14 @@
     WebStateList* webStateList = self.mainBrowser->GetWebStateList();
     breakpad::StopMonitoringTabStateForWebStateList(webStateList);
     breakpad::StopMonitoringURLsForWebStateList(webStateList);
-    [self.mainBrowser->GetTabModel() disconnect];
+    // Close all webstates in |webStateList|. Do this in an @autoreleasepool as
+    // WebStateList observers will be notified (they are unregistered later). As
+    // some of them may be implemented in Objective-C and unregister themselves
+    // in their -dealloc method, ensure they -autorelease introduced by ARC are
+    // processed before the WebStateList destructor is called.
+    @autoreleasepool {
+      webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    }
   }
 
   _mainBrowser = nullptr;
@@ -250,7 +256,14 @@
   if (_otrBrowser.get()) {
     WebStateList* webStateList = self.otrBrowser->GetWebStateList();
     breakpad::StopMonitoringTabStateForWebStateList(webStateList);
-    [self.otrBrowser->GetTabModel() disconnect];
+    // Close all webstates in |webStateList|. Do this in an @autoreleasepool as
+    // WebStateList observers will be notified (they are unregistered later). As
+    // some of them may be implemented in Objective-C and unregister themselves
+    // in their -dealloc method, ensure they -autorelease introduced by ARC are
+    // processed before the WebStateList destructor is called.
+    @autoreleasepool {
+      webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    }
   }
 
   _otrBrowser = std::move(otrBrowser);
