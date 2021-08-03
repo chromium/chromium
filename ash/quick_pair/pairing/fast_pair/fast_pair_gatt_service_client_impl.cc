@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
@@ -35,12 +35,12 @@ namespace ash {
 namespace quick_pair {
 
 // static
-FastPairGattServiceClient::Factory*
-    FastPairGattServiceClient::Factory::g_test_factory_ = nullptr;
+FastPairGattServiceClientImpl::Factory*
+    FastPairGattServiceClientImpl::Factory::g_test_factory_ = nullptr;
 
 // static
 std::unique_ptr<FastPairGattServiceClient>
-FastPairGattServiceClient::Factory::Create(
+FastPairGattServiceClientImpl::Factory::Create(
     device::BluetoothDevice* device,
     scoped_refptr<device::BluetoothAdapter> adapter,
     base::OnceCallback<void(absl::optional<PairFailure>)>
@@ -49,43 +49,43 @@ FastPairGattServiceClient::Factory::Create(
     return g_test_factory_->CreateInstance(device, adapter,
                                            std::move(on_initialized_callback));
   }
-  return absl::WrapUnique(new FastPairGattServiceClient(
+  return absl::WrapUnique(new FastPairGattServiceClientImpl(
       device, adapter, std::move(on_initialized_callback)));
 }
 
 // static
-void FastPairGattServiceClient::Factory::SetFactoryForTesting(
+void FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
     Factory* g_test_factory) {
   g_test_factory_ = g_test_factory;
 }
 
-FastPairGattServiceClient::Factory::~Factory() = default;
+FastPairGattServiceClientImpl::Factory::~Factory() = default;
 
-FastPairGattServiceClient::FastPairGattServiceClient(
+FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
     device::BluetoothDevice* device,
     scoped_refptr<device::BluetoothAdapter> adapter,
     base::OnceCallback<void(absl::optional<PairFailure>)>
         on_initialized_callback)
-    : device_address_(device->GetAddress()),
-      on_initialized_callback_(std::move(on_initialized_callback)),
+    : on_initialized_callback_(std::move(on_initialized_callback)),
+      device_address_(device->GetAddress()),
       adapter_(std::move(adapter)) {
   adapter_observation_.Observe(adapter_.get());
   QP_LOG(VERBOSE) << "Starting the GATT connection to device at address:["
                   << device_address_ << "].";
   device->CreateGattConnection(
-      base::BindOnce(&FastPairGattServiceClient::OnGattConnection,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
                      weak_ptr_factory_.GetWeakPtr()),
       kFastPairBluetoothUuid);
   gatt_service_discovery_timer_.Start(
       FROM_HERE, kConnectingTimeout,
-      base::BindOnce(&FastPairGattServiceClient::NotifyError,
+      base::BindOnce(&FastPairGattServiceClientImpl::NotifyError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kGattServiceDiscoveryTimeout));
 }
 
-FastPairGattServiceClient::~FastPairGattServiceClient() = default;
+FastPairGattServiceClientImpl::~FastPairGattServiceClientImpl() = default;
 
-void FastPairGattServiceClient::OnGattConnection(
+void FastPairGattServiceClientImpl::OnGattConnection(
     std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
@@ -100,7 +100,7 @@ void FastPairGattServiceClient::OnGattConnection(
   }
 }
 
-void FastPairGattServiceClient::NotifyError(PairFailure failure) {
+void FastPairGattServiceClientImpl::NotifyError(PairFailure failure) {
   adapter_.reset();
   adapter_observation_.Reset();
   gatt_connection_.reset();
@@ -116,7 +116,7 @@ void FastPairGattServiceClient::NotifyError(PairFailure failure) {
   std::move(on_initialized_callback_).Run(failure);
 }
 
-void FastPairGattServiceClient::GattDiscoveryCompleteForService(
+void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
     device::BluetoothAdapter* adapter,
     device::BluetoothRemoteGattService* service) {
   gatt_service_discovery_timer_.Stop();
@@ -133,7 +133,7 @@ void FastPairGattServiceClient::GattDiscoveryCompleteForService(
 }
 
 std::vector<device::BluetoothRemoteGattCharacteristic*>
-FastPairGattServiceClient::GetCharacteristicsByUUIDs(
+FastPairGattServiceClientImpl::GetCharacteristicsByUUIDs(
     const device::BluetoothUUID& uuidV1,
     const device::BluetoothUUID& uuidV2) {
   if (!gatt_service_)
@@ -147,7 +147,7 @@ FastPairGattServiceClient::GetCharacteristicsByUUIDs(
   return characteristics;
 }
 
-void FastPairGattServiceClient::
+void FastPairGattServiceClientImpl::
     FindGattCharacteristicsAndStartNotifySessions() {
   std::vector<device::BluetoothRemoteGattCharacteristic*>
       key_based_characteristics = GetCharacteristicsByUUIDs(
@@ -177,33 +177,33 @@ void FastPairGattServiceClient::
   keybased_notify_session_timer_.Start(
       FROM_HERE, kConnectingTimeout,
       base::BindOnce(
-          &FastPairGattServiceClient::NotifyError,
+          &FastPairGattServiceClientImpl::NotifyError,
           weak_ptr_factory_.GetWeakPtr(),
           PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout));
   passkey_notify_session_timer_.Start(
       FROM_HERE, kConnectingTimeout,
-      base::BindOnce(&FastPairGattServiceClient::NotifyError,
+      base::BindOnce(&FastPairGattServiceClientImpl::NotifyError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kPasskeyCharacteristicNotifySessionTimeout));
 
   key_based_characteristic_ = key_based_characteristics[0];
   key_based_characteristic_->StartNotifySession(
-      base::BindOnce(&FastPairGattServiceClient::OnNotifySession,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnNotifySession,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FastPairGattServiceClient::OnGattError,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnGattError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kKeyBasedPairingCharacteristicNotifySession));
 
   passkey_characteristic_ = passkey_characteristics[0];
   passkey_characteristic_->StartNotifySession(
-      base::BindOnce(&FastPairGattServiceClient::OnNotifySession,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnNotifySession,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FastPairGattServiceClient::OnGattError,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnGattError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kPasskeyCharacteristicNotifySession));
 }
 
-void FastPairGattServiceClient::OnNotifySession(
+void FastPairGattServiceClientImpl::OnNotifySession(
     std::unique_ptr<device::BluetoothGattNotifySession> session) {
   // Check which characteristic the session corresponds to and stop the relevant
   // timer.
@@ -232,11 +232,16 @@ void FastPairGattServiceClient::OnNotifySession(
   }
 }
 
-void FastPairGattServiceClient::OnGattError(
+void FastPairGattServiceClientImpl::OnGattError(
     PairFailure failure,
     device::BluetoothGattService::GattErrorCode error) {
   QP_LOG(VERBOSE) << "StartNotifySession failed due to GATT error.";
   NotifyError(failure);
+}
+
+device::BluetoothRemoteGattService*
+FastPairGattServiceClientImpl::gatt_service() {
+  return gatt_service_;
 }
 
 }  // namespace quick_pair

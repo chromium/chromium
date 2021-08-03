@@ -5,24 +5,7 @@
 #ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 #define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 
-#include "ash/quick_pair/common/pair_failure.h"
-#include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace device {
-
-class BluetoothDevice;
-class BluetoothGattConnection;
-class BluetoothRemoteGattService;
-class BluetoothGattNotifySession;
-class BluetoothRemoteGattService;
-
-}  // namespace device
 
 namespace ash {
 namespace quick_pair {
@@ -32,87 +15,8 @@ namespace quick_pair {
 // during initialization.
 class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<FastPairGattServiceClient> Create(
-        device::BluetoothDevice* device,
-        scoped_refptr<device::BluetoothAdapter> adapter,
-        base::OnceCallback<void(absl::optional<PairFailure>)>
-            on_initialized_callback);
-    static void SetFactoryForTesting(Factory* test_factory);
-
-   protected:
-    virtual ~Factory();
-    virtual std::unique_ptr<FastPairGattServiceClient> CreateInstance(
-        device::BluetoothDevice* device,
-        scoped_refptr<device::BluetoothAdapter> adapter,
-        base::OnceCallback<void(absl::optional<PairFailure>)>
-            on_initialized_callback) = 0;
-
-   private:
-    static Factory* g_test_factory_;
-  };
-
-  device::BluetoothRemoteGattService* gatt_service() { return gatt_service_; }
-
-  ~FastPairGattServiceClient() override;
-
- private:
-  FastPairGattServiceClient(
-      device::BluetoothDevice* device,
-      scoped_refptr<device::BluetoothAdapter> adapter,
-      base::OnceCallback<void(absl::optional<PairFailure>)>
-          on_initialized_callback);
-  FastPairGattServiceClient(const FastPairGattServiceClient&) = delete;
-  FastPairGattServiceClient& operator=(const FastPairGattServiceClient&) =
-      delete;
-
-  // Callback from the adapter's call to create GATT connection.
-  void OnGattConnection(
-      std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
-
-  // Invokes the callback with the proper PairFailure and clears local state.
-  void NotifyError(PairFailure failure);
-
-  // BluetoothAdapter::Observer
-  void GattDiscoveryCompleteForService(
-      device::BluetoothAdapter* adapter,
-      device::BluetoothRemoteGattService* service) override;
-
-  void FindGattCharacteristicsAndStartNotifySessions();
-
-  std::vector<device::BluetoothRemoteGattCharacteristic*>
-  GetCharacteristicsByUUIDs(const device::BluetoothUUID& uuidV1,
-                            const device::BluetoothUUID& uuidV2);
-
-  // BluetoothRemoteGattCharacteristic StartNotifySession callbacks
-  void OnNotifySession(
-      std::unique_ptr<device::BluetoothGattNotifySession> session);
-  void OnGattError(PairFailure failure,
-                   device::BluetoothGattService::GattErrorCode error);
-
-  base::OneShotTimer gatt_service_discovery_timer_;
-  base::OneShotTimer passkey_notify_session_timer_;
-  base::OneShotTimer keybased_notify_session_timer_;
-
-  std::string device_address_;
-  device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =
-      nullptr;
-  device::BluetoothRemoteGattCharacteristic* passkey_characteristic_ = nullptr;
-  device::BluetoothRemoteGattCharacteristic* account_key_characteristic_ =
-      nullptr;
-  std::vector<std::unique_ptr<device::BluetoothGattNotifySession>>
-      bluetooth_gatt_notify_sessions_;
-  base::OnceCallback<void(absl::optional<PairFailure>)>
-      on_initialized_callback_;
-  scoped_refptr<device::BluetoothAdapter> adapter_;
-  std::unique_ptr<device::BluetoothGattConnection> gatt_connection_;
-  device::BluetoothRemoteGattService* gatt_service_ = nullptr;
-  base::ScopedObservation<device::BluetoothAdapter,
-                          device::BluetoothAdapter::Observer>
-      adapter_observation_{this};
-  base::WeakPtrFactory<FastPairGattServiceClient> weak_ptr_factory_{this};
+  ~FastPairGattServiceClient() override = default;
+  virtual device::BluetoothRemoteGattService* gatt_service() = 0;
 };
 
 }  // namespace quick_pair

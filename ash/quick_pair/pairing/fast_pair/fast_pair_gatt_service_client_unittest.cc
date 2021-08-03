@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
 
 #include <stddef.h>
 
@@ -211,7 +211,7 @@ class FastPairGattServiceClientTest : public testing::Test {
     device_ = CreateTestBluetoothDevice(
         adapter_.get(), ash::quick_pair::kFastPairBluetoothUuid);
     adapter_->AddMockDevice(std::move(device_));
-    gatt_service_client_ = FastPairGattServiceClient::Factory::Create(
+    gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
         adapter_->GetDevice(kTestBleDeviceAddress), adapter_.get(),
         base::BindRepeating(
             &::ash::quick_pair::FastPairGattServiceClientTest::TestCallback,
@@ -224,7 +224,7 @@ class FastPairGattServiceClientTest : public testing::Test {
         adapter_.get(), ash::quick_pair::kFastPairBluetoothUuid);
     device_->SetError(true);
     adapter_->AddMockDevice(std::move(device_));
-    gatt_service_client_ = FastPairGattServiceClient::Factory::Create(
+    gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
         adapter_->GetDevice(kTestBleDeviceAddress), adapter_.get(),
         base::BindRepeating(
             &::ash::quick_pair::FastPairGattServiceClientTest::TestCallback,
@@ -235,7 +235,7 @@ class FastPairGattServiceClientTest : public testing::Test {
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device_ = CreateTestBluetoothDevice(adapter_.get(), kNonFastPairUuid);
     adapter_->AddMockDevice(std::move(device_));
-    gatt_service_client_ = FastPairGattServiceClient::Factory::Create(
+    gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
         adapter_->GetDevice(kTestBleDeviceAddress), adapter_.get(),
         base::BindRepeating(
             &::ash::quick_pair::FastPairGattServiceClientTest::TestCallback,

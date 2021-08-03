@@ -5,8 +5,12 @@
 #ifndef ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_H_
 #define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_H_
 
+#include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -37,12 +41,12 @@ class FastPairPairer {
           pairing_procedure_complete);
   FastPairPairer(const FastPairPairer&) = delete;
   FastPairPairer& operator=(const FastPairPairer&) = delete;
-  FastPairPairer(FastPairPairer&&);
-  FastPairPairer& operator=(FastPairPairer&&);
+  FastPairPairer(FastPairPairer&&) = delete;
+  FastPairPairer& operator=(FastPairPairer&&) = delete;
   ~FastPairPairer();
 
  private:
-  void StartPairing();
+  void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
@@ -52,6 +56,8 @@ class FastPairPairer {
   base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
+  std::unique_ptr<FastPairGattServiceClient> fast_pair_gatt_service_client_;
+  base::WeakPtrFactory<FastPairPairer> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair
