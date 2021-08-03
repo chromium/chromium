@@ -9,6 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -180,7 +181,7 @@ public class OverlayPanelManagerTest extends DummyUiChromeActivityTestCase {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testPanelClosed() {

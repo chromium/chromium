@@ -9,6 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -281,7 +282,7 @@ public class OverlayPanelBaseTest extends DummyUiChromeActivityTestCase {
      * Tests that a panel is only maximized when desired height is far above the max.
      */
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"OverlayPanelBase"})
     @UiThreadTest
     public void testLargeDesiredHeightIsMaximized() {
