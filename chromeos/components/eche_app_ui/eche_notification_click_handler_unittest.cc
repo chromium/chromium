@@ -42,7 +42,7 @@ class EcheNotificationClickHandlerTest : public testing::Test {
   }
 
   void FakeLaunchEcheAppFunction(int64_t notification_id,
-                                 std::string package_name) {
+                                 const std::string& package_name) {
     // Do nothing.
   }
 

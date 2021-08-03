@@ -23,31 +23,32 @@ namespace eche_app {
 
 // Handles notification clicks originating from Phone Hub notifications.
 class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
-                                     FeatureStatusProvider::Observer {
+                                     public FeatureStatusProvider::Observer {
  public:
   using LaunchEcheAppFunction =
-      base::RepeatingCallback<void(int64_t, std::string)>;
+      base::RepeatingCallback<void(int64_t notification_id,
+                                   const std::string& package_name)>;
   using CloseEcheAppFunction = base::RepeatingCallback<void()>;
 
-  EcheNotificationClickHandler(phonehub::PhoneHubManager*,
-                               FeatureStatusProvider*,
-                               LaunchEcheAppFunction,
-                               CloseEcheAppFunction);
+  EcheNotificationClickHandler(phonehub::PhoneHubManager* phone_hub_manager,
+                               FeatureStatusProvider* feature_status_provider,
+                               LaunchEcheAppFunction launch_eche_app_function,
+                               CloseEcheAppFunction close_eche_app_function);
   ~EcheNotificationClickHandler() override;
 
   EcheNotificationClickHandler(const EcheNotificationClickHandler&) = delete;
   EcheNotificationClickHandler& operator=(const EcheNotificationClickHandler&) =
       delete;
 
-  // phonehub::NotificationClickHandler
+  // phonehub::NotificationClickHandler:
   void HandleNotificationClick(
       int64_t notification_id,
       const phonehub::Notification::AppMetadata& app_metadata) override;
 
- private:
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
+ private:
   bool IsClickable(FeatureStatus status);
 
   bool NeedClose(FeatureStatus status);
@@ -56,7 +57,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
   FeatureStatusProvider* feature_status_provider_;
   LaunchEcheAppFunction launch_eche_app_function_;
   CloseEcheAppFunction close_eche_app_function_;
-  bool is_click_handler_set;
+  bool is_click_handler_set_ = false;
 };
 
 }  // namespace eche_app

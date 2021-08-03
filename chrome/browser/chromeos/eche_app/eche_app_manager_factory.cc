@@ -86,10 +86,9 @@ void LaunchSystemWebApp(Profile* profile,
                                    params);
 }
 
-// TODO(b/195070217): Convert |package_name| to const reference type.
 void LaunchEcheApp(Profile* profile,
                    int64_t notification_id,
-                   std::string package_name) {
+                   const std::string& package_name) {
   LaunchSystemWebApp(profile, package_name, notification_id);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
                                 NotificationInteraction::kOpenAppStreaming);

@@ -16,28 +16,22 @@ EcheNotificationClickHandler::EcheNotificationClickHandler(
     LaunchEcheAppFunction launch_eche_app_function,
     CloseEcheAppFunction close_eche_app_function)
     : feature_status_provider_(feature_status_provider),
-      launch_eche_app_function_(std::move(launch_eche_app_function)),
-      close_eche_app_function_(std::move(close_eche_app_function)) {
+      launch_eche_app_function_(launch_eche_app_function),
+      close_eche_app_function_(close_eche_app_function) {
   handler_ = phone_hub_manager->GetNotificationInteractionHandler();
-  DCHECK_NE(handler_, nullptr);
   feature_status_provider_->AddObserver(this);
-  if (handler_ != nullptr) {
-    if (IsClickable(feature_status_provider_->GetStatus())) {
-      handler_->AddNotificationClickHandler(this);
-      is_click_handler_set = true;
-    } else {
-      is_click_handler_set = false;
-    }
+  if (handler_ && IsClickable(feature_status_provider_->GetStatus())) {
+    handler_->AddNotificationClickHandler(this);
+    is_click_handler_set_ = true;
   } else {
     PA_LOG(INFO)
         << "No Phone Hub interaction handler to set Eche click handler";
-    is_click_handler_set = false;
   }
 }
 
 EcheNotificationClickHandler::~EcheNotificationClickHandler() {
   feature_status_provider_->RemoveObserver(this);
-  if (is_click_handler_set && handler_ != nullptr)
+  if (is_click_handler_set_ && handler_)
     handler_->RemoveNotificationClickHandler(this);
 }
 
@@ -48,22 +42,23 @@ void EcheNotificationClickHandler::HandleNotificationClick(
 }
 
 void EcheNotificationClickHandler::OnFeatureStatusChanged() {
-  if (handler_ != nullptr) {
-    bool clickable = IsClickable(feature_status_provider_->GetStatus());
-    if (!is_click_handler_set && clickable) {
-      handler_->AddNotificationClickHandler(this);
-      is_click_handler_set = true;
-    } else if (is_click_handler_set && !clickable) {
-      handler_->RemoveNotificationClickHandler(this);
-      is_click_handler_set = false;
-      if (NeedClose(feature_status_provider_->GetStatus())) {
-        PA_LOG(INFO) << "Close Eche app window";
-        close_eche_app_function_.Run();
-      }
-    }
-  } else {
+  if (!handler_) {
     PA_LOG(INFO)
         << "No Phone Hub interaction handler to set Eche click handler";
+    return;
+  }
+
+  bool clickable = IsClickable(feature_status_provider_->GetStatus());
+  if (!is_click_handler_set_ && clickable) {
+    handler_->AddNotificationClickHandler(this);
+    is_click_handler_set_ = true;
+  } else if (is_click_handler_set_ && !clickable) {
+    handler_->RemoveNotificationClickHandler(this);
+    is_click_handler_set_ = false;
+    if (NeedClose(feature_status_provider_->GetStatus())) {
+      PA_LOG(INFO) << "Close Eche app window";
+      close_eche_app_function_.Run();
+    }
   }
 }
 
