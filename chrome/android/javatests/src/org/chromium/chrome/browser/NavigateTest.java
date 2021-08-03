@@ -74,7 +74,6 @@ public class NavigateTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String HTTPS_SCHEME = "https://";
-    private static final String NEW_TAB_PAGE = "chrome-native://newtab/";
 
     private EmbeddedTestServer mTestServer;
 
@@ -391,14 +390,8 @@ public class NavigateTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1233114")
     @Feature({"Navigation"})
     public void testIntentFallbackRedirection() throws Exception {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        Assert.assertEquals(NEW_TAB_PAGE,
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab()));
-
         final String fallbackUrl =
                 mTestServer.getURL("/chrome/test/data/android/redirect/about.html");
         final String redirectUrl = "intent://non_existent/#Intent;scheme=non_existent;"
@@ -407,12 +400,19 @@ public class NavigateTest {
                 mTestServer.getURL("/chrome/test/data/android/redirect/js_redirect.html"
                         + "?replace_text="
                         + Base64.encodeToString(
-                                  ApiCompatibilityUtils.getBytesUtf8("PARAM_URL"), Base64.URL_SAFE)
+                                ApiCompatibilityUtils.getBytesUtf8("PARAM_URL"), Base64.URL_SAFE)
                         + ":"
-                        + Base64.encodeToString(ApiCompatibilityUtils.getBytesUtf8(redirectUrl),
-                                  Base64.URL_SAFE));
-        final String targetUrl =
-                mTestServer.getURL("/chrome/test/data/android/redirect/one.html");
+                        + Base64.encodeToString(
+                                ApiCompatibilityUtils.getBytesUtf8(redirectUrl), Base64.URL_SAFE));
+        final String targetUrl = mTestServer.getURL("/chrome/test/data/android/redirect/one.html");
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // We should start on the homepage, which is something other than our test page.
+        String originalUrl = ChromeTabUtils.getUrlStringOnUiThread(
+                mActivityTestRule.getActivity().getActivityTab());
+        Criteria.checkThat(originalUrl, Matchers.not(targetUrl));
+
         typeInOmniboxAndNavigate(initialUrl, null);
 
         // Now intent fallback should be triggered assuming 'non_existent' scheme cannot be handled.
@@ -440,7 +440,7 @@ public class NavigateTest {
                                                .getEntryAtIndex(0)
                                                .getUrl()
                                                .getSpec();
-        Assert.assertEquals(NEW_TAB_PAGE, previousNavigationUrl);
+        Assert.assertEquals(originalUrl, previousNavigationUrl);
     }
 
     /**
