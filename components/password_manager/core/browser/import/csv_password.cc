@@ -106,6 +106,7 @@ CSVPassword::Status CSVPassword::ParseImpl(PasswordForm* form) const {
   form->username_value = Convert(username);
   form->password_value = Convert(password);
   form->date_created = base::Time::Now();
+  form->date_password_modified = form->date_created;
   return Status::kOK;
 }
 

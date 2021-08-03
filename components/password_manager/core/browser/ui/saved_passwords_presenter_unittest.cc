@@ -54,7 +54,8 @@ class SavedPasswordsPresenterTest : public ::testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   SavedPasswordsPresenter presenter_{store_};
@@ -143,6 +144,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   // issues.
   PasswordForm updated = form;
   updated.password_value = new_password;
+  updated.date_password_modified = base::Time::Now();
   updated.password_issues->clear();
 
   // Verify that editing a password triggers the right notifications.
@@ -239,6 +241,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   // The result of the update should have a new password and no password
   // issues.
   updated_password.password_value = new_password;
+  updated_password.date_password_modified = base::Time::Now();
   updated_password.password_issues->clear();
 
   base::HistogramTester histogram_tester;
@@ -288,6 +291,7 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   // password issues.
   updated_both.username_value = new_username;
   updated_both.password_value = new_password;
+  updated_both.date_password_modified = base::Time::Now();
   updated_both.password_issues->clear();
 
   base::HistogramTester histogram_tester;
@@ -404,10 +408,12 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   // The result of the update should have a new password and no password_issues.
   // The same is valid for the duplicate form.
   updated_form.password_value = new_password;
+  updated_form.date_password_modified = base::Time::Now();
   updated_form.password_issues->clear();
 
   PasswordForm updated_duplicate_form = duplicate_form;
   updated_duplicate_form.password_value = new_password;
+  updated_duplicate_form.date_password_modified = base::Time::Now();
   updated_duplicate_form.password_issues->clear();
 
   EXPECT_CALL(observer, OnEdited(updated_form));
@@ -486,7 +492,8 @@ class SavedPasswordsPresenterWithTwoStoresTest : public ::testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> profile_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
@@ -845,6 +852,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   expected_profile_store_form.username_value = new_username;
   expected_profile_store_form.password_value = new_password;
   expected_profile_store_form.in_store = PasswordForm::Store::kProfileStore;
+  expected_profile_store_form.date_password_modified = base::Time::Now();
   expected_profile_store_form.password_issues->clear();
   PasswordForm expected_account_store_form = expected_profile_store_form;
   expected_account_store_form.in_store = PasswordForm::Store::kAccountStore;

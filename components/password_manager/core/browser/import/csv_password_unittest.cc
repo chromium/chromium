@@ -35,6 +35,7 @@ TEST(CSVPasswordTest, Construction) {
   EXPECT_EQ(u"user", result.username_value);
   EXPECT_EQ(u"password", result.password_value);
   EXPECT_EQ(base::Time::Now(), result.date_created);
+  EXPECT_EQ(base::Time::Now(), result.date_password_modified);
 }
 
 struct TestCase {
