@@ -533,6 +533,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "floatingkeyboarddefault",
       base::FeatureList::IsEnabled(
           chromeos::features::kVirtualKeyboardFloatingDefault)));
+  features.Append(GenerateFeatureFlag(
+      "stylushandwriting",
+      base::FeatureList::IsEnabled(chromeos::features::kImeStylusHandwriting)));
 
   // Flag used to enable system built-in IME decoder instead of NaCl.
   bool mojo_decoder =

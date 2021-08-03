@@ -625,6 +625,10 @@ const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
 const base::Feature kImeSystemEmojiPickerClipboard{
     "SystemEmojiPickerClipboard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable a new UI for stylus writing on the virtual keyboard
+const base::Feature kImeStylusHandwriting{"StylusHandwriting",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

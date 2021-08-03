@@ -2844,6 +2844,9 @@ extern const char kImeSystemEmojiPickerDescription[];
 extern const char kImeSystemEmojiPickerClipboardName[];
 extern const char kImeSystemEmojiPickerClipboardDescription[];
 
+extern const char kImeStylusHandwritingName[];
+extern const char kImeStylusHandwritingDescription[];
+
 extern const char kIntentHandlingSharingName[];
 extern const char kIntentHandlingSharingDescription[];
 

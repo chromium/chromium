@@ -4934,6 +4934,9 @@ const char kImeSystemEmojiPickerClipboardName[] =
 const char kImeSystemEmojiPickerClipboardDescription[] =
     "Emoji picker will insert emoji into clipboard if they can't be inserted "
     "into a text field";
+const char kImeStylusHandwritingName[] = "Stylus Handwriting";
+const char kImeStylusHandwritingDescription[] =
+    "Enable VK UI for stylus in text fields";
 
 const char kCrosLanguageSettingsImeOptionsInSettingsName[] =
     "Ime settings in settings";
