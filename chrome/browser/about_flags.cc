@@ -4033,7 +4033,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2ClicksAndViewsConditionalUpload)},
 #endif  // OS_ANDROID
-    {"PasswordImport", flag_descriptions::kPasswordImportName,
+    {"password-import", flag_descriptions::kPasswordImportName,
      flag_descriptions::kPasswordImportDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordImport)},
     {"enable-force-dark", flag_descriptions::kForceWebContentsDarkModeName,

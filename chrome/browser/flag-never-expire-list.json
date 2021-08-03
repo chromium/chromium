@@ -82,6 +82,7 @@
   "memlog-sampling-rate",
   "memlog-stack-mode",
   "overlay-strategies",
+  "password-import",
   "reader-mode-heuristics",
   "record-web-app-debug-info",
   "release-notes-notification-all-channels",

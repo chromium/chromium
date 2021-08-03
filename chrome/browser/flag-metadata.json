@@ -4502,6 +4502,13 @@
     "expiry_milestone": 95
   },
   {
+    "name": "password-import",
+    "owners": [ "//components/password_manager/OWNERS" ],
+    // The feature is already extensively used externally.
+    // However, it's not polished enough yet to launch.
+    "expiry_milestone": -1
+  },
+  {
     "name": "password-reuse-detection",
     "owners": [
       "edchin",
@@ -4514,11 +4521,6 @@
     "name": "password-scripts-fetching",
     "owners": [ "kolos" ],
     "expiry_milestone": 95
-  },
-  {
-    "name": "PasswordImport",
-    "owners": [ "jdoerrie", "vasilii" ],
-    "expiry_milestone": 92
   },
   {
     "name": "passwords-account-storage",
