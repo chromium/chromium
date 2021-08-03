@@ -112,6 +112,7 @@ interface FileSystemDirectoryHandle extends FileSystemHandleBase {
       Promise<FileSystemDirectoryHandle>;
   getFileHandle(name: string, options?: FileSystemGetFileOptions):
       Promise<FileSystemFileHandle>;
+  removeEntry(name: string): Promise<void>;
   values(): IterableIterator<FileSystemHandle>;
 }
 
