@@ -5,12 +5,18 @@
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace ash {
 
 namespace {
 PciePeripheralManager* g_instance = nullptr;
+
+const int kBillboardDeviceClassCode = 17;
+constexpr char thunderbolt_file_path[] = "/sys/bus/thunderbolt/devices/0-0";
 
 void RecordConnectivityMetric(
     PciePeripheralManager::PciePeripheralConnectivityResults results) {
@@ -65,6 +71,11 @@ void PciePeripheralManager::NotifyPeripheralBlockedReceived() {
     observer.OnPeripheralBlockedReceived();
 }
 
+void PciePeripheralManager::NotifyBillboardDeviceReceived() {
+  for (auto& observer : observer_list_)
+    observer.OnBillboardDeviceConnected();
+}
+
 void PciePeripheralManager::OnThunderboltDeviceConnected(
     bool is_thunderbolt_only) {
   if (is_guest_profile_) {
@@ -100,9 +111,27 @@ void PciePeripheralManager::OnBlockedThunderboltDeviceConnected(
       PciePeripheralConnectivityResults::kPeripheralBlocked);
 }
 
+void PciePeripheralManager::OnDeviceConnected(
+    device::mojom::UsbDeviceInfo* device) {
+  if (device->class_code == kBillboardDeviceClassCode &&
+      !CheckIfThunderboltFilepathExists()) {
+    NotifyBillboardDeviceReceived();
+    RecordConnectivityMetric(
+        PciePeripheralConnectivityResults::kBillboardDevice);
+  }
+}
+
 void PciePeripheralManager::SetPcieTunnelingAllowedState(
     bool is_pcie_tunneling_allowed) {
   is_pcie_tunneling_allowed_ = is_pcie_tunneling_allowed;
+}
+
+void PciePeripheralManager::SetRootPrefixForTesting(const std::string& prefix) {
+  root_prefix_ = prefix;
+}
+
+bool PciePeripheralManager::CheckIfThunderboltFilepathExists() {
+  return base::PathExists(base::FilePath(root_prefix_ + thunderbolt_file_path));
 }
 
 // static

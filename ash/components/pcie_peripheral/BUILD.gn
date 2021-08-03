@@ -13,6 +13,7 @@ component("pcie_peripheral") {
     "//base",
     "//chromeos/dbus/pciguard",
     "//chromeos/dbus/typecd",
+    "//services/device/public/mojom:usb",
   ]
 
   sources = [

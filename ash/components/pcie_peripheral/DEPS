@@ -4,4 +4,5 @@ include_rules = [
   "+base",
   "+chromeos/dbus",
   "+testing",
+  "+services/device/public",
 ]

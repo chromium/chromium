@@ -97,6 +97,7 @@
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/handlers/lock_to_single_user_manager.h"
@@ -1161,6 +1162,13 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
       ->PostTask(FROM_HERE,
                  base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
                                 base::Unretained(cros_usb_detector_.get())));
+
+  // USB detection for ash notifications.
+  ash_usb_detector_ = std::make_unique<ash::AshUsbDetector>();
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&ash::AshUsbDetector::ConnectToDeviceManager,
+                                base::Unretained(ash_usb_detector_.get())));
 
   if (chromeos::features::IsPciguardUiEnabled()) {
     // The local_state pref may not be available at this stage of Chrome's
