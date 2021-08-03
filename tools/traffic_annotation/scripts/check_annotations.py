@@ -21,9 +21,9 @@ from annotation_tools import NetworkTrafficAnnotationTools
 # //tools/traffic_annotation/OWNERS.
 TEST_IS_ENABLED = True
 
-# If the auditor.py part of this test starts failing, please set
-# TEST_PYTHON_AUDITOR to "False" and file a bug (see comment above).
-TEST_PYTHON_AUDITOR = True
+# If this test starts failing due to a critical bug in auditor.py, please set
+# USE_PYTHON_AUDITOR to "False" and file a bug (see comment above).
+USE_PYTHON_AUDITOR = True
 
 # Threshold for the change list size to trigger full test.
 CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
@@ -145,24 +145,7 @@ def main():
   checker = NetworkTrafficAnnotationChecker(args.build_path)
   exit_code = checker.CheckFiles(args.complete,
                                  args.limit,
-                                 use_python_auditor=False)
-
-  if TEST_PYTHON_AUDITOR:
-    print()
-    print("Now trying again with the experimental auditor.py script. This is "
-          "only for testing/debugging purposes.")
-    print()
-    print("YOU CAN SAFELY IGNORE ALL OUTPUT BELOW THIS LINE")
-    print("=" * 120)
-
-    # Ignore all errors while running auditor.py.
-    try:
-      python_exit_code = checker.CheckFiles(args.complete,
-                                            args.limit,
-                                            use_python_auditor=True)
-      print("Exit code was %d." % python_exit_code)
-    except Exception as e:
-      traceback.print_exc()
+                                 use_python_auditor=USE_PYTHON_AUDITOR)
 
   return exit_code
 

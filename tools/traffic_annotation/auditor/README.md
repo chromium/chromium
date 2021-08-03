@@ -1,4 +1,14 @@
 # Network Traffic Annotation Auditor
+
+THIS CODEBASE IS DEPRECATED. It will be removed soon(ish). The new
+implementation can be found at tools/traffic_annotation/auditor/auditor.py. It
+is a drop-in replacement for traffic_annotation_auditor, so you can run it with
+the same command-line arguments, etc.
+
+<!-- TODO(crbug.com/1119417): Remove t_a_auditor-related code after enough
+     time running auditor.py by default (to ensure it's relatively bug-free).
+  -->
+
 This binary runs extractor.py for extraction of Network Traffic Annotations
 from chromium source code, collects and summarizes its outputs, and performs
 tests and maintenance.
