@@ -279,9 +279,9 @@ bool GetBlurredImage(const SkBitmap& image,
   const int data_size = blurred->width() * blurred->height();
   blurred_image->mutable_data()->reserve(data_size);
 
-  for (int x = 0; x < blurred->width(); ++x) {
-    for (int y = 0; y < blurred->height(); ++y) {
-      SkColor color = blurred->getColor(y, x);
+  for (int y = 0; y < blurred->height(); ++y) {
+    for (int x = 0; x < blurred->width(); ++x) {
+      SkColor color = blurred->getColor(x, y);
       *blurred_image->mutable_data() += static_cast<char>(SkColorGetR(color));
       *blurred_image->mutable_data() += static_cast<char>(SkColorGetG(color));
       *blurred_image->mutable_data() += static_cast<char>(SkColorGetB(color));
