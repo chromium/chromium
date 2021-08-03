@@ -1,0 +1,10 @@
+# back-to-dynamic-iframe.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "back-to-dynamic-iframe.html">
+Header set Cache-Control "no-store"
+</Files>
+# forward-to-fragment-fires-onload.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "forward-to-fragment-fires-onload.html">
+Header set Cache-Control "no-store"
+</Files>
