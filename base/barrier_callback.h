@@ -16,7 +16,7 @@
 
 namespace base {
 
-namespace {
+namespace internal {
 
 template <typename T>
 class BarrierCallbackInfo {
@@ -53,7 +53,7 @@ void ShouldNeverRun(T t) {
   CHECK(false);
 }
 
-}  // namespace
+}  // namespace internal
 
 // BarrierCallback<T> is an analog of BarrierClosure for which each `Run()`
 // invocation takes a `T` as an argument. After `num_callbacks` such
@@ -76,11 +76,11 @@ RepeatingCallback<void(T)> BarrierCallback(
     OnceCallback<void(std::vector<T>)> done_callback) {
   if (num_callbacks == 0) {
     std::move(done_callback).Run({});
-    return BindRepeating(&ShouldNeverRun<T>);
+    return BindRepeating(&internal::ShouldNeverRun<T>);
   }
 
-  return BindRepeating(&BarrierCallbackInfo<T>::Run,
-                       std::make_unique<BarrierCallbackInfo<T>>(
+  return BindRepeating(&internal::BarrierCallbackInfo<T>::Run,
+                       std::make_unique<internal::BarrierCallbackInfo<T>>(
                            num_callbacks, std::move(done_callback)));
 }
 
