@@ -4861,7 +4861,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6308937455967653460">Guardar &amp;enlace como...</translation>
 <translation id="6309443618838462258">Tu administrador no permite este método de introducción de texto</translation>
 <translation id="6309510305002439352">Micrófono desactivado</translation>
-<translation id="6310141306111263820">No se ha podido instalar el perfil eSIM. Para obtener ayuda, ponte en contacto con tu operador.</translation>
+<translation id="6310141306111263820">No se ha podido instalar el perfil de eSIM. Para obtener ayuda, ponte en contacto con tu operador.</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se ha producido un error al abrir el perfil. Prueba a reiniciar el navegador.</translation>
 <translation id="6312403991423642364">Error desconocido de red</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{La comprobación de seguridad se realizó hace 1 día}other{La comprobación de seguridad se realizó hace {NUM_DAYS} días}}</translation>

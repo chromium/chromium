@@ -2482,7 +2482,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3658871634334445293">TrackPoint-aren azelerazioa</translation>
 <translation id="3659830472545192450">Voice Match-i esker, Google-ren Laguntzailea eginbideak zure ahotsa identifikatzen du Chromebook-ean, eta gainerakoetatik bereizi.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Kontuan izan:<ph name="END_BOLD" /> baliteke grabaketa edo antzeko ahots batekin ere zure emaitza pertsonalak atzitu ahal izatea. Voice Match erabiltzeko baimena kendu nahi baduzu, desaktiba ezazu Laguntzailea eginbidearen ezarpenetan.</translation>
+    <ph name="BEGIN_BOLD" />Kontuan izan:<ph name="END_BOLD" /> baliteke zurearen antzekoa den ahots bat edo zure ahotsaren grabaketa bat erabilita zure emaitza pertsonalak atzitu ahal izatea. Voice Match erabiltzeko baimena kendu nahi baduzu, desaktiba ezazu Laguntzailea eginbidearen ezarpenetan.</translation>
 <translation id="3660234220361471169">Ez-fidagarria</translation>
 <translation id="3664511988987167893">Luzapenaren ikonoa</translation>
 <translation id="3665589677786828986">Beste programa batek ezarpen batzuk hondatu dituela hauteman du Chrome-k. Ezarpen horien jatorrizko balio lehenetsiak berrezarri dira.</translation>
@@ -4235,7 +4235,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5612734644261457353">Orain ere, ezin izan da egiaztatu pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, saioa amaitu eta gero aplikatuko da pasahitz berria, beraz, erabili pasahitz zaharra hemen.</translation>
 <translation id="561308544008485315">Voice Match-i esker, Google-ren Laguntzailea eginbideak zure ahotsa identifikatzen du Chromebook-ean, eta gainerakoetatik bereizi. Bateria aurrezteko, gailua energia-iturri batera konektatuta dagoenean soilik aktibatzen da "Hey Google". Aldaketak egiteko, joan Ezarpenak atalera.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Kontuan izan:<ph name="END_BOLD" /> baliteke grabaketa edo antzeko ahots batekin ere zure emaitza pertsonalak atzitu ahal izatea. Voice Match erabiltzeko baimena kendu nahi baduzu, desaktiba ezazu Laguntzailea eginbidearen ezarpenetan.</translation>
+    <ph name="BEGIN_BOLD" />Kontuan izan:<ph name="END_BOLD" /> baliteke zurearen antzekoa den ahots bat edo zure ahotsaren grabaketa bat erabilita zure emaitza pertsonalak atzitu ahal izatea. Voice Match erabiltzeko baimena kendu nahi baduzu, desaktiba ezazu Laguntzailea eginbidearen ezarpenetan.</translation>
 <translation id="5614190747811328134">Erabiltzaileentzako oharra</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5616726534702877126">Gorde tamaina</translation>

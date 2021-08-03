@@ -2839,7 +2839,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika ukuran halaman tidak tersedia pada printer yang dipilih pengguna, kebijakan ini diabaikan.</translation>
 <translation id="4790588245699320140">Mengizinkan Asisten Google mengakses konteks layar</translation>
-<translation id="4802744647065138872">Membatasi jumlah snapshot data pengguna yang disimpan untuk digunakan ketika terjadi rollback darurat.</translation>
+<translation id="4802744647065138872">Membatasi jumlah ringkasan data pengguna yang disimpan untuk digunakan ketika terjadi rollback darurat.</translation>
 <translation id="4802905909524200151">Mengonfigurasi perilaku update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Selalu reboot saat pengguna logout.</translation>
 <translation id="4807950475297505572">Pengguna yang paling jarang digunakan dihapus sampai terdapat cukup ruang kosong</translation>
