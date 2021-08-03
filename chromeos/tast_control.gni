@@ -70,4 +70,7 @@ tast_disabled_tests_from_chrome_all = [
 
   #crbug.com/1204550
   "policy.DefaultNotificationsSetting",
+
+  # crbug.com/1186991
+  "launcher.SearchBuiltInApps",
 ]
