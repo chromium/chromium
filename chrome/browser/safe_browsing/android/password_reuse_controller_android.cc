@@ -51,10 +51,20 @@ void PasswordReuseControllerAndroid::ShowDialog() {
 }
 
 void PasswordReuseControllerAndroid::ShowCheckPasswords() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  // TODO(rsamp) Move the below launch code to HandleUserActionOnModalWarning()
+  // in ChromePasswordProtectionService.
 
-  PasswordCheckupLauncherHelper::LaunchLocalCheckupFromPhishGuardWarningDialog(
-      env, window_android_->GetJavaObject());
+  if (password_type_.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::
+              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+
+    PasswordCheckupLauncherHelper::
+        LaunchLocalCheckupFromPhishGuardWarningDialog(
+            env, window_android_->GetJavaObject());
+  }
 
   if (done_callback_)
     std::move(done_callback_).Run(WarningAction::CHANGE_PASSWORD);
@@ -77,20 +87,38 @@ void PasswordReuseControllerAndroid::CloseDialog() {
 }
 
 std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)
-             ? l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON)
-             : l10n_util::GetStringUTF16(IDS_CLOSE);
+  if (password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
+      password_type_.is_account_syncing() &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kPasswordProtectionForSignedInUsers)) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON);
+  } else if (
+      password_type_.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::
+              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
 std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)
-             ? l10n_util::GetStringUTF16(
-                   IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON)
-             : std::u16string();
+  if ((password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
+       password_type_.is_account_syncing() &&
+       base::FeatureList::IsEnabled(
+           safe_browsing::kPasswordProtectionForSignedInUsers)) ||
+      (password_type_.account_type() ==
+           ReusedPasswordAccountType::SAVED_PASSWORD &&
+       base::FeatureList::IsEnabled(
+           safe_browsing::
+               kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid))) {
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON);
+  }
+
+  return std::u16string();
 }
 
 std::u16string PasswordReuseControllerAndroid::GetWarningDetailText(
@@ -134,6 +162,11 @@ WarningUIType PasswordReuseControllerAndroid::GetObserverType() {
 
 void PasswordReuseControllerAndroid::WebContentsDestroyed() {
   delete this;
+}
+
+void PasswordReuseControllerAndroid::SetReusedPasswordAccountTypeForTesting(
+    ReusedPasswordAccountType password_type) {
+  password_type_ = password_type;
 }
 
 }  // namespace safe_browsing

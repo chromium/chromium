@@ -380,10 +380,16 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
   if (password_type.account_type() == ReusedPasswordAccountType::SAVED_PASSWORD)
     return true;
 
-// Currently password reuse warnings are only supported for saved passwords on
-// Android.
+// TODO(rsamp) Add test coverage for these changes below in the
+// VerifyShouldShowModalWarning tests.
+
+// Currently password reuse warnings are only supported for saved passwords
+// and GAIA passwords on Android.
 #if defined(OS_ANDROID)
-  return false;
+  return base::FeatureList::IsEnabled(
+             safe_browsing::kPasswordProtectionForSignedInUsers) &&
+         password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
+         password_type.is_account_syncing();
 #else
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)

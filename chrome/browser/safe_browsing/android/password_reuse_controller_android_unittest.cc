@@ -46,19 +46,13 @@ class PasswordReuseControllerAndroidTest
                                    WarningAction warning_action) {
     ASSERT_EQ(expected_action_warning, warning_action);
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  ReusedPasswordAccountType reused_password_account_type_;
 };
 
 TEST_F(PasswordReuseControllerAndroidTest, ClickedIgnore) {
-  reused_password_account_type_.set_is_account_syncing(true);
-  reused_password_account_type_.set_account_type(
-      ReusedPasswordAccountType::SAVED_PASSWORD);
+  ReusedPasswordAccountType password_type;
 
   MakeController(
-      nullptr, reused_password_account_type_,
+      nullptr, password_type,
       base::BindOnce(
           &PasswordReuseControllerAndroidTest::AssertWarningActionEquality,
           base::Unretained(this), WarningAction::IGNORE_WARNING))
@@ -66,50 +60,210 @@ TEST_F(PasswordReuseControllerAndroidTest, ClickedIgnore) {
 }
 
 TEST_F(PasswordReuseControllerAndroidTest, ClickedClose) {
-  reused_password_account_type_.set_is_account_syncing(true);
-  reused_password_account_type_.set_account_type(
-      ReusedPasswordAccountType::SAVED_PASSWORD);
+  ReusedPasswordAccountType password_type;
 
   MakeController(
-      nullptr, reused_password_account_type_,
+      nullptr, password_type,
       base::BindOnce(
           &PasswordReuseControllerAndroidTest::AssertWarningActionEquality,
           base::Unretained(this), WarningAction::CLOSE))
       ->CloseDialog();
 }
 
-TEST_F(PasswordReuseControllerAndroidTest, ButtonTextWithFlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::
-          kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid);
-
+TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
   MockOnWarningDone empty_callback;
+  ReusedPasswordAccountType password_type;
 
-  PasswordReuseControllerAndroid* controller = MakeController(
-      nullptr, reused_password_account_type_, empty_callback.Get());
+  PasswordReuseControllerAndroid* controller =
+      MakeController(nullptr, password_type, empty_callback.Get());
 
-  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
-            controller->GetPrimaryButtonText());
-  ASSERT_EQ(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
-      controller->GetSecondaryButtonText());
+  {
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
 
-  delete controller;
-}
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid},
+        {});
 
-TEST_F(PasswordReuseControllerAndroidTest, ButtonTextWithFlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      safe_browsing::
-          kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid);
+    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
+    password_type.set_is_account_syncing(false);
 
-  MockOnWarningDone empty_callback;
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
 
-  PasswordReuseControllerAndroid* controller = MakeController(
-      nullptr, reused_password_account_type_, empty_callback.Get());
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
 
-  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
-            controller->GetPrimaryButtonText());
-  ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid},
+        {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(true);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::kPasswordProtectionForSignedInUsers}, {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::kPasswordProtectionForSignedInUsers}, {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(true);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
+         safe_browsing::kPasswordProtectionForSignedInUsers},
+        {});
+
+    ReusedPasswordAccountType empty_reused_password;
+    controller->SetReusedPasswordAccountTypeForTesting(empty_reused_password);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
+         safe_browsing::kPasswordProtectionForSignedInUsers},
+        {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
+         safe_browsing::kPasswordProtectionForSignedInUsers},
+        {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(true);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
+         safe_browsing::kPasswordProtectionForSignedInUsers},
+        {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::SAVED_PASSWORD);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
+         safe_browsing::kPasswordProtectionForSignedInUsers},
+        {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(true);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON),
+        controller->GetSecondaryButtonText());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid,
+         safe_browsing::kPasswordProtectionForSignedInUsers},
+        {});
+
+    password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+    password_type.set_is_account_syncing(false);
+
+    controller->SetReusedPasswordAccountTypeForTesting(password_type);
+
+    ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
+              controller->GetPrimaryButtonText());
+    ASSERT_EQ(std::u16string(), controller->GetSecondaryButtonText());
+  }
 
   delete controller;
 }

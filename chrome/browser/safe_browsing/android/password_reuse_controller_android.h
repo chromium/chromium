@@ -77,11 +77,14 @@ class PasswordReuseControllerAndroid
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
+  void SetReusedPasswordAccountTypeForTesting(
+      ReusedPasswordAccountType password_type);
+
  private:
   std::unique_ptr<PasswordReuseDialogViewAndroid> dialog_view_;
   ChromePasswordProtectionService* service_;
   const GURL url_;
-  const ReusedPasswordAccountType password_type_;
+  ReusedPasswordAccountType password_type_;
   ui::WindowAndroid* window_android_;
   OnWarningDone done_callback_;
 
