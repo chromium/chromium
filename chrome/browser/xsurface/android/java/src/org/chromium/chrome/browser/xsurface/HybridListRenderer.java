@@ -55,4 +55,9 @@ public interface HybridListRenderer {
      * Updates the renderer with templates and initializing data.
      */
     default void update(byte[] data) {}
+
+    /**
+     * Called when a pull to refresh is initiated by the user.
+     */
+    default void onPullToRefreshStarted() {}
 }
