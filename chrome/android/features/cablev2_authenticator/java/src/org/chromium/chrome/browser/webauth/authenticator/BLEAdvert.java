@@ -15,7 +15,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 class BLEAdvert implements Closeable {
@@ -30,6 +29,15 @@ class BLEAdvert implements Closeable {
 
         BluetoothLeAdvertiser advertiser =
                 BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+        if (advertiser == null) {
+            // It's possible for the Bluetooth adapter to have been disabled
+            // between the previous check and now (crbug.com/123454675). Due to
+            // the narrowness of this corner case we don't attempt to watch the
+            // adapter in case it is reenabled. Instead the advert is lost and
+            // the transaction won't work.
+            return;
+        }
+
         mCallback = new AdvertiseCallback() {
             @Override
             public void onStartFailure(int errorCode) {
@@ -68,8 +76,11 @@ class BLEAdvert implements Closeable {
 
         BluetoothLeAdvertiser advertiser =
                 BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
-        Log.i(TAG, "stopping advertising");
-        advertiser.stopAdvertising(mCallback);
+        // The Bluetooth adapter may have been disabled during the transaction.
+        if (advertiser != null) {
+            Log.i(TAG, "stopping advertising");
+            advertiser.stopAdvertising(mCallback);
+        }
         mCallback = null;
     }
 }
