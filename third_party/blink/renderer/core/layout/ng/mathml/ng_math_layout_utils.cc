@@ -226,14 +226,9 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
     return false;
   if (!node.IsBlock() || !node.IsMathML())
     return false;
-  auto base = To<NGBlockNode>(FirstChildInFlow(node));
-  // TODO(crbug.com/1124298)):
-  // https://w3c.github.io/mathml-core/#embellished-operators
-  if (auto* element =
-          DynamicTo<MathMLOperatorElement>(base.GetDOMNode())) {
-    return element->HasBooleanProperty(MathMLOperatorElement::kMovableLimits);
-  }
-  return false;
+  const auto base = To<NGBlockNode>(FirstChildInFlow(node));
+  const auto base_properties = GetMathMLEmbellishedOperatorProperties(base);
+  return base_properties && base_properties->has_movablelimits;
 }
 
 bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
@@ -289,6 +284,50 @@ LayoutUnit MathTableBaseline(const ComputedStyle& style,
   // The center of the table is aligned with the math axis.
   // See: https://w3c.github.io/mathml-core/#table-or-matrix-mtable
   return LayoutUnit(block_offset / 2 + MathAxisHeight(style));
+}
+
+namespace {
+
+MathMLOperatorElement* GetCoreOperator(const NGBlockNode& node) {
+  if (!node || !node.IsMathML())
+    return nullptr;
+
+  // See https://w3c.github.io/mathml-core/#embellished-operators
+  // TODO(crbug.com/1124298): Implement embellished operators.
+  auto* element = DynamicTo<MathMLElement>(node.GetDOMNode());
+  if (element && element->HasTagName(mathml_names::kMoTag)) {
+    // 1. An <mo> element;
+    return To<MathMLOperatorElement>(element);
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+absl::optional<MathMLEmbellishedOperatorProperties>
+GetMathMLEmbellishedOperatorProperties(const NGBlockNode& node) {
+  auto* core_operator = GetCoreOperator(node);
+  if (!core_operator)
+    return absl::nullopt;
+
+  MathMLEmbellishedOperatorProperties properties;
+
+  properties.has_movablelimits =
+      core_operator->HasBooleanProperty(MathMLOperatorElement::kMovableLimits);
+
+  LayoutUnit leading_space(core_operator->DefaultLeadingSpace() *
+                           node.Style().FontSize());
+  properties.lspace =
+      ValueForLength(node.Style().GetMathLSpace(), leading_space)
+          .ClampNegativeToZero();
+
+  LayoutUnit trailing_space(core_operator->DefaultTrailingSpace() *
+                            node.Style().FontSize());
+  properties.rspace =
+      ValueForLength(node.Style().GetMathRSpace(), trailing_space)
+          .ClampNegativeToZero();
+
+  return properties;
 }
 
 }  // namespace blink

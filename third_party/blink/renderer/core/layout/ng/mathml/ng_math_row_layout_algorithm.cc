@@ -26,23 +26,12 @@ inline LayoutUnit InlineOffsetForDisplayMathCentering(
   return LayoutUnit();
 }
 
-static void DetermineOperatorSpacing(const NGLayoutInputNode& node,
+static void DetermineOperatorSpacing(const NGBlockNode& node,
                                      LayoutUnit* lspace,
                                      LayoutUnit* rspace) {
-  auto* core_operator =
-      DynamicTo<MathMLOperatorElement>(node.GetDOMNode());
-  if (core_operator) {
-    // TODO(crbug.com/1124298): Implement embellished operators.
-    LayoutUnit leading_space(core_operator->DefaultLeadingSpace() *
-                             node.Style().FontSize());
-    *lspace = std::max<LayoutUnit>(
-        ValueForLength(node.Style().GetMathLSpace(), leading_space),
-        LayoutUnit());
-    LayoutUnit trailing_space(core_operator->DefaultTrailingSpace() *
-                              node.Style().FontSize());
-    *rspace = std::max<LayoutUnit>(
-        ValueForLength(node.Style().GetMathRSpace(), trailing_space),
-        LayoutUnit());
+  if (auto properties = GetMathMLEmbellishedOperatorProperties(node)) {
+    *lspace = properties->lspace;
+    *rspace = properties->rspace;
   }
 }
 
@@ -143,7 +132,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     const auto child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     LayoutUnit lspace, rspace;
-    DetermineOperatorSpacing(child, &lspace, &rspace);
+    DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
     const NGPhysicalFragment& physical_fragment =
         child_layout_result->PhysicalFragment();
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
@@ -237,7 +226,7 @@ MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
     sizes += child_result.sizes;
 
     LayoutUnit lspace, rspace;
-    DetermineOperatorSpacing(child, &lspace, &rspace);
+    DetermineOperatorSpacing(To<NGBlockNode>(child), &lspace, &rspace);
     sizes += lspace + rspace;
     depends_on_block_constraints |= child_result.depends_on_block_constraints;
 

@@ -101,6 +101,16 @@ bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
 
 LayoutUnit MathTableBaseline(const ComputedStyle&, LayoutUnit block_offset);
 
+// For nodes corresponding to embellished operators, this function returns the
+// properties of its core operator. Otherwise, it returns a null optional.
+// See https://mathml-refresh.github.io/mathml-core/#embellished-operators
+struct MathMLEmbellishedOperatorProperties {
+  bool has_movablelimits;
+  LayoutUnit lspace;
+  LayoutUnit rspace;
+};
+absl::optional<MathMLEmbellishedOperatorProperties>
+GetMathMLEmbellishedOperatorProperties(const NGBlockNode&);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_LAYOUT_UTILS_H_
