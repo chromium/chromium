@@ -1,0 +1,5 @@
+# cross-origin-redirect-on-back.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "cross-origin-redirect-on-back.html">
+Header set Cache-Control "no-store"
+</Files>
