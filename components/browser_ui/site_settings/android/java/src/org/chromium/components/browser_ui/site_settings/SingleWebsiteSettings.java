@@ -1115,17 +1115,19 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        int titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
-                                                       : R.string.website_reset;
-        int confirmationResId = mHideNonPermissionPreferences
-                ? R.string.page_info_permissions_reset_confirmation
-                : R.string.website_reset_confirmation;
+        int titleResId = mHideNonPermissionPreferences
+                ? R.string.page_info_permissions_reset_dialog_title
+                : R.string.website_reset;
+        String confirmationText = mHideNonPermissionPreferences
+                ? getString(R.string.page_info_permissions_reset_confirmation,
+                        mSite.getAddress().getHost())
+                : getString(R.string.website_reset_confirmation);
         int buttonResId = mHideNonPermissionPreferences ? R.string.reset : titleResId;
         // Handle the Clear & Reset preference click by showing a confirmation.
         mConfirmationDialog =
                 new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
                         .setTitle(titleResId)
-                        .setMessage(confirmationResId)
+                        .setMessage(confirmationText)
                         .setPositiveButton(buttonResId,
                                 (dialog, which) -> {
                                     if (mHideNonPermissionPreferences) {
