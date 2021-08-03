@@ -501,7 +501,7 @@ bool WrappedSkImageFactory::CanUseWrappedSkImage(
     // raster and/or display.
     return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
   } else {
-    // For d SkiaRenderer/GL only use WrappedSkImages for OOP-R because
+    // For SkiaRenderer/GL only use WrappedSkImages for OOP-R because
     // CopySubTexture() doesn't use Skia. https://crbug.com/984045
     return (usage == kWrappedSkImageUsage) ||
            (usage == SHARED_IMAGE_USAGE_DISPLAY);
