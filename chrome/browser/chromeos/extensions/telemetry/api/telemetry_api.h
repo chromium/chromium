@@ -13,7 +13,23 @@
 
 namespace chromeos {
 
-class OsTelemetryGetVpdInfoFunction : public ExtensionFunction {
+class TelemetryApiFunctionBase : public ExtensionFunction {
+ public:
+  TelemetryApiFunctionBase();
+
+  TelemetryApiFunctionBase(const TelemetryApiFunctionBase&) = delete;
+  TelemetryApiFunctionBase& operator=(const TelemetryApiFunctionBase&) = delete;
+
+ protected:
+  ~TelemetryApiFunctionBase() override;
+
+  mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
+
+ private:
+  ProbeService probe_service_;
+};
+
+class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
  public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)
 
@@ -29,9 +45,24 @@ class OsTelemetryGetVpdInfoFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnResult(health::mojom::TelemetryInfoPtr ptr);
+};
 
-  mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
-  ProbeService probe_service_;
+class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getOemData", OS_TELEMETRY_GETOEMDATA)
+
+  OsTelemetryGetOemDataFunction();
+  OsTelemetryGetOemDataFunction(const OsTelemetryGetOemDataFunction&) = delete;
+  OsTelemetryGetOemDataFunction& operator=(
+      const OsTelemetryGetOemDataFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetOemDataFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnResult(health::mojom::OemDataPtr ptr);
 };
 
 }  // namespace chromeos

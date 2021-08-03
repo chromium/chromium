@@ -28823,6 +28823,7 @@ Called by update_extension_histograms.py.-->
   <int value="1565" label="OS_TELEMETRY_GETVPDINFO"/>
   <int value="1566" label="ACCESSIBILITY_PRIVATE_MAGNIFIERCENTERONPOINT"/>
   <int value="1567" label="STORAGE_SETACCESSLEVEL"/>
+  <int value="1568" label="OS_TELEMETRY_GETOEMDATA"/>
 </enum>
 
 <enum name="ExtensionIconState">

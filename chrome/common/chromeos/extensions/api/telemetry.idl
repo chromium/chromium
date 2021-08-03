@@ -21,8 +21,18 @@ namespace os.telemetry {
 
   callback VpdInfoCallback = void (VpdInfo vpdInfo);
 
+  dictionary OemData {
+    // OEM data.
+    DOMString? oemData;
+  };
+
+  callback OemDataCallback = void (OemData oemData);
+
   interface Functions {
     // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
+
+    // Retrieves OEM data.
+    [supportsPromises] static void getOemData(OemDataCallback callback);
   };
 };

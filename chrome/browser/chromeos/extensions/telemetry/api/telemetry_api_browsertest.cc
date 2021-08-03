@@ -9,6 +9,8 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
@@ -106,6 +108,52 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest, GetVpdInfoSuccess) {
         chrome.test.assertEq("COOL-LAPTOP-CHROME", result.modelName);
         chrome.test.assertEq("5CD9132880", result.serialNumber);
         chrome.test.assertEq("sku15", result.skuNumber);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+namespace {
+
+class TestDebugDaemonClient : public FakeDebugDaemonClient {
+ public:
+  TestDebugDaemonClient() = default;
+  ~TestDebugDaemonClient() override = default;
+
+  void GetLog(const std::string& log_name,
+              DBusMethodCallback<std::string> callback) override {
+    EXPECT_EQ(log_name, "oemdata");
+    std::move(callback).Run(absl::nullopt);
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest, GetOemDataError) {
+  DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
+      std::make_unique<TestDebugDaemonClient>());
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getOemData() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getOemData(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest, GetOemDataSuccess) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getOemData() {
+        const result = await chrome.os.telemetry.getOemData();
+        chrome.test.assertEq(
+          "oemdata: response from GetLog", result.oemData);
         chrome.test.succeed();
       }
     ]);

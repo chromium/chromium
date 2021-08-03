@@ -14,8 +14,13 @@
 
 namespace chromeos {
 
-OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction()
+TelemetryApiFunctionBase::TelemetryApiFunctionBase()
     : probe_service_(remote_probe_service_.BindNewPipeAndPassReceiver()) {}
+TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
+
+// getVpdInfo ------------------------------------------------------------------
+
+OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
 OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
 
 ExtensionFunction::ResponseAction OsTelemetryGetVpdInfoFunction::Run() {
@@ -57,6 +62,34 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
   }
 
   Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));
+}
+
+// getOemData ------------------------------------------------------------------
+
+OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
+OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
+
+ExtensionFunction::ResponseAction OsTelemetryGetOemDataFunction::Run() {
+  // We don't need Unretained() or WeakPtr because ExtensionFunction is
+  // ref-counted.
+  auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
+
+  remote_probe_service_->GetOemData(std::move(cb));
+
+  return RespondLater();
+}
+
+void OsTelemetryGetOemDataFunction::OnResult(health::mojom::OemDataPtr ptr) {
+  if (!ptr || !ptr->oem_data.has_value()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  api::os_telemetry::OemData result;
+  result.oem_data =
+      std::make_unique<std::string>(std::move(ptr->oem_data.value()));
+
+  Respond(ArgumentList(api::os_telemetry::GetOemData::Results::Create(result)));
 }
 
 }  // namespace chromeos

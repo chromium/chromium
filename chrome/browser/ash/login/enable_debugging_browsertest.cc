@@ -60,17 +60,11 @@ const test::UIPath kEnableButton = {kDebuggingScreenId, "enableButton"};
 const test::UIPath kRemoveProtectionButton = {kDebuggingScreenId,
                                               "removeProtectionProceedButton"};
 
-}  // namespace
-
 class TestDebugDaemonClient : public FakeDebugDaemonClient {
  public:
-  TestDebugDaemonClient()
-      : got_reply_(false),
-        num_query_debugging_features_(0),
-        num_enable_debugging_features_(0),
-        num_remove_protection_(0) {}
+  TestDebugDaemonClient() = default;
 
-  ~TestDebugDaemonClient() override {}
+  ~TestDebugDaemonClient() override = default;
 
   // FakeDebugDaemonClient overrides:
   void SetDebuggingFeaturesStatus(int featues_mask) override {
@@ -169,11 +163,13 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 
  private:
   scoped_refptr<content::MessageLoopRunner> runner_;
-  bool got_reply_;
-  int num_query_debugging_features_;
-  int num_enable_debugging_features_;
-  int num_remove_protection_;
+  bool got_reply_ = false;
+  int num_query_debugging_features_ = 0;
+  int num_enable_debugging_features_ = 0;
+  int num_remove_protection_ = 0;
 };
+
+}  // namespace
 
 class EnableDebuggingTestBase : public OobeBaseTest {
  public:
