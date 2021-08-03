@@ -17,6 +17,7 @@ export const AppState = {
   CANCELING: 7,
   NO_SCANNERS: 8,
   MULTI_PAGE_NEXT_ACTION: 9,
+  MULTI_PAGE_SCANNING: 10,
 };
 
 /**
@@ -77,3 +78,9 @@ export let ScannerSetting;
  * }}
  */
 export let ScanSettings;
+
+/**
+ * @typedef {{controller:
+                     ?ash.scanning.mojom.MultiPageScanControllerRemote}}
+ */
+export let StartMultiPageScanResponse;

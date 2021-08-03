@@ -41,4 +41,9 @@ Polymer({
               this.scanButtonText_ = pluralString;
             });
   },
+
+  /** @private */
+  onScanClick_() {
+    this.fire('scan-next-page');
+  },
 });

@@ -53,4 +53,15 @@ export function multiPageScanTest() {
               multiPageScan.$$('#scanButton').textContent.trim());
         });
   });
+
+  // Verify clicking the Scan button fires the 'scan-next-page' event.
+  test('scanButtonFiresEvent', () => {
+    let scanNextPageEventFired = false;
+    multiPageScan.addEventListener('scan-next-page', function() {
+      scanNextPageEventFired = true;
+    });
+
+    multiPageScan.$$('#scanButton').click();
+    assertTrue(scanNextPageEventFired);
+  });
 }

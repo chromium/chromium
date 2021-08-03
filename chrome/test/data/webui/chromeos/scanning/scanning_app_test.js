@@ -7,7 +7,7 @@ import 'chrome://scanning/scanning_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
-import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings} from 'chrome://scanning/scanning_app_types.js';
+import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
@@ -87,6 +87,9 @@ class FakeScanService {
     /** @private {!Map<string, !PromiseResolver>} */
     this.resolverMap_ = new Map();
 
+    /** @private {?ash.scanning.mojom.MultiPageScanControllerInterface} */
+    this.multiPageScanController_ = null;
+
     /** @private {!ScannerArr} */
     this.scanners_ = [];
 
@@ -113,6 +116,7 @@ class FakeScanService {
     this.resolverMap_.set('getScanners', new PromiseResolver());
     this.resolverMap_.set('getScannerCapabilities', new PromiseResolver());
     this.resolverMap_.set('startScan', new PromiseResolver());
+    this.resolverMap_.set('startMultiPageScan', new PromiseResolver());
     this.resolverMap_.set('cancelScan', new PromiseResolver());
   }
 
@@ -144,6 +148,13 @@ class FakeScanService {
       // Support sequential calls to whenCalled() by replacing the promise.
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
+  }
+
+  /**
+   * @param {?ash.scanning.mojom.MultiPageScanControllerInterface} controller
+   */
+  setMultiPageScanController(controller) {
+    this.multiPageScanController_ = controller;
   }
 
   /** @param {!ScannerArr} scanners */
@@ -245,11 +256,83 @@ class FakeScanService {
     });
   }
 
-  startMultiPageScan() {}
+  /**
+   * @param {!mojoBase.mojom.UnguessableToken} scanner_id
+   * @param {!ash.scanning.mojom.ScanSettings} settings
+   * @param {!ash.scanning.mojom.ScanJobObserverRemote} remote
+   * @return {!Promise<StartMultiPageScanResponse>}
+   */
+  startMultiPageScan(scanner_id, settings, remote) {
+    return new Promise(resolve => {
+      this.scanJobObserverRemote_ = remote;
+      this.methodCalled('startMultiPageScan');
+      resolve({
+        controller: this.failStartScan_ ? null : this.multiPageScanController_
+      });
+    });
+  }
 
   cancelScan() {
     this.methodCalled('cancelScan');
   }
+}
+
+/** @implements {ash.scanning.mojom.MultiPageScanControllerInterface} */
+class FakeMultiPageScanController {
+  constructor() {
+    /** @private {!Map<string, !PromiseResolver>} */
+    this.resolverMap_ = new Map();
+
+    this.resetForTest();
+  }
+
+  resetForTest() {
+    this.resolverMap_.set('scanNextPage', new PromiseResolver());
+  }
+
+  /**
+   * @param {string} methodName
+   * @return {!PromiseResolver}
+   * @private
+   */
+  getResolver_(methodName) {
+    let method = this.resolverMap_.get(methodName);
+    assertTrue(!!method, `Method '${methodName}' not found.`);
+    return method;
+  }
+
+  /**
+   * @param {string} methodName
+   * @protected
+   */
+  methodCalled(methodName) {
+    this.getResolver_(methodName).resolve();
+  }
+
+  /**
+   * @param {string} methodName
+   * @return {!Promise}
+   */
+  whenCalled(methodName) {
+    return this.getResolver_(methodName).promise.then(() => {
+      // Support sequential calls to whenCalled() by replacing the promise.
+      this.resolverMap_.set(methodName, new PromiseResolver());
+    });
+  }
+
+  /**
+   * @param {!mojoBase.mojom.UnguessableToken} scanner_id
+   * @param {!ash.scanning.mojom.ScanSettings} settings
+   * @return {!Promise<{success: boolean}>}
+   */
+  scanNextPage(scanner_id, settings) {
+    return new Promise(resolve => {
+      this.methodCalled('scanNextPage');
+      resolve({success: true});
+    });
+  }
+
+  completeMultiPageScan() {}
 }
 
 export function scanningAppTest() {
@@ -258,6 +341,9 @@ export function scanningAppTest() {
 
   /** @type {?FakeScanService} */
   let fakeScanService_ = null;
+
+  /** @type {?FakeMultiPageScanController} */
+  let fakeMultiPageScanController_ = null;
 
   /** @type {?TestScanningBrowserProxy} */
   let testBrowserProxy = null;
@@ -321,6 +407,7 @@ export function scanningAppTest() {
   suiteSetup(() => {
     fakeScanService_ = new FakeScanService();
     setScanServiceForTesting(fakeScanService_);
+    fakeMultiPageScanController_ = new FakeMultiPageScanController();
     testBrowserProxy = new TestScanningBrowserProxy();
     ScanningBrowserProxyImpl.instance_ = testBrowserProxy;
     testBrowserProxy.setMyFilesPath(MY_FILES_PATH);
@@ -360,6 +447,7 @@ export function scanningAppTest() {
    * @return {!Promise}
    */
   function initializeScanningApp(scanners, capabilities) {
+    fakeScanService_.setMultiPageScanController(fakeMultiPageScanController_);
     fakeScanService_.setScanners(scanners);
     fakeScanService_.setCapabilities(capabilities);
     scanningApp = /** @type {!ScanningAppElement} */ (
@@ -671,16 +759,38 @@ export function scanningAppTest() {
           const scanButton = scanningApp.$$('#scanButton');
           assertEquals('Scan page 1', scanButton.textContent.trim());
           scanButton.click();
-          return fakeScanService_.whenCalled('startScan');
+          return fakeScanService_.whenCalled('startMultiPageScan');
         })
         .then(() => {
           return fakeScanService_.simulatePageComplete(1);
         })
         .then(() => {
+          // The scanned images and multi-page scan page should be visible.
           assertTrue(isVisible(/** @type {!HTMLElement} */ (
               scanningApp.$$('#scanPreview').$$('#scannedImages'))));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+
+          const scanNextPageButton =
+              scanningApp.$$('multi-page-scan').$$('#scanButton');
+          assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
+          scanNextPageButton.click();
+          return fakeMultiPageScanController_.whenCalled('scanNextPage');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          // The scanned images and multi-page scan page should still be visible
+          // after scanning the next page.
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (
+              scanningApp.$$('#scanPreview').$$('#scannedImages'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+
+          const scanNextPageButton =
+              scanningApp.$$('multi-page-scan').$$('#scanButton');
+          assertEquals('Scan page 3', scanNextPageButton.textContent.trim());
         });
   });
 
