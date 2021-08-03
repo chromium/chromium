@@ -218,8 +218,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     @Override
     public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String host) {
-        return new PageInfoHistoryController(mainController, rowView, this, host);
+            PageInfoMainController mainController, PageInfoRowView rowView) {
+        return new PageInfoHistoryController(mainController, rowView, this);
     }
 
     /**

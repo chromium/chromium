@@ -48,12 +48,12 @@ public class PageInfoHistoryController
     private long mLastVisitedTimestamp;
 
     public PageInfoHistoryController(PageInfoMainController mainController, PageInfoRowView rowView,
-            PageInfoControllerDelegate delegate, String host) {
+            PageInfoControllerDelegate delegate) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
         mTitle = mRowView.getContext().getResources().getString(R.string.page_info_history_title);
-        mHost = host;
+        mHost = mainController.getURL().getHost();
         mHistoryProvider = sProviderForTests != null
                 ? sProviderForTests
                 : new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile());

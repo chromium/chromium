@@ -53,12 +53,12 @@ public class PageInfoPermissionsController
             new PageInfoDiscoverabilityMetrics();
 
     public PageInfoPermissionsController(PageInfoMainController mainController,
-            PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl,
+            PageInfoRowView view, PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
         mMainController = mainController;
         mRowView = view;
         mDelegate = delegate;
-        mPageUrl = pageUrl;
+        mPageUrl = mainController.getURL().getSpec();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
         mHighlightColor = resources.getColor(R.color.iph_highlight_blue);

@@ -104,7 +104,7 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     @Override
     @Nullable
     public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String host) {
+            PageInfoMainController mainController, PageInfoRowView rowView) {
         return null;
     }
 

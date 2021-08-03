@@ -250,14 +250,12 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         // Create Subcontrollers.
         mConnectionController = new PageInfoConnectionController(this, mView.getConnectionRowView(),
                 mWebContents, mDelegate, publisher, mIsInternalPage);
-        mPermissionsController =
-                new PageInfoPermissionsController(this, mView.getPermissionsRowView(), mDelegate,
-                        mFullUrl.getSpec(), highlightedPermission);
-        mCookiesController = new PageInfoCookiesController(
-                this, mView.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
+        mPermissionsController = new PageInfoPermissionsController(
+                this, mView.getPermissionsRowView(), mDelegate, highlightedPermission);
+        mCookiesController =
+                new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
         if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
-            mHistoryController = mDelegate.createHistoryController(
-                    this, mView.getHistoryRowView(), mFullUrl.getHost());
+            mHistoryController = mDelegate.createHistoryController(this, mView.getHistoryRowView());
             // TODO(crbug.com/1173154): Setup forget this site button after history delete is
             // implemented.
             // setupForgetSiteButton(mView.getForgetSiteButton());
@@ -546,5 +544,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @Nullable
     public Activity getActivity() {
         return mWindowAndroid.getActivity().get();
+    }
+
+    @Override
+    public GURL getURL() {
+        return mFullUrl;
     }
 }

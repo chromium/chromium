@@ -43,11 +43,11 @@ public class PageInfoCookiesController
     private Website mWebsite;
 
     public PageInfoCookiesController(PageInfoMainController mainController, PageInfoRowView rowView,
-            PageInfoControllerDelegate delegate, String fullUrl) {
+            PageInfoControllerDelegate delegate) {
         mMainController = mainController;
         mRowView = rowView;
         mDelegate = delegate;
-        mFullUrl = fullUrl;
+        mFullUrl = mainController.getURL().getSpec();
         mTitle = mRowView.getContext().getResources().getString(R.string.cookies_title);
         mBridge = mDelegate.createCookieControlsBridge(this);
 

@@ -182,7 +182,7 @@ public abstract class PageInfoControllerDelegate {
      */
     @Nullable
     public abstract PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String host);
+            PageInfoMainController mainController, PageInfoRowView rowView);
 
     /**
      * @return Returns the browser context associated with this dialog.
