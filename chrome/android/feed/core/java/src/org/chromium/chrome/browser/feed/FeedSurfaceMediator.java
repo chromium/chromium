@@ -674,7 +674,7 @@ public class FeedSurfaceMediator
 
     private void updatePromoCardPadding(View promoCard) {
         MarginLayoutParams layoutParams = promoCard.getLayoutParams() == null
-                ? new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+                ? new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                 : (MarginLayoutParams) promoCard.getLayoutParams();
         layoutParams.bottomMargin = isSuggestionsVisible()
                 ? 0
