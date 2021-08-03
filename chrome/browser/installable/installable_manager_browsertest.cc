@@ -429,7 +429,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(manager->has_worker());
 
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
   EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
 }
@@ -460,7 +459,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
 
   EXPECT_EQ(IN_INCOGNITO, manager->eligibility_error());
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
   EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
 }
@@ -708,8 +706,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     base::RunLoop run_loop;
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
-
-    RunInstallableManager(browser(), tester.get(), GetWebAppParams());
+    auto params = GetWebAppParams();
+    params.valid_manifest = false;
+    RunInstallableManager(browser(), tester.get(), params);
     run_loop.Run();
 
     EXPECT_FALSE(tester->manifest().IsEmpty());
@@ -832,6 +831,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestAndIcon) {
 
 IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
                        CheckWebapp) {
+  auto params = GetWebAppParams();
   // Request everything except splash icon.
   {
     base::HistogramTester histograms;
@@ -861,14 +861,13 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
 
     EXPECT_FALSE(manager->manifest().IsEmpty());
     EXPECT_FALSE(manager->manifest_url().is_empty());
-    EXPECT_TRUE(manager->valid_manifest());
     EXPECT_EQ(1u, manager->icons_.size());
+    EXPECT_FALSE(manager->valid_manifest());
     EXPECT_FALSE((
         manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
     EXPECT_NE(nullptr,
               (manager->icon(InstallableManager::IconUsage::kPrimary)));
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-    EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
     EXPECT_EQ(NO_ERROR_DETECTED,
               (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
@@ -881,8 +880,10 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
     base::RunLoop run_loop;
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
-
-    RunInstallableManager(browser(), tester.get(), GetWebAppParams());
+    auto params = GetWebAppParams();
+    // Make sure valid_manifest check is run.
+    params.is_debug_mode = true;
+    RunInstallableManager(browser(), tester.get(), params);
     run_loop.Run();
 
     EXPECT_FALSE(tester->manifest().IsEmpty());
@@ -899,14 +900,13 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
 
     EXPECT_FALSE(manager->manifest().IsEmpty());
     EXPECT_FALSE(manager->manifest_url().is_empty());
-    EXPECT_TRUE(manager->valid_manifest());
     EXPECT_EQ(1u, manager->icons_.size());
+    EXPECT_FALSE(manager->valid_manifest());
     EXPECT_FALSE((
         manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
     EXPECT_NE(nullptr,
               (manager->icon(InstallableManager::IconUsage::kPrimary)));
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-    EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
     EXPECT_EQ(NO_ERROR_DETECTED,
               (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
@@ -924,7 +924,6 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
     EXPECT_FALSE(manager->has_worker());
     EXPECT_TRUE(manager->icons_.empty());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-    EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
   }
@@ -1207,14 +1206,13 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
   EXPECT_TRUE(tester->manifest().IsEmpty());
   EXPECT_FALSE(manager->manifest().IsEmpty());
   EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->valid_manifest());
   EXPECT_FALSE(manager->has_worker());
   EXPECT_EQ(1u, manager->icons_.size());
+  EXPECT_TRUE(manager->valid_manifest());
   EXPECT_FALSE(
       (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
   EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
   EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
   EXPECT_EQ(NO_ERROR_DETECTED,
             (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
@@ -1271,13 +1269,12 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
   // Verify internal state.
   EXPECT_FALSE(manager->manifest().IsEmpty());
   EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->valid_manifest());
+  EXPECT_FALSE(manager->valid_manifest());
   EXPECT_EQ(1u, manager->icons_.size());
   EXPECT_FALSE(
       (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
   EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
   EXPECT_EQ(NO_ERROR_DETECTED,
             (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());
@@ -1411,7 +1408,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
   EXPECT_FALSE(tester->primary_icon_url().is_empty());
   EXPECT_NE(nullptr, tester->primary_icon());
-  EXPECT_TRUE(tester->valid_manifest());
+  EXPECT_FALSE(tester->valid_manifest());
   EXPECT_FALSE(tester->has_worker());
   EXPECT_TRUE(tester->splash_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->splash_icon());
@@ -1428,7 +1425,10 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
   NavigateAndRunInstallableManager(browser(), tester.get(), GetWebAppParams(),
                                    GetPath("/banners/nested_sw_test_page"));
 
-  RunInstallableManager(browser(), tester.get(), GetWebAppParams());
+  auto params = GetWebAppParams();
+  // Make sure valid_manifest check is run.
+  params.is_debug_mode = true;
+  RunInstallableManager(browser(), tester.get(), params);
   run_loop.Run();
 
   EXPECT_FALSE(tester->manifest().IsEmpty());
@@ -1519,7 +1519,10 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
     base::RunLoop run_loop;
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
-    RunInstallableManager(browser(), tester.get(), GetWebAppParams());
+    auto params = GetWebAppParams();
+    // Make sure valid_manifest check is run.
+    params.is_debug_mode = true;
+    RunInstallableManager(browser(), tester.get(), params);
 
     run_loop.Run();
 
@@ -1572,13 +1575,12 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
 
   EXPECT_FALSE(manager->manifest().IsEmpty());
   EXPECT_FALSE(manager->manifest_url().is_empty());
-  EXPECT_TRUE(manager->valid_manifest());
+  EXPECT_FALSE(manager->valid_manifest());
   EXPECT_EQ(1u, manager->icons_.size());
   EXPECT_FALSE(
       (manager->icon_url(InstallableManager::IconUsage::kPrimary).is_empty()));
   EXPECT_NE(nullptr, (manager->icon(InstallableManager::IconUsage::kPrimary)));
   EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->valid_manifest_error());
   EXPECT_EQ(NO_ERROR_DETECTED,
             (manager->icon_error(InstallableManager::IconUsage::kPrimary)));
   EXPECT_TRUE(!manager->task_queue_.HasCurrent());

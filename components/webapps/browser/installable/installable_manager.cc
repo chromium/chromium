@@ -507,6 +507,9 @@ void InstallableManager::CleanupAndStartNextTask() {
   if (worker_error() == NO_MATCHING_SERVICE_WORKER)
     worker_ = std::make_unique<ServiceWorkerProperty>();
 
+  // |valid_manifest_| shouldn't be re-used across tasks because its state is
+  // dependent on current task's |params|.
+  valid_manifest_ = std::make_unique<ValidManifestProperty>();
   task_queue_.Next();
   WorkOnTask();
 }
@@ -574,6 +577,8 @@ void InstallableManager::WorkOnTask() {
     CheckEligiblity();
   } else if (!manifest_->fetched) {
     FetchManifest();
+  } else if (params.valid_manifest && !valid_manifest_->fetched) {
+    CheckManifestValid(params.check_webapp_manifest_display);
   } else if (params.valid_primary_icon && params.prefer_maskable_icon &&
              !IsMaskableIconFetched(IconUsage::kPrimary)) {
     CheckAndFetchBestIcon(GetIdealPrimaryAdaptiveLauncherIconSizeInPx(),
@@ -584,8 +589,6 @@ void InstallableManager::WorkOnTask() {
     CheckAndFetchBestIcon(GetIdealPrimaryIconSizeInPx(),
                           GetMinimumPrimaryIconSizeInPx(), IconPurpose::ANY,
                           IconUsage::kPrimary);
-  } else if (params.valid_manifest && !valid_manifest_->fetched) {
-    CheckManifestValid(params.check_webapp_manifest_display);
   } else if (params.fetch_screenshots && !is_screenshots_fetch_complete_) {
     CheckAndFetchScreenshots();
   } else if (params.has_worker && !worker_->fetched) {

@@ -1438,6 +1438,27 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NullManifestId) {
   EXPECT_EQ(absl::nullopt, app->manifest_id());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
+  GURL url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_display_browser.json");
+  NavigateAndAwaitInstallabilityCheck(browser(), url);
+
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+
+  // Install using Create Shortcut.
+  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                              /*auto_open_in_window=*/false);
+  WebAppInstallObserver observer(profile());
+  CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+  observer.AwaitNextInstall();
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+
+  // Navigate to this site again and install should still be disabled.
+  Browser* new_browser = NavigateInNewWindowAndAwaitInstallabilityCheck(url);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
                        WindowControlsOverlay) {
   GURL test_url = https_server()->GetURL(
