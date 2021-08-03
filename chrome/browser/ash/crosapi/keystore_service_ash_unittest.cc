@@ -193,7 +193,7 @@ struct CallbackObserver {
                           base::Unretained(this));
   }
 
-  T result;
+  absl::optional<T> result;
 };
 
 // A mock for observing callbacks that return a single result of the type |T| by
@@ -211,10 +211,6 @@ struct CallbackObserverRef {
   absl::optional<T> result;
 };
 
-using BinaryCallbackObserver = CallbackObserver<mojom::KeystoreBinaryResultPtr>;
-using SelectCertsCallbackObserver =
-    CallbackObserver<mojom::KeystoreSelectClientCertificatesResultPtr>;
-
 // A mock for observing status results returned via a callback.
 struct StatusCallbackObserver {
   MOCK_METHOD(void, Callback, (bool is_error, mojom::KeystoreError error));
@@ -227,7 +223,9 @@ struct StatusCallbackObserver {
                           base::Unretained(this));
   }
 
-  bool result_is_error = false;
+  bool has_value() const { return result_is_error.has_value(); }
+
+  absl::optional<bool> result_is_error;
   mojom::KeystoreError result_error = mojom::KeystoreError::kUnknown;
 };
 
@@ -244,7 +242,8 @@ TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
                                 MakeRsaKeystoreSigningAlgorithm(modulus_length),
                                 observer.GetCallback());
 
-  AssertBlobEq(observer.result, GetPublicKeyBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
 TEST_F(KeystoreServiceAshTest, GenerateDeviceEcKeySuccess) {
@@ -254,24 +253,26 @@ TEST_F(KeystoreServiceAshTest, GenerateDeviceEcKeySuccess) {
               GenerateECKey(TokenId::kSystem, named_curve, /*callback=*/_))
       .WillOnce(RunOnceCallback<2>(GetPublicKeyStr(), Status::kSuccess));
 
-  BinaryCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.GenerateKey(mojom::KeystoreType::kDevice,
                                 MakeEcKeystoreSigningAlgorithm(named_curve),
                                 observer.GetCallback());
 
-  AssertBlobEq(observer.result, GetPublicKeyBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertBlobEq(observer.result.value(), GetPublicKeyBin());
 }
 
 TEST_F(KeystoreServiceAshTest, GenerateKeyFail) {
   EXPECT_CALL(platform_keys_service_, GenerateECKey)
       .WillOnce(RunOnceCallback<2>("", Status::kErrorInternal));
 
-  BinaryCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.GenerateKey(mojom::KeystoreType::kUser,
                                 MakeEcKeystoreSigningAlgorithm("named_curve_1"),
                                 observer.GetCallback());
 
-  AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(), mojom::KeystoreError::kInternal);
 }
 
 //------------------------------------------------------------------------------
@@ -286,13 +287,14 @@ TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
                                  /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataStr(), Status::kSuccess));
 
-  BinaryCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.Sign(
       /*is_keystore_provided=*/true, mojom::KeystoreType::kUser,
       GetPublicKeyBin(), mojom::KeystoreSigningScheme::kRsassaPkcs1V15Sha256,
       GetDataBin(), observer.GetCallback());
 
-  AssertBlobEq(observer.result, GetDataBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertBlobEq(observer.result.value(), GetDataBin());
 }
 
 TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
@@ -305,26 +307,28 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
                       /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataStr(), Status::kSuccess));
 
-  BinaryCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.Sign(
       /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
       GetPublicKeyBin(), mojom::KeystoreSigningScheme::kEcdsaSha512,
       GetDataBin(), observer.GetCallback());
 
-  AssertBlobEq(observer.result, GetDataBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertBlobEq(observer.result.value(), GetDataBin());
 }
 
 TEST_F(KeystoreServiceAshTest, SignFail) {
   EXPECT_CALL(platform_keys_service_, SignECDSADigest)
       .WillOnce(RunOnceCallback<4>("", Status::kErrorKeyNotAllowedForSigning));
 
-  BinaryCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.Sign(
       /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
       GetPublicKeyBin(), mojom::KeystoreSigningScheme::kEcdsaSha512,
       GetDataBin(), observer.GetCallback());
 
-  AssertErrorEq(observer.result,
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(),
                 mojom::KeystoreError::kKeyNotAllowedForSigning);
 }
 
@@ -339,6 +343,7 @@ TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
   keystore_service_.RemoveKey(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
                               observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, false);
 }
 
@@ -351,6 +356,7 @@ TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
   keystore_service_.RemoveKey(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
                               observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, true);
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kKeyNotFound);
 }
@@ -370,13 +376,14 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
         std::move(callback).Run(GetCertificateList(), Status::kSuccess);
       }));
 
-  SelectCertsCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreSelectClientCertificatesResultPtr> observer;
   keystore_service_.SelectClientCertificates(cert_authorities_bin,
                                              observer.GetCallback());
 
-  ASSERT_TRUE(observer.result);
-  ASSERT_TRUE(observer.result->is_certificates());
-  AssertCertListEq(observer.result->get_certificates(), GetCertificateList());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_certificates());
+  AssertCertListEq(observer.result.value()->get_certificates(),
+                   GetCertificateList());
 }
 
 TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
@@ -385,10 +392,11 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
         std::move(callback).Run({}, Status::kErrorInternal);
       }));
 
-  SelectCertsCallbackObserver observer;
+  CallbackObserver<mojom::KeystoreSelectClientCertificatesResultPtr> observer;
   keystore_service_.SelectClientCertificates({}, observer.GetCallback());
 
-  AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(), mojom::KeystoreError::kInternal);
 }
 
 //------------------------------------------------------------------------------
@@ -402,9 +410,9 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
   CallbackObserver<mojom::GetKeyTagsResultPtr> observer;
   keystore_service_.GetKeyTags(GetPublicKeyBin(), observer.GetCallback());
 
-  ASSERT_TRUE(observer.result);
-  ASSERT_EQ(observer.result->which(), mojom::GetKeyTagsResult::Tag::kTags);
-  EXPECT_EQ(observer.result->get_tags(),
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_tags());
+  EXPECT_EQ(observer.result.value()->get_tags(),
             static_cast<uint64_t>(mojom::KeyTag::kCorporate));
 }
 
@@ -415,7 +423,8 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsFail) {
   CallbackObserver<mojom::GetKeyTagsResultPtr> observer;
   keystore_service_.GetKeyTags(GetPublicKeyBin(), observer.GetCallback());
 
-  AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(), mojom::KeystoreError::kInternal);
 }
 
 //------------------------------------------------------------------------------
@@ -430,6 +439,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsSuccess) {
   StatusCallbackObserver observer;
   keystore_service_.AddKeyTags(GetPublicKeyBin(), tags, observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, false);
 }
 
@@ -443,6 +453,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
   StatusCallbackObserver observer;
   keystore_service_.AddKeyTags(GetPublicKeyBin(), tags, observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, true);
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kInternal);
 }
@@ -458,6 +469,7 @@ TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
   keystore_service_.CanUserGrantPermissionForKey(GetPublicKeyBin(),
                                                  observer.GetCallback());
 
+  ASSERT_TRUE(observer.result.has_value());
   EXPECT_EQ(observer.result, false);
 }
 
@@ -472,14 +484,16 @@ TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
       cert_bin, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_success_result());
-  ASSERT_EQ(observer.result->get_success_result()->public_key,
-            GetPublicKeyBin());
-  ASSERT_TRUE(observer.result->get_success_result()
-                  ->algorithm_properties->is_pkcs115());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+
+  ASSERT_TRUE(observer.result.value()->is_success_result());
+  const mojom::GetPublicKeySuccessResultPtr& success_result =
+      observer.result.value()->get_success_result();
+  ASSERT_EQ(success_result->public_key, GetPublicKeyBin());
+
+  ASSERT_TRUE(success_result->algorithm_properties->is_pkcs115());
   const mojom::KeystorePKCS115ParamsPtr& params =
-      observer.result->get_success_result()
-          ->algorithm_properties->get_pkcs115();
+      success_result->algorithm_properties->get_pkcs115();
   EXPECT_EQ(params->modulus_length, 2048);
   EXPECT_EQ(params->public_exponent, (std::vector<uint8_t>{1, 0, 1}));
 }
@@ -493,9 +507,9 @@ TEST_F(KeystoreServiceAshTest, GetPublicKeyFail) {
                                  mojom::KeystoreSigningAlgorithmName::kUnknown,
                                  observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_error());
-  EXPECT_EQ(observer.result->get_error(),
-            mojom::KeystoreError::kAlgorithmNotPermittedByCertificate);
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(),
+                mojom::KeystoreError::kAlgorithmNotPermittedByCertificate);
 }
 
 //------------------------------------------------------------------------------
@@ -506,8 +520,10 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresEmptySuccess) {
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_TRUE(observer.result->get_key_stores().empty());
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_TRUE(observer.result.value()->get_key_stores().empty());
 }
 
 TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
@@ -517,8 +533,10 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_THAT(observer.result->get_key_stores(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_THAT(observer.result.value()->get_key_stores(),
               ElementsAre(crosapi::mojom::KeystoreType::kUser));
 }
 
@@ -529,8 +547,10 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceSuccess) {
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_THAT(observer.result->get_key_stores(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_THAT(observer.result.value()->get_key_stores(),
               ElementsAre(crosapi::mojom::KeystoreType::kDevice));
 }
 
@@ -541,8 +561,10 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceUserSuccess) {
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_THAT(observer.result->get_key_stores(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_THAT(observer.result.value()->get_key_stores(),
               UnorderedElementsAre(crosapi::mojom::KeystoreType::kUser,
                                    crosapi::mojom::KeystoreType::kDevice));
 }
@@ -553,8 +575,9 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresFail) {
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_error());
-  EXPECT_EQ(observer.result->get_error(), mojom::KeystoreError::kInternal);
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(), mojom::KeystoreError::kInternal);
 }
 
 //------------------------------------------------------------------------------
@@ -567,8 +590,11 @@ TEST_F(KeystoreServiceAshTest, GetCertificatesSuccess) {
   CallbackObserver<mojom::GetCertificatesResultPtr> observer;
   keystore_service_.GetCertificates(mojom::KeystoreType::kUser,
                                     observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_certificates());
-  AssertCertListEq(observer.result->get_certificates(), GetCertificateList());
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_certificates());
+  AssertCertListEq(observer.result.value()->get_certificates(),
+                   GetCertificateList());
 }
 
 TEST_F(KeystoreServiceAshTest, GetCertificatesFail) {
@@ -580,8 +606,9 @@ TEST_F(KeystoreServiceAshTest, GetCertificatesFail) {
   CallbackObserver<mojom::GetCertificatesResultPtr> observer;
   keystore_service_.GetCertificates(mojom::KeystoreType::kUser,
                                     observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_error());
-  EXPECT_EQ(observer.result->get_error(), mojom::KeystoreError::kInternal);
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  AssertErrorEq(observer.result.value(), mojom::KeystoreError::kInternal);
 }
 
 //------------------------------------------------------------------------------
@@ -599,6 +626,7 @@ TEST_F(KeystoreServiceAshTest, AddCertificateSuccess) {
                                    CertToBlob(cert_list->front()),
                                    observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, false);
 }
 
@@ -615,6 +643,7 @@ TEST_F(KeystoreServiceAshTest, AddCertificateFail) {
                                    CertToBlob(cert_list->front()),
                                    observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, true);
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kCertificateInvalid);
 }
@@ -634,6 +663,7 @@ TEST_F(KeystoreServiceAshTest, RemoveCertificateSuccess) {
                                       CertToBlob(cert_list->front()),
                                       observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, false);
 }
 
@@ -650,6 +680,7 @@ TEST_F(KeystoreServiceAshTest, RemoveCertificateFail) {
                                       CertToBlob(cert_list->front()),
                                       observer.GetCallback());
 
+  ASSERT_TRUE(observer.has_value());
   EXPECT_EQ(observer.result_is_error, true);
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kCertificateInvalid);
 }
@@ -688,8 +719,9 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
       mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/false,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataBin());
 }
 
 TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
@@ -714,8 +746,9 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
       mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/true,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataBin());
 }
 
 TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
@@ -740,8 +773,9 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
       mojom::KeystoreType::kDevice, /*challenge=*/GetDataBin(),
       /*migrate=*/false, observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataBin());
 }
 
 TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
@@ -767,8 +801,9 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
       mojom::KeystoreType::kDevice, /*challenge=*/GetDataBin(),
       /*migrate=*/true, observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataBin());
 }
 
 TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
@@ -791,8 +826,9 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
       mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(),
       /*migrate=*/false, observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_error_message());
-  EXPECT_EQ(observer.result->get_error_message(),
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_error_message());
+  EXPECT_EQ(observer.result.value()->get_error_message(),
             challenge_result.GetErrorMessage());
 }
 
@@ -809,14 +845,16 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeySuccess) {
       cert_bin, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_success_result());
-  ASSERT_EQ(observer.result->get_success_result()->public_key,
-            GetPublicKeyBin());
-  ASSERT_TRUE(observer.result->get_success_result()
-                  ->algorithm_properties->is_pkcs115());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+
+  ASSERT_TRUE(observer.result.value()->is_success_result());
+  const mojom::GetPublicKeySuccessResultPtr& success_result =
+      observer.result.value()->get_success_result();
+  ASSERT_EQ(success_result->public_key, GetPublicKeyBin());
+
+  ASSERT_TRUE(success_result->algorithm_properties->is_pkcs115());
   const mojom::KeystorePKCS115ParamsPtr& params =
-      observer.result->get_success_result()
-          ->algorithm_properties->get_pkcs115();
+      success_result->algorithm_properties->get_pkcs115();
   EXPECT_EQ(params->modulus_length, 2048);
   EXPECT_EQ(params->public_exponent, (std::vector<uint8_t>{1, 0, 1}));
 }
@@ -830,8 +868,9 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeyFail) {
       cert_bin, mojom::KeystoreSigningAlgorithmName::kUnknown,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_error_message());
-  EXPECT_EQ(observer.result->get_error_message(),
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_error_message());
+  EXPECT_EQ(observer.result.value()->get_error_message(),
             chromeos::platform_keys::KeystoreErrorToString(
                 mojom::KeystoreError::kAlgorithmNotPermittedByCertificate));
 }
@@ -844,8 +883,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresEmptySuccess) {
 
   CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
   keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_TRUE(observer.result->get_key_stores().empty());
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_TRUE(observer.result.value()->get_key_stores().empty());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresUserSuccess) {
@@ -855,8 +896,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresUserSuccess) {
 
   CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
   keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_THAT(observer.result->get_key_stores(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_THAT(observer.result.value()->get_key_stores(),
               ElementsAre(crosapi::mojom::KeystoreType::kUser));
 }
 
@@ -867,8 +910,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresDeviceSuccess) {
 
   CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
   keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_THAT(observer.result->get_key_stores(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_THAT(observer.result.value()->get_key_stores(),
               ElementsAre(crosapi::mojom::KeystoreType::kDevice));
 }
 
@@ -879,8 +924,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresDeviceUserSuccess) {
 
   CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
   keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_key_stores());
-  EXPECT_THAT(observer.result->get_key_stores(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_key_stores());
+  EXPECT_THAT(observer.result.value()->get_key_stores(),
               UnorderedElementsAre(crosapi::mojom::KeystoreType::kUser,
                                    crosapi::mojom::KeystoreType::kDevice));
 }
@@ -891,8 +938,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresFail) {
 
   CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
   keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_error_message());
-  EXPECT_EQ(observer.result->get_error_message(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_error_message());
+  EXPECT_EQ(observer.result.value()->get_error_message(),
             chromeos::platform_keys::KeystoreErrorToString(
                 mojom::KeystoreError::kInternal));
 }
@@ -907,8 +956,11 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetCertificatesSuccess) {
   CallbackObserver<mojom::DEPRECATED_GetCertificatesResultPtr> observer;
   keystore_service_.DEPRECATED_GetCertificates(mojom::KeystoreType::kUser,
                                                observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_certificates());
-  AssertCertListEq(observer.result->get_certificates(), GetCertificateList());
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_certificates());
+  AssertCertListEq(observer.result.value()->get_certificates(),
+                   GetCertificateList());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedGetCertificatesFail) {
@@ -920,8 +972,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetCertificatesFail) {
   CallbackObserver<mojom::DEPRECATED_GetCertificatesResultPtr> observer;
   keystore_service_.DEPRECATED_GetCertificates(mojom::KeystoreType::kUser,
                                                observer.GetCallback());
-  ASSERT_TRUE(observer.result->is_error_message());
-  EXPECT_EQ(observer.result->get_error_message(),
+
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_error_message());
+  EXPECT_EQ(observer.result.value()->get_error_message(),
             chromeos::platform_keys::KeystoreErrorToString(
                 mojom::KeystoreError::kInternal));
 }
@@ -941,8 +995,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedAddCertificateSuccess) {
                                               CertToBlob(cert_list->front()),
                                               observer.GetCallback());
 
-  ASSERT_TRUE(observer.result);
-  EXPECT_TRUE(observer.result->empty());
+  ASSERT_TRUE(observer.result.has_value());
+  EXPECT_TRUE(observer.result.value().empty());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedAddCertificateFail) {
@@ -958,9 +1012,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedAddCertificateFail) {
                                               CertToBlob(cert_list->front()),
                                               observer.GetCallback());
 
-  ASSERT_TRUE(observer.result);
-  EXPECT_EQ(observer.result, chromeos::platform_keys::KeystoreErrorToString(
-                                 mojom::KeystoreError::kCertificateInvalid));
+  ASSERT_TRUE(observer.result.has_value());
+  EXPECT_EQ(observer.result.value(),
+            chromeos::platform_keys::KeystoreErrorToString(
+                mojom::KeystoreError::kCertificateInvalid));
 }
 
 //------------------------------------------------------------------------------
@@ -978,8 +1033,8 @@ TEST_F(KeystoreServiceAshTest, DeprecatedRemoveCertificateSuccess) {
                                                  CertToBlob(cert_list->front()),
                                                  observer.GetCallback());
 
-  ASSERT_TRUE(observer.result);
-  EXPECT_TRUE(observer.result->empty());
+  ASSERT_TRUE(observer.result.has_value());
+  EXPECT_TRUE(observer.result.value().empty());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedRemoveCertificateFail) {
@@ -995,9 +1050,10 @@ TEST_F(KeystoreServiceAshTest, DeprecatedRemoveCertificateFail) {
                                                  CertToBlob(cert_list->front()),
                                                  observer.GetCallback());
 
-  ASSERT_TRUE(observer.result);
-  EXPECT_EQ(observer.result, chromeos::platform_keys::KeystoreErrorToString(
-                                 mojom::KeystoreError::kCertificateInvalid));
+  ASSERT_TRUE(observer.result.has_value());
+  EXPECT_EQ(observer.result.value(),
+            chromeos::platform_keys::KeystoreErrorToString(
+                mojom::KeystoreError::kCertificateInvalid));
 }
 
 //------------------------------------------------------------------------------
@@ -1024,8 +1080,9 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyNoMigrateSuccess) {
       /*challenge=*/GetDataStr(), mojom::KeystoreType::kUser, /*migrate=*/false,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataStr());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyMigrateSuccess) {
@@ -1050,8 +1107,9 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyMigrateSuccess) {
       /*challenge=*/GetDataStr(), mojom::KeystoreType::kUser, /*migrate=*/true,
       observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataStr());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyNoMigrateSuccess) {
@@ -1076,8 +1134,9 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyNoMigrateSuccess) {
       /*challenge=*/GetDataStr(), mojom::KeystoreType::kDevice,
       /*migrate=*/false, observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataStr());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyMigrateSuccess) {
@@ -1103,8 +1162,9 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyMigrateSuccess) {
       /*challenge=*/GetDataStr(), mojom::KeystoreType::kDevice,
       /*migrate=*/true, observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_challenge_response());
-  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_challenge_response());
+  EXPECT_EQ(observer.result.value()->get_challenge_response(), GetDataStr());
 }
 
 TEST_F(KeystoreServiceAshTest, DeprecatedChallengeKeyFail) {
@@ -1127,8 +1187,9 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeKeyFail) {
       /*challenge=*/GetDataStr(), mojom::KeystoreType::kUser,
       /*migrate=*/false, observer.GetCallback());
 
-  ASSERT_TRUE(observer.result->is_error_message());
-  EXPECT_EQ(observer.result->get_error_message(),
+  ASSERT_TRUE(observer.result.has_value() && observer.result.value());
+  ASSERT_TRUE(observer.result.value()->is_error_message());
+  EXPECT_EQ(observer.result.value()->get_error_message(),
             challenge_result.GetErrorMessage());
 }
 
