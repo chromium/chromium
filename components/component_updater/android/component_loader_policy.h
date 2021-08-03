@@ -26,17 +26,19 @@ class DictionaryValue;
 
 namespace component_updater {
 
-// Errors that causes failure when loading a component. These values may be
-// persisted to logs. Entries should not be renumbered and numeric values
-// should never be reused. Should be kept synced with its Java counterpart in
-// ComponentLoaderPolicyBridge.
-enum class ComponentLoadError {
-  kFailedToConnectToComponentsProviderService = 0,
-  kRemoteException = 1,
-  kComponentsProviderServiceError = 2,
-  kMissingManifest = 3,
-  kMalformedManifest = 4,
-  kInvalidVersion = 5,
+// Errors that cause failure when loading a component. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.component_updater
+enum class ComponentLoadResult {
+  kComponentLoaded = 0,
+  kFailedToConnectToComponentsProviderService = 1,
+  kRemoteException = 2,
+  kComponentsProviderServiceError = 3,
+  kMissingManifest = 4,
+  kMalformedManifest = 5,
+  kInvalidVersion = 6,
   kMaxValue = kInvalidVersion,
 };
 
@@ -81,12 +83,18 @@ class ComponentLoaderPolicy {
   //
   // Will be called at most once. This is mutually exclusive with
   // ComponentLoaded; if this is called then ComponentLoaded won't be called.
-  virtual void ComponentLoadFailed(ComponentLoadError error) = 0;
+  virtual void ComponentLoadFailed(ComponentLoadResult error) = 0;
 
   // Returns the component's SHA2 hash as raw bytes, the hash value is used as
   // the unique id of the component and will be used to request components files
   // from the ComponentsProviderService.
   virtual void GetHash(std::vector<uint8_t>* hash) const = 0;
+
+  // Returns a Human readable string that can be used as a suffix for recorded
+  // UMA metrics. New suffixes should be added to
+  // "ComponentUpdater.AndroidComponentLoader.ComponentName" in
+  // tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml.
+  virtual std::string GetMetricsSuffix() const = 0;
 };
 
 // Provides a bridge from Java to native to receive callbacks from the Java
@@ -128,6 +136,8 @@ class AndroidComponentLoaderPolicy {
 
   void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
                         std::unique_ptr<base::DictionaryValue> manifest);
+
+  void ComponentLoadFailedInternal(ComponentLoadResult error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

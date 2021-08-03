@@ -26,6 +26,10 @@
 
 namespace {
 
+// Persisted to logs, should never change.
+constexpr char kTrustTokenKeyCommitmentsComponentMetricsSuffix[] =
+    "TrustTokenKeyCommitments";
+
 // Attempts to load key commitments as raw JSON from their storage file,
 // returning the loaded commitments on success and nullopt on failure.
 // TODO(crbug.com/1180964) move reading string from fd to base/file_util.h
@@ -72,12 +76,17 @@ void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
 }
 
 void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoadFailed(
-    ComponentLoadError /*error*/) {}
+    ComponentLoadResult /*error*/) {}
 
 void TrustTokenKeyCommitmentsComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   component_updater::TrustTokenKeyCommitmentsComponentInstallerPolicy::
       GetPublicKeyHash(hash);
+}
+
+std::string TrustTokenKeyCommitmentsComponentLoaderPolicy::GetMetricsSuffix()
+    const {
+  return kTrustTokenKeyCommitmentsComponentMetricsSuffix;
 }
 
 }  // namespace component_updater

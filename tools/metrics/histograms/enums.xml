@@ -1763,6 +1763,16 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="NEON support"/>
 </enum>
 
+<enum name="AndroidComponentLoaderLoadStatus">
+  <int value="0" label="Component loaded"/>
+  <int value="1" label="Failed to connect to ComponentsProviderService"/>
+  <int value="2" label="Remote service exception"/>
+  <int value="3" label="ComponentsProviderService returned an error"/>
+  <int value="4" label="Missing manifest"/>
+  <int value="5" label="Malformed manifest"/>
+  <int value="6" label="Invalid version field in the manifest"/>
+</enum>
+
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
   <obsolete>
     Removed Mar 2021; experiment is done and the data isn't useful.

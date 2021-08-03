@@ -17,7 +17,6 @@ import android.os.ResultReceiver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.components.component_updater.ComponentLoaderPolicyBridge.ComponentLoadError;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -73,14 +72,14 @@ public class EmbeddedComponentLoader implements ServiceConnection {
 
             if (resultCode != 0) {
                 mComponent.componentLoadFailed(
-                        ComponentLoadError.COMPONENTS_PROVIDER_SERVICE_ERROR);
+                        ComponentLoadResult.COMPONENTS_PROVIDER_SERVICE_ERROR);
                 return;
             }
             Map<String, ParcelFileDescriptor> resultMap =
                     (Map<String, ParcelFileDescriptor>) resultData.getSerializable(KEY_RESULT);
             if (resultMap == null) {
                 mComponent.componentLoadFailed(
-                        ComponentLoadError.COMPONENTS_PROVIDER_SERVICE_ERROR);
+                        ComponentLoadResult.COMPONENTS_PROVIDER_SERVICE_ERROR);
                 return;
             }
             mComponent.componentLoaded(resultMap);
@@ -110,7 +109,7 @@ public class EmbeddedComponentLoader implements ServiceConnection {
                 // will be ignored.
                 for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
                     receiver.getComponentLoaderPolicy().componentLoadFailed(
-                            ComponentLoadError.REMOTE_EXCEPTION);
+                            ComponentLoadResult.REMOTE_EXCEPTION);
                 }
                 mComponentsResultReceivers.clear();
                 ContextUtils.getApplicationContext().unbindService(this);
@@ -140,7 +139,7 @@ public class EmbeddedComponentLoader implements ServiceConnection {
             Log.d(TAG, "Could not bind to " + intent);
             for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
                 receiver.getComponentLoaderPolicy().componentLoadFailed(
-                        ComponentLoadError.FAILED_TO_CONNECT_TO_COMPONENTS_PROVIDER_SERVICE);
+                        ComponentLoadResult.FAILED_TO_CONNECT_TO_COMPONENTS_PROVIDER_SERVICE);
             }
             mComponentsResultReceivers.clear();
         }

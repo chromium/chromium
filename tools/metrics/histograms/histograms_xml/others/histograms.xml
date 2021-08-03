@@ -2970,6 +2970,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ComponentUpdater.AndroidComponentLoader.LoadStatus"
+    enum="AndroidComponentLoaderLoadStatus" expires_after="2022-07-01">
+<!-- Name completed by histogram_suffixes
+     name="ComponentUpdater.AndroidComponentLoader.ComponentName" -->
+
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/components/component_updater/android/OWNERS</owner>
+  <summary>
+    Records component loading success, or the failure reason if the component
+    loading fails using the EmbeddedComponentLoader. Note that success here just
+    means that the component has been fetched successfully from the components
+    provider service. However, this doesn't neccessary mean that the component
+    will be then loaded successfully in the system by its respective
+    ComponentLoaderPolicy implementation.
+  </summary>
+</histogram>
+
 <histogram name="ComponentUpdater.Calls" enum="ComponentUpdaterCalls"
     expires_after="2020-12-20">
   <owner>sorin@chromium.org</owner>

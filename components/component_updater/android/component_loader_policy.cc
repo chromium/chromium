@@ -26,7 +26,9 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -66,6 +68,15 @@ std::unique_ptr<base::DictionaryValue> ReadManifestFromFd(int fd) {
     return nullptr;
   }
   return ReadManifest(content);
+}
+
+void RecordComponentLoadStatusHistogram(const std::string& suffix,
+                                        ComponentLoadResult status) {
+  DCHECK(!suffix.empty());
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ComponentUpdater.AndroidComponentLoader.LoadStatus.", suffix}),
+      status);
 }
 
 }  // namespace
@@ -115,7 +126,7 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
   }
 
   if (manifest_fd == -1) {
-    loader_policy_->ComponentLoadFailed(ComponentLoadError::kMissingManifest);
+    ComponentLoadFailedInternal(ComponentLoadResult::kMissingManifest);
     return;
   }
 
@@ -130,12 +141,9 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
 void AndroidComponentLoaderPolicy::ComponentLoadFailed(JNIEnv* env,
                                                        jint error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(error_code >=
-         static_cast<int>(
-             ComponentLoadError::kFailedToConnectToComponentsProviderService));
-  DCHECK(error_code <= static_cast<int>(ComponentLoadError::kMaxValue));
-  loader_policy_->ComponentLoadFailed(
-      static_cast<ComponentLoadError>(error_code));
+  DCHECK(error_code > static_cast<int>(ComponentLoadResult::kComponentLoaded));
+  DCHECK(error_code <= static_cast<int>(ComponentLoadResult::kMaxValue));
+  ComponentLoadFailedInternal(static_cast<ComponentLoadResult>(error_code));
   delete this;
 }
 
@@ -153,18 +161,26 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!manifest) {
-    loader_policy_->ComponentLoadFailed(ComponentLoadError::kMalformedManifest);
+    ComponentLoadFailedInternal(ComponentLoadResult::kMalformedManifest);
     return;
   }
   std::string version_ascii;
   manifest->GetStringASCII("version", &version_ascii);
   base::Version version(version_ascii);
   if (!version.IsValid()) {
-    loader_policy_->ComponentLoadFailed(ComponentLoadError::kInvalidVersion);
+    ComponentLoadFailedInternal(ComponentLoadResult::kInvalidVersion);
     return;
   }
 
+  RecordComponentLoadStatusHistogram(loader_policy_->GetMetricsSuffix(),
+                                     ComponentLoadResult::kComponentLoaded);
   loader_policy_->ComponentLoaded(version, fd_map, std::move(manifest));
+}
+
+void AndroidComponentLoaderPolicy::ComponentLoadFailedInternal(
+    ComponentLoadResult error) {
+  RecordComponentLoadStatusHistogram(loader_policy_->GetMetricsSuffix(), error);
+  loader_policy_->ComponentLoadFailed(error);
 }
 
 // static
