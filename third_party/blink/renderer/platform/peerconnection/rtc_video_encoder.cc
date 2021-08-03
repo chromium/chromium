@@ -270,15 +270,17 @@ bool CreateSpatialLayersConfig(
       // SpatialLayer is not filled.
       if (codec_settings.VP9().numberOfTemporalLayers > 1 ||
           codec_settings.VP9().numberOfSpatialLayers > 1) {
-        spatial_layers->resize(codec_settings.VP9().numberOfSpatialLayers);
-        for (size_t i = 0; i < spatial_layers->size(); ++i) {
+        spatial_layers->clear();
+        for (size_t i = 0; i < codec_settings.VP9().numberOfSpatialLayers;
+             ++i) {
           const webrtc::SpatialLayer& rtc_sl = codec_settings.spatialLayers[i];
           // We ignore non active spatial layer and don't proceed further. There
           // must NOT be an active higher spatial layer than non active spatial
           // layer.
           if (!rtc_sl.active)
             break;
-          auto& sl = (*spatial_layers)[i];
+          spatial_layers->emplace_back();
+          auto& sl = spatial_layers->back();
           sl.width = base::checked_cast<int32_t>(rtc_sl.width);
           sl.height = base::checked_cast<int32_t>(rtc_sl.height);
           if (!ConvertKbpsToBps(rtc_sl.targetBitrate, &sl.bitrate_bps))
@@ -288,8 +290,16 @@ bool CreateSpatialLayersConfig(
           sl.num_of_temporal_layers =
               base::saturated_cast<uint8_t>(rtc_sl.numberOfTemporalLayers);
         }
-        *inter_layer_pred = CopyFromWebRtcInterLayerPredMode(
-            codec_settings.VP9().interLayerPred);
+
+        if (spatial_layers->size() == 1 &&
+            spatial_layers->at(0).num_of_temporal_layers == 1) {
+          // Don't report spatial layers if only the base layer is active and we
+          // have no temporar layers configured.
+          spatial_layers->clear();
+        } else {
+          *inter_layer_pred = CopyFromWebRtcInterLayerPredMode(
+              codec_settings.VP9().interLayerPred);
+        }
       }
       break;
     default:

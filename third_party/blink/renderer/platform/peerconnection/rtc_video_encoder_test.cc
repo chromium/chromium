@@ -25,12 +25,18 @@
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AtLeast;
+using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::Values;
 using ::testing::WithArgs;
+
+using SpatialLayer = media::VideoEncodeAccelerator::Config::SpatialLayer;
 
 namespace blink {
 
@@ -92,9 +98,9 @@ class RTCVideoEncoderTest
 
     EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
         .WillRepeatedly(Return(mock_vea));
-    EXPECT_CALL(*mock_vea, Initialize(_, _))
+    EXPECT_CALL(*mock_vea, Initialize)
         .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
-    EXPECT_CALL(*mock_vea, UseOutputBitstreamBuffer(_)).Times(AtLeast(3));
+    EXPECT_CALL(*mock_vea, UseOutputBitstreamBuffer).Times(AtLeast(3));
     EXPECT_CALL(*mock_vea, Destroy()).Times(1);
     return mock_vea;
   }
@@ -150,6 +156,7 @@ class RTCVideoEncoderTest
   bool Initialize(const media::VideoEncodeAccelerator::Config& config,
                   media::VideoEncodeAccelerator::Client* client) {
     DVLOG(3) << __func__;
+    config_ = config;
     client_ = client;
     client_->RequireBitstreamBuffers(0, config.input_visible_size,
                                      config.input_visible_size.GetArea());
@@ -308,6 +315,7 @@ class RTCVideoEncoderTest
  protected:
   media::MockVideoEncodeAccelerator* mock_vea_;
   std::unique_ptr<RTCVideoEncoder> rtc_encoder_;
+  absl::optional<media::VideoEncodeAccelerator::Config> config_;
   media::VideoEncodeAccelerator::Client* client_;
   base::Thread encoder_thread_;
 
@@ -498,12 +506,12 @@ TEST_F(RTCVideoEncoderTest, EncodeTemporalLayer) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 // Currently we only test spatial SVC encoding on CrOS since only CrOS platform
 // support spatial SVC encoding.
 
 // http://crbug.com/1226875
-TEST_F(RTCVideoEncoderTest, DISABLED_EncodeSpatialLayer) {
+TEST_F(RTCVideoEncoderTest, EncodeSpatialLayer) {
   webrtc::VideoCodec sl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
   CreateEncoder(sl_codec.codecType);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -530,6 +538,52 @@ TEST_F(RTCVideoEncoderTest, DISABLED_EncodeSpatialLayer) {
                                        .build(),
                                    &frame_types));
   }
+}
+
+TEST_F(RTCVideoEncoderTest, CreateAndInitThreeLayerSvc) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+  CreateEncoder(tl_codec.codecType);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  EXPECT_THAT(
+      *config_,
+      Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+            ElementsAre(
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 4)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 2)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth),
+                      Field(&SpatialLayer::height, kInputFrameHeight)))));
+}
+
+TEST_F(RTCVideoEncoderTest, CreateAndInitSvcSinglecast) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+  tl_codec.spatialLayers[1].active = false;
+  tl_codec.spatialLayers[2].active = false;
+  CreateEncoder(tl_codec.codecType);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  EXPECT_THAT(*config_,
+              Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+                    ElementsAre(AllOf(
+                        Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                        Field(&SpatialLayer::height, kInputFrameHeight / 4)))));
+}
+
+TEST_F(RTCVideoEncoderTest, CreateAndInitSvcSinglecastWithoutTemporalLayers) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+  tl_codec.spatialLayers[1].active = false;
+  tl_codec.spatialLayers[2].active = false;
+  tl_codec.spatialLayers[0].numberOfTemporalLayers = 1;
+  tl_codec.VP9()->numberOfTemporalLayers = 1;
+  CreateEncoder(tl_codec.codecType);
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  EXPECT_THAT(config_->spatial_layers, IsEmpty());
 }
 #endif
 
