@@ -114,6 +114,8 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
                                  const gpu::MailboxHolder& src_mailbox_holder,
                                  VideoFrame* dst_video_frame,
                                  gpu::SyncToken& completion_sync_token) {
+  DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
+
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
 
@@ -136,10 +138,13 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
     return false;
   }
 
-  // Make GrContext wait for `dst_video_frame`.
+  // Make GrContext wait for `dst_video_frame`. Waiting on the mailbox tokens
+  // here ensures that all writes are completed in cases where the underlying
+  // GpuMemoryBuffer and SharedImage resources have been reused.
   ri->Flush();
   WaitAndReplaceSyncTokenClient client(ri);
-  dst_video_frame->UpdateReleaseSyncToken(&client);
+  for (size_t plane = 0; plane < 2; ++plane)
+    dst_video_frame->UpdateMailboxHolderSyncToken(plane, &client);
 
   // Do the blit.
   skia::BlitRGBAToYUVA(
@@ -151,10 +156,14 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   ri->Flush();
 
   // Set `completion_sync_token` to mark the completion of the copy.
-  ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
+  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
 
-  // Make `dst_video_frame` wait on the token.
+  // Make access to the `dst_video_frame` wait on copy completion. We also
+  // update the ReleaseSyncToken here since it's used when the underlying
+  // GpuMemoryBuffer and SharedImage resources are returned to the pool.
   SimpleSyncTokenClient simple_client(completion_sync_token);
+  for (size_t plane = 0; plane < 2; ++plane)
+    dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
   return true;
 }

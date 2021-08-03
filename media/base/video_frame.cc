@@ -1312,6 +1312,22 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   return release_sync_token_;
 }
 
+gpu::SyncToken VideoFrame::UpdateMailboxHolderSyncToken(
+    size_t plane,
+    SyncTokenClient* client) {
+  DCHECK(HasOneRef());
+  DCHECK(HasTextures());
+  DCHECK(!wrapped_frame_);
+  DCHECK_LT(plane, kMaxPlanes);
+
+  // No lock is required due to the HasOneRef() check.
+  auto& token = mailbox_holders_[plane].sync_token;
+  if (token.HasData())
+    client->WaitSyncToken(token);
+  client->GenerateSyncToken(&token);
+  return token;
+}
+
 std::string VideoFrame::AsHumanReadableString() const {
   if (metadata().end_of_stream)
     return "end of stream";
