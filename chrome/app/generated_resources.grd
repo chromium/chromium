@@ -650,8 +650,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_LOOP" desc="The name of the Loop command for audio and video playback in the content area context menu">
             &amp;Loop
           </message>
-          <message name="IDS_CONTENT_CONTEXT_CONTROLS" desc="The name of the Show Controls command for audio and video playback in the content area context menu">
-            Show &amp;controls
+          <message name="IDS_CONTENT_CONTEXT_CONTROLS" desc="The name of the Show All Controls command for audio and video playback in the content area context menu">
+            Show all &amp;controls
           </message>
           <message name="IDS_CONTENT_CONTEXT_ROTATECW" desc="The name of the Rotate clockwise command for plugins in the content area context menu">
             Rotate &amp;clockwise
@@ -891,8 +891,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_LOOP" desc="In Title Case: The name of the Loop command for audio and video playback in the content area context menu">
             &amp;Loop
           </message>
-          <message name="IDS_CONTENT_CONTEXT_CONTROLS" desc="In Title Case: The name of the Show Controls command for audio and video playback in the content area context menu">
-            Show &amp;Controls
+          <message name="IDS_CONTENT_CONTEXT_CONTROLS" desc="In Title Case: The name of the Show All Controls command for audio and video playback in the content area context menu">
+            Show All &amp;Controls
           </message>
           <message name="IDS_CONTENT_CONTEXT_ROTATECW" desc="In Title Case: The name of the Rotate Clockwise command for plugins in the content area context menu">
             Rotate &amp;Clockwise

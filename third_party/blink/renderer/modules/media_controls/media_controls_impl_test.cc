@@ -38,10 +38,12 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_cast_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_current_time_display_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_download_button_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_fullscreen_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_mute_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_list_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_play_button_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_remaining_time_display_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_timeline_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_volume_slider_element.h"
@@ -252,6 +254,12 @@ class MediaControlsImplTest : public PageTestBase,
   }
   MediaControlDownloadButtonElement* DownloadButtonElement() const {
     return media_controls_->download_button_;
+  }
+  MediaControlFullscreenButtonElement* FullscreenButtonElement() const {
+    return media_controls_->fullscreen_button_;
+  }
+  MediaControlPlaybackSpeedButtonElement* PlaybackSpeedButtonElement() const {
+    return media_controls_->playback_speed_button_;
   }
   MediaControlPlayButtonElement* PlayButtonElement() const {
     return media_controls_->play_button_;
@@ -550,6 +558,29 @@ TEST_F(MediaControlsImplTest, CastOverlayDisabledMediaControlsDisabled) {
   EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 }
 
+TEST_F(MediaControlsImplTest, CastButtonVisibilityDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlCastButtonElement* cast_button = CastButtonElement();
+  ASSERT_NE(nullptr, cast_button);
+
+  SimulateRouteAvailable();
+  ASSERT_TRUE(IsOverflowElementVisible(*cast_button));
+
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "noremoteplayback");
+  test::RunPendingTasks();
+
+  // Cast button should not be displayed because of
+  // controlslist="noremoteplayback".
+  ASSERT_FALSE(IsOverflowElementVisible(*cast_button));
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and cast button should be displayed.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  ASSERT_TRUE(IsOverflowElementVisible(*cast_button));
+}
+
 TEST_F(MediaControlsImplTest, KeepControlsVisibleIfOverflowListVisible) {
   Element* overflow_list = GetElementByShadowPseudoId(
       MediaControls(), "-internal-media-controls-overflow-menu-list");
@@ -632,6 +663,77 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedHLS) {
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+}
+
+TEST_F(MediaControlsImplTest,
+       DownloadButtonVisibilityDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlDownloadButtonElement* download_button = DownloadButtonElement();
+  ASSERT_NE(nullptr, download_button);
+
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "nodownload");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Download button should not be displayed because of
+  // controlslist="nodownload".
+  EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and download button should be displayed.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  EXPECT_TRUE(IsOverflowElementVisible(*download_button));
+}
+
+TEST_F(MediaControlsImplTest,
+       FullscreenButtonDisabledDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlFullscreenButtonElement* fullscreen_button =
+      FullscreenButtonElement();
+  ASSERT_NE(nullptr, fullscreen_button);
+
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "nofullscreen");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Fullscreen button should be disabled because of
+  // controlslist="nofullscreen".
+  EXPECT_TRUE(fullscreen_button->IsDisabled());
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and fullscreen button should be enabled.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  EXPECT_FALSE(fullscreen_button->IsDisabled());
+}
+
+TEST_F(MediaControlsImplTest,
+       PlaybackSpeedButtonVisibilityDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlPlaybackSpeedButtonElement* playback_speed_button =
+      PlaybackSpeedButtonElement();
+  ASSERT_NE(nullptr, playback_speed_button);
+
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "noplaybackrate");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Fullscreen button should not be displayed because of
+  // controlslist="noplaybackrate".
+  EXPECT_FALSE(IsOverflowElementVisible(*playback_speed_button));
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and playback speed button should be displayed.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  EXPECT_TRUE(IsOverflowElementVisible(*playback_speed_button));
 }
 
 TEST_F(MediaControlsImplTest, TimelineSeekToRoundedEnd) {

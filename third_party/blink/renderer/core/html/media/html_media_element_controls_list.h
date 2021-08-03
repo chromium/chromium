@@ -23,6 +23,8 @@ class CORE_EXPORT HTMLMediaElementControlsList final : public DOMTokenList {
   bool ShouldHidePlaybackRate() const;
   bool ShouldHideRemotePlayback() const;
 
+  bool CanShowAllControls() const;
+
  private:
   bool ValidateTokenValue(const AtomicString&, ExceptionState&) const override;
 };

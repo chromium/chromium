@@ -338,6 +338,10 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   bool ControlsVisible() const { return Media()->ShouldShowControls(); }
 
+  bool MediaShouldShowAllControls() const {
+    return Media()->ShouldShowAllControls();
+  }
+
   ExecutionContext* GetExecutionContext() const {
     return dummy_page_holder_->GetFrame().DomWindow();
   }
@@ -1135,4 +1139,37 @@ TEST_P(HTMLMediaElementTest,
   EXPECT_FALSE(ControlsVisible());
 }
 
+TEST_P(HTMLMediaElementTest,
+       MediaShouldShowAllControlsDependsOnControlslistAttr) {
+  // Enable scripts to prevent controls being shown due to no scripts.
+  Media()->GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  // Setting the controls attribute to true should show the controls.
+  Media()->SetBooleanAttribute(html_names::kControlsAttr, true);
+  EXPECT_TRUE(MediaShouldShowAllControls());
+
+  // Setting the controlsList attribute to a valid value should not show the
+  // controls.
+  Media()->setAttribute(blink::html_names::kControlslistAttr, "nofullscreen");
+  EXPECT_FALSE(MediaShouldShowAllControls());
+
+  // Removing the controlsList attribute should show the controls.
+  Media()->removeAttribute(blink::html_names::kControlslistAttr);
+  EXPECT_TRUE(MediaShouldShowAllControls());
+
+  // Setting the controlsList attribute to an invalid value should still show
+  // the controls.
+  Media()->setAttribute(blink::html_names::kControlslistAttr, "foo");
+  EXPECT_TRUE(MediaShouldShowAllControls());
+
+  // Setting the controlsList attribute to another valid value should not show
+  // the controls.
+  Media()->setAttribute(blink::html_names::kControlslistAttr, "noplaybackrate");
+  EXPECT_FALSE(MediaShouldShowAllControls());
+
+  // If the user explicitly shows them, that should override the controlsList
+  // attribute.
+  Media()->SetUserWantsControlsVisible(true);
+  EXPECT_TRUE(MediaShouldShowAllControls());
+}
 }  // namespace blink

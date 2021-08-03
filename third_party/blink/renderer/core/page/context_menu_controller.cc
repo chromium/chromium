@@ -532,7 +532,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (IsA<HTMLVideoElement>(media_element) && media_element->HasVideo() &&
         !media_element->IsFullscreen())
       data.media_flags |= ContextMenuData::kMediaCanToggleControls;
-    if (media_element->ShouldShowControls())
+    if (media_element->ShouldShowAllControls())
       data.media_flags |= ContextMenuData::kMediaControls;
   } else if (IsA<HTMLObjectElement>(*result.InnerNode()) ||
              IsA<HTMLEmbedElement>(*result.InnerNode())) {

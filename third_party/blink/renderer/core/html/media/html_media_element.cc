@@ -2830,6 +2830,14 @@ bool HTMLMediaElement::ShouldShowControls(
   return false;
 }
 
+bool HTMLMediaElement::ShouldShowAllControls() const {
+  // If the user has explicitly shown or hidden the controls, then force that
+  // choice. Otherwise returns whether controls should be shown and no controls
+  // are meant to be hidden.
+  return user_wants_controls_visible_.value_or(
+      ShouldShowControls() && !ControlsListInternal()->CanShowAllControls());
+}
+
 DOMTokenList* HTMLMediaElement::controlsList() const {
   return controls_list_.Get();
 }
@@ -2919,6 +2927,10 @@ void HTMLMediaElement::setMuted(bool muted) {
 void HTMLMediaElement::SetUserWantsControlsVisible(bool visible) {
   user_wants_controls_visible_ = visible;
   UpdateControlsVisibility();
+}
+
+bool HTMLMediaElement::UserWantsControlsVisible() const {
+  return user_wants_controls_visible_.value_or(false);
 }
 
 double HTMLMediaElement::EffectiveMediaVolume() const {
