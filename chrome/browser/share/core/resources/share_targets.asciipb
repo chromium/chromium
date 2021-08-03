@@ -5,14 +5,14 @@
 ##
 ## Top level settings
 ##
-version_id: 4
+version_id: 5
 
 ##
 ## Share Targets
 ##
 targets {
   nickname: "Email"
-  url: "mailto:?subject=%(escaped_subject)&body=%(escaped_url)"
+  url: "mailto:?body=%(escaped_url)"
 }
 
 targets {
@@ -360,8 +360,8 @@ targets {
 }
 
 targets {
-  nickname: "Linkedin"
-  url: "http://www.linkedin.com/shareArticle?url=%(escaped_url)&title=%(escaped_title)"
+  nickname: "LinkedIn"
+  url: "http://www.linkedi  n.com/shareArticle?url=%(escaped_url)&title=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -806,7 +806,7 @@ locale_mapping {
   targets: "Facebook"
   targets: "Twitter"
   targets: "reddit"
-  targets: "Linkedin"
+  targets: "LinkedIn"
   targets: "Pinterest"
 }
 
@@ -823,7 +823,7 @@ locale_mapping {
   targets: "Email"
   targets: "WhatsApp"
   targets: "Facebook"
-  targets: "Linkedin"
+  targets: "LinkedIn"
   targets: "Twitter"
 }
 
@@ -832,7 +832,7 @@ locale_mapping {
   targets: "Email"
   targets: "Facebook"
   targets: "WhatsApp"
-  targets: "Linkedin"
+  targets: "LinkedIn"
   targets: "Twitter"
 }
 
@@ -841,7 +841,7 @@ locale_mapping {
   targets: "Email"
   targets: "Facebook"
   targets: "Twitter"
-  targets: "Linkedin"
+  targets: "LinkedIn"
   targets: "WhatsApp"
 }
 
@@ -850,7 +850,7 @@ locale_mapping {
   targets: "Email"
   targets: "Facebook"
   targets: "Twitter"
-  targets: "Linkedin"
+  targets: "LinkedIn"
 
 }
 locale_mapping {
@@ -860,7 +860,7 @@ locale_mapping {
   targets: "Facebook"
   targets: "WhatsApp"
   targets: "Twitter"
-  targets: "Linkedin"
+  targets: "LinkedIn"
 }
 
 locale_mapping {
@@ -869,13 +869,13 @@ locale_mapping {
   targets: "Facebook"
   targets: "WhatsApp"
   targets: "Twitter"
-  targets: "Linkedin"
+  targets: "LinkedIn"
 }
 
 locale_mapping {
   locale_keys: "ALL"
   targets: "Facebook"
-  targets: "Linkedin"
+  targets: "LinkedIn"
   targets: "Email"
   targets: "Pinterest"
   targets: "reddit"
