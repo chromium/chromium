@@ -109,6 +109,10 @@ void RecordLoadSafeSeedResult(LoadSeedResult state);
 // server.
 COMPONENT_EXPORT(VARIATIONS) void RecordStoreSeedResult(StoreSeedResult result);
 
+
+// Reports to UMA that the seed format specified by the server is unsupported.
+COMPONENT_EXPORT(VARIATIONS) void ReportUnsupportedSeedFormatError();
+
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_METRICS_H_

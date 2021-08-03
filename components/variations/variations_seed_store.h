@@ -114,9 +114,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // different day.
   void UpdateSeedDateAndLogDayChange(const base::Time& server_date_fetched);
 
-  // Reports to UMA that the seed format specified by the server is unsupported.
-  void ReportUnsupportedSeedFormatError();
-
   // Returns the serial number of the most recently received seed, or an empty
   // string if there is no seed (or if it could not be read).
   // Side-effect: If there is a failure while attempting to read the latest seed

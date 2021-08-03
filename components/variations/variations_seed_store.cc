@@ -647,8 +647,4 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
   return true;
 }
 
-void VariationsSeedStore::ReportUnsupportedSeedFormatError() {
-  RecordStoreSeedResult(StoreSeedResult::FAILED_UNSUPPORTED_SEED_FORMAT);
-}
-
 }  // namespace variations

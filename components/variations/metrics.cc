@@ -30,4 +30,8 @@ void RecordStoreSeedResult(StoreSeedResult result) {
                             StoreSeedResult::ENUM_SIZE);
 }
 
+void ReportUnsupportedSeedFormatError() {
+  RecordStoreSeedResult(StoreSeedResult::FAILED_UNSUPPORTED_SEED_FORMAT);
+}
+
 }  // namespace variations

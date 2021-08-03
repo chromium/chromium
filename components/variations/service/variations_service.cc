@@ -891,7 +891,7 @@ void VariationsService::OnSimpleLoaderCompleteOrRedirect(
                                 &is_gzip_compressed)) {
     // The header does not specify supported instance manipulations, unable to
     // process data. Details of errors were logged by GetInstanceManipulations.
-    field_trial_creator_.seed_store()->ReportUnsupportedSeedFormatError();
+    ReportUnsupportedSeedFormatError();
     return;
   }
 
