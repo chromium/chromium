@@ -1455,11 +1455,6 @@ class SystemWebAppManagerShortcutTest : public SystemWebAppManagerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
-  if (GetParam().crosapi_state == web_app::test::CrosapiParam::kEnabled) {
-    // TODO(crbug.com/1228119): Make shortcuts work with CrosAPI enabled.
-    return;
-  }
-
   WaitForTestSystemAppInstall();
   AppId app_id =
       GetManager()
