@@ -97,7 +97,6 @@ export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserPr
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
 export {Route, Router} from '../router.js';
-export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.m.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.m.js';
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.m.js';
@@ -138,6 +137,7 @@ export {FingerprintLocation, FingerprintSetupStep} from './os_people_page/setup_
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {routes} from './os_route.m.js';
+export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.m.js';
 export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.js';
 export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.js';
