@@ -606,6 +606,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.incognitoTabsViewController.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
   self.scrollView.scrollEnabled = (self.tabGridMode != TabGridModeSelection);
+  if (mode == TabGridModeSelection)
+    [self updateSelectionModeToolbars];
 }
 
 #pragma mark - LayoutSwitcherProvider
@@ -1542,6 +1544,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.selectedTabsCount = selectedItemsCount;
   [self.bottomToolbar setShareTabsButtonEnabled:sharableSelectedItemsCount > 0];
   [self.bottomToolbar setAddToButtonEnabled:sharableSelectedItemsCount > 0];
+  [self.bottomToolbar setCloseTabsButtonEnabled:selectedItemsCount];
 
   if (currentGridViewController.allItemsSelectedForEditing) {
     [self.topToolbar configureDeselectAllButtonTitle];
