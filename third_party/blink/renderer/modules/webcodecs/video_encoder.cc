@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -382,6 +384,23 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
   return result;
 }
 
+#if defined(OS_MAC)
+const base::Feature kWebCodecsEncoderGpuMemoryBufferReadback{
+    "WebCodecsEncoderGpuMemoryBufferReadback",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
+bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format) {
+#if defined(OS_MAC)
+  // GMB readback only works with NV12, so only opaque buffers can be used.
+  return (format == media::PIXEL_FORMAT_XBGR ||
+          format == media::PIXEL_FORMAT_XRGB) &&
+         base::FeatureList::IsEnabled(kWebCodecsEncoderGpuMemoryBufferReadback);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 // static
@@ -582,19 +601,73 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
+  // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
-    scoped_refptr<viz::RasterContextProvider> raster_provider;
-    auto wrapper = SharedGpuContext::ContextProviderWrapper();
-    if (wrapper && wrapper->ContextProvider())
-      raster_provider = wrapper->ContextProvider()->RasterContextProvider();
-    if (raster_provider) {
-      auto* ri = raster_provider->RasterInterface();
-      auto* gr_context = raster_provider->GrContext();
+    const bool can_use_gmb = CanUseGpuMemoryBufferReadback(frame->format());
+    if (can_use_gmb && !accelerated_frame_pool_) {
+      if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+        accelerated_frame_pool_ =
+            std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
+      }
+    }
 
-      frame = ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
-                                                     &readback_frame_pool_);
+    if (can_use_gmb && accelerated_frame_pool_) {
+      // This will execute shortly after CopyRGBATextureToVideoFrame()
+      // completes. |stall_request_processing_| = true will ensure that
+      // HasPendingActivity() keeps the VideoEncoder alive long enough.
+      auto blit_done_callback = [](VideoEncoder* self, bool keyframe,
+                                   media::VideoEncoder::StatusCB done_callback,
+                                   scoped_refptr<media::VideoFrame> frame) {
+        --self->requested_encodes_;
+        self->stall_request_processing_ = false;
+        self->media_encoder_->Encode(std::move(frame), keyframe,
+                                     std::move(done_callback));
+      };
+
+      auto origin = frame->metadata().texture_origin_is_top_left
+                        ? kTopLeft_GrSurfaceOrigin
+                        : kBottomLeft_GrSurfaceOrigin;
+
+      // TODO(crbug.com/1224279): This assumes that all frames are 8-bit sRGB.
+      // Expose the color space and pixel format that is backing
+      // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
+      // SkImage.
+      auto format = frame->format() == media::PIXEL_FORMAT_XBGR
+                        ? viz::ResourceFormat::RGBA_8888
+                        : viz::ResourceFormat::BGRA_8888;
+
+      // Stall request processing while we wait for the copy to complete. It'd
+      // be nice to not have to do this, but currently the request processing
+      // loop must execute synchronously or flush() will miss frames. Also it
+      // ensures the VideoEncoder remains alive while the copy completes.
+      stall_request_processing_ = true;
+      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+              format, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
+              origin, frame->mailbox_holder(0),
+              WTF::Bind(blit_done_callback, WrapWeakPersistent(this), keyframe,
+                        ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                            done_callback, WrapCrossThreadWeakPersistent(this),
+                            WrapCrossThreadPersistent(request)))))) {
+        request->input->close();
+        return;
+      }
+
+      // Error occurred, fall through to error handling below.
+      stall_request_processing_ = false;
     } else {
-      frame.reset();
+      auto wrapper = SharedGpuContext::ContextProviderWrapper();
+      scoped_refptr<viz::RasterContextProvider> raster_provider;
+      if (wrapper && wrapper->ContextProvider())
+        raster_provider = wrapper->ContextProvider()->RasterContextProvider();
+      if (raster_provider) {
+        auto* ri = raster_provider->RasterInterface();
+        auto* gr_context = raster_provider->GrContext();
+
+        frame = ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
+                                                       &readback_frame_pool_);
+      } else {
+        frame.reset();
+      }
     }
 
     if (!frame) {
