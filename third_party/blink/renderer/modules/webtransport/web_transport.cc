@@ -934,15 +934,19 @@ void WebTransport::Init(const String& url,
 
   auto* execution_context = GetExecutionContext();
 
+  bool had_csp_failure = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
-    // TODO(ricea): This error should probably be asynchronous like it is for
-    // WebSockets and fetch.
-    exception_state.ThrowSecurityError(
+    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
+        script_state_->GetIsolate(), DOMExceptionCode::kSecurityError,
         "Failed to connect to '" + url_.ElidedString() + "'",
         "Refused to connect to '" + url_.ElidedString() +
             "' because it violates the document's Content Security Policy");
-    return;
+
+    ready_resolver_->Reject(dom_exception);
+    closed_resolver_->Reject(dom_exception);
+
+    had_csp_failure = true;
   }
 
   Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
@@ -961,18 +965,20 @@ void WebTransport::Init(const String& url,
   // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
   // disallowed. Must be done before shipping.
 
-  mojo::Remote<mojom::blink::WebTransportConnector> connector;
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      connector.BindNewPipeAndPassReceiver(
-          execution_context->GetTaskRunner(TaskType::kNetworking)));
+  if (!had_csp_failure) {
+    mojo::Remote<mojom::blink::WebTransportConnector> connector;
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        connector.BindNewPipeAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kNetworking)));
 
-  connector->Connect(
-      url_, std::move(fingerprints),
-      handshake_client_receiver_.BindNewPipeAndPassRemote(
-          execution_context->GetTaskRunner(TaskType::kNetworking)));
+    connector->Connect(
+        url_, std::move(fingerprints),
+        handshake_client_receiver_.BindNewPipeAndPassRemote(
+            execution_context->GetTaskRunner(TaskType::kNetworking)));
 
-  handshake_client_receiver_.set_disconnect_handler(
-      WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
+    handshake_client_receiver_.set_disconnect_handler(
+        WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
+  }
 
   probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
 
