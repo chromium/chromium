@@ -57,8 +57,8 @@ function onFocus({target}) {
   for (const v of ringStyleValues) {
     ring.classList.toggle(v, ringStyleValue.includes(v));
   }
-  const uiRectEvent = new CustomEvent(
-      FOCUS_RING_UI_RECT_EVENT_NAME, {cancelable: true, target});
+  const uiRectEvent =
+      new CustomEvent(FOCUS_RING_UI_RECT_EVENT_NAME, {cancelable: true});
   const doDefault = el.dispatchEvent(uiRectEvent);
   if (doDefault) {
     setUIRect(el.getBoundingClientRect());

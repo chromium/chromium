@@ -70,8 +70,8 @@ function show(element) {
   }
   wrapper.textContent = message;
   hovered = element;
-  const positionEvent = new CustomEvent(
-      TOOLTIP_POSITION_EVENT_NAME, {cancelable: true, target: hovered});
+  const positionEvent =
+      new CustomEvent(TOOLTIP_POSITION_EVENT_NAME, {cancelable: true});
   const doDefault = hovered.dispatchEvent(positionEvent);
   if (doDefault) {
     position(hovered.getBoundingClientRect());
