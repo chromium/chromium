@@ -191,16 +191,37 @@ void PrintViewManager::PrintPreviewDone() {
   print_preview_rfh_ = nullptr;
 }
 
-bool PrintViewManager::RejectPrintPreviewRequestIfRestricted(
-    content::RenderFrameHost* rfh) {
-  if (!IsPrintingRestricted())
-    return false;
+void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
+    base::OnceClosure on_print_preview_allowed_cb,
+    base::OnceClosure on_print_preview_rejected_cb) {
+  if (IsPrintingRestricted()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    policy::ShowDlpPrintDisabledNotification();
+#else
+    NOTREACHED();
+#endif
+    std::move(on_print_preview_rejected_cb).Run();
+  } else if (ShouldWarnBeforePrinting()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    policy::ShowDlpPrintWarningDialog(std::move(on_print_preview_allowed_cb),
+                                      std::move(on_print_preview_rejected_cb));
+#else
+    NOTREACHED();
+#endif
+  } else {
+    std::move(on_print_preview_allowed_cb).Run();
+  }
+}
+
+void PrintViewManager::OnPrintPreviewRequestRejected(int render_process_id,
+                                                     int render_frame_id) {
+  auto* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!rfh) {
+    return;
+  }
   GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
   PrintPreviewDone();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::ShowDlpPrintDisabledNotification();
-#endif
-  return true;
 }
 
 void PrintViewManager::RenderFrameCreated(
@@ -279,10 +300,31 @@ void PrintViewManager::SetupScriptedPrintPreview(
     return;
   }
 
-  if (RejectPrintPreviewRequestIfRestricted(rfh)) {
-    std::move(callback).Run();
+  // The |callback| should be called whether the request is rejected or not, so
+  // passing it in both cases.
+  auto split = base::SplitOnceCallback(std::move(callback));
+  RejectPrintPreviewRequestIfRestricted(
+      base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewAllowed,
+                     weak_factory_.GetWeakPtr(), std::move(split.first),
+                     rph->GetID(), rfh->GetRoutingID()),
+      base::BindOnce(&PrintViewManager::OnPrintPreviewRequestRejected,
+                     weak_factory_.GetWeakPtr(), rph->GetID(),
+                     rfh->GetRoutingID())
+          .Then(std::move(split.second)));
+}
+
+void PrintViewManager::OnScriptedPrintPreviewAllowed(
+    SetupScriptedPrintPreviewCallback callback,
+    int render_process_id,
+    int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  auto* rph = content::RenderProcessHost::FromID(render_process_id);
+  if (!rfh || !rph) {
     return;
   }
+  auto& map = g_scripted_print_preview_closure_map.Get();
 
   DCHECK(!print_preview_rfh_);
   print_preview_rfh_ = rfh;
@@ -327,9 +369,28 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
 void PrintViewManager::RequestPrintPreview(
     mojom::RequestPrintPreviewParamsPtr params) {
   content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
-  if (RejectPrintPreviewRequestIfRestricted(render_frame_host))
-    return;
+  content::RenderProcessHost* render_process_host =
+      render_frame_host->GetProcess();
 
+  RejectPrintPreviewRequestIfRestricted(
+      base::BindOnce(&PrintViewManager::OnRequestPrintPreviewAllowed,
+                     weak_factory_.GetWeakPtr(), std::move(params),
+                     render_process_host->GetID(),
+                     render_frame_host->GetRoutingID()),
+      base::BindOnce(&PrintViewManager::OnPrintPreviewRequestRejected,
+                     weak_factory_.GetWeakPtr(), render_process_host->GetID(),
+                     render_frame_host->GetRoutingID()));
+}
+
+void PrintViewManager::OnRequestPrintPreviewAllowed(
+    mojom::RequestPrintPreviewParamsPtr params,
+    int render_process_id,
+    int render_frame_id) {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!render_frame_host) {
+    return;
+  }
   if (params->webnode_only) {
     PrintPreviewForWebNode(render_frame_host);
   }
@@ -362,6 +423,15 @@ bool PrintViewManager::IsPrintingRestricted() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't print DLP restricted content on Chrome OS.
   return policy::DlpContentManager::Get()->IsPrintingRestricted(web_contents());
+#else
+  return false;
+#endif
+}
+
+bool PrintViewManager::ShouldWarnBeforePrinting() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return policy::DlpContentManager::Get()->ShouldWarnBeforePrinting(
+      web_contents());
 #else
   return false;
 #endif

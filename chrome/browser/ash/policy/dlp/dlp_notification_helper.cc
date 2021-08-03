@@ -21,6 +21,7 @@ namespace policy {
 namespace {
 
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
+constexpr char kPrintWarningNotificationId[] = "print_dlp_warning";
 constexpr char kScreenCapturePausedNotificationPrefix[] =
     "screen_capture_dlp_paused-";
 constexpr char kScreenCaptureResumedNotificationPrefix[] =
@@ -63,6 +64,18 @@ void ShowDlpPrintDisabledNotification() {
       kPrintBlockedNotificationId,
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE),
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE));
+}
+
+void ShowDlpPrintWarningDialog(base::OnceClosure continue_cb,
+                               base::OnceClosure cancel_cb) {
+  // TODO(aidazolic): show a warning dialog instead of toast that will get
+  // response from the user and call the right callback
+  ShowDlpNotification(
+      kPrintWarningNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARNING_TITLE),
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARNING_MESSAGE));
+
+  std::move(continue_cb).Run();
 }
 
 void HideDlpScreenCapturePausedNotification(const std::string& capture_id) {

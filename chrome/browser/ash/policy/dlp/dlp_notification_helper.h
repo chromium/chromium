@@ -7,10 +7,18 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
+
 namespace policy {
 
 // Shows a notification that printing is not allowed due to DLP rules.
 void ShowDlpPrintDisabledNotification();
+
+// Shows a warning dialog that printing is not recommended and allows the user
+// to choose whether to continue or not. Based on the response, only one of
+// |continue_cb| and |cancel_cb| will run.
+void ShowDlpPrintWarningDialog(base::OnceClosure continue_cb,
+                               base::OnceClosure cancel_cb);
 
 // Shows/hides a notification that screen capture was paused because
 // confidential content appeared in the captured area, or resumed when it left
