@@ -8,6 +8,8 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,19 +30,24 @@ constexpr char kWindowAndTabCountHistogramName[] =
 constexpr char kLaunchFromTemplateHistogramName[] =
     "Ash.DeskTemplate.LaunchFromTemplate";
 
+// Returns true if |profile| is a supported profile in desk template feature.
+bool IsSupportedProfile(Profile* profile) {
+  // Public users & guest users are not supported.
+  return profile && profile->IsRegularProfile();
+}
+
 }  // namespace
 
-DesksClient::DesksClient()
-    : desks_helper_(ash::DesksHelper::Get()),
-      storage_manager_(std::make_unique<desks_storage::LocalDeskDataManager>(
-          ProfileManager::GetActiveUserProfile()->GetPath())) {
+DesksClient::DesksClient() : desks_helper_(ash::DesksHelper::Get()) {
   DCHECK(!g_desks_client_instance);
   g_desks_client_instance = this;
+  ash::SessionController::Get()->AddObserver(this);
 }
 
 DesksClient::~DesksClient() {
   DCHECK_EQ(this, g_desks_client_instance);
   g_desks_client_instance = nullptr;
+  ash::SessionController::Get()->RemoveObserver(this);
 }
 
 // static
@@ -48,8 +55,25 @@ DesksClient* DesksClient::Get() {
   return g_desks_client_instance;
 }
 
+void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (profile == active_profile_ || !IsSupportedProfile(profile))
+    return;
+
+  active_profile_ = profile;
+  DCHECK(active_profile_);
+  storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
+      active_profile_->GetPath());
+}
+
 void DesksClient::CaptureActiveDeskAndSaveTemplate(
     CaptureActiveDeskAndSaveTemplateCallback callback) {
+  if (!active_profile_) {
+    std::move(callback).Run(/*success=*/false, /*desk_template=*/nullptr);
+    return;
+  }
+
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desks_helper_->CaptureActiveDeskAsTemplate();
   RecordWindowAndTabCount(desk_template.get());
@@ -63,6 +87,11 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
 void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
                                      const std::u16string& template_name,
                                      UpdateDeskTemplateCallback callback) {
+  if (!active_profile_) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   storage_manager_->GetEntryByUUID(
       template_uuid, base::BindOnce(&DesksClient::OnGetTemplateToBeUpdated,
                                     weak_ptr_factory_.GetWeakPtr(),
@@ -71,6 +100,11 @@ void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
 
 void DesksClient::DeleteDeskTemplate(const std::string& template_uuid,
                                      DeleteDeskTemplateCallback callback) {
+  if (!active_profile_) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   storage_manager_->DeleteEntry(
       template_uuid,
       base::BindOnce(&DesksClient::OnDeleteDeskTemplate,
@@ -78,6 +112,11 @@ void DesksClient::DeleteDeskTemplate(const std::string& template_uuid,
 }
 
 void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
+  if (!active_profile_) {
+    std::move(callback).Run(/*success=*/false, /*desk_templates=*/{});
+    return;
+  }
+
   storage_manager_->GetAllEntries(
       base::BindOnce(&DesksClient::OnGetAllTemplates,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -85,6 +124,11 @@ void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
 
 void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
                                      LaunchDeskTemplateCallback callback) {
+  if (!active_profile_) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   MaybeCreateAppLaunchHandler();
   if (!app_launch_handler_) {
     std::move(callback).Run(/*success=*/false);
@@ -107,16 +151,14 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
 }
 
 void DesksClient::MaybeCreateAppLaunchHandler() {
-  if (app_launch_handler_)
+  if (app_launch_handler_ &&
+      app_launch_handler_->profile() == active_profile_) {
     return;
-
-  // TODO(sammiequon): Handle multiple profile case.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
-  if (profile) {
-    app_launch_handler_ =
-        std::make_unique<DeskTemplateAppLaunchHandler>(profile);
   }
+
+  DCHECK(active_profile_);
+  app_launch_handler_ =
+      std::make_unique<DeskTemplateAppLaunchHandler>(active_profile_);
 }
 
 void DesksClient::RecordWindowAndTabCount(ash::DeskTemplate* desk_template) {

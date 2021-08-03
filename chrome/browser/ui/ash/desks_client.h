@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/desks_storage/core/desk_model.h"
@@ -23,17 +24,22 @@ namespace desks_storage {
 class LocalDeskDataManager;
 }
 
+class Profile;
+
 // Class to handle all Desks in-browser functionalities. Will call into
 // ash::DesksController (via ash::DesksHelper) to do actual desk related
 // operations.
-class DesksClient {
+class DesksClient : public ash::SessionObserver {
  public:
   DesksClient();
   DesksClient(const DesksClient&) = delete;
   DesksClient& operator=(const DesksClient&) = delete;
-  ~DesksClient();
+  ~DesksClient() override;
 
   static DesksClient* Get();
+
+  // ash::SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // TODO: Change the callback to accept a ash::DeskTemplate* type parameter
   // later when DesksClient (or DesksController) hooks up with storage and can
@@ -138,6 +144,8 @@ class DesksClient {
   // Convenience pointer to the desks helper which is `ash::DesksController`.
   // Guaranteed to be not null for the duration of `this`.
   ash::DesksHelper* const desks_helper_;
+
+  Profile* active_profile_ = nullptr;
 
   // The object that handles launching apps.
   std::unique_ptr<DeskTemplateAppLaunchHandler> app_launch_handler_;
