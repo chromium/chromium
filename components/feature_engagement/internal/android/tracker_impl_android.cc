@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
