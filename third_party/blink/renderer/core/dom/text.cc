@@ -438,8 +438,8 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
     return true;
   }
   if (text_layout_object->IsTextFragment()) {
-    // Changes of |textNode| may change first letter part, so we should
-    // reattach. Note: When |textNode| is empty or holds collapsed white spaces
+    // Changes of |text_node| may change first letter part, so we should
+    // reattach. Note: When |text_node| is empty or holds collapsed whitespaces
     // |text_fragment_layout_object| represents first-letter part but it isn't
     // inside first-letter-pseudo element. See http://crbug.com/978947
     const auto& text_fragment_layout_object =
@@ -447,13 +447,13 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
     return text_fragment_layout_object.GetFirstLetterPseudoElement() ||
            !text_fragment_layout_object.IsRemainingTextLayoutObject();
   }
-  if (auto* next = text_layout_object->NextSibling()) {
-    if (IsA<FirstLetterPseudoElement>(next->GetNode())) {
-      // This |Text| node is not a first-letter part, but it may be changed.
-      // So, we should rebuild first-letter part and remaining part.
-      // See FirstLetterPseudoElementTest.AppendDataToSpace
-      return true;
-    }
+  if (!FirstLetterPseudoElement::FirstLetterLength(
+          text_layout_object->GetText()) &&
+      FirstLetterPseudoElement::FirstLetterLength(text_node.data())) {
+    // We did not previously apply ::first-letter styles to this |text_node|,
+    // and if there was no first formatted letter, but now is, we may need to
+    // reattach.
+    return true;
   }
   return false;
 }
