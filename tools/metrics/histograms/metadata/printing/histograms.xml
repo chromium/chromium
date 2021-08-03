@@ -135,7 +135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
-    expires_after="2021-11-21">
+    expires_after="2022-01-30">
   <owner>skau@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>

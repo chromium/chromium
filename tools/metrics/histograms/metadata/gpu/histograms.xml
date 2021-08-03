@@ -559,7 +559,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
-    expires_after="2021-11-28">
+    expires_after="2022-01-30">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

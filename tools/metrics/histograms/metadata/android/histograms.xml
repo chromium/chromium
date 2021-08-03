@@ -391,7 +391,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"
-    enum="BackgroundTaskId" expires_after="2021-12-01">
+    enum="BackgroundTaskId" expires_after="2022-01-30">
   <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -3873,7 +3873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
-    units="ms" expires_after="2021-11-28">
+    units="ms" expires_after="2022-01-30">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3883,7 +3883,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold"
-    units="ms" expires_after="2021-11-28">
+    units="ms" expires_after="2022-01-30">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3895,7 +3895,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm"
-    units="ms" expires_after="2021-11-28">
+    units="ms" expires_after="2022-01-30">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
