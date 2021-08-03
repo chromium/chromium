@@ -14,6 +14,12 @@ namespace blink {
 // This class collects performance data for font-related operations.
 class PLATFORM_EXPORT FontPerformance {
  public:
+  static void DidReachFirstContentfulPaint() {
+    primary_font_ = base::TimeDelta();
+    primary_font_in_style_ = base::TimeDelta();
+    system_fallback_ = base::TimeDelta();
+  }
+
   // The aggregated time spent in |DeterminePrimarySimpleFontData|.
   static base::TimeDelta PrimaryFontTime() {
     return primary_font_ + primary_font_in_style_;
