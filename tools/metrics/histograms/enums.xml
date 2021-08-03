@@ -73819,6 +73819,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ServiceWorkerInternalsLinkQuery">
+  <obsolete>
+    Removed 2021-08-03.
+  </obsolete>
   <int value="0" label="Accessed from DevTools"/>
   <int value="1" label="Accessed from outside DevTools"/>
 </enum>

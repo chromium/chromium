@@ -238,14 +238,6 @@ void DidGetRegistrations(
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ServiceWorkerInternalsLinkQuery {
-  kDevTools = 0,
-  kOther = 1,
-  kMaxValue = kOther,
-};
-
 }  // namespace
 
 class ServiceWorkerInternalsHandler::PartitionObserver
@@ -356,14 +348,6 @@ class ServiceWorkerInternalsHandler::PartitionObserver
 
 ServiceWorkerInternalsUI::ServiceWorkerInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
-  std::string query = web_ui->GetWebContents()->GetURL().query();
-  ServiceWorkerInternalsLinkQuery query_type =
-      ServiceWorkerInternalsLinkQuery::kOther;
-  if (query == "devtools") {
-    query_type = ServiceWorkerInternalsLinkQuery::kDevTools;
-  }
-  base::UmaHistogramEnumeration("ServiceWorker.InternalsPageAccessed",
-                                query_type);
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIServiceWorkerInternalsHost);
   source->OverrideContentSecurityPolicy(
