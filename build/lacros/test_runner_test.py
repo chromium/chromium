@@ -186,6 +186,33 @@ class TestRunnerTest(unittest.TestCase):
           ['./url_unittests', '--gtest_filter=Suite.Test'])
       self.assertFalse(mock_download.called)
 
+  @mock.patch.dict(os.environ, {'ASH_WRAPPER': 'gdb --args'}, clear=False)
+  @mock.patch.object(os,
+                     'listdir',
+                     return_value=['wayland-0', 'wayland-0.lock'])
+  @mock.patch.object(tempfile,
+                     'mkdtemp',
+                     side_effect=['/tmp/xdg', '/tmp/ash-data'])
+  @mock.patch.object(os.environ, 'copy', side_effect=[{}, {}])
+  @mock.patch.object(os.path, 'exists', return_value=True)
+  @mock.patch.object(os.path, 'isfile', return_value=True)
+  @mock.patch.object(test_runner,
+                     '_GetLatestVersionOfAshChrome',
+                     return_value='793554')
+  @mock.patch.object(test_runner, '_DownloadAshChromeIfNecessary')
+  @mock.patch.object(subprocess, 'Popen', return_value=mock.Mock())
+  # Tests that, when the ASH_WRAPPER environment variable is set, it forwards
+  # the commands to the invocation of ash.
+  def test_ash_wrapper(self, mock_popen, *_):
+    args = [
+        'script_name', 'test', './browser_tests', '--gtest_filter=Suite.Test'
+    ]
+    with mock.patch.object(sys, 'argv', args):
+      test_runner.Main()
+      ash_args = mock_popen.call_args_list[0][0][0]
+      self.assertTrue(ash_args[2].endswith('test_ash_chrome'))
+      self.assertEqual(['gdb', '--args'], ash_args[:2])
+
 
 if __name__ == '__main__':
   unittest.main()

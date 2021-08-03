@@ -71,7 +71,8 @@ _PREBUILT_ASH_CHROME_DIR = os.path.join(os.path.dirname(__file__),
                                         'prebuilt_ash_chrome')
 
 # Number of seconds to wait for ash-chrome to start.
-ASH_CHROME_TIMEOUT_SECONDS = 10
+ASH_CHROME_TIMEOUT_SECONDS = (
+    300 if os.environ.get('ASH_WRAPPER', None) else 10)
 
 # List of targets that require ash-chrome as a Wayland server in order to run.
 _TARGETS_REQUIRE_ASH_CHROME = [
@@ -321,6 +322,15 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     ]
     if enable_mojo_crosapi:
       ash_cmd.append(lacros_mojo_socket_arg)
+
+    # Users can specify a wrapper for the ash binary to do things like
+    # attaching debuggers. For example, this will open a new terminal window
+    # and run GDB.
+    #   $ export ASH_WRAPPER="gnome-terminal -- gdb --ex=r --args"
+    ash_wrapper = os.environ.get('ASH_WRAPPER', None)
+    if ash_wrapper:
+      logging.info('Running ash with "ASH_WRAPPER": %s', ash_wrapper)
+      ash_cmd = list(ash_wrapper.split()) + ash_cmd
 
     ash_process_has_started = False
     total_tries = 3
