@@ -11,10 +11,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 
-namespace base {
-class Clock;
-}  // namespace base
-
 namespace segmentation_platform {
 
 class SignalDatabase;
@@ -23,8 +19,7 @@ class SignalDatabase;
 // internal database for future processing.
 class UserActionSignalHandler {
  public:
-  explicit UserActionSignalHandler(SignalDatabase* signal_database,
-                                   base::Clock* clock);
+  explicit UserActionSignalHandler(SignalDatabase* signal_database);
   virtual ~UserActionSignalHandler();
 
   // Disallow copy/assign.
@@ -45,9 +40,6 @@ class UserActionSignalHandler {
 
   // The database storing relevant user actions.
   SignalDatabase* db_;
-
-  // Used for getting current time.
-  base::Clock* clock_;
 
   // The callback registered with user metrics module that gets invoked for
   // every user action.

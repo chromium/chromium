@@ -49,7 +49,8 @@ class SignalDatabaseImplTest : public testing::Test {
     auto db = std::make_unique<leveldb_proto::test::FakeDB<proto::SignalData>>(
         &db_entries_);
     db_ = db.get();
-    signal_db_ = std::make_unique<SignalDatabaseImpl>(std::move(db));
+    signal_db_ =
+        std::make_unique<SignalDatabaseImpl>(std::move(db), &test_clock_);
 
     signal_db_->Initialize(base::DoNothing());
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -90,8 +91,8 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   // Write a sample.
   int32_t value = 10;
   base::Time timestamp = now - base::TimeDelta::FromHours(1);
-  signal_db_->WriteSample(signal_type, name_hash, value, timestamp,
-                          base::DoNothing());
+  test_clock_.SetNow(timestamp);
+  signal_db_->WriteSample(signal_type, name_hash, value, base::DoNothing());
   db_->UpdateCallback(true);
 
   // Read back the sample and verify.
@@ -100,6 +101,20 @@ TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual({{timestamp, value}}, get_samples_result_);
+  EXPECT_EQ(1u, db_entries_.size());
+
+  // Write another sample right away. Both the values should be persisted
+  // correctly without being overwritten.
+  int32_t value2 = 20;
+  signal_db_->WriteSample(signal_type, name_hash, value2, base::DoNothing());
+  db_->UpdateCallback(true);
+
+  signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
+                                        base::Unretained(this)));
+  db_->LoadCallback(true);
+  CheckVectorsEqual({{timestamp, value}, {timestamp, value2}},
+                    get_samples_result_);
   EXPECT_EQ(1u, db_entries_.size());
 }
 
@@ -113,12 +128,14 @@ TEST_F(SignalDatabaseImplTest, DeleteSamples) {
   base::Time timestamp3 = timestamp2 + base::TimeDelta::FromHours(1);
 
   // Write two samples, at timestamp1 and timestamp3.
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt, timestamp1,
+  test_clock_.SetNow(timestamp1);
+  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
   EXPECT_EQ(1u, db_entries_.size());
 
-  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt, timestamp3,
+  test_clock_.SetNow(timestamp3);
+  signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
                           base::DoNothing());
   db_->UpdateCallback(true);
   EXPECT_EQ(2u, db_entries_.size());
@@ -164,16 +181,19 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   base::Time timestamp_day1_2 = day1 + base::TimeDelta::FromHours(2);
   base::Time timestamp_day2_1 = day2 + base::TimeDelta::FromHours(2);
 
+  test_clock_.SetNow(timestamp_day1_1);
   signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
-                          timestamp_day1_1, base::DoNothing());
+                          base::DoNothing());
   db_->UpdateCallback(true);
 
+  test_clock_.SetNow(timestamp_day1_2);
   signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
-                          timestamp_day1_2, base::DoNothing());
+                          base::DoNothing());
   db_->UpdateCallback(true);
 
+  test_clock_.SetNow(timestamp_day2_1);
   signal_db_->WriteSample(signal_type, name_hash, absl::nullopt,
-                          timestamp_day2_1, base::DoNothing());
+                          base::DoNothing());
   db_->UpdateCallback(true);
 
   EXPECT_EQ(3u, db_entries_.size());
