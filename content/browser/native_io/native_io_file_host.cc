@@ -37,7 +37,9 @@ NativeIOFileHost::NativeIOFileHost(
       &NativeIOFileHost::OnReceiverDisconnect, base::Unretained(this)));
 }
 
-NativeIOFileHost::~NativeIOFileHost() = default;
+NativeIOFileHost::~NativeIOFileHost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void NativeIOFileHost::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
