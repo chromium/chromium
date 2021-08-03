@@ -33,8 +33,6 @@ extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableVirtualCard;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::Feature kAutofillFixOfferInIncognito;
-extern const base::FeatureParam<int>
-    kAutofillImageFetcherDiskCacheExpirationInMinutes;
 extern const base::Feature kAutofillParseMerchantPromoCodeFields;
 extern const base::Feature kAutofillSaveCardDismissOnNavigation;
 extern const base::Feature kAutofillSaveCardInfobarEditSupport;

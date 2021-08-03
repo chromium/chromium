@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -153,9 +152,6 @@ class PersonalDatabaseHelper
   explicit PersonalDatabaseHelper(PersonalDataManager* personal_data_manager)
       : personal_data_manager_(personal_data_manager) {}
 
-  PersonalDatabaseHelper(const PersonalDatabaseHelper&) = delete;
-  PersonalDatabaseHelper& operator=(const PersonalDatabaseHelper&) = delete;
-
   void Init(scoped_refptr<AutofillWebDataService> profile_database,
             scoped_refptr<AutofillWebDataService> account_database) {
     profile_database_ = profile_database;
@@ -256,6 +252,8 @@ class PersonalDatabaseHelper
   scoped_refptr<AutofillWebDataService> server_database_;
 
   PersonalDataManager* personal_data_manager_;
+
+  DISALLOW_COPY_AND_ASSIGN(PersonalDatabaseHelper);
 };
 
 PersonalDataManager::PersonalDataManager(
@@ -480,7 +478,6 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
           ReceiveLoadedDbValues(h, result.get(),
                                 &pending_server_creditcards_query_,
                                 &server_credit_cards_);
-          OnServerCreditCardsRefreshed();
         }
         break;
       case AUTOFILL_CLOUDTOKEN_RESULT:
@@ -964,7 +961,6 @@ void PersonalDataManager::ClearAllServerData() {
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
   autofill_offer_data_.clear();
-  credit_card_art_images_.clear();
 }
 
 void PersonalDataManager::ClearAllLocalData() {
@@ -1229,41 +1225,6 @@ std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
   for (const auto& data : autofill_offer_data_)
     result.push_back(data.get());
   return result;
-}
-
-std::vector<const AutofillOfferData*>
-PersonalDataManager::GetAutofillPromoCodeOffers() const {
-  if (!IsAutofillWalletImportEnabled())
-    return {};
-
-  std::vector<const AutofillOfferData*> result;
-  result.reserve(autofill_offer_data_.size());
-  for (const auto& data : autofill_offer_data_) {
-    if (data.get()->IsPromoCodeOffer())
-      result.push_back(data.get());
-  }
-  return result;
-}
-
-gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
-    const GURL& card_art_url) const {
-  if (!IsAutofillWalletImportEnabled())
-    return nullptr;
-
-  if (!card_art_url.is_valid())
-    return nullptr;
-
-  auto images_iterator = credit_card_art_images_.find(card_art_url);
-
-  // Found an image and return it.
-  if (images_iterator != credit_card_art_images_.end()) {
-    gfx::Image* image = images_iterator->second.get();
-    if (!image->IsEmpty())
-      return image;
-  }
-
-  FetchImagesForUrls({card_art_url});
-  return nullptr;
 }
 
 void PersonalDataManager::Refresh() {
@@ -1541,16 +1502,6 @@ const ProfileValidityMap& PersonalDataManager::GetProfileValidityByGUID(
   }
 
   return empty_validity_map;
-}
-
-void PersonalDataManager::FetchImagesForUrls(
-    const std::vector<GURL>& updated_urls) const {
-  if (!image_fetcher_)
-    return;
-
-  image_fetcher_->FetchImagesForUrls(
-      updated_urls, base::BindOnce(&PersonalDataManager::OnCardArtImagesFetched,
-                                   weak_factory_.GetWeakPtr()));
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
@@ -1965,8 +1916,7 @@ void PersonalDataManager::LogStoredProfileMetrics() const {
 void PersonalDataManager::LogStoredCreditCardMetrics() const {
   if (!has_logged_stored_credit_card_metrics_) {
     AutofillMetrics::LogStoredCreditCardMetrics(
-        local_credit_cards_, server_credit_cards_,
-        GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
+        local_credit_cards_, server_credit_cards_, kDisusedDataModelTimeDelta);
 
     // Only log this info once per chrome user profile load.
     has_logged_stored_credit_card_metrics_ = true;
@@ -2147,16 +2097,6 @@ void PersonalDataManager::OnAutofillProfileChanged(
   }
 
   OnProfileChangeDone(guid);
-}
-
-void PersonalDataManager::OnCardArtImagesFetched(
-    std::vector<std::unique_ptr<CreditCardArtImage>> art_images) {
-  for (auto& art_image : art_images) {
-    if (!art_image->card_art_image.IsEmpty()) {
-      credit_card_art_images_[art_image->card_art_url] =
-          std::make_unique<gfx::Image>(art_image->card_art_image);
-    }
-  }
 }
 
 void PersonalDataManager::LogServerCardLinkClicked() const {
@@ -2433,36 +2373,6 @@ bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {
 scoped_refptr<AutofillWebDataService> PersonalDataManager::GetLocalDatabase() {
   DCHECK(database_helper_);
   return database_helper_->GetLocalDatabase();
-}
-
-void PersonalDataManager::OnServerCreditCardsRefreshed() {
-  ProcessVirtualCardMetadataChanges();
-}
-
-void PersonalDataManager::ProcessVirtualCardMetadataChanges() {
-  std::vector<GURL> updated_urls;
-  for (auto& card : server_credit_cards_) {
-    // If this card is not enrolled for virtual cards or the url is not valid,
-    // continue.
-    if (card->virtual_card_enrollment_state() != CreditCard::ENROLLED ||
-        !card->card_art_url().is_valid()) {
-      continue;
-    }
-
-    // Otherwise try to find the old entry with the same url.
-    auto it = credit_card_art_images_.find(card->card_art_url());
-    // No existing entry found.
-    if (it == credit_card_art_images_.end())
-      updated_urls.emplace_back(card->card_art_url());
-  }
-  if (!updated_urls.empty())
-    FetchImagesForUrls(updated_urls);
-}
-
-size_t PersonalDataManager::GetServerCardWithArtImageCount() const {
-  return base::ranges::count_if(
-      server_credit_cards_.begin(), server_credit_cards_.end(),
-      [](const auto& card) { return card->card_art_url().is_valid(); });
 }
 
 }  // namespace autofill

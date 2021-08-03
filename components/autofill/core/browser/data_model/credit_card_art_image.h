@@ -5,23 +5,30 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_CREDIT_CARD_ART_IMAGE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_CREDIT_CARD_ART_IMAGE_H_
 
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include <string>
+#include <vector>
 
 namespace autofill {
 
-// Represents an rich card art image for the card art url.
+// Represents an rich card art image for the server credit card.
 struct CreditCardArtImage {
  public:
   CreditCardArtImage();
-  CreditCardArtImage(const CreditCardArtImage& other);
+  CreditCardArtImage(const std::string& id,
+                     int64_t instrument_id,
+                     std::vector<uint8_t> card_art_image);
   ~CreditCardArtImage();
+  CreditCardArtImage(const CreditCardArtImage&) = delete;
+  CreditCardArtImage& operator=(const CreditCardArtImage&) = delete;
 
-  // The url to fetch the card art image.
-  GURL card_art_url;
+  // The server id for the related credit card.
+  std::string id;
 
-  // The customized card art image.
-  gfx::Image card_art_image;
+  // The instrument id for the related credit card.
+  int64_t instrument_id;
+
+  // The customized card art image. Stored as an raw PNG-encoded data.
+  std::vector<uint8_t> card_art_image;
 };
 
 }  // namespace autofill
