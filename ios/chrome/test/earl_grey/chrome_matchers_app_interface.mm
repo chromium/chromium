@@ -1149,4 +1149,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGridEditShareButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditShareButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 @end

@@ -21,6 +21,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/base/mac/url_conversions.h"
 #import "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -117,7 +118,9 @@ id<GREYMatcher> SelectAllButton() {
   if ([self isRunningTest:@selector(testTabGridBulkActionCloseTabs)] ||
       [self isRunningTest:@selector(testTabGridBulkActionDeselectAll)] ||
       [self isRunningTest:@selector(testTabGridBulkActionSelectAll)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionAddToReadingList)]) {
+      [self isRunningTest:@selector(testTabGridBulkActionAddToBookmarks)] ||
+      [self isRunningTest:@selector(testTabGridBulkActionAddToReadingList)] ||
+      [self isRunningTest:@selector(testTabGridBulkActionShare)]) {
     config.features_enabled.push_back(kTabsBulkActions);
   }
 
@@ -1090,6 +1093,66 @@ id<GREYMatcher> SelectAllButton() {
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 }
 
+// Tests adding items to Bookmarks from the tab grid edit mode.
+- (void)testTabGridBulkActionAddToBookmarks {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Bulk actions are only supported on iOS 14 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+
+  // Select the first and last items.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(2)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditAddToButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:AddToBookmarksButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON)]
+      assertWithMatcher:grey_notNil()];
+
+  // Choose "Mobile Bookmarks" folder as the destination.
+  // Duplicate matcher here instead of using +[BookmarkEarlGreyUI
+  // openMobileBookmarks] in order to properly wait for the snackbar message.
+  NSString* snackBarMessage =
+      l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER,
+                              base::SysNSStringToUTF16(@"Mobile Bookmarks"));
+  [self waitForSnackBarMessageText:snackBarMessage
+      triggeredByTappingItemWithMatcher:grey_allOf(grey_kindOfClassName(
+                                                       @"UITableViewCell"),
+                                                   grey_descendant(grey_text(
+                                                       @"Mobile Bookmarks")),
+                                                   nil)];
+}
+
 // Tests adding items to the readinglist from the tab grid edit mode.
 - (void)testTabGridBulkActionAddToReadingList {
   if (!base::ios::IsRunningOnIOS14OrLater()) {
@@ -1130,6 +1193,74 @@ id<GREYMatcher> SelectAllButton() {
 
   [self waitForSnackBarMessage:IDS_IOS_READING_LIST_SNACKBAR_MESSAGE
       triggeredByTappingItemWithMatcher:AddToReadingListButton()];
+}
+
+// Tests sharing multiple tabs from the tab grid edit mode.
+- (void)testTabGridBulkActionShare {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Bulk actions are only supported on iOS 14 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+
+  // Select the first and last items.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(2)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditShareButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CopyActivityButton()]
+      performAction:grey_tap()];
+
+  NSString* URL1String = base::SysUTF8ToNSString(_URL1.spec());
+  NSString* URL3String = base::SysUTF8ToNSString(_URL3.spec());
+
+  // Copying can take a while, wait for it to happen.
+  GREYCondition* copyCondition = [GREYCondition
+      conditionWithName:@"test text copied condition"
+                  block:^BOOL {
+                    NSArray<NSString*>* URLStrings =
+                        UIPasteboard.generalPasteboard.strings;
+                    if (URLStrings.count != 2) {
+                      return false;
+                    }
+
+                    // Strings may appear in either order.
+                    if (([URLStrings[0] isEqualToString:URL1String] &&
+                         [URLStrings[1] isEqualToString:URL3String]) ||
+                        ([URLStrings[0] isEqualToString:URL3String] &&
+                         [URLStrings[1] isEqualToString:URL1String])) {
+                      return true;
+                    }
+
+                    return false;
+                  }];
+  // Wait for copy to happen or timeout after 5 seconds.
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying URLs failed");
 }
 
 #pragma mark - Helper Methods
@@ -1198,6 +1329,38 @@ id<GREYMatcher> SelectAllButton() {
   // Wait for the snackbar to appear.
   id<GREYMatcher> snackbar_matcher =
       chrome_test_util::ButtonWithAccessibilityLabelId(messageIdentifier);
+  ConditionBlock wait_for_appearance = ^{
+    return [ChromeEarlGrey watcherDetectedButtonWithLabel:snackBarLabel];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarAppearanceTimeout, wait_for_appearance),
+             @"Snackbar did not appear.");
+
+  // Wait for the snackbar to disappear.
+  ConditionBlock wait_for_disappearance = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
+             @"Snackbar did not disappear.");
+}
+
+- (void)waitForSnackBarMessageText:(NSString*)snackBarLabel
+    triggeredByTappingItemWithMatcher:(id<GREYMatcher>)matcher {
+  // Start custom monitor, because there's a chance the snackbar is
+  // already gone by the time we wait for it (and it was like that sometimes).
+  [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
+                                    timeout:kSnackbarAppearanceTimeout];
+
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+
+  // Wait for the snackbar to appear.
+  id<GREYMatcher> snackbar_matcher =
+      chrome_test_util::ButtonWithAccessibilityLabel(snackBarLabel);
   ConditionBlock wait_for_appearance = ^{
     return [ChromeEarlGrey watcherDetectedButtonWithLabel:snackBarLabel];
   };

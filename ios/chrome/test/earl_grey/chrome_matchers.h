@@ -604,6 +604,9 @@ id<GREYMatcher> TabGridEditCloseTabsButton();
 // Returns a matcher for the button to select all tabs.
 id<GREYMatcher> TabGridEditSelectAllButton();
 
+// Returns a matcher for the button to share tabs.
+id<GREYMatcher> TabGridEditShareButton();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_H_

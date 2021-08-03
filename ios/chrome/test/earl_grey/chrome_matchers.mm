@@ -763,4 +763,8 @@ id<GREYMatcher> TabGridEditSelectAllButton() {
   return [ChromeMatchersAppInterface tabGridEditSelectAllButton];
 }
 
+id<GREYMatcher> TabGridEditShareButton() {
+  return [ChromeMatchersAppInterface tabGridEditShareButton];
+}
+
 }  // namespace chrome_test_util

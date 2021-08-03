@@ -596,6 +596,9 @@
 // Returns a matcher for the button to select all tabs.
 + (id<GREYMatcher>)tabGridEditSelectAllButton;
 
+// Returns a matcher for the button to share tabs.
++ (id<GREYMatcher>)tabGridEditShareButton;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_APP_INTERFACE_H_
