@@ -498,7 +498,7 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
     // Ensure that the |root_from| point is correct if RTL.
     root_from.set_x(apps_grid_view->GetMirroredXInView(root_from.x()));
 
-    apps_grid_view->InitiateDrag(view, root_from, root_from);
+    view->InitiateDrag(root_from, root_from);
     current_drag_location_ = root_from;
     // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state.
     UpdateDrag(pointer, from, apps_grid_view);

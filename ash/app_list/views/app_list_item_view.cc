@@ -410,7 +410,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
       SetIcon(icon_image_);
       layer()->SetTransform(gfx::GetScaleTransform(
           GetContentsBounds().CenterPoint(), 1 / kDragDropAppIconScale));
-    } else if (grid_delegate_->IsDraggedView(this)) {
+    } else if (drag_state_ != DragState::kNone) {
       // If a drag view has been created for this icon, the item transition to
       // target bounds is handled by the apps grid view bounds animator. At the
       // end of that animation, the layer will be destroyed, causing the
@@ -436,7 +436,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   } else {
     if (is_folder_) {
       layer()->SetTransform(gfx::Transform());
-    } else if (!grid_delegate_->IsDraggedView(this)) {
+    } else if (drag_state_ == DragState::kNone) {
       // To avoid poor quality icons, update icon image with the correct scale
       // after the transform animation is completed.
       settings.AddObserver(this);
@@ -480,8 +480,46 @@ void AppListItemView::OnTouchDragTimer(
     const gfx::Point& tap_down_location,
     const gfx::Point& tap_down_root_location) {
   // Show scaled up app icon to indicate draggable state.
-  grid_delegate_->InitiateDrag(this, tap_down_location, tap_down_root_location);
+  if (!InitiateDrag(tap_down_location, tap_down_root_location))
+    return;
   SetTouchDragging(true);
+}
+
+bool AppListItemView::InitiateDrag(const gfx::Point& location,
+                                   const gfx::Point& root_location) {
+  if (!grid_delegate_->InitiateDrag(
+          this, location, root_location,
+          base::BindOnce(&AppListItemView::OnDragStarted,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&AppListItemView::OnDragEnded,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return false;
+  }
+  drag_state_ = DragState::kInitialized;
+  return true;
+}
+
+void AppListItemView::OnDragStarted() {
+  DCHECK_EQ(DragState::kInitialized, drag_state_);
+
+  mouse_drag_timer_.Stop();
+  touch_drag_timer_.Stop();
+  drag_state_ = DragState::kStarted;
+  SetUIState(UI_STATE_DRAGGING);
+  CancelContextMenu();
+}
+
+void AppListItemView::OnDragEnded() {
+  DCHECK_NE(drag_state_, DragState::kNone);
+
+  mouse_dragging_ = false;
+  mouse_drag_timer_.Stop();
+
+  touch_dragging_ = false;
+  touch_drag_timer_.Stop();
+
+  SetUIState(UI_STATE_NORMAL);
+  drag_state_ = DragState::kNone;
 }
 
 void AppListItemView::CancelContextMenu() {
@@ -490,12 +528,6 @@ void AppListItemView::CancelContextMenu() {
 
   menu_close_initiated_from_drag_ = true;
   context_menu_->Cancel();
-}
-
-void AppListItemView::OnDragEnded() {
-  mouse_drag_timer_.Stop();
-  touch_drag_timer_.Stop();
-  SetUIState(UI_STATE_NORMAL);
 }
 
 gfx::Point AppListItemView::GetDragImageOffset() {
@@ -577,7 +609,7 @@ void AppListItemView::OnContextMenuModelReceived(
   // to complete. If a menu is shown after the icon has moved, |grid_delegate_|
   // gets put in a bad state because the context menu begins to receive drag
   // events, interrupting the app icon drag.
-  if (grid_delegate_->IsDragViewMoved(*this))
+  if (drag_state_ == DragState::kStarted)
     return;
 
   menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
@@ -642,7 +674,7 @@ bool AppListItemView::ShouldEnterPushedState(const ui::Event& event) {
 }
 
 void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
-  if (grid_delegate_->IsDraggedView(this))
+  if (drag_state_ != DragState::kNone)
     return;
 
   // TODO(ginko) focus and selection should be unified.
@@ -694,13 +726,12 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
   if (!ShouldEnterPushedState(event))
     return true;
 
-  grid_delegate_->InitiateDrag(this, event.location(), event.root_location());
+  if (!InitiateDrag(event.location(), event.root_location()))
+    return true;
 
-  if (grid_delegate_->IsDraggedView(this)) {
-    mouse_drag_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kMouseDragUIDelayInMs),
-        this, &AppListItemView::OnMouseDragTimer);
-  }
+  mouse_drag_timer_.Start(
+      FROM_HERE, base::TimeDelta::FromMilliseconds(kMouseDragUIDelayInMs), this,
+      &AppListItemView::OnMouseDragTimer);
   return true;
 }
 
@@ -749,7 +780,7 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   SetMouseDragging(false);
 
   // EndDrag may delete |this|.
-  grid_delegate_->EndDrag(false /*cancel*/);
+  grid_delegate_->EndDrag(/*cancel=*/false);
 }
 
 void AppListItemView::OnMouseCaptureLost() {
@@ -757,12 +788,12 @@ void AppListItemView::OnMouseCaptureLost() {
   SetMouseDragging(false);
 
   // EndDrag may delete |this|.
-  grid_delegate_->EndDrag(true /*cancel*/);
+  grid_delegate_->EndDrag(/*cancel=*/true);
 }
 
 bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
   Button::OnMouseDragged(event);
-  if (grid_delegate_->IsDraggedView(this) && mouse_dragging_) {
+  if (drag_state_ != DragState::kNone && mouse_dragging_) {
     // Update the drag location of the drag proxy if it has been created.
     // If the drag is no longer happening, it could be because this item
     // got removed, in which case this item has been destroyed. So, bail out
@@ -774,13 +805,6 @@ bool AppListItemView::OnMouseDragged(const ui::MouseEvent& event) {
 
   if (!grid_delegate_->IsSelectedView(this))
     grid_delegate_->ClearSelectedView();
-
-  // Show dragging UI when it's confirmed without waiting for the timer.
-  if (ui_state_ != UI_STATE_DRAGGING && grid_delegate_->IsDragging() &&
-      grid_delegate_->IsDraggedView(this)) {
-    mouse_drag_timer_.Stop();
-    SetUIState(UI_STATE_DRAGGING);
-  }
   return true;
 }
 
@@ -806,7 +830,6 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (touch_dragging_) {
-        CancelContextMenu();
         grid_delegate_->StartDragAndDropHostDragAfterLongPress();
         event->SetHandled();
       } else {
@@ -814,7 +837,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (touch_dragging_ && grid_delegate_->IsDraggedView(this)) {
+      if (touch_dragging_ && drag_state_ != DragState::kNone) {
         grid_delegate_->UpdateDragFromItem(/*is_touch=*/true, *event);
         event->SetHandled();
       }
@@ -1001,10 +1024,6 @@ void AppListItemView::SetIconVisible(bool visible) {
   icon_->SetVisible(visible);
 }
 
-void AppListItemView::SetDragUIState() {
-  SetUIState(UI_STATE_DRAGGING);
-}
-
 void AppListItemView::EnterCardifyState() {
   in_cardified_grid_ = true;
   gfx::FontList font_size = GetAppListConfig().app_title_font();
@@ -1017,10 +1036,6 @@ void AppListItemView::ExitCardifyState() {
   title_->SetFontList(GetAppListConfig().app_title_font());
   ScaleIconImmediatly(1.0f);
   in_cardified_grid_ = false;
-}
-
-void AppListItemView::SetNormalUIState() {
-  SetUIState(UI_STATE_NORMAL);
 }
 
 // static

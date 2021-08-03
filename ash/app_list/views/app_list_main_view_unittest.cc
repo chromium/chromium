@@ -39,6 +39,8 @@ namespace {
 
 const int kInitialItems = 2;
 
+}  // namespace
+
 class AppListMainViewTest : public views::ViewsTestBase,
                             public testing::WithParamInterface<bool> {
  public:
@@ -118,7 +120,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
     gfx::Point root_window_point = point;
     views::View::ConvertPointToWidget(grid_view, &root_window_point);
 
-    grid_view->InitiateDrag(view, root_window_point, point);
+    view->InitiateDrag(point, root_window_point);
     return view;
   }
 
@@ -134,7 +136,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
     gfx::Point root_window_point = point;
     views::View::ConvertPointToWidget(grid_view, &root_window_point);
 
-    ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, root_window_point, point,
+    ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, point, root_window_point,
                               ui::EventTimeForNow(), 0, 0);
 
     grid_view->UpdateDragFromItem(pointer, drag_event);
@@ -247,8 +249,6 @@ class AppListMainViewTest : public views::ViewsTestBase,
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
-
-}  // namespace
 
 // Tests that the close button becomes invisible after close button is clicked.
 TEST_F(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {

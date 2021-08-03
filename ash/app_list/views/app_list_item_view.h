@@ -40,6 +40,11 @@ class AppListItem;
 class AppListMenuModelAdapter;
 class AppListViewDelegate;
 
+namespace test {
+class AppsGridViewDragAndDropTestBase;
+class AppListMainViewTest;
+}  // namespace test
+
 // An application icon and title. Commonly part of the AppsGridView, but may be
 // used in other contexts. Supports dragging and keyboard selection via the
 // GridDelegate interface.
@@ -64,20 +69,30 @@ class ASH_EXPORT AppListItemView : public views::Button,
     virtual void ClearSelectedView() = 0;
     virtual bool IsSelectedView(const AppListItemView* view) const = 0;
 
-    virtual void InitiateDrag(AppListItemView* view,
+    // Registers `view` as a dragged item with the apps grid. Called when the
+    // user presses the mouse, or starts touch interaction with the view (both
+    // of which may transition into a drag operation).
+    // `location` - The pointer location in the view's bounds.
+    // `root_location` - The pointer location in the root window coordinates.
+    // `drag_start_callback` - Callback that gets called when the mouse/touch
+    //     interaction transitions into a drag (i.e. when the "drag" item starts
+    //     moving.
+    //  `drag_end_callback` - Callback that gets called when drag interaction
+    //     ends.
+    //  Returns whether `view` has been registered as a dragged view. Callbacks
+    //  should be ignored if the method returns false. If the method returns
+    //  true, it's expected to eventually run `drag_end_callback`.
+    virtual bool InitiateDrag(AppListItemView* view,
                               const gfx::Point& location,
-                              const gfx::Point& root_location) = 0;
+                              const gfx::Point& root_location,
+                              base::OnceClosure drag_start_callback,
+                              base::OnceClosure drag_end_callback) = 0;
     virtual void StartDragAndDropHostDragAfterLongPress() = 0;
     // Called from AppListItemView when it receives a drag event. Returns true
     // if the drag is still happening.
     virtual bool UpdateDragFromItem(bool is_touch,
                                     const ui::LocatedEvent& event) = 0;
     virtual void EndDrag(bool cancel) = 0;
-    virtual bool IsDragging() const = 0;
-    virtual bool IsDraggedView(const AppListItemView* view) const = 0;
-
-    // Whether |view| is being dragged and is not in its drag start position.
-    virtual bool IsDragViewMoved(const AppListItemView& view) const = 0;
 
     // Provided as a callback for AppListItemView to notify of activation via
     // press/click/return key.
@@ -109,7 +124,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void CancelContextMenu();
 
-  void OnDragEnded();
   gfx::Point GetDragImageOffset();
 
   void SetAsAttemptedFolderTarget(bool is_target_folder);
@@ -140,11 +154,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Sets the icon's visibility.
   void SetIconVisible(bool visible);
-
-  // Sets UI state to dragging state.
-  void SetDragUIState();
-  // Sets UI state to normal state.
-  void SetNormalUIState();
 
   // Handles the icon's scaling and animation for a cardified grid.
   void EnterCardifyState();
@@ -199,6 +208,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
 
  private:
+  friend class test::AppsGridViewDragAndDropTestBase;
+  friend class test::AppListMainViewTest;
+
   class IconImageView;
   class AppNotificationIndicatorView;
 
@@ -206,6 +218,24 @@ class ASH_EXPORT AppListItemView : public views::Button,
     UI_STATE_NORMAL,              // Normal UI (icon + label)
     UI_STATE_DRAGGING,            // Dragging UI (scaled icon only)
     UI_STATE_DROPPING_IN_FOLDER,  // Folder dropping preview UI
+  };
+
+  // Describes the app list item view drag state.
+  enum class DragState {
+    // Item is not being dragged.
+    kNone,
+
+    // Drag is initialized for the item (the owning apps grid considers the view
+    // to be the dragged view), but the item is still not being dragged.
+    // Depending on mouse/touch drag timers, UI may be in either normal, or
+    // dragging state.
+    kInitialized,
+
+    // The item drag is in progress. While in this state, the owning apps grid
+    // view will generally hide the item view, and replace it with a drag icon
+    // widget. The UI should be in dragging state (scaled up and with title
+    // hidden).
+    kStarted,
   };
 
   // gfx::AnimationDelegate:
@@ -241,6 +271,18 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Invoked when |touch_drag_timer_| fires to show dragging UI.
   void OnTouchDragTimer(const gfx::Point& tap_down_location,
                         const gfx::Point& tap_down_root_location);
+
+  // Registers this view as a dragged view with the grid delegate.
+  bool InitiateDrag(const gfx::Point& location,
+                    const gfx::Point& root_location);
+
+  // Called when the drag registered for this view starts moving.
+  // `drag_start_callback` passed to `GridDelegate::InitiateDrag()`.
+  void OnDragStarted();
+
+  // Called when the drag registered for this view ends.
+  // `drag_end_callback` passed to `GridDelegate::InitiateDrag()`.
+  void OnDragEnded();
 
   // Callback invoked when a context menu is received after calling
   // |AppListViewDelegate::GetContextMenuModel|.
@@ -353,6 +395,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // The bitmap image for this app list item.
   gfx::ImageSkia icon_image_;
+
+  // The current item's drag state.
+  DragState drag_state_ = DragState::kNone;
 
   // The scaling factor for displaying the app icon.
   float icon_scale_ = 1.0f;

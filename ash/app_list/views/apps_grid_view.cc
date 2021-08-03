@@ -445,12 +445,17 @@ bool AppsGridView::IsSelectedView(const AppListItemView* view) const {
   return selected_view_ == view;
 }
 
-void AppsGridView::InitiateDrag(AppListItemView* view,
+bool AppsGridView::InitiateDrag(AppListItemView* view,
                                 const gfx::Point& location,
-                                const gfx::Point& root_location) {
+                                const gfx::Point& root_location,
+                                base::OnceClosure drag_start_callback,
+                                base::OnceClosure drag_end_callback) {
   DCHECK(view);
   if (drag_view_ || pulsing_blocks_model_.view_size())
-    return;
+    return false;
+
+  drag_start_callback_ = std::move(drag_start_callback);
+  drag_end_callback_ = std::move(drag_end_callback);
 
   // Finalize previous drag icon animation if it's still in progress.
   drag_view_hider_.reset();
@@ -469,6 +474,7 @@ void AppsGridView::InitiateDrag(AppListItemView* view,
   reorder_placeholder_ = drag_view_init_index_;
   ExtractDragLocation(root_location, &drag_start_grid_view_);
   drag_view_start_ = gfx::Point(drag_view_->x(), drag_view_->y());
+  return true;
 }
 
 void AppsGridView::StartDragAndDropHostDragAfterLongPress() {
@@ -488,6 +494,9 @@ void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
 
   if (!dragging_for_reparent_item_)
     StartDragAndDropHostDrag();
+
+  if (drag_start_callback_)
+    std::move(drag_start_callback_).Run();
 }
 
 bool AppsGridView::UpdateDragFromItem(bool is_touch,
@@ -750,7 +759,6 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   gfx::Point converted_origin = drag_view_rect.origin();
   ConvertPointToTarget(this, items_container_, &converted_origin);
   drag_view_->SetBoundsRect(gfx::Rect(converted_origin, drag_view_rect.size()));
-  drag_view_->SetDragUIState();  // Hide the title of the drag_view_.
 
   // Hide the drag_view_ for drag icon proxy when a native drag is responsible
   // for showing the icon.
@@ -791,10 +799,6 @@ bool AppsGridView::IsDraggedView(const AppListItemView* view) const {
   return drag_view_ == view;
 }
 
-bool AppsGridView::IsDragViewMoved(const AppListItemView& view) const {
-  return IsDraggedView(&view) && drag_view_start_ != view.origin();
-}
-
 void AppsGridView::ClearDragState() {
   current_ghost_location_ = GridIndex();
   last_folder_dropping_a11y_event_location_ = GridIndex();
@@ -810,7 +814,6 @@ void AppsGridView::ClearDragState() {
     host_drag_start_timer_.AbandonAndStop();
 
   if (drag_view_) {
-    drag_view_->OnDragEnded();
     if (IsDraggingForReparentInRootLevelGridView()) {
       const int drag_view_index = view_model_.GetIndexOfView(drag_view_);
       CHECK_EQ(view_model_.view_size() - 1, drag_view_index);
@@ -820,6 +823,10 @@ void AppsGridView::ClearDragState() {
   drag_view_ = nullptr;
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
+
+  drag_start_callback_.Reset();
+  if (drag_end_callback_)
+    std::move(drag_end_callback_).Run();
 }
 
 void AppsGridView::SetDragAndDropHostOfCurrentAppList(
@@ -1748,7 +1755,6 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     // By setting |drag_view_| to nullptr here, we prevent ClearDragState() from
     // cleaning up the newly created AppListItemView, effectively claiming
     // ownership of the newly created drag view.
-    drag_view_->OnDragEnded();
     released_drag_view = drag_view_;
     drag_view_ = nullptr;
   }

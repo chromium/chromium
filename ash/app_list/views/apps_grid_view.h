@@ -145,16 +145,18 @@ class ASH_EXPORT AppsGridView : public views::View,
   void SetSelectedView(AppListItemView* view) override;
   void ClearSelectedView() override;
   bool IsSelectedView(const AppListItemView* view) const override;
-  void InitiateDrag(AppListItemView* view,
+  bool InitiateDrag(AppListItemView* view,
                     const gfx::Point& location,
-                    const gfx::Point& root_location) override;
+                    const gfx::Point& root_location,
+                    base::OnceClosure drag_start_callback,
+                    base::OnceClosure drag_end_callback) override;
   void StartDragAndDropHostDragAfterLongPress() override;
   bool UpdateDragFromItem(bool is_touch,
                           const ui::LocatedEvent& event) override;
   void EndDrag(bool cancel) override;
-  bool IsDragging() const override;
-  bool IsDraggedView(const AppListItemView* view) const override;
-  bool IsDragViewMoved(const AppListItemView& view) const override;
+
+  bool IsDragging() const;
+  bool IsDraggedView(const AppListItemView* view) const;
 
   void ClearDragState();
 
@@ -425,6 +427,17 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Subclasses need non-const access.
   AppListItemView* drag_view_ = nullptr;
+
+  // If set, a callback called when the dragged item starts moving during a drag
+  // (i.e. when the drag icon proxy gets created).
+  // Registered in `InitiateDrag()`
+  base::OnceClosure drag_start_callback_;
+
+  // If set, a callback called when an item drag ends, and drag state is
+  // cleared. It may get called before the drag icon proxy drop animation
+  // finishes.
+  // Registered in `InitiateDrag()`.
+  base::OnceClosure drag_end_callback_;
 
   // If app item drag is in progress, the icon proxy created for the app list
   // item.

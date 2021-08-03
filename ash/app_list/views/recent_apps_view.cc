@@ -114,22 +114,19 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   bool IsSelectedView(const AppListItemView* view) const override {
     return view == selected_view_;
   }
-  void InitiateDrag(AppListItemView* view,
+  bool InitiateDrag(AppListItemView* view,
                     const gfx::Point& location,
-                    const gfx::Point& root_location) override {}
+                    const gfx::Point& root_location,
+                    base::OnceClosure drag_start_callback,
+                    base::OnceClosure drag_end_callback) override {
+    return false;
+  }
   void StartDragAndDropHostDragAfterLongPress() override {}
   bool UpdateDragFromItem(bool is_touch,
                           const ui::LocatedEvent& event) override {
     return false;
   }
   void EndDrag(bool cancel) override {}
-  bool IsDragging() const override { return false; }
-  bool IsDraggedView(const AppListItemView* view) const override {
-    return false;
-  }
-  bool IsDragViewMoved(const AppListItemView& view) const override {
-    return false;
-  }
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override {
     // TODO(crbug.com/1216594): Add a new launch type for "recent apps".
