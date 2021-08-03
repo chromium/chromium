@@ -134,7 +134,6 @@ DetachedResourceRequest::DetachedResourceRequest(
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   resource_request->do_not_prompt_for_login = true;
   resource_request->enable_load_timing = false;
-  resource_request->report_raw_headers = false;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);

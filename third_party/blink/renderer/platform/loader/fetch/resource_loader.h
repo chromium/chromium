@@ -133,7 +133,7 @@ class PLATFORM_EXPORT ResourceLoader final
                           network::mojom::ReferrerPolicy new_referrer_policy,
                           const WebString& new_method,
                           const WebURLResponse& passed_redirect_response,
-                          bool& report_raw_headers,
+                          bool& has_devtools_request_id,
                           std::vector<std::string>* removed_headers) override;
   void DidSendData(uint64_t bytes_sent,
                    uint64_t total_bytes_to_be_sent) override;

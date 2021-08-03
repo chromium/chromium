@@ -35,7 +35,6 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_load_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -482,15 +481,6 @@ ResourceLoadTiming* ResourceResponse::GetResourceLoadTiming() const {
 void ResourceResponse::SetResourceLoadTiming(
     scoped_refptr<ResourceLoadTiming> resource_load_timing) {
   resource_load_timing_ = std::move(resource_load_timing);
-}
-
-scoped_refptr<ResourceLoadInfo> ResourceResponse::GetResourceLoadInfo() const {
-  return resource_load_info_.get();
-}
-
-void ResourceResponse::SetResourceLoadInfo(
-    scoped_refptr<ResourceLoadInfo> load_info) {
-  resource_load_info_ = std::move(load_info);
 }
 
 void ResourceResponse::SetCTPolicyCompliance(CTPolicyCompliance compliance) {

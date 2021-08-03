@@ -217,7 +217,6 @@ source_set("blink_headers") {
     "platform/web_graphics_context_3d_provider.h",
     "platform/web_http_body.h",
     "platform/web_http_header_visitor.h",
-    "platform/web_http_load_info.h",
     "platform/web_icon_sizes_parser.h",
     "platform/web_image_generator.h",
     "platform/web_impression.h",

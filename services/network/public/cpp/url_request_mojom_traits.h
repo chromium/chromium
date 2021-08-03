@@ -253,9 +253,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static int32_t transition_type(const network::ResourceRequest& request) {
     return request.transition_type;
   }
-  static bool report_raw_headers(const network::ResourceRequest& request) {
-    return request.report_raw_headers;
-  }
   static int32_t previews_state(const network::ResourceRequest& request) {
     return request.previews_state;
   }

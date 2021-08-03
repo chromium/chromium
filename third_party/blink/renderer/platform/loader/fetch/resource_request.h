@@ -236,13 +236,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     report_upload_progress_ = report_upload_progress;
   }
 
-  // Whether actual headers being sent/received should be collected and reported
-  // for the request.
-  bool ReportRawHeaders() const { return report_raw_headers_; }
-  void SetReportRawHeaders(bool report_raw_headers) {
-    report_raw_headers_ = report_raw_headers;
-  }
-
   // True if request was user initiated.
   bool HasUserGesture() const { return has_user_gesture_; }
   void SetHasUserGesture(bool);
@@ -561,7 +554,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   HTTPHeaderMap http_header_fields_;
   bool allow_stored_credentials_ : 1;
   bool report_upload_progress_ : 1;
-  bool report_raw_headers_ : 1;
   bool has_user_gesture_ : 1;
   bool has_text_fragment_token_ : 1;
   bool download_to_blob_ : 1;

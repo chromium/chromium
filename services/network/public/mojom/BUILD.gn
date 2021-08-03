@@ -172,7 +172,6 @@ mojom("url_loader_base") {
     "early_hints.mojom",
     "fetch_api.mojom",
     "http_raw_headers.mojom",
-    "http_raw_request_response_info.mojom",
     "http_request_headers.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",

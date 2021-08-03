@@ -93,7 +93,7 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
       const network::ResourceRequest& request)
       : client_(std::move(client)),
         url_(request.url),
-        devtools_enabled_(request.report_raw_headers) {
+        devtools_enabled_(request.devtools_request_id.has_value()) {
     if (!devtools_enabled_)
       return;
     AddDevToolsCallback(

@@ -235,14 +235,6 @@ void WebURLRequest::SetReportUploadProgress(bool report_upload_progress) {
   resource_request_->SetReportUploadProgress(report_upload_progress);
 }
 
-void WebURLRequest::SetReportRawHeaders(bool report_raw_headers) {
-  resource_request_->SetReportRawHeaders(report_raw_headers);
-}
-
-bool WebURLRequest::ReportRawHeaders() const {
-  return resource_request_->ReportRawHeaders();
-}
-
 mojom::blink::RequestContextType WebURLRequest::GetRequestContext() const {
   return resource_request_->GetRequestContext();
 }

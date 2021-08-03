@@ -81,7 +81,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_load_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -804,22 +803,9 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   if (response.IsNull())
     return nullptr;
 
-  int status;
-  String status_text;
-  if (response.GetResourceLoadInfo() &&
-      response.GetResourceLoadInfo()->http_status_code) {
-    status = response.GetResourceLoadInfo()->http_status_code;
-    status_text = response.GetResourceLoadInfo()->http_status_text;
-  } else {
-    status = response.HttpStatusCode();
-    status_text = response.HttpStatusText();
-  }
-  HTTPHeaderMap headers_map;
-  if (response.GetResourceLoadInfo() &&
-      response.GetResourceLoadInfo()->response_headers.size())
-    headers_map = response.GetResourceLoadInfo()->response_headers;
-  else
-    headers_map = response.HttpHeaderFields();
+  int status = response.HttpStatusCode();
+  String status_text = response.HttpStatusText();
+  HTTPHeaderMap headers_map = response.HttpHeaderFields();
 
   int64_t encoded_data_length = response.EncodedDataLength();
 
@@ -883,21 +869,6 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   if (response.GetResourceLoadTiming())
     response_object->setTiming(
         BuildObjectForTiming(*response.GetResourceLoadTiming()));
-
-  if (response.GetResourceLoadInfo()) {
-    if (!response.GetResourceLoadInfo()->response_headers_text.IsEmpty()) {
-      response_object->setHeadersText(
-          response.GetResourceLoadInfo()->response_headers_text);
-    }
-    if (response.GetResourceLoadInfo()->request_headers.size()) {
-      response_object->setRequestHeaders(BuildObjectForHeaders(
-          response.GetResourceLoadInfo()->request_headers));
-    }
-    if (!response.GetResourceLoadInfo()->request_headers_text.IsEmpty()) {
-      response_object->setRequestHeadersText(
-          response.GetResourceLoadInfo()->request_headers_text);
-    }
-  }
 
   const net::IPEndPoint& remote_ip_endpoint = response.RemoteIPEndpoint();
   if (remote_ip_endpoint.address().IsValid()) {
@@ -1220,8 +1191,6 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
       }
     }
   }
-
-  request.SetReportRawHeaders(true);
 
   if (cache_disabled_.Get()) {
     if (LoadsFromCacheOnly(request) &&

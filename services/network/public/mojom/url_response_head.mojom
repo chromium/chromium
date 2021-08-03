@@ -7,7 +7,6 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/http_raw_request_response_info.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -66,11 +65,6 @@ struct URLResponseHead {
   // Detailed timing information used by the WebTiming, HAR and Developer
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
-
-  // Actual request and response headers, as obtained from the network stack.
-  // Only present if the renderer set report_raw_headers to true and had the
-  // CanReadRawCookies permission.
-  HttpRawRequestResponseInfo? raw_request_response_info;
 
   // True if the response was delivered using SPDY.
   bool was_fetched_via_spdy = false;
@@ -145,7 +139,7 @@ struct URLResponseHead {
 
   // Only provided if kURLLoadOptionSendSSLInfoWithResponse was specified to
   // the URLLoaderFactory::CreateLoaderAndStart option or
-  // if ResourceRequest::report_raw_headers is set. When set via
+  // if ResourceRequest::devtools_request_id is set. When set via
   // |report_raw_headers|, the SSLInfo is not guaranteed to be fully populated
   // and may only contain certain fields of interest (namely, connection
   // parameters and certificate information).

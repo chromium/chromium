@@ -109,7 +109,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
       network_isolation_key, frame_tree_node_id_);
   auto devtools_proxy = std::make_unique<SignedExchangeDevToolsProxy>(
       request.url, response_head->Clone(), frame_tree_node_id_,
-      devtools_navigation_token_, request.report_raw_headers);
+      devtools_navigation_token_, request.devtools_request_id.has_value());
   signed_exchange_loader_ = std::make_unique<SignedExchangeLoader>(
       request, std::move(*response_head), std::move(*response_body),
       std::move(client), url_loader->Unbind(), url_loader_options_,

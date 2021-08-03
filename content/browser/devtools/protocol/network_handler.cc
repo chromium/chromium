@@ -78,12 +78,12 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
+#include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -1713,23 +1713,6 @@ std::unique_ptr<Network::Response> BuildResponse(
     response->SetCacheStorageCacheName(info.cache_storage_cache_name);
   }
 
-  auto* raw_info = info.raw_request_response_info.get();
-  if (raw_info) {
-    if (raw_info->http_status_code) {
-      response->SetStatus(raw_info->http_status_code);
-      response->SetStatusText(raw_info->http_status_text);
-    }
-    if (raw_info->request_headers.size()) {
-      response->SetRequestHeaders(GetRawHeaders(raw_info->request_headers));
-    }
-    if (!raw_info->request_headers_text.empty()) {
-      response->SetRequestHeadersText(raw_info->request_headers_text);
-    }
-    if (raw_info->response_headers.size())
-      response->SetHeaders(GetRawHeaders(raw_info->response_headers));
-    if (!raw_info->response_headers_text.empty())
-      response->SetHeadersText(raw_info->response_headers_text);
-  }
   response->SetProtocol(GetProtocol(url, info));
   response->SetRemoteIPAddress(
       net::HostPortPair::FromIPEndPoint(info.remote_endpoint).HostForURL());

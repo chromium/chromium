@@ -39,10 +39,8 @@
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
-#include "third_party/blink/public/platform/web_http_load_info.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_load_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -123,10 +121,6 @@ void WebURLResponse::SetLoadTiming(
   timing->SetPushStart(mojo_timing.push_start);
   timing->SetPushEnd(mojo_timing.push_end);
   resource_response_->SetResourceLoadTiming(std::move(timing));
-}
-
-void WebURLResponse::SetHTTPLoadInfo(const WebHTTPLoadInfo& value) {
-  resource_response_->SetResourceLoadInfo(value);
 }
 
 base::Time WebURLResponse::ResponseTime() const {

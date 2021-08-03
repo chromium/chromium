@@ -227,7 +227,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          do_not_prompt_for_login == request.do_not_prompt_for_login &&
          is_main_frame == request.is_main_frame &&
          transition_type == request.transition_type &&
-         report_raw_headers == request.report_raw_headers &&
          previews_state == request.previews_state &&
          upgrade_if_insecure == request.upgrade_if_insecure &&
          is_revalidating == request.is_revalidating &&

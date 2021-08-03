@@ -72,7 +72,6 @@
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
-#include "third_party/blink/public/platform/web_http_load_info.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -387,13 +386,13 @@ class WebURLLoader::Context : public WebRequestPeer {
   WebURLLoader* loader_;
 
   KURL url_;
-  // Controls SetSecurityStyleAndDetails() in PopulateURLResponse(). Initially
-  // set to WebURLRequest::ReportRawHeaders() in Start() and gets updated in
-  // WillFollowRedirect() (by the InspectorNetworkAgent) while the new
-  // ReportRawHeaders() value won't be propagated to the browser process.
+  // This is set in Start() and is used by SetSecurityStyleAndDetails() to
+  // determine if security details should be added to the request for DevTools.
   //
-  // TODO(tyoshino): Investigate whether it's worth propagating the new value.
-  bool report_raw_headers_;
+  // Additionally, if there is a redirect, WillFollowRedirect() will update this
+  // for the new request. InspectorNetworkAgent will have the chance to attach a
+  // DevTools request id to that new request, and it will propagate here.
+  bool has_devtools_request_id_;
 
   WebURLLoaderClient* client_;
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
@@ -441,7 +440,7 @@ WebURLLoader::Context::Context(
     mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : loader_(loader),
-      report_raw_headers_(false),
+      has_devtools_request_id_(false),
       client_(nullptr),
       freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
       unfreezable_task_runner_handle_(
@@ -516,7 +515,7 @@ void WebURLLoader::Context::Start(
   freezable_task_runner_handle_->DidChangeRequestPriority(request->priority);
 
   url_ = KURL(request->url);
-  report_raw_headers_ = request->report_raw_headers;
+  has_devtools_request_id_ = request->devtools_request_id.has_value();
 
   // TODO(horo): Check credentials flag is unset when credentials mode is omit.
   //             Check credentials flag is set when credentials mode is include.
@@ -634,7 +633,8 @@ bool WebURLLoader::Context::OnReceivedRedirect(
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   WebURLResponse response;
-  PopulateURLResponse(url_, *head, &response, report_raw_headers_, request_id_);
+  PopulateURLResponse(url_, *head, &response, has_devtools_request_id_,
+                      request_id_);
 
   url_ = KURL(redirect_info.new_url);
   return client_->WillFollowRedirect(
@@ -642,7 +642,7 @@ bool WebURLLoader::Context::OnReceivedRedirect(
       WebString::FromUTF8(redirect_info.new_referrer),
       ReferrerUtils::NetToMojoReferrerPolicy(redirect_info.new_referrer_policy),
       WebString::FromUTF8(redirect_info.new_method), response,
-      report_raw_headers_, removed_headers);
+      has_devtools_request_id_, removed_headers);
 }
 
 void WebURLLoader::Context::OnReceivedResponse(
@@ -661,7 +661,8 @@ void WebURLLoader::Context::OnReceivedResponse(
   DCHECK(!head->headers || !head->headers->HasHeader("clear-site-data"));
 
   WebURLResponse response;
-  PopulateURLResponse(url_, *head, &response, report_raw_headers_, request_id_);
+  PopulateURLResponse(url_, *head, &response, has_devtools_request_id_,
+                      request_id_);
 
   client_->DidReceiveResponse(response);
 
@@ -859,29 +860,6 @@ void WebURLLoader::PopulateURLResponse(
     response->SetLoadTiming(ToMojoLoadTiming(head.load_timing));
   }
 
-  if (head.raw_request_response_info.get()) {
-    WebHTTPLoadInfo load_info;
-
-    load_info.SetHTTPStatusCode(
-        head.raw_request_response_info->http_status_code);
-    load_info.SetHTTPStatusText(WebString::FromLatin1(
-        head.raw_request_response_info->http_status_text));
-
-    load_info.SetRequestHeadersText(WebString::FromLatin1(
-        head.raw_request_response_info->request_headers_text));
-    load_info.SetResponseHeadersText(WebString::FromLatin1(
-        head.raw_request_response_info->response_headers_text));
-    for (auto& header : head.raw_request_response_info->request_headers) {
-      load_info.AddRequestHeader(WebString::FromLatin1(header->key),
-                                 WebString::FromLatin1(header->value));
-    }
-    for (auto& header : head.raw_request_response_info->response_headers) {
-      load_info.AddResponseHeader(WebString::FromLatin1(header->key),
-                                  WebString::FromLatin1(header->value));
-    }
-    response->SetHTTPLoadInfo(load_info);
-  }
-
   response->SetAuthChallengeInfo(head.auth_challenge_info);
   response->SetRequestIncludeCredentials(head.request_include_credentials);
 
@@ -973,7 +951,7 @@ void WebURLLoader::LoadSynchronously(
   DCHECK(!context_->client());
   context_->set_client(client);
 
-  const bool report_raw_headers = request->report_raw_headers;
+  const bool has_devtools_request_id = request->devtools_request_id.has_value();
   context_->Start(std::move(request), std::move(url_request_extra_data),
                   pass_response_pipe_to_client, no_mime_sniffing,
                   timeout_interval, &sync_load_response,
@@ -1007,7 +985,7 @@ void WebURLLoader::LoadSynchronously(
   }
 
   PopulateURLResponse(final_url, *sync_load_response.head, &response,
-                      report_raw_headers, context_->request_id());
+                      has_devtools_request_id, context_->request_id());
   encoded_data_length = sync_load_response.head->encoded_data_length;
   encoded_body_length = sync_load_response.head->encoded_body_length;
   if (sync_load_response.downloaded_blob) {

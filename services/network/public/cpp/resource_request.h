@@ -150,7 +150,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool do_not_prompt_for_login = false;
   bool is_main_frame = false;
   int transition_type = 0;
-  bool report_raw_headers = false;
   int previews_state = 0;
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;

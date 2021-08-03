@@ -540,7 +540,6 @@ component("platform") {
     "exported/web_font.cc",
     "exported/web_font_description.cc",
     "exported/web_http_body.cc",
-    "exported/web_http_load_info.cc",
     "exported/web_icon_sizes_parser.cc",
     "exported/web_image_generator.cc",
     "exported/web_media_player_client.cc",

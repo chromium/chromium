@@ -200,11 +200,14 @@ void ConnectivityCheckerImpl::CheckInternal() {
   resource_request->url = GURL(*connectivity_check_url_);
   resource_request->method = "HEAD";
   resource_request->priority = net::MAXIMUM_PRIORITY;
-  // To enable ssl_info in the response.
-  resource_request->report_raw_headers = true;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  MISSING_TRAFFIC_ANNOTATION);
+
+  // To enable ssl_info in the response.
+  url_loader_->SetURLLoaderFactoryOptions(
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+      network::mojom::kURLLoadOptionSendSSLInfoForCertificateError);
 
   // Configure the loader to treat HTTP error status codes as successful loads.
   // This setting allows us to inspect the status code and log it as an error.

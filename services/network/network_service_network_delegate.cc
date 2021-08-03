@@ -96,7 +96,7 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
 
   NetworkService* network_service = network_context_->network_service();
   if (network_service) {
-    loader->SetAllowReportingRawHeaders(network_service->HasRawHeadersAccess(
+    loader->SetEnableReportingRawHeaders(network_service->HasRawHeadersAccess(
         loader->GetProcessId(), *effective_url));
   }
   return net::OK;

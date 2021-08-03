@@ -365,7 +365,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->has_user_gesture = src.HasUserGesture();
   dest->enable_load_timing = true;
   dest->enable_upload_progress = src.ReportUploadProgress();
-  dest->report_raw_headers = src.ReportRawHeaders();
   // TODO(ryansturm): Remove dest->previews_state once it is no
   // longer used in a network delegate. https://crbug.com/842233
   dest->previews_state = static_cast<int>(src.GetPreviewsState());

@@ -24,12 +24,10 @@ class TestURLLoaderFactoryTest : public testing::Test {
 
   void StartRequest(const std::string& url,
                     TestURLLoaderClient* client,
-                    int load_flags = 0,
-                    bool report_raw_headers = false) {
+                    int load_flags = 0) {
     ResourceRequest request;
     request.url = GURL(url);
     request.load_flags = load_flags;
-    request.report_raw_headers = report_raw_headers;
     loader_.reset();
     factory_.CreateLoaderAndStart(
         loader_.BindNewPipeAndPassReceiver(), 0, 0, request,
@@ -360,33 +358,6 @@ TEST_F(TestURLLoaderFactoryTest, SimulateResponseNoRawHeadersByDefault) {
   EXPECT_TRUE(factory()->SimulateResponseForPendingRequest(
       GURL(url), ok_status, std::move(response_head), /*content=*/""));
   EXPECT_TRUE(client()->has_received_completion());
-  EXPECT_FALSE(client()->response_head()->raw_request_response_info);
-}
-
-TEST_F(TestURLLoaderFactoryTest, SimulateResponseReportRawHeaders) {
-  std::string url = "http://foo/";
-  std::string cookie_line = "my_cookie=myvalue";
-
-  TestURLLoaderClient client;
-  StartRequest(url, &client, /*load_flags=*/0, /*report_raw_headers=*/true);
-  network::URLLoaderCompletionStatus ok_status(net::OK);
-  mojom::URLResponseHeadPtr response_head =
-      CreateURLResponseHead(net::HTTP_NOT_FOUND, /*report_raw_headers=*/true);
-  AddCookiesToURLResponseHead({cookie_line}, response_head.get());
-  EXPECT_TRUE(factory()->SimulateResponseForPendingRequest(
-      GURL(url), ok_status, std::move(response_head), /*content=*/"hello"));
-  EXPECT_TRUE(client.has_received_completion());
-  auto& raw_response_info = client.response_head()->raw_request_response_info;
-  ASSERT_TRUE(raw_response_info);
-  EXPECT_EQ(net::HTTP_NOT_FOUND, raw_response_info->http_status_code);
-  auto& headers = raw_response_info->response_headers;
-  int cookie_count = 0;
-  for (auto iter = headers.begin(); iter != headers.end(); ++iter) {
-    if ((*iter)->key == "Set-Cookie") {
-      cookie_count++;
-      EXPECT_EQ(cookie_line, (*iter)->value);
-    }
-  }
 }
 
 TEST_F(TestURLLoaderFactoryTest,

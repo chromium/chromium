@@ -7081,6 +7081,8 @@ crbug.com/1218431 [ Fuchsia ] virtual/file-system-access-access-handle/external/
 crbug.com/1218431 [ Mac ] virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-close.https.tentative.worker.html [ Failure Pass ]
 crbug.com/1218431 [ Mac ] virtual/file-system-access-access-handle/external/wpt/file-system-access/sandboxed_FileSystemSyncAccessHandle-truncate.https.tentative.worker.html [ Failure Pass ]
 
+crbug.com/1017836 http/tests/devtools/network/warning-for-long-cookie.js [ Timeout ]
+
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
 

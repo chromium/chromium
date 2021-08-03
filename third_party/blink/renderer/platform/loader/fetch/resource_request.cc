@@ -88,7 +88,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       http_method_(http_names::kGET),
       allow_stored_credentials_(true),
       report_upload_progress_(false),
-      report_raw_headers_(false),
       has_user_gesture_(false),
       has_text_fragment_token_(false),
       download_to_blob_(false),

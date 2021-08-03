@@ -233,7 +233,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return url_loader_factory_;
   }
 
-  void SetAllowReportingRawHeaders(bool allow);
+  void SetEnableReportingRawHeaders(bool enable);
 
   mojom::LoadInfoPtr CreateLoadInfo();
 
@@ -466,10 +466,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       resource_scheduler_request_handle_;
 
-  // Whether client requested raw headers.
-  const bool want_raw_headers_;
-  // Whether we actually should report them.
-  bool report_raw_headers_ = false;
+  bool enable_reporting_raw_headers_ = false;
   net::HttpRawRequestHeaders raw_request_headers_;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 

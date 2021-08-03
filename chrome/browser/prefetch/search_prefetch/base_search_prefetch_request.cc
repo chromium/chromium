@@ -144,10 +144,6 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   // navigation, the request is relatively high priority.
   resource_request->priority = net::MEDIUM;
   resource_request->url = prefetch_url_;
-  // Search prefetch URL Loaders should check |report_raw_headers| on the
-  // intercepted request to clear out the raw headers when |report_raw_headers|
-  // is false.
-  resource_request->report_raw_headers = true;
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->method = "GET";

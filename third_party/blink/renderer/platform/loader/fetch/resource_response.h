@@ -51,7 +51,6 @@
 namespace blink {
 
 class ResourceLoadTiming;
-struct ResourceLoadInfo;
 
 // A ResourceResponse is a "response" object used in blink. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-response, but it contains
@@ -268,9 +267,6 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   ResourceLoadTiming* GetResourceLoadTiming() const;
   void SetResourceLoadTiming(scoped_refptr<ResourceLoadTiming>);
-
-  scoped_refptr<ResourceLoadInfo> GetResourceLoadInfo() const;
-  void SetResourceLoadInfo(scoped_refptr<ResourceLoadInfo>);
 
   HTTPVersion HttpVersion() const { return http_version_; }
   void SetHttpVersion(HTTPVersion version) { http_version_ = version; }
@@ -663,7 +659,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   absl::optional<SecurityDetails> security_details_;
 
   scoped_refptr<ResourceLoadTiming> resource_load_timing_;
-  scoped_refptr<ResourceLoadInfo> resource_load_info_;
 
   mutable CacheControlHeader cache_control_header_;
 

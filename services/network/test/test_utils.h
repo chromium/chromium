@@ -24,8 +24,7 @@ std::string GetUploadData(const network::ResourceRequest& request);
 // reported by the network stack (it's useful to report cookies, for example,
 // as they are filtered out of the net::HttpResponseHeaders when serialized).
 mojom::URLResponseHeadPtr CreateURLResponseHead(
-    net::HttpStatusCode http_status,
-    bool report_raw_headers = false);
+    net::HttpStatusCode http_status);
 
 // Adds cookies to the passed in mojom::URLResponseHead. If it was created with
 // |report_raw_headers| true, the cookies are also added to the raw headers.

@@ -197,11 +197,11 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     DCHECK(request.request_initiator);
 
     // Keep the SSLInfo only when the request is for main frame main resource,
-    // or report_raw_headers is set. Users can inspect the certificate for the
+    // or devtools_request_id is set. Users can inspect the certificate for the
     // main frame using the info bubble in Omnibox, and for the subresources in
     // DevTools' Security panel.
     if (request.destination != network::mojom::RequestDestination::kDocument &&
-        !request.report_raw_headers) {
+        !request.devtools_request_id) {
       response_->ssl_info = absl::nullopt;
     }
     UpdateRequestResponseStartTime(response_.get());
