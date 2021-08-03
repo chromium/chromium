@@ -404,9 +404,17 @@ TEST_F(TrustedVaultConnectionImplTest,
               Run(Eq(TrustedVaultRegistrationStatus::kAlreadyRegistered),
                   TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
                                               kServerConstantKeyVersion)));
-  sync_pb::JoinSecurityDomainsErrorDetail response;
-  *response.mutable_already_exists_response() = MakeJoinSecurityDomainsResponse(
-      /*current_epoch=*/kServerConstantKeyVersion);
+
+  sync_pb::JoinSecurityDomainsErrorDetail error_detail;
+  *error_detail.mutable_already_exists_response() =
+      MakeJoinSecurityDomainsResponse(
+          /*current_epoch=*/kServerConstantKeyVersion);
+
+  sync_pb::RPCStatus response;
+  sync_pb::Proto3Any* status_detail = response.add_details();
+  status_detail->set_type_url(kJoinSecurityDomainsErrorDetailTypeURL);
+  status_detail->set_value(error_detail.SerializeAsString());
+
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(
       net::HTTP_CONFLICT, response.SerializeAsString()));
 }
