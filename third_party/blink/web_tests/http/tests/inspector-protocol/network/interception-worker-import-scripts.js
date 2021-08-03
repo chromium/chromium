@@ -8,10 +8,13 @@
   const importScriptRequestWillBeSent = new Promise(resolve => {
     dp.Target.onAttachedToTarget(async event => {
       const wdp = session.createChild(event.params.sessionId).protocol;
+      wdp.Network.onRequestWillBeSent(e => {
+        if (e.params.request.url.endsWith('/final.js')) {
+          resolve(`Network.requestWillBeSent: ${e.params.request.url}`);
+        }
+      });
       await wdp.Network.enable();
       wdp.Runtime.runIfWaitingForDebugger();
-      const willBeSent = await wdp.Network.onceRequestWillBeSent();
-      resolve(`Network.requestWillBeSent: ${willBeSent.params.request.url}`);
     });
   });
 

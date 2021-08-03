@@ -12,6 +12,7 @@
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cross_origin_embedder_policy.h"
@@ -362,12 +363,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   // Set up the default network loader factory.
   bool bypass_redirect_checks = false;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      url_loader_factory_remote = CreateNetworkFactoryForSubresources(
-          ancestor_render_frame_host, &bypass_redirect_checks);
-  DCHECK(url_loader_factory_remote);
   subresource_loader_factories->pending_default_factory() =
-      std::move(url_loader_factory_remote);
+      CreateNetworkFactoryForSubresources(ancestor_render_frame_host,
+                                          &bypass_redirect_checks);
   subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
@@ -410,6 +408,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(ancestor_render_frame_host);
   DCHECK(bypass_redirect_checks);
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
@@ -424,10 +423,8 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
 
   network::mojom::ClientSecurityStatePtr client_security_state =
       ancestor_render_frame_host->BuildClientSecurityState();
-  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    client_security_state->cross_origin_embedder_policy =
-        cross_origin_embedder_policy();
-  }
+  client_security_state->cross_origin_embedder_policy =
+      cross_origin_embedder_policy();
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
@@ -450,8 +447,10 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
 
-  // TODO(nhiroki): Call devtools_instrumentation::WillCreateURLLoaderFactory()
-  // here.
+  devtools_instrumentation::WillCreateURLLoaderFactory(
+      ancestor_render_frame_host, /*is_navigation=*/false,
+      /*is_download=*/false, &default_factory_receiver,
+      &factory_params->factory_override);
 
   worker_process_host_->CreateURLLoaderFactory(
       std::move(default_factory_receiver), std::move(factory_params));
@@ -642,6 +641,8 @@ void DedicatedWorkerHost::BindSerialService(
 
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(
     StoragePartitionImpl* storage_partition_impl) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+
   auto params = network::mojom::URLLoaderFactoryParams::New();
   params->process_id = worker_process_host_->GetID();
   params->debug_tag = "DedicatedWorkerHost::ObserveNetworkServiceCrash";
@@ -660,6 +661,7 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
   DCHECK(subresource_loader_updater_.is_bound());
   DCHECK(network_service_connection_error_handler_holder_);
   DCHECK(!network_service_connection_error_handler_holder_.is_connected());
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
   auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
       worker_process_host_->GetStoragePartition());
