@@ -7651,7 +7651,6 @@ if (!is_android) {
       "//content/public/browser",
       "//extensions/buildflags",
       "//google_apis",
-      "//ppapi/shared_impl",
       "//printing/buildflags",
       "//services/device/public/cpp:test_support",
       "//skia",
@@ -7677,6 +7676,8 @@ if (!is_android) {
         "ppapi/ppapi_test_select_file_dialog_factory.cc",
         "ppapi/ppapi_test_select_file_dialog_factory.h",
       ]
+
+      deps += [ "//ppapi/shared_impl" ]
     }
 
     if (enable_extensions) {

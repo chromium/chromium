@@ -23,7 +23,6 @@
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -35,6 +34,10 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/test/fake_app_instance.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
 #endif
 
 namespace em = enterprise_management;

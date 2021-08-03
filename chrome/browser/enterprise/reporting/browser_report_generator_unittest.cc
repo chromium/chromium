@@ -25,7 +25,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device_management_backend.pb.h"
@@ -38,6 +37,10 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
+#endif
 
 namespace em = enterprise_management;
 

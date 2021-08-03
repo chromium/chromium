@@ -105,7 +105,6 @@
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
@@ -170,6 +169,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
+#endif
+
 // The blocklist tests rely on the safe-browsing database.
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
 #define ENABLE_BLOCKLIST_TESTS
@@ -178,7 +181,6 @@
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DOMStorageContext;
-using content::PluginService;
 using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
@@ -732,7 +734,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 
   void InitPluginService() {
 #if BUILDFLAG(ENABLE_PLUGINS)
-    PluginService::GetInstance()->Init();
+    content::PluginService::GetInstance()->Init();
 #endif
   }
 
@@ -7864,6 +7866,7 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
   EXPECT_FALSE(prefs->IsExtensionDisabled(good_crx));
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 // Regression test for crbug.com/460699. Ensure PluginManager doesn't crash even
 // if OnExtensionUnloaded is invoked twice in succession.
 TEST_F(ExtensionServiceTest, PluginManagerCrash) {
@@ -7880,6 +7883,7 @@ TEST_F(ExtensionServiceTest, PluginManagerCrash) {
   // redundantly for a disabled extension.
   service()->BlockAllExtensions();
 }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 class ExternalExtensionPriorityTest
     : public ExtensionServiceTest,
