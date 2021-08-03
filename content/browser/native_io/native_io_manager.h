@@ -124,13 +124,10 @@ class CONTENT_EXPORT NativeIOManager {
   void OnHostReceiverDisconnect(NativeIOHost* host,
                                 base::PassKey<NativeIOHost>);
 
-  // Callback function when DeleteStorageKeyData has completed.
+  // Called when a NativeIOHost finishes processing a data deletion request.
   //
-  // `host` must be owned by this manager.
-  void OnDeleteStorageKeyDataCompleted(
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
-      base::File::Error result,
-      NativeIOHost* host);
+  // `host` must be owned by this manager. `host` may be deleted.
+  void DidDeleteHostData(NativeIOHost* host, base::PassKey<NativeIOHost>);
 
   storage::QuotaManagerProxy* quota_manager_proxy() const {
     return quota_manager_proxy_.get();
