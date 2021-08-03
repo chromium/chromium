@@ -151,7 +151,7 @@ void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
 void AccountFetcherService::RefreshAccountInfoIfStale(
     const CoreAccountId& account_id) {
   DCHECK(network_fetches_enabled_);
-  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/false);
+  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
 }
 
 void AccountFetcherService::UpdateChildInfo() {
