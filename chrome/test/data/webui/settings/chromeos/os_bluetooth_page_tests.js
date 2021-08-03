@@ -19,7 +19,10 @@ suite('OsBluetoothPageTest', function() {
   setup(function() {
     // TODO(crbug.com/1010321): Replace this with fake_cros_bluetooth_config
     // when it is created.
-    setBluetoothConfigForTesting({observeSystemProperties: (observer) => {}});
+    setBluetoothConfigForTesting({
+      observeSystemProperties: (observer) => {},
+      setBluetoothEnabledState: (enabled) => {}
+    });
     bluetoothPage = document.createElement('os-settings-bluetooth-page');
     document.body.appendChild(bluetoothPage);
     Polymer.dom.flush();
