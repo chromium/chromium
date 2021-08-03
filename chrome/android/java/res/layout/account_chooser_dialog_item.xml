@@ -12,10 +12,7 @@
     android:minHeight="64dp"
     android:paddingStart="@dimen/account_chooser_dialog_item_margin"
     android:paddingEnd="@dimen/account_chooser_dialog_item_margin"
-    android:orientation="horizontal"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:orientation="horizontal" >
     <ImageView
         android:id="@+id/profile_image"
         android:layout_width="40dp"
