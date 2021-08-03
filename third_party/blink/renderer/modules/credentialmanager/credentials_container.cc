@@ -912,17 +912,30 @@ void OnIsUserVerifyingPlatformAuthenticatorAvailableForPaymentCredentialCreate(
 
   mojo_options->is_payment_credential_creation = true;
 
-  // Download instrument icon and prompt the user before creating the
-  // credential.
-  auto* payment_credential_remote =
-      CredentialManagerProxy::From(resolver->GetScriptState())
-          ->PaymentCredential();
-  payment_credential_remote->DownloadIconAndShowUserPrompt(
-      PaymentCredentialInstrument::New(options->instrument()->displayName(),
-                                       KURL(options->instrument()->icon())),
-      WTF::Bind(&DidDownloadPaymentCredentialIconAndShowUserPrompt,
-                std::make_unique<ScopedPromiseResolver>(resolver),
-                std::move(mojo_options), WrapPersistent(options)));
+  // SecurePaymentConfirmationAPIV3 skips downloading instrument icon and
+  // showing user prompt.
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV3Enabled()) {
+    auto* authenticator =
+        CredentialManagerProxy::From(resolver->GetScriptState())
+            ->Authenticator();
+    authenticator->MakeCredential(
+        std::move(mojo_options),
+        WTF::Bind(&OnMakePublicKeyCredentialForPaymentComplete,
+                  std::make_unique<ScopedPromiseResolver>(resolver),
+                  WrapPersistent(options)));
+  } else {
+    // Download instrument icon and prompt the user before creating the
+    // credential.
+    auto* payment_credential_remote =
+        CredentialManagerProxy::From(resolver->GetScriptState())
+            ->PaymentCredential();
+    payment_credential_remote->DownloadIconAndShowUserPrompt(
+        PaymentCredentialInstrument::New(options->instrument()->displayName(),
+                                         KURL(options->instrument()->icon())),
+        WTF::Bind(&DidDownloadPaymentCredentialIconAndShowUserPrompt,
+                  std::make_unique<ScopedPromiseResolver>(resolver),
+                  std::move(mojo_options), WrapPersistent(options)));
+  }
 }
 
 void CreatePublicKeyCredentialForPaymentCredential(

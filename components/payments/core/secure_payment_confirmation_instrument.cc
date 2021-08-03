@@ -32,9 +32,9 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
 SecurePaymentConfirmationInstrument::~SecurePaymentConfirmationInstrument() =
     default;
 
-bool SecurePaymentConfirmationInstrument::IsValid() const {
+bool SecurePaymentConfirmationInstrument::IsValid(bool is_spcv3_enabled) const {
   return !credential_id.empty() && !relying_party_id.empty() &&
-         !label.empty() && !icon.empty();
+         (is_spcv3_enabled || (!label.empty() && !icon.empty()));
 }
 
 }  // namespace payments

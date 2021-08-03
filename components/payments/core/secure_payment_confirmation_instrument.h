@@ -37,7 +37,7 @@ struct SecurePaymentConfirmationInstrument {
       const SecurePaymentConfirmationInstrument& other) = delete;
 
   // Checks instrument validity.
-  bool IsValid() const;
+  bool IsValid(bool is_spcv3_enabled) const;
 
   std::vector<uint8_t> credential_id;
   std::string relying_party_id;

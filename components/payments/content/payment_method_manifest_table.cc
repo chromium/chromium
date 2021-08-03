@@ -7,10 +7,12 @@
 #include <time.h>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_database.h"
+#include "content/public/common/content_features.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -161,7 +163,8 @@ std::vector<std::string> PaymentMethodManifestTable::GetManifest(
 
 bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
     const SecurePaymentConfirmationInstrument& instrument) {
-  if (!instrument.IsValid())
+  if (!instrument.IsValid(base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationAPIV3)))
     return false;
 
   sql::Transaction transaction(db_);
@@ -244,7 +247,8 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
     if (!s.ColumnBlobAsVector(index++, &instrument->icon))
       continue;
 
-    if (!instrument->IsValid())
+    if (!instrument->IsValid(base::FeatureList::IsEnabled(
+            features::kSecurePaymentConfirmationAPIV3)))
       continue;
 
     instruments.push_back(std::move(instrument));

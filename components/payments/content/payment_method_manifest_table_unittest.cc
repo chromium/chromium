@@ -60,7 +60,7 @@ void ExpectOneValidInstrument(
         instruments) {
   ASSERT_EQ(1U, instruments.size());
   ASSERT_NE(nullptr, instruments.back());
-  ASSERT_TRUE(instruments.back()->IsValid());
+  ASSERT_TRUE(instruments.back()->IsValid(/*is_spcv3_enabled=*/false));
   EXPECT_EQ(credential_id, instruments.back()->credential_id);
   EXPECT_EQ(relying_party_id, instruments.back()->relying_party_id);
   EXPECT_EQ(base::ASCIIToUTF16(label), instruments.back()->label);
@@ -312,7 +312,7 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   ASSERT_EQ(2U, instruments.size());
 
   ASSERT_NE(nullptr, instruments.front());
-  ASSERT_TRUE(instruments.front()->IsValid());
+  ASSERT_TRUE(instruments.front()->IsValid(/*is_spcv3_enabled=*/false));
   std::vector<uint8_t> expected_credential_id = {0, 1, 2, 3};
   EXPECT_EQ(expected_credential_id, instruments.front()->credential_id);
   EXPECT_EQ("relying-party.example", instruments.front()->relying_party_id);
@@ -321,7 +321,7 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   EXPECT_EQ(expected_icon, instruments.front()->icon);
 
   ASSERT_NE(nullptr, instruments.back());
-  ASSERT_TRUE(instruments.back()->IsValid());
+  ASSERT_TRUE(instruments.back()->IsValid(/*is_spcv3_enabled=*/false));
   expected_credential_id = {4, 5, 6, 7};
   EXPECT_EQ(expected_credential_id, instruments.back()->credential_id);
   EXPECT_EQ("relying-party.example", instruments.back()->relying_party_id);

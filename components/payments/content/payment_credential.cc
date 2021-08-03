@@ -96,9 +96,14 @@ void PaymentCredential::StorePaymentCredentialAndHideUserPrompt(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,
     StorePaymentCredentialAndHideUserPromptCallback callback) {
-  if (state_ != State::kMakingCredential || !IsCurrentStateValid() ||
-      !instrument || instrument->display_name.empty() ||
-      credential_id.empty() || rp_id.empty()) {
+  // If SPCV3 flag is enabled, state will be kIdle and display_name is optional.
+  bool is_spcv3_enabled =
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV3);
+  if ((is_spcv3_enabled && state_ != State::kIdle) ||
+      (!is_spcv3_enabled && (state_ != State::kMakingCredential ||
+                             instrument->display_name.empty())) ||
+      !IsCurrentStateValid() || !instrument || credential_id.empty() ||
+      rp_id.empty()) {
     Reset();
     std::move(callback).Run(
         mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
@@ -119,7 +124,10 @@ void PaymentCredential::StorePaymentCredentialAndHideUserPrompt(
 }
 
 void PaymentCredential::HideUserPrompt(HideUserPromptCallback callback) {
-  if (state_ == State::kMakingCredential) {
+  bool is_spcv3_enabled =
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV3);
+  if ((is_spcv3_enabled && state_ == State::kIdle) ||
+      (!is_spcv3_enabled && state_ == State::kMakingCredential)) {
     RecordFirstSystemPromptResult(
         SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled);
   } else {
@@ -212,9 +220,11 @@ bool PaymentCredential::IsCurrentStateValid() const {
 
     case State::kStoringCredential:
       return !prompt_callback_ && storage_callback_ &&
-             data_service_request_handle_ && ui_controller_ &&
-             ui_controller_token_ && !pending_icon_download_request_id_ &&
-             encoded_icon_.empty();
+             data_service_request_handle_ &&
+             (base::FeatureList::IsEnabled(
+                  features::kSecurePaymentConfirmationAPIV3) ||
+              (ui_controller_ && ui_controller_token_)) &&
+             !pending_icon_download_request_id_ && encoded_icon_.empty();
   }
 }
 

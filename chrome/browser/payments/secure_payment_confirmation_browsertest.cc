@@ -539,6 +539,9 @@ INSTANTIATE_TEST_SUITE_P(APIVersion,
 // crash.
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        WebContentsClosedDuringEnrollmentBrowserPrompt) {
+  if (GetParam() == APIVersion::kApiV3)
+    return;
+
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ObserveEnrollmentController();
@@ -581,12 +584,15 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                                 GetDefaultIconURL())));
 
   // Verify that credential id size gets recorded.
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 1U);
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectNoFunnelCount();
@@ -647,10 +653,14 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   EXPECT_EQ(1u, test_controller()->app_descriptions().size());
   EXPECT_EQ("display_name_for_instrument",
             test_controller()->app_descriptions().front().label);
+
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectNoFunnelCount();
@@ -697,10 +707,14 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
               "postToIframe($1, $2);",
               https_server()->GetURL("c.com", "/iframe_receiver.html").spec(),
               credentialIdentifier)));
+
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
@@ -757,10 +771,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
               "getTotalAmountFromClientDataWithModifierAndShowPromise($1, $2);",
               credentialIdentifier, "0.04")));
 
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
@@ -792,10 +809,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                 content::JsReplace("getTotalAmountFromClientData($1, $2);",
                                    credentialIdentifier, "0.01")));
 
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
@@ -804,6 +824,9 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        NonexistentIcon) {
+  if (GetParam() == APIVersion::kApiV3)
+    return;
+
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
@@ -866,10 +889,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 2U);
 
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 2;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          2);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 2);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 2);
   ExpectNoFunnelCount();
@@ -882,9 +908,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
 
+  std::list<Event> expected_events_ =
+      (GetParam() == APIVersion::kApiV3)
+          ? std::list<Event>{Event::AUTHENTICATOR_REQUEST}
+          : std::list<Event>{Event::ENROLLMENT_DIALOG_OPENED,
+                             Event::AUTHENTICATOR_REQUEST};
   event_waiter_ =
-      std::make_unique<autofill::EventWaiter<Event>>(std::list<Event>{
-          Event::ENROLLMENT_DIALOG_OPENED, Event::AUTHENTICATOR_REQUEST});
+      std::make_unique<autofill::EventWaiter<Event>>(expected_events_);
   ExecuteScriptAsync(
       GetActiveWebContents(),
       content::JsReplace("createPaymentCredential($1)", GetDefaultIconURL()));
@@ -896,12 +926,19 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   GetActiveWebContents()->Close();
   event_waiter_->Wait();
 
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
+  // In V3, PaymentCredential doesn't get created since the test leaves the
+  // authentication request idle, so skip this check.
+  if (GetParam() == APIVersion::kApiV2) {
+    ExpectEnrollSystemPromptResult(
+        SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled, 1);
+  }
   ExpectNoFunnelCount();
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
@@ -921,10 +958,13 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                              GetDefaultIconURL()))
           .ExtractString());
 
+  int expected_enroll_histogram_value_ =
+      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          1);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled, 1);
 
@@ -946,10 +986,12 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                                         "getTotalAmountFromClientData($1, $2);",
                                         credentialIdentifier, "0.01")));
 
+  expected_enroll_histogram_value_ = (GetParam() == APIVersion::kApiV3) ? 0 : 2;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          2);
+                          expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted, 2);
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value_);
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmation.Funnel."
       "EnrollSystemPromptResult",
@@ -977,6 +1019,9 @@ std::unique_ptr<net::test_server::HttpResponse> HangRequest(
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        WebContentsClosedDuringIconDownload) {
+  if (GetParam() == APIVersion::kApiV3)
+    return;
+
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
