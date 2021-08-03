@@ -2112,7 +2112,7 @@ TEST_F(AXPositionTest, AtEndOfParagraphWithTextPosition) {
   EXPECT_TRUE(text_position->AtEndOfParagraph());
 }
 
-TEST_F(AXPositionTest, ParagraphEdgesWithPreservedNewLine) {
+TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithPreservedNewLine) {
   // This test ensures that "At{Start|End}OfParagraph" work correctly when a
   // text position is on a preserved newline character.
   //
@@ -2268,60 +2268,6 @@ TEST_F(AXPositionTest, ParagraphEdgesWithPreservedNewLine) {
       ax::mojom::TextAffinity::kDownstream);
   EXPECT_FALSE(text_position14->AtEndOfParagraph());
   EXPECT_FALSE(text_position14->AtStartOfParagraph());
-}
-
-TEST_F(
-    AXPositionTest,
-    PreviousParagraphEndStopAtAnchorBoundaryWithConsecutiveParentChildLineBreakingObjects) {
-  // This test updates the tree structure to test a specific edge case -
-  // CreatePreviousParagraphEndPosition(), stopping at an anchor boundary,
-  // with consecutive parent-child line breaking objects.
-  // ++1 rootWebArea
-  // ++++2 staticText name="first"
-  // ++++3 genericContainer isLineBreakingObject
-  // ++++++4 genericContainer isLineBreakingObject
-  // ++++++5 staticText name="second"
-  AXNodeData root_data;
-  root_data.id = 1;
-  root_data.role = ax::mojom::Role::kRootWebArea;
-
-  AXNodeData static_text_data_a;
-  static_text_data_a.id = 2;
-  static_text_data_a.role = ax::mojom::Role::kStaticText;
-  static_text_data_a.SetName("first");
-
-  AXNodeData container_data_a;
-  container_data_a.id = 3;
-  container_data_a.role = ax::mojom::Role::kGenericContainer;
-  container_data_a.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-
-  AXNodeData container_data_b;
-  container_data_b.id = 4;
-  container_data_b.role = ax::mojom::Role::kGenericContainer;
-  container_data_b.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-
-  AXNodeData static_text_data_b;
-  static_text_data_b.id = 5;
-  static_text_data_b.role = ax::mojom::Role::kStaticText;
-  static_text_data_b.SetName("second");
-
-  root_data.child_ids = {static_text_data_a.id, container_data_a.id};
-  container_data_a.child_ids = {container_data_b.id, static_text_data_b.id};
-
-  SetTree(CreateAXTree({root_data, static_text_data_a, container_data_a,
-                        container_data_b, static_text_data_b}));
-
-  TestPositionType test_position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), root_data.id, 11 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-
-  test_position = test_position->CreatePreviousParagraphEndPosition(
-      AXBoundaryBehavior::StopAtAnchorBoundary);
-  EXPECT_TRUE(test_position->IsTextPosition());
-  EXPECT_EQ(root_data.id, test_position->anchor_id());
-  EXPECT_EQ(5, test_position->text_offset());
 }
 
 TEST_F(AXPositionTest, AtStartOrEndOfParagraphOnAListMarker) {
@@ -3110,6 +3056,254 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithEmbeddedObjectCharacter) {
       ax::mojom::TextAffinity::kDownstream);
   EXPECT_TRUE(text_position->AtEndOfParagraph());
   EXPECT_FALSE(text_position->AtStartOfParagraph());
+}
+
+TEST_F(AXPositionTest, CreateNextOrPreviousParagraphPositionWithIgnoredNodes) {
+  // When searching for a paragraph start position, we should always place the
+  // resulting position after any ignored paragraph boundary, not before it.
+  // Otherwise we are running the risk of including parts of the previous
+  // paragraph in the current paragraph, or providing inconsistent results if
+  // assistive software calls `AtStart/EndOfParagraph()` on the resulting
+  // position. We should do the same when searching for paragraph end positions.
+  // ++1 kRootWebArea isLineBreakingObject
+  // ++++2 kStaticText "First paragraph"
+  // ++++++3 kInlineTextBox "First paragraph"
+  // ++++4 kGenericContainer ignored isLineBreakingObject
+  // ++++5 kStaticText "Second paragraph"
+  // ++++++6 kInlineTextBox "Second"
+  // ++++++7 kInlineTextBox " "
+  // ++++++8 kInlineTextBox "paragraph"
+  // ++++9 kGenericContainer ignored isLineBreakingObject
+  // ++++10 kStaticText "Third paragraph"
+  // ++++++11 kInlineTextBox "Third paragraph"
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  AXNodeData static_text_data_a;
+  static_text_data_a.id = 2;
+  AXNodeData inline_text_data_a;
+  inline_text_data_a.id = 3;
+  AXNodeData ignored_container_data_a;
+  ignored_container_data_a.id = 4;
+  AXNodeData static_text_data_b;
+  static_text_data_b.id = 5;
+  AXNodeData inline_text_data_b_1;
+  inline_text_data_b_1.id = 6;
+  AXNodeData inline_text_data_b_2;
+  inline_text_data_b_2.id = 7;
+  AXNodeData inline_text_data_b_3;
+  inline_text_data_b_3.id = 8;
+  AXNodeData ignored_container_data_b;
+  ignored_container_data_b.id = 9;
+  AXNodeData static_text_data_c;
+  static_text_data_c.id = 10;
+  AXNodeData inline_text_data_c;
+  inline_text_data_c.id = 11;
+
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+  root_data.child_ids = {static_text_data_a.id, ignored_container_data_a.id,
+                         static_text_data_b.id, ignored_container_data_b.id,
+                         static_text_data_c.id};
+
+  static_text_data_a.role = ax::mojom::Role::kStaticText;
+  static_text_data_a.SetName("First paragraph");
+  static_text_data_a.child_ids = {inline_text_data_a.id};
+
+  inline_text_data_a.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_data_a.SetName("First paragraph");
+
+  ignored_container_data_a.role = ax::mojom::Role::kGenericContainer;
+  ignored_container_data_a.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  static_text_data_b.role = ax::mojom::Role::kStaticText;
+  static_text_data_b.SetName("Second paragraph");
+  static_text_data_b.child_ids = {inline_text_data_b_1.id,
+                                  inline_text_data_b_2.id,
+                                  inline_text_data_b_3.id};
+
+  inline_text_data_b_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_data_b_1.SetName("Paragraph");
+
+  inline_text_data_b_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_data_b_2.SetName(" ");
+
+  inline_text_data_b_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_data_b_3.SetName("paragraph");
+
+  ignored_container_data_b.role = ax::mojom::Role::kGenericContainer;
+  ignored_container_data_b.AddState(ax::mojom::State::kIgnored);
+  ignored_container_data_b.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  static_text_data_c.role = ax::mojom::Role::kStaticText;
+  static_text_data_c.SetName("Third paragraph");
+  static_text_data_c.child_ids = {inline_text_data_c.id};
+
+  inline_text_data_c.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_data_c.SetName("Third paragraph");
+
+  SetTree(CreateAXTree({root_data, static_text_data_a, inline_text_data_a,
+                        ignored_container_data_a, static_text_data_b,
+                        inline_text_data_b_1, inline_text_data_b_2,
+                        inline_text_data_b_3, ignored_container_data_b,
+                        static_text_data_c, inline_text_data_c}));
+
+  TestPositionType paragraph_start_position =
+      AXNodePosition::CreateTextPosition(GetTreeID(), inline_text_data_a.id,
+                                         0 /* text_offset */,
+                                         ax::mojom::TextAffinity::kDownstream);
+  paragraph_start_position =
+      paragraph_start_position->CreateNextParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_start_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_b_1.id, paragraph_start_position->anchor_id());
+  EXPECT_EQ(0, paragraph_start_position->text_offset());
+  paragraph_start_position =
+      paragraph_start_position->CreateNextParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_start_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_c.id, paragraph_start_position->anchor_id());
+  EXPECT_EQ(0, paragraph_start_position->text_offset());
+  paragraph_start_position =
+      paragraph_start_position->CreateNextParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  EXPECT_TRUE(paragraph_start_position->IsNullPosition());
+
+  paragraph_start_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_text_data_c.id, 15 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  paragraph_start_position =
+      paragraph_start_position->CreatePreviousParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_start_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_c.id, paragraph_start_position->anchor_id());
+  EXPECT_EQ(0, paragraph_start_position->text_offset());
+  paragraph_start_position =
+      paragraph_start_position->CreatePreviousParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_start_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_b_1.id, paragraph_start_position->anchor_id());
+  EXPECT_EQ(0, paragraph_start_position->text_offset());
+  paragraph_start_position =
+      paragraph_start_position->CreatePreviousParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_start_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_a.id, paragraph_start_position->anchor_id());
+  EXPECT_EQ(0, paragraph_start_position->text_offset());
+  paragraph_start_position =
+      paragraph_start_position->CreatePreviousParagraphStartPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  EXPECT_TRUE(paragraph_start_position->IsNullPosition());
+
+  TestPositionType paragraph_end_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_text_data_a.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  paragraph_end_position =
+      paragraph_end_position->CreateNextParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_end_position->IsTextPosition());
+  // TODO(nektar): Fix the next paragraph end position in a followup. It should
+  // not be on an ignored node.
+  EXPECT_EQ(ignored_container_data_a.id, paragraph_end_position->anchor_id());
+  EXPECT_EQ(0, paragraph_end_position->text_offset());
+  paragraph_end_position =
+      paragraph_end_position->CreateNextParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_end_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_b_3.id, paragraph_end_position->anchor_id());
+  // "paragraph<>".
+  EXPECT_EQ(9, paragraph_end_position->text_offset());
+  paragraph_end_position =
+      paragraph_end_position->CreateNextParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_end_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_c.id, paragraph_end_position->anchor_id());
+  // "Third paragraph<>".
+  EXPECT_EQ(15, paragraph_end_position->text_offset());
+  paragraph_end_position =
+      paragraph_end_position->CreateNextParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  EXPECT_TRUE(paragraph_end_position->IsNullPosition());
+
+  paragraph_end_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_text_data_c.id, 15 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  paragraph_end_position =
+      paragraph_end_position->CreatePreviousParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_end_position->IsTextPosition());
+  EXPECT_EQ(inline_text_data_b_3.id, paragraph_end_position->anchor_id());
+  // "paragraph<>".
+  EXPECT_EQ(9, paragraph_end_position->text_offset());
+  paragraph_end_position =
+      paragraph_end_position->CreatePreviousParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  ASSERT_TRUE(paragraph_end_position->IsTextPosition());
+  // TODO(nektar): Fix this paragraph end position in a followup patch. It
+  // should not be on an ignored node.
+  EXPECT_EQ(ignored_container_data_a.id, paragraph_end_position->anchor_id());
+  EXPECT_EQ(0, paragraph_end_position->text_offset());
+  paragraph_end_position =
+      paragraph_end_position->CreatePreviousParagraphEndPosition(
+          AXBoundaryBehavior::CrossBoundary);
+  EXPECT_TRUE(paragraph_end_position->IsNullPosition());
+}
+
+TEST_F(
+    AXPositionTest,
+    CreatePreviousParagraphEndPositionStopAtAnchorBoundaryWithConsecutiveParentChildLineBreakingObjects) {
+  // This test updates the tree structure to test a specific edge case -
+  // CreatePreviousParagraphEndPosition(), stopping at an anchor boundary,
+  // with consecutive parent-child line breaking objects.
+  // ++1 rootWebArea
+  // ++++2 staticText name="first"
+  // ++++3 genericContainer isLineBreakingObject
+  // ++++++4 genericContainer isLineBreakingObject
+  // ++++++5 staticText name="second"
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData static_text_data_a;
+  static_text_data_a.id = 2;
+  static_text_data_a.role = ax::mojom::Role::kStaticText;
+  static_text_data_a.SetName("first");
+
+  AXNodeData container_data_a;
+  container_data_a.id = 3;
+  container_data_a.role = ax::mojom::Role::kGenericContainer;
+  container_data_a.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData container_data_b;
+  container_data_b.id = 4;
+  container_data_b.role = ax::mojom::Role::kGenericContainer;
+  container_data_b.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData static_text_data_b;
+  static_text_data_b.id = 5;
+  static_text_data_b.role = ax::mojom::Role::kStaticText;
+  static_text_data_b.SetName("second");
+
+  root_data.child_ids = {static_text_data_a.id, container_data_a.id};
+  container_data_a.child_ids = {container_data_b.id, static_text_data_b.id};
+
+  SetTree(CreateAXTree({root_data, static_text_data_a, container_data_a,
+                        container_data_b, static_text_data_b}));
+
+  TestPositionType test_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_data.id, 11 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+
+  test_position = test_position->CreatePreviousParagraphEndPosition(
+      AXBoundaryBehavior::StopAtAnchorBoundary);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(root_data.id, test_position->anchor_id());
+  EXPECT_EQ(5, test_position->text_offset());
 }
 
 TEST_F(AXPositionTest, LowestCommonAncestor) {
