@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -242,13 +243,11 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
   if (item.image) {
     item_icon->SetBorder(
         views::CreateEmptyBorder(kTitleDescriptionListItemInset));
-    const SkColor icon_color =
-        views::style::GetColor(*item_icon, CONTEXT_DIALOG_BODY_TEXT_SMALL,
-                               views::style::STYLE_PRIMARY);
-    item_icon->SetImage(CreateVectorIconWithBadge(
-        *item.image, GetLayoutConstant(LOCATION_BAR_ICON_SIZE), icon_color,
-        item.has_blocked_badge ? vector_icons::kBlockedBadgeIcon
-                               : gfx::kNoneIcon));
+    item_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        *item.image, ui::NativeTheme::kColorId_LabelEnabledColor,
+        GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+        item.has_blocked_badge ? &vector_icons::kBlockedBadgeIcon
+                               : &gfx::kNoneIcon));
   }
 
   std::unique_ptr<views::View> item_contents;
