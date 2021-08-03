@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,6 +30,9 @@
 
 namespace android_webview {
 
+using AllowlistPraseStatus =
+    AwAppsPackageNamesAllowlistComponentLoaderPolicy::AllowlistPraseStatus;
+
 namespace {
 
 constexpr int kNumHash = 11;
@@ -36,6 +40,9 @@ constexpr int kNumBitsPerEntry = 16;
 constexpr char kTestAllowlistVersion[] = "123.456.789.10";
 const std::string kTestAllowlist[] = {"com.example.test", "my.fake.app",
                                       "yet.another.app"};
+constexpr char kAllowlistPraseStatusHistogramName[] =
+    "Android.WebView.Metrics.PackagesAllowList.ParseStatus";
+
 double MillisFromUnixEpoch(const base::Time& time) {
   return (time - base::Time::UnixEpoch()).InMillisecondsF();
 }
@@ -95,6 +102,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
   // Has to be init after TaskEnvironment.
   base::SequenceCheckerImpl checker_;
   base::RunLoop lookup_run_loop_;
+  base::HistogramTester histogram_tester_;
 
   absl::optional<AppPackageNameLoggingRule> allowlist_lookup_result_;
 
@@ -130,6 +138,10 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   EXPECT_TRUE(allowlist_lookup_result_.value().IsAppPackageNameAllowed());
   EXPECT_EQ(allowlist_lookup_result_.value().GetVersion(), new_version);
   EXPECT_EQ(allowlist_lookup_result_.value().GetExpiryDate(), one_day_from_now);
+
+  histogram_tester_.ExpectBucketCount(kAllowlistPraseStatusHistogramName,
+                                      AllowlistPraseStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -155,6 +167,10 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   ASSERT_TRUE(allowlist_lookup_result_.has_value());
   EXPECT_TRUE(allowlist_lookup_result_.value().IsAppPackageNameAllowed());
   EXPECT_TRUE(expected_record.IsSameAs(allowlist_lookup_result_.value()));
+
+  histogram_tester_.ExpectBucketCount(kAllowlistPraseStatusHistogramName,
+                                      AllowlistPraseStatus::kUsingCache, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -178,6 +194,10 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
   ASSERT_TRUE(allowlist_lookup_result_.has_value());
   EXPECT_EQ(allowlist_lookup_result_.value().GetVersion(), new_version);
   EXPECT_FALSE(allowlist_lookup_result_.value().IsAppPackageNameAllowed());
+
+  histogram_tester_.ExpectBucketCount(kAllowlistPraseStatusHistogramName,
+                                      AllowlistPraseStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -197,6 +217,11 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(allowlist_lookup_result_.has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      kAllowlistPraseStatusHistogramName,
+      AllowlistPraseStatus::kMissingAllowlistFile, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -217,6 +242,10 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(allowlist_lookup_result_.has_value());
+
+  histogram_tester_.ExpectBucketCount(kAllowlistPraseStatusHistogramName,
+                                      AllowlistPraseStatus::kMissingFields, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -237,6 +266,11 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(allowlist_lookup_result_.has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      kAllowlistPraseStatusHistogramName,
+      AllowlistPraseStatus::kMalformedBloomFilter, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -257,6 +291,11 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(allowlist_lookup_result_.has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      kAllowlistPraseStatusHistogramName,
+      AllowlistPraseStatus::kMalformedBloomFilter, 1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
@@ -281,6 +320,11 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(allowlist_lookup_result_.has_value());
+
+  histogram_tester_.ExpectBucketCount(kAllowlistPraseStatusHistogramName,
+                                      AllowlistPraseStatus::kExpiredAllowlist,
+                                      1);
+  histogram_tester_.ExpectTotalCount(kAllowlistPraseStatusHistogramName, 1);
 }
 
 }  // namespace android_webview
