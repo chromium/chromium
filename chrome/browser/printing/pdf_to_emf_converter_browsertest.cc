@@ -445,4 +445,22 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel3Bezier) {
                                             "bezier.emf");
 }
 
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel2Image) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2);
+  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "embedded_images.pdf",
+                                            "embedded_images_ps_level2.emf");
+}
+
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel3Image) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3);
+  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "embedded_images.pdf",
+                                            "embedded_images_ps_level3.emf");
+}
+
 }  // namespace printing
