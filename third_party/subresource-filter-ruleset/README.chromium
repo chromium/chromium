@@ -2,6 +2,7 @@ Name: EasyList
 URL: https://easylist.to/easylist/easylist.txt
 Version: 202106071325
 License: Creative Commons Attribution-ShareAlike 3.0 Unported
+License Android Compatible: yes
 License File: LICENSE
 Security Critical: no
 
