@@ -35,7 +35,7 @@ template.innerHTML = `
       <g id="change-daily">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
             xmlns="http://www.w3.org/2000/svg">>
-          <rect width="20" height="20" fill="white"/>
+          <rect width="20" height="20" fill="none"/>
           <path d="M17.4989 4.16672H19.1656V15.8334H17.4989V4.16672ZM14.1656
           4.16672H15.8322V15.8334H14.1656V4.16672ZM11.6656
           4.16672H1.66558C1.20724 4.16672 0.832245 4.54172 0.832245
@@ -54,7 +54,7 @@ template.innerHTML = `
       <g id="refresh">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
           xmlns="http://www.w3.org/2000/svg">
-          <rect width="20" height="20" fill="white"/>
+          <rect width="20" height="20" fill="none"/>
           <path d="M10 3C6.136 3 3 6.136 3 10C3 13.864 6.136 17 10 17C12.1865 17
           14.1399 15.9959 15.4239 14.4239L13.9984 12.9984C13.0852 14.2129
           11.6325 15 10 15C7.24375 15 5 12.7563 5 10C5 7.24375 7.24375 5 10
@@ -69,7 +69,7 @@ template.innerHTML = `
       <g id="layout_fill">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
           xmlns="http://www.w3.org/2000/svg">
-        <rect width="20" height="20" fill="white"/>
+        <rect width="20" height="20" fill="none"/>
         <path fill-rule="evenodd" clip-rule="evenodd" d="M3.75
         13.125H16.25V6.875L3.75 6.78571V13.125ZM2.5
         14.375H17.5V5.625H2.5V14.375ZM12.5 4.375H14.375V2.5H12.5V4.375ZM12.5
@@ -89,7 +89,7 @@ template.innerHTML = `
       <g id="layout_center">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
           xmlns="http://www.w3.org/2000/svg">
-        <rect width="20" height="20" fill="white"/>
+        <rect width="20" height="20" fill="none"/>
         <path fill-rule="evenodd" clip-rule="evenodd"
         d="M7.5 12.5H12.5V7.5H7.5V12.5ZM6.25 13.75H13.75V6.25H6.25V13.75ZM12.5
         4.375H14.375V2.5H12.5V4.375ZM11.875
