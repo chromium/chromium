@@ -5591,7 +5591,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_UPLOAD_IMAGE_FORMAT" desc="The permitted upload image format for the custom background. (On the New Tab Page)">
         *.jpeg, *.jpg, *.png
       </message>
-      <message name="IDS_NTP_CUSTOM_LINKS_NAME" desc="The title for custom link name input field on the edit shortcut dialog. (On the New Tab Page)">
+      <message name="IDS_NTP_CUSTOM_LINKS_NAME" desc="The title for custom link name input field on the edit shortcut dialog. (On the New Tab Page)" meaning="Name of an inanimate object">
         Name
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_URL" desc="The title for custom link URL input field on the edit shortcut dialog. (On the New Tab Page)">
@@ -8032,7 +8032,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COOKIES_REMOVE_LABEL" desc="The label of the 'Remove' button in the Cookies Window">
         Remove
       </message>
-      <message name="IDS_COOKIES_COOKIE_NAME_LABEL" desc="The Cookie Name label">
+      <message name="IDS_COOKIES_COOKIE_NAME_LABEL" desc="The Cookie Name label" meaning="Name of an inanimate object">
         Name
       </message>
       <message name="IDS_COOKIES_COOKIE_CONTENT_LABEL" desc="The Cookie Content label">
@@ -8586,7 +8586,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DIRECTORY_LISTING_PARENT" desc="When viewing a local directory, this is the text for a link to the parent directory.">
         [parent directory]
       </message>
-      <message name="IDS_DIRECTORY_LISTING_NAME" desc="When viewing a local directory, this is the text for the column above the filenames.">
+      <message name="IDS_DIRECTORY_LISTING_NAME" desc="When viewing a local directory, this is the text for the column above the filenames." meaning="Name of an inanimate object">
         Name
       </message>
       <message name="IDS_DIRECTORY_LISTING_SIZE" desc="When viewing a local directory, this is the text for the column above the file sizes.">
