@@ -50,6 +50,7 @@ group("chromium_providers") {
     ":chromium_provider_factory",
 
     # The individual API implementations.
+    "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
     "//ios/chrome/browser/providers/lens:chromium_lens",
     "//ios/chrome/browser/providers/modals:chromium_modals",

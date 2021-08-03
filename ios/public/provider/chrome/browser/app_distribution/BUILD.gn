@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("app_distribution_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "app_distribution_api.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("test_app_distribution") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_app_distribution.cc" ]
+  deps = [ ":app_distribution_api" ]
+}
