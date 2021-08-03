@@ -28,12 +28,16 @@
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 class SpecialStoragePolicy;
 namespace mojom {
 class Partition;
-}
-}
+}  // namespace mojom
+}  // namespace storage
 
 namespace content {
 
@@ -73,7 +77,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // DOMStorageContext implementation.
   void GetLocalStorageUsage(GetLocalStorageUsageCallback callback) override;
   void GetSessionStorageUsage(GetSessionStorageUsageCallback callback) override;
-  void DeleteLocalStorage(const url::Origin& origin,
+  void DeleteLocalStorage(const blink::StorageKey& storage_key,
                           base::OnceClosure callback) override;
   void PerformLocalStorageCleanup(base::OnceClosure callback) override;
   void DeleteSessionStorage(const SessionStorageUsageInfo& usage_info,
@@ -95,7 +99,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void Flush();
 
   void OpenLocalStorage(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
   void BindNamespace(
       const std::string& namespace_id,
@@ -103,7 +107,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver);
   void BindStorageArea(
       ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& namespace_id,
       mojo::ReportBadMessageCallback bad_message_callback,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver);

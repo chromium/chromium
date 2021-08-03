@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -67,7 +68,9 @@ void LocalStorageHelper::StartFetching(FetchCallback callback) {
 void LocalStorageHelper::DeleteOrigin(const url::Origin& origin,
                                       base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  dom_storage_context_->DeleteLocalStorage(origin, std::move(callback));
+  dom_storage_context_->DeleteLocalStorage(
+      // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
+      blink::StorageKey(origin), std::move(callback));
 }
 
 //---------------------------------------------------------

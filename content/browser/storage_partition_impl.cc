@@ -345,7 +345,10 @@ void OnLocalStorageUsageInfo(
 
     if (info.last_modified >= delete_begin &&
         info.last_modified <= delete_end) {
-      dom_storage_context->DeleteLocalStorage(info.origin, barrier);
+      dom_storage_context->DeleteLocalStorage(
+          // TODO(https://crbug.com/1199077): Pass the real StorageKey
+          // when StoragePartitionImpl is converted.
+          blink::StorageKey(info.origin), barrier);
     } else {
       barrier.Run();
     }
@@ -372,8 +375,11 @@ void OnSessionStorageUsageInfo(
       base::BarrierClosure(infos.size(), std::move(done_callback));
 
   for (const SessionStorageUsageInfo& info : infos) {
-    if (origin_matcher && !origin_matcher.Run(url::Origin::Create(info.origin),
-                                              special_storage_policy.get())) {
+    if (origin_matcher &&
+        !origin_matcher.Run(
+            // TODO(https://crbug.com/1199077): Pass the real StorageKey
+            // when StoragePartitionImpl is converted.
+            info.storage_key.origin(), special_storage_policy.get())) {
       barrier.Run();
       continue;
     }
@@ -398,7 +404,10 @@ void ClearLocalStorageOnUIThread(
                                          special_storage_policy.get());
     if (can_delete) {
       dom_storage_context->DeleteLocalStorage(
-          url::Origin::Create(storage_origin), std::move(callback));
+          // TODO(https://crbug.com/1199077): Pass the real StorageKey
+          // when StoragePartitionImpl is converted.
+          blink::StorageKey(url::Origin::Create(storage_origin)),
+          std::move(callback));
     } else {
       std::move(callback).Run();
     }
@@ -1706,7 +1715,10 @@ void StoragePartitionImpl::OpenLocalStorage(
         "Access denied for localStorage request");
     return;
   }
-  dom_storage_context_->OpenLocalStorage(origin, std::move(receiver));
+  dom_storage_context_->OpenLocalStorage(
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey
+      // when StoragePartitionImpl is converted.
+      blink::StorageKey(origin), std::move(receiver));
 }
 
 void StoragePartitionImpl::BindSessionStorageNamespace(
@@ -1726,7 +1738,10 @@ void StoragePartitionImpl::BindSessionStorageArea(
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->BindStorageArea(
-      std::move(security_policy_handle), origin, namespace_id,
+      std::move(security_policy_handle),
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey
+      // when StoragePartitionImpl is converted.
+      blink::StorageKey(origin), namespace_id,
       dom_storage_receivers_.GetBadMessageCallback(), std::move(receiver));
 }
 

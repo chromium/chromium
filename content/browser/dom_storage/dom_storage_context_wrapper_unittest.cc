@@ -15,6 +15,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
 
@@ -35,14 +36,16 @@ class DOMStorageContextWrapperTest : public testing::Test {
     security_policy->Add(kTestProcessIdOrigin1, &browser_context_);
     security_policy->Add(kTestProcessIdOrigin2, &browser_context_);
     security_policy->AddFutureIsolatedOrigins(
-        {test_origin1_, test_origin2_},
+        {test_storage_key1_.origin(), test_storage_key2_.origin()},
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
     IsolationContext isolation_context(BrowsingInstanceId(1),
                                        &browser_context_);
     security_policy->LockProcessForTesting(
-        isolation_context, kTestProcessIdOrigin1, test_origin1_.GetURL());
+        isolation_context, kTestProcessIdOrigin1,
+        test_storage_key1_.origin().GetURL());
     security_policy->LockProcessForTesting(
-        isolation_context, kTestProcessIdOrigin2, test_origin2_.GetURL());
+        isolation_context, kTestProcessIdOrigin2,
+        test_storage_key2_.origin().GetURL());
   }
 
   void TearDown() override {
@@ -70,10 +73,10 @@ class DOMStorageContextWrapperTest : public testing::Test {
   }
 
   const std::string test_namespace_id_{base::GenerateGUID()};
-  const url::Origin test_origin1_{
-      url::Origin::Create(GURL("https://host1.com/"))};
-  const url::Origin test_origin2_{
-      url::Origin::Create(GURL("https://host2.com/"))};
+  const blink::StorageKey test_storage_key1_{
+      blink::StorageKey::CreateFromStringForTesting("https://host1.com/")};
+  const blink::StorageKey test_storage_key2_{
+      blink::StorageKey::CreateFromStringForTesting("https://host2.com/")};
 
   content::BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
@@ -81,13 +84,13 @@ class DOMStorageContextWrapperTest : public testing::Test {
   bool bad_message_called_ = false;
 };
 
-TEST_F(DOMStorageContextWrapperTest, ProcessLockedToOtherOrigin) {
-  // Tries to open an area with a process that is locked to a different origin
-  // and verifies the bad message callback.
+TEST_F(DOMStorageContextWrapperTest, ProcessLockedToOtherStorageKey) {
+  // Tries to open an area with a process that is locked to a different
+  // StorageKey and verifies the bad message callback.
 
   mojo::Remote<blink::mojom::StorageArea> area;
   context_->BindStorageArea(CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
-                            test_origin2_, test_namespace_id_,
+                            test_storage_key2_, test_namespace_id_,
                             MakeBadMessageCallback(),
                             area.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(bad_message_called_);
