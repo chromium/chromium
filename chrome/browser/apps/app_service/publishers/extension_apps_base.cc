@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -76,21 +77,6 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
       return std::string(extension_urls::kLaunchSourceAppListSearch);
     default:
       return std::string();
-  }
-}
-
-extensions::UninstallReason GetUninstallReason(
-    apps::mojom::UninstallSource uninstall_source) {
-  switch (uninstall_source) {
-    case apps::mojom::UninstallSource::kUnknown:
-      NOTREACHED();
-      FALLTHROUGH;
-    case apps::mojom::UninstallSource::kAppList:
-    case apps::mojom::UninstallSource::kAppManagement:
-    case apps::mojom::UninstallSource::kShelf:
-      return extensions::UNINSTALL_REASON_USER_INITIATED;
-    case apps::mojom::UninstallSource::kMigration:
-      return extensions::UNINSTALL_REASON_MIGRATED;
   }
 }
 
@@ -503,8 +489,8 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
   std::u16string error;
   extensions::ExtensionSystem::Get(profile())
       ->extension_service()
-      ->UninstallExtension(app_id, GetUninstallReason(uninstall_source),
-                           &error);
+      ->UninstallExtension(
+          app_id, GetExtensionUninstallReason(uninstall_source), &error);
 
   if (!report_abuse) {
     UMA_HISTOGRAM_ENUMERATION(

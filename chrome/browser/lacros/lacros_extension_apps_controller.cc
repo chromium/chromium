@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lacros/lacros_extension_apps_utility.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,25 +16,6 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
-
-namespace {
-
-extensions::UninstallReason GetUninstallReason(
-    apps::mojom::UninstallSource uninstall_source) {
-  switch (uninstall_source) {
-    case apps::mojom::UninstallSource::kUnknown:
-      // We assume if the reason is unknown that it's user inititated.
-      return extensions::UNINSTALL_REASON_USER_INITIATED;
-    case apps::mojom::UninstallSource::kAppList:
-    case apps::mojom::UninstallSource::kAppManagement:
-    case apps::mojom::UninstallSource::kShelf:
-      return extensions::UNINSTALL_REASON_USER_INITIATED;
-    case apps::mojom::UninstallSource::kMigration:
-      return extensions::UNINSTALL_REASON_MIGRATED;
-  }
-}
-
-}  // namespace
 
 LacrosExtensionAppsController::LacrosExtensionAppsController() = default;
 LacrosExtensionAppsController::~LacrosExtensionAppsController() = default;
@@ -56,7 +38,8 @@ void LacrosExtensionAppsController::Uninstall(
   std::u16string error;
   extensions::ExtensionSystem::Get(profile)
       ->extension_service()
-      ->UninstallExtension(extension_id, GetUninstallReason(uninstall_source),
+      ->UninstallExtension(extension_id,
+                           apps::GetExtensionUninstallReason(uninstall_source),
                            &error);
 
   if (report_abuse) {
