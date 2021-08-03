@@ -3864,6 +3864,16 @@ Press an assigned switch to remove assignment
     App details
   </message>
 
+   <!-- Apps > Manage your apps > Borealis -->
+   <!-- TODO(b/194640944): Replace "borealis" string before launch -->
+  <message name="IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT" translateable="false" desc="Describes how Borealis permissions are applied on main app with learn more link.">
+    Permission settings applied here are applied across all Borealis apps. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_APPS_BOREALIS_APP_PERMISSION_TEXT" translateable="false" desc="Link to main Borealis app from other borealis apps.">
+    Permissions for apps installed by Borealis are managed via the <ph name="LINK_BEGIN">&lt;a&gt;</ph>Borealis app settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    Borealis permission settings are applied across all Borealis applications.
+  </message>
+
   <!-- Apps > Manage your apps > Parallels -->
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_PERMISSION_DIALOG_CAMERA_LABEL" desc="Label for the Parallels permissions dialog when camera permissions are being adjusted">
     The change in camera setting requires Parallels Desktop to relaunch. Relaunch Parallels Desktop to proceed.

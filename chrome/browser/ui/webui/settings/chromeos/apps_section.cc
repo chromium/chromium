@@ -192,6 +192,16 @@ void AddGuestOsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
+void AddBorealisStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"borealisMainPermissionText",
+       IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT},
+      {"borealisAppPermissionText",
+       IDS_SETTINGS_APPS_BOREALIS_APP_PERMISSION_TEXT},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
   // Even if not allowed, we still want to show Plugin VM if the VM image is on
   // disk, so that users are still able to delete the image at will.
@@ -279,6 +289,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddGuestOsStrings(html_source);
   AddAndroidAppStrings(html_source);
   AddPluginVmLoadTimeData(html_source);
+  AddBorealisStrings(html_source);
   AddOnStartupTimeData(html_source);
 }
 
