@@ -232,6 +232,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   bool IsRouteMediaEnabled() const;
   bool IsOpenLinkOTREnabled() const;
   bool IsSearchWebForEnabled() const;
+  bool IsLensRegionSearchEnabled() const;
 
   // Command execution functions.
   void ExecOpenWebApp();

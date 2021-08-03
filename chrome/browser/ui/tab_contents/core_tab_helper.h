@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/lens/lens_entrypoints.h"
 #include "components/search_engines/template_url.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -40,7 +41,7 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Open the Lens experience for an image. Used for sending the bitmap selected
   // via Lens Region Search.
-  void SearchWithLensInNewTab(gfx::Image image);
+  void SearchWithLensInNewTab(gfx::Image image, lens::EntryPoint entry_point);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch

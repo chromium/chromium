@@ -107,6 +107,7 @@ test("components_unittests") {
     "//components/keyed_service/core:unit_tests",
     "//components/language/core/browser:unit_tests",
     "//components/language/core/common:unit_tests",
+    "//components/lens:unit_tests",
     "//components/leveldb_proto:unit_tests",
     "//components/lookalikes/core:unit_tests",
     "//components/metrics:unit_tests",

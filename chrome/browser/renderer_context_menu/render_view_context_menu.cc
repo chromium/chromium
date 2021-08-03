@@ -866,8 +866,10 @@ void RenderViewContextMenu::InitMenu() {
   if (media_image)
     AppendImageItems();
 
+  // Do not show image search menu items if Lens Region Search will be shown.
   if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
+          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
+      !IsLensRegionSearchEnabled()) {
     if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
         search::DefaultSearchProviderIsGoogle(GetProfile())) {
       AppendSearchLensForImageItems();
@@ -976,8 +978,7 @@ void RenderViewContextMenu::InitMenu() {
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH)) {
-    if (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
-        search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    if (IsLensRegionSearchEnabled()) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
       AppendLensRegionSearchItem();
     }
@@ -2986,6 +2987,11 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 
   return qrcode_generator::QRCodeGeneratorBubbleController::
       IsGeneratorAvailable(entry->GetURL());
+}
+
+bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
+  return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
+         search::DefaultSearchProviderIsGoogle(GetProfile());
 }
 
 void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
