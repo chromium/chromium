@@ -90,7 +90,7 @@
   <!-- 12.5= RADIUS -->
   <!-- 1.5=  STROKEWIDTH/2 -->
   <!-- ARCSIZE would affect the 1.5,14 part of this... 1.5,14 is specific to
-       270 degress -->
+       270 degrees -->
   <g class="qp-circular-loader">
     <path class="qp-circular-loader-path" fill="none" 
           d="M 14,1.5 A 12.5,12.5 0 1 1 1.5,14" stroke-width="3"

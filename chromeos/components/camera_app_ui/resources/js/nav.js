@@ -83,10 +83,10 @@ function activate(index) {
 }
 
 /**
- * Inactivates the view to be unfocusable.
+ * Deactivates the view to be unfocusable.
  * @param {number} index Index of the view.
  */
-function inactivate(index) {
+function deactivate(index) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'true');
   dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
@@ -121,7 +121,7 @@ function show(index) {
     view.layout();
     if (index > topmostIndex) {
       if (topmostIndex >= 0) {
-        inactivate(topmostIndex);
+        deactivate(topmostIndex);
       }
       activate(index);
       topmostIndex = index;
@@ -144,13 +144,13 @@ function findNextTopmostIndex() {
 }
 
 /**
- * Hides the view indexed in the stacked views and inactivate the view if it was
+ * Hides the view indexed in the stacked views and deactivate the view if it was
  * the topmost visible view.
  * @param {number} index Index of the view.
  */
 function hide(index) {
   if (index === topmostIndex) {
-    inactivate(index);
+    deactivate(index);
     const next = findNextTopmostIndex();
     if (next >= 0) {
       activate(next);
