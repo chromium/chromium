@@ -33,6 +33,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace url {
 class Origin;
 }
@@ -124,7 +128,8 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
 
   // ServiceWorkerContextCoreObserver implementation.
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
  private:

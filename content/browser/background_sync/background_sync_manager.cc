@@ -557,8 +557,10 @@ void BackgroundSyncManager::GetRegistrations(
       op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
 }
 
-void BackgroundSyncManager::OnRegistrationDeleted(int64_t sw_registration_id,
-                                                  const GURL& pattern) {
+void BackgroundSyncManager::OnRegistrationDeleted(
+    int64_t sw_registration_id,
+    const GURL& pattern,
+    const blink::StorageKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Operations already in the queue will either fail when they write to storage

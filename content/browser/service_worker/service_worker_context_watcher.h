@@ -85,18 +85,21 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
 
   // ServiceWorkerContextCoreObserver implements
   void OnNewLiveRegistration(int64_t registration_id,
-                             const GURL& scope) override;
+                             const GURL& scope,
+                             const blink::StorageKey& key) override;
   void OnNewLiveVersion(const ServiceWorkerVersionInfo& version_info) override;
   void OnStarting(int64_t version_id) override;
   void OnStarted(int64_t version_id,
                  const GURL& scope,
                  int process_id,
                  const GURL& script_url,
-                 const blink::ServiceWorkerToken& token) override;
+                 const blink::ServiceWorkerToken& token,
+                 const blink::StorageKey& key) override;
   void OnStopping(int64_t version_id) override;
   void OnStopped(int64_t version_id) override;
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
   void OnVersionDevToolsRoutingIdChanged(int64_t version_id,
                                          int process_id,
@@ -107,9 +110,11 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
   void OnErrorReported(
       int64_t version_id,
       const GURL& scope,
+      const blink::StorageKey& key,
       const ServiceWorkerContextObserver::ErrorInfo& info) override;
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
+                              const blink::StorageKey& key,
                               const ConsoleMessage& message) override;
   void OnControlleeAdded(int64_t version_id,
                          const std::string& uuid,
@@ -117,9 +122,11 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
   void OnControlleeRemoved(int64_t version_id,
                            const std::string& uuid) override;
   void OnRegistrationCompleted(int64_t registration_id,
-                               const GURL& scope) override;
+                               const GURL& scope,
+                               const blink::StorageKey& key) override;
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& scope) override;
+                             const GURL& scope,
+                             const blink::StorageKey& key) override;
 
   void OnRunningStateChanged(int64_t version_id,
                              EmbeddedWorkerStatus running_status);

@@ -306,15 +306,18 @@ BrowserThread::ID ServiceWorkerContext::GetCoreThreadId() {
 
 void ServiceWorkerContextWrapper::OnRegistrationCompleted(
     int64_t registration_id,
-    const GURL& scope) {
+    const GURL& scope,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : observer_list_)
     observer.OnRegistrationCompleted(scope);
 }
 
-void ServiceWorkerContextWrapper::OnRegistrationStored(int64_t registration_id,
-                                                       const GURL& scope) {
+void ServiceWorkerContextWrapper::OnRegistrationStored(
+    int64_t registration_id,
+    const GURL& scope,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   registered_origins_.insert(url::Origin::Create(scope));
@@ -332,6 +335,7 @@ void ServiceWorkerContextWrapper::OnAllRegistrationsDeletedForOrigin(
 void ServiceWorkerContextWrapper::OnErrorReported(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     const ServiceWorkerContextObserver::ErrorInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -342,6 +346,7 @@ void ServiceWorkerContextWrapper::OnErrorReported(
 void ServiceWorkerContextWrapper::OnReportConsoleMessage(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     const ConsoleMessage& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -368,8 +373,10 @@ void ServiceWorkerContextWrapper::OnControlleeRemoved(
     observer.OnControlleeRemoved(version_id, client_uuid);
 }
 
-void ServiceWorkerContextWrapper::OnNoControllees(int64_t version_id,
-                                                  const GURL& scope) {
+void ServiceWorkerContextWrapper::OnNoControllees(
+    int64_t version_id,
+    const GURL& scope,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : observer_list_)
@@ -392,16 +399,15 @@ void ServiceWorkerContextWrapper::OnStarted(
     const GURL& scope,
     int process_id,
     const GURL& script_url,
-    const blink::ServiceWorkerToken& token) {
+    const blink::ServiceWorkerToken& token,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(crbug.com/1199077): Update this when ServiceWorkerContextCoreObserver
   // implements StorageKey.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
       version_id,
-      ServiceWorkerRunningInfo(script_url, scope,
-                               blink::StorageKey(url::Origin::Create(scope)),
-                               process_id, token)));
+      ServiceWorkerRunningInfo(script_url, scope, key, process_id, token)));
   DCHECK(insertion_result.second);
 
   const auto& running_info = insertion_result.first->second;
@@ -434,6 +440,7 @@ void ServiceWorkerContextWrapper::OnDeleteAndStartOver() {
 void ServiceWorkerContextWrapper::OnVersionStateChanged(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     ServiceWorkerVersion::Status status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

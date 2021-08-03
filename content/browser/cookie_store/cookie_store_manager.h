@@ -27,6 +27,10 @@
 
 class GURL;
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class ServiceWorkerContextWrapper;
@@ -98,7 +102,8 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
 
   // ServiceWorkerContextCoreObserver
   void OnRegistrationDeleted(int64_t service_worker_registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
   // ::network::mojom::CookieChangeListener

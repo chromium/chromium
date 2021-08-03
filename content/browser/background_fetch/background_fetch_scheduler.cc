@@ -490,8 +490,10 @@ void BackgroundFetchScheduler::OnServiceWorkerDatabaseCorrupted(
   AbortFetches(service_worker_registration_id);
 }
 
-void BackgroundFetchScheduler::OnRegistrationDeleted(int64_t registration_id,
-                                                     const GURL& pattern) {
+void BackgroundFetchScheduler::OnRegistrationDeleted(
+    int64_t registration_id,
+    const GURL& pattern,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   AbortFetches(registration_id);
 }

@@ -225,7 +225,8 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
   ASSERT_EQ(StoreRegistration(registration),
             blink::ServiceWorkerStatusCode::kOk);
 
-  wrapper_->OnRegistrationCompleted(registration->id(), registration->scope());
+  wrapper_->OnRegistrationCompleted(registration->id(), registration->scope(),
+                                    registration->key());
   base::RunLoop().RunUntilIdle();
 
   // Now test that a registration is recognized.

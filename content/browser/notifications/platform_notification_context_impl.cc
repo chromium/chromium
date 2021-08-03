@@ -1093,7 +1093,8 @@ void PlatformNotificationContextImpl::DoDeleteNotificationData(
 
 void PlatformNotificationContextImpl::OnRegistrationDeleted(
     int64_t registration_id,
-    const GURL& pattern) {
+    const GURL& pattern,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   InitializeDatabase(
       base::BindOnce(&PlatformNotificationContextImpl::

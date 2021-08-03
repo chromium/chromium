@@ -27,7 +27,8 @@ PushMessagingContext::~PushMessagingContext() {
 }
 
 void PushMessagingContext::OnRegistrationDeleted(int64_t registration_id,
-                                                 const GURL& pattern) {
+                                                 const GURL& pattern,
+                                                 const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingService* push_service =
       browser_context_->GetPushMessagingService();

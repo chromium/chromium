@@ -72,6 +72,7 @@ ServiceWorkerActivationObserver::~ServiceWorkerActivationObserver() {}
 void ServiceWorkerActivationObserver::OnVersionStateChanged(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     ServiceWorkerVersion::Status) {
   if (context_->GetLiveVersion(version_id)->status() ==
       ServiceWorkerVersion::ACTIVATED) {

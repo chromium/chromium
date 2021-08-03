@@ -32,8 +32,10 @@
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "url/origin.h"
 
 using blink::FetchAPIRequestHeadersMap;
 using testing::_;
@@ -468,10 +470,11 @@ TEST_F(BackgroundFetchJobControllerTest, Progress) {
 
 TEST_F(BackgroundFetchJobControllerTest, ServiceWorkerRegistrationDeleted) {
   BackgroundFetchRegistrationId registration_id;
+  const GURL kFunnyCatUrl("https://example.com/funny_cat.png");
 
-  auto requests = CreateRegistrationForRequests(
-      &registration_id, {{GURL("https://example.com/funny_cat.png"), "GET"}},
-      /* auto_complete_requests= */ true);
+  auto requests =
+      CreateRegistrationForRequests(&registration_id, {{kFunnyCatUrl, "GET"}},
+                                    /* auto_complete_requests= */ true);
 
   EXPECT_EQ(JobCompletionStatus::kRunning,
             GetCompletionStatus(registration_id));
@@ -481,8 +484,9 @@ TEST_F(BackgroundFetchJobControllerTest, ServiceWorkerRegistrationDeleted) {
 
   AddControllerToSchedulerMap(registration_id.unique_id(),
                               std::move(controller));
-  scheduler()->OnRegistrationDeleted(kExampleServiceWorkerRegistrationId,
-                                     GURL("https://example.com/funny_cat.png"));
+  scheduler()->OnRegistrationDeleted(
+      kExampleServiceWorkerRegistrationId, kFunnyCatUrl,
+      blink::StorageKey(url::Origin::Create(kFunnyCatUrl)));
 
   base::RunLoop().RunUntilIdle();
 

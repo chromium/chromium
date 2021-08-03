@@ -44,6 +44,7 @@ namespace blink {
 namespace mojom {
 enum class PermissionStatus;
 }  // namespace mojom
+class StorageKey;
 }  // namespace blink
 
 namespace content {
@@ -117,7 +118,8 @@ class CONTENT_EXPORT BackgroundSyncManager
 
   // ServiceWorkerContextCoreObserver overrides.
   void OnRegistrationDeleted(int64_t sw_registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
   BackgroundSyncNetworkObserver* GetNetworkObserverForTesting() {

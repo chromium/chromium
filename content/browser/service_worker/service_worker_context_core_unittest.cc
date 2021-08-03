@@ -151,6 +151,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   // ServiceWorkerContextCoreObserver overrides:
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override {
     if (status == ServiceWorkerVersion::ACTIVATED &&
         scope == scope_for_wait_for_activated_ &&

@@ -14,6 +14,10 @@ namespace base {
 class TestSimpleTaskRunner;
 }
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class ServiceWorkerContextWrapper;
@@ -42,6 +46,7 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
   // ServiceWorkerContextCoreObserver overrides:
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;

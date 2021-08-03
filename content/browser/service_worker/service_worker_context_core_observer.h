@@ -19,6 +19,10 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "url/gurl.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 enum class EmbeddedWorkerStatus;
@@ -28,7 +32,8 @@ struct ConsoleMessage;
 class ServiceWorkerContextCoreObserver {
  public:
   virtual void OnNewLiveRegistration(int64_t registration_id,
-                                     const GURL& scope) {}
+                                     const GURL& scope,
+                                     const blink::StorageKey& key) {}
   virtual void OnNewLiveVersion(const ServiceWorkerVersionInfo& version_info) {}
   virtual void OnLiveVersionDestroyed(int64_t version_id) {}
   virtual void OnStarting(int64_t version_id) {}
@@ -36,7 +41,8 @@ class ServiceWorkerContextCoreObserver {
                          const GURL& scope,
                          int process_id,
                          const GURL& script_url,
-                         const blink::ServiceWorkerToken& token) {}
+                         const blink::ServiceWorkerToken& token,
+                         const blink::StorageKey& key) {}
   virtual void OnStopping(int64_t version_id) {}
   virtual void OnStopped(int64_t version_id) {}
   // Called when the context core is about to be deleted. After this is called,
@@ -46,6 +52,7 @@ class ServiceWorkerContextCoreObserver {
   virtual void OnDeleteAndStartOver() {}
   virtual void OnVersionStateChanged(int64_t version_id,
                                      const GURL& scope,
+                                     const blink::StorageKey& key,
                                      ServiceWorkerVersion::Status status) {}
   virtual void OnVersionDevToolsRoutingIdChanged(int64_t version_id,
                                                  int process_id,
@@ -56,16 +63,20 @@ class ServiceWorkerContextCoreObserver {
   virtual void OnErrorReported(
       int64_t version_id,
       const GURL& scope,
+      const blink::StorageKey& key,
       const ServiceWorkerContextObserver::ErrorInfo& info) {}
   virtual void OnReportConsoleMessage(int64_t version_id,
                                       const GURL& scope,
+                                      const blink::StorageKey& key,
                                       const ConsoleMessage& message) {}
   virtual void OnControlleeAdded(int64_t version_id,
                                  const std::string& uuid,
                                  const ServiceWorkerClientInfo& info) {}
   virtual void OnControlleeRemoved(int64_t version_id,
                                    const std::string& uuid) {}
-  virtual void OnNoControllees(int64_t version_id, const GURL& scope) {}
+  virtual void OnNoControllees(int64_t version_id,
+                               const GURL& scope,
+                               const blink::StorageKey& key) {}
   virtual void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& uuid,
@@ -76,14 +87,16 @@ class ServiceWorkerContextCoreObserver {
   // storage. The implementation cannot assume that the ServiceWorkerContextCore
   // will find the registration at this point.
   virtual void OnRegistrationCompleted(int64_t registration_id,
-                                       const GURL& scope) {}
+                                       const GURL& scope,
+                                       const blink::StorageKey& key) {}
   // Called after a service worker registration is persisted to storage.
   //
   // This happens after OnRegistrationCompleted(). The implementation can assume
   // that ServiceWorkerContextCore will find the registration, and can safely
   // add user data to the registration.
   virtual void OnRegistrationStored(int64_t registration_id,
-                                    const GURL& scope) {}
+                                    const GURL& scope,
+                                    const blink::StorageKey& key) {}
 
   // Called after a task has been posted to delete a registration from storage.
   // This is roughly equivalent to the same time that the promise for
@@ -91,7 +104,8 @@ class ServiceWorkerContextCoreObserver {
   // ServiceWorkerRegistration may still exist, and the deletion operator may
   // not yet have finished.
   virtual void OnRegistrationDeleted(int64_t registration_id,
-                                     const GURL& scope) {}
+                                     const GURL& scope,
+                                     const blink::StorageKey& key) {}
 
   // Called after all registrations for |origin| are deleted from storage. There
   // may still be live registrations for this origin in the kUninstalling or
@@ -99,6 +113,8 @@ class ServiceWorkerContextCoreObserver {
   //
   // This is called after OnRegistrationDeleted(). It is called once
   // ServiceWorkerRegistry gets confirmation that the delete operation finished.
+  // TODO(crbug.com/1199077): Refactor to use StorageKey once
+  // ServiceWorkerContextWrapper::registered_origins_ is refactored.
   virtual void OnAllRegistrationsDeletedForOrigin(const url::Origin& origin) {}
 
   // Notified when the storage corruption recovery is completed and all stored

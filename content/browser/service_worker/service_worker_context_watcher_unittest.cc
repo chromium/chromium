@@ -174,8 +174,9 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
   void ReportError(scoped_refptr<ServiceWorkerContextWatcher> watcher,
                    int64_t version_id,
                    const GURL& scope,
+                   const blink::StorageKey& key,
                    const ServiceWorkerContextObserver::ErrorInfo& error_info) {
-    watcher->OnErrorReported(version_id, scope, error_info);
+    watcher->OnErrorReported(version_id, scope, key, error_info);
   }
 
  private:
@@ -357,7 +358,7 @@ TEST_F(ServiceWorkerContextWatcherTest, ErrorReport) {
   EXPECT_EQ(0u, watcher_callback.errors().size());
 
   std::u16string message(u"HELLO");
-  ReportError(watcher, version_id, scope,
+  ReportError(watcher, version_id, scope, key,
               ServiceWorkerContextObserver::ErrorInfo(message, 0, 0, script));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, watcher_callback.errors().size());
@@ -410,7 +411,7 @@ TEST_F(ServiceWorkerContextWatcherTest, Race) {
 
   int callback_count = watcher_callback.callback_count();
   std::u16string message(u"HELLO");
-  ReportError(watcher, 0 /*version_id*/, scope,
+  ReportError(watcher, 0 /*version_id*/, scope, key,
               ServiceWorkerContextObserver::ErrorInfo(message, 0, 0, script));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(callback_count, watcher_callback.callback_count());

@@ -21,6 +21,10 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class BackgroundFetchDataManager;
@@ -83,7 +87,8 @@ class CONTENT_EXPORT BackgroundFetchScheduler
 
   // ServiceWorkerContextCoreObserver implementation.
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
  private:

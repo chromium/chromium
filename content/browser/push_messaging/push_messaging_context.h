@@ -12,6 +12,10 @@
 
 class GURL;
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class BrowserContext;
@@ -28,7 +32,8 @@ class PushMessagingContext : public ServiceWorkerContextCoreObserver {
 
   // ServiceWorkerContextCoreObserver methods
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
  private:

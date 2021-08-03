@@ -1436,6 +1436,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
   // ServiceWorkerContextCoreObserver overrides
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override {
     StateChangeLogEntry entry;
     entry.version_id = version_id;

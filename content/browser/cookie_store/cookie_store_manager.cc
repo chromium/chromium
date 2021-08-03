@@ -436,7 +436,8 @@ void CookieStoreManager::StoreSubscriptions(
 
 void CookieStoreManager::OnRegistrationDeleted(
     int64_t service_worker_registration_id,
-    const GURL& pattern) {
+    const GURL& pattern,
+    const blink::StorageKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Waiting for the on-disk subscriptions to be loaded ensures that the
@@ -446,7 +447,7 @@ void CookieStoreManager::OnRegistrationDeleted(
   if (!done_loading_subscriptions_) {
     subscriptions_loaded_callbacks_.push_back(base::BindOnce(
         &CookieStoreManager::OnRegistrationDeleted, weak_factory_.GetWeakPtr(),
-        service_worker_registration_id, pattern));
+        service_worker_registration_id, pattern, key));
     return;
   }
 
