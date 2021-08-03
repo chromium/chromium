@@ -190,10 +190,14 @@ class StartupBrowserCreator {
                            ValidNotificationLaunchId);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            InvalidNotificationLaunchId);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppShortcutNoPref);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppShortcutTabPref);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,
+                           OpenAppShortcutNoPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,
+                           OpenAppShortcutTabPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,
                            OpenAppShortcutWindowPref);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,
+                           OpenPolicyForcedAppShortcut);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppUrlShortcut);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserWithRealWebAppTest,
                            LastUsedProfilesWithRealWebApp);

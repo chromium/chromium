@@ -725,10 +725,6 @@ class Browser : public TabStripModelObserver,
   FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessTest,
                            TabEntersPresentationModeFromWindowed);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastGuest);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppShortcutNoPref);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
-                           OpenAppShortcutWindowPref);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, OpenAppShortcutTabPref);
 
   // Used to describe why a tab is being detached. This is used by
   // TabDetachedAtImpl.

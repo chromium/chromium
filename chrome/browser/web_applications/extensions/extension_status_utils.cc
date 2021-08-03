@@ -5,8 +5,10 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 
 #include "base/one_shot_event.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -71,6 +73,27 @@ bool IsExternalExtensionUninstalled(content::BrowserContext* context,
   // May be nullptr in unit tests.
   return prefs && prefs->IsExternalExtensionUninstalled(extension_id);
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
+                                         const std::string& extension_id) {
+  auto* registry = ExtensionRegistry::Get(context);
+  // May be nullptr in unit tests.
+  if (!registry)
+    return false;
+
+  const extensions::Extension* app = registry->GetExtensionById(
+      extension_id, extensions::ExtensionRegistry::EVERYTHING);
+  if (!app)
+    return false;
+
+  // TODO(crbug.com/1235894): Figure out if "hosted apps" should be checked as
+  // well.
+  return base::FeatureList::IsEnabled(features::kChromeAppsDeprecation) &&
+         (app->is_platform_app() || app->is_legacy_packaged_app()) &&
+         !IsExtensionForceInstalled(context, extension_id, nullptr);
+}
+#endif
 
 void OnExtensionSystemReady(content::BrowserContext* context,
                             base::OnceClosure callback) {

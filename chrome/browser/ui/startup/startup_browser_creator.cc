@@ -1101,6 +1101,12 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   if (command_line.HasSwitch(switches::kAppId)) {
     std::string app_id = command_line.GetSwitchValueASCII(switches::kAppId);
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+    // If Chrome Apps are deprecated and |app_id| is a Chrome App, display the
+    // deprecation UI instead of launching the app.
+    if (apps::OpenDeprecatedApplicationPrompt(privacy_safe_profile, app_id))
+      return true;
+#endif
     // If |app_id| is a disabled or terminated platform app we handle it
     // specially here, otherwise it will be handled below.
     if (apps::OpenExtensionApplicationWithReenablePrompt(
