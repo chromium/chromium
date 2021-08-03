@@ -919,7 +919,7 @@ static void UpdateNonFastScrollableRegion(
   // pre-CompositeAfterPaint does not paint scroll hit test data for
   // composited scrollers.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (const auto* scroll_translation = hit_test_data.scroll_translation) {
+    if (const auto scroll_translation = hit_test_data.scroll_translation) {
       const auto* scroll_node = scroll_translation->ScrollNode();
       DCHECK(scroll_node);
       // TODO(crbug.com/1222613): Remove this when we fix the root cause.
