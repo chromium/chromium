@@ -3968,6 +3968,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection.UserInteraction"
     enum="GetCurrentBrowsingContextMediaExplicitSelectionUserInteraction"
     expires_after="2022-01-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>eladalon@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>

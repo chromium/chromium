@@ -193,7 +193,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kWebPImage,
           WebFeature::kAVIFImage,
           WebFeature::kGetDisplayMedia,
-          WebFeature::kGetCurrentBrowsingContextMedia,
           WebFeature::kLaxAllowingUnsafeCookies,
           WebFeature::kOpenWebDatabaseThirdPartyContext,
           WebFeature::kOversrollBehaviorOnViewportBreaks,

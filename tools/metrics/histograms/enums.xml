@@ -33806,7 +33806,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3716" label="OBSOLETE_CSSPseudoHostCompoundList"/>
   <int value="3717" label="OBSOLETE_CSSPseudoHostContextCompoundList"/>
   <int value="3718" label="OBSOLETE_CSSPseudoHostDynamicSpecificity"/>
-  <int value="3719" label="GetCurrentBrowsingContextMedia"/>
+  <int value="3719" label="OBSOLETE_GetCurrentBrowsingContextMedia"/>
   <int value="3720" label="MouseEventRelativePositionForInlineElement"/>
   <int value="3721" label="V8SharedArrayBufferConstructedWithoutIsolation"/>
   <int value="3722" label="V8HTMLVideoElement_GetVideoPlaybackQuality_Method"/>

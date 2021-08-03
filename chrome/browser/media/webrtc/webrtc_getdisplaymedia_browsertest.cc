@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -98,12 +97,7 @@ class WebRtcScreenCaptureBrowserTestWithPicker
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<TestConfigForPicker> {
  public:
-  WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {
-    if (test_config_.should_prefer_current_tab_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kRTCGetCurrentBrowsingContextMedia);
-    }
-  }
+  WebRtcScreenCaptureBrowserTestWithPicker() : test_config_(GetParam()) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
@@ -128,7 +122,6 @@ class WebRtcScreenCaptureBrowserTestWithPicker
   }
 
   const TestConfigForPicker test_config_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
@@ -228,12 +221,7 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<TestConfigForFakeUI> {
  public:
-  WebRtcScreenCaptureBrowserTestWithFakeUI() : test_config_(GetParam()) {
-    if (test_config_.should_prefer_current_tab_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kRTCGetCurrentBrowsingContextMedia);
-    }
-  }
+  WebRtcScreenCaptureBrowserTestWithFakeUI() : test_config_(GetParam()) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
@@ -252,7 +240,6 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
 
  protected:
   const TestConfigForFakeUI test_config_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
@@ -338,12 +325,7 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
  public:
   WebRtcScreenCapturePermissionPolicyBrowserTest()
       : tested_variant_(GetParam().first),
-        allowlisted_by_policy_(GetParam().second) {
-    if (tested_variant_ == GetDisplayMediaVariant::kPreferCurrentTab) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kRTCGetCurrentBrowsingContextMedia);
-    }
-  }
+        allowlisted_by_policy_(GetParam().second) {}
 
   ~WebRtcScreenCapturePermissionPolicyBrowserTest() override = default;
 
@@ -363,7 +345,6 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
   const bool allowlisted_by_policy_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -165,17 +165,6 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
   }
 #endif
 
-  if (request.video_type ==
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kRTCGetCurrentBrowsingContextMedia)) {
-      std::move(callback).Run(
-          blink::MediaStreamDevices(),
-          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
-      return;
-    }
-  }
-
   for (const auto& handler : media_access_handlers_) {
     if (handler->SupportsStreamType(web_contents, request.video_type,
                                     extension) ||

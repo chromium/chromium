@@ -245,11 +245,6 @@ const base::Feature kPurgeRendererMemoryWhenBackgrounded {
 #endif
 };
 
-// Kill switch for getCurrentBrowsingContextMedia(), which allows capturing of
-// web content from the tab from which it is called. (crbug.com/1136940)
-const base::Feature kRTCGetCurrentBrowsingContextMedia{
-    "RTCGetCurrentBrowsingContextMedia", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Changes the default RTCPeerConnection constructor behavior to use Unified
 // Plan as the SDP semantics. When the feature is enabled, Unified Plan is used
 // unless the default is overridden (by passing {sdpSemantics:'plan-b'} as the

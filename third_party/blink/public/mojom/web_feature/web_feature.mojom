@@ -3022,7 +3022,7 @@ enum WebFeature {
   kOBSOLETE_CSSPseudoHostCompoundList = 3716,
   kOBSOLETE_CSSPseudoHostContextCompoundList = 3717,
   kOBSOLETE_CSSPseudoHostDynamicSpecificity = 3718,
-  kGetCurrentBrowsingContextMedia = 3719,
+  kOBSOLETE_GetCurrentBrowsingContextMedia = 3719,
   kMouseEventRelativePositionForInlineElement = 3720,
   kV8SharedArrayBufferConstructedWithoutIsolation = 3721,
   kV8HTMLVideoElement_GetVideoPlaybackQuality_Method = 3722,

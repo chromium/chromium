@@ -1102,12 +1102,6 @@
       status: "experimental",
     },
     {
-      name: "GetCurrentBrowsingContextMedia",
-      origin_trial_feature_name: "GetCurrentBrowsingContextMedia",
-      depends_on: ["GetDisplayMedia"],
-      status: {"Android": "", "default": "experimental"},
-    },
-    {
       name: "GetDisplayMedia",
       status: {
         "Android": "experimental",
