@@ -277,6 +277,21 @@ if (enable_cast_media_runtime) {
   }
 }
 
+executable("demo_platform_service") {
+  sources = [
+    "demo_platform_service.cc",
+    "demo_platform_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/openscreen/src/cast/cast_core/api:cast_core_service_proto",
+    "//third_party/openscreen/src/cast/cast_core/api:platform_service_proto",
+  ]
+
+  deps = [ "//third_party/grpc:grpc++" ]
+}
+
 # TODO(b/194439829): Upstream additional metrics unit tests.
 test("cast_cast_core_unittests") {
   sources = [
