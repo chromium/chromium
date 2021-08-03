@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -40,10 +40,10 @@ def main():
   gn_command = ['ninja',
                 '-C', opts.dir,
                 RESOURCE_SUBDIR + ':make_all_file_types_protobuf']
-  print "Running the following"
-  print "   " + (' '.join(gn_command))
+  print("Running the following")
+  print("   " + (' '.join(gn_command)))
   if subprocess.call(gn_command):
-    print "Ninja failed."
+    print("Ninja failed.")
     return 1
 
   os.chdir(all_dir)
@@ -60,19 +60,19 @@ def main():
   vers_dir = dirs[0]
   command = ['gsutil', 'cp', '-Rn', vers_dir, DEST_BUCKET]
 
-  print '\nGoing to run the following command'
-  print '   ', ' '.join(command)
-  print '\nIn directory'
-  print '   ', all_dir
-  print '\nWhich should push the following files'
+  print('\nGoing to run the following command')
+  print('   ', ' '.join(command))
+  print('\nIn directory')
+  print('   ', all_dir)
+  print('\nWhich should push the following files')
   expected_files = [os.path.join(dp, f) for dp, dn, fn in
                     os.walk(vers_dir) for f in fn]
   for f in expected_files:
-    print '   ', f
+    print('   ', f)
 
-  shall = raw_input('\nAre you sure (y/N) ').lower() == 'y'
+  shall = input('\nAre you sure (y/N) ').lower() == 'y'
   if not shall:
-    print 'aborting'
+    print('aborting')
     return 1
   return subprocess.call(command)
 
