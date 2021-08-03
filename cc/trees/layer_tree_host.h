@@ -444,6 +444,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Returns if the viewport is considered to be mobile optimized.
   bool IsMobileOptimized() const;
 
+  void SetPrefersReducedMotion(bool prefers_reduced_motion);
+
   void SetBrowserControlsParams(const BrowserControlsParams& params);
   void SetBrowserControlsShownRatio(float top_ratio, float bottom_ratio);
 
@@ -915,6 +917,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // <meta name="viewport" content="initial-scale=1.0">
   bool is_viewport_mobile_optimized_ = false;
 
+  bool prefers_reduced_motion_ = false;
   bool have_scroll_event_handlers_ = false;
   EventListenerProperties event_listener_properties_
       [static_cast<size_t>(EventListenerClass::kLast) + 1];

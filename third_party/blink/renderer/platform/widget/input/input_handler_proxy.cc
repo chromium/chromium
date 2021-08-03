@@ -225,12 +225,8 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
       cursor_control_handler_(std::make_unique<CursorControlHandler>()) {
   DCHECK(client);
   input_handler_->BindToClient(this);
-  cc::ScrollElasticityHelper* scroll_elasticity_helper =
-      input_handler_->CreateScrollElasticityHelper();
-  if (scroll_elasticity_helper) {
-    elastic_overscroll_controller_ =
-        ElasticOverscrollController::Create(scroll_elasticity_helper);
-  }
+
+  UpdateElasticOverscroll();
   compositor_event_queue_ = std::make_unique<CompositorThreadEventQueue>();
   scroll_predictor_ =
       base::FeatureList::IsEnabled(blink::features::kResamplingScrollEvents)
@@ -531,6 +527,27 @@ void InputHandlerProxy::DispatchQueuedInputEvents() {
   base::TimeTicks now = tick_clock_->NowTicks();
   while (!compositor_event_queue_->empty())
     DispatchSingleInputEvent(compositor_event_queue_->Pop(), now);
+}
+
+void InputHandlerProxy::UpdateElasticOverscroll() {
+  bool can_use_elastic_overscroll = true;
+#if defined(OS_ANDROID)
+  // On android, elastic overscroll introduces quite a bit of motion which can
+  // effect those sensitive to it. Disable when prefers_reduced_motion_ is
+  // disabled.
+  can_use_elastic_overscroll = !prefers_reduced_motion_;
+#endif
+  if (!can_use_elastic_overscroll && elastic_overscroll_controller_) {
+    elastic_overscroll_controller_.reset();
+    input_handler_->DestroyScrollElasticityHelper();
+  } else if (can_use_elastic_overscroll && !elastic_overscroll_controller_) {
+    cc::ScrollElasticityHelper* scroll_elasticity_helper =
+        input_handler_->CreateScrollElasticityHelper();
+    if (scroll_elasticity_helper) {
+      elastic_overscroll_controller_ =
+          ElasticOverscrollController::Create(scroll_elasticity_helper);
+    }
+  }
 }
 
 void InputHandlerProxy::InjectScrollbarGestureScroll(
@@ -1354,6 +1371,14 @@ void InputHandlerProxy::Animate(base::TimeTicks time) {
 void InputHandlerProxy::ReconcileElasticOverscrollAndRootScroll() {
   if (elastic_overscroll_controller_)
     elastic_overscroll_controller_->ReconcileStretchAndScroll();
+}
+
+void InputHandlerProxy::SetPrefersReducedMotion(bool prefers_reduced_motion) {
+  if (prefers_reduced_motion_ == prefers_reduced_motion)
+    return;
+  prefers_reduced_motion_ = prefers_reduced_motion;
+
+  UpdateElasticOverscroll();
 }
 
 void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(

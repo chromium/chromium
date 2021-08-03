@@ -403,6 +403,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return is_viewport_mobile_optimized_;
   }
 
+  void SetPrefersReducedMotion(bool prefers_reduced_motion);
+
   // Updates registered ElementIds present in |changed_list|. Call this after
   // changing the property trees for the |changed_list| trees.
   void UpdateElements(ElementListType changed_list);
@@ -1169,6 +1171,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // or
   // <meta name="viewport" content="initial-scale=1.0">
   bool is_viewport_mobile_optimized_ = false;
+
+  bool prefers_reduced_motion_ = false;
 
   std::unique_ptr<PendingTreeRasterDurationHistogramTimer>
       pending_tree_raster_duration_timer_;

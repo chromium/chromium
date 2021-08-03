@@ -1961,6 +1961,8 @@ void WebViewImpl::DidAttachLocalMainFrame() {
   if (does_composite_) {
     // When attaching a local main frame, set up any state on the compositor.
     MainFrameImpl()->FrameWidgetImpl()->SetBackgroundColor(BackgroundColor());
+    MainFrameImpl()->FrameWidgetImpl()->SetPrefersReducedMotion(
+        web_preferences_.prefers_reduced_motion);
     auto& viewport = GetPage()->GetVisualViewport();
     MainFrameImpl()->FrameWidgetImpl()->SetPageScaleStateAndLimits(
         viewport.Scale(), viewport.IsPinchGestureActive(),
@@ -3301,6 +3303,12 @@ const web_pref::WebPreferences& WebViewImpl::GetWebPreferences() {
 void WebViewImpl::UpdateWebPreferences(
     const blink::web_pref::WebPreferences& preferences) {
   web_preferences_ = preferences;
+
+  if (MainFrameImpl()) {
+    MainFrameImpl()->FrameWidgetImpl()->SetPrefersReducedMotion(
+        web_preferences_.prefers_reduced_motion);
+  }
+
   ApplyWebPreferences(preferences, this);
   ApplyCommandLineToSettings(SettingsImpl());
 }

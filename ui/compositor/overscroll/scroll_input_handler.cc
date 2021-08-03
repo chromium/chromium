@@ -88,6 +88,8 @@ void ScrollInputHandler::Animate(base::TimeTicks time) {}
 
 void ScrollInputHandler::ReconcileElasticOverscrollAndRootScroll() {}
 
+void ScrollInputHandler::SetPrefersReducedMotion(bool prefers_reduced_motion) {}
+
 void ScrollInputHandler::UpdateRootLayerStateForSynchronousInputHandler(
     const gfx::ScrollOffset& total_scroll_offset,
     const gfx::ScrollOffset& max_scroll_offset,

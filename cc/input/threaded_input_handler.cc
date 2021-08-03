@@ -77,6 +77,7 @@ base::WeakPtr<InputHandler> ThreadedInputHandler::AsWeakPtr() const {
 void ThreadedInputHandler::BindToClient(InputHandlerClient* client) {
   DCHECK(input_handler_client_ == nullptr);
   input_handler_client_ = client;
+  input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
 }
 
 InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
@@ -871,6 +872,12 @@ ScrollElasticityHelper* ThreadedInputHandler::CreateScrollElasticityHelper() {
   return scroll_elasticity_helper_.get();
 }
 
+void ThreadedInputHandler::DestroyScrollElasticityHelper() {
+  // Remove any stretch before destroying helper.
+  scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF());
+  scroll_elasticity_helper_.reset();
+}
+
 bool ThreadedInputHandler::GetScrollOffsetForLayer(ElementId element_id,
                                                    gfx::ScrollOffset* offset) {
   ScrollTree& scroll_tree = GetScrollTree();
@@ -1119,6 +1126,16 @@ void ThreadedInputHandler::ScrollOffsetAnimationFinished() {
     ScrollEnd(/*should_snap=*/false);
     return;
   }
+}
+
+void ThreadedInputHandler::SetPrefersReducedMotion(
+    bool prefers_reduced_motion) {
+  if (prefers_reduced_motion_ == prefers_reduced_motion)
+    return;
+  prefers_reduced_motion_ = prefers_reduced_motion;
+
+  if (input_handler_client_)
+    input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
 }
 
 bool ThreadedInputHandler::IsCurrentlyScrolling() const {

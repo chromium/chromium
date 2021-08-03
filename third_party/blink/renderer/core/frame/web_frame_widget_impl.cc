@@ -1219,6 +1219,13 @@ void WebFrameWidgetImpl::SetOverscrollBehavior(
   widget_base_->LayerTreeHost()->SetOverscrollBehavior(overscroll_behavior);
 }
 
+void WebFrameWidgetImpl::SetPrefersReducedMotion(bool prefers_reduced_motion) {
+  if (!View()->does_composite())
+    return;
+  widget_base_->LayerTreeHost()->SetPrefersReducedMotion(
+      prefers_reduced_motion);
+}
+
 void WebFrameWidgetImpl::RegisterSelection(cc::LayerSelection selection) {
   if (!View()->does_composite())
     return;

@@ -135,6 +135,8 @@ class MockInputHandler : public cc::InputHandler {
   cc::ScrollElasticityHelper* CreateScrollElasticityHelper() override {
     return nullptr;
   }
+  void DestroyScrollElasticityHelper() override {}
+
   bool GetScrollOffsetForLayer(cc::ElementId element_id,
                                gfx::ScrollOffset* offset) override {
     return false;

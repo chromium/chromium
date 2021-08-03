@@ -3983,6 +3983,7 @@ float LayerTreeHostImpl::PageScaleFactor() const {
 void LayerTreeHostImpl::BindToInputHandler(
     std::unique_ptr<InputDelegateForCompositor> delegate) {
   input_delegate_ = std::move(delegate);
+  input_delegate_->SetPrefersReducedMotion(prefers_reduced_motion_);
 }
 
 void LayerTreeHostImpl::SetVisualDeviceViewportSize(
@@ -3992,6 +3993,15 @@ void LayerTreeHostImpl::SetVisualDeviceViewportSize(
 
 gfx::Size LayerTreeHostImpl::VisualDeviceViewportSize() const {
   return visual_device_viewport_size_;
+}
+
+void LayerTreeHostImpl::SetPrefersReducedMotion(bool prefers_reduced_motion) {
+  if (prefers_reduced_motion_ == prefers_reduced_motion)
+    return;
+
+  prefers_reduced_motion_ = prefers_reduced_motion;
+  if (input_delegate_)
+    input_delegate_->SetPrefersReducedMotion(prefers_reduced_motion_);
 }
 
 ScrollTree& LayerTreeHostImpl::GetScrollTree() const {
