@@ -4,6 +4,7 @@
 
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 
+#import "base/values.h"
 #import "ios/web/js_features/context_menu/context_menu_params_utils.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
@@ -19,8 +20,6 @@ const CGFloat kJavaScriptTimeout = 1;
 }  // namespace
 
 @interface CRWContextMenuController () <UIContextMenuInteractionDelegate>
-
-@property(nonatomic, assign) web::ContextMenuParams params;
 
 // The context menu responsible for the interaction.
 @property(nonatomic, strong) UIContextMenuInteraction* contextMenu;
@@ -39,7 +38,12 @@ const CGFloat kJavaScriptTimeout = 1;
 
 @end
 
-@implementation CRWContextMenuController
+@implementation CRWContextMenuController {
+  // This is an ivar instead of a property. As a property, the struct gets
+  // copied whenever an inner field is to be changed. The change happens in the
+  // copy, which is then dropped right after, leaving the original intact.
+  absl::optional<web::ContextMenuParams> _contextMenuParams;
+}
 
 @synthesize highlightView = _highlightView;
 @synthesize dismissView = _dismissView;
@@ -103,8 +107,7 @@ const CGFloat kJavaScriptTimeout = 1;
 
   // Clear params in case elementFetcher fails, which would lead to a popping
   // a context menu with the previous context menu params.
-  self.params.link_url = GURL();
-  self.params.src_url = GURL();
+  _contextMenuParams.reset();
 
   __weak __typeof(self) weakSelf = self;
   [self.elementFetcher
@@ -112,7 +115,9 @@ const CGFloat kJavaScriptTimeout = 1;
            completionHandler:^(const web::ContextMenuParams& params) {
              __typeof(self) strongSelf = weakSelf;
              javascriptEvaluationComplete = YES;
-             strongSelf.params = params;
+             if (!strongSelf)
+               return;
+             strongSelf->_contextMenuParams = params;
              if (isRunLoopNested) {
                CFRunLoopStop(CFRunLoopGetCurrent());
              }
@@ -144,8 +149,10 @@ const CGFloat kJavaScriptTimeout = 1;
 
   isRunLoopComplete = YES;
 
-  if (!web::CanShowContextMenuForParams(self.params))
+  if (!_contextMenuParams.has_value() ||
+      !web::CanShowContextMenuForParams(_contextMenuParams.value())) {
     return nil;
+  }
 
   // Adding the highlight/dismiss view here so they can be used in the
   // delegate's methods.
@@ -154,12 +161,12 @@ const CGFloat kJavaScriptTimeout = 1;
   self.highlightView.center = location;
   self.dismissView.center = location;
 
-  self.params.location = [self.webView convertPoint:location
-                                           fromView:interaction.view];
+  _contextMenuParams.value().location =
+      [self.webView convertPoint:location fromView:interaction.view];
 
   __block UIContextMenuConfiguration* configuration;
   self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, self.params, /*preview_provider=*/nil,
+      self.webState, _contextMenuParams.value(), /*preview_provider=*/nil,
       ^(UIContextMenuConfiguration* conf) {
         configuration = conf;
       });
