@@ -3668,6 +3668,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Conversions.ExtraReportDelay" units="ms"
     expires_after="2021-12-19">
+  <obsolete>
+    Replaced with Conversions.ExtraReportDelay2, which has a greater range.
+  </obsolete>
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to send a
+    particular conversion report. This is primarily due to a report's scheduled
+    report time taking place while the browser is closed. Recorded when a
+    conversion report is sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ExtraReportDelay2" units="ms"
+    expires_after="2021-12-19">
+  <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

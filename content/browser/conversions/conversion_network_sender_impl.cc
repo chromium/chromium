@@ -61,10 +61,10 @@ void LogMetricsOnReportSend(const ConversionReport& report) {
   base::Time now = base::Time::Now();
   base::TimeDelta time_since_original_report_time =
       (now - report.report_time) + report.extra_delay;
-  base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay",
+  base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay2",
                                 time_since_original_report_time,
                                 base::TimeDelta::FromSeconds(1),
-                                base::TimeDelta::FromDays(7), /*buckets=*/100);
+                                base::TimeDelta::FromDays(24), /*buckets=*/100);
 
   base::TimeDelta time_from_conversion_to_report_send =
       report.report_time - report.conversion_time;
