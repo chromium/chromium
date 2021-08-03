@@ -5,18 +5,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/web_contents_tester.h"
-#include "media/base/media_switches.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
@@ -342,33 +336,4 @@ TEST_F(OverlayWindowViewsTest, HitTestFrameView) {
   views::NonClientView* non_client_view = overlay_window().non_client_view();
   EXPECT_EQ(non_client_view->frame_view()->HitTestPoint(point), false);
   EXPECT_EQ(non_client_view->HitTestPoint(point), true);
-}
-
-// Tests with MediaSessionWebRTC enabled.
-class OverlayWindowViewsMediaSessionWebRTCTest : public OverlayWindowViewsTest {
- public:
-  // OverlayWindowViewsTest:
-  void SetUp() override {
-    OverlayWindowViewsTest::SetUp();
-  }
-
-  void NavigateTo(const GURL& url) {
-    content::WebContentsTester::For(web_contents())->SetLastCommittedURL(url);
-  }
-
- private:
-  // |feature_list_| needs to be initialized as early as possible to avoid data
-  // races with other threads checking if a feature is enabled.
-  base::test::ScopedFeatureList feature_list_{media::kMediaSessionWebRTC};
-};
-
-TEST_F(OverlayWindowViewsMediaSessionWebRTCTest,
-       BackToTabLabelButtonDisplaysText) {
-  // Navigation does not affect the text displayed on the button.
-  NavigateTo(GURL("https://foo.com/bar?baz=1"));
-  overlay_window().UpdateVideoSize({200, 200});
-  overlay_window().ShowInactive();
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT),
-            overlay_window().back_to_tab_label_button_for_testing()->GetText());
 }

@@ -853,11 +853,6 @@ void OverlayWindowViews::Close() {
 }
 
 void OverlayWindowViews::ShowInactive() {
-  if (back_to_tab_label_button_) {
-    back_to_tab_label_button_->SetText(l10n_util::GetStringUTF16(
-        IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
-  }
-
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
 
