@@ -9,12 +9,18 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "build/buildflag.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -24,8 +30,11 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/models/tree_model.h"
 
 namespace {
@@ -60,6 +69,44 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   bool initialized_;
   content::DownloadManager* download_manager_;
 };
+
+class CookiesTreeObserver : public CookiesTreeModel::Observer {
+ public:
+  explicit CookiesTreeObserver(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+  ~CookiesTreeObserver() override = default;
+
+  void TreeModelBeginBatch(CookiesTreeModel* model) override {}
+
+  void TreeModelEndBatch(CookiesTreeModel* model) override {
+    std::move(quit_closure_).Run();
+  }
+
+  void TreeNodesAdded(ui::TreeModel* model,
+                      ui::TreeModelNode* parent,
+                      size_t start,
+                      size_t count) override {}
+  void TreeNodesRemoved(ui::TreeModel* model,
+                        ui::TreeModelNode* parent,
+                        size_t start,
+                        size_t count) override {}
+  void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override {
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
+
+// Check if |file| matches any regex in |ignore_file_patterns|.
+bool ShouldIgnoreFile(const std::string& file,
+                      const std::vector<std::string>& ignore_file_patterns) {
+  for (const std::string& pattern : ignore_file_patterns) {
+    if (RE2::PartialMatch(file, pattern))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 BrowsingDataRemoverBrowserTestBase::BrowsingDataRemoverBrowserTestBase() =
@@ -79,6 +126,13 @@ void BrowsingDataRemoverBrowserTestBase::UseIncognitoBrowser() {
   incognito_browser_ = CreateIncognitoBrowser();
 }
 
+void BrowsingDataRemoverBrowserTestBase::RestartIncognitoBrowser() {
+  ASSERT_NE(nullptr, incognito_browser_);
+  CloseBrowserSynchronously(incognito_browser_);
+  incognito_browser_ = nullptr;
+  UseIncognitoBrowser();
+}
+
 Browser* BrowsingDataRemoverBrowserTestBase::GetBrowser() const {
   return incognito_browser_ ? incognito_browser_ : browser();
 }
@@ -92,24 +146,32 @@ void BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread() {
 
 void BrowsingDataRemoverBrowserTestBase::RunScriptAndCheckResult(
     const std::string& script,
-    const std::string& result) {
+    const std::string& result,
+    Browser* browser) {
+  if (!browser)
+    browser = GetBrowser();
   std::string data;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetBrowser()->tab_strip_model()->GetActiveWebContents(), script, &data));
+      browser->tab_strip_model()->GetActiveWebContents(), script, &data));
   ASSERT_EQ(data, result);
 }
 
 bool BrowsingDataRemoverBrowserTestBase::RunScriptAndGetBool(
-    const std::string& script) {
+    const std::string& script,
+    Browser* browser) {
+  EXPECT_TRUE(browser);
   bool data;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetBrowser()->tab_strip_model()->GetActiveWebContents(), script, &data));
+      browser->tab_strip_model()->GetActiveWebContents(), script, &data));
   return data;
 }
 
-void BrowsingDataRemoverBrowserTestBase::VerifyDownloadCount(size_t expected) {
+void BrowsingDataRemoverBrowserTestBase::VerifyDownloadCount(size_t expected,
+                                                             Browser* browser) {
+  if (!browser)
+    browser = GetBrowser();
   content::DownloadManager* download_manager =
-      GetBrowser()->profile()->GetDownloadManager();
+      browser->profile()->GetDownloadManager();
   DownloadManagerWaiter download_manager_waiter(download_manager);
   download_manager_waiter.WaitForInitialized();
   std::vector<download::DownloadItem*> downloads;
@@ -135,21 +197,27 @@ void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
   VerifyDownloadCount(1u);
 }
 
-bool BrowsingDataRemoverBrowserTestBase::HasDataForType(
-    const std::string& type) {
-  return RunScriptAndGetBool("has" + type + "()");
+bool BrowsingDataRemoverBrowserTestBase::HasDataForType(const std::string& type,
+                                                        Browser* browser) {
+  if (!browser)
+    browser = GetBrowser();
+  return RunScriptAndGetBool("has" + type + "()", browser);
 }
 
-void BrowsingDataRemoverBrowserTestBase::SetDataForType(
-    const std::string& type) {
-  ASSERT_TRUE(RunScriptAndGetBool("set" + type + "()"))
+void BrowsingDataRemoverBrowserTestBase::SetDataForType(const std::string& type,
+                                                        Browser* browser) {
+  if (!browser)
+    browser = GetBrowser();
+  ASSERT_TRUE(RunScriptAndGetBool("set" + type + "()", browser))
       << "Couldn't create data for: " << type;
 }
 
-int BrowsingDataRemoverBrowserTestBase::GetSiteDataCount() {
+int BrowsingDataRemoverBrowserTestBase::GetSiteDataCount(Browser* browser) {
+  if (!browser)
+    browser = GetBrowser();
   base::RunLoop run_loop;
   int count = -1;
-  (new SiteDataCountingHelper(GetBrowser()->profile(), base::Time(),
+  (new SiteDataCountingHelper(browser->profile(), base::Time(),
                               base::Time::Max(),
                               base::BindLambdaForTesting([&](int c) {
                                 count = c;
@@ -167,3 +235,184 @@ BrowsingDataRemoverBrowserTestBase::network_context() const {
       ->GetDefaultStoragePartition()
       ->GetNetworkContext();
 }
+
+bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
+    const std::string& hostname,
+    const std::vector<std::string>& ignore_file_patterns) {
+  base::FilePath user_data_dir =
+      g_browser_process->profile_manager()->user_data_dir();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FileEnumerator enumerator(
+      user_data_dir, true /* recursive */,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+  int found = 0;
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    // Remove |user_data_dir| part from path.
+    std::string file =
+        path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe().substr(
+            user_data_dir.AsUTF8Unsafe().length());
+
+    // Check file name.
+    if (file.find(hostname) != std::string::npos) {
+      if (ShouldIgnoreFile(file, ignore_file_patterns)) {
+        LOG(INFO) << "Ignored: " << file;
+      } else {
+        found++;
+        LOG(WARNING) << "Found file name: " << file;
+      }
+    }
+
+    // Check leveldb content.
+    if (path.BaseName().AsUTF8Unsafe() == "CURRENT") {
+      // LevelDB instances consist of a folder where most files have variable
+      // names that contain a revision number.
+      // All leveldb folders have a "CURRENT" file that points to the current
+      // manifest. We consider all folders with a CURRENT file to be leveldb
+      // instances and try to open them.
+      std::unique_ptr<leveldb::DB> db;
+      std::string db_file = path.DirName().AsUTF8Unsafe();
+      auto status = leveldb_env::OpenDB(leveldb_env::Options(), db_file, &db);
+      if (status.ok()) {
+        std::unique_ptr<leveldb::Iterator> it(
+            db->NewIterator(leveldb::ReadOptions()));
+        for (it->SeekToFirst(); it->Valid(); it->Next()) {
+          std::string entry =
+              it->key().ToString() + ":" + it->value().ToString();
+          if (entry.find(hostname) != std::string::npos) {
+            LOG(WARNING) << "Found leveldb entry: " << file << " " << entry;
+            found++;
+          }
+        }
+      } else {
+        // TODO(crbug.com/846297): Some databases are already open and the LOCK
+        // prevents us from accessing them.
+        LOG(INFO) << "Could not open: " << file << " " << status.ToString();
+      }
+    }
+
+    // TODO(crbug.com/846297): Add support for sqlite and other formats that
+    // possibly contain non-plaintext data.
+
+    // Check file content.
+    if (enumerator.GetInfo().IsDirectory())
+      continue;
+    std::string content;
+    if (!base::ReadFileToString(path, &content)) {
+      LOG(INFO) << "Could not read: " << file;
+      continue;
+    }
+    size_t pos = content.find(hostname);
+    if (pos != std::string::npos) {
+      if (ShouldIgnoreFile(file, ignore_file_patterns)) {
+        LOG(INFO) << "Ignored: " << file;
+        continue;
+      }
+      found++;
+      // Print surrounding text of the match.
+      std::string partial_content = content.substr(
+          pos < 30 ? 0 : pos - 30,
+          std::min(content.size() - 1, pos + hostname.size() + 30));
+      LOG(WARNING) << "Found file content: " << file << "\n"
+                   << partial_content << "\n";
+    }
+  }
+  return found;
+}
+
+int BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelCount(
+    const CookieTreeNode* root) {
+  int count = 0;
+  for (const auto& node : root->children()) {
+    EXPECT_GE(node->children().size(), 1u);
+    count += std::count_if(node->children().cbegin(), node->children().cend(),
+                           [](const auto& child) {
+                             // TODO(crbug.com/642955): Include quota nodes.
+                             return child->GetDetailedInfo().node_type !=
+                                    CookieTreeNode::DetailedInfo::TYPE_QUOTA;
+                           });
+  }
+  return count;
+}
+
+std::string BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelInfo(
+    const CookieTreeNode* root) {
+  std::stringstream info;
+  info << "CookieTreeModel: " << std::endl;
+  for (const auto& node : root->children()) {
+    info << node->GetTitle() << std::endl;
+    for (const auto& child : node->children()) {
+      // Quota nodes are not included in the UI due to crbug.com/642955.
+      const auto node_type = child->GetDetailedInfo().node_type;
+      if (node_type != CookieTreeNode::DetailedInfo::TYPE_QUOTA)
+        info << "  " << child->GetTitle() << " " << node_type << std::endl;
+    }
+  }
+  return info.str();
+}
+
+std::unique_ptr<CookiesTreeModel>
+BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Browser* browser) {
+  Profile* profile = browser->profile();
+  content::StoragePartition* storage_partition =
+      profile->GetDefaultStoragePartition();
+  content::ServiceWorkerContext* service_worker_context =
+      storage_partition->GetServiceWorkerContext();
+  storage::FileSystemContext* file_system_context =
+      storage_partition->GetFileSystemContext();
+  content::NativeIOContext* native_io_context =
+      storage_partition->GetNativeIOContext();
+  auto container = std::make_unique<LocalDataContainer>(
+      new browsing_data::CookieHelper(
+          storage_partition,
+          CookiesTreeModel::GetCookieDeletionDisabledCallback(profile)),
+      new browsing_data::DatabaseHelper(profile),
+      new browsing_data::LocalStorageHelper(profile),
+      /*session_storage_helper=*/nullptr,
+      new browsing_data::AppCacheHelper(
+          storage_partition->GetAppCacheService()),
+      new browsing_data::IndexedDBHelper(storage_partition),
+      browsing_data::FileSystemHelper::Create(
+          file_system_context,
+          browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
+          native_io_context),
+      BrowsingDataQuotaHelper::Create(profile),
+      new browsing_data::ServiceWorkerHelper(service_worker_context),
+      new browsing_data::SharedWorkerHelper(storage_partition),
+      new browsing_data::CacheStorageHelper(storage_partition),
+      BrowsingDataMediaLicenseHelper::Create(file_system_context));
+  base::RunLoop run_loop;
+  CookiesTreeObserver observer(run_loop.QuitClosure());
+  auto model = std::make_unique<CookiesTreeModel>(
+      std::move(container), profile->GetExtensionSpecialStoragePolicy());
+  model->AddCookiesTreeObserver(&observer);
+  run_loop.Run();
+  return model;
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+bool BrowsingDataRemoverBrowserTestBase::SetGaiaCookieForProfile(
+    Profile* profile) {
+  GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "SAPISID", std::string(), "." + google_url.host(), "/", base::Time(),
+      base::Time(), base::Time(), true /* secure */, false /* httponly */,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
+  bool success = false;
+  base::RunLoop loop;
+  base::OnceCallback<void(net::CookieAccessResult)> callback =
+      base::BindLambdaForTesting([&success, &loop](net::CookieAccessResult r) {
+        success = r.status.IsInclude();
+        loop.Quit();
+      });
+  network::mojom::CookieManager* cookie_manager =
+      profile->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess();
+  cookie_manager->SetCanonicalCookie(*cookie, google_url,
+                                     net::CookieOptions::MakeAllInclusive(),
+                                     std::move(callback));
+  loop.Run();
+  return success;
+}
+#endif

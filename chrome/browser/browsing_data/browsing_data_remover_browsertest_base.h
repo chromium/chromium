@@ -7,7 +7,9 @@
 
 #include <string>
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 class BrowsingDataRemoverBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -18,20 +20,53 @@ class BrowsingDataRemoverBrowserTestBase : public InProcessBrowserTest {
 
   Browser* GetBrowser() const;
   void SetUpOnMainThread() override;
+  // If |browser| is not specified, |GetBrowser| will be used.
   void RunScriptAndCheckResult(const std::string& script,
-                               const std::string& result);
-  bool RunScriptAndGetBool(const std::string& script);
-  void VerifyDownloadCount(size_t expected);
-  void DownloadAnItem();
-  bool HasDataForType(const std::string& type);
+                               const std::string& result,
+                               Browser* browser = nullptr);
+  bool RunScriptAndGetBool(const std::string& script, Browser* browser);
 
-  void SetDataForType(const std::string& type);
-  int GetSiteDataCount();
+  // If |browser| is not specified, |GetBrowser| will be used.
+  void VerifyDownloadCount(size_t expected, Browser* browser = nullptr);
+  void DownloadAnItem();
+
+  // If |browser| is not specified, |GetBrowser| will be used.
+  bool HasDataForType(const std::string& type, Browser* browser = nullptr);
+
+  // If |browser| is not specified, |GetBrowser| will be used.
+  void SetDataForType(const std::string& type, Browser* browser = nullptr);
+
+  // If |browser| is not specified, |GetBrowser| will be used.
+  int GetSiteDataCount(Browser* browser = nullptr);
 
   void UseIncognitoBrowser();
   bool IsIncognito() { return incognito_browser_ != nullptr; }
+  void RestartIncognitoBrowser();
 
   network::mojom::NetworkContext* network_context() const;
+
+ protected:
+  // Searches the user data directory for files that contain |hostname| in the
+  // filename or as part of the content. Returns the number of files that
+  // do not match any regex in |ignore_file_patterns|.
+  bool CheckUserDirectoryForString(
+      const std::string& hostname,
+      const std::vector<std::string>& ignore_file_patterns);
+
+  // Returns the cookie tree model for the browser.
+  std::unique_ptr<CookiesTreeModel> GetCookiesTreeModel(Browser* browser);
+
+  // Returns the sum of the number of datatypes per host.
+  int GetCookiesTreeModelCount(const CookieTreeNode* root);
+
+  // Returns a string with information about the content of the
+  // cookie tree model.
+  std::string GetCookiesTreeModelInfo(const CookieTreeNode* root);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Sets the APISID Gaia cookie, which is monitored by the AccountReconcilor.
+  bool SetGaiaCookieForProfile(Profile* profile);
+#endif
 
  private:
   base::test::ScopedFeatureList feature_list_;

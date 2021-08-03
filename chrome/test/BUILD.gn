@@ -1422,6 +1422,7 @@ if (!is_android) {
       "../browser/browsing_data/counters/history_counter_browsertest.cc",
       "../browser/browsing_data/counters/passwords_counter_browsertest.cc",
       "../browser/browsing_data/counters/sync_aware_counter_browsertest.cc",
+      "../browser/browsing_data/incognito_browsing_data_browsertest.cc",
       "../browser/browsing_data/navigation_entry_remover_browsertest.cc",
       "../browser/browsing_data/third_party_data_remover_browsertest.cc",
       "../browser/capability_delegation_browsertest.cc",
