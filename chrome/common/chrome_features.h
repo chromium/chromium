@@ -81,6 +81,11 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kBorealis;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChangePictureVideoMode;
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kChromeAppsDeprecation;
+#endif
+
 #if defined(OS_WIN)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChromeCleanupScanCompletedNotification;

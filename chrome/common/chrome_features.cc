@@ -101,6 +101,14 @@ const base::Feature kBorealis{"Borealis", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kChangePictureVideoMode{"ChangePictureVideoMode",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// Controls whether Chrome Apps are supported. See https://crbug.com/1221251.
+// If the feature is disabled, Chrome Apps continue to work. If enabled, Chrome
+// Apps will not launch and will be marked in the UI as deprecated.
+const base::Feature kChromeAppsDeprecation{"ChromeAppsDeprecation",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+
 #if defined(OS_WIN)
 const base::Feature kChromeCleanupScanCompletedNotification{
     "ChromeCleanupScanCompletedNotification",
