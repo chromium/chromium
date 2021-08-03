@@ -444,7 +444,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
+// TODO(http://crbug.com/1229213): flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_DesktopFocusIframe DISABLED_DesktopFocusIframe
+#else
+#define MAYBE_DesktopFocusIframe DesktopFocusIframe
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_DesktopFocusIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "focus_iframe.html"}))
