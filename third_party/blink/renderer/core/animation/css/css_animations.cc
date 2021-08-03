@@ -86,7 +86,7 @@
 
 namespace blink {
 
-using PropertySet = HashSet<const CSSProperty*>;
+using PropertySet = HashSet<CSSPropertyName>;
 
 namespace {
 
@@ -329,12 +329,12 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     //     to animated properties.
     StringKeyframe* keyframe = keyframes[target_index];
     for (const auto& property : rule_keyframe->Properties()) {
-      const CSSProperty& css_property = property.GetCSSProperty();
+      CSSPropertyName property_name = property.GetCSSPropertyName();
 
       // Since processing keyframes in reverse order, skipping properties that
       // have already been inserted prevents overwriting a later merged
       // keyframe.
-      if (current_offset_properties.Contains(&css_property))
+      if (current_offset_properties.Contains(property_name))
         continue;
 
       if (source_index != target_index) {
@@ -343,12 +343,12 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
             rule_keyframe->CssPropertyValue(property));
       }
 
-      current_offset_properties.insert(&css_property);
-      animated_properties.insert(&css_property);
+      current_offset_properties.insert(property_name);
+      animated_properties.insert(property_name);
       if (keyframe_offset == 0)
-        start_properties.insert(&css_property);
+        start_properties.insert(property_name);
       else if (keyframe_offset == 1)
-        end_properties.insert(&css_property);
+        end_properties.insert(property_name);
     }
   }
 
