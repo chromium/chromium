@@ -7,8 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
-#include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
@@ -29,7 +27,6 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -45,7 +42,6 @@ constexpr char kWlan0DevicePath[] = "/device/wlan0";
 constexpr char kWlan0Name[] = "wlan0_name";
 constexpr char kWlan0NetworkGuid[] = "wlan0_network_guid";
 constexpr char kFormattedMacAddress[] = "01:23:45:67:89:AB";
-constexpr char kTestIPConfigPath[] = "test_ip_config_path";
 
 // TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
 namespace network_config = ::chromeos::network_config;
@@ -209,15 +205,6 @@ class NetworkHealthProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void AssociateIPConfigWithWifiDevice() {
-    network_state_helper().device_test()->SetDeviceProperty(
-        kWlan0DevicePath, shill::kSavedIPConfigProperty,
-        base::Value(kTestIPConfigPath),
-        /*notify_changed=*/true);
-
-    base::RunLoop().RunUntilIdle();
-  }
-
   void CreateVpnDevice() {
     network_state_helper().manager_test()->AddTechnology(shill::kTypeVPN, true);
     network_state_helper().device_test()->AddDevice(
@@ -239,14 +226,6 @@ class NetworkHealthProviderTest : public testing::Test {
     network_state_helper().service_test()->AddService(
         kWlan0DevicePath, kWlan0NetworkGuid, kWlan0Name, shill::kTypeWifi,
         shill::kStateAssociation, true);
-
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void AssociateWifiWithIPConfig() {
-    network_state_helper().service_test()->AddServiceWithIPConfig(
-        kWlan0DevicePath, kWlan0NetworkGuid, kWlan0Name, shill::kTypeWifi,
-        shill::kStateAssociation, kTestIPConfigPath, true);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -323,34 +302,6 @@ class NetworkHealthProviderTest : public testing::Test {
     network_state_helper().device_test()->SetDeviceProperty(
         kWlan0DevicePath, shill::kAddressProperty, base::Value(mac_address),
         /*notify_changed=*/true);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetGatewayForIPConfig(const std::string& gateway) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
-        dbus::ObjectPath(kTestIPConfigPath), shill::kGatewayProperty,
-        base::Value(gateway), base::DoNothing());
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetIPAddressForIPConfig(const std::string& ip_address) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
-        dbus::ObjectPath(kTestIPConfigPath), shill::kAddressProperty,
-        base::Value(ip_address), base::DoNothing());
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetNameServersForIPConfig(const base::ListValue& dns_servers) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
-        dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
-        dns_servers, base::DoNothing());
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetRoutingPrefixForIPConfig(int routing_prefix) {
-    chromeos::ShillIPConfigClient::Get()->SetProperty(
-        dbus::ObjectPath(kTestIPConfigPath), shill::kPrefixlenProperty,
-        base::Value(routing_prefix), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -805,67 +756,6 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithMacAddress) {
   ExpectStateObserverFired(observer, &state_call_count);
 
   EXPECT_EQ(observer.GetLatestState()->mac_address, kFormattedMacAddress);
-}
-
-TEST_F(NetworkHealthProviderTest, IPConfig) {
-  // Observe the network list.
-  FakeNetworkListObserver list_observer;
-  SetupObserver(&list_observer);
-  size_t list_call_count =
-      ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
-
-  // No networks are present and no active network.
-  ASSERT_EQ(0u, list_observer.observer_guids().size());
-  EXPECT_TRUE(list_observer.active_guid().empty());
-
-  // Create a wifi device and verify `list_observer` fired.
-  CreateWifiDevice();
-  AssociateIPConfigWithWifiDevice();
-  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
-
-  // Verify a new network is created, but there is no active guid because
-  // the network isn't connected.
-  ASSERT_EQ(1u, list_observer.observer_guids().size());
-  const std::string guid = list_observer.observer_guids()[0];
-  EXPECT_FALSE(guid.empty());
-  EXPECT_TRUE(list_observer.active_guid().empty());
-
-  // Observe the network and verify the observer fired.
-  FakeNetworkStateObserver observer;
-  SetupObserver(&observer, guid);
-
-  // Set IP Config properties.
-  const std::string gateway("192.0.0.1");
-  SetGatewayForIPConfig(gateway);
-  const std::string ip_address("192.168.1.1");
-  SetIPAddressForIPConfig(ip_address);
-  const int routing_prefix = 1;
-  SetRoutingPrefixForIPConfig(routing_prefix);
-  base::ListValue dns_servers;
-  const std::string dns_server_1 = "192.168.1.100";
-  const std::string dns_server_2 = "192.168.1.101";
-  dns_servers.AppendString(dns_server_1);
-  dns_servers.AppendString(dns_server_2);
-  SetNameServersForIPConfig(dns_servers);
-
-  AssociateWifiWithIPConfig();
-  SetWifiOnline();
-
-  ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
-  ExpectStateObserverFired(observer, /*prior_call_count=*/0);
-  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
-  EXPECT_FALSE(list_observer.active_guid().empty());
-  EXPECT_EQ(guid, list_observer.active_guid());
-
-  auto ip_config = observer.GetLatestState()->ip_config.Clone();
-  EXPECT_EQ(ip_config->gateway.value(), gateway);
-  EXPECT_EQ(ip_config->routing_prefix, routing_prefix);
-  EXPECT_EQ(ip_config->ip_address.value(), ip_address);
-
-  auto name_servers = ip_config->name_servers.value();
-  EXPECT_EQ(name_servers.size(), 2U);
-  EXPECT_EQ(name_servers[0], dns_server_1);
-  EXPECT_EQ(name_servers[1], dns_server_2);
 }
 
 }  // namespace diagnostics
