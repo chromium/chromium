@@ -91,7 +91,7 @@
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager_util.h"
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif

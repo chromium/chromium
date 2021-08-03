@@ -89,7 +89,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager_util.h"
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/browser/lacros/lacros_startup_infobar_delegate.h"
 #include "chromeos/lacros/lacros_service.h"
