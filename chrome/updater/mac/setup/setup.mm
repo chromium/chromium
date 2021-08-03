@@ -84,12 +84,32 @@ NSString* NSStringSessionType(UpdaterScope scope) {
 }
 
 #pragma mark Setup
-bool CopyBundle(const base::FilePath& dest_path) {
+bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
   if (!base::PathExists(dest_path)) {
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(dest_path, &error)) {
       LOG(ERROR) << "Failed to create '" << dest_path.value().c_str()
                  << "' directory: " << base::File::ErrorToString(error);
+      return false;
+    }
+  }
+
+  // For system installs, set file permissions to be drwxr-xr-x
+  if (scope == UpdaterScope::kSystem) {
+    constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
+                                     base::FILE_PERMISSION_READ_BY_GROUP |
+                                     base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                                     base::FILE_PERMISSION_READ_BY_OTHERS |
+                                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
+    if (!base::SetPosixFilePermissions(
+            GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
+            kPermissionsMask) ||
+        !base::SetPosixFilePermissions(*GetUpdaterFolderPath(scope),
+                                       kPermissionsMask) ||
+        !base::SetPosixFilePermissions(*GetVersionedUpdaterFolderPath(scope),
+                                       kPermissionsMask)) {
+      LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
+                 << dest_path.value().c_str();
       return false;
     }
   }
@@ -339,7 +359,7 @@ int DoSetup(UpdaterScope scope) {
 
   if (!dest_path)
     return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
-  if (!CopyBundle(*dest_path))
+  if (!CopyBundle(*dest_path, scope))
     return setup_exit_codes::kFailedToCopyBundle;
 
   const base::FilePath updater_executable_path =
