@@ -48,6 +48,6 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
   }
 
   CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
-  result->Start(IdentityManagerFactory::GetForProfile(profile));
+  result->Start();
   return result;
 }

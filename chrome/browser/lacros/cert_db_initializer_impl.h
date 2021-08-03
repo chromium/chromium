@@ -11,11 +11,9 @@
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
-class IdentityManagerObserver;
 
 // Initializes certificate database in Lacros-Chrome. Public methods should be
 // called from the UI thread. Relies on CertDatabase mojo interface to be
@@ -25,18 +23,14 @@ class CertDbInitializerImpl : public CertDbInitializer, public KeyedService {
   explicit CertDbInitializerImpl(Profile* profile);
   ~CertDbInitializerImpl() override;
 
-  // Starts the initialization. The first step is to wait for
-  // IdentityManager.
-  void Start(signin::IdentityManager* identity_manager);
+  // Starts the initialization.
+  void Start();
 
   // CertDbInitializer
   base::CallbackListSubscription WaitUntilReady(
       ReadyCallback callback) override;
 
  private:
-  // It is called when IdentityManager is ready.
-  void OnRefreshTokensLoaded();
-
   // Checks that the current profile is the main profile and, if yes, makes a
   // mojo request to Ash-Chrome to get information about certificate database.
   void WaitForCertDbReady();
@@ -53,7 +47,6 @@ class CertDbInitializerImpl : public CertDbInitializer, public KeyedService {
   // This class is a `KeyedService` based on the `Profile`. An instance is
   // created together with a new profile and never outlives it.`
   Profile* profile_ = nullptr;
-  std::unique_ptr<IdentityManagerObserver> identity_manager_observer_;
   absl::optional<bool> is_ready_;
   base::OnceCallbackList<ReadyCallback::RunType> callbacks_;
 

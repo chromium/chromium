@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/chaps_support.h"
@@ -60,42 +59,11 @@ bool InitializeCertDbOnWorkerThread(bool should_load_chaps,
 
 }  // namespace
 
-class IdentityManagerObserver : public signin::IdentityManager::Observer {
- public:
-  explicit IdentityManagerObserver(signin::IdentityManager* identity_manager)
-      : identity_manager_(identity_manager) {
-    DCHECK(identity_manager_);
-    identity_manager_->AddObserver(this);
-  }
-
-  IdentityManagerObserver(const IdentityManagerObserver&) = delete;
-  IdentityManagerObserver& operator==(const IdentityManagerObserver&) = delete;
-
-  ~IdentityManagerObserver() override {
-    identity_manager_->RemoveObserver(this);
-  }
-
-  void WaitForRefreshTokensLoaded(base::OnceClosure callback) {
-    DCHECK(callback_.is_null());
-    callback_ = std::move(callback);
-  }
-
- private:
-  void OnRefreshTokensLoaded() override {
-    if (!callback_) {
-      return;
-    }
-    std::move(callback_).Run();  // NOTE: may delete `this`.
-  }
-
-  signin::IdentityManager* identity_manager_ = nullptr;
-  base::OnceClosure callback_;
-};
-
 // =============================================================================
 
 CertDbInitializerImpl::CertDbInitializerImpl(Profile* profile)
     : profile_(profile) {
+  DCHECK(profile_);
   DCHECK(chromeos::LacrosService::Get()
              ->IsAvailable<crosapi::mojom::CertDatabase>());
 }
@@ -106,45 +74,7 @@ CertDbInitializerImpl::~CertDbInitializerImpl() {
   OnCertDbInitializationFinished(false);
 }
 
-void CertDbInitializerImpl::Start(signin::IdentityManager* identity_manager) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  DCHECK(identity_manager);
-  // TODO(crbug.com/1148300): This is temporary. Until ~2021
-  // `Profile::IsMainProfile()` method can return a false negative response if
-  // called before refresh tokens are loaded. This should be removed together
-  // with the entire usage of `IdentityManager` in this class when it is not the
-  // case anymore.
-  if (!identity_manager->AreRefreshTokensLoaded()) {
-    identity_manager_observer_ =
-        std::make_unique<IdentityManagerObserver>(identity_manager);
-    identity_manager_observer_->WaitForRefreshTokensLoaded(
-        base::BindOnce(&CertDbInitializerImpl::OnRefreshTokensLoaded,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-  WaitForCertDbReady();
-}
-
-base::CallbackListSubscription CertDbInitializerImpl::WaitUntilReady(
-    ReadyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (is_ready_.has_value()) {
-    std::move(callback).Run(is_ready_.value());
-    return {};
-  }
-
-  return callbacks_.Add(std::move(callback));
-}
-
-void CertDbInitializerImpl::OnRefreshTokensLoaded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  identity_manager_observer_.reset();
-  WaitForCertDbReady();
-}
-
-void CertDbInitializerImpl::WaitForCertDbReady() {
+void CertDbInitializerImpl::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!profile_->IsMainProfile()) {
@@ -157,6 +87,18 @@ void CertDbInitializerImpl::WaitForCertDbReady() {
       ->GetCertDatabaseInfo(
           base::BindOnce(&CertDbInitializerImpl::OnCertDbInfoReceived,
                          weak_factory_.GetWeakPtr()));
+}
+
+base::CallbackListSubscription CertDbInitializerImpl::WaitUntilReady(
+    ReadyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_ready_.has_value()) {
+    std::move(callback).Run(is_ready_.value());
+    return {};
+  }
+
+  return callbacks_.Add(std::move(callback));
 }
 
 void CertDbInitializerImpl::OnCertDbInfoReceived(
