@@ -29,9 +29,20 @@ enum class DisabledReasonId : content::BackForwardCache::DisabledReasonType {
   // Modal dialog such as form resubmittion or http password dialog is shown for
   // the page.
   kModalDialog = 11,
+  // Support for extensions is added in stages (see crbug.com/1110891), each
+  // with its own enum.
+  // - kExtensions: All extensions are blocklisted.
+  // - kExtensionMessaging: Extensions using messaging APIs are blocklisted.
+  // - kExtensionMessagingForOpenPort: Extensions using long-lived connections
+  //   that don't close the connection before attempting to cache the frame are
+  //   blocklisted.
+  // - kExtensionSentMessageToCachedFrame: Extensions using long-lived
+  //   connections that attempt to send a message to a frame while it is cached
+  //   (inactive) are blocklisted.
   kExtensions = 12,
   kExtensionMessaging = 13,
   kExtensionMessagingForOpenPort = 14,
+  kExtensionSentMessageToCachedFrame = 15,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.

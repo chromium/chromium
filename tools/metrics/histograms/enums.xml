@@ -7009,6 +7009,7 @@ others/histograms.xml -->
   <int value="196620" label="kEmbedder-kExtensions"/>
   <int value="196621" label="kEmbedder-kExtensionMessaging"/>
   <int value="196622" label="kEmbedder-kExtensionMessagingForOpenPort"/>
+  <int value="196623" label="kEmbedder-kExtensionSentMessageToCachedFrame"/>
 </enum>
 
 <enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">

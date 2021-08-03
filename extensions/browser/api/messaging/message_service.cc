@@ -16,9 +16,12 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -29,6 +32,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/extension_message_port.h"
@@ -108,6 +112,26 @@ const Extension* GetExtensionForNativeAppChannel(
     return nullptr;
   return extension_web_contents_observer->GetExtensionFromFrame(source_rfh,
                                                                 true);
+}
+
+bool IsExtensionMessageSupportedInBackForwardCache() {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
+    return false;
+  static const bool is_extension_message_supported =
+      base::FeatureParam<bool>(&features::kBackForwardCache,
+                               "extension_message_supported", false)
+          .Get();
+  return is_extension_message_supported;
+}
+
+// Disables the back forward for `host` if the current configuration does not
+// support extension messaging APIs.
+void MaybeDisableBackForwardCacheForMessaging(content::RenderFrameHost* host) {
+  if (!host || IsExtensionMessageSupportedInBackForwardCache())
+    return;
+  content::BackForwardCache::DisableForRenderFrameHost(
+      host, back_forward_cache::DisabledReason(
+                back_forward_cache::DisabledReasonId::kExtensionMessaging));
 }
 
 }  // namespace
@@ -214,6 +238,8 @@ void MessageService::OpenChannelToExtension(
     return;
   BrowserContext* context = source.browser_context();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
+
+  MaybeDisableBackForwardCacheForMessaging(source_render_frame_host);
 
   if (!opener_port) {
     DCHECK(source_endpoint.type == MessagingEndpoint::Type::kTab ||
@@ -408,6 +434,8 @@ void MessageService::OpenChannelToNativeApp(
   content::RenderFrameHost* source_rfh =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
 
+  MaybeDisableBackForwardCacheForMessaging(source_rfh);
+
   std::string error = kReceivingEndDoesntExistError;
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   // NOTE: We're creating |receiver| with nullptr |source_rfh|, which seems to
@@ -471,6 +499,8 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
     opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
     return;
   }
+
+  MaybeDisableBackForwardCacheForMessaging(receiver_contents->GetMainFrame());
 
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
   std::unique_ptr<MessagePort> receiver =

@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -31,7 +32,8 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
       bool allow_content_scripts = true,
       bool extension_message_support = true,
       std::string blocked_extensions = "")
-      : extension_message_support_(extension_message_support) {
+      : allow_content_scripts_(allow_content_scripts),
+        extension_message_support_(extension_message_support) {
     // If `allow_content_scripts` is true then `all_extensions_allowed` must
     // also be true.
     DCHECK(!(allow_content_scripts && !all_extensions_allowed));
@@ -83,7 +85,7 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
         static_cast<int>(
             extension_message_support_
                 ? back_forward_cache::DisabledReasonId::
-                      kExtensionMessagingForOpenPort
+                      kExtensionSentMessageToCachedFrame
                 : back_forward_cache::DisabledReasonId::kExtensionMessaging);
 
     std::string action = base::StringPrintf(
@@ -107,20 +109,38 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     // 3) Navigate to B.
     ui_test_utils::NavigateToURL(browser(), url_b);
 
-    // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
-    // since it uses the chrome.runtime API.
-    delete_observer_rfh_a.WaitUntilDeleted();
+    // What happens next depends on whether or not content script is allowed. If
+    // it is, then the `rfh_a` should be cached and the channel should still be
+    // open. If it isn't, then `rfh_a` and the channel should be deleted.
+    if (!allow_content_scripts_) {
+      // `rfh_a` should be destroyed, and the channel should be closed.
+      delete_observer_rfh_a.WaitUntilDeleted();
+      EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
+    } else {
+      // Expect that `rfh_a` is cached, and the channel is still open.
+      EXPECT_EQ(rfh_a->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+      EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 
-    // 4) Go back to A.
+      // 4) Send a message to the port.
+      ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
+          extension->id(), "port.postMessage('bye');"));
+
+      // `rfh_a` should be destroyed now, and the channel should be closed.
+      delete_observer_rfh_a.WaitUntilDeleted();
+      EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
+    }
+
+    // 5) Go back to A.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     web_contents->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents));
 
     // When extension_message_support_ = true, validate that the not restored
-    // reason is `ExtensionMessagingForOpenPort` due to an active message
-    // channel. Otherwise, validate that the not restored reason is
-    // `ExtensionMessaging` due to extension messages.
+    // reason is `kExtensionSentMessageToCachedFrame` due to a message being
+    // sent to an inactive frame. Otherwise, validate that the not restored
+    // reason is `ExtensionMessaging` due to extension messages.
     EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                      "BackForwardCache.HistoryNavigationOutcome."
                      "DisabledForRenderFrameHostReason2",
@@ -180,6 +200,7 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  bool allow_content_scripts_;
   bool extension_message_support_;
 };
 
@@ -653,7 +674,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test if the chrome.tabs.connect is called and then the page is navigated,
-// the page is not allowed to enter the bfcache due to an open channel.
+// the page is allowed to enter the bfcache, but if the extension tries to send
+// it a message the page will be evicted.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
                        ChromeTabsConnect) {
   const Extension* extension =
@@ -673,9 +695,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 
   constexpr char kScript[] =
       R"HTML(
-      var p;
       chrome.tabs.query({}, (t) => {
         p = chrome.tabs.connect(t[0].id);
+        // Save a "global" reference to the port so it can be used by the test
+        // later.
+        port = p;
         p.onMessage.addListener(
          (m) => {window.domAutomationController.send(m)}
         );
@@ -690,8 +714,87 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // 3) Navigate to B.
   ui_test_utils::NavigateToURL(browser(), url_b);
 
-  // Expect that `rfh_a` is destroyed as it should be cleared from the cache.
+  // Expect that `rfh_a` is cached, and the channel is still open.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  // 4) Send a message to the port.
+  ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(extension->id(),
+                                                  "port.postMessage('bye');"));
+
+  // Expect that `rfh_a` is destroyed, since the message should cause it to be
+  // evicted, and that the channel is closed.
   delete_observer_rfh_a.WaitUntilDeleted();
+  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
+}
+
+// Test that after caching and restoring a page, long-lived ports still work.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ChromeTabsConnectChannelWorksAfterRestore) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  std::u16string expected_title_connected = u"connected";
+  content::TitleWatcher title_watcher_connected(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      expected_title_connected);
+
+  EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 0u);
+
+  std::string action = base::StringPrintf(
+      R"HTML(
+        var p = chrome.runtime.connect('%s');
+        p.onMessage.addListener((m) => {
+          document.title = m;
+        });
+      )HTML",
+      extension->id().c_str());
+  ASSERT_TRUE(ExecJs(rfh_a, action));
+
+  // 2) Wait for the message port to be connected.
+  EXPECT_EQ(expected_title_connected,
+            title_watcher_connected.WaitAndGetTitle());
+
+  EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 1u);
+
+  // 3) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+
+  EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 1u);
+
+  // Expect that `rfh_a` is cached.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4) Navigate back to A.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
+
+  // Verify that `rfh_a` is the active frame again.
+  EXPECT_TRUE(rfh_a->GetLifecycleState() ==
+              content::RenderFrameHost::LifecycleState::kActive);
+
+  // 5) Post a message to the frame.
+  ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
+      extension->id(), "port.postMessage('restored');"));
+
+  // Verify that the message was received properly.
+  content::TitleWatcher title_watcher_restored(
+      browser()->tab_strip_model()->GetActiveWebContents(), u"restored");
+  EXPECT_EQ(u"restored", title_watcher_restored.WaitAndGetTitle());
 }
 
 // Test if the chrome.tabs.connect is called then disconnected, the page is
