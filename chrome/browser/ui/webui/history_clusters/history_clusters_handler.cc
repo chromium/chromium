@@ -16,6 +16,7 @@
 #include "components/history_clusters/core/memories_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if !defined(CHROME_BRANDED)
@@ -112,8 +113,15 @@ void ServiceResultToMojom(
     clusters_mojoms.emplace_back(std::move(cluster_mojom));
   }
 
-  std::move(callback).Run(result.continuation_end_time,
-                          std::move(clusters_mojoms));
+  // TODO(tommycli): Resolve the semantics mismatch where the C++ handler uses
+  // `continuation_end_time` == base::Time() to represent exhausted history,
+  // while the mojom uses an explicit absl::optional value.
+  absl::optional<base::Time> continuation_end_time;
+  if (!result.continuation_end_time.is_null()) {
+    continuation_end_time = result.continuation_end_time;
+  }
+
+  std::move(callback).Run(continuation_end_time, std::move(clusters_mojoms));
 }
 
 // Exists temporarily only for developer usage. Never enabled via variations.
@@ -149,7 +157,12 @@ void HistoryClustersHandler::SetPage(
 void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
   const std::string& query = query_params->query;
   const size_t max_count = query_params->max_count;
-  base::Time end_time = query_params->end_time.value_or(base::Time());
+  base::Time end_time;
+  if (query_params->end_time) {
+    DCHECK(!query_params->end_time->is_null())
+        << "Page called handler with non-null but invalid end_time.";
+    end_time = *(query_params->end_time);
+  }
   auto result_callback =
       base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(query_params));
