@@ -9,12 +9,13 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 
-// Collection of window details associated with a profile.
+// Collection of tab searching details associated with a profile.
 struct ProfileData {
   array<Window> windows;
   array<TabGroup> tab_groups;
   array<RecentlyClosedTab> recently_closed_tabs;
   array<RecentlyClosedTabGroup> recently_closed_tab_groups;
+  bool recently_closed_section_expanded;
 };
 
 // Properties and tabs associated with a window.
@@ -162,6 +163,10 @@ interface PageHandler {
 
   // Open a recently closed tab or tab group.
   OpenRecentlyClosedEntry(int32 session_id);
+
+  // Save a user's preference for the state of the expandable 'Recently Closed'
+  // list section.
+  SaveRecentlyClosedExpandedPref(bool expanded);
 
   // Notify the backend that the UI is ready to be shown.
   ShowUI();

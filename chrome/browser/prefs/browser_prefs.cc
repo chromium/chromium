@@ -251,6 +251,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
@@ -1236,6 +1237,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   signin::RegisterProfilePrefs(registry);
   StartupBrowserCreator::RegisterProfilePrefs(registry);
+  tab_search_prefs::RegisterProfilePrefs(registry);
   TaskModuleService::RegisterProfilePrefs(registry);
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   CartService::RegisterProfilePrefs(registry);

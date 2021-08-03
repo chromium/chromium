@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/l10n/time_format.h"
@@ -188,6 +189,11 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
+void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
+      tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded, expanded);
+}
+
 void TabSearchPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder)
@@ -245,6 +251,10 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                            tab_group_ids, profile_data->tab_groups,
                            tab_dedup_keys);
   DCHECK(features::kTabSearchRecentlyClosedTabCountThreshold.Get() >= 0);
+
+  profile_data->recently_closed_section_expanded =
+      Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
+          tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
   return profile_data;
 }
 

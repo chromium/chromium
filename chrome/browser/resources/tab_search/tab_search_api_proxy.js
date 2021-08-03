@@ -55,6 +55,9 @@ export class TabSearchApiProxy {
   /** @return {!PageCallbackRouter} */
   getCallbackRouter() {}
 
+  /** @param {boolean} expanded */
+  saveRecentlyClosedExpandedPref(expanded) {}
+
   showUI() {}
 }
 
@@ -117,6 +120,11 @@ export class TabSearchApiProxyImpl {
   /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
+  }
+
+  /** @override */
+  saveRecentlyClosedExpandedPref(expanded) {
+    this.handler.saveRecentlyClosedExpandedPref(expanded);
   }
 
   /** @override */

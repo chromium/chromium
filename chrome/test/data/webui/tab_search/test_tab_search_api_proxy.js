@@ -14,6 +14,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
       'getProfileData',
       'openRecentlyClosedEntry',
       'switchToTab',
+      'saveRecentlyClosedExpandedPref',
       'showUI',
     ]);
 
@@ -47,6 +48,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   /** @override */
   switchToTab(tabInfo, withSearch, switchedTabIndex) {
     this.methodCalled('switchToTab', [tabInfo, withSearch, switchedTabIndex]);
+  }
+
+  /** @override */
+  saveRecentlyClosedExpandedPref(expanded) {
+    this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
   }
 
   /** @override */

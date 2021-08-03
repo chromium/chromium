@@ -51,6 +51,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
+      {"recentlyClosedExpandA11yLabel",
+       IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED_ENTRIES},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);

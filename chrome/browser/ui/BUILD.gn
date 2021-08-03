@@ -1569,6 +1569,8 @@ static_library("ui") {
       "webui/system_info_ui.h",
       "webui/tab_search/tab_search_page_handler.cc",
       "webui/tab_search/tab_search_page_handler.h",
+      "webui/tab_search/tab_search_prefs.cc",
+      "webui/tab_search/tab_search_prefs.h",
       "webui/tab_search/tab_search_ui.cc",
       "webui/tab_search/tab_search_ui.h",
       "webui/theme_handler.cc",

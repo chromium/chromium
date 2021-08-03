@@ -742,4 +742,40 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
   handler()->GetProfileData(std::move(callback1));
 }
 
+TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  handler()->CloseTab(tab_id);
+
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& tabs = profile_tabs->windows[0]->tabs;
+            ASSERT_EQ(1u, tabs.size());
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(1u, recently_closed_tabs.size());
+            ASSERT_TRUE(profile_tabs->recently_closed_section_expanded);
+          });
+  handler()->GetProfileData(std::move(callback1));
+
+  handler()->SaveRecentlyClosedExpandedPref(false);
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_FALSE(profile_tabs->recently_closed_section_expanded);
+          });
+  handler()->GetProfileData(std::move(callback2));
+}
+
 }  // namespace
