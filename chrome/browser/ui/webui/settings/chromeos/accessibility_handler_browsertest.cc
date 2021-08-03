@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -46,8 +47,10 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   ~AccessibilityHandlerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityDictationOffline);
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kExperimentalAccessibilityDictationOffline,
+         features::kOnDeviceSpeechRecognition},
+        {});
   }
 
   void SetUpOnMainThread() override {

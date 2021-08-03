@@ -133,6 +133,8 @@ AX_BASE_EXPORT extern const base::Feature
 // Returns true if experimental accessibility offline dictation is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationOfflineEnabled();
 
+AX_BASE_EXPORT bool IsDictationOfflineAvailableAndEnabled();
+
 // Enables high-quality, network-based voices in Select-to-speak.
 AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
 

@@ -14,7 +14,6 @@
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/devicetype.h"
@@ -859,7 +858,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
 
   // Only need to check SODA installation and locale preference if offline
   // dictation is enabled.
-  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
     return;
 
   const bool enabled =
@@ -877,7 +876,8 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
                                     locale);
   }
 
-  if (triggered_by_user && !enabled) {
+  if (triggered_by_user && !enabled &&
+      features::IsDictationOfflineAvailableAndEnabled()) {
     // Note: This should not be called at start-up or it will
     // push back SODA deletion each time start-up occurs with dictation
     // disabled.
@@ -1866,11 +1866,8 @@ bool AccessibilityManager::ShouldShowNetworkDictationDialog(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kOnDeviceSpeechRecognition) ||
-      !::features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  if (!features::IsDictationOfflineAvailableAndEnabled())
     return true;
-  }
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   std::vector<std::string> supported_languages =
@@ -1909,11 +1906,10 @@ void AccessibilityManager::OnNetworkDictationDialogDismissed() {
 }
 
 void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
-  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (!features::IsDictationOfflineAvailableAndEnabled()) {
     return;
+  }
 
-  // TODO(crbug.com/1173135): Check whether SODA is available on this device by
-  // checking (IsEnabled(ash::features::kOnDeviceSpeechRecognition)).
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (soda_installer->IsSodaInstalled(speech::GetLanguageCode(locale)) ||
       soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale)))

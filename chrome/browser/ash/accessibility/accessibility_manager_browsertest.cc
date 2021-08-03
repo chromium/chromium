@@ -295,10 +295,10 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::Feature> enabled_features = {
-        ::features::kExperimentalAccessibilityDictationOffline,
-        ash::features::kOnDeviceSpeechRecognition};
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kExperimentalAccessibilityDictationOffline,
+         ash::features::kOnDeviceSpeechRecognition},
+        {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 

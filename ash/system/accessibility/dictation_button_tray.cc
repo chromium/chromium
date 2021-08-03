@@ -118,21 +118,18 @@ void DictationButtonTray::UpdateVisibility() {
       Shell::Get()->accessibility_controller()->dictation().enabled();
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled() ||
-      !pref_service || !soda_installer) {
+  if (!features::IsDictationOfflineAvailableAndEnabled() || !pref_service) {
     // If we can't get the pref service or soda installer, then simply use
     // Dictation's enabled state.
     SetVisiblePreferred(dictation_enabled);
     return;
   }
-
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   const std::string locale =
       pref_service->GetString(prefs::kAccessibilityDictationLocale);
   bool soda_downloading =
       soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale));
-  bool is_visible = dictation_enabled && !soda_downloading;
-  SetVisiblePreferred(is_visible);
+  SetVisiblePreferred(dictation_enabled && !soda_downloading);
 }
 
 void DictationButtonTray::CheckDictationStatusAndUpdateIcon() {

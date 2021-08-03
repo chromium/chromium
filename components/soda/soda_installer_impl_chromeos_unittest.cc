@@ -4,7 +4,9 @@
 
 #include "components/soda/soda_installer_impl_chromeos.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
@@ -23,6 +25,8 @@ namespace speech {
 class SodaInstallerImplChromeOSTest : public testing::Test {
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOnDeviceSpeechRecognition);
     soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     soda_installer_impl_->RegisterLocalStatePrefs(pref_service_->registry());
@@ -85,6 +89,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SodaInstallerImplChromeOSTest, IsSodaInstalled) {

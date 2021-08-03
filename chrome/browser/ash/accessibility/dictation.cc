@@ -213,7 +213,7 @@ const base::flat_map<std::string, bool> Dictation::GetAllSupportedLocales() {
     // By default these languages are not supported offline.
     supported_locales[locale] = false;
   }
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  if (features::IsDictationOfflineAvailableAndEnabled()) {
     std::vector<std::string> offline_languages =
         speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
     for (auto language : offline_languages) {
@@ -267,16 +267,16 @@ bool Dictation::OnToggleDictation() {
   base::UmaHistogramSparse("Accessibility.CrosDictation.Language",
                            base::HashMetricName(locale));
 
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled() &&
-      (soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale)))) {
+  if (features::IsDictationOfflineAvailableAndEnabled() &&
+      speech::SodaInstaller::GetInstance()->IsSodaDownloading(
+          speech::GetLanguageCode(locale))) {
     // Don't allow Dictation to be used while SODA is downloading.
     audio::SoundsManager::Get()->Play(
         static_cast<int>(Sound::kDictationCancel));
     return false;
   }
 
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled() &&
+  if (features::IsDictationOfflineAvailableAndEnabled() &&
       OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale)) {
     // On-device recognition is behind a flag and then only available if
     // SODA is installed on-device.

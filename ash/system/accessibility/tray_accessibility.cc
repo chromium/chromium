@@ -86,7 +86,7 @@ AccessibilityDetailedView::AccessibilityDetailedView(
 }
 
 AccessibilityDetailedView::~AccessibilityDetailedView() {
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (features::IsDictationOfflineAvailableAndEnabled())
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
@@ -539,7 +539,7 @@ void AccessibilityDetailedView::ShowHelp() {
 }
 
 void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
-  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (!features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   bool dictation_enabled =

@@ -57,7 +57,8 @@ class ASH_PUBLIC_EXPORT MockProjectorController : public ProjectorController {
 class ProjectorClientTest : public InProcessBrowserTest {
  public:
   ProjectorClientTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kProjector);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kProjector, features::kOnDeviceSpeechRecognition}, {});
   }
 
   ~ProjectorClientTest() override = default;

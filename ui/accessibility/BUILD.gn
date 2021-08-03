@@ -88,6 +88,10 @@ component("ax_base") {
   ]
 
   deps = [ "//build:chromeos_buildflags" ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 #if (is_win) {

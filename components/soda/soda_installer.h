@@ -20,6 +20,9 @@ namespace speech {
 
 // Installer of SODA (Speech On-Device API). This is a singleton because there
 // is only one installation of SODA per device.
+// SODA is not supported on some Chrome OS devices. Chrome OS callers should
+// check if ash::features::kOnDeviceSpeechRecognition is enabled before
+// trying to access the SodaInstaller instance.
 class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
  public:
   // Observer of the SODA (Speech On-Device API) installation.
@@ -114,6 +117,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   void NotifySodaInstalledForTesting();
   void NotifySodaErrorForTesting();
   void UninstallSodaForTesting();
+  void NotifySodaDownloadProgressForTesting(int percentage);
 
  protected:
   // Registers the preference tracking the installed SODA language packs.

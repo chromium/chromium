@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -24,7 +25,11 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/soda/soda_installer.h"
+#include "components/soda/soda_installer_impl_chromeos.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -57,10 +62,10 @@ class DictationButtonTrayTest : public AshTestBase {
  public:
   DictationButtonTrayTest() = default;
   ~DictationButtonTrayTest() override = default;
+  DictationButtonTrayTest(const DictationButtonTrayTest&) = delete;
+  DictationButtonTrayTest& operator=(const DictationButtonTrayTest&) = delete;
 
-  void SetUp() override {
-    AshTestBase::SetUp();
-  }
+  void SetUp() override { AshTestBase::SetUp(); }
 
  protected:
   views::ImageView* GetImageView(DictationButtonTray* tray) {
@@ -69,9 +74,6 @@ class DictationButtonTrayTest : public AshTestBase {
   void CheckDictationStatusAndUpdateIcon(DictationButtonTray* tray) {
     tray->CheckDictationStatusAndUpdateIcon();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DictationButtonTrayTest);
 };
 
 // Ensures that creation doesn't cause any crashes and adds the image icon.
@@ -131,6 +133,55 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
       AcceleratorAction::TOGGLE_DICTATION, {});
   EXPECT_FALSE(controller->dictation_active());
   EXPECT_FALSE(GetTray()->is_active());
+}
+
+class DictationButtonTraySodaTest : public DictationButtonTrayTest {
+ public:
+  DictationButtonTraySodaTest() = default;
+  ~DictationButtonTraySodaTest() override = default;
+  DictationButtonTraySodaTest(const DictationButtonTraySodaTest&) = delete;
+  DictationButtonTraySodaTest& operator=(const DictationButtonTraySodaTest&) =
+      delete;
+
+  void SetUp() override {
+    DictationButtonTrayTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kExperimentalAccessibilityDictationOffline,
+         features::kOnDeviceSpeechRecognition},
+        {});
+
+    // Since this test suite is part of ash unit tests, the
+    // SodaInstallerImplChromeOS is never created (it's normally created when
+    // ChromeBrowserMainPartsChromeos initializes). Create it here so that
+    // calling speech::SodaInstaller::GetInstance) returns a valid instance.
+    soda_installer_impl_ =
+        std::make_unique<speech::SodaInstallerImplChromeOS>();
+  }
+
+  void TearDown() override {
+    soda_installer_impl_.reset();
+    AshTestBase::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
+};
+
+TEST_F(DictationButtonTraySodaTest, VisiblityChangesWhenSodaInstalled) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->dictation().SetEnabled(true);
+
+  speech::SodaInstaller::GetInstance()->NotifySodaDownloadProgressForTesting(
+      50);
+  GetTray()->UpdateVisibility();
+  EXPECT_FALSE(GetTray()->GetVisible());
+
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  GetTray()->UpdateVisibility();
+  EXPECT_TRUE(GetTray()->GetVisible());
 }
 
 }  // namespace ash

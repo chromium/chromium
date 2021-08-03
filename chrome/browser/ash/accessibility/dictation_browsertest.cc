@@ -120,7 +120,9 @@ class DictationTest : public InProcessBrowserTest,
     // initializes (which is when the global SodaInstaller gets created).
     // Lastly, do this before Dictation is enabled so that we don't initiate a
     // SODA download when Dictation is enabled.
-    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    if (GetParam().second == kOnDeviceRecognition) {
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    }
 
     ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
     generator_ = std::make_unique<ui::test::EventGenerator>(

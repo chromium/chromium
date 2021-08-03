@@ -128,7 +128,7 @@ void AccessibilityHandler::OnJavascriptAllowed() {
 }
 
 void AccessibilityHandler::OnJavascriptDisallowed() {
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled())
+  if (features::IsDictationOfflineAvailableAndEnabled())
     soda_observation_.Reset();
 }
 
@@ -151,7 +151,7 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
   // TODO(crbug.com/1195916): Don't display SODA status if the Dictation
   // language is not a downloaded or available SODA language.
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  if (features::IsDictationOfflineAvailableAndEnabled()) {
     const std::string dictation_locale =
         profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
     if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(

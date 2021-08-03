@@ -5,6 +5,7 @@
 #include "components/soda/soda_installer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/containers/contains.h"
@@ -29,6 +30,10 @@ SodaInstaller* g_instance = nullptr;
 
 // static
 SodaInstaller* SodaInstaller::GetInstance() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(
+      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return g_instance;
 }
 
@@ -63,7 +68,12 @@ void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
 void SodaInstaller::Init(PrefService* profile_prefs,
                          PrefService* global_prefs) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kOnDeviceSpeechRecognition) ||
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+#endif
       soda_installer_initialized_) {
     return;
   }
@@ -142,6 +152,13 @@ void SodaInstaller::UninstallSodaForTesting() {
   is_soda_downloading_ = false;
   installed_languages_.clear();
   language_pack_progress_.clear();
+}
+
+void SodaInstaller::NotifySodaDownloadProgressForTesting(int progress) {
+  soda_binary_installed_ = false;
+  is_soda_downloading_ = true;
+  installed_languages_.clear();
+  NotifyOnSodaProgress(progress);
 }
 
 void SodaInstaller::RegisterRegisteredLanguagePackPref(

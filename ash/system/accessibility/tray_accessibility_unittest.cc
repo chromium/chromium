@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -106,11 +107,13 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
     // SodaInstallerImplChromeOS is never created (it's normally created when
     // ChromeBrowserMainPartsChromeos initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kExperimentalAccessibilityDictationOffline,
+         ash::features::kOnDeviceSpeechRecognition},
+        {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();
     speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityDictationOffline);
   }
 
   void TearDown() override {

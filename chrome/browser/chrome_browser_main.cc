@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -1639,8 +1640,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
-                                             browser_process_->local_state());
+  if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
+    speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
+                                               browser_process_->local_state());
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   variations::VariationsService* variations_service =

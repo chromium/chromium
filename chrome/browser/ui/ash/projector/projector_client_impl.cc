@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
@@ -32,7 +33,8 @@ ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
       ShouldUseWebSpeechFallback();
 
   controller_->OnSpeechRecognitionAvailable(recognition_available);
-  if (!recognition_available) {
+  if (!recognition_available &&
+      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
   }
 }

@@ -17,16 +17,26 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if defined(OS_WIN) || defined(OS_MAC)
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
 #endif
 
 namespace settings {
 
-CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {}
+CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  soda_available_ =
+      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 CaptionsHandler::~CaptionsHandler() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  if (soda_available_)
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void CaptionsHandler::RegisterMessages() {
@@ -41,11 +51,13 @@ void CaptionsHandler::RegisterMessages() {
 }
 
 void CaptionsHandler::OnJavascriptAllowed() {
-  speech::SodaInstaller::GetInstance()->AddObserver(this);
+  if (soda_available_)
+    speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
 
 void CaptionsHandler::OnJavascriptDisallowed() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  if (soda_available_)
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
@@ -61,7 +73,8 @@ void CaptionsHandler::HandleOpenSystemCaptionsDialog(
 }
 
 void CaptionsHandler::OnSodaInstalled() {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
 

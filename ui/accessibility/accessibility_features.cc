@@ -8,6 +8,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace features {
 
 // Enable recognizing "aria-virtualcontent" as a valid aria property.
@@ -153,6 +157,12 @@ const base::Feature kExperimentalAccessibilityDictationOffline{
 bool IsExperimentalAccessibilityDictationOfflineEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityDictationOffline);
+}
+
+bool IsDictationOfflineAvailableAndEnabled() {
+  return base::FeatureList::IsEnabled(
+             ash::features::kOnDeviceSpeechRecognition) &&
+         IsExperimentalAccessibilityDictationOfflineEnabled();
 }
 
 const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
