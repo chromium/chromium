@@ -1005,13 +1005,16 @@
       },
       'android-cronet-x86-dbg-10-tests': {
         'mixins': [
-          'has_native_resultdb_integration',
           '10-x86-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
         ],
+        'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'cronet_gtests',
         },
-        'os_type': 'android',
       },
       'android-pie-arm64-wpt-rel-non-cq': {
         'mixins': [
