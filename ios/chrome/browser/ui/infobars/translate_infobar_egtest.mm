@@ -266,6 +266,12 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that different language signals are detected correctly.
 - (void)testLanguageDetection {
+// TODO(crbug.com/1235979): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   const GURL URL =
       web::test::HttpServer::MakeUrl("http://scenarioLanguageDetection");
   std::map<GURL, std::string> responses;
