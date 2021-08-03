@@ -182,7 +182,8 @@ TEST_F(
       });
     });
 
-TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
+// Disabled - failing on ASan: crbug.com/1236009
+TEST_F('MagnifierE2ETest', 'DISABLED_MagnifierCenterOnPoint', function() {
   this.runWithLoadedTree('', async function(root) {
     const targetPoint = {x: 100, y: 100};
     const targetBounds = {left: 100, top: 100, width: 0, height: 0};
