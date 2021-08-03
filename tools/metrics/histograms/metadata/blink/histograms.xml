@@ -1765,9 +1765,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.JavaJsBridge.MethodInvocationError"
-    enum="JavaJsBridgeMethodInvocationError" expires_after="2021-09-11">
-  <owner>timvolodine@chromium.org</owner>
+    enum="JavaJsBridgeMethodInvocationError" expires_after="2022-03-11">
   <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <summary>Records the Java/JS bridge method invocation errors.</summary>
 </histogram>
 
