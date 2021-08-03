@@ -620,9 +620,6 @@
   <message name="IDS_RESET_SCREEN_ICON_TITLE" desc="Accessible title of the reset screen icon depicting exclamation mark.">
     Exclamation mark icon
   </message>
-  <message name="IDS_RESET_SCREEN_ILLUSTRATION_TITLE" desc="Accessible title of the reset screen illustration depicting powerwash.">
-    Powerwash illustration
-  </message>
   <message name="IDS_UPDATING_SCREEN_TITLE" desc="Title of the OOBE screen displayed while system update is being dowloaded.">
     Updating...
   </message>
@@ -1778,17 +1775,11 @@
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_MESSAGE" desc="Setup message in dialog for enabling ARC ADB Sideloading.">
     Continuing will enable ADB debugging for creating and testing Android apps. Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.
   </message>
-  <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_SETUP_ILLUSTRATION_TITLE" desc="Accessible title of ARC ADB sideloading illustration depicting the setup screen.">
-    Enabling adb to create apps illustration
-  </message>
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_TITLE" desc="Title message when enabling of ARC ADB Sideloading fails.">
     Something went wrong
   </message>
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_MESSAGE" desc="Error message when enabling of ARC ADB Sideloading fails.">
     Couldn't enable ADB debugging. Go to Settings and try again.
-  </message>
-  <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_ERROR_ILLUSTRATION_TITLE" desc="Accessible title of ARC ADB sideloading illustration depicting the error screen.">
-    Failed to enable ADB illustration
   </message>
   <message name="IDS_ENABLE_ARC_ADB_SIDELOADING_LEARN_MORE" desc="Learn more link text in the enable ARC ADB Sideloading dialog.">
     Learn more
@@ -2857,9 +2848,6 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE" desc="Title of the screen to be shown upon an error during enterprise enrollment.">
     Enrollment Error
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_ERROR_ILLUSTRATION_TITLE" desc="Accessible title of the enterprise enrollment screen illustration depicting error during enrollment.">
-    Enrollment error illustration
-  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_RETRY" desc="Label for the retry button on the error step in the enterprise enrollment dialog.">
     Try again
   </message>
@@ -2877,9 +2865,6 @@
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS" desc="Success message to be shown once enterprise enrollment completes.">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> has successfully been enrolled for enterprise management.
-  </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ILLUSTRATION_TITLE" desc="Accessible title of the enterprise enrollment screen illustration depicting successful enrollment.">
-    Successful enrollment illustration
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN" desc="Success message to be shown once enterprise enrollment completes. MANAGER can be a domain or an email address.">
     This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will be managed by <ph name="MANAGER">$2<ex>acmecorp.com</ex></ph>.
