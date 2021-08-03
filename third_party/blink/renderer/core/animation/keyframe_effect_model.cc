@@ -211,7 +211,7 @@ bool KeyframeEffectModelBase::SnapshotCompositorKeyFrames(
     return false;
 
   PropertySpecificKeyframeGroup* keyframe_group =
-      keyframe_groups_->at(property);
+      keyframe_groups_->DeprecatedAtOrEmptyValue(property);
   if (!keyframe_group)
     return false;
 
