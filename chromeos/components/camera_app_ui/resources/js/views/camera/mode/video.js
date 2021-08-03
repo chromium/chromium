@@ -85,7 +85,7 @@ function getVideoMimeType(param) {
 /**
  * The 'beforeunload' listener which will show confirm dialog when trying to
  * close window.
- * @param {!Event} event The 'beforeunload' event.
+ * @param {!BeforeUnloadEvent} event The 'beforeunload' event.
  */
 function beforeUnloadListener(event) {
   event.preventDefault();

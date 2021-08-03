@@ -10,3 +10,6 @@
 
 /** @typedef {NodeList} */
 var NodeListOf;
+
+/** @typedef {Event} */
+var BeforeUnloadEvent;
