@@ -108,13 +108,15 @@ GLuint GetGrGLBackendTextureFormat(const gles2::FeatureInfo* feature_info,
   use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
 #endif
 
-  // Use R8 and R16F when using later GLs where LUMINANCE8 and LUMINANCE18F are
-  // deprecated
+  // Use R8 and R16F when using later GLs where ALPHA8, LUMINANCE8, ALPHA16F and
+  // LUMINANCE16F are deprecated
   if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
     switch (internal_format) {
+      case GL_ALPHA8_EXT:
       case GL_LUMINANCE8:
         internal_format = GL_R8_EXT;
         break;
+      case GL_ALPHA16F_EXT:
       case GL_LUMINANCE16F_EXT:
         internal_format = GL_R16F_EXT;
         break;
