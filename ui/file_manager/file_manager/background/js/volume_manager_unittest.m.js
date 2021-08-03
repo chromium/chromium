@@ -326,7 +326,7 @@ export function testGetLocationInfo(callback) {
         const driveFilesByIdDirectoryLocationInfo =
             volumeManager.getLocationInfo(driveFilesByIdDirectoryEntry);
         assertEquals(
-            VolumeManagerCommon.RootType.DRIVE_OTHER,
+            VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
             driveFilesByIdDirectoryLocationInfo.rootType);
         assertFalse(driveFilesByIdDirectoryLocationInfo.hasFixedLabel);
         assertTrue(driveFilesByIdDirectoryLocationInfo.isReadOnly);
@@ -338,7 +338,7 @@ export function testGetLocationInfo(callback) {
         const driveFilesByIdLocationInfo =
             volumeManager.getLocationInfo(driveFilesByIdEntry);
         assertEquals(
-            VolumeManagerCommon.RootType.DRIVE_OTHER,
+            VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
             driveFilesByIdLocationInfo.rootType);
         assertFalse(driveFilesByIdLocationInfo.hasFixedLabel);
         assertFalse(driveFilesByIdLocationInfo.isReadOnly);
@@ -352,7 +352,7 @@ export function testGetLocationInfo(callback) {
             volumeManager.getLocationInfo(
                 driveShortcutTargetsByIdDirectoryEntry);
         assertEquals(
-            VolumeManagerCommon.RootType.DRIVE_OTHER,
+            VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
             driveShortcutTargetsByIdDirectoryLocationInfo.rootType);
         assertFalse(
             driveShortcutTargetsByIdDirectoryLocationInfo.hasFixedLabel);
@@ -365,7 +365,7 @@ export function testGetLocationInfo(callback) {
         const driveShortcutTargetsByIdLocationInfo =
             volumeManager.getLocationInfo(driveShortcutTargetsByIdEntry);
         assertEquals(
-            VolumeManagerCommon.RootType.DRIVE_OTHER,
+            VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
             driveShortcutTargetsByIdLocationInfo.rootType);
         assertFalse(driveShortcutTargetsByIdLocationInfo.hasFixedLabel);
         assertFalse(driveShortcutTargetsByIdLocationInfo.isReadOnly);

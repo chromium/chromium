@@ -143,7 +143,7 @@ export class MockVolumeManager {
           isRootEntry = util.isComputersRoot(entry);
         }
       } else if (/^\/\.(files|shortcut-targets)-by-id/.test(entry.fullPath)) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
+        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
       }
       return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, true);
     }

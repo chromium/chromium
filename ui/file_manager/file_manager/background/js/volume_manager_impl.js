@@ -407,15 +407,9 @@ export class VolumeManagerImpl extends EventTarget {
           }
         }
       } else if (
-          entry.fullPath == '/other' ||
-          entry.fullPath.indexOf('/other/') === 0) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
-        isReadOnly = true;
-        isRootEntry = entry.fullPath === '/other';
-      } else if (
           entry.fullPath === '/.files-by-id' ||
           entry.fullPath.indexOf('/.files-by-id/') === 0) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
+        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
 
         // /.files-by-id/<id> is read-only, but /.files-by-id/<id>/foo is
         // read-write.
@@ -424,7 +418,7 @@ export class VolumeManagerImpl extends EventTarget {
       } else if (
           entry.fullPath === '/.shortcut-targets-by-id' ||
           entry.fullPath.indexOf('/.shortcut-targets-by-id/') === 0) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
+        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
 
         // /.shortcut-targets-by-id/<id> is read-only, but
         // /.shortcut-targets-by-id/<id>/foo is read-write.

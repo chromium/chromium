@@ -39,7 +39,6 @@ export class EntryLocationImpl {
 
     /** @override */
     this.isDriveBased = this.rootType === VolumeManagerCommon.RootType.DRIVE ||
-        this.rootType === VolumeManagerCommon.RootType.DRIVE_OTHER ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_RECENT ||
         this.rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||

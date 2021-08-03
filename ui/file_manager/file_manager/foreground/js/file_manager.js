@@ -1454,11 +1454,11 @@ export class FileManager extends EventTarget {
       if (!locationInfo) {
         nextCurrentDirEntry = null;
       } else {
-        // Having root directory of DRIVE_OTHER here should be only for shared
-        // with me files. Fallback to Drive root in such case.
+        // Having root directory of DRIVE_SHARED_WITH_ME here should be only for
+        // shared with me files. Fallback to Drive root in such case.
         if (locationInfo.isRootEntry &&
             locationInfo.rootType ===
-                VolumeManagerCommon.RootType.DRIVE_OTHER) {
+                VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME) {
           const volumeInfo =
               this.volumeManager_.getVolumeInfo(nextCurrentDirEntry);
           if (!volumeInfo) {

@@ -87,7 +87,8 @@ export class PathComponent {
       components.push(new PathComponent(
           prefixEntry.name, prefixEntry.toURL(), prefixEntry));
     }
-    if (locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE_OTHER) {
+    if (locationInfo.rootType ===
+        VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME) {
       // DriveFS shared items are in either of:
       // <drivefs>/.files-by-id/<id>/<item>
       // <drivefs>/.shortcut-targets-by-id/<id>/<item>
