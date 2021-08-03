@@ -194,12 +194,9 @@ void FirstPartySets::ApplyManuallySpecifiedSet() {
 
   // Erase the intersection between the manually-specified set and the
   // CU-supplied set, and any members whose owner was in the intersection.
-  sets_.erase(base::ranges::remove_if(sets_,
-                                      [&was_manually_provided](const auto& p) {
-                                        return was_manually_provided(p.first) ||
-                                               was_manually_provided(p.second);
-                                      }),
-              sets_.end());
+  base::EraseIf(sets_, [&was_manually_provided](const auto& p) {
+    return was_manually_provided(p.first) || was_manually_provided(p.second);
+  });
 
   // Now remove singleton sets. We already removed any sites that were part
   // of the intersection, or whose owner was part of the intersection. This
@@ -210,13 +207,9 @@ void FirstPartySets::ApplyManuallySpecifiedSet() {
     if (it.first != it.second)
       owners_with_members.insert(it.second);
   }
-  sets_.erase(base::ranges::remove_if(
-                  sets_,
-                  [&owners_with_members](const auto& p) {
-                    return p.first == p.second &&
-                           !base::Contains(owners_with_members, p.first);
-                  }),
-              sets_.end());
+  base::EraseIf(sets_, [&owners_with_members](const auto& p) {
+    return p.first == p.second && !base::Contains(owners_with_members, p.first);
+  });
 
   // Next, we must add the manually-added set to the parsed value.
   for (const net::SchemefulSite& member : manual_members) {
