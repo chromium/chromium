@@ -135,7 +135,6 @@ class TerminalPrivateCloseTerminalProcessFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void CloseOnRegistryTaskRunner(const std::string& terminal_id);
   void RespondOnUIThread(bool success);
 };
 

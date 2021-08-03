@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
@@ -21,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task_runner_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -77,18 +79,41 @@ const char kSwitchCurrentWorkingDir[] = "cwd";
 
 const char kCwdTerminalIdPrefix[] = "terminal_id:";
 
+void CloseTerminal(const std::string& terminal_id,
+                   base::OnceCallback<void(bool)> callback) {
+  chromeos::ProcessProxyRegistry::GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::string& terminal_id) {
+            return chromeos::ProcessProxyRegistry::Get()->CloseProcess(
+                terminal_id);
+          },
+          terminal_id),
+      std::move(callback));
+}
+
 class TerminalTabHelper
     : public content::WebContentsUserData<TerminalTabHelper> {
  public:
+  ~TerminalTabHelper() override {
+    // The web contents object is being destructed. We should close all
+    // terminals that haven't been closed already. This can happen when the JS
+    // code didn't have a chance to do that (e.g. memory stress causes the web
+    // contents to be killed directly).
+    for (const std::string& terminal_id : terminal_ids_) {
+      CloseTerminal(terminal_id, base::DoNothing());
+    }
+  }
+
   void AddTerminalId(const std::string& terminal_id) {
     if (!terminal_ids_.insert(terminal_id).second) {
-      LOG(ERROR) << "terminal id already exists" << terminal_id;
+      LOG(ERROR) << "Terminal id already exists: " << terminal_id;
     }
   }
 
   void RemoveTerminalId(const std::string& terminal_id) {
     if (terminal_ids_.erase(terminal_id) == 0) {
-      LOG(ERROR) << "terminal id does not exists" << terminal_id;
+      LOG(ERROR) << "Terminal id does not exist: " << terminal_id;
     }
   }
 
@@ -491,25 +516,13 @@ TerminalPrivateCloseTerminalProcessFunction::Run() {
   TerminalTabHelper::FromWebContents(GetSenderWebContents())
       ->RemoveTerminalId(params->id);
 
-  // Registry lives on its own task runner.
-  chromeos::ProcessProxyRegistry::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&TerminalPrivateCloseTerminalProcessFunction::
-                                    CloseOnRegistryTaskRunner,
-                                this, params->id));
+  CloseTerminal(
+      params->id,
+      base::BindOnce(
+          &TerminalPrivateCloseTerminalProcessFunction::RespondOnUIThread,
+          this));
 
   return RespondLater();
-}
-
-void TerminalPrivateCloseTerminalProcessFunction::CloseOnRegistryTaskRunner(
-    const std::string& terminal_id) {
-  bool success =
-      chromeos::ProcessProxyRegistry::Get()->CloseProcess(terminal_id);
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &TerminalPrivateCloseTerminalProcessFunction::RespondOnUIThread, this,
-          success));
 }
 
 void TerminalPrivateCloseTerminalProcessFunction::RespondOnUIThread(
