@@ -783,8 +783,10 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path) {
     std::move(load_complete_callback_).Run(success);
   }
 
-  if (state_ == State::STOPPED && GetLaunchOnLoginPref())
+  if (state_ == State::STOPPED &&
+      (browser_util::IsLacrosPrimaryBrowser() || GetLaunchOnLoginPref())) {
     Start(mojom::InitialBrowserAction::kUseStartupPreference);
+  }
 }
 
 void BrowserManager::PrepareLacrosPolicies() {
