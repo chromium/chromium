@@ -8706,9 +8706,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateTo304) {
 
 // Ensure that we do not corrupt a NavigationEntry's PageState if two forward
 // navigations compete in different frames.  See https://crbug.com/623319.
-// Currently flaking on Android and Mac, see https://crubug.com/1101292.
+// Currently flaking on Android, Linux and Mac, see https://crubug.com/1101292.
 // Currently flaking on ChromeOS, see https://crbug.com/1227088.
-#if defined(OS_ANDROID) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || defined(OS_MAC) || defined(OS_CHROMEOS) || defined(OS_LINUX)
 #define MAYBE_PageStateAfterForwardInCompetingFrames \
   DISABLED_PageStateAfterForwardInCompetingFrames
 #else
