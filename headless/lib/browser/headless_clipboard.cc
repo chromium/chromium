@@ -76,6 +76,10 @@ HeadlessClipboard::ReadAvailablePlatformSpecificFormatNames(
   const auto& data = GetStore(buffer).data;
   std::vector<std::u16string> types;
   types.reserve(data.size());
+  std::map<std::string, std::string> custom_format_names =
+      ExtractCustomPlatformNames(buffer, data_dst);
+  for (const auto& item : custom_format_names)
+    types.push_back(base::UTF8ToUTF16(item.first));
   for (const auto& it : data) {
     std::u16string type = base::UTF8ToUTF16(it.first.GetName());
     types.push_back(type);

@@ -354,13 +354,16 @@ ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
   if (!clipboard.Acquire(GetClipboardWindow()))
     return {};
 
+  // Check if we have any custom formats in the clipboard.
+  std::map<std::string, std::string> custom_format_names =
+      ExtractCustomPlatformNames(buffer, data_dst);
+  for (const auto& items : custom_format_names) {
+    types.push_back(base::ASCIIToUTF16(items.first));
+  }
   UINT cf_format = 0;
   cf_format = ::EnumClipboardFormats(cf_format);
   while (cf_format) {
     std::string type_name = ClipboardFormatType(cf_format).GetName();
-    // Search for custom types if we couldn't find a standard format.
-    if (type_name.empty())
-      type_name = ClipboardFormatType(cf_format).GetCustomPlatformName();
     if (!type_name.empty())
       types.push_back(base::ASCIIToUTF16(type_name));
     cf_format = ::EnumClipboardFormats(cf_format);

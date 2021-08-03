@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -137,6 +138,33 @@ base::Time Clipboard::GetLastModifiedTime() const {
 
 void Clipboard::ClearLastModifiedTime() {}
 
+std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  // Read the JSON metadata payload.
+  std::map<std::string, std::string> custom_format_names;
+  if (IsFormatAvailable(ui::ClipboardFormatType::WebCustomFormatMap(), buffer,
+                        data_dst)) {
+    std::string custom_format_json;
+    // Read the custom format map.
+    ReadData(ui::ClipboardFormatType::WebCustomFormatMap(), data_dst,
+             &custom_format_json);
+    if (!custom_format_json.empty()) {
+      absl::optional<base::Value> json_val =
+          base::JSONReader::Read(custom_format_json);
+      if (json_val.has_value()) {
+        for (const auto it : json_val->DictItems()) {
+          std::string custom_format_name;
+          if (it.second.GetAsString(&custom_format_name)) {
+            custom_format_names.emplace(it.first, custom_format_name);
+          }
+        }
+      }
+    }
+  }
+  return custom_format_names;
+}
+
 Clipboard::Clipboard() = default;
 Clipboard::~Clipboard() = default;
 
@@ -203,6 +231,11 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
                 &(params[1].front()), params[1].size());
       break;
 
+    case PortableFormat::kWebCustomFormatMap:
+      WriteData(ClipboardFormatType::WebCustomFormatMap(),
+                &(params[0].front()), params[0].size());
+      break;
+
     default:
       NOTREACHED();
   }
@@ -211,7 +244,7 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
 void Clipboard::DispatchPlatformRepresentations(
     std::vector<Clipboard::PlatformRepresentation> platform_representations) {
   for (const auto& representation : platform_representations) {
-    WriteData(ClipboardFormatType::GetCustomPlatformType(representation.format),
+    WriteData(ClipboardFormatType::CustomPlatformType(representation.format),
               reinterpret_cast<const char*>(representation.data.data()),
               representation.data.size());
   }

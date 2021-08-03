@@ -142,11 +142,15 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
   const auto& data = store.data;
   std::vector<std::u16string> types;
   types.reserve(data.size());
+  std::map<std::string, std::string> custom_format_names =
+      ExtractCustomPlatformNames(buffer, data_dst);
+  for (const auto& item : custom_format_names)
+    types.push_back(base::UTF8ToUTF16(item.first));
   for (const auto& it : data) {
     std::string format_type = it.first.GetName();
-    if (format_type.empty())
-      format_type = it.first.GetCustomPlatformName();
-    types.push_back(base::UTF8ToUTF16(format_type));
+    if (!format_type.empty()) {
+      types.push_back(base::UTF8ToUTF16(format_type));
+    }
   }
 
   return types;
@@ -314,6 +318,7 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
     std::unique_ptr<DataTransferEndpoint> data_src) {
   Clear(buffer);
   default_store_buffer_ = buffer;
+
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& kv : objects)
     DispatchPortableRepresentation(kv.first, kv.second);

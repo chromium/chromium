@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -265,6 +266,15 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Resets the clipboard last modified time to Time::Time().
   virtual void ClearLastModifiedTime();
 
+  // Reads the web custom format map (which is in JSON format) from the
+  // clipboard if it's available. Parses the JSON string that has the mapping of
+  // MIME type to custom format name and fetches the list of custom MIME types.
+  // e.g. on Windows, the mapping is represented as "text/html":"Web Custom
+  // Format(0-99)".
+  std::map<std::string, std::string> ExtractCustomPlatformNames(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const;
+
  protected:
   // PortableFormat designates the type of data to be stored in the clipboard.
   // This designation is shared across all OSes. The system-specific designation
@@ -291,6 +301,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     kData,  // Arbitrary block of bytes.
     kSvg,
     kFilenames,
+    kWebCustomFormatMap,
   };
 
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.
@@ -314,6 +325,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // kWebkit    none          empty vector
   // kData      format        char array
   //            data          byte array
+  // kWebCustomFormatMap      char array
   using ObjectMapParam = std::vector<char>;
   using ObjectMapParams = std::vector<ObjectMapParam>;
   using ObjectMap = base::flat_map<PortableFormat, ObjectMapParams>;
