@@ -43,6 +43,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -644,11 +645,11 @@ static void JNI_WebsitePreferenceBridge_ClearLocalStorageData(
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   auto local_storage_helper =
       base::MakeRefCounted<browsing_data::LocalStorageHelper>(browser_context);
-  auto origin =
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin)));
-  local_storage_helper->DeleteOrigin(
-      origin, base::BindOnce(&OnLocalStorageCleared,
-                             ScopedJavaGlobalRef<jobject>(java_callback)));
+  auto storage_key = blink::StorageKey(
+      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
+  local_storage_helper->DeleteStorageKey(
+      storage_key, base::BindOnce(&OnLocalStorageCleared,
+                                  ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
 static void JNI_WebsitePreferenceBridge_ClearStorageData(

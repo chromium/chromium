@@ -553,7 +553,10 @@ void PageSpecificContentSettings::OnDomStorageAccessed(const GURL& url,
                         : allowed_local_shared_objects_;
   browsing_data::CannedLocalStorageHelper* helper =
       local ? container.local_storages() : container.session_storages();
-  helper->Add(url::Origin::Create(url));
+  helper->Add(
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+      // function directly.
+      blink::StorageKey(url::Origin::Create(url)));
 
   if (blocked_by_policy) {
     OnContentBlocked(ContentSettingsType::COOKIES);

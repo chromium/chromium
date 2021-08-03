@@ -13,6 +13,7 @@
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_local_storage_helper.h"
 #include "content/public/test/test_web_ui.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -69,10 +70,10 @@ class CookiesViewHandlerTest : public ChromeRenderViewHostTestHarness {
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
 
-    mock_browsing_data_local_storage_helper->AddLocalStorageForOrigin(
-        url::Origin::Create(GURL(kTestOrigin1)), 2);
-    mock_browsing_data_local_storage_helper->AddLocalStorageForOrigin(
-        url::Origin::Create(GURL(kTestOrigin2)), 3);
+    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
+        blink::StorageKey::CreateFromStringForTesting(kTestOrigin1), 2);
+    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
+        blink::StorageKey::CreateFromStringForTesting(kTestOrigin2), 3);
 
     mock_browsing_data_cookie_helper->AddCookieSamples(GURL(kTestOrigin1),
                                                        kTestCookie1);

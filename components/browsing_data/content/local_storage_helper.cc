@@ -29,8 +29,8 @@ namespace browsing_data {
 namespace {
 
 // Only websafe state is considered browsing data.
-bool HasStorageScheme(const GURL& origin_url) {
-  return base::Contains(url::GetWebStorageSchemes(), origin_url.scheme());
+bool HasStorageScheme(const url::Origin& origin) {
+  return base::Contains(url::GetWebStorageSchemes(), origin.scheme());
 }
 
 void GetUsageInfoCallback(LocalStorageHelper::FetchCallback callback,
@@ -40,7 +40,7 @@ void GetUsageInfoCallback(LocalStorageHelper::FetchCallback callback,
 
   std::list<content::StorageUsageInfo> result;
   for (const content::StorageUsageInfo& info : infos) {
-    if (HasStorageScheme(info.origin.GetURL()))
+    if (HasStorageScheme(info.origin))
       result.push_back(info);
   }
 
@@ -65,12 +65,10 @@ void LocalStorageHelper::StartFetching(FetchCallback callback) {
       base::BindOnce(&GetUsageInfoCallback, std::move(callback)));
 }
 
-void LocalStorageHelper::DeleteOrigin(const url::Origin& origin,
-                                      base::OnceClosure callback) {
+void LocalStorageHelper::DeleteStorageKey(const blink::StorageKey& storage_key,
+                                          base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  dom_storage_context_->DeleteLocalStorage(
-      // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
-      blink::StorageKey(origin), std::move(callback));
+  dom_storage_context_->DeleteLocalStorage(storage_key, std::move(callback));
 }
 
 //---------------------------------------------------------
@@ -78,26 +76,27 @@ void LocalStorageHelper::DeleteOrigin(const url::Origin& origin,
 CannedLocalStorageHelper::CannedLocalStorageHelper(BrowserContext* context)
     : LocalStorageHelper(context) {}
 
-void CannedLocalStorageHelper::Add(const url::Origin& origin) {
-  if (!HasStorageScheme(origin.GetURL()))
+void CannedLocalStorageHelper::Add(const blink::StorageKey& storage_key) {
+  if (!HasStorageScheme(storage_key.origin()))
     return;
-  pending_origins_.insert(origin);
+  pending_storage_keys_.insert(storage_key);
 }
 
 void CannedLocalStorageHelper::Reset() {
-  pending_origins_.clear();
+  pending_storage_keys_.clear();
 }
 
 bool CannedLocalStorageHelper::empty() const {
-  return pending_origins_.empty();
+  return pending_storage_keys_.empty();
 }
 
 size_t CannedLocalStorageHelper::GetCount() const {
-  return pending_origins_.size();
+  return pending_storage_keys_.size();
 }
 
-const std::set<url::Origin>& CannedLocalStorageHelper::GetOrigins() const {
-  return pending_origins_;
+const std::set<blink::StorageKey>& CannedLocalStorageHelper::GetStorageKeys()
+    const {
+  return pending_storage_keys_;
 }
 
 void CannedLocalStorageHelper::StartFetching(FetchCallback callback) {
@@ -105,17 +104,21 @@ void CannedLocalStorageHelper::StartFetching(FetchCallback callback) {
   DCHECK(!callback.is_null());
 
   std::list<content::StorageUsageInfo> result;
-  for (const auto& origin : pending_origins_)
-    result.emplace_back(origin, 0, base::Time());
+  for (const auto& storage_key : pending_storage_keys_)
+    result.emplace_back(
+        // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+        // StorageUsageInfo is converted.
+        storage_key.origin(), 0, base::Time());
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void CannedLocalStorageHelper::DeleteOrigin(const url::Origin& origin,
-                                            base::OnceClosure callback) {
-  pending_origins_.erase(origin);
-  LocalStorageHelper::DeleteOrigin(origin, std::move(callback));
+void CannedLocalStorageHelper::DeleteStorageKey(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback) {
+  pending_storage_keys_.erase(storage_key);
+  LocalStorageHelper::DeleteStorageKey(storage_key, std::move(callback));
 }
 
 CannedLocalStorageHelper::~CannedLocalStorageHelper() = default;

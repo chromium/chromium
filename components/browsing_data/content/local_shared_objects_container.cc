@@ -104,15 +104,17 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
       ++count;
   }
 
-  // Count local storages for the domain of the given |origin|.
-  for (const auto& storage_origin : local_storages()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
+  // Count local storages for the domain of the given `storage_key`.
+  for (const auto& storage_key : local_storages()->GetStorageKeys()) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
       ++count;
   }
 
-  // Count session storages for the domain of the given |origin|.
-  for (const auto& storage_origin : session_storages()->GetOrigins()) {
-    if (SameDomainOrHost(origin, storage_origin.GetURL()))
+  // Count session storages for the domain of the given `storage_key`.
+  for (const auto& storage_key : session_storages()->GetStorageKeys()) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
       ++count;
   }
 
@@ -172,11 +174,15 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
     hosts.insert(cookie.Domain());
   }
 
-  for (const auto& origin : local_storages()->GetOrigins())
-    hosts.insert(origin.host());
+  for (const auto& storage_key : local_storages()->GetStorageKeys()) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    hosts.insert(storage_key.origin().host());
+  }
 
-  for (const auto& origin : session_storages()->GetOrigins())
-    hosts.insert(origin.host());
+  for (const auto& storage_key : session_storages()->GetStorageKeys()) {
+    // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
+    hosts.insert(storage_key.origin().host());
+  }
 
   for (const auto& storage_key : indexed_dbs()->GetStorageKeys()) {
     // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.

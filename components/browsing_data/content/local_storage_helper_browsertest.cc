@@ -138,8 +138,9 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
       new LocalStorageHelper(shell()->web_contents()->GetBrowserContext()));
   CreateLocalStorageDataForTest();
   base::RunLoop delete_run_loop;
-  local_storage_helper->DeleteOrigin(url::Origin::Create(GURL(kOrigin1)),
-                                     delete_run_loop.QuitClosure());
+  local_storage_helper->DeleteStorageKey(
+      blink::StorageKey::CreateFromStringForTesting(kOrigin1),
+      delete_run_loop.QuitClosure());
   delete_run_loop.Run();
 
   // Ensure the origin has been deleted, but other origins are intact.
@@ -171,13 +172,15 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
-  const GURL origin1("http://host1:1/");
-  const GURL origin2("http://host2:1/");
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   scoped_refptr<CannedLocalStorageHelper> helper(new CannedLocalStorageHelper(
       shell()->web_contents()->GetBrowserContext()));
-  helper->Add(url::Origin::Create(origin1));
-  helper->Add(url::Origin::Create(origin2));
+  helper->Add(storage_key1);
+  helper->Add(storage_key2);
 
   TestCompletionCallback callback;
   helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
@@ -187,18 +190,19 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
 
   ASSERT_EQ(2u, result.size());
   auto info = result.begin();
-  EXPECT_EQ(origin1, info->origin.GetURL());
+  EXPECT_EQ(storage_key1.origin(), info->origin);
   info++;
-  EXPECT_EQ(origin2, info->origin.GetURL());
+  EXPECT_EQ(storage_key2.origin(), info->origin);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
-  const GURL origin("http://host1:1/");
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
   scoped_refptr<CannedLocalStorageHelper> helper(new CannedLocalStorageHelper(
       shell()->web_contents()->GetBrowserContext()));
-  helper->Add(url::Origin::Create(origin));
-  helper->Add(url::Origin::Create(origin));
+  helper->Add(storage_key);
+  helper->Add(storage_key);
 
   TestCompletionCallback callback;
   helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
@@ -207,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(origin, result.begin()->origin.GetURL());
+  EXPECT_EQ(storage_key.origin(), result.begin()->origin);
 }
 
 }  // namespace

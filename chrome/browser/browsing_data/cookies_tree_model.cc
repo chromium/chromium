@@ -482,8 +482,10 @@ class CookieTreeLocalStorageNode : public CookieTreeNode {
           local_storage_info_->origin,
           AccessContextAuditDatabase::StorageAPIType::kLocalStorage);
 
-      container->local_storage_helper_->DeleteOrigin(
-          local_storage_info_->origin, base::DoNothing());
+      container->local_storage_helper_->DeleteStorageKey(
+          // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+          // function directly.
+          blink::StorageKey(local_storage_info_->origin), base::DoNothing());
       container->local_storage_info_list_.erase(local_storage_info_);
     }
   }
