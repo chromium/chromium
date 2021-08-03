@@ -34,6 +34,8 @@ namespace {
 const size_t kHardMaxCachedFonts = 250;
 const size_t kMaxCachedFonts = 25;
 const float kUMASampleProbability = 0.01;
+// Max delay to fire context lost for context in iframes.
+static const unsigned kMaxIframeContextLoseDelay = 100;
 
 class OffscreenFontCache {
  public:
@@ -329,7 +331,9 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ == kSyntheticLostContext && Host()) {
     Host()->DiscardResourceProvider();
   }
-  dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
+  dispatch_context_lost_event_timer_.StartOneShot(
+      base::TimeDelta::FromMilliseconds(delay), FROM_HERE);
 }
 
 bool OffscreenCanvasRenderingContext2D::IsPaintable() const {
