@@ -1719,7 +1719,6 @@ static LayoutUnit ComputeContentSize(
         is_after_break = false;
       }
 
-      bool has_forced_break = false;
       for (const NGInlineItemResult& result : line_info.Results()) {
         const NGInlineItem& item = *result.item;
         if (item.Type() == NGInlineItem::kText) {
@@ -1736,14 +1735,10 @@ static LayoutUnit ComputeContentSize(
         }
         if (item.Type() == NGInlineItem::kControl) {
           UChar c = items_data.text_content[item.StartOffset()];
-          if (c == kNewlineCharacter) {
-            // Compute the forced break after all results were handled, because
-            // when close tags appear after a forced break, they are included in
-            // the line, and they may have inline sizes. crbug.com/991320.
-            DCHECK(!has_forced_break);
-            has_forced_break = true;
-            continue;
-          }
+#if DCHECK_IS_ON()
+          if (c == kNewlineCharacter)
+            DCHECK(line_info.HasForcedBreak());
+#endif
           // Tabulation characters change the widths by their positions, so
           // their widths for the max size may be different from the widths for
           // the min size. Fall back to 2 pass for now.
@@ -1752,9 +1747,16 @@ static LayoutUnit ComputeContentSize(
             continue;
           }
         }
+#if DCHECK_IS_ON()
+        if (item.Type() == NGInlineItem::kBlockInInline)
+          DCHECK(line_info.HasForcedBreak());
+#endif
         position += result.inline_size;
       }
-      if (has_forced_break)
+      // Compute the forced break after all results were handled, because
+      // when close tags appear after a forced break, they are included in
+      // the line, and they may have inline sizes. crbug.com/991320.
+      if (line_info.HasForcedBreak())
         ForceLineBreak(line_info);
     }
   };

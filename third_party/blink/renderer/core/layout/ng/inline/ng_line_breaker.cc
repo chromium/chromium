@@ -1738,6 +1738,7 @@ void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem* item,
   if (UNLIKELY(HasHyphen()))
     position_ -= RemoveHyphen(line_info->MutableResults());
   is_after_forced_break_ = true;
+  line_info->SetHasForcedBreak();
   line_info->SetIsLastLine(true);
   state_ = LineBreakState::kDone;
 }
@@ -1981,6 +1982,10 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
     return;
   }
   const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+  item_result->inline_size =
+      NGFragment(constraint_space_.GetWritingDirection(), fragment)
+          .InlineSize();
+  position_ += item_result->inline_size;
   item_result->should_create_line_box = !layout_result->IsSelfCollapsing();
   item_result->layout_result = std::move(layout_result);
 
@@ -1988,6 +1993,8 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
   line_info->SetBlockInInlineBreakToken(
       To<NGBlockBreakToken>(fragment.BreakToken()));
   line_info->SetIsBlockInInline();
+  line_info->SetHasForcedBreak();
+  is_after_forced_break_ = true;
   trailing_whitespace_ = WhitespaceState::kNone;
   if (!line_info->BlockInInlineBreakToken())
     MoveToNextOf(item);
@@ -2746,6 +2753,7 @@ scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
   DCHECK_LE(item_index_, items.size());
   if (item_index_ >= items.size())
     return nullptr;
+  DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);
   return NGInlineBreakToken::Create(
       node_, current_style_.get(), item_index_, offset_,
       (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |

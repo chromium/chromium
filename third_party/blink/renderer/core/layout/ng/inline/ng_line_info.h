@@ -53,6 +53,12 @@ class CORE_EXPORT NGLineInfo {
   bool IsLastLine() const { return is_last_line_; }
   void SetIsLastLine(bool is_last_line) { is_last_line_ = is_last_line; }
 
+  // Whether this line has ended with a forced break or not. Note, the forced
+  // break item may not be the last item if trailing items are included, or even
+  // does not exist if synthesized for block-in-inline.
+  bool HasForcedBreak() const { return has_forced_break_; }
+  void SetHasForcedBreak() { has_forced_break_ = true; }
+
   // If the line is marked as empty, it means that there's no content that
   // requires it to be present at all, e.g. when there are only close tags with
   // no margin/border/padding.
@@ -188,6 +194,7 @@ class CORE_EXPORT NGLineInfo {
 
   bool use_first_line_style_ = false;
   bool is_last_line_ = false;
+  bool has_forced_break_ = false;
   bool is_empty_line_ = false;
   bool is_block_in_inline_ = false;
   bool has_overflow_ = false;
