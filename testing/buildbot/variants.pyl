@@ -46,32 +46,32 @@
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4573.0/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v94.0.4596.0/test_ash_chrome',
       '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
-    'identifier': 'Lacros version skew testing ash 93.0.4573.0',
+    'identifier': 'Lacros version skew testing ash 94.0.4596.0',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v93.0.4573.0',
-          'revision': 'version:93.0.4573.0',
+          'location': 'lacros_version_skew_tests_v94.0.4596.0',
+          'revision': 'version:94.0.4596.0',
         },
       ],
     },
   },
   'LACROS_VERSION_SKEW_DEV': {
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4577.10/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v94.0.4588.0/test_ash_chrome',
       '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
-    'identifier': 'Lacros version skew testing ash 93.0.4577.10',
+    'identifier': 'Lacros version skew testing ash 94.0.4588.0',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v93.0.4577.10',
-          'revision': 'version:93.0.4577.10',
+          'location': 'lacros_version_skew_tests_v94.0.4588.0',
+          'revision': 'version:94.0.4588.0',
         },
       ],
     },
