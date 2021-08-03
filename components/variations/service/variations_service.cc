@@ -356,7 +356,7 @@ VariationsService::VariationsService(
       state_manager_(state_manager),
       policy_pref_service_(local_state),
       initial_request_completed_(false),
-      disable_deltas_for_next_request_(false),
+      delta_error_since_last_success_(false),
       resource_request_allowed_notifier_(std::move(notifier)),
       request_count_(0),
       safe_seed_manager_(local_state),
@@ -638,7 +638,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   bool enable_deltas = false;
   std::string serial_number =
       field_trial_creator_.seed_store()->GetLatestSerialNumber();
-  if (!serial_number.empty() && !disable_deltas_for_next_request_) {
+  if (!serial_number.empty() && !delta_error_since_last_success_) {
     // Tell the server that delta-compressed seeds are supported.
     enable_deltas = true;
     // Get the seed only if its serial number doesn't match what we have.
@@ -680,7 +680,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   UMA_HISTOGRAM_COUNTS_100("Variations.RequestCount", request_count_);
   ++request_count_;
   last_request_started_time_ = now;
-  disable_deltas_for_next_request_ = false;
+  delta_error_since_last_success_ = false;
   return true;
 }
 
@@ -902,7 +902,7 @@ void VariationsService::OnSimpleLoaderCompleteOrRedirect(
       StoreSeed(*response_body, signature, country_code, response_date,
                 is_delta_compressed, is_gzip_compressed);
   if (!store_success && is_delta_compressed) {
-    disable_deltas_for_next_request_ = true;
+    delta_error_since_last_success_ = true;
     // |request_scheduler_| will be null during unit tests.
     if (request_scheduler_)
       request_scheduler_->ScheduleFetchShortly();

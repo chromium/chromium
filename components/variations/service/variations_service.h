@@ -399,10 +399,9 @@ class VariationsService
   // Tracks whether the initial request to the variations server had completed.
   bool initial_request_completed_;
 
-  // Indicates that the next request to the variations service shouldn't specify
-  // that it supports delta compression. Set to true when a delta compressed
-  // response encountered an error.
-  bool disable_deltas_for_next_request_;
+  // Tracks whether any errors resolving delta compression were encountered
+  // since the last time a seed was fetched successfully.
+  bool delta_error_since_last_success_;
 
   // Helper class used to tell this service if it's allowed to make network
   // resource requests.
