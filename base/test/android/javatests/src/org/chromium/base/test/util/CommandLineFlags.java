@@ -9,6 +9,9 @@ import android.text.TextUtils;
 
 import org.junit.Assert;
 import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -38,18 +41,30 @@ import java.util.Set;
 /**
  * Provides annotations related to command-line flag handling.
  *
- * Uses of these annotations on a derived class will take precedence over uses on its base classes,
- * so a derived class can add a command-line flag that a base class has removed (or vice versa).
- * Similarly, uses of these annotations on a test method will take precedence over uses on the
- * containing class.
+ * <p>This can be used in either an on-device instrumentation test or a junit (robolectric) test
+ * running on the host. To use in an instrumentation test, just {@code RunWith} {@link
+ * BaseJUnit4ClassRunner} (or a runner which extends that class). To use from a robolectric test,
+ * add the following test rule to your class:
+ *
+ * <pre>
+ * &#64Rule
+ * TestRule mRule = CommandLineFlags.getTestRule();
+ * </pre>
+ *
+ * <p>Then you can annotate the test class, test methods, or test rules with {@code
+ * CommandLineFlags.Add} or {@code CommandLineFlags.Remove}. Uses of these annotations on a derived
+ * class will take precedence over uses on its base classes, so a derived class can add a
+ * command-line flag that a base class has removed (or vice versa). Similarly, uses of these
+ * annotations on a test method will take precedence over uses on the containing class.
+ *
  * <p>
  * These annonations may also be used on Junit4 Rule classes and on their base classes. Note,
  * however that the annotation processor only looks at the declared type of the Rule, not its actual
  * type, so in, for example:
  *
  * <pre>
- *     &#64Rule
- *     TestRule mRule = new ChromeActivityTestRule();
+ * &#64Rule
+ * TestRule mRule = new ChromeActivityTestRule();
  * </pre>
  *
  * will only look for CommandLineFlags annotations on TestRule, not for CommandLineFlags annotations
@@ -259,6 +274,31 @@ public final class CommandLineFlags {
 
     private CommandLineFlags() {
         throw new AssertionError("CommandLineFlags is a non-instantiable class");
+    }
+
+    private static class CommandLineFlagsTestRule implements TestRule {
+        @Override
+        public Statement apply(final Statement base, Description description) {
+            return new Statement() {
+                @Override
+                public void evaluate() throws Throwable {
+                    try {
+                        Class clazz = description.getTestClass();
+                        CommandLineFlags.setUpClass(clazz);
+                        CommandLineFlags.setUpMethod(clazz.getMethod(description.getMethodName()));
+
+                        base.evaluate();
+                    } finally {
+                        CommandLineFlags.tearDownMethod();
+                        CommandLineFlags.tearDownClass();
+                    }
+                }
+            };
+        }
+    }
+
+    public static TestRule getTestRule() {
+        return new CommandLineFlagsTestRule();
     }
 
     public static TestHook getPreTestHook() {
