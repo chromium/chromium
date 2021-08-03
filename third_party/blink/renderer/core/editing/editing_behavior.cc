@@ -237,14 +237,17 @@ const char* EditingBehavior::InterpretKeyEvent(
 
   if (key_event->GetType() == WebInputEvent::Type::kRawKeyDown) {
     int map_key = modifiers << 16 | event.keyCode();
-    const char* name = map_key ? key_down_commands_map->at(map_key) : nullptr;
+    const char* name =
+        map_key ? key_down_commands_map->DeprecatedAtOrEmptyValue(map_key)
+                : nullptr;
     if (!name)
       name = LookupCommandNameFromDomKeyKeyDown(event.key(), modifiers);
     return name;
   }
 
   int map_key = modifiers << 16 | event.charCode();
-  return map_key ? key_press_commands_map->at(map_key) : nullptr;
+  return map_key ? key_press_commands_map->DeprecatedAtOrEmptyValue(map_key)
+                 : nullptr;
 }
 
 bool EditingBehavior::ShouldInsertCharacter(const KeyboardEvent& event) const {

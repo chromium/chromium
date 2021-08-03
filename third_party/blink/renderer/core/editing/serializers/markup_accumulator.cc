@@ -90,7 +90,8 @@ class MarkupAccumulator::NamespaceContext final {
   }
 
   AtomicString LookupNamespaceURI(const AtomicString& prefix) const {
-    return prefix_ns_map_.at(prefix ? prefix : g_empty_atom);
+    return prefix_ns_map_.DeprecatedAtOrEmptyValue(prefix ? prefix
+                                                          : g_empty_atom);
   }
 
   const AtomicString& ContextNamespace() const { return context_namespace_; }
@@ -108,7 +109,7 @@ class MarkupAccumulator::NamespaceContext final {
   }
 
   const Vector<AtomicString> PrefixList(const AtomicString& ns) const {
-    return ns_prefixes_map_.at(ns ? ns : g_empty_atom);
+    return ns_prefixes_map_.DeprecatedAtOrEmptyValue(ns ? ns : g_empty_atom);
   }
 
  private:

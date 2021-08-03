@@ -542,7 +542,7 @@ DocumentMarker* DocumentMarkerController::FirstMarkerIntersectingOffsetRange(
   if (start_offset == node_length && end_offset == node_length)
     return nullptr;
 
-  MarkerLists* const markers = markers_.at(&node);
+  MarkerLists* const markers = markers_.DeprecatedAtOrEmptyValue(&node);
   if (!markers)
     return nullptr;
 
@@ -592,7 +592,8 @@ DocumentMarkerController::MarkersAroundPosition(
     if (!text_node)
       continue;
 
-    MarkerLists* const marker_lists = markers_.at(text_node);
+    MarkerLists* const marker_lists =
+        markers_.DeprecatedAtOrEmptyValue(text_node);
     if (!marker_lists)
       continue;
 
@@ -645,7 +646,7 @@ DocumentMarkerController::MarkersIntersectingRange(
     auto* text_node = DynamicTo<Text>(node);
     if (!text_node)
       continue;
-    MarkerLists* const markers = markers_.at(text_node);
+    MarkerLists* const markers = markers_.DeprecatedAtOrEmptyValue(text_node);
     if (!markers)
       continue;
 
@@ -684,7 +685,7 @@ DocumentMarkerVector DocumentMarkerController::MarkersFor(
   if (!PossiblyHasMarkers(marker_types))
     return result;
 
-  MarkerLists* markers = markers_.at(&text);
+  MarkerLists* markers = markers_.DeprecatedAtOrEmptyValue(&text);
   if (!markers)
     return result;
 
@@ -1164,7 +1165,7 @@ bool DocumentMarkerController::SetTextMatchMarkersActive(const Text& text,
                                                          unsigned start_offset,
                                                          unsigned end_offset,
                                                          bool active) {
-  MarkerLists* markers = markers_.at(&text);
+  MarkerLists* markers = markers_.DeprecatedAtOrEmptyValue(&text);
   if (!markers)
     return false;
 
@@ -1224,7 +1225,7 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
   auto* text_node = DynamicTo<Text>(node);
   if (!text_node)
     return;
-  MarkerLists* markers = markers_.at(text_node);
+  MarkerLists* markers = markers_.DeprecatedAtOrEmptyValue(text_node);
   if (!markers)
     return;
 
