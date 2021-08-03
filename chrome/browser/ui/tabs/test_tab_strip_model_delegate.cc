@@ -97,7 +97,3 @@ bool TestTabStripModelDelegate::CanReload() const {
 
 void TestTabStripModelDelegate::AddToReadLater(
     content::WebContents* web_contents) {}
-
-void TestTabStripModelDelegate::CacheWebContents(
-    const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
-        web_contents) {}

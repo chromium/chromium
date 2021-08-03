@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/browser_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -47,41 +48,25 @@ ClosedTabCache::ClosedTabCache()
 }
 ClosedTabCache::~ClosedTabCache() = default;
 
-bool ClosedTabCache::CanCacheWebContents(absl::optional<SessionID> id) {
-  TRACE_EVENT0("browser", "ClosedTabCache::CanCacheWebContents");
+base::TimeDelta ClosedTabCache::GetTimeToLiveInClosedTabCache() {
+  // We use the following order of priority if multiple values exist:
+  // - The programmatical value set in params. Used in specific tests.
+  // - Default value otherwise, kDefaultTimeToLiveInClosedTabCacheInSeconds.
 
-  // Only store if the kClosedTabCache feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kClosedTabCache))
-    return false;
-
-  // We need to assume that the caller took care of obtaining a SessionID.
-  DCHECK(id.has_value());
-
-  // Only store if tab has valid session id associated with it.
-  if (!id.value().is_valid())
-    return false;
-
-  // If the current memory pressure exceeds the threshold, we should not cache
-  // any WebContents.
-  if (memory_pressure_level_ >= kClosedTabCacheMemoryPressureThreshold)
-    return false;
-
-  // For all other cases, you can store the tab in ClosedTabCache.
-  return true;
+  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kClosedTabCache, "time_to_live_in_closed_tab_cache_in_seconds",
+      kDefaultTimeToLiveInClosedTabCacheInSeconds.InSeconds()));
 }
 
-void ClosedTabCache::CacheWebContents(
-    std::pair<absl::optional<SessionID>, std::unique_ptr<content::WebContents>>
-        cached) {
-  TRACE_EVENT0("browser", "ClosedTabCache::CacheWebContents");
+void ClosedTabCache::StoreEntry(SessionID id,
+                                std::unique_ptr<content::WebContents> wc,
+                                base::TimeTicks timestamp) {
+  TRACE_EVENT2("browser", "ClosedTabCache::StoreEntry", "SessionID", id.id(),
+               "URL", wc->GetURL().spec());
 
-  DCHECK(CanCacheWebContents(cached.first));
-  auto entry = std::make_unique<Entry>(
-      cached.first.value(), std::move(cached.second), base::TimeTicks::Now());
-  // TODO(https://crbug.com/1117377): Add a WebContents::SetInClosedTabCache()
-  // method to replace freezing the page.
-  entry->web_contents->WasHidden();
-  DCHECK_EQ(content::Visibility::HIDDEN, entry->web_contents->GetVisibility());
+  auto entry = std::make_unique<Entry>(id, std::move(wc), timestamp);
+
+  // TODO: Dispatch pagehide() before freezing.
   entry->web_contents->SetPageFrozen(/*frozen=*/true);
   StartEvictionTimer(entry.get());
 
@@ -122,46 +107,6 @@ const content::WebContents* ClosedTabCache::GetWebContents(SessionID id) const {
   return (*matching_entry).get()->web_contents.get();
 }
 
-base::TimeDelta ClosedTabCache::GetTimeToLiveInClosedTabCache() {
-  // We use the following order of priority if multiple values exist:
-  // - The programmatical value set in params. Used in specific tests.
-  // - Infinite if kClosedTabCacheNoTimeEviction is enabled.
-  // - Default value otherwise, kDefaultTimeToLiveInClosedTabCacheInSeconds.
-  if (base::FeatureList::IsEnabled(kClosedTabCacheNoTimeEviction) &&
-      GetFieldTrialParamValueByFeature(
-          features::kClosedTabCache,
-          "time_to_live_in_closed_tab_cache_in_seconds")
-          .empty()) {
-    return base::TimeDelta::Max();
-  }
-
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
-      features::kClosedTabCache, "time_to_live_in_closed_tab_cache_in_seconds",
-      kDefaultTimeToLiveInClosedTabCacheInSeconds.InSeconds()));
-}
-
-void ClosedTabCache::SetCacheSizeLimitForTesting(size_t limit) {
-  cache_size_limit_ = limit;
-}
-
-void ClosedTabCache::SetTaskRunnerForTesting(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  task_runner_ = task_runner;
-}
-
-bool ClosedTabCache::IsEmpty() {
-  return entries_.empty();
-}
-
-// static
-bool ClosedTabCache::IsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kClosedTabCache);
-}
-
-size_t ClosedTabCache::EntriesCount() {
-  return entries_.size();
-}
-
 void ClosedTabCache::StartEvictionTimer(Entry* entry) {
   base::TimeDelta evict_after = GetTimeToLiveInClosedTabCache();
   entry->eviction_timer.SetTaskRunner(task_runner_);
@@ -183,15 +128,26 @@ void ClosedTabCache::EvictEntryById(SessionID id) {
   entries_.erase(matching_entry);
 }
 
+void ClosedTabCache::SetCacheSizeLimitForTesting(size_t limit) {
+  cache_size_limit_ = limit;
+}
+
+void ClosedTabCache::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  task_runner_ = task_runner;
+}
+
+bool ClosedTabCache::IsEmpty() {
+  return entries_.empty();
+}
+
+size_t ClosedTabCache::EntriesCount() {
+  return entries_.size();
+}
+
 void ClosedTabCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (!base::FeatureList::IsEnabled(kClosedTabCacheMemoryPressure))
-    return;
-
-  if (memory_pressure_level_ != level)
-    memory_pressure_level_ = level;
-
-  if (memory_pressure_level_ >= kClosedTabCacheMemoryPressureThreshold)
+  if (level >= kClosedTabCacheMemoryPressureThreshold)
     Flush();
 }
 
