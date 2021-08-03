@@ -256,22 +256,22 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<const RuleData>>* IdRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return id_rules_.at(key);
+    return id_rules_.DeprecatedAtOrEmptyValue(key);
   }
   const HeapVector<Member<const RuleData>>* ClassRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return class_rules_.at(key);
+    return class_rules_.DeprecatedAtOrEmptyValue(key);
   }
   const HeapVector<Member<const RuleData>>* TagRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return tag_rules_.at(key);
+    return tag_rules_.DeprecatedAtOrEmptyValue(key);
   }
   const HeapVector<Member<const RuleData>>* UAShadowPseudoElementRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return ua_shadow_pseudo_element_rules_.at(key);
+    return ua_shadow_pseudo_element_rules_.DeprecatedAtOrEmptyValue(key);
   }
   const HeapVector<Member<const RuleData>>* LinkPseudoClassRules() const {
     DCHECK(!pending_rules_);

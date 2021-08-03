@@ -15,7 +15,7 @@ class CORE_EXPORT MediaFeatureOverrides {
  public:
   void SetOverride(const AtomicString& feature, const String& value_string);
   MediaQueryExpValue GetOverride(const AtomicString& feature) const {
-    return overrides_.at(feature);
+    return overrides_.DeprecatedAtOrEmptyValue(feature);
   }
 
  private:

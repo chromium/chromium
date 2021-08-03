@@ -87,7 +87,7 @@ const CSSValue* PrepopulatedComputedStylePropertyMap::GetProperty(
 
 const CSSValue* PrepopulatedComputedStylePropertyMap::GetCustomProperty(
     AtomicString property_name) const {
-  return custom_values_.at(property_name);
+  return custom_values_.DeprecatedAtOrEmptyValue(property_name);
 }
 
 void PrepopulatedComputedStylePropertyMap::ForEachProperty(
