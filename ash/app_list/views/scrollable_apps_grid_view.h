@@ -39,14 +39,6 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetPaddingBetweenPages() const override;
   bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
-  GridIndex GetIndexFromModelIndex(int model_index) const override;
-  int GetModelIndexFromIndex(const GridIndex& index) const override;
-  GridIndex GetLastTargetIndex() const override;
-  GridIndex GetLastTargetIndexOfPage(int page) const override;
-  int GetTargetModelIndexForMove(AppListItemView* moved_view,
-                                 const GridIndex& index) const override;
-  size_t GetTargetItemListIndexForMove(AppListItemView* moved_view,
-                                       const GridIndex& index) const override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:

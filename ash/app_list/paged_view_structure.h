@@ -17,7 +17,8 @@ class AppsGridView;
 class AppListItemView;
 struct GridIndex;
 
-// The structure of app list item views in root apps grid view.
+// Manages the mapping between AppListItemList index, view model index, and
+// visual pages in the apps grid view.
 class ASH_EXPORT PagedViewStructure {
  public:
   using Page = std::vector<AppListItemView*>;
@@ -26,6 +27,17 @@ class ASH_EXPORT PagedViewStructure {
   explicit PagedViewStructure(AppsGridView* apps_grid_view);
   PagedViewStructure(const PagedViewStructure& other);
   ~PagedViewStructure();
+
+  enum class Mode {
+    // Paged, with partially full pages created by page break items.
+    kPartialPages,
+    // Paged, with all pages full. Used for folders.
+    kFullPages,
+    // A single long page. Ignores page breaks in the data model. Used for
+    // scrollable apps grid.
+    kSinglePage
+  };
+  void Init(Mode mode);
 
   // Loads the view structure based on the position and page position in the
   // metadata of item views in the view model.
@@ -69,10 +81,10 @@ class ASH_EXPORT PagedViewStructure {
   int GetTargetModelIndexForMove(AppListItemView* moved_view,
                                  const GridIndex& index) const;
 
-  // Returns the target item index if moving the item view to specified target
-  // visual index.
-  int GetTargetItemIndexForMove(AppListItemView* moved_view,
-                                const GridIndex& index) const;
+  // Returns the target `AppsGridView::item_list_` index if moving the item view
+  // to specified target visual index.
+  int GetTargetItemListIndexForMove(AppListItemView* moved_view,
+                                    const GridIndex& index) const;
 
   // Returns true if the visual index is valid position to which an item view
   // can be moved.
@@ -95,8 +107,6 @@ class ASH_EXPORT PagedViewStructure {
 
   const Pages& pages() const { return pages_; }
 
-  void set_ignore_page_breaks() { ignore_page_breaks_ = true; }
-
  private:
   // Skips the item view being dragged if it exists in the specified
   // |page|.
@@ -109,16 +119,16 @@ class ASH_EXPORT PagedViewStructure {
   // Removes empty page. Returns true if view structure is changed.
   bool ClearEmptyPages();
 
+  // Returns TilesPerPage() from `apps_grid_view_`.
+  int TilesPerPage() const;
+
+  // Not const for tests.
+  Mode mode_ = Mode::kPartialPages;
+
   // Represents the item views' locations in each page.
   Pages pages_;
 
   AppsGridView* const apps_grid_view_;  // Not owned.
-
-  // Ignores page breaks in the data model, resulting in a structure with a
-  // single long page.
-  // TODO(crbug.com/1211608): Eliminate ScrollableAppsGridView's dependence on
-  // this class, then remove this member.
-  bool ignore_page_breaks_ = false;
 };
 
 }  // namespace ash

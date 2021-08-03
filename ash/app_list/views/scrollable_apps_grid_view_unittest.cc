@@ -13,9 +13,11 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -138,27 +140,32 @@ TEST_F(ScrollableAppsGridViewTest, ItemIndicesForMove) {
   AddAppListItem("ccc");  // App list item index 4, visual index 0,2.
   ShowAppList();
 
-  // Simulate dragging the last item.
   auto* view = GetScrollableAppsGridView();
+  PagedViewStructure* structure =
+      test::AppsGridViewTestApi(view).GetPagedViewStructure();
 
   // The last visual index is 0,2.
-  EXPECT_EQ(GridIndex(0, 2), view->GetLastTargetIndex());
-  EXPECT_EQ(GridIndex(0, 2), view->GetLastTargetIndexOfPage(0));
+  EXPECT_EQ(GridIndex(0, 2), structure->GetLastTargetIndex());
+  EXPECT_EQ(GridIndex(0, 2), structure->GetLastTargetIndexOfPage(0));
 
   // Visual index directly maps to target index in "view model".
-  EXPECT_EQ(0, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 0)));
-  EXPECT_EQ(1, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 1)));
-  EXPECT_EQ(2, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 2)));
-  EXPECT_EQ(3, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 3)));
+  EXPECT_EQ(0, structure->GetTargetModelIndexForMove(nullptr, GridIndex(0, 0)));
+  EXPECT_EQ(1, structure->GetTargetModelIndexForMove(nullptr, GridIndex(0, 1)));
+  EXPECT_EQ(2, structure->GetTargetModelIndexForMove(nullptr, GridIndex(0, 2)));
+  EXPECT_EQ(3, structure->GetTargetModelIndexForMove(nullptr, GridIndex(0, 3)));
 
   // Target is the front.
-  EXPECT_EQ(0u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 0)));
+  EXPECT_EQ(0,
+            structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 0)));
   // Target is after "aaa".
-  EXPECT_EQ(1u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 1)));
+  EXPECT_EQ(1,
+            structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 1)));
   // Target is after "aaa" + break + "bbb".
-  EXPECT_EQ(3u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 2)));
+  EXPECT_EQ(3,
+            structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 2)));
   // Target is after "aaa" + break + "bbb" + break + "ccc".
-  EXPECT_EQ(5u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 3)));
+  EXPECT_EQ(5,
+            structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 3)));
 }
 
 TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {

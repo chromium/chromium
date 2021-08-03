@@ -34,7 +34,7 @@ ScrollableAppsGridView::ScrollableAppsGridView(
                    a11y_announcer,
                    view_delegate,
                    folder_delegate) {
-  view_structure_.set_ignore_page_breaks();
+  view_structure_.Init(PagedViewStructure::Mode::kSinglePage);
 }
 
 ScrollableAppsGridView::~ScrollableAppsGridView() {
@@ -131,58 +131,6 @@ void ScrollableAppsGridView::CalculateIdealBounds() {
     ++model_index;
     ++grid_index;
   }
-}
-
-GridIndex ScrollableAppsGridView::GetIndexFromModelIndex(
-    int model_index) const {
-  return GridIndex(0, model_index);
-}
-
-int ScrollableAppsGridView::GetModelIndexFromIndex(
-    const GridIndex& index) const {
-  DCHECK_EQ(index.page, 0);
-  return index.slot;
-}
-
-GridIndex ScrollableAppsGridView::GetLastTargetIndex() const {
-  DCHECK_GT(view_model()->view_size(), 0);
-  int view_index = view_model()->view_size() - 1;
-  return GetIndexFromModelIndex(view_index);
-}
-
-GridIndex ScrollableAppsGridView::GetLastTargetIndexOfPage(int page) const {
-  DCHECK_EQ(page, 0);
-  return GetLastTargetIndex();
-}
-
-int ScrollableAppsGridView::GetTargetModelIndexForMove(
-    AppListItemView* moved_view,
-    const GridIndex& index) const {
-  DCHECK_EQ(index.page, 0);
-  return GetModelIndexFromIndex(index);
-}
-
-size_t ScrollableAppsGridView::GetTargetItemListIndexForMove(
-    AppListItemView* moved_view,
-    const GridIndex& index) const {
-  DCHECK_EQ(index.page, 0);
-  GridIndex current_index(0, 0);
-  size_t current_item_index = 0;
-
-  // Skip the leading "page break" items.
-  while (current_item_index < item_list()->item_count() &&
-         item_list()->item_at(current_item_index)->is_page_break()) {
-    ++current_item_index;
-  }
-
-  while (current_item_index < item_list()->item_count() &&
-         current_index != index) {
-    if (!item_list()->item_at(current_item_index)->is_page_break())
-      ++current_index.slot;
-    ++current_item_index;
-  }
-  DCHECK_EQ(current_index, index);
-  return current_item_index;
 }
 
 void ScrollableAppsGridView::RecordAppMovingTypeMetrics(

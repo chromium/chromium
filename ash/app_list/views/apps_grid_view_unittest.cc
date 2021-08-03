@@ -2490,6 +2490,9 @@ TEST_P(AppsGridViewDragAndDropTest, UpdateFolderBackgroundOnCancelDrag) {
   const int kTotalItems = 4;
   TestAppsGridViewFolderDelegate folder_delegate;
   apps_grid_view_->set_folder_delegate(&folder_delegate);
+  test::AppsGridViewTestApi(apps_grid_view_)
+      .GetPagedViewStructure()
+      ->Init(PagedViewStructure::Mode::kFullPages);
   model_->PopulateApps(kTotalItems);
   gfx::Point mouse_from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   gfx::Point mouse_to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();

@@ -25,16 +25,32 @@ PagedViewStructure::PagedViewStructure(const PagedViewStructure& other) =
 
 PagedViewStructure::~PagedViewStructure() = default;
 
+void PagedViewStructure::Init(Mode mode) {
+  mode_ = mode;
+}
+
 void PagedViewStructure::LoadFromMetadata() {
+  const auto* view_model = apps_grid_view_->view_model();
+  const size_t tiles_per_page = TilesPerPage();
+
   pages_.clear();
   pages_.emplace_back();
 
-  // When ignoring page breaks, just copy the view model.
-  if (ignore_page_breaks_) {
-    auto* view_model = apps_grid_view_->view_model();
+  if (mode_ == Mode::kSinglePage) {
+    // Copy the view model to a single page.
     pages_[0].reserve(view_model->view_size());
     for (int i = 0; i < view_model->view_size(); ++i) {
       pages_[0].push_back(view_model->view_at(i));
+    }
+    return;
+  }
+
+  if (mode_ == Mode::kFullPages) {
+    // Copy the view model to N full pages.
+    for (int i = 0; i < view_model->view_size(); ++i) {
+      if (pages_.back().size() == tiles_per_page)
+        pages_.emplace_back();
+      pages_.back().push_back(view_model->view_at(i));
     }
     return;
   }
@@ -67,7 +83,7 @@ void PagedViewStructure::LoadFromMetadata() {
 void PagedViewStructure::SaveToMetadata() {
   // When ignoring page breaks we don't need to add or remove page breaks from
   // the data model.
-  if (ignore_page_breaks_)
+  if (mode_ == Mode::kFullPages || mode_ == Mode::kSinglePage)
     return;
 
   auto* item_list = apps_grid_view_->item_list_;
@@ -184,6 +200,15 @@ void PagedViewStructure::Add(AppListItemView* view,
 }
 
 GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
+  if (mode_ == Mode::kSinglePage)
+    return GridIndex(0, model_index);
+
+  if (mode_ == Mode::kFullPages) {
+    const int tiles_per_page = TilesPerPage();
+    return GridIndex(model_index / tiles_per_page,
+                     model_index % tiles_per_page);
+  }
+
   AppListItemView* view = apps_grid_view_->view_model()->view_at(model_index);
   for (size_t i = 0; i < pages_.size(); ++i) {
     auto& page = pages_[i];
@@ -196,6 +221,14 @@ GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
 }
 
 int PagedViewStructure::GetModelIndexFromIndex(const GridIndex& index) const {
+  if (mode_ == Mode::kSinglePage) {
+    DCHECK_EQ(index.page, 0);
+    return index.slot;
+  }
+
+  if (mode_ == Mode::kFullPages)
+    return index.page * TilesPerPage() + index.slot;
+
   auto* view_model = apps_grid_view_->view_model();
   if (index.page >= total_pages() || index.slot >= items_on_page(index.page))
     return view_model->view_size();
@@ -207,6 +240,11 @@ int PagedViewStructure::GetModelIndexFromIndex(const GridIndex& index) const {
 GridIndex PagedViewStructure::GetLastTargetIndex() const {
   if (apps_grid_view_->view_model()->view_size() == 0)
     return GridIndex(0, 0);
+
+  if (mode_ == Mode::kSinglePage || mode_ == Mode::kFullPages) {
+    int view_index = apps_grid_view_->view_model()->view_size() - 1;
+    return GetIndexFromModelIndex(view_index);
+  }
 
   int last_page_index = total_pages() - 1;
   int target_slot = CalculateTargetSlot(pages_.back());
@@ -220,6 +258,17 @@ GridIndex PagedViewStructure::GetLastTargetIndex() const {
 }
 
 GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
+  if (mode_ == Mode::kSinglePage) {
+    DCHECK_EQ(page_index, 0);
+    return GetLastTargetIndex();
+  }
+
+  if (mode_ == Mode::kFullPages) {
+    if (page_index == apps_grid_view_->pagination_model_.total_pages() - 1)
+      return GetLastTargetIndex();
+    return GridIndex(page_index, TilesPerPage() - 1);
+  }
+
   const int page_size = total_pages();
   DCHECK_LT(0, apps_grid_view_->view_model()->view_size());
   DCHECK_LE(page_index, page_size);
@@ -239,6 +288,9 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
 int PagedViewStructure::GetTargetModelIndexForMove(
     AppListItemView* moved_view,
     const GridIndex& index) const {
+  if (mode_ == Mode::kSinglePage || mode_ == Mode::kFullPages)
+    return GetModelIndexFromIndex(index);
+
   int target_model_index = 0;
   const int max_page = std::min(index.page, total_pages());
   for (int i = 0; i < max_page; ++i) {
@@ -259,11 +311,34 @@ int PagedViewStructure::GetTargetModelIndexForMove(
   return target_model_index;
 }
 
-int PagedViewStructure::GetTargetItemIndexForMove(
+int PagedViewStructure::GetTargetItemListIndexForMove(
     AppListItemView* moved_view,
     const GridIndex& index) const {
-  // Should only be called from PagedAppsGridView, which uses page breaks.
-  DCHECK(!ignore_page_breaks_);
+  if (mode_ == Mode::kFullPages)
+    return GetModelIndexFromIndex(index);
+
+  if (mode_ == Mode::kSinglePage) {
+    DCHECK_EQ(index.page, 0);
+    GridIndex current_index(0, 0);
+    size_t current_item_index = 0;
+
+    // Skip the leading "page break" items.
+    const auto* item_list = apps_grid_view_->item_list_;
+    while (current_item_index < item_list->item_count() &&
+           item_list->item_at(current_item_index)->is_page_break()) {
+      ++current_item_index;
+    }
+
+    while (current_item_index < item_list->item_count() &&
+           current_index != index) {
+      if (!item_list->item_at(current_item_index)->is_page_break())
+        ++current_index.slot;
+      ++current_item_index;
+    }
+    DCHECK_EQ(current_index, index);
+    return current_item_index;
+  }
+
   GridIndex current_index(0, 0);
   size_t current_item_index = 0;
   size_t offset = 0;
@@ -308,6 +383,9 @@ int PagedViewStructure::GetTargetItemIndexForMove(
 
 bool PagedViewStructure::IsValidReorderTargetIndex(
     const GridIndex& index) const {
+  if (mode_ == Mode::kFullPages)
+    return apps_grid_view_->IsValidIndex(index);
+
   if (apps_grid_view_->IsValidIndex(index))
     return true;
 
@@ -321,6 +399,7 @@ bool PagedViewStructure::IsValidReorderTargetIndex(
 }
 
 void PagedViewStructure::AppendPage() {
+  DCHECK_NE(mode_, Mode::kSinglePage);
   pages_.emplace_back();
 }
 
@@ -386,6 +465,10 @@ bool PagedViewStructure::ClearEmptyPages() {
     }
   }
   return changed;
+}
+
+int PagedViewStructure::TilesPerPage() const {
+  return apps_grid_view_->TilesPerPage();
 }
 
 }  // namespace ash

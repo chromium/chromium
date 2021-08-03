@@ -19,7 +19,7 @@ class View;
 namespace ash {
 
 class AppListItemView;
-class AppsGridView;
+class PagedViewStructure;
 
 namespace test {
 
@@ -51,6 +51,10 @@ class AppsGridViewTestApi {
   void Update() { view_->Update(); }
 
   AppListItemList* GetItemList() { return view_->item_list_; }
+
+  PagedViewStructure* GetPagedViewStructure() {
+    return &view_->view_structure_;
+  }
 
  private:
   AppsGridView* view_;

@@ -182,6 +182,9 @@ PagedAppsGridView::PagedAppsGridView(
       contents_view_(contents_view),
       page_flip_delay_(kPageFlipDelay) {
   DCHECK(contents_view_);
+  view_structure_.Init(IsInFolder() ? PagedViewStructure::Mode::kFullPages
+                                    : PagedViewStructure::Mode::kPartialPages);
+
   pagination_model_.AddObserver(this);
 
   pagination_controller_ = std::make_unique<PaginationController>(
@@ -552,59 +555,6 @@ void PagedAppsGridView::MaybeStartPageFlip() {
 
 void PagedAppsGridView::MaybeStopPageFlip() {
   StopPageFlipTimer();
-}
-
-GridIndex PagedAppsGridView::GetIndexFromModelIndex(int model_index) const {
-  if (!IsInFolder())
-    return view_structure_.GetIndexFromModelIndex(model_index);
-
-  const int tiles_per_page = TilesPerPage();
-  return GridIndex(model_index / tiles_per_page, model_index % tiles_per_page);
-}
-
-int PagedAppsGridView::GetModelIndexFromIndex(const GridIndex& index) const {
-  if (!IsInFolder())
-    return view_structure_.GetModelIndexFromIndex(index);
-
-  return index.page * TilesPerPage() + index.slot;
-}
-
-GridIndex PagedAppsGridView::GetLastTargetIndex() const {
-  if (!IsInFolder())
-    return view_structure_.GetLastTargetIndex();
-
-  DCHECK_LT(0, view_model()->view_size());
-  int view_index = view_model()->view_size() - 1;
-  return GetIndexFromModelIndex(view_index);
-}
-
-GridIndex PagedAppsGridView::GetLastTargetIndexOfPage(int page) const {
-  if (!IsInFolder())
-    return view_structure_.GetLastTargetIndexOfPage(page);
-
-  if (page == pagination_model_.total_pages() - 1)
-    return GetLastTargetIndex();
-
-  return GridIndex(page, TilesPerPage() - 1);
-}
-
-int PagedAppsGridView::GetTargetModelIndexForMove(
-    AppListItemView* moved_view,
-    const GridIndex& index) const {
-  if (!IsInFolder())
-    return view_structure_.GetTargetModelIndexForMove(moved_view, index);
-
-  return GetModelIndexFromIndex(index);
-}
-
-size_t PagedAppsGridView::GetTargetItemListIndexForMove(
-    AppListItemView* moved_view,
-    const GridIndex& index) const {
-  if (!IsInFolder())
-    return view_structure_.GetTargetItemIndexForMove(moved_view, index);
-
-  // Model index is the same as item index for folder.
-  return GetModelIndexFromIndex(index);
 }
 
 void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {

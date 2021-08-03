@@ -706,29 +706,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Update number of columns and rows for apps within a folder.
   void UpdateColsAndRowsForFolder();
 
-  // Convert between the model index and the visual index. The model index
-  // is the index of the item in AppListModel. The visual index is the Index
-  // struct above with page/slot info of where to display the item.
-  virtual GridIndex GetIndexFromModelIndex(int model_index) const = 0;
-  virtual int GetModelIndexFromIndex(const GridIndex& index) const = 0;
-
-  // Returns the last possible visual index to add an item view.
-  virtual GridIndex GetLastTargetIndex() const = 0;
-
-  // Returns the last possible visual index to add an item view in |page|.
-  virtual GridIndex GetLastTargetIndexOfPage(int page) const = 0;
-
-  // Returns the target model index if moving the item view to specified target
-  // visual index.
-  virtual int GetTargetModelIndexForMove(AppListItemView* moved_view,
-                                         const GridIndex& index) const = 0;
-
-  // Returns the target `item_list_` index if moving the item view to specified
-  // target visual index.
-  virtual size_t GetTargetItemListIndexForMove(
-      AppListItemView* moved_view,
-      const GridIndex& index) const = 0;
-
   // Returns true if an item view exists in the visual index.
   bool IsValidIndex(const GridIndex& index) const;
 
