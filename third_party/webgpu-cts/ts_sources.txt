@@ -19,6 +19,7 @@ src/common/internal/query/compare.ts
 src/common/internal/params_utils.ts
 src/common/framework/fixture.ts
 src/common/framework/params_builder.ts
+src/common/framework/resources.ts
 src/common/internal/test_group.ts
 src/common/framework/test_group.ts
 src/common/internal/test_suite_listing.ts
@@ -207,10 +208,12 @@ src/webgpu/shader/validation/variable_and_const.spec.ts
 src/webgpu/shader/validation/wgsl/basic.spec.ts
 src/webgpu/util/copy_to_texture.ts
 src/webgpu/util/texture/texel_data.spec.ts
+src/webgpu/web_platform/util.ts
 src/webgpu/web_platform/canvas/configureSwapChain.spec.ts
 src/webgpu/web_platform/canvas/context_creation.spec.ts
 src/webgpu/web_platform/canvas/getCurrentTexture.spec.ts
 src/webgpu/web_platform/canvas/getSwapChainPreferredFormat.spec.ts
+src/webgpu/web_platform/canvas/readbackFromWebGPUCanvas.spec.ts
 src/webgpu/web_platform/copyToTexture/ImageBitmap.spec.ts
 src/webgpu/web_platform/copyToTexture/canvas.spec.ts
 src/webgpu/web_platform/copyToTexture/video.spec.ts

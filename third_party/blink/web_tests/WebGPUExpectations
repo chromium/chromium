@@ -134,6 +134,9 @@ crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createCom
 # Crash when creating the bindgroup. Most likely because we are using an invalid VkImageView
 crbug.com/dawn/1043 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture,resource_state:* [ Crash Failure ]
 
+# Flaky crash on shutdown
+crbug.com/1236132 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:onscreenCanvas,uploadToWebGL:* [ RetryOnFailure Crash ]
+
 # Failures because 1d, stencil8 and depth16unorm aren't implemented.
 crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
 crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:dimension="1d";* [ Failure ]
@@ -201,6 +204,21 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:ro
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,dimension:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:array_layers:textureDimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:array_layers:viewDimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:aspect:format="depth16unorm";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:aspect:format="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:dimension:textureDimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:format:textureFormat="depth16unorm";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:format:textureFormat="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:format:viewFormat="depth16unorm";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:format:viewFormat="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:textureDimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:viewDimension="1d";* [ Failure ]
+
+# Dawn treats 0 and undefined as the same
+crbug.com/dawn/1026 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:mipLevelCount=0;* [ Failure ]
+crbug.com/dawn/1026 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:array_layers:arrayLayerCount=0;* [ Failure ]
 
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_image,crossOrigin:* [ Failure ]
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";* [ Skip ]
@@ -277,6 +295,13 @@ crbug.com/1234041 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # VVLs want fillBuffer to be a multiple of 4
 crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=false;indirect=true;* [ Skip ]
 crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=false;* [ Skip ]
+
+# Shared image synchronization
+crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:drawTo2DCanvas:* [ Crash ]
+crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:offscreenCanvas,snapshot:* [ Crash ]
+crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:onscreenCanvas,snapshot:* [ Crash ]
+# conflicts with previous expectation
+# crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:onscreenCanvas,uploadToWebGL:* [ Crash ]
 
 ###
 ### Windows (D3D12) specific
