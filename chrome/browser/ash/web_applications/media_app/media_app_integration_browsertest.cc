@@ -277,6 +277,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
                                                 TestFile(kFileJpeg640x480));
   PrepareAppForTest(app);
 
+  EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+
   clickAppBarButton(app, kAnnotationButtonSelector);
 
   // Checks ink is loaded for images by ensuring the ink engine canvas has a non
