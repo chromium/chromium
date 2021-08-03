@@ -104,7 +104,7 @@ class ReadLaterSidePanelWebView : public views::WebView,
  private:
   void UpdateActiveURL(content::WebContents* contents) {
     auto* controller = contents_wrapper_->GetWebUIController();
-    if (!controller)
+    if (!controller || !contents)
       return;
 
     controller->GetAs<ReadLaterUI>()->SetActiveTabURL(
