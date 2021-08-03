@@ -16,6 +16,7 @@ source_set("share_targets") {
     "//chrome/browser:resources_grit",
     "//chrome/browser/share/core/resources:make_share_targets_protobuf",
     "//chrome/browser/share/proto:proto",
+    "//components/country_codes",
     "//components/resources:components_resources",
     "//ui/base:base",
   ]
