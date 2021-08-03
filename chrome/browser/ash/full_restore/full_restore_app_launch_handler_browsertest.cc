@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/full_restore/arc_app_launch_handler.h"
 #include "chrome/browser/ash/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/ash/full_restore/full_restore_service.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -2325,16 +2328,22 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
   }
 
   void ModifyAppReadiness(apps::mojom::Readiness readiness) {
+    apps::mojom::AppType app_type = apps::mojom::AppType::kWeb;
+    if (crosapi::browser_util::IsLacrosEnabled() &&
+        base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
+      app_type = apps::mojom::AppType::kSystemWeb;
+    }
+
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     std::vector<apps::mojom::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     apps::mojom::AppPtr app = apps::mojom::App::New();
     app->app_id =
         *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
-    app->app_type = apps::mojom::AppType::kWeb;
+    app->app_type = app_type;
     app->readiness = readiness;
     deltas.push_back(std::move(app));
-    cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
+    cache.OnApps(std::move(deltas), app_type,
                  false /* should_notify_initialized */);
   }
 

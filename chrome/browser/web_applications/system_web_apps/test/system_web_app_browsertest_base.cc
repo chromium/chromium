@@ -132,42 +132,11 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl() {
 
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
     bool install_mock)
-    : SystemWebAppBrowserTestBase(install_mock) {
+    : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(install_mock) {
   if (install_mock) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
-}
-
-void SystemWebAppManagerBrowserTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  SystemWebAppBrowserTestBase::SetUpCommandLine(command_line);
-  if (profile_type() == TestProfileType::kGuest) {
-    ConfigureCommandLineForGuestMode(command_line);
-  } else if (profile_type() == TestProfileType::kIncognito) {
-    command_line->AppendSwitch(::switches::kIncognito);
-  }
-}
-
-std::string SystemWebAppManagerTestParamsToString(
-    const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info) {
-  std::string output;
-
-  switch (std::get<0>(param_info.param)) {
-    case TestProfileType::kRegular:
-      break;
-    case TestProfileType::kIncognito:
-      output.append("_Incognito");
-      break;
-    case TestProfileType::kGuest:
-      output.append("_Guest");
-      break;
-  }
-  // The framework doesn't accept a blank param
-  if (output.empty()) {
-    output = "_Default";
-  }
-  return output;
 }
 
 }  // namespace web_app

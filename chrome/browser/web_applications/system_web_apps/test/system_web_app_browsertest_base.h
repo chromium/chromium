@@ -106,47 +106,13 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
 
 enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
 
-using SystemWebAppManagerTestParams = std::tuple<TestProfileType>;
-
 class SystemWebAppManagerBrowserTest
-    : public SystemWebAppBrowserTestBase,
-      public ::testing::WithParamInterface<SystemWebAppManagerTestParams> {
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
   ~SystemWebAppManagerBrowserTest() override = default;
-
-  TestProfileType profile_type() const { return std::get<0>(GetParam()); }
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
 };
 
-std::string SystemWebAppManagerTestParamsToString(
-    const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info);
-
 }  // namespace web_app
-
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(SUITE, PARAMS) \
-  INSTANTIATE_TEST_SUITE_P(All, SUITE, PARAMS,                         \
-                           web_app::SystemWebAppManagerTestParamsToString)
-
-// Instantiates 3 versions of each test in |SUITE| to ensure coverage of
-// Guest and Incognito profiles, as well as regular profiles. This is currently
-// only used on ChromeOS. Other platforms will likely need a differently defined
-// macro because there is no such thing as Guest mode.
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P( \
-    SUITE)                                                                 \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                         \
-      SUITE,                                                               \
-      ::testing::Values(TestProfileType::kRegular,                         \
-                        TestProfileType::kIncognito, TestProfileType::kGuest))
-
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(SUITE) \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                             \
-      SUITE, ::testing::Values(TestProfileType::kRegular))
-
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(SUITE) \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
-      SUITE, ::testing::Values(TestProfileType::kGuest))
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_

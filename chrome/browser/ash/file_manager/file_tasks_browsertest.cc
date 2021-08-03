@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 // The Media App will be preferred over a chrome app with a specific extension,
 // unless that app is set default via prefs.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
-  if (GetParam() == TestProfileType::kGuest) {
+  if (profile_type() == TestProfileType::kGuest) {
     // The provided file system can't install in guest mode. Just check that
     // MediaApp handles tiff.
     TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
       profile->GetPrefs(),
       TaskDescriptor(extension->id(), StringToTaskType("app"), "tiffAction"),
       {"tiff"}, {"image/tiff"});
-  if (GetParam() == TestProfileType::kIncognito) {
+  if (profile_type() == TestProfileType::kIncognito) {
     // In incognito, the provided file system can exist, but the file handler
     // preference can't be changed.
     TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
 
 // Test expectations for files coming from provided file systems.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
-  if (GetParam() == TestProfileType::kGuest) {
+  if (profile_type() == TestProfileType::kGuest) {
     // Provided file systems don't exist in guest. This test seems to work OK in
     // incognito mode though.
     return;
@@ -415,19 +415,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
   EXPECT_EQ(remaining_expectations, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FileTasksBrowserTest,
-                         ::testing::Values(TestProfileType::kRegular,
-                                           TestProfileType::kIncognito,
-                                           TestProfileType::kGuest),
-                         TestProfileTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    FileTasksBrowserTest);
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         FileTasksBrowserTestWithPdf,
-                         ::testing::Values(TestProfileType::kRegular,
-                                           TestProfileType::kIncognito,
-                                           TestProfileType::kGuest),
-                         TestProfileTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    FileTasksBrowserTestWithPdf);
 
 }  // namespace file_tasks
 }  // namespace file_manager
