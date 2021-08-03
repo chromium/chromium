@@ -20,22 +20,18 @@ class WaylandWindow;
 class XDGPopupWrapperImpl : public ShellPopupWrapper {
  public:
   XDGPopupWrapperImpl(std::unique_ptr<XDGSurfaceWrapperImpl> surface,
-                      WaylandWindow* wayland_window);
+                      WaylandWindow* wayland_window,
+                      WaylandConnection* connection);
   ~XDGPopupWrapperImpl() override;
 
   // XDGPopupWrapper:
-  bool Initialize(WaylandConnection* connection,
-                  const ShellPopupParams& params) override;
+  bool Initialize(const ShellPopupParams& params) override;
   void AckConfigure(uint32_t serial) override;
   bool IsConfigured() override;
+  bool SetBounds(const gfx::Rect& new_bounds) override;
 
  private:
-  bool InitializeStable(WaylandConnection* connection,
-                        const ShellPopupParams& params,
-                        XDGSurfaceWrapperImpl* parent_xdg_surface_wrapper);
-  struct xdg_positioner* CreatePositioner(WaylandConnection* connection,
-                                          WaylandWindow* parent_window,
-                                          const ShellPopupParams& params);
+  struct xdg_positioner* CreatePositioner(WaylandWindow* parent_window);
 
   // xdg_popup_listener
   static void Configure(void* data,
@@ -45,17 +41,26 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
                               int32_t width,
                               int32_t height);
   static void PopupDone(void* data, struct xdg_popup* xdg_popup);
+  static void Repositioned(void* data,
+                           struct xdg_popup* xdg_popup,
+                           uint32_t token);
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
   // Non-owned WaylandWindow that uses this popup.
   WaylandWindow* const wayland_window_;
+  WaylandConnection* const connection_;
 
   // Ground surface for this popup.
   std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;
 
   // XDG Shell Stable object.
   wl::Object<xdg_popup> xdg_popup_;
+
+  // Parameters that help to configure this popup.
+  ShellPopupParams params_;
+
+  uint32_t next_reposition_token_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(XDGPopupWrapperImpl);
 };

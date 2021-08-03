@@ -182,11 +182,32 @@ void WaylandInputEmulate::EmulateKeyboardKey(gfx::AcceleratedWidget widget,
   wayland_proxy->ScheduleDisplayFlush();
 }
 
-void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget) {
+void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
+                                             bool is_configured) {
   auto it = windows_.find(widget);
   DCHECK(it != windows_.end());
 
   auto* test_surface = it->second.get();
+  // The buffer is no longer attached as the window lost its role. Wait until
+  // the configuration event comes.
+  if (!is_configured) {
+    test_surface->buffer_attached_and_configured = false;
+    // Also destroy the frame callback...
+    if (test_surface->frame_callback) {
+      wl_callback_destroy(test_surface->frame_callback);
+      test_surface->frame_callback = nullptr;
+    }
+    // ... and the buffer.
+    if (test_surface->buffer) {
+      auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+      DCHECK(wayland_proxy);
+      wayland_proxy->DestroyShmForWlBuffer(test_surface->buffer);
+      wayland_proxy->ScheduleDisplayFlush();
+      test_surface->buffer = nullptr;
+    }
+    return;
+  }
+
   if (test_surface->buffer_attached_and_configured)
     return;
 

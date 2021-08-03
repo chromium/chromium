@@ -6,10 +6,12 @@
 
 #include <aura-shell-client-protocol.h>
 
+#include "base/auto_reset.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/transform.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
@@ -116,6 +118,28 @@ bool WaylandPopup::IsVisible() const {
   return !!shell_popup_;
 }
 
+void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
+  auto old_bounds = GetBounds();
+  WaylandWindow::SetBounds(bounds);
+
+  // The shell popup can be null if bounds are being fixed during
+  // the initialization. See WaylandPopup::CreateShellPopup.
+  if (shell_popup_ && old_bounds != bounds && !wayland_sets_bounds_) {
+    const auto bounds_dip =
+        wl::TranslateWindowBoundsToParentDIP(this, parent_window());
+    // If ShellPopup doesn't support repositioning, the popup will be recreated
+    // with new geometry applied. Availability of methods to move/resize popup
+    // surfaces purely depends on a protocol. See implementations of ShellPopup
+    // for more details.
+    if (!shell_popup_->SetBounds(bounds_dip)) {
+      // This will also close all the children windows...
+      Hide();
+      // ... and will result in showing them again starting with their parents.
+      GetTopMostChildWindow()->Show(false);
+    }
+  }
+}
+
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   DCHECK(shell_popup());
   DCHECK(parent_window());
@@ -161,6 +185,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
     DCHECK(new_bounds_dip.y() >= 0);
   }
 
+  base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
   SetBoundsDip(new_bounds_dip);
 }
 

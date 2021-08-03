@@ -3072,6 +3072,62 @@ TEST_P(WaylandWindowTest, UsesCorrectParentForChildrenWindows) {
   EXPECT_TRUE(menu_window->AsWaylandPopup());
 }
 
+// Tests that WaylandPopups can be repositioned.
+TEST_P(WaylandWindowTest, RepositionPopups) {
+  VerifyAndClearExpectations();
+
+  EXPECT_CALL(delegate_, GetMenuType())
+      .WillRepeatedly(Return(MenuType::kRootContextMenu));
+  gfx::Rect menu_window_bounds(gfx::Rect(6, 20, 8, 20));
+  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds,
+      &delegate_);
+  EXPECT_TRUE(menu_window);
+  EXPECT_TRUE(menu_window->IsVisible());
+
+  menu_window->set_update_visual_size_immediately(true);
+
+  Sync();
+
+  auto* mock_surface_popup = server_.GetObject<wl::MockSurface>(
+      menu_window->root_surface()->GetSurfaceId());
+  auto* mock_xdg_popup = mock_surface_popup->xdg_surface()->xdg_popup();
+
+  EXPECT_EQ(mock_xdg_popup->anchor_rect().origin(),
+            menu_window_bounds.origin());
+  EXPECT_EQ(mock_xdg_popup->size(), menu_window_bounds.size());
+  EXPECT_EQ(mock_surface_popup->opaque_region(),
+            gfx::Rect(menu_window_bounds.size()));
+
+  VerifyAndClearExpectations();
+
+  menu_window_bounds.set_origin({10, 10});
+  menu_window->SetBounds(menu_window_bounds);
+
+  Sync();
+
+  // Xdg objects can be recreated depending on the version of the xdg shell.
+  mock_surface_popup = server_.GetObject<wl::MockSurface>(
+      menu_window->root_surface()->GetSurfaceId());
+  mock_xdg_popup = mock_surface_popup->xdg_surface()->xdg_popup();
+
+  EXPECT_EQ(mock_xdg_popup->anchor_rect().origin(),
+            menu_window_bounds.origin());
+  EXPECT_EQ(mock_xdg_popup->size(), menu_window_bounds.size());
+  EXPECT_EQ(mock_surface_popup->opaque_region(),
+            gfx::Rect(menu_window_bounds.size()));
+
+  // This will send a configure event for the xdg_surface that backs the
+  // xdg_popup. Size and state are not used there.
+  SendConfigureEvent(mock_surface_popup->xdg_surface(), 0, 0, 1, nullptr);
+
+  // Call sync so that server's configuration event is received by
+  // Ozone/Wayland.
+  Sync();
+
+  VerifyAndClearExpectations();
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{

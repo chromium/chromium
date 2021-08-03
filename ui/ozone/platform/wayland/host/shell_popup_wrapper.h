@@ -71,14 +71,18 @@ class ShellPopupWrapper {
   virtual ~ShellPopupWrapper() {}
 
   // Initializes the popup surface.
-  virtual bool Initialize(WaylandConnection* connection,
-                          const ShellPopupParams& params) = 0;
+  virtual bool Initialize(const ShellPopupParams& params) = 0;
 
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
   // Tells if the surface has been AckConfigured at least once.
   virtual bool IsConfigured() = 0;
+
+  // Changes bounds of the popup window. If changing bounds is not supported,
+  // false is returned and the client should recreate the shell popup instead
+  // if it still wants to reposition the popup.
+  virtual bool SetBounds(const gfx::Rect& new_bounds) = 0;
 
   bool CanGrabPopup(WaylandConnection* connection) const;
 };

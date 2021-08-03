@@ -95,7 +95,8 @@ constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
 constexpr uint32_t kMaxLinuxDmabufVersion = 3;
 constexpr uint32_t kMaxSeatVersion = 5;
 constexpr uint32_t kMaxShmVersion = 1;
-constexpr uint32_t kMaxXdgShellVersion = 1;
+constexpr uint32_t kMaxXdgShellVersion = 3;
+constexpr uint32_t kMaxZXdgShellVersion = 1;
 constexpr uint32_t kMaxDeviceManagerVersion = 3;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
@@ -482,7 +483,7 @@ void WaylandConnection::Global(void* data,
              strcmp(interface, "zxdg_shell_v6") == 0) {
     // Check for zxdg_shell_v6 first.
     connection->shell_v6_ = wl::Bind<zxdg_shell_v6>(
-        registry, name, std::min(version, kMaxXdgShellVersion));
+        registry, name, std::min(version, kMaxZXdgShellVersion));
     if (!connection->shell_v6_) {
       LOG(ERROR) << "Failed to bind to zxdg_shell_v6 global";
       return;

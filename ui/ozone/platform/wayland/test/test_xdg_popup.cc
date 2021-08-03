@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
 
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
+#include "ui/ozone/platform/wayland/test/test_positioner.h"
 
 namespace wl {
 
@@ -17,11 +18,22 @@ void Grab(struct wl_client* client,
   GetUserDataAs<TestXdgPopup>(resource)->set_grab_serial(serial);
 }
 
+void Reposition(struct wl_client* client,
+                struct wl_resource* resource,
+                struct wl_resource* positioner,
+                uint32_t token) {
+  auto* test_positioner = GetUserDataAs<TestPositioner>(positioner);
+  DCHECK(test_positioner);
+  GetUserDataAs<TestXdgPopup>(resource)->set_position(
+      test_positioner->position());
+}
+
 }  // namespace
 
 const struct xdg_popup_interface kXdgPopupImpl = {
     &DestroyResource,  // destroy
     &Grab,             // grab
+    &Reposition,       // reposition
 };
 
 const struct zxdg_popup_v6_interface kZxdgPopupV6Impl = {
