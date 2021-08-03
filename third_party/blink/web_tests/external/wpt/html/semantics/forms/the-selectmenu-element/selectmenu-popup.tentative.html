@@ -29,6 +29,14 @@
   <!-- Swap out the listbox part without providing a replacement -->
   <div slot="listbox"></div>
 </selectmenu>
+
+<selectmenu id="selectMenu3">
+  <div slot="listbox">
+    <popup part="listbox" id="selectMenu3-listbox">
+      <option>one</option>
+    </popup>
+  </div>
+</selectmenu>
 <script>
 
   function clickOn(element) {
@@ -82,7 +90,19 @@
     const selectMenu2 = document.getElementById("selectMenu2");
     await clickOn(selectMenu2);
     assert_equals(selectMenu2.value, "");
+
+    // TODO(crbug.com/1234899) Fails because listbox pointer isn't cleared when default listbox is swapped out due to initial <slot> replacement
     assert_equals(selectMenu2.open, false);
 
   }, "Clicking a popup with no listbox part does nothing");
+
+  promise_test(async () => {
+    const selectMenu3 = document.getElementById("selectMenu3");
+    const selectMenu3Listbox = document.getElementById("selectMenu3-listbox");
+    selectMenu3Listbox.remove();
+
+    await clickOn(selectMenu3);
+    assert_equals(selectMenu3.value, "");
+    assert_equals(selectMenu3.open, false);
+  }, "Clicking a popup with a listbox that was removed does nothing");
 </script>

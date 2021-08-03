@@ -41,6 +41,9 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void UpdatePartElements();
 
   Element* FirstOptionPart() const;
+  Element* FirstValidButtonPart() const;
+  Element* FirstValidListboxPart() const;
+  Element* FirstValidSelectedValuePart() const;
   void EnsureSelectedOptionIsValid();
   Element* SelectedOption();
   void SetSelectedOption(Element* selected_option);
@@ -59,7 +62,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
   bool IsValidListboxPart(const Element* part, bool show_warning) const;
   bool IsValidOptionPart(const Element* part, bool show_warning) const;
 
-  void SetListboxPart(HTMLPopupElement* listbox_part);
+  void SetButtonPart(Element* new_button_part);
+  void SetListboxPart(HTMLPopupElement* new_listbox_part);
 
   class ButtonPartEventListener : public NativeEventListener {
    public:

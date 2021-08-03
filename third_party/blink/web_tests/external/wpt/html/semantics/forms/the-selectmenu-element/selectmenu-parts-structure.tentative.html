@@ -44,6 +44,23 @@
   </div>
 </selectmenu>
 
+<selectmenu id="selectMenu3">
+  <div slot="button" id="selectMenu3-button-slot">
+    <div part="button" id="selectMenu3-button0">button0</div>
+  </div>
+  <option>one</option>
+</selectmenu>
+
+<selectmenu id="selectMenu4">
+  <div slot="button" part="button" id="selectMenu4-button0">button0</div>
+  <div slot="listbox" id="selectMenu4-listbox-slot">
+    <popup part="listbox" id="selectMenu4-listbox0">
+      <option>one</option>
+      <option id="selectMenu4-option2">two</option>
+    </popup>
+  </div>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
@@ -109,4 +126,53 @@
     await clickOn(selectMenu2Child4);
     assert_equals(selectMenu2.value, "four", "Clicking an <option> that is a descendant of a valid listbox part should update the value");
   }, "To receive listbox part controller code, an element labeled as a listbox must not be a descendant of the button part in a flat tree traversal");
+
+  promise_test(async () => {
+    const selectMenu3 = document.getElementById("selectMenu3");
+    const selectMenu3ButtonSlot = document.getElementById("selectMenu3-button-slot");
+    const selectMenu3Button0 = document.getElementById("selectMenu3-button0");
+
+    assert_false(selectMenu3.open);
+
+    let button1 = document.createElement("div");
+    button1.innerText = "button1";
+    button1.setAttribute("part", "button");
+    selectMenu3ButtonSlot.appendChild(button1);
+
+    await clickOn(button1);
+    assert_false(selectMenu3.open, "A button part should only get controller code if it's first in document order, even if added dynamically");
+
+    await clickOn(selectMenu3Button0);
+    assert_true(selectMenu3.open, "A button part should get controller code if it's first in document order");
+  }, "Button controller code should be applied in flat tree traversal order regardless of dynamic insertion order");
+
+  promise_test(async () => {
+    const selectMenu4 = document.getElementById("selectMenu4");
+    const selectMenu4Button0 = document.getElementById("selectMenu4-button0");
+    const selectMenu4ListboxSlot = document.getElementById("selectMenu4-listbox-slot");
+    const selectMenu4Option2 = document.getElementById("selectMenu4-option2");
+
+    assert_false(selectMenu4.open);
+
+    let listbox2 = document.createElement("div");
+    listbox2.innerHTML = `
+      <option>three</option>
+      <option id="selectMenu4-option4">four</option>
+    `;
+    listbox2.setAttribute("part", "listbox");
+    selectMenu4ListboxSlot.appendChild(listbox2);
+
+    await clickOn(selectMenu4Button0);
+    assert_true(selectMenu4.open);
+
+    const selectMenu4Option4 = document.getElementById("selectMenu4-option4");
+    await clickOn(selectMenu4Option4);
+    assert_equals(selectMenu3.value, "one", "An option in a listbox should not get controller code if its listbox isn't first in document order, even if added dynamically");
+
+    await clickOn(selectMenu4Button0);
+    assert_true(selectMenu4.open);
+
+    await clickOn(selectMenu4Option2);
+    assert_equals(selectMenu4.value, "two", "An option in a listbox should get controller code if its listbox is first in document order, even if another listbox was added dynamically");
+}, "Listbox controller code should be applied in flat tree traversal order regardless of dynamic insertion order");
 </script>

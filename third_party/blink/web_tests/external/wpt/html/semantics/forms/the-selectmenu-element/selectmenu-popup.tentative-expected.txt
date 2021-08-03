@@ -2,5 +2,6 @@ This is a testharness.js-based test.
 PASS Opening the popup and clicking an option should change the selectmenu's value
 PASS With custom button and popup: opening the popup and clicking an option should change the selectmenu's value
 FAIL Clicking a popup with no listbox part does nothing assert_equals: expected false but got true
+PASS Clicking a popup with a listbox that was removed does nothing
 Harness: the test ran to completion.
 
