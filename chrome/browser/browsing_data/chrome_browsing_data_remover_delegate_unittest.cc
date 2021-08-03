@@ -2098,7 +2098,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 #else
 #define MAYBE_DisableAutoSignIn DisableAutoSignIn
 #endif
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, DisableAutoSignIn) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, MAYBE_DisableAutoSignIn) {
   RemovePasswordsTester tester(GetProfile());
   base::RepeatingCallback<bool(const GURL&)> empty_filter =
       BrowsingDataFilterBuilder::BuildNoopFilter();
