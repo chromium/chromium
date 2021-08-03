@@ -76,18 +76,6 @@
       ],
     },
   },
-  'SIM_IPAD_AIR_2_13_6': {
-    'args': [
-      '--platform',
-      'iPad Air 2',
-      '--version',
-      '13.6'
-    ],
-    'identifier': 'iPad Air 2 13.6',
-    'mixins': [
-      'ios_runtime_cache_13_6',
-    ],
-  },
   'SIM_IPAD_AIR_2_14_4': {
     'args': [
       '--platform',
@@ -162,18 +150,6 @@
       'ios_runtime_cache_14_5',
     ],
   },
-  'SIM_IPHONE_6S_13_6': {
-    'args': [
-      '--platform',
-      'iPhone 6s',
-      '--version',
-      '13.6',
-    ],
-    'identifier': 'iPhone 6s 13.6',
-    'mixins': [
-      'ios_runtime_cache_13_6',
-    ],
-  },
   'SIM_IPHONE_6S_14_4': {
     'args': [
       '--platform',
@@ -208,18 +184,6 @@
     'identifier': 'iPhone 6s 15.0',
     'mixins': [
       'ios_runtime_cache_15_0',
-    ],
-  },
-  'SIM_IPHONE_6S_PLUS_13_6': {
-    'args': [
-      '--platform',
-      'iPhone 6s Plus',
-      '--version',
-      '13.6',
-    ],
-    'identifier': 'iPhone 6s Plus 13.6',
-    'mixins': [
-      'ios_runtime_cache_13_6',
     ],
   },
   'SIM_IPHONE_6S_PLUS_14_4': {
@@ -258,18 +222,6 @@
       'ios_runtime_cache_15_0',
     ],
   },
-  'SIM_IPHONE_7_13_6': {
-    'args': [
-      '--platform',
-      'iPhone 7',
-      '--version',
-      '13.6',
-    ],
-    'identifier': 'iPhone 7 13.6',
-    'mixins': [
-      'ios_runtime_cache_13_6',
-    ],
-  },
   'SIM_IPHONE_7_14_4': {
     'args': [
       '--platform',
@@ -306,18 +258,6 @@
       'ios_runtime_cache_15_0',
     ],
   },
-  'SIM_IPHONE_SE_1ST_GEN_13_6': {
-    'args': [
-      '--platform',
-      'iPhone SE (1st generation)',
-      '--version',
-      '13.6',
-    ],
-    'identifier': 'iPhone SE (1st generation) 13.6',
-    'mixins': [
-      'ios_runtime_cache_13_6',
-    ],
-  },
   'SIM_IPHONE_SE_1ST_GEN_14_4': {
     'args': [
       '--platform',
@@ -352,18 +292,6 @@
     'identifier': 'iPhone SE (1st generation) 15.0',
     'mixins': [
       'ios_runtime_cache_15_0',
-    ],
-  },
-  'SIM_IPHONE_X_13_6': {
-    'args': [
-      '--platform',
-      'iPhone X',
-      '--version',
-      '13.6',
-    ],
-    'identifier': 'iPhone X 13.6',
-    'mixins': [
-      'ios_runtime_cache_13_6',
     ],
   },
   'SIM_IPHONE_X_14_4': {
