@@ -245,6 +245,8 @@ class FakeScanService {
     });
   }
 
+  startMultiPageScan() {}
+
   cancelScan() {
     this.methodCalled('cancelScan');
   }

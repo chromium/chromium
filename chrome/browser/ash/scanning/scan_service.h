@@ -40,7 +40,9 @@ class LorgnetteScannerManager;
 // Implementation of the ash::scanning::mojom::ScanService interface. Used
 // by the scanning WebUI (chrome://scanning) to get connected scanners, obtain
 // scanner capabilities, and perform scans.
-class ScanService : public scanning::mojom::ScanService, public KeyedService {
+class ScanService : public scanning::mojom::ScanService,
+                    public scanning::mojom::MultiPageScanController,
+                    public KeyedService {
  public:
   ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
               base::FilePath my_files_path,
@@ -59,7 +61,18 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
                  scanning::mojom::ScanSettingsPtr settings,
                  mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
                  StartScanCallback callback) override;
+  void StartMultiPageScan(
+      const base::UnguessableToken& scanner_id,
+      scanning::mojom::ScanSettingsPtr settings,
+      mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
+      StartMultiPageScanCallback callback) override;
   void CancelScan() override;
+
+  // scanning::mojom::MultiPageScanController:
+  void ScanNextPage(const base::UnguessableToken& scanner_id,
+                    scanning::mojom::ScanSettingsPtr settings,
+                    ScanNextPageCallback callback) override;
+  void CompleteMultiPageScan() override;
 
   // Binds receiver_ by consuming |pending_receiver|.
   void BindInterface(
@@ -98,6 +111,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // succeeds; otherwise, its value indicates what caused the scan to fail.
   void OnScanCompleted(lorgnette::ScanFailureMode failure_mode);
 
+  // For a multi-page scan, when a page scan completes, report a failure if it
+  // exists.
+  void OnMultiPageScanPageCompleted(lorgnette::ScanFailureMode failure_mode);
+
   // Processes the final result of calling
   // LorgnetteScannerManager::CancelScan().
   void OnCancelCompleted(bool success);
@@ -109,14 +126,24 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   void OnPageSaved(const base::FilePath& saved_file_path);
 
   // Sends the scan request to the scanner.
-  bool SendScanRequest(const base::UnguessableToken& scanner_id,
-                       scanning::mojom::ScanSettingsPtr settings);
+  bool SendScanRequest(
+      const base::UnguessableToken& scanner_id,
+      scanning::mojom::ScanSettingsPtr settings,
+      base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>
+          completion_callback);
 
   // Called once the task runner finishes saving the last page of a scan.
   void OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode);
 
   // Sets the local member variables back to their initial empty state.
   void ClearScanState();
+
+  // Sets the ScanJobOberver for a new scan.
+  void SetScanJobObserver(
+      mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer);
+
+  // Resets the mojo::Receiver |multi_page_controller_receiver_|.
+  void ResetMultiPageScanController();
 
   // Determines whether the service supports saving scanned images to
   // |file_path|.
@@ -133,6 +160,11 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Receives and dispatches method calls to this implementation of the
   // ash::scanning::mojom::ScanService interface.
   mojo::Receiver<scanning::mojom::ScanService> receiver_{this};
+
+  // Receives and dispatches method calls to this implementation of the
+  // ash::scanning::mojom::MultiPageScanController interface.
+  mojo::Receiver<scanning::mojom::MultiPageScanController>
+      multi_page_controller_receiver_{this};
 
   // Used to send scan job events to an observer. The remote is bound when a
   // scan job is started and is disconnected when the scan job is complete.

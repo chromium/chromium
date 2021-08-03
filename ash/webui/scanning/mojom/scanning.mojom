@@ -135,6 +135,10 @@ interface ScanJobObserver {
   // Called when canceling the current scan job is complete. |success|
   // indicates whether the scan job was cancelled successfully.
   OnCancelComplete(bool success);
+
+  // Called when a scan in a multi-page scan session fails. This does not end
+  // the multi-page scan session. The user is allowed to attempt the scan again.
+  OnMultiPageScanFail(ScanResult result);
 };
 
 // Interface used to obtain information about and interact with connected
@@ -158,7 +162,33 @@ interface ScanService {
   StartScan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings,
       pending_remote<ScanJobObserver> observer) => (bool success);
 
+  // Starts a multi-page scan session with the scanner identified by
+  // |scanner_id| using the provided |settings|. Scan job events are reported to
+  // the client via the |observer|. |success| indicates whether the first scan
+  // started successfully. All subsequent multi-page scan actions are made
+  // through the |controller|. There can only be one multi-page scan session
+  // started at at a time.
+  StartMultiPageScan(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings, pending_remote<ScanJobObserver> observer)
+      => (pending_remote<MultiPageScanController>? controller);
+
   // Attempts to cancel the currently running scan job. The success of the
   // cancel attempt is reported through the ScanJobObserver.
   CancelScan();
+};
+
+// Interface used for performing the actions in a multi-page scan session. It is
+// exposed to the Scan app only after a successful call to
+// ScanService::StartMultiPageScan(). Closing the message pipe for this
+// interface without calling CompleteMultiPageScan() cancels the current
+// multipage scan session. The previously scanned images from that session
+// will be discarded.
+interface MultiPageScanController {
+  // Scans the next page in a multi-page scan session. |success| indicates
+  // whether the scan started successfully.
+  ScanNextPage(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings)  => (bool success);
+
+  // Ends a multi-page scan session and saves the scan to disk.
+  CompleteMultiPageScan();
 };

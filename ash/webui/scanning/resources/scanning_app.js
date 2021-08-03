@@ -474,6 +474,12 @@ Polymer({
   },
 
   /**
+   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
+   * @param {!ash.scanning.mojom.ScanResult} result
+   */
+  onMultiPageScanFail(result) {},
+
+  /**
    * @param {string} selectedSource
    * @return {!Array<ash.scanning.mojom.PageSize>}
    * @private
