@@ -7,6 +7,7 @@ package org.chromium.chrome.features.start_surface;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -162,6 +163,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                 launchOrigin, PrivacyPreferencesManagerImpl.getInstance(),
                 feedLaunchReliabilityLoggingState, swipeRefreshLayout);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
+        feedSurfaceCoordinator.getRecyclerView().setOverScrollMode(View.OVER_SCROLL_NEVER);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.
         // TODO(crbug.com/982018): Hide signin promo UI in incognito mode.
