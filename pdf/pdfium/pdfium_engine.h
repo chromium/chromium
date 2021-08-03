@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -638,6 +639,10 @@ class PDFiumEngine : public PDFEngine,
   void UpdateLinkUnderCursor(const std::string& target_url);
   void SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot, int page_index);
 
+  // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
+  // requests the thumbnail for that page.
+  void MaybeRequestPendingThumbnail(int page_index);
+
   // Keeps track of the most recently used plugin instance.
   // TODO(crbug.com/702993): Remove when PPAPI is gone.
   void SetLastInstance();
@@ -818,6 +823,20 @@ class PDFiumEngine : public PDFEngine,
 
   // Shadow matrix for generating the page shadow bitmap.
   std::unique_ptr<draw_utils::ShadowMatrix> page_shadow_;
+
+  // Pending thumbnail requests.
+  struct PendingThumbnail {
+    PendingThumbnail();
+    PendingThumbnail(PendingThumbnail&& that);
+    PendingThumbnail& operator=(PendingThumbnail&& that);
+    ~PendingThumbnail();
+
+    float device_pixel_ratio = 1.0f;
+    SendThumbnailCallback send_callback;
+  };
+
+  // Map of page indices to pending thumbnail requests.
+  base::flat_map<int, PendingThumbnail> pending_thumbnails_;
 
   // A list of information of document attachments.
   std::vector<DocumentAttachmentInfo> doc_attachment_info_list_;

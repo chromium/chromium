@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -3188,6 +3189,8 @@ void PDFiumEngine::FinishPaint(int progressive_index, SkBitmap& image_data) {
 
   FPDF_RenderPage_Close(pages_[page_index]->GetPage());
   progressive_paints_.erase(progressive_paints_.begin() + progressive_index);
+
+  MaybeRequestPendingThumbnail(page_index);
 }
 
 void PDFiumEngine::CancelPaints() {
@@ -4238,8 +4241,37 @@ void PDFiumEngine::RequestThumbnail(int page_index,
                                     float device_pixel_ratio,
                                     SendThumbnailCallback send_callback) {
   DCHECK(PageIndexInBounds(page_index));
-  pages_[page_index]->RequestThumbnail(device_pixel_ratio,
-                                       std::move(send_callback));
+
+  // Thumbnails cannot be generated in the middle of a progressive paint of a
+  // page. Generate the thumbnail immediately only if the page is not currently
+  // being progressively painted. Otherwise, wait for progressive painting to
+  // finish.
+  const int progressive_index = GetProgressiveIndex(page_index);
+  if (progressive_index == -1) {
+    pages_[page_index]->RequestThumbnail(device_pixel_ratio,
+                                         std::move(send_callback));
+    return;
+  }
+
+  // A thumbnail may be already pending for a page. Overwrite the pending
+  // thumbnail in that case.
+  PendingThumbnail& pending_thumbnail = pending_thumbnails_[page_index];
+  pending_thumbnail.device_pixel_ratio = device_pixel_ratio;
+  pending_thumbnail.send_callback = std::move(send_callback);
+}
+
+void PDFiumEngine::MaybeRequestPendingThumbnail(int page_index) {
+  DCHECK_EQ(GetProgressiveIndex(page_index), -1);
+
+  auto it = pending_thumbnails_.find(page_index);
+  if (it == pending_thumbnails_.end())
+    return;
+
+  PendingThumbnail& pending_thumbnail = it->second;
+  pages_[page_index]->RequestThumbnail(
+      pending_thumbnail.device_pixel_ratio,
+      std::move(pending_thumbnail.send_callback));
+  pending_thumbnails_.erase(it);
 }
 
 void PDFiumEngine::SetLastInstance() {
@@ -4264,5 +4296,15 @@ void PDFiumEngine::ProgressivePaint::SetBitmapAndImageData(
   bitmap_ = std::move(bitmap);
   image_data_ = std::move(image_data);
 }
+
+PDFiumEngine::PendingThumbnail::PendingThumbnail() = default;
+
+PDFiumEngine::PendingThumbnail::PendingThumbnail(PendingThumbnail&& that) =
+    default;
+
+PDFiumEngine::PendingThumbnail& PDFiumEngine::PendingThumbnail::operator=(
+    PendingThumbnail&& that) = default;
+
+PDFiumEngine::PendingThumbnail::~PendingThumbnail() = default;
 
 }  // namespace chrome_pdf
