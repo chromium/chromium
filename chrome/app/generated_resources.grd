@@ -7842,6 +7842,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARING_HUB_SHARE_LABEL" desc="The Label for the Third Party Targets in the Sharing Hub dialog.">
         Share link to
       </message>
+      <message name="IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY" desc="The acccessibility label spoken by screen readers when the label for a Third Party Sharing Target gets focus but not visually rendered.">
+        Share link to <ph name="SHARE_TARGET">$1<ex>Facebook</ex></ph>
+      </message>
 
       <!-- Desktop screenshot -->
       <message name="IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE"

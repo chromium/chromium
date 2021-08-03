@@ -8,6 +8,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -58,6 +59,10 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
       action_is_first_party_(action_info.is_first_party),
       action_name_for_metrics_(action_info.feature_name_for_metrics) {
   SetEnabled(true);
+  if (!action_is_first_party_) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY, action_info.title));
+  }
 }
 
 SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;
