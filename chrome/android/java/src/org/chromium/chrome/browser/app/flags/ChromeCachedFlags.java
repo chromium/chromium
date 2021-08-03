@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -153,6 +154,7 @@ public class ChromeCachedFlags {
                         add(TabUiFeatureUtilities.SKIP_SLOW_ZOOMING);
                         add(TabUiFeatureUtilities.TAB_GRID_LAYOUT_ANDROID_NEW_TAB_TILE);
                         add(TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO);
+                        add(ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS);
                     }
                 };
         tryToCatchMissingParameters(fieldTrialsToCache);

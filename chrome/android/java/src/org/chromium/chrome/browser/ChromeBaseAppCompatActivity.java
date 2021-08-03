@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -176,9 +177,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected void applyThemeOverlays() {
         setTheme(R.style.ColorOverlay_ChromiumAndroid);
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID)) {
+        if (supportsDynamicColors()) {
             new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
         }
+
         // Try to enable browser overscroll when content overscroll is enabled for consistency. This
         // needs to be in a cached feature because activity startup happens before native is
         // initialized. Unfortunately content overscroll is read in renderer threads, and these two
@@ -189,6 +191,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                 && !CachedFeatureFlags.isEnabled(ChromeFeatureList.ELASTIC_OVERSCROLL)) {
             setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }
+    }
+
+    /**
+     * Returns whether the activity supports dynamic colors. For most activities this is only true
+     * if full dynamic colors are enabled.
+     */
+    protected boolean supportsDynamicColors() {
+        return ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue();
     }
 
     // NightModeStateProvider.Observer implementation.
