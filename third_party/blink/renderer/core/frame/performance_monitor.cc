@@ -85,7 +85,8 @@ void PerformanceMonitor::Subscribe(Violation violation,
                                    base::TimeDelta threshold,
                                    Client* client) {
   DCHECK(violation < kAfterLast);
-  ClientThresholds* client_thresholds = subscriptions_.at(violation);
+  ClientThresholds* client_thresholds =
+      subscriptions_.DeprecatedAtOrEmptyValue(violation);
   if (!client_thresholds) {
     client_thresholds = MakeGarbageCollected<ClientThresholds>();
     subscriptions_.Set(violation, client_thresholds);
