@@ -230,6 +230,8 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
   gpu_info.EnumerateFields(&enumerator);
   enumerator.BeginAuxAttributes();
   enumerator.AddInt("processCrashCount", GpuProcessHost::GetGpuCrashCount());
+  enumerator.AddInt("visibilityCallbackCallCount",
+                    gpu_info.visibility_callback_call_count);
   enumerator.EndAuxAttributes();
 
   std::unique_ptr<base::DictionaryValue> base_feature_status =

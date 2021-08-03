@@ -413,6 +413,8 @@ struct GPU_EXPORT GPUInfo {
 
   bool subpixel_font_rendering;
 
+  uint32_t visibility_callback_call_count = 0;
+
 #if BUILDFLAG(ENABLE_VULKAN)
   absl::optional<VulkanInfo> vulkan_info;
 #endif

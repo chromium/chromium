@@ -396,6 +396,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
 
   out->oop_rasterization_supported = data.oop_rasterization_supported();
   out->subpixel_font_rendering = data.subpixel_font_rendering();
+  out->visibility_callback_call_count = data.visibility_callback_call_count();
 
 #if defined(OS_WIN)
   out->d3d12_feature_level = data.d3d12_feature_level();

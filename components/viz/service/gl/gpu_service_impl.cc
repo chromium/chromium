@@ -1161,8 +1161,13 @@ void GpuServiceImpl::OnBackgrounded() {
 void GpuServiceImpl::OnBackgroundedOnMainThread() {
   gpu_channel_manager_->OnApplicationBackgrounded();
 
-  if (visibility_changed_callback_)
+  if (visibility_changed_callback_) {
     visibility_changed_callback_.Run(false);
+    if (gpu_preferences_.enable_gpu_benchmarking_extension) {
+      ++gpu_info_.visibility_callback_call_count;
+      UpdateGPUInfoGL();
+    }
+  }
 }
 
 void GpuServiceImpl::OnForegrounded() {
@@ -1178,8 +1183,13 @@ void GpuServiceImpl::OnForegrounded() {
 }
 
 void GpuServiceImpl::OnForegroundedOnMainThread() {
-  if (visibility_changed_callback_)
+  if (visibility_changed_callback_) {
     visibility_changed_callback_.Run(true);
+    if (gpu_preferences_.enable_gpu_benchmarking_extension) {
+      ++gpu_info_.visibility_callback_call_count;
+      UpdateGPUInfoGL();
+    }
+  }
 }
 
 #if !defined(OS_ANDROID)
