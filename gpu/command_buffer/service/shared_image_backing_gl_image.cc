@@ -642,9 +642,14 @@ void SharedImageBackingGLImage::Update(
 
 bool SharedImageBackingGLImage::
     SharedImageRepresentationGLTextureBeginAccess() {
-  if (!release_fence_.is_null())
-    gl::GLFence::CreateFromGpuFence(gfx::GpuFence(std::move(release_fence_)))
-        ->ServerWait();
+  if (!release_fence_.is_null()) {
+    auto fence = gfx::GpuFence(std::move(release_fence_));
+    if (gl::GLFence::IsGpuFenceSupported()) {
+      gl::GLFence::CreateFromGpuFence(std::move(fence))->ServerWait();
+    } else {
+      fence.Wait();
+    }
+  }
   return BindOrCopyImageIfNeeded();
 }
 
