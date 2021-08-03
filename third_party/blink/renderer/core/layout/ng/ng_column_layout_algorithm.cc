@@ -484,6 +484,11 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
         IsEarlyBreakTarget(*early_break_, container_builder_, spanner_node))
       break;
 
+    // Handle any OOF fragmentainer descendants that were found before the
+    // spanner.
+    NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_)
+        .HandleFragmentation();
+
     NGBreakStatus break_status =
         LayoutSpanner(spanner_node, child_break_token, &margin_strut);
 

@@ -19,9 +19,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
@@ -117,12 +115,14 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
   const NGBoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
   allow_first_tier_oof_cache_ = border_scrollbar.IsEmpty();
-  default_containing_block_info_for_absolute_.rect.size =
-      ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
-  default_containing_block_info_for_fixed_.rect.size =
-      initial_containing_block_fixed_size
-          ? *initial_containing_block_fixed_size
-          : default_containing_block_info_for_absolute_.rect.size;
+  if (container_builder_->HasBlockSize()) {
+    default_containing_block_info_for_absolute_.rect.size =
+        ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
+    default_containing_block_info_for_fixed_.rect.size =
+        initial_containing_block_fixed_size
+            ? *initial_containing_block_fixed_size
+            : default_containing_block_info_for_absolute_.rect.size;
+  }
   LogicalOffset container_offset = {border_scrollbar.inline_start,
                                     border_scrollbar.block_start};
   default_containing_block_info_for_absolute_.rect.offset = container_offset;
@@ -130,25 +130,7 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
 }
 
 void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
-  if (container_builder_->IsBlockFragmentationContextRoot() &&
-      !has_block_fragmentation_) {
-    while (container_builder_->HasOutOfFlowFragmentainerDescendants() ||
-           container_builder_->HasMulticolsWithPendingOOFs()) {
-      HandleMulticolsWithPendingOOFs(container_builder_);
-      if (container_builder_->HasOutOfFlowFragmentainerDescendants()) {
-        Vector<NGLogicalOutOfFlowPositionedNode> fragmentainer_descendants;
-        container_builder_->SwapOutOfFlowFragmentainerDescendants(
-            &fragmentainer_descendants);
-        DCHECK(!fragmentainer_descendants.IsEmpty());
-        LayoutUnit column_inline_progression = ColumnInlineProgression(
-            container_builder_->ChildAvailableSize().inline_size,
-            container_builder_->Style());
-        LayoutFragmentainerDescendants(&fragmentainer_descendants,
-                                       column_inline_progression);
-      }
-    }
-  }
-
+  HandleFragmentation();
   const LayoutObject* current_container = container_builder_->GetLayoutObject();
   if (!container_builder_->HasOutOfFlowPositionedCandidates() &&
       !To<LayoutBlock>(current_container)->HasPositionedObjects()) {
@@ -297,6 +279,28 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
         DynamicTo<LayoutInline>(css_container));
   }
   return true;
+}
+
+void NGOutOfFlowLayoutPart::HandleFragmentation() {
+  if (!container_builder_->IsBlockFragmentationContextRoot() ||
+      has_block_fragmentation_)
+    return;
+
+  while (container_builder_->HasOutOfFlowFragmentainerDescendants() ||
+         container_builder_->HasMulticolsWithPendingOOFs()) {
+    HandleMulticolsWithPendingOOFs(container_builder_);
+    if (container_builder_->HasOutOfFlowFragmentainerDescendants()) {
+      Vector<NGLogicalOutOfFlowPositionedNode> fragmentainer_descendants;
+      container_builder_->SwapOutOfFlowFragmentainerDescendants(
+          &fragmentainer_descendants);
+      DCHECK(!fragmentainer_descendants.IsEmpty());
+      LayoutUnit column_inline_progression = ColumnInlineProgression(
+          container_builder_->ChildAvailableSize().inline_size,
+          container_builder_->Style());
+      LayoutFragmentainerDescendants(&fragmentainer_descendants,
+                                     column_inline_progression);
+    }
+  }
 }
 
 // Retrieve the stored ContainingBlockInfo needed for placing positioned nodes.
@@ -637,7 +641,8 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
     const LayoutBox* only_layout,
     HashSet<const LayoutObject*>* placed_objects) {
   while (candidates->size() > 0) {
-    if (!has_block_fragmentation_)
+    if (!has_block_fragmentation_ ||
+        container_builder_->IsInitialColumnBalancingPass())
       ComputeInlineContainingBlocks(*candidates);
     for (auto& candidate : *candidates) {
       LayoutBox* layout_box = candidate.box;
@@ -647,7 +652,8 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           (!only_layout || layout_box == only_layout)) {
         if (layout_box != only_layout)
           candidate.Node().InsertIntoLegacyPositionedObjects();
-        if (has_block_fragmentation_) {
+        if (has_block_fragmentation_ &&
+            !container_builder_->IsInitialColumnBalancingPass()) {
           container_builder_->AdjustOffsetsForFragmentainerDescendant(
               candidate);
           container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
@@ -662,6 +668,10 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
         container_builder_->AddChild(result->PhysicalFragment(),
                                      result->OutOfFlowPositionedOffset(),
                                      &candidate.inline_container);
+        if (container_builder_->IsInitialColumnBalancingPass()) {
+          container_builder_->PropagateTallestUnbreakableBlockSize(
+              result->TallestUnbreakableBlockSize());
+        }
         placed_objects->insert(layout_box);
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);
@@ -1096,6 +1106,15 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   builder.SetAvailableSize(container_content_size);
   builder.SetPercentageResolutionSize(container_content_size);
 
+  if (container_builder_->IsInitialColumnBalancingPass()) {
+    // The |fragmentainer_offset_delta| will not make a difference in the
+    // initial column balancing pass.
+    SetupSpaceBuilderForFragmentation(
+        *container_builder_->ConstraintSpace(), node,
+        /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
+        /* is_new_fc */ true);
+  }
+
   DCHECK(!oof_node.fixedpos_containing_block.fragment ||
          containing_block_fragment);
   DCHECK(oof_node.fixedpos_containing_block.offset == LogicalOffset() ||
@@ -1352,6 +1371,10 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
   if (fragmentainer_constraint_space) {
     SetupSpaceBuilderForFragmentation(*fragmentainer_constraint_space, node,
                                       block_offset, &builder,
+                                      /* is_new_fc */ true);
+  } else if (container_builder_->IsInitialColumnBalancingPass()) {
+    SetupSpaceBuilderForFragmentation(*container_builder_->ConstraintSpace(),
+                                      node, block_offset, &builder,
                                       /* is_new_fc */ true);
   }
   NGConstraintSpace space = builder.ToConstraintSpace();

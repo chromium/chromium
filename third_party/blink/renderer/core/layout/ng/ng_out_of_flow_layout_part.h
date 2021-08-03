@@ -70,6 +70,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // LayoutResult::OutOfFlowPositionedDescendants.
   void Run(const LayoutBox* only_layout = nullptr);
 
+  // Handle the layout of any OOF elements in a fragmentation context.
+  void HandleFragmentation();
+
  private:
   // Information needed to position descendant within a containing block.
   // Geometry expressed here is complicated:

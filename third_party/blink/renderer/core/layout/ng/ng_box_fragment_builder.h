@@ -137,8 +137,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   LayoutUnit FragmentBlockSize() const {
 #if DCHECK_IS_ON()
-    if (has_block_fragmentation_)
-      DCHECK(!block_size_is_for_all_fragments_);
+    DCHECK(!block_size_is_for_all_fragments_ || !has_block_fragmentation_ ||
+           IsInitialColumnBalancingPass());
     DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;

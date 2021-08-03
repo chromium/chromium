@@ -56,6 +56,8 @@ class CORE_EXPORT NGFragmentBuilder {
   }
   void SetBlockSize(LayoutUnit block_size) { size_.block_size = block_size; }
 
+  bool HasBlockSize() const { return size_.block_size != kIndefiniteSize; }
+
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }
 
   void SetHasCollapsedBorders(bool value) { has_collapsed_borders_ = value; }
