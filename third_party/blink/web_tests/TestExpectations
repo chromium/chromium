@@ -2621,6 +2621,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-ruby/improperly-contained-annotation-001.html [ Failure ]
+crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-ruby/ruby-base-container-abs.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-ruby/empty-ruby-base-container.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
@@ -7230,4 +7232,4 @@ crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub
 
 # Sheriff 2021-08-02
 crbug.com/1235685 [ Mac10.14 ] virtual/scroll-unification/plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
-crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure ]
+crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
