@@ -15,7 +15,6 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
@@ -32,6 +31,7 @@
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -629,7 +629,7 @@ base::WeakPtr<RenderWidgetHostViewBase> RenderWidgetHostViewBase::GetWeakPtr() {
 }
 
 void RenderWidgetHostViewBase::GetScreenInfo(display::ScreenInfo* screen_info) {
-  DisplayUtil::GetNativeViewScreenInfo(screen_info, GetNativeView());
+  display::DisplayUtil::GetNativeViewScreenInfo(screen_info, GetNativeView());
 }
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() {

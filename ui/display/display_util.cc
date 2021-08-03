@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/display_util.h"
+#include "ui/display/display_util.h"
 
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/icc_profile.h"
 
-namespace content {
+namespace display {
 
 // static
-void DisplayUtil::DisplayToScreenInfo(display::ScreenInfo* screen_info,
-                                      const display::Display& display) {
+void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
+                                      const Display& display) {
   screen_info->rect = display.bounds();
   // TODO(husky): Remove any Android system controls from availableRect.
   screen_info->available_rect = display.work_area();
@@ -50,7 +49,7 @@ void DisplayUtil::DisplayToScreenInfo(display::ScreenInfo* screen_info,
 
   // TODO(crbug.com/1194700 and crbug.com/1182855): Use cross-process screen
   // info caches, not local-process info, for child frames and Mac's shim.
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = Screen::GetScreen();
   // Some tests are run with no Screen initialized.
   screen_info->is_extended = screen && screen->GetNumDisplays() > 1;
   screen_info->is_primary =
@@ -60,28 +59,27 @@ void DisplayUtil::DisplayToScreenInfo(display::ScreenInfo* screen_info,
 }
 
 // static
-void DisplayUtil::GetDefaultScreenInfo(display::ScreenInfo* screen_info) {
+void DisplayUtil::GetDefaultScreenInfo(ScreenInfo* screen_info) {
   return GetNativeViewScreenInfo(screen_info, nullptr);
 }
 
 // static
-void DisplayUtil::GetNativeViewScreenInfo(display::ScreenInfo* screen_info,
+void DisplayUtil::GetNativeViewScreenInfo(ScreenInfo* screen_info,
                                           gfx::NativeView native_view) {
   // Some tests are run with no Screen initialized.
-  display::Screen* screen = display::Screen::GetScreen();
+  Screen* screen = Screen::GetScreen();
   if (!screen) {
-    *screen_info = display::ScreenInfo();
+    *screen_info = ScreenInfo();
     return;
   }
-  display::Display display = native_view
-                                 ? screen->GetDisplayNearestView(native_view)
-                                 : screen->GetPrimaryDisplay();
+  Display display = native_view ? screen->GetDisplayNearestView(native_view)
+                                : screen->GetPrimaryDisplay();
   DisplayToScreenInfo(screen_info, display);
 }
 
 // static
-display::mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForMobile(
-    const display::Display& display) {
+mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForMobile(
+    const Display& display) {
   int angle = display.PanelRotationAsDegree();
   const gfx::Rect& bounds = display.bounds();
 
@@ -94,30 +92,26 @@ display::mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForMobile(
 
   switch (angle) {
     case 0:
-      return natural_portrait
-                 ? display::mojom::ScreenOrientation::kPortraitPrimary
-                 : display::mojom::ScreenOrientation::kLandscapePrimary;
+      return natural_portrait ? mojom::ScreenOrientation::kPortraitPrimary
+                              : mojom::ScreenOrientation::kLandscapePrimary;
     case 90:
-      return natural_portrait
-                 ? display::mojom::ScreenOrientation::kLandscapePrimary
-                 : display::mojom::ScreenOrientation::kPortraitSecondary;
+      return natural_portrait ? mojom::ScreenOrientation::kLandscapePrimary
+                              : mojom::ScreenOrientation::kPortraitSecondary;
     case 180:
-      return natural_portrait
-                 ? display::mojom::ScreenOrientation::kPortraitSecondary
-                 : display::mojom::ScreenOrientation::kLandscapeSecondary;
+      return natural_portrait ? mojom::ScreenOrientation::kPortraitSecondary
+                              : mojom::ScreenOrientation::kLandscapeSecondary;
     case 270:
-      return natural_portrait
-                 ? display::mojom::ScreenOrientation::kLandscapeSecondary
-                 : display::mojom::ScreenOrientation::kPortraitPrimary;
+      return natural_portrait ? mojom::ScreenOrientation::kLandscapeSecondary
+                              : mojom::ScreenOrientation::kPortraitPrimary;
     default:
       NOTREACHED();
-      return display::mojom::ScreenOrientation::kPortraitPrimary;
+      return mojom::ScreenOrientation::kPortraitPrimary;
   }
 }
 
 // static
-display::mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForDesktop(
-    const display::Display& display) {
+mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForDesktop(
+    const Display& display) {
   static int primary_landscape_angle = -1;
   static int primary_portrait_angle = -1;
 
@@ -133,13 +127,13 @@ display::mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForDesktop(
 
   if (is_portrait) {
     return primary_portrait_angle == angle
-               ? display::mojom::ScreenOrientation::kPortraitPrimary
-               : display::mojom::ScreenOrientation::kPortraitSecondary;
+               ? mojom::ScreenOrientation::kPortraitPrimary
+               : mojom::ScreenOrientation::kPortraitSecondary;
   }
 
   return primary_landscape_angle == angle
-             ? display::mojom::ScreenOrientation::kLandscapePrimary
-             : display::mojom::ScreenOrientation::kLandscapeSecondary;
+             ? mojom::ScreenOrientation::kLandscapePrimary
+             : mojom::ScreenOrientation::kLandscapeSecondary;
 }
 
-}  // namespace content
+}  // namespace display

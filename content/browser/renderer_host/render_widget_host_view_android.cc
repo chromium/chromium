@@ -51,7 +51,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_android.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_android.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
@@ -87,6 +86,7 @@
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display_util.h"
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/android/motion_event_android.h"
@@ -2517,8 +2517,8 @@ void RenderWidgetHostViewAndroid::GetScreenInfo(
     RenderWidgetHostViewBase::GetScreenInfo(screen_info);
     return;
   }
-  DisplayUtil::DisplayToScreenInfo(screen_info,
-                                   window->GetDisplayWithWindowColorSpace());
+  display::DisplayUtil::DisplayToScreenInfo(
+      screen_info, window->GetDisplayWithWindowColorSpace());
 }
 
 std::vector<std::unique_ptr<ui::TouchEvent>>

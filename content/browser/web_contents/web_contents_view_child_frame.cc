@@ -5,13 +5,13 @@
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 
 #include "build/build_config.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/display/display_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -83,7 +83,7 @@ RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForWidget(
   if (auto* view = web_contents_->GetRenderWidgetHostView())
     view->GetScreenInfo(&screen_info);
   else
-    DisplayUtil::GetDefaultScreenInfo(&screen_info);
+    display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
   return RenderWidgetHostViewChildFrame::Create(render_widget_host,
                                                 screen_info);
 }

@@ -21,7 +21,6 @@
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/browser/download/drag_download_file.h"
 #include "content/browser/download/drag_download_util.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -35,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
 using blink::DragOperationsMask;

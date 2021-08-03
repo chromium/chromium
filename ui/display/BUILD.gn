@@ -29,6 +29,8 @@ component("display") {
     "display_switches.h",
     "display_transform.cc",
     "display_transform.h",
+    "display_util.cc",
+    "display_util.h",
     "scoped_display_for_new_windows.cc",
     "scoped_display_for_new_windows.h",
     "screen.cc",

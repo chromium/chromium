@@ -1382,8 +1382,6 @@ source_set("browser") {
     "renderer_host/dip_util.h",
     "renderer_host/display_feature.cc",
     "renderer_host/display_feature.h",
-    "renderer_host/display_util.cc",
-    "renderer_host/display_util.h",
     "renderer_host/embedded_frame_sink_impl.cc",
     "renderer_host/embedded_frame_sink_impl.h",
     "renderer_host/embedded_frame_sink_provider_impl.cc",

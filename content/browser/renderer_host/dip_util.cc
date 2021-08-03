@@ -4,9 +4,9 @@
 
 #include "content/browser/renderer_host/dip_util.h"
 
-#include "content/browser/renderer_host/display_util.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/base/layout.h"
+#include "ui/display/display_util.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -21,7 +21,7 @@ float GetScaleFactorForView(RenderWidgetHostView* view) {
   if (view)
     return view->GetDeviceScaleFactor();
   display::ScreenInfo screen_info;
-  DisplayUtil::GetDefaultScreenInfo(&screen_info);
+  display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
   return screen_info.device_scale_factor;
 }
 

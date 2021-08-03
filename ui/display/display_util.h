@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_DISPLAY_UTIL_H_
-#define CONTENT_BROWSER_RENDERER_HOST_DISPLAY_UTIL_H_
+#ifndef UI_DISPLAY_DISPLAY_UTIL_H_
+#define UI_DISPLAY_DISPLAY_UTIL_H_
 
-#include "content/common/content_export.h"
 #include "ui/display/display.h"
+#include "ui/display/display_export.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace content {
+namespace display {
 
-class CONTENT_EXPORT DisplayUtil {
+class DISPLAY_EXPORT DisplayUtil {
  public:
   static void DisplayToScreenInfo(display::ScreenInfo* screen_info,
                                   const display::Display& display);
@@ -31,6 +31,6 @@ class CONTENT_EXPORT DisplayUtil {
       const display::Display& display);
 };
 
-}  // namespace content
+}  // namespace display
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_DISPLAY_UTIL_H_
+#endif  // UI_DISPLAY_DISPLAY_UTIL_H_

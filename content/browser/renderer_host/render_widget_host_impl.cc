@@ -61,7 +61,6 @@
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/display_feature.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
@@ -127,6 +126,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
@@ -1866,7 +1866,7 @@ void RenderWidgetHostImpl::GetScreenInfo(display::ScreenInfo* result) {
   if (view_)
     view_->GetScreenInfo(result);
   else
-    DisplayUtil::GetDefaultScreenInfo(result);
+    display::DisplayUtil::GetDefaultScreenInfo(result);
 
   if (display::Display::HasForceRasterColorProfile()) {
     result->display_color_spaces = gfx::DisplayColorSpaces(
@@ -2136,7 +2136,7 @@ display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
       continue;
     }
     display::ScreenInfo screen_info;
-    DisplayUtil::DisplayToScreenInfo(&screen_info, display);
+    display::DisplayUtil::DisplayToScreenInfo(&screen_info, display);
     if (display::Display::HasForceRasterColorProfile()) {
       screen_info.display_color_spaces = gfx::DisplayColorSpaces(
           display::Display::GetForcedRasterColorProfile());
