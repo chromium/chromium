@@ -114,6 +114,9 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void executeAction() {
+        // Top bar may be loaded before notes.
+        if (mListModel.size() == 0) return;
+
         NoteCreationMetrics.recordNoteTemplateSelected(getTimeElapsedSinceCreationStart());
         NoteCreationMetrics.recordNbTemplateChanges(mDialog.getNbTemplateSwitches());
 
