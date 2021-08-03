@@ -81608,6 +81608,9 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Throttled client side"/>
   <int value="3" label="Attempting registration with newly generated keys"/>
   <int value="4" label="Attempting registration with preexisting keys"/>
+  <int value="5"
+      label="Attempting registration while having persistent authentication
+             error"/>
 </enum>
 
 <enum name="TrustedVaultFetchKeysAttempt">

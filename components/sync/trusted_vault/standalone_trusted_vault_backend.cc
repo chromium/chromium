@@ -218,11 +218,15 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   }
 
   WriteToDisk(data_, file_path_);
-  MaybeRegisterDevice();
+  // This codepath doesn't record Sync.TrustedVaultDeviceRegistrationState, so
+  // it's safe to pass any value for |has_persistent_auth_error_for_uma|.
+  MaybeRegisterDevice(
+      /*has_persistent_auth_error_for_uma=*/false);
 }
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
-    const absl::optional<CoreAccountInfo>& primary_account) {
+    const absl::optional<CoreAccountInfo>& primary_account,
+    bool has_persistent_auth_error) {
   if (primary_account == primary_account_) {
     // Still need to complete deferred deletion, e.g. if primary account was
     // cleared before browser shutdown but not handled here.
@@ -247,7 +251,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
 
   const absl::optional<DeviceRegistrationStateForUMA> registration_state =
-      MaybeRegisterDevice();
+      MaybeRegisterDevice(has_persistent_auth_error);
 
   if (registration_state.has_value() &&
       !device_registration_state_recorded_to_uma_) {
@@ -421,7 +425,8 @@ void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
 }
 
 absl::optional<StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA>
-StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
+StandaloneTrustedVaultBackend::MaybeRegisterDevice(
+    bool has_persistent_auth_error_for_uma) {
   // TODO(crbug.com/1102340): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
@@ -507,7 +512,10 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   }
 
   DCHECK(ongoing_connection_request_);
-
+  if (has_persistent_auth_error_for_uma) {
+    return DeviceRegistrationStateForUMA::
+        kAttemptingRegistrationWithPersistentAuthError;
+  }
   return had_generated_key_pair ? DeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithExistingKeyPair
                                 : DeviceRegistrationStateForUMA::

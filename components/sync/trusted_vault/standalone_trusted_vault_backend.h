@@ -86,8 +86,8 @@ class StandaloneTrustedVaultBackend
   bool MarkLocalKeysAsStale(const CoreAccountInfo& account_info);
 
   // Sets/resets |primary_account_|.
-  void SetPrimaryAccount(
-      const absl::optional<CoreAccountInfo>& primary_account);
+  void SetPrimaryAccount(const absl::optional<CoreAccountInfo>& primary_account,
+                         bool has_persistent_auth_error);
 
   // Handles changes of accounts in cookie jar and removes keys for some
   // accounts:
@@ -126,7 +126,8 @@ class StandaloneTrustedVaultBackend
     kThrottledClientSide = 2,
     kAttemptingRegistrationWithNewKeyPair = 3,
     kAttemptingRegistrationWithExistingKeyPair = 4,
-    kMaxValue = kAttemptingRegistrationWithExistingKeyPair,
+    kAttemptingRegistrationWithPersistentAuthError = 5,
+    kMaxValue = kAttemptingRegistrationWithPersistentAuthError,
   };
 
  private:
@@ -143,7 +144,8 @@ class StandaloneTrustedVaultBackend
   // registration is desirable (i.e. feature toggle enabled and user signed in),
   // it returns an enum representing the registration state, intended to be used
   // for metric recording. Otherwise it returns nullopt.
-  absl::optional<DeviceRegistrationStateForUMA> MaybeRegisterDevice();
+  absl::optional<DeviceRegistrationStateForUMA> MaybeRegisterDevice(
+      bool has_persistent_auth_error_for_uma);
 
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for

@@ -65,10 +65,11 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnRefreshTokensLoaded() override;
 
  private:
   void UpdatePrimaryAccountIfNeeded();
-  void UpdateAccountsInCookieJarInfoIfNotStale(
+  void UpdateAccountsInCookieJarInfoIfNeeded(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
@@ -92,9 +93,9 @@ IdentityManagerObserver::IdentityManagerObserver(
   DCHECK(identity_manager_);
 
   identity_manager_->AddObserver(this);
-  UpdatePrimaryAccountIfNeeded();
-  UpdateAccountsInCookieJarInfoIfNotStale(
-      identity_manager_->GetAccountsInCookieJar());
+  if (identity_manager_->AreRefreshTokensLoaded()) {
+    OnRefreshTokensLoaded();
+  }
 }
 
 IdentityManagerObserver::~IdentityManagerObserver() {
@@ -109,22 +110,32 @@ void IdentityManagerObserver::OnPrimaryAccountChanged(
 void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
   // TODO(crbug.com/1148328): remove this handler once tests can mimic
   // OnAccountInCookieUpdated() properly.
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo,
-          backend_, signin::AccountsInCookieJarInfo()));
+  UpdateAccountsInCookieJarInfoIfNeeded(
+      signin::AccountsInCookieJarInfo(/*accounts_are_fresh_param=*/true,
+                                      /*signed_in_accounts_param=*/{},
+                                      /*signed_out_accounts_param=*/{}));
   notify_keys_changed_callback_.Run();
 }
 
 void IdentityManagerObserver::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  UpdateAccountsInCookieJarInfoIfNotStale(accounts_in_cookie_jar_info);
+  UpdateAccountsInCookieJarInfoIfNeeded(accounts_in_cookie_jar_info);
   notify_keys_changed_callback_.Run();
 }
 
+void IdentityManagerObserver::OnRefreshTokensLoaded() {
+  UpdatePrimaryAccountIfNeeded();
+  UpdateAccountsInCookieJarInfoIfNeeded(
+      identity_manager_->GetAccountsInCookieJar());
+}
+
 void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // Defer setting primary account until refresh tokens are loaded (otherwise,
+    // |has_persistent_auth_error| can't be determined correctly).
+    return;
+  }
   CoreAccountInfo primary_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account == primary_account_) {
@@ -135,18 +146,29 @@ void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
   // IdentityManager returns empty CoreAccountInfo if there is no primary
   // account.
   absl::optional<CoreAccountInfo> optional_primary_account;
+  bool has_persistent_auth_error = false;
   if (!primary_account_.IsEmpty()) {
     optional_primary_account = primary_account_;
+    has_persistent_auth_error =
+        identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+            primary_account_.account_id);
   }
 
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
-                     backend_, optional_primary_account));
+                     backend_, optional_primary_account,
+                     has_persistent_auth_error));
 }
 
-void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNotStale(
+void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNeeded(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // Defer propagation of changes into backend until refresh tokens are
+    // loaded, since primary account setting is deferred too. Otherwise,
+    // deferred deletion of primary account keys won't work.
+    return;
+  }
   if (accounts_in_cookie_jar_info.accounts_are_fresh) {
     backend_task_runner_->PostTask(
         FROM_HERE,

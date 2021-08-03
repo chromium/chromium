@@ -101,6 +101,9 @@ void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
 void TrustedVaultRequest::OnAccessTokenFetched(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     absl::optional<signin::AccessTokenInfo> access_token_info) {
+  base::UmaHistogramBoolean("Sync.TrustedVaultAccessTokenFetchSuccess",
+                            access_token_info.has_value());
+
   if (!access_token_info.has_value()) {
     RunCompletionCallbackAndMaybeDestroySelf(
         HttpStatus::kAccessTokenFetchingFailure,

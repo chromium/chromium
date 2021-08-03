@@ -206,7 +206,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
     // Setting the primary account will trigger device registration.
-    backend()->SetPrimaryAccount(account_info);
+    backend()->SetPrimaryAccount(account_info,
+                                 /*has_persistent_auth_error=*/false);
     EXPECT_FALSE(device_registration_callback.is_null());
 
     // Pretend that the registration completed successfully.
@@ -214,7 +215,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
         .Run(TrustedVaultRegistrationStatus::kSuccess);
 
     // Reset primary account.
-    backend()->SetPrimaryAccount(absl::nullopt);
+    backend()->SetPrimaryAccount(absl::nullopt,
+                                 /*has_persistent_auth_error=*/false);
 
     std::string device_private_key_material =
         backend_->GetDeviceRegistrationInfoForTesting(account_info.gaia)
@@ -371,8 +373,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
 
   // Make sure that backend handles primary account changes prior
   // UpdateAccountsInCookieJarInfo() call.
-  backend()->SetPrimaryAccount(account_info_1);
-  backend()->SetPrimaryAccount(absl::nullopt);
+  backend()->SetPrimaryAccount(account_info_1,
+                               /*has_persistent_auth_error=*/false);
+  backend()->SetPrimaryAccount(absl::nullopt,
+                               /*has_persistent_auth_error=*/false);
 
   // Keys should be removed immediately if account is not primary and not in
   // cookie jar.
@@ -398,7 +402,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
   backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   // Keys should not be removed immediately.
   backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
@@ -409,7 +414,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Reset primary account, keys should be deleted from both in-memory and disk
   // storage.
-  backend()->SetPrimaryAccount(absl::nullopt);
+  backend()->SetPrimaryAccount(absl::nullopt,
+                               /*has_persistent_auth_error=*/false);
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 
@@ -424,7 +430,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
   backend()->StoreKeys(account_info.gaia, {kKey}, /*last_key_version=*/0);
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   // Keys should not be removed immediately.
   backend()->UpdateAccountsInCookieJarInfo(signin::AccountsInCookieJarInfo());
@@ -439,7 +446,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
       /*connection=*/nullptr);
   new_backend->ReadDataFromDisk();
-  new_backend->SetPrimaryAccount(absl::nullopt);
+  new_backend->SetPrimaryAccount(absl::nullopt,
+                                 /*has_persistent_auth_error=*/false);
 
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   new_backend->FetchKeys(account_info, fetch_keys_callback.Get());
@@ -478,7 +486,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 
   // Setting the primary account will trigger device registration.
   base::HistogramTester histogram_tester;
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   ASSERT_FALSE(device_registration_callback.is_null());
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
@@ -505,6 +514,31 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRecordAuthErrorAndAttemptDeviceRegistration) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _));
+
+  base::HistogramTester histogram_tester;
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDeviceRegistrationState",
+      /*sample=*/
+      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
+          kAttemptingRegistrationWithPersistentAuthError,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldNotRegisterDeviceIfLocalKeysAreStale) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
@@ -518,7 +552,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(_, _, _)).Times(0);
 
   base::HistogramTester histogram_tester;
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
@@ -552,7 +587,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           });
 
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   ASSERT_FALSE(device_registration_callback.is_null());
   std::move(device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess);
@@ -576,7 +612,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(_, _, _)).Times(0);
 
   base::HistogramTester histogram_tester;
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
@@ -608,7 +645,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
   // Setting the primary account will trigger device registration.
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   ASSERT_FALSE(device_registration_callback.is_null());
   Mock::VerifyAndClearExpectations(connection());
 
@@ -623,7 +661,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
       .Times(0);
   backend()->ReadDataFromDisk();
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
@@ -638,7 +677,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
   clock()->Advance(switches::kTrustedVaultServiceThrottlingDuration.Get());
   backend()->ReadDataFromDisk();
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   histogram_tester2.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
@@ -669,7 +709,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
   // Setting the primary account will trigger device registration.
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   ASSERT_FALSE(device_registration_callback.is_null());
   Mock::VerifyAndClearExpectations(connection());
 
@@ -682,7 +723,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ResetBackend();
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
   backend()->ReadDataFromDisk();
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 }
 
 // System time can be changed to the past and if this situation not handled,
@@ -711,7 +753,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
   // Setting the primary account will trigger device registration.
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   ASSERT_FALSE(device_registration_callback.is_null());
   Mock::VerifyAndClearExpectations(connection());
 
@@ -726,8 +769,10 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       TrustedVaultConnection::RegisterAuthenticationFactorCallback();
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
   // Reset and set primary account to trigger device registration attempt.
-  backend()->SetPrimaryAccount(absl::nullopt);
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(absl::nullopt,
+                               /*has_persistent_auth_error=*/false);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   EXPECT_FALSE(device_registration_callback.is_null());
 }
 
@@ -741,7 +786,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
   // Make keys downloading theoretically possible.
   StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
                                       account_info);
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
 
@@ -762,7 +808,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
       StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
                                           kInitialLastKeyVersion, account_info);
   EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {kInitialVaultKey,
                                                            {1, 3, 2}};
@@ -812,7 +859,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
                                           kInitialLastKeyVersion, account_info);
   EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
   ON_CALL(*connection(), DownloadNewKeys(_, _, _, _))
@@ -872,7 +920,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       });
 
   // Setting the primary account will trigger device registration.
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   ASSERT_FALSE(device_registration_callback.is_null());
 
   // Pretend that the registration completed successfully.
@@ -926,7 +975,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const int kMethodTypeHint = 7;
 
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   backend()->StoreKeys(account_info.gaia, kVaultKeys, kLastKeyVersion);
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -971,7 +1021,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   ASSERT_THAT(SecureBoxPublicKey::CreateByImport(kInvalidPublicKey), IsNull());
 
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
   backend()->StoreKeys(account_info.gaia, kVaultKeys, kLastKeyVersion);
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
@@ -1030,7 +1081,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
         // to be cancelled.
         return std::make_unique<TrustedVaultConnection::Request>();
       });
-  backend()->SetPrimaryAccount(account_info);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
 
   // The operation should be in flight.
   ASSERT_FALSE(registration_callback.is_null());
