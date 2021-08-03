@@ -22,18 +22,18 @@ android_library("compiled_in_runtime_library_java") {
   sources = [ "src/org/chromium/webapk/lib/runtime_library/IWebApkApi.java" ]
 }
 
-mustache_pass("generate_old_style_manifest_for_upload") {
+mustache_pass("generate_chromeos_manifest_for_upload") {
   input = "AndroidManifest.xml"
-  output = generate_old_style_manifest_for_upload_output
+  output = generate_chromeos_manifest_for_upload_output
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
     "use_new_splash=false",
   ]
 }
 
-mustache_pass("generate_new_style_manifest_for_upload") {
+mustache_pass("generate_manifest_for_upload") {
   input = "AndroidManifest.xml"
-  output = generate_new_style_manifest_for_upload_output
+  output = generate_manifest_for_upload_output
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
     "use_new_splash=true",
@@ -297,16 +297,16 @@ java_strings_grd("webapk_strings_grd") {
 # Template for WebAPK. When a WebAPK is generated:
 # - Android manifest is customized to the website.
 # - App icon is extracted from the website and added to the APK's resources.
-webapk_tmpl("webapk") {
+webapk_tmpl("webapk_chromeos") {
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
-  apk_name = "WebApk"
-  apk_package_name = "org.chromium.webapk"
+  manifest_to_upload_dep = ":generate_chromeos_manifest_for_upload"
+  apk_name = "WebApkChromeos"
+  apk_package_name = "org.chromium.webapk.chromeos"
 }
 
 webapk_tmpl("maps_go_webapk") {
   config_file = "manifest/maps_go_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "MapsWebApk"
   apk_package_name = "org.chromium.maps_go_webapk"
 }
@@ -314,7 +314,7 @@ webapk_tmpl("maps_go_webapk") {
 webapk_tmpl("uiautomator_maps_go_webapk") {
   testonly = true
   config_file = "manifest/maps_go_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "JavatestsMapsWebApk"
   delta_config_file = "manifest/javatest_maps_go_manifest_config_delta.json"
   apk_package_name = "org.chromium.test.maps_go_webapk"
@@ -322,23 +322,27 @@ webapk_tmpl("uiautomator_maps_go_webapk") {
 
 webapk_tmpl("unbound_webapk") {
   config_file = "manifest/unbound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "UnboundWebApk"
   apk_package_name = "org.chromium.arbitrarypackage"
 }
 
-webapk_tmpl("new_splash_webapk") {
+webapk_tmpl("webapk") {
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_new_style_manifest_for_upload"
-  apk_name = "NewSplashWebApk"
-  apk_package_name = "org.chromium.webapk.new_splash"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
+  apk_name = "WebApk"
+  apk_package_name = "org.chromium.webapk"
+}
+
+group("new_splash_webapk") {
+  deps = [ ":webapk" ]
 }
 
 # Used by javatests
 webapk_tmpl("javatests_webapk") {
   testonly = true
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_new_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   delta_config_file = "manifest/javatest_manifest_config_delta.json"
   apk_name = "JavatestsWebApk"
   apk_package_name = "org.chromium.webapk.test"
@@ -347,7 +351,7 @@ webapk_tmpl("javatests_webapk") {
 # Used by webapk_shell_apk_h2o_junit_tests
 webapk_tmpl("h2o_j_unit_webapk") {
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_new_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "H2OJUnitWebApk"
   apk_package_name = "org.chromium.webapk.h2o.junit_webapk"
   manifest_output = h2o_junit_manifest_output
@@ -361,7 +365,7 @@ android_library("shell_apk_javatests") {
     "javatests/src/org/chromium/webapk/shell_apk/h2o/SplashUtilsTest.java",
   ]
   deps = [
-    ":new_splash_webapk_generated_webapk_java",
+    ":webapk_generated_webapk_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android/webapk/libs/common:common_java",
