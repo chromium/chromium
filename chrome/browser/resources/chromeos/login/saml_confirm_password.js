@@ -82,10 +82,7 @@ Polymer({
     cr.ui.Oobe.showScreen({id: 'saml-confirm-password'});
   },
 
-  reset() {
-    if (this.$.cancelConfirmDlg.open)
-      this.$.cancelConfirmDlg.hideDialog();
-    this.setUIStep(UIState.PASSWORD);
+  resetFields() {
     this.$.passwordInput.invalid = false;
     this.$.passwordInput.value = '';
     if (this.isManualInput) {
@@ -93,6 +90,14 @@ Polymer({
       this.$$('#confirmPasswordInput').value = '';
     }
   },
+
+  reset() {
+    if (this.$.cancelConfirmDlg.open)
+      this.$.cancelConfirmDlg.hideDialog();
+    this.setUIStep(UIState.PASSWORD);
+    this.resetFields();
+  },
+
 
   onCancel_() {
     this.$.cancelConfirmDlg.showDialog();
@@ -124,10 +129,9 @@ Polymer({
         return;
       }
     }
-
     this.setUIStep(UIState.PROGRESS);
     this.callback_(this.$.passwordInput.value);
-    this.reset();
+    this.resetFields();
   },
 
   onDialogOverlayClosed_() {
