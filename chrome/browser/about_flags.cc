@@ -2141,6 +2141,13 @@ const FeatureEntry::FeatureVariation kLensContextMenuTranslateVariations[] = {
      base::size(kLensContextMenuTranslateHideRemoveIcon), nullptr},
 };
 
+const FeatureEntry::FeatureParam kDynamicColorFull[] = {
+    {"dynamic_color_full", "true"}};
+
+const FeatureEntry::FeatureVariation kDynamicColorAndroidVariations[] = {
+    {"(Full)", kDynamicColorFull, base::size(kDynamicColorFull), nullptr},
+};
+
 #endif  // defined(OS_ANDROID)
 
 const FeatureEntry::FeatureParam kLazyFrameLoadingAutomatic[] = {
@@ -7672,7 +7679,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(OS_ANDROID)
     {"dynamic-color-android", flag_descriptions::kDynamicColorAndroidName,
      flag_descriptions::kDynamicColorAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDynamicColorAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kDynamicColorAndroid,
+                                    kDynamicColorAndroidVariations,
+                                    "AndroidDynamicColor")},
 #endif  //   defined(OS_ANDROID)
 
 #if defined(OS_WIN)
