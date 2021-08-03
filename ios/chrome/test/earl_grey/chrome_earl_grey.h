@@ -682,8 +682,9 @@ UIWindow* GetAnyKeyWindow();
 - (int)userIntegerPref:(const std::string&)prefName;
 - (std::string)userStringPref:(const std::string&)prefName;
 
-// Sets the value of a boolean user pref in the original browser state.
+// Sets the value of a user pref in the original browser state.
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
+- (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.

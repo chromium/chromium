@@ -1075,6 +1075,12 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
       base::SysNSStringToUTF8(prefName).c_str(), value);
 }
 
++ (void)setIntegerValue:(int)value forUserPref:(NSString*)prefName {
+  chrome_test_util::SetIntegerUserPref(
+      chrome_test_util::GetOriginalBrowserState(),
+      base::SysNSStringToUTF8(prefName).c_str(), value);
+}
+
 + (void)resetBrowsingDataPrefs {
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   prefs->ClearPref(browsing_data::prefs::kDeleteBrowsingHistory);

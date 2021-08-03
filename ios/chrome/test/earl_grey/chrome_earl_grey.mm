@@ -1306,6 +1306,13 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface setBoolValue:value forUserPref:prefName];
 }
 
+- (void)setIntegerValue:(int)value
+            forUserPref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setIntegerValue:value
+                                         forUserPref:prefName];
+}
+
 - (void)resetBrowsingDataPrefs {
   return [ChromeEarlGreyAppInterface resetBrowsingDataPrefs];
 }
