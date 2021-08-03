@@ -39,7 +39,8 @@ SecurityOrigin* BlobURLNullOriginMap::Get(const KURL& blob_url) {
   DCHECK_EQ(BlobURL::GetOrigin(blob_url), "null");
   KURL blob_url_without_fragment = blob_url;
   blob_url_without_fragment.RemoveFragmentIdentifier();
-  return blob_url_null_origin_map_.at(blob_url_without_fragment.GetString());
+  return blob_url_null_origin_map_.DeprecatedAtOrEmptyValue(
+      blob_url_without_fragment.GetString());
 }
 
 BlobURLOpaqueOriginNonceMap& BlobURLOpaqueOriginNonceMap::GetInstance() {
