@@ -3670,3 +3670,14 @@ TEST_F('ChromeVoxBackgroundTest', 'EndOfText', function() {
     contentEditable.focus();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'ShowContextMenuOnViewsTab', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `<p>test</p>`;
+  this.runWithLoadedTree(site, function(root) {
+    const tabs = root.findAll({Role: RoleType.TAB});
+    assertTrue(tabs.length > 0);
+    tabs[0].showContextMenu();
+    mockFeedback.expectSpeech(/menu opened/).replay();
+  });
+});

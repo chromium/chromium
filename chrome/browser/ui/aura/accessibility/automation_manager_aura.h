@@ -131,7 +131,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
     int id;
     ax::mojom::Event event_type;
     int action_request_id;
-    bool is_performing_action;
+    ax::mojom::Action currently_performing_action;
   };
 
   std::vector<Event> pending_events_;
@@ -145,7 +145,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   std::unique_ptr<views::AXAuraObjCache> cache_;
 
-  bool is_performing_action_ = false;
+  ax::mojom::Action currently_performing_action_ = ax::mojom::Action::kNone;
 
   base::ScopedObservation<extensions::AutomationEventRouter,
                           extensions::AutomationEventRouterObserver>
