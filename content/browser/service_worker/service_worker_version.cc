@@ -256,7 +256,6 @@ ServiceWorkerVersion::ServiceWorkerVersion(
       tick_clock_(base::DefaultTickClock::GetInstance()),
       clock_(base::DefaultClock::GetInstance()),
       ping_controller_(this),
-      validator_(std::make_unique<blink::TrialTokenValidator>()),
       remote_reference_(std::move(remote_reference)),
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
                                             ukm::SourceIdType::WORKER_ID)),
@@ -1077,7 +1076,7 @@ void ServiceWorkerVersion::InitializeGlobalScope(
 
 void ServiceWorkerVersion::SetValidOriginTrialTokens(
     const blink::TrialTokenValidator::FeatureToTokensMap& tokens) {
-  origin_trial_tokens_ = validator_->GetValidTokens(
+  origin_trial_tokens_ = validator_.GetValidTokens(
       url::Origin::Create(scope()), tokens, clock_->Now());
 }
 
@@ -1130,7 +1129,7 @@ void ServiceWorkerVersion::SetMainScriptResponse(
   //     was written by old version Chrome (< M56), so |origin_trial_tokens|
   //     wasn't set in the entry.
   if (!origin_trial_tokens_) {
-    origin_trial_tokens_ = validator_->GetValidTokensFromHeaders(
+    origin_trial_tokens_ = validator_.GetValidTokensFromHeaders(
         url::Origin::Create(scope()), main_script_response_->headers.get(),
         clock_->Now());
   }

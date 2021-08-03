@@ -1104,7 +1104,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // version completed, or used during the lifetime of |this|.
   std::set<blink::mojom::WebFeature> used_features_;
 
-  std::unique_ptr<blink::TrialTokenValidator> const validator_;
+  blink::TrialTokenValidator const validator_;
 
   // Stores the result of byte-to-byte update check for each script.
   std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>
