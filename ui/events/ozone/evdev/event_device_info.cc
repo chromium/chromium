@@ -39,10 +39,12 @@ constexpr struct {
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
     {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying) // nocheck
+    {0x046d, 0x4072},  // Logitech MX Anywhere 2 (Unifying)
     {0x046d, 0xb00d},  // Logitech T630 Ultrathin
     {0x046d, 0xb011},  // Logitech M558
     {0x046d, 0xb016},  // Logitech M535
     {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth) // nocheck
+    {0x046d, 0xb01f},  // Logitech MX Anywhere 2 (Bluetooth)
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
