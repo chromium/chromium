@@ -63,8 +63,8 @@ def ci_builder(
         specifying additional parameters for exporting test results to BigQuery.
         Will always upload to the following tables in addition to any tables
         specified by the list's elements:
-          luci-resultdb.chromium.ci_test_results
-          luci-resultdb.chromium.gpu_ci_test_results
+          chrome-luci-data.chromium.ci_test_results
+          chrome-luci-data.chromium.gpu_ci_test_results
       experiments - a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
     """
@@ -78,16 +78,13 @@ def ci_builder(
         notifies = (notifies or []) + ["chromium-tree-closer", "chromium-tree-closer-email"]
 
     merged_resultdb_bigquery_exports = [
+        # TODO(crbug.com/1230801): Remove when all usages of this table have
+        # been migrated to `chrome-luci-data.chromium.ci_test_results`.
         resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.ci_test_results",
         ),
         resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.gpu_ci_test_results",
-            predicate = resultdb.test_result_predicate(
-                # Only match the telemetry_gpu_integration_test and
-                # fuchsia_telemetry_gpu_integration_test targets.
-                test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test/.+",
-            ),
+            bq_table = "chrome-luci-data.chromium.ci_test_results",
         ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",
@@ -98,14 +95,6 @@ def ci_builder(
                 # denoting the binary that's included, so also catch those with
                 # [^/]*.
                 test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test[^/]*/.+",
-            ),
-        ),
-        resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.blink_web_tests_ci_test_results",
-            predicate = resultdb.test_result_predicate(
-                # Match the "blink_web_tests" target and all of its
-                # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
-                test_id_regexp = "ninja://[^/]*blink_web_tests/.+",
             ),
         ),
     ]
