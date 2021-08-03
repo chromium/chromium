@@ -28,10 +28,10 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.Op
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.BuyableProduct;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.PriceTrackingData;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPrice;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPriceUpdate;
+import org.chromium.components.commerce.PriceTracking.BuyableProduct;
+import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
+import org.chromium.components.commerce.PriceTracking.ProductPrice;
+import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;

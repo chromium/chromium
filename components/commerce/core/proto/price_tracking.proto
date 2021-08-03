@@ -4,9 +4,9 @@
 
 syntax = "proto2";
 
-package org.chromium.chrome.browser.tab.proto;
+package org.chromium.components.commerce;
 
-option java_package = "org.chromium.chrome.browser.tab.proto";
+option java_package = "org.chromium.components.commerce";
 
 message PriceTrackingData {
   // metadata relating to the product

@@ -26,10 +26,10 @@ import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceFactor
 import org.chromium.chrome.browser.page_annotations.ProductPriceUpdatePageAnnotation;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.BuyableProduct;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.PriceTrackingData;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPriceUpdate;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
+import org.chromium.components.commerce.PriceTracking.BuyableProduct;
+import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
+import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
