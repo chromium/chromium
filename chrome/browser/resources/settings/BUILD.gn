@@ -125,9 +125,9 @@ preprocess_if_expr("preprocess") {
     "extension_control_browser_proxy.js",
     "global_scroll_target_mixin.js",
     "hats_browser_proxy.js",
-    "i18n_setup.js",
+    "i18n_setup.ts",
     "incompatible_applications_page/incompatible_applications_browser_proxy.js",
-    "lazy_load.js",
+    "lazy_load.ts",
     "lifetime_browser_proxy.js",
     "metrics_browser_proxy.js",
     "on_startup_page/on_startup_browser_proxy.js",
@@ -148,8 +148,8 @@ preprocess_if_expr("preprocess") {
     "safety_check_page/safety_check_browser_proxy.js",
     "search_engines_page/search_engines_browser_proxy.js",
     "search_settings.js",
-    "setting_id_param_util.js",
-    "settings.js",
+    "setting_id_param_util.ts",
+    "settings.ts",
     "settings_page/main_page_mixin.js",
     "settings_routes.js",
     "site_settings/constants.js",
@@ -236,7 +236,7 @@ preprocess_if_expr("preprocess_generated") {
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
     "downloads_page/downloads_page.js",
-    "icons.js",
+    "icons.ts",
     "settings_menu/settings_menu.js",
     "on_startup_page/on_startup_page.js",
     "on_startup_page/startup_url_dialog.js",
@@ -285,9 +285,9 @@ preprocess_if_expr("preprocess_generated") {
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
     "settings_ui/settings_ui.js",
-    "settings_page_css.js",
-    "settings_shared_css.js",
-    "settings_vars_css.js",
+    "settings_page_css.ts",
+    "settings_shared_css.ts",
+    "settings_vars_css.ts",
     "site_favicon.js",
     "site_settings/add_site_dialog.js",
     "site_settings/all_sites.js",
@@ -440,6 +440,8 @@ js_type_check("closure_compile_local") {
 }
 
 js_library("settings") {
+  sources =
+      [ "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.js" ]
   deps = [
     ":hats_browser_proxy",
     ":lifetime_browser_proxy",
@@ -456,6 +458,7 @@ js_library("settings") {
     "search_engines_page:search_engines_browser_proxy",
     "settings_ui:settings_ui",
   ]
+  extra_deps = [ ":build_ts" ]
 }
 
 js_library("base_mixin") {
@@ -470,7 +473,10 @@ js_library("extension_control_browser_proxy") {
 }
 
 js_library("i18n_setup") {
+  sources =
+      [ "$root_gen_dir/chrome/browser/resources/settings/tsc/i18n_setup.js" ]
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  extra_deps = [ ":build_ts" ]
 }
 
 js_library("global_scroll_target_mixin") {
@@ -486,6 +492,8 @@ js_library("hats_browser_proxy") {
 }
 
 js_library("lazy_load") {
+  sources =
+      [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lazy_load.js" ]
   deps = [
     "autofill_page:autofill_section",
     "autofill_page:payments_section",
@@ -510,6 +518,7 @@ js_library("lazy_load") {
       "languages_page:languages_subpage",
     ]
   }
+  extra_deps = [ ":build_ts" ]
 }
 
 js_library("lifetime_browser_proxy") {
@@ -557,10 +566,12 @@ js_library("search_settings") {
 }
 
 js_library("setting_id_param_util") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/setting_id_param_util.js" ]
   deps = [
     ":router",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  extra_deps = [ ":build_ts" ]
 }
 
 js_library("settings_routes") {
@@ -625,10 +636,10 @@ group("polymer3_elements") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "icons.js",
-    "settings_vars_css.js",
-    "settings_page_css.js",
-    "settings_shared_css.js",
+    "icons.ts",
+    "settings_vars_css.ts",
+    "settings_page_css.ts",
+    "settings_shared_css.ts",
     "site_favicon.js",
   ]
 }
@@ -708,9 +719,9 @@ ts_library("build_ts") {
     "extension_control_browser_proxy.js",
     "global_scroll_target_mixin.js",
     "hats_browser_proxy.js",
-    "i18n_setup.js",
-    "icons.js",
-    "lazy_load.js",
+    "i18n_setup.ts",
+    "icons.ts",
+    "lazy_load.ts",
     "lifetime_browser_proxy.js",
     "metrics_browser_proxy.js",
     "on_startup_page/on_startup_browser_proxy.js",
@@ -773,19 +784,19 @@ ts_library("build_ts") {
     "search_engines_page/search_engines_page.js",
     "search_page/search_page.js",
     "search_settings.js",
-    "setting_id_param_util.js",
-    "settings.js",
+    "setting_id_param_util.ts",
+    "settings.ts",
     "settings_main/settings_main.js",
     "settings_menu/settings_menu.js",
-    "settings_page_css.js",
+    "settings_page_css.ts",
     "settings_page/main_page_mixin.js",
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
     "settings_routes.js",
-    "settings_shared_css.js",
+    "settings_shared_css.ts",
     "settings_ui/settings_ui.js",
-    "settings_vars_css.js",
+    "settings_vars_css.ts",
     "site_favicon.js",
     "site_settings/add_site_dialog.js",
     "site_settings/all_sites_icons.js",
