@@ -4896,7 +4896,8 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
 
     GURL cookie_url = test_server()->GetURL("/");
     auto cookie = net::CanonicalCookie::Create(
-        cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */);
+        cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
         base::DoNothing());
@@ -4951,7 +4952,8 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
     GURL cookie_url = test_server()->GetURL("/");
     auto cookie = net::CanonicalCookie::Create(
         cookie_url, "a=b;Path=/something-else", base::Time::Now(),
-        absl::nullopt /* server_time */);
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
         base::DoNothing());

@@ -459,6 +459,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     const std::string& cookie_line,
     const base::Time& creation_time,
     absl::optional<base::Time> server_time,
+    absl::optional<CookiePartitionKey> cookie_partition_key,
     CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -529,6 +530,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (parsed_cookie.IsPartitioned()) {
     base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
                               is_partitioned_valid);
+  } else {
+    cookie_partition_key = absl::nullopt;
   }
 
   if (!status->IsInclude())
@@ -549,7 +552,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       parsed_cookie.Name(), parsed_cookie.Value(), cookie_domain, cookie_path,
       creation_time, cookie_expires, creation_time, parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
-      parsed_cookie.IsSameParty(), absl::nullopt, source_scheme, source_port));
+      parsed_cookie.IsSameParty(), cookie_partition_key, source_scheme,
+      source_port));
 
   // TODO(chlily): Log metrics.
   if (!cc->IsCanonical()) {

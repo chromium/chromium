@@ -63,6 +63,10 @@ class NET_EXPORT CookiePartitionKey {
     return CookiePartitionKey(url);
   }
 
+  // Temporary method, used to mark the places where we need to supply the
+  // cookie partition key to CanonicalCookie::Create.
+  static absl::optional<CookiePartitionKey> Todo() { return absl::nullopt; }
+
  private:
   explicit CookiePartitionKey(const GURL& url);
 

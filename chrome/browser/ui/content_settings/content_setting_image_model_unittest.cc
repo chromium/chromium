@@ -196,7 +196,8 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
 
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      origin, "A=B", base::Time::Now(), absl::nullopt /* server_time */));
+      origin, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */));
   ASSERT_TRUE(cookie);
   PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame())
       ->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,

@@ -886,7 +886,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
     // With default settings object, setting a third-party cookie is OK.
     auto cookie = net::CanonicalCookie::Create(
         kDefaultUrl, "A=B; SameSite=none; Secure", base::Time::Now(),
-        absl::nullopt /* server_time */);
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     EXPECT_TRUE(sync_service_->SetCanonicalCookie(
         *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin));
   }
@@ -908,7 +909,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
     cookie_settings_.set_block_third_party_cookies(true);
     auto cookie = net::CanonicalCookie::Create(
         kDefaultUrl, "A2=B2; SameSite=none; Secure", base::Time::Now(),
-        absl::nullopt /* server_time */);
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
     EXPECT_FALSE(sync_service_->SetCanonicalCookie(
         *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin));
   }
@@ -949,7 +951,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
 
   auto cookie = net::CanonicalCookie::Create(
-      kDefaultUrl, "A=B", base::Time::Now(), absl::nullopt /* server_time */);
+      kDefaultUrl, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
   EXPECT_FALSE(sync_service_->SetCanonicalCookie(
       *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin));
 
@@ -1351,7 +1354,7 @@ TEST_P(RestrictedCookieManagerTest, ChangeNotificationIncludesAccessSemantics) {
 
   auto cookie = net::CanonicalCookie::Create(
       kDefaultUrl, "cookie_with_no_samesite=unspecified", base::Time::Now(),
-      absl::nullopt);
+      absl::nullopt, absl::nullopt /* cookie_partition_key */);
 
   // Set cookie directly into the CookieMonster, using all-inclusive options.
   net::ResultSavingCookieCallback<net::CookieAccessResult> callback;
@@ -1390,11 +1393,12 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
 
   auto unspecified_cookie = net::CanonicalCookie::Create(
       kDefaultUrl, "cookie_with_no_samesite=unspecified", base::Time::Now(),
-      absl::nullopt);
+      absl::nullopt, absl::nullopt /* cookie_partition_key */);
 
   auto samesite_none_cookie = net::CanonicalCookie::Create(
       kDefaultUrl, "samesite_none_cookie=none; SameSite=None; Secure",
-      base::Time::Now(), absl::nullopt);
+      base::Time::Now(), absl::nullopt,
+      absl::nullopt /* cookie_partition_key */);
 
   // Set cookies directly into the CookieMonster, using all-inclusive options.
   net::ResultSavingCookieCallback<net::CookieAccessResult> callback1;

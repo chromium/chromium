@@ -151,8 +151,9 @@ bool CookieManagerImpl::FireFlushTimerForTesting() {
 bool CookieManagerImpl::SetCookieInternal(const GURL& url,
                                           const std::string& value,
                                           SetCookieCallback callback) {
-  auto cc = net::CanonicalCookie::Create(url, value, base::Time::Now(),
-                                         absl::nullopt);
+  auto cc =
+      net::CanonicalCookie::Create(url, value, base::Time::Now(), absl::nullopt,
+                                   net::CookiePartitionKey::Todo());
   if (!cc) {
     return false;
   }

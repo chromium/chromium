@@ -5079,7 +5079,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   ASSERT_TRUE(cookie_store);
   auto cookie =
       net::CanonicalCookie::Create(ext_url, "dummy=value", base::Time::Now(),
-                                   absl::nullopt /* server_time */);
+                                   absl::nullopt /* server_time */,
+                                   absl::nullopt /* cookie_partition_key */);
   cookie_store->SetCanonicalCookieAsync(
       std::move(cookie), ext_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&ExtensionCookieCallback::SetCookieCallback,
@@ -5245,7 +5246,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
 
   std::unique_ptr<net::CanonicalCookie> cc(
       net::CanonicalCookie::Create(origin1, "dummy=value", base::Time::Now(),
-                                   absl::nullopt /* server_time */));
+                                   absl::nullopt /* server_time */,
+                                   absl::nullopt /* cookie_partition_key */));
   ASSERT_TRUE(cc.get());
 
   {

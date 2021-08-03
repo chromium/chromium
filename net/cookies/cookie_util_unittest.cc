@@ -307,13 +307,18 @@ TEST(CookieUtilTest, SimulatedCookieSource) {
   for (const auto& test : kTests) {
     std::vector<std::unique_ptr<CanonicalCookie>> cookies;
     // It shouldn't depend on the cookie's secureness or actual source scheme.
-    cookies.push_back(CanonicalCookie::Create(
-        insecure_url, test.cookie, base::Time::Now(), absl::nullopt));
-    cookies.push_back(CanonicalCookie::Create(
-        secure_url, test.cookie, base::Time::Now(), absl::nullopt));
     cookies.push_back(
-        CanonicalCookie::Create(secure_url, test.cookie + "; Secure",
-                                base::Time::Now(), absl::nullopt));
+        CanonicalCookie::Create(insecure_url, test.cookie, base::Time::Now(),
+                                absl::nullopt /* server_time */,
+                                absl::nullopt /* cookie_partition_key */));
+    cookies.push_back(
+        CanonicalCookie::Create(secure_url, test.cookie, base::Time::Now(),
+                                absl::nullopt /* server_time */,
+                                absl::nullopt /* cookie_partition_key */));
+    cookies.push_back(CanonicalCookie::Create(
+        secure_url, test.cookie + "; Secure", base::Time::Now(),
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */));
     for (const auto& cookie : cookies) {
       GURL simulated_source =
           cookie_util::SimulatedCookieSource(*cookie, test.source_scheme);

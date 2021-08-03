@@ -1664,8 +1664,9 @@ bool SetAllCookies(CookieMonster* cm, const CookieList& list) {
 bool CreateAndSetCookie(CookieStore* cs,
                         const GURL& url,
                         const std::string& cookie_line) {
-  auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
-                                        absl::nullopt);
+  auto cookie = CanonicalCookie::Create(
+      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
   if (!cookie)
     return false;
   DCHECK(cs);
@@ -1714,7 +1715,8 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   // would normally only happen during an existing cookie DB version upgrade.
   std::unique_ptr<CanonicalCookie> unset_cookie1 = CanonicalCookie::Create(
       secure_url_for_unset1, "NoSourceSchemeHttps=val", base::Time::Now(),
-      absl::nullopt /* server_time */);
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
   unset_cookie1->SetSourceScheme(net::CookieSourceScheme::kUnset);
 
   CookieList list1 = {*unset_cookie1};
@@ -1734,7 +1736,8 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
 
   std::unique_ptr<CanonicalCookie> unset_cookie2 = CanonicalCookie::Create(
       nonsecure_url_for_unset2, "NoSourceSchemeHttp=val", base::Time::Now(),
-      absl::nullopt /* server_time */);
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
   unset_cookie2->SetSourceScheme(net::CookieSourceScheme::kUnset);
 
   CookieList list2 = {*unset_cookie2};

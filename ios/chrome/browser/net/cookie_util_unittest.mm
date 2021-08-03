@@ -95,9 +95,9 @@ TEST_F(CookieUtilTest, CreateCookieStore) {
   options.set_include_httponly();
   std::string cookie_line = base::SysNSStringToUTF8(cookie_name) + "=" +
                             base::SysNSStringToUTF8(cookie_value);
-  auto canonical_cookie =
-      net::CanonicalCookie::Create(test_url, cookie_line, base::Time::Now(),
-                                   absl::nullopt /* server_time */);
+  auto canonical_cookie = net::CanonicalCookie::Create(
+      test_url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt);
   cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie), test_url,
                                         options,
                                         net::CookieStore::SetCookiesCallback());

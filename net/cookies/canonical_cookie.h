@@ -80,12 +80,22 @@ class NET_EXPORT CanonicalCookie {
   // HttpOnly related parameters should be checked when setting the cookie in
   // the CookieStore.
   //
+  // The partition_key argument only needs to be present if the cookie line
+  // contains the Partitioned attribute. If the cookie line will never contain
+  // that attribute, you should use absl::nullopt to indicate you intend to
+  // always create an unpartitioned cookie. If partition_key has a value but the
+  // cookie line does not contain the Partitioned attribute, the resulting
+  // cookie will be unpartitioned. If the partition_key is null, then the cookie
+  // will be unpartitioned even when the cookie line has the Partitioned
+  // attribute.
+  //
   // If a cookie is returned, |cookie->IsCanonical()| will be true.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
       const std::string& cookie_line,
       const base::Time& creation_time,
       absl::optional<base::Time> server_time,
+      absl::optional<CookiePartitionKey> cookie_partition_key,
       CookieInclusionStatus* status = nullptr);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the

@@ -779,7 +779,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
-        &returned_status);
+        net::CookiePartitionKey::Todo(), &returned_status);
 
     absl::optional<CanonicalCookie> cookie_to_return = absl::nullopt;
     if (returned_status.IsInclude()) {

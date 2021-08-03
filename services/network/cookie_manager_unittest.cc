@@ -1133,7 +1133,7 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
   GURL http_localhost_url("http://localhost/path");
   auto http_localhost_cookie = net::CanonicalCookie::Create(
       http_localhost_url, "http_localhost=1; Secure", base::Time::Now(),
-      absl::nullopt);
+      absl::nullopt, absl::nullopt /* cookie_partition_key */);
 
   // Secure cookie can be set from non-cryptographic localhost URL.
   EXPECT_TRUE(service_wrapper()
@@ -1153,7 +1153,8 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
 
   GURL http_other_url("http://other.test/path");
   auto http_other_cookie = net::CanonicalCookie::Create(
-      http_other_url, "http_other=1; Secure", base::Time::Now(), absl::nullopt);
+      http_other_url, "http_other=1; Secure", base::Time::Now(), absl::nullopt,
+      absl::nullopt /* cookie_partition_key */);
 
   // Secure cookie cannot be set from another non-cryptographic URL if there is
   // no CookieAccessDelegate.

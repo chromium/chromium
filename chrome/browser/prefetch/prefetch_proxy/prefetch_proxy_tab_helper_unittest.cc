@@ -337,7 +337,8 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
         ->GetNetworkContext()
         ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
     std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), absl::nullopt /* server_time */));
+        url, value, base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */));
     EXPECT_TRUE(cc.get());
 
     net::CookieOptions options;

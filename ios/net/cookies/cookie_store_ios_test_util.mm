@@ -38,9 +38,9 @@ TestPersistentCookieStore::~TestPersistentCookieStore() = default;
 
 void TestPersistentCookieStore::RunLoadedCallback() {
   std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
-  std::unique_ptr<net::CanonicalCookie> cookie(
-      net::CanonicalCookie::Create(kTestCookieURL, "a=b", base::Time::Now(),
-                                   absl::nullopt /* server_time */));
+  std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
+      kTestCookieURL, "a=b", base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt));
   cookies.push_back(std::move(cookie));
 
   std::unique_ptr<net::CanonicalCookie> bad_canonical_cookie =
@@ -135,7 +135,8 @@ void SetCookie(const std::string& cookie_line,
   net::CookieOptions options;
   options.set_include_httponly();
   auto canonical_cookie = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */);
+      url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt);
   ASSERT_TRUE(canonical_cookie);
   store->SetCanonicalCookieAsync(std::move(canonical_cookie), url, options,
                                  base::DoNothing());
