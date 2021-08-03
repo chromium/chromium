@@ -6,12 +6,10 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/public/cpp/simple_geo_position.h"
 #include "ash/shell.h"
 #include "ash/system/machine_learning/user_settings_event.pb.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/power/power_status.h"
-#include "ash/system/time/time_scheduler_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/simple_test_clock.h"
@@ -67,13 +65,12 @@ NetworkStatePropertiesPtr CreateCellularNetwork(int signal_strength) {
   return network;
 }
 
-class FakeTimeSchedulerDelegate : public TimeSchedulerController::Delegate {
+class FakeNightLightDelegate : public NightLightControllerImpl::Delegate {
  public:
-  FakeTimeSchedulerDelegate() = default;
-  ~FakeTimeSchedulerDelegate() override = default;
-  FakeTimeSchedulerDelegate(const FakeTimeSchedulerDelegate&) = delete;
-  FakeTimeSchedulerDelegate& operator=(const FakeTimeSchedulerDelegate&) =
-      delete;
+  FakeNightLightDelegate() = default;
+  ~FakeNightLightDelegate() override = default;
+  FakeNightLightDelegate(const FakeNightLightDelegate&) = delete;
+  FakeNightLightDelegate& operator=(const FakeNightLightDelegate&) = delete;
 
   void SetFakeNow(TimeOfDay time) { fake_now_ = time.ToTimeToday(); }
   void SetFakeSunset(TimeOfDay time) { fake_sunset_ = time.ToTimeToday(); }
@@ -83,7 +80,8 @@ class FakeTimeSchedulerDelegate : public TimeSchedulerController::Delegate {
   base::Time GetNow() const override { return fake_now_; }
   base::Time GetSunsetTime() const override { return fake_sunset_; }
   base::Time GetSunriseTime() const override { return fake_sunrise_; }
-  bool SetGeoposition(const SimpleGeoposition& position) override {
+  bool SetGeoposition(
+      const NightLightController::SimpleGeoposition& position) override {
     return false;
   }
   bool HasGeoposition() const override { return false; }
@@ -262,7 +260,7 @@ TEST_F(UserSettingsEventLoggerTest, TestLogNightLightEvent) {
 }
 
 TEST_F(UserSettingsEventLoggerTest, TestNightLightSunsetFeature) {
-  auto night_light_delegate = std::make_unique<FakeTimeSchedulerDelegate>();
+  auto night_light_delegate = std::make_unique<FakeNightLightDelegate>();
   auto* night_light = night_light_delegate.get();
   Shell::Get()->night_light_controller()->SetDelegateForTesting(
       std::move(night_light_delegate));

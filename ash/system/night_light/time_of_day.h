@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_TIME_TIME_OF_DAY_H_
-#define ASH_SYSTEM_TIME_TIME_OF_DAY_H_
+#ifndef ASH_SYSTEM_NIGHT_LIGHT_TIME_OF_DAY_H_
+#define ASH_SYSTEM_NIGHT_LIGHT_TIME_OF_DAY_H_
 
 #include <string>
 
@@ -49,4 +49,4 @@ class ASH_EXPORT TimeOfDay {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_TIME_TIME_OF_DAY_H_
+#endif  // ASH_SYSTEM_NIGHT_LIGHT_TIME_OF_DAY_H_

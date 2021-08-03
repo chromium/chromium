@@ -12,14 +12,12 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_types.h"
-#include "ash/public/cpp/simple_geo_position.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
-#include "ash/system/time/time_of_day.h"
-#include "ash/system/time/time_scheduler_controller.h"
+#include "ash/system/night_light/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
@@ -148,7 +146,7 @@ constexpr double kFakePosition2_Longitude = -100.5;
 constexpr int kFakePosition2_SunsetOffset = 17 * 60;
 constexpr int kFakePosition2_SunriseOffset = 3 * 60;
 
-class TestDelegate : public TimeSchedulerController::Delegate {
+class TestDelegate : public NightLightControllerImpl::Delegate {
  public:
   TestDelegate() = default;
   TestDelegate(const TestDelegate& other) = delete;
@@ -164,15 +162,17 @@ class TestDelegate : public TimeSchedulerController::Delegate {
   base::Time GetNow() const override { return fake_now_; }
   base::Time GetSunsetTime() const override { return fake_sunset_; }
   base::Time GetSunriseTime() const override { return fake_sunrise_; }
-  bool SetGeoposition(const SimpleGeoposition& position) override {
+  bool SetGeoposition(
+      const NightLightController::SimpleGeoposition& position) override {
     has_geoposition_ = true;
-    if (position ==
-        SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude}) {
+    if (position == NightLightController::SimpleGeoposition{
+                        kFakePosition1_Latitude, kFakePosition1_Longitude}) {
       // Set sunset and sunrise times associated with fake position 1.
       SetFakeSunset(TimeOfDay(kFakePosition1_SunsetOffset));
       SetFakeSunrise(TimeOfDay(kFakePosition1_SunriseOffset));
-    } else if (position == SimpleGeoposition{kFakePosition2_Latitude,
-                                             kFakePosition2_Longitude}) {
+    } else if (position ==
+               NightLightController::SimpleGeoposition{
+                   kFakePosition2_Latitude, kFakePosition2_Longitude}) {
       // Set sunset and sunrise times associated with fake position 2.
       SetFakeSunset(TimeOfDay(kFakePosition2_SunsetOffset));
       SetFakeSunrise(TimeOfDay(kFakePosition2_SunriseOffset));
@@ -234,7 +234,7 @@ class NightLightTest : public NoSessionAshTestBase {
 
   void SetNightLightEnabled(bool enabled) {
     GetController()->SetEnabled(
-        enabled, TimeSchedulerController::TimeSetterSource::kUser);
+        enabled, NightLightControllerImpl::AnimationDuration::kShort);
   }
 
   void SetAmbientColorPrefEnabled(bool enabled) {
@@ -461,16 +461,16 @@ TEST_F(NightLightTest, TestScheduleNoneToCustomTransition) {
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(2),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // If the user changes the schedule type to "none", the NightLight status
   // should not change, but the timer should not be running.
   controller->SetScheduleType(NightLightController::ScheduleType::kNone);
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
-  EXPECT_FALSE(controller->GetIsTimerRunningForTesting());
+  EXPECT_FALSE(controller->timer()->IsRunning());
 }
 
 // Tests what happens when the time now reaches the end of the NightLight
@@ -494,16 +494,16 @@ TEST_F(NightLightTest, TestCustomScheduleReachingEndTime) {
   //
   // Now is 8:00 PM.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
   // The timer should still be running, but now scheduling the start at 3:00 PM
   // tomorrow which is 19 hours from "now" (8:00 PM).
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(19),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Tests that user toggles from the system menu or system settings override any
@@ -536,9 +536,9 @@ TEST_F(NightLightTest, TestExplicitUserTogglesWhileScheduleIsActive) {
             controller->last_animation_duration());
   // The timer should still be running, but NightLight should automatically
   // turn off at 8:00 PM tomorrow, which is 21 hours from now (11:00 PM).
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(21),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Manually turning it back off should also be respected, and this time the
   // start is scheduled at 3:00 PM tomorrow after 19 hours from "now" (8:00 PM).
@@ -547,9 +547,9 @@ TEST_F(NightLightTest, TestExplicitUserTogglesWhileScheduleIsActive) {
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(16),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Tests that changing the custom start and end times, in such a way that
@@ -574,27 +574,27 @@ TEST_F(NightLightTest, TestChangingStartTimesThatDontChangeTheStatus) {
   controller->SetScheduleType(NightLightController::ScheduleType::kCustom);
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(2),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Change the start time in such a way that doesn't change the status, but
   // despite that, confirm that schedule has been updated.
   controller->SetCustomStartTime(TimeOfDay(19 * 60));  // 7:00 PM.
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(3),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Changing the end time in a similar fashion to the above and expect no
   // change.
   controller->SetCustomEndTime(TimeOfDay(23 * 60));  // 11:00 PM.
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(3),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Tests the behavior of the sunset to sunrise automatic schedule type.
@@ -619,33 +619,33 @@ TEST_F(NightLightTest, TestSunsetSunrise) {
       NightLightController::ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(4),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
   // Timer is running scheduling the end at sunrise.
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(9),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate reaching sunrise.
   delegate()->SetFakeNow(TimeOfDay(5 * 60));  // Now is 5:00 AM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
   // Timer is running scheduling the start at the next sunset.
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(15),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Tests the behavior of the sunset to sunrise automatic schedule type when the
@@ -660,29 +660,29 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
   //
   NightLightControllerImpl* controller = GetController();
   delegate()->SetFakeNow(TimeOfDay(16 * 60));  // 4:00PM.
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition1_Latitude, kFakePosition1_Longitude});
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   controller->SetScheduleType(
       NightLightController::ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(4),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
   // Timer is running scheduling the end at sunrise.
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(8),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Now simulate user changing position.
   // Position 2 sunset and sunrise times.
@@ -692,28 +692,28 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
   //        |           |                  |
   //      sunset       now               sunrise
   //
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition2_Latitude, kFakePosition2_Longitude});
 
   // Expect that the scheduled end delay has been updated, and the status hasn't
   // changed.
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(controller->GetColorTemperature());
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(7),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate reaching sunrise.
   delegate()->SetFakeNow(TimeOfDay(3 * 60));  // Now is 5:00 AM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kLong,
             controller->last_animation_duration());
   // Timer is running scheduling the start at the next sunset.
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(14),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Tests the behavior when the client sets the geoposition while in custom
@@ -746,16 +746,16 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
 
   int fake_now = 16 * 60;
   delegate()->SetFakeNow(TimeOfDay(fake_now));
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition1_Latitude, kFakePosition1_Longitude});
 
   // Expect that timer is running and is scheduled at next custom start time.
   controller->SetScheduleType(NightLightController::ScheduleType::kCustom);
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromMinutes(time_diff(fake_now, kCustom_Start)),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate a timezone change by changing geoposition.
   // Current time updates to 9PM.
@@ -766,9 +766,9 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
   //
   fake_now = 21 * 60;
   delegate()->SetFakeNow(TimeOfDay(fake_now));
-  controller->FireTimerForTesting();
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->timer()->FireNow();
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition2_Latitude, kFakePosition2_Longitude});
 
   // Expect the controller to enter night light mode and  the scheduled end
   // delay has been updated.
@@ -776,26 +776,26 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
   TestCompositorsTemperature(controller->GetColorTemperature());
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromMinutes(time_diff(fake_now, kCustom_End)),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate user changing position back to location 1 and current time goes
   // back to 4PM.
   fake_now = 16 * 60;
   delegate()->SetFakeNow(TimeOfDay(fake_now));
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
 
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
             controller->last_animation_duration());
   // Timer is running and is scheduled at next custom start time.
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromMinutes(time_diff(fake_now, kCustom_Start)),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Tests the behavior when there is no valid geoposition for example due to lack
@@ -848,8 +848,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   EXPECT_EQ(delegate()->GetSunriseTime(), kSunrise1.ToTimeToday());
 
   // Now simulate receiving a geoposition update of fake geoposition 2.
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition2_Latitude, kFakePosition2_Longitude});
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
   EXPECT_EQ(delegate()->GetSunsetTime(), kSunset2.ToTimeToday());
@@ -877,8 +877,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   user2_pref_service()->ClearPref(prefs::kNightLightCachedLongitude);
 
   // Now simulate receiving a geoposition update of fake geoposition 1.
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
   EXPECT_EQ(delegate()->GetSunsetTime(), kSunset1.ToTimeToday());
@@ -914,10 +914,10 @@ TEST_F(NightLightTest, TestCustomScheduleOnResume) {
 
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should start in 2 hours.
   EXPECT_EQ(base::TimeDelta::FromHours(2),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Now simulate that the device was suspended for 3 hours, and the time now
   // is 7:00 PM when the devices was resumed. Expect that NightLight turns on.
@@ -926,10 +926,10 @@ TEST_F(NightLightTest, TestCustomScheduleOnResume) {
 
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(0.4f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should end in 3 hours.
   EXPECT_EQ(base::TimeDelta::FromHours(3),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // The following tests ensure that the NightLight schedule is correctly
@@ -957,10 +957,10 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase1) {
 
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(0.4f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should end in two hours.
   EXPECT_EQ(base::TimeDelta::FromHours(2),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Case 2: "Now" is between "end" and "start".
@@ -983,10 +983,10 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase2) {
 
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should start in 15 hours.
   EXPECT_EQ(base::TimeDelta::FromHours(15),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 // Case 3: "Now" is greater than both "start" and "end".
@@ -1009,10 +1009,10 @@ TEST_F(NightLightTest, TestCustomScheduleInvertedStartAndEndTimesCase3) {
 
   EXPECT_TRUE(controller->GetEnabled());
   TestCompositorsTemperature(0.4f);
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   // NightLight should end in 5 hours.
   EXPECT_EQ(base::TimeDelta::FromHours(5),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 }
 
 TEST_F(NightLightTest, TestAmbientLightEnabledSetting_FeatureOn) {
@@ -1149,7 +1149,7 @@ TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
     // expected in NightLight's status.
     delegate()->SetFakeNow(test_case.fake_now);
     if (user_1_previous_status != test_case.user_1_expected_status)
-      controller->FireTimerForTesting();
+      controller->timer()->FireNow();
     user_1_previous_status = test_case.user_1_expected_status;
 
     // The untoggled states for both users should match the expected ones
@@ -1205,9 +1205,9 @@ TEST_F(NightLightTest, ManualStatusToggleCanPersistAfterResumeFromSuspend) {
   // turn back off at 8:00 PM.
   controller->Toggle();
   EXPECT_TRUE(controller->GetEnabled());
-  EXPECT_TRUE(controller->GetIsTimerRunningForTesting());
+  EXPECT_TRUE(controller->timer()->IsRunning());
   EXPECT_EQ(base::TimeDelta::FromHours(9),
-            controller->GetCurrentTimerDelayForTesting());
+            controller->timer()->GetCurrentDelay());
 
   // Simulate suspend and then resume at 2:00 PM (which is outside the user's
   // custom schedule). However, the manual toggle to on should be kept.
@@ -1658,7 +1658,7 @@ TEST_F(AutoNightLightTest, Notification) {
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   auto* notification = controller->GetAutoNightLightNotificationForTesting();
   ASSERT_TRUE(notification);
@@ -1669,13 +1669,13 @@ TEST_F(AutoNightLightTest, Notification) {
   // dismissed.
   notification->delegate()->Click(absl::nullopt, absl::nullopt);
   controller->SetEnabled(false,
-                         TimeSchedulerController::TimeSetterSource::kUser);
+                         NightLightControllerImpl::AnimationDuration::kShort);
   EXPECT_FALSE(controller->GetEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 
   // Simulate reaching next sunset. The notification should no longer show.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 }
@@ -1687,12 +1687,12 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
             controller->GetScheduleType());
 
   // Use a fake geoposition with sunset/sunrise times at 5pm/3am.
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition2_Latitude, kFakePosition2_Longitude});
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(17 * 60));  // Now is 5:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   auto* notification = controller->GetAutoNightLightNotificationForTesting();
   ASSERT_TRUE(notification);
@@ -1702,15 +1702,15 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   // 8pm/4am, so now is before sunset. Night Light should turn off, and the
   // stale notification from above should be removed. However, its removal
   // should not affect kAutoNightLightNotificationDismissed.
-  controller->SetCurrentGeoposition(
-      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
+      kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_FALSE(controller->GetEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 
   // Simulate reaching next sunset. The notification should still show, since it
   // was never dismissed by the user.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   EXPECT_TRUE(controller->GetAutoNightLightNotificationForTesting());
 }
@@ -1721,7 +1721,7 @@ TEST_F(AutoNightLightTest, CannotDisableNotificationWhenSessionIsBlocked) {
   // Simulate reaching sunset.
   NightLightControllerImpl* controller = GetController();
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   auto* notification = controller->GetAutoNightLightNotificationForTesting();
   ASSERT_TRUE(notification);
@@ -1741,7 +1741,7 @@ TEST_F(AutoNightLightTest, OverriddenByUser) {
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
-  controller->FireTimerForTesting();
+  controller->timer()->FireNow();
   EXPECT_TRUE(controller->GetEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 }

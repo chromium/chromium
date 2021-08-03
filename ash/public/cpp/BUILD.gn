@@ -280,7 +280,6 @@ component("cpp") {
     "shell_window_ids.h",
     "shutdown_controller.cc",
     "shutdown_controller.h",
-    "simple_geo_position.h",
     "style/color_mode_observer.h",
     "style/color_provider.cc",
     "style/color_provider.h",
