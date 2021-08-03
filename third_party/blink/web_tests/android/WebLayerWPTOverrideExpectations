@@ -1173,7 +1173,6 @@ crbug.com/1050754 external/wpt/input-events/input-events-cut-paste.html [ Pass T
 crbug.com/1050754 external/wpt/intersection-observer/iframe-no-root-with-wrapping-scroller.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/iframe-no-root.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/inline-client-rect.html [ Failure ]
-crbug.com/1050754 external/wpt/intersection-observer/intersection-ratio-ib-split.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/multiple-targets.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/multiple-thresholds.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/root-margin-root-element.html [ Failure ]
