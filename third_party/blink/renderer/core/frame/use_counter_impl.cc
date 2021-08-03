@@ -54,6 +54,20 @@ mojom::blink::UseCounterFeatureType ToFeatureType(
       return mojom::blink::UseCounterFeatureType::kAnimatedCssProperty;
   }
 }
+
+mojom::blink::UseCounterFeatureType ToFeatureType(
+    UseCounterImpl::PermissionsPolicyUsageType type) {
+  switch (type) {
+    case UseCounterImpl::PermissionsPolicyUsageType::kViolation:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyViolationEnforce;
+    case UseCounterImpl::PermissionsPolicyUsageType::kHeader:
+      return mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader;
+    case UseCounterImpl::PermissionsPolicyUsageType::kIframeAttribute:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyIframeAttribute;
+  }
+}
 }  // namespace
 
 UseCounterMuteScope::UseCounterMuteScope(const Element& element)
@@ -197,14 +211,14 @@ void UseCounterImpl::Count(WebFeature web_feature,
         source_frame);
 }
 
-void UseCounterImpl::CountPermissionsPolicyViolation(
+void UseCounterImpl::CountPermissionsPolicyUsage(
     mojom::blink::PermissionsPolicyFeature feature,
+    PermissionsPolicyUsageType usage_type,
     const LocalFrame& source_frame) {
   DCHECK_NE(mojom::blink::PermissionsPolicyFeature::kNotFound, feature);
-  Count(
-      {mojom::blink::UseCounterFeatureType::kPermissionsPolicyViolationEnforce,
-       static_cast<uint32_t>(feature)},
-      &source_frame);
+
+  Count({ToFeatureType(usage_type), static_cast<uint32_t>(feature)},
+        &source_frame);
 }
 
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
@@ -285,6 +299,8 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
       break;
     case mojom::blink::UseCounterFeatureType::
         kPermissionsPolicyViolationEnforce:
+    case mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader:
+    case mojom::blink::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
       // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
       // gathering.
       return;

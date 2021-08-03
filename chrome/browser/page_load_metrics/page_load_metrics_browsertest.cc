@@ -1789,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, UseCounterFeaturesInIframe) {
 // Test UseCounter Features observed in multiple child frames are recorded,
 // exactly once per feature.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       UseCounterFeaturesInIframes) {
+                       UseCounterFeaturesInMultipleIframes) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1856,7 +1856,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 // Test UseCounter CSS Properties observed in multiple child frames are
 // recorded, exactly once per feature.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       UseCounterCSSPropertiesInIframes) {
+                       UseCounterCSSPropertiesInMultipleIframes) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1907,7 +1907,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 // Test UseCounter CSS Properties observed in multiple child frames are
 // recorded, exactly once per feature.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       UseCounterAnimatedCSSPropertiesInIframes) {
+                       UseCounterAnimatedCSSPropertiesInMultipleIframes) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1944,6 +1944,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
+// Test UseCounter Permissions Policy Usages in main frame.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                        UseCounterPermissionsPolicyUsageInMainFrame) {
   auto test_feature = static_cast<blink::UseCounterFeature::EnumValue>(
@@ -1964,8 +1965,12 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   histogram_tester_->ExpectBucketCount(
       internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyHeaderHistogramName, test_feature, 1);
 }
 
+// Test UseCounter Permissions Policy Usages observed in child frame
+// are recorded, exactly once per feature.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                        UseCounterPermissionsPolicyUsageInIframe) {
   auto test_feature = static_cast<blink::UseCounterFeature::EnumValue>(
@@ -1986,10 +1991,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   histogram_tester_->ExpectBucketCount(
       internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyHeaderHistogramName, test_feature, 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyIframeAttributeHistogramName, test_feature,
+      1);
 }
 
+// Test UseCounter Permissions Policy Usages observed in multiple child frames
+// are recorded, exactly once per feature.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       UseCounterPermissionsPolicyUsageInIframes) {
+                       UseCounterPermissionsPolicyUsageInMultipleIframes) {
   auto test_feature = static_cast<blink::UseCounterFeature::EnumValue>(
       blink::mojom::PermissionsPolicyFeature::kFullscreen);
 
@@ -2009,6 +2021,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   histogram_tester_->ExpectBucketCount(
       internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyHeaderHistogramName, test_feature, 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kPermissionsPolicyIframeAttributeHistogramName, test_feature,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, LoadingMetrics) {

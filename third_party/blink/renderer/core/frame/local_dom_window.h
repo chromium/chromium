@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -194,6 +195,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Count |feature| only when this window is associated with a cross-site
   // iframe. A "site" is a scheme and registrable domain.
   void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature);
+
+  // Count permissions policy feature usage through use counter.
+  void CountPermissionsPolicyUsage(
+      mojom::blink::PermissionsPolicyFeature feature,
+      UseCounterImpl::PermissionsPolicyUsageType type);
 
   Document* InstallNewDocument(const DocumentInit&);
 
@@ -459,12 +465,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Return the viewport size including scrollbars.
   IntSize GetViewportSize() const;
-
-  // Count feature disabled by Permissions Policy through use counter.
-  // The method is marked const as its caller |ReportPermissionsPolicyViolation|
-  // is marked const.
-  void CountPermissionsPolicyViolation(
-      mojom::blink::PermissionsPolicyFeature feature) const;
 
   Member<ScriptController> script_controller_;
 

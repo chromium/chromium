@@ -74,6 +74,8 @@ UseCounterPageLoadMetricsObserver::OnCommit(
   DCHECK_EQ(css_properties_recorded_.count(), 0ul);
   DCHECK_EQ(animated_css_properties_recorded_.count(), 0ul);
   DCHECK_EQ(violated_permissions_policy_features_recorded_.count(), 0ul);
+  DCHECK_EQ(iframe_permissions_policy_features_recorded_, 0ul);
+  DCHECK_EQ(header_permissions_policy_features_recorded_, 0ul);
 
   content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
 
@@ -194,6 +196,23 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
       UMA_HISTOGRAM_ENUMERATION(
           internal::kPermissionsPolicyViolationHistogramName,
           static_cast<PermissionsPolicyFeature>(feature.value()));
+      break;
+    case FeatureType::kPermissionsPolicyHeader:
+      if (TestAndSet(header_permissions_policy_features_recorded_,
+                     feature.value()))
+        return;
+      UMA_HISTOGRAM_ENUMERATION(
+          internal::kPermissionsPolicyHeaderHistogramName,
+          static_cast<PermissionsPolicyFeature>(feature.value()));
+      break;
+    case FeatureType::kPermissionsPolicyIframeAttribute:
+      if (TestAndSet(iframe_permissions_policy_features_recorded_,
+                     feature.value()))
+        return;
+      UMA_HISTOGRAM_ENUMERATION(
+          internal::kPermissionsPolicyIframeAttributeHistogramName,
+          static_cast<PermissionsPolicyFeature>(feature.value()));
+      break;
   }
 }
 

@@ -24,6 +24,10 @@ const char kAnimatedCssPropertiesHistogramName[] =
     "Blink.UseCounter.AnimatedCSSProperties";
 const char kPermissionsPolicyViolationHistogramName[] =
     "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
+const char kPermissionsPolicyHeaderHistogramName[] =
+    "Blink.UseCounter.PermissionsPolicy.Allow";
+const char kPermissionsPolicyIframeAttributeHistogramName[] =
+    "Blink.UseCounter.PermissionsPolicy.Header";
 
 }  // namespace internal
 
@@ -86,6 +90,14 @@ class UseCounterPageLoadMetricsObserver
                   blink::mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       violated_permissions_policy_features_recorded_;
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      iframe_permissions_policy_features_recorded_;
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      header_permissions_policy_features_recorded_;
   DISALLOW_COPY_AND_ASSIGN(UseCounterPageLoadMetricsObserver);
 };
 

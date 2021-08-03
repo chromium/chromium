@@ -438,8 +438,10 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
     mojom::blink::PermissionsPolicyFeature feature,
     mojom::blink::PolicyDisposition disposition,
     const String& message) const {
-  if (disposition == mojom::blink::PolicyDisposition::kEnforce)
-    CountPermissionsPolicyViolation(feature);
+  if (disposition == mojom::blink::PolicyDisposition::kEnforce) {
+    const_cast<LocalDOMWindow*>(this)->CountPermissionsPolicyUsage(
+        feature, UseCounterImpl::PermissionsPolicyUsageType::kViolation);
+  }
 
   if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled(this))
     return;
@@ -600,13 +602,14 @@ void LocalDOMWindow::CountUse(mojom::WebFeature feature) {
     loader->CountUse(feature);
 }
 
-void LocalDOMWindow::CountPermissionsPolicyViolation(
-    mojom::blink::PermissionsPolicyFeature feature) const {
+void LocalDOMWindow::CountPermissionsPolicyUsage(
+    mojom::blink::PermissionsPolicyFeature feature,
+    UseCounterImpl::PermissionsPolicyUsageType type) {
   if (!GetFrame())
     return;
   if (auto* loader = GetFrame()->Loader().GetDocumentLoader()) {
-    loader->GetUseCounter().CountPermissionsPolicyViolation(feature,
-                                                            *GetFrame());
+    loader->GetUseCounter().CountPermissionsPolicyUsage(feature, type,
+                                                        *GetFrame());
   }
 }
 

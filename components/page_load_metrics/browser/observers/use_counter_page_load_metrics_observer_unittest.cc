@@ -33,6 +33,10 @@ const char* GetUseCounterHistogramName(
       return internal::kAnimatedCssPropertiesHistogramName;
     case FeatureType::kPermissionsPolicyViolationEnforce:
       return internal::kPermissionsPolicyViolationHistogramName;
+    case FeatureType::kPermissionsPolicyHeader:
+      return internal::kPermissionsPolicyHeaderHistogramName;
+    case FeatureType::kPermissionsPolicyIframeAttribute:
+      return internal::kPermissionsPolicyIframeAttributeHistogramName;
   }
 }
 

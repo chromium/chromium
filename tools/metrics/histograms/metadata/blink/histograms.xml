@@ -3019,7 +3019,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>feature-control@chromium.org</owner>
   <summary>
     Counts the use of a specific feature policy via the &quot;allow&quot;
-    attribute. Each policy is counted only once per page load.
+    attribute. Each policy is counted only once per document load.
   </summary>
 </histogram>
 
@@ -3142,6 +3142,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This histogram counts usage of web features in main frame only. Refer to
     Blink.UseCounter.Features for more details.
   </details>
+</histogram>
+
+<histogram name="Blink.UseCounter.PermissionsPolicy.Allow"
+    enum="FeaturePolicyFeature" expires_after="2022-05-30">
+  <owner>iclelland@chromium.org</owner>
+  <owner>feature-control@chromium.org</owner>
+  <summary>
+    Counts the use of a specific permissions policy feature via the
+    &quot;allow&quot; attribute on iframes. Each policy is counted only once per
+    page load.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.PermissionsPolicy.Header"
+    enum="FeaturePolicyFeature" expires_after="2022-05-30">
+  <owner>iclelland@chromium.org</owner>
+  <owner>feature-control@chromium.org</owner>
+  <summary>
+    Counts the use of a specific permissions policy feature via both
+    &quot;Feature-Policy&quot; and &quot;Permissions-Policy&quot; HTTP response
+    header. Each policy is counted only once per page load.
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Violation.Enforce"
