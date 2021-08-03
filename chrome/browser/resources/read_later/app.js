@@ -218,11 +218,14 @@ export class ReadLaterAppElement extends PolymerElement {
    * @private
    */
   getCurrentPageActionButtonIcon_(addIcon, removeIcon) {
-    if (this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kRemove) {
-      return removeIcon;
+    switch (this.currentPageActionButtonState_) {
+      case readLater.mojom.CurrentPageActionButtonState.kAdd:
+        return addIcon;
+      case readLater.mojom.CurrentPageActionButtonState.kRemove:
+      case readLater.mojom.CurrentPageActionButtonState.kDisabled:
+      default:
+        return removeIcon;
     }
-    return addIcon;
   }
 
   /**
