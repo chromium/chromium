@@ -608,6 +608,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantHotwordEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [chromeos::assistant::prefs::kAssistantVoiceMatchEnabledDuringOobe] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantLaunchWithMicOpen] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantNotificationEnabled] =

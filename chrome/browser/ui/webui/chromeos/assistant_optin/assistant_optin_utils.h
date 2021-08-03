@@ -87,7 +87,8 @@ void RecordActivityControlConsent(
 
 bool IsHotwordDspAvailable();
 
-bool IsVoiceMatchEnforcedOff(const PrefService* prefs);
+bool IsVoiceMatchEnforcedOff(const PrefService* prefs,
+                             bool is_oobe_in_progress);
 
 sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
 GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
