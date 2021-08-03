@@ -286,7 +286,7 @@ const NGOffsetMappingUnit* NGOffsetMapping::GetMappingUnitForPosition(
   const unsigned offset = node_and_offset.second;
   unsigned range_start;
   unsigned range_end;
-  std::tie(range_start, range_end) = ranges_.at(&node);
+  std::tie(range_start, range_end) = ranges_.DeprecatedAtOrEmptyValue(&node);
   if (range_start == range_end || units_[range_start].DOMStart() > offset)
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
