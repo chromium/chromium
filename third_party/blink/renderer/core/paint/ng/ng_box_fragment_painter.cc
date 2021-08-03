@@ -1207,6 +1207,20 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
     paint_info.context.EndLayer();
 }
 
+void NGBoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
+    NGInlineCursor* children,
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset) {
+  for (; *children; children->MoveToNext()) {
+    const NGFragmentItem* item = children->Current().Item();
+    if (item->Type() != NGFragmentItem::kBox)
+      continue;
+    const NGPhysicalBoxFragment* fragment = item->BoxFragment();
+    if (fragment && fragment->IsBlockInInline())
+      PaintBoxItem(*item, *fragment, *children, paint_info, paint_offset);
+  }
+}
+
 void NGBoxFragmentPainter::PaintColumnRules(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
@@ -1454,10 +1468,14 @@ void NGBoxFragmentPainter::PaintLineBoxChildren(
       paint_info.phase != PaintPhase::kTextClip &&
       paint_info.phase != PaintPhase::kMask &&
       paint_info.phase != PaintPhase::kDescendantOutlinesOnly &&
-      paint_info.phase != PaintPhase::kOutline &&
+      paint_info.phase != PaintPhase::kOutline) {
+    if (UNLIKELY(ShouldPaintDescendantBlockBackgrounds(paint_info.phase))) {
       // When block-in-inline, block backgrounds need to be painted.
-      !ShouldPaintDescendantBlockBackgrounds(paint_info.phase))
+      PaintBoxDecorationBackgroundForBlockInInline(children, paint_info,
+                                                   paint_offset);
+    }
     return;
+  }
 
   // The only way an inline could paint like this is if it has a layer.
   const auto* layout_object = box_fragment_.GetLayoutObject();

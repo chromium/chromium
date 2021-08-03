@@ -116,6 +116,11 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                             const PhysicalRect& paint_rect,
                                             const DisplayItemClient&);
 
+  void PaintBoxDecorationBackgroundForBlockInInline(
+      NGInlineCursor* children,
+      const PaintInfo&,
+      const PhysicalOffset& paint_offset);
+
   void PaintColumnRules(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   void PaintInternal(const PaintInfo&);

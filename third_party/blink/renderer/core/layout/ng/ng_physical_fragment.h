@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
@@ -124,6 +125,10 @@ class CORE_EXPORT NGPhysicalFragment
   // replaced elements.
   bool IsAtomicInline() const {
     return IsBox() && BoxType() == NGBoxType::kAtomicInline;
+  }
+  bool IsBlockInInline() const {
+    return IsBox() && BoxType() == NGBoxType::kNormalBox && GetLayoutObject() &&
+           IsA<LayoutInline>(GetLayoutObject()->Parent());
   }
   // True if this fragment is in-flow in an inline formatting context.
   bool IsInline() const { return IsInlineBox() || IsAtomicInline(); }
