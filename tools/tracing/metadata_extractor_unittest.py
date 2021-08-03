@@ -216,9 +216,10 @@ class ExtractMetadataTestCase(unittest.TestCase):
 
     self.assertEqual(extractor.os_name, OSName.LINUX)
 
-  def testParseOSNameMac(self):
+  def testParseMac64(self):
     def side_effect(*args):
-      params = self._CreateRunQueryResultsFromValues(os_name='Mac OS X')
+      params = self._CreateRunQueryResultsFromValues(
+          os_name='Mac OS X', version_number='Chrome/28.9.9364.32-64')
       return params[args]
 
     extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
@@ -226,6 +227,7 @@ class ExtractMetadataTestCase(unittest.TestCase):
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
+    self.assertEqual(extractor.version_number, '28.9.9364.32')
     self.assertEqual(extractor.os_name, OSName.MAC)
 
   def testParseOSNameWindows(self):

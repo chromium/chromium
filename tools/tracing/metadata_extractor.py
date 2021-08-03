@@ -105,6 +105,9 @@ class MetadataExtractor:
       self.version_number = version_number.split('/')[1]
     else:
       self.version_number = version_number
+    # Mac 64 traces add '-64' after the version number.
+    if self.version_number is not None and self.version_number.endswith('-64'):
+      self.version_number = self.version_number[:-3]
 
     raw_os_name = self._GetStringValueFromQuery(OS_NAME_QUERY)
     self.os_name = self._ParseOSName(raw_os_name)
