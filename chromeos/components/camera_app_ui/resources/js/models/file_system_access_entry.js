@@ -8,39 +8,14 @@ import {assert} from '../chrome_util.js';
 import {AsyncWriter} from './async_writer.js';
 
 /**
- * The file system entry implementation for SWA.
- */
-export class FileSystemAccessEntry {
-  /**
-   * @param {!FileSystemHandle} handle
-   */
-  constructor(handle) {
-    /**
-     * @type {!FileSystemHandle}
-     * @private
-     */
-    this.handle_ = handle;
-  }
-
-  /**
-   * @return {string}
-   */
-  get name() {
-    return this.handle_.name;
-  }
-}
-
-/**
  * The file entry implementation for SWA.
  */
-export class FileAccessEntry extends FileSystemAccessEntry {
+export class FileAccessEntry {
   /**
    * @param {!FileSystemFileHandle} handle
    * @param {?DirectoryAccessEntryImpl} parent
    */
   constructor(handle, parent = null) {
-    super(handle);
-
     /**
      * @type {!FileSystemFileHandle}
      * @private
@@ -111,6 +86,13 @@ export class FileAccessEntry extends FileSystemAccessEntry {
       throw new Error('Failed to delete file due to no parent directory');
     }
     return this.parent_.removeEntry(this.name);
+  }
+
+  /**
+   * @return {string}
+   */
+  get name() {
+    return this.handle_.name;
   }
 }
 
@@ -199,14 +181,12 @@ export class DirectoryAccessEntry {
  * The directory entry implementation for SWA.
  * @implements {DirectoryAccessEntry}
  */
-export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
+export class DirectoryAccessEntryImpl {
   /**
    * @param {!FileSystemDirectoryHandle} handle
    * @param {?DirectoryAccessEntryImpl} parent
    */
   constructor(handle, parent = null) {
-    super(handle);
-
     /**
      * @type {!FileSystemDirectoryHandle}
      * @private
@@ -224,23 +204,33 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
    * @override
    */
   get name() {
-    return this.name;
+    return this.handle_.name;
   }
 
   /**
    * @override
    */
   async getFiles() {
-    return /** @type {!Array<!FileAccessEntry>} */ (
-        await this.getHandles_({isDirectory: false}));
+    const results = [];
+    for await (const handle of this.handle_.values()) {
+      if (handle.kind === 'file') {
+        results.push(new FileAccessEntry(handle, this));
+      }
+    }
+    return results;
   }
 
   /**
    * @override
    */
   async getDirectories() {
-    return /** @type {!Array<!DirectoryAccessEntry>} */ (
-        await this.getHandles_({isDirectory: true}));
+    const results = [];
+    for await (const handle of this.handle_.values()) {
+      if (handle.kind === 'directory') {
+        results.push(new DirectoryAccessEntryImpl(handle, this));
+      }
+    }
+    return results;
   }
 
   /**
@@ -308,23 +298,5 @@ export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
    */
   async removeEntry(name) {
     return this.handle_.removeEntry(name);
-  }
-
-  /**
-   * Gets the file handles in this directory if |isDirectory| is set to false.
-   * If |isDirectory| is true, gets the directory entries instead.
-   * @param {{isDirectory: boolean}} params
-   * @return {!Promise<!Array<!FileSystemAccessEntry>>}
-   */
-  async getHandles_({isDirectory}) {
-    const results = [];
-    for await (const handle of this.handle_.values()) {
-      if (isDirectory && handle.kind === 'directory') {
-        results.push(new DirectoryAccessEntryImpl(handle, this));
-      } else if (!isDirectory && handle.kind === 'file') {
-        results.push(new FileAccessEntry(handle, this));
-      }
-    }
-    return results;
   }
 }
