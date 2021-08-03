@@ -17,7 +17,6 @@
 #include "components/variations/variations_associated_data.h"
 #include "ios/chrome/browser/notification_promo.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/public/provider/chrome/browser/images/branded_image_icon_types.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -93,7 +92,7 @@ class NotificationPromoWhatsNewTest : public PlatformTest {
                 const std::string& promo_type,
                 const std::string& url,
                 const std::string& command,
-                WhatsNewIcon icon,
+                NotificationPromoWhatsNew::IconType icon_type,
                 bool valid) {
     EXPECT_EQ(promo_text, promo_.promo_text());
     EXPECT_EQ(promo_type, promo_.promo_type());
@@ -103,9 +102,9 @@ class NotificationPromoWhatsNewTest : public PlatformTest {
       EXPECT_EQ(command, promo_.command());
 
     EXPECT_EQ(valid, promo_.CanShow());
-    // |icon()| is set only if the promo is valid.
+    // |icon_type()| is set only if the promo is valid.
     if (valid)
-      EXPECT_EQ(icon, promo_.icon());
+      EXPECT_EQ(icon_type, promo_.icon_type());
   }
 
   void OnUserAction(const std::string& user_action,
@@ -130,7 +129,8 @@ TEST_F(NotificationPromoWhatsNewTest, NotificationPromoCommandTest) {
        "testWhatsNewCommand", "0", "chrome_command", "", kTestWhatsNewCommand,
        "TestWhatsNewMetric", "logo", "0", "0");
   RunTests(std::string(kTestWhatsNewMessage), "chrome_command", "",
-           kTestWhatsNewCommand, WHATS_NEW_LOGO, true);
+           kTestWhatsNewCommand, NotificationPromoWhatsNew::kIconTypeLogo,
+           true);
 }
 
 // Test that a url-based, valid promo is shown with the correct text and icon.
@@ -138,7 +138,8 @@ TEST_F(NotificationPromoWhatsNewTest, NotificationPromoURLTest) {
   Init("3 Aug 1999 9:26:06 GMT", "3 Aug 2199 9:26:06 GMT", "moveToDockTip", "0",
        "url", "http://blog.chromium.org", "", "TestURLPromo", "", "0", "0");
   RunTests(l10n_util::GetStringUTF8(IDS_IOS_MOVE_TO_DOCK_TIP), "url",
-           "http://blog.chromium.org/", "", WHATS_NEW_INFO, true);
+           "http://blog.chromium.org/", "",
+           NotificationPromoWhatsNew::kIconTypeInfo, true);
 }
 
 // Test that a promo without a valid promo type is not shown.

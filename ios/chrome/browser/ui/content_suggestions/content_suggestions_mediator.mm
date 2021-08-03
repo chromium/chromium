@@ -52,7 +52,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -409,9 +408,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     if (_notificationPromo->CanShow()) {
       ContentSuggestionsWhatsNewItem* item =
           [[ContentSuggestionsWhatsNewItem alloc] initWithType:0];
-      item.icon = ios::GetChromeBrowserProvider()
-                      .GetBrandedImageProvider()
-                      ->GetWhatsNewIconImage(_notificationPromo->icon());
+      item.icon = _notificationPromo->GetIcon();
       item.text = base::SysUTF8ToNSString(_notificationPromo->promo_text());
       [convertedSuggestions addObject:item];
     }

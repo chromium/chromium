@@ -8,9 +8,10 @@
 #include <string>
 #include <vector>
 
+#import <UIKit/UIKit.h>
+
 #include "base/macros.h"
 #include "ios/chrome/browser/notification_promo.h"
-#include "ios/public/provider/chrome/browser/images/branded_image_icon_types.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -27,6 +28,12 @@ extern const char kSetDefaultBrowserCommand[];
 // Helper class for NotificationPromo that deals with mobile_ntp promos.
 class NotificationPromoWhatsNew {
  public:
+  enum IconType {
+    kIconTypeInfo,
+    kIconTypeLogo,
+    kIconTypeLogoRoundedRectangle,
+  };
+
   explicit NotificationPromoWhatsNew(PrefService* local_state);
   ~NotificationPromoWhatsNew();
 
@@ -49,7 +56,8 @@ class NotificationPromoWhatsNew {
   bool valid() const { return valid_; }
   const std::string& promo_type() { return promo_type_; }
   const std::string& promo_text() { return promo_text_; }
-  WhatsNewIcon icon() { return icon_; }
+  UIImage* GetIcon() const;
+  IconType icon_type() const { return icon_type_; }
   bool IsURLPromo() const;
   const GURL& url() { return url_; }
   bool IsChromeCommandPromo() const;
@@ -73,10 +81,10 @@ class NotificationPromoWhatsNew {
                        const std::string& icon);
 
   // Prefs service for promos.
-  PrefService* local_state_;
+  PrefService* local_state_ = nullptr;
 
   // True if InitFromPrefs/JSON was called and all mandatory fields were found.
-  bool valid_;
+  bool valid_ = false;
 
   // Text of promo.
   std::string promo_text_;
@@ -85,15 +93,15 @@ class NotificationPromoWhatsNew {
   std::string promo_type_;
 
   // Icon of promo.
-  WhatsNewIcon icon_;
+  IconType icon_type_ = kIconTypeInfo;
 
   // The minimum number of seconds from installation before promo can be valid.
   // E.g. Don't show the promo if installation was within N days.
-  int seconds_since_install_;
+  int seconds_since_install_ = 0;
 
   // The duration after installation that the promo can be valid.
   // E.g. Don't show the promo if installation was more than N days ago.
-  int max_seconds_since_install_;
+  int max_seconds_since_install_ = 0;
 
   // If promo type is 'url'.
   GURL url_;
@@ -106,9 +114,6 @@ class NotificationPromoWhatsNew {
 
   // The lower-level notification promo.
   ios::NotificationPromo notification_promo_;
-
-  // Convert an icon name string to WhatsNewIcon.
-  WhatsNewIcon ParseIconName(const std::string& icon_name);
 
   DISALLOW_COPY_AND_ASSIGN(NotificationPromoWhatsNew);
 };

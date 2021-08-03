@@ -18,8 +18,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -505,9 +504,8 @@ NSString* GetSizeString(long long size_in_bytes) {
   if (!_installDriveIcon) {
     _installDriveIcon = [[UIImageView alloc] initWithFrame:CGRectZero];
     _installDriveIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    _installDriveIcon.image = ios::GetChromeBrowserProvider()
-                                  .GetBrandedImageProvider()
-                                  ->GetDownloadGoogleDriveImage();
+    _installDriveIcon.image = ios::provider::GetBrandedImage(
+        ios::provider::BrandedImage::kDownloadGoogleDrive);
   }
   return _installDriveIcon;
 }

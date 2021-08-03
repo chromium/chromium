@@ -9,12 +9,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -25,7 +27,10 @@
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,6 +67,43 @@ std::string GetLocalizedPromoText(const std::string& promo_text) {
   return std::string();
 }
 
+// Convert an icon name string to an IconType.
+NotificationPromoWhatsNew::IconType IconNameToIconType(
+    const std::string& icon_name) {
+  if (icon_name == "logo") {
+    return NotificationPromoWhatsNew::kIconTypeLogo;
+  }
+
+  if (icon_name == "logoWithRoundedRectangle") {
+    return NotificationPromoWhatsNew::kIconTypeLogoRoundedRectangle;
+  }
+
+  return NotificationPromoWhatsNew::kIconTypeInfo;
+}
+
+// Convert an icon type to an UIImage*.
+UIImage* IconTypeToUIImage(NotificationPromoWhatsNew::IconType icon_type) {
+  switch (icon_type) {
+    case NotificationPromoWhatsNew::kIconTypeInfo: {
+      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+      return rb.GetNativeImageNamed(IDR_IOS_PROMO_INFO).ToUIImage();
+    }
+
+    case NotificationPromoWhatsNew::kIconTypeLogo: {
+      return ios::provider::GetBrandedImage(
+          ios::provider::BrandedImage::kWhatsNewLogo);
+    }
+
+    case NotificationPromoWhatsNew::kIconTypeLogoRoundedRectangle: {
+      return ios::provider::GetBrandedImage(
+          ios::provider::BrandedImage::kWhatsNewLogoRoundedRectangle);
+    }
+  }
+
+  NOTREACHED();
+  return nil;
+}
+
 }  // namespace
 
 // The What's New promo command for testing.
@@ -72,9 +114,9 @@ const char kTestWhatsNewMessage[] =
 const char kSetDefaultBrowserCommand[] = "openSettings";
 
 NotificationPromoWhatsNew::NotificationPromoWhatsNew(PrefService* local_state)
-    : local_state_(local_state),
-      valid_(false),
-      notification_promo_(local_state_) {}
+    : local_state_(local_state), notification_promo_(local_state_) {
+  DCHECK(local_state_);
+}
 
 NotificationPromoWhatsNew::~NotificationPromoWhatsNew() {}
 
@@ -185,22 +227,16 @@ void NotificationPromoWhatsNew::HandleClosed() {
   notification_promo_.HandleClosed();
 }
 
+UIImage* NotificationPromoWhatsNew::GetIcon() const {
+  return IconTypeToUIImage(icon_type_);
+}
+
 bool NotificationPromoWhatsNew::IsURLPromo() const {
   return promo_type_ == "url";
 }
 
 bool NotificationPromoWhatsNew::IsChromeCommandPromo() const {
   return promo_type_ == "chrome_command";
-}
-
-WhatsNewIcon NotificationPromoWhatsNew::ParseIconName(
-    const std::string& icon_name) {
-  if (icon_name == "logo") {
-    return WHATS_NEW_LOGO;
-  } else if (icon_name == "logoWithRoundedRectangle") {
-    return WHATS_NEW_LOGO_ROUNDED_RECTANGLE;
-  }
-  return WHATS_NEW_INFO;
 }
 
 bool NotificationPromoWhatsNew::InitFromNotificationPromo() {
@@ -250,7 +286,7 @@ bool NotificationPromoWhatsNew::InitFromNotificationPromo() {
   // Optional values don't need validation.
   const std::string* icon_name =
       notification_promo_.promo_payload().FindStringKey("icon");
-  icon_ = ParseIconName(icon_name ? *icon_name : std::string());
+  icon_type_ = IconNameToIconType(icon_name ? *icon_name : std::string());
 
   seconds_since_install_ = notification_promo_.promo_payload()
                                .FindIntKey("seconds_since_install")

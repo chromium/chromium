@@ -63,8 +63,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -546,9 +545,9 @@ static NSDictionary* _imageNamesByItemTypes = @{
 }
 
 - (TableViewLinkHeaderFooterItem*)footerGoogleAccountAndMyActivityItem {
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       .GetBrandedImageProvider()
-                       ->GetClearBrowsingDataAccountActivityImage();
+  UIImage* image = ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kClearBrowsingDataAccountActivity);
+
   return [self
       footerItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY
@@ -557,9 +556,9 @@ static NSDictionary* _imageNamesByItemTypes = @{
 }
 
 - (TableViewLinkHeaderFooterItem*)footerSavedSiteDataItem {
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       .GetBrandedImageProvider()
-                       ->GetClearBrowsingDataSiteDataImage();
+  UIImage* image = ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kClearBrowsingDataSiteData);
+
   return [self
       footerItemWithType:ItemTypeFooterSavedSiteData
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SAVED_SITE_DATA
