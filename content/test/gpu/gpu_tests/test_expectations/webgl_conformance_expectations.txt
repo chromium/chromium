@@ -450,6 +450,7 @@ crbug.com/1203167 [ mac amd angle-opengl ] conformance/extensions/oes-texture-fl
 crbug.com/1203167 [ mac amd angle-metal ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1230781 [ mac amd-0x6821 ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/1236072 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
