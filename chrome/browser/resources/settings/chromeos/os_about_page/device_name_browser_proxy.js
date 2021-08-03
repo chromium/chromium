@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
@@ -11,10 +11,10 @@
  *   deviceName: string,
  * }}
  */
-/* #export */ let DeviceNameMetadata;
+export let DeviceNameMetadata;
 
 /** @interface */
-/* #export */ class DeviceNameBrowserProxy {
+export class DeviceNameBrowserProxy {
   /**
    * Queries the system for metadata about the device name.
    * @return {!Promise<!DeviceNameMetadata>}
@@ -25,13 +25,13 @@
 /**
  * @implements {DeviceNameBrowserProxy}
  */
-/* #export */ class DeviceNameBrowserProxyImpl {
+export class DeviceNameBrowserProxyImpl {
   /** @override */
   getDeviceNameMetadata() {
-    return cr.sendWithPromise('getDeviceNameMetadata');
+    return sendWithPromise('getDeviceNameMetadata');
   }
 }
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-cr.addSingletonGetter(DeviceNameBrowserProxyImpl);
+addSingletonGetter(DeviceNameBrowserProxyImpl);
