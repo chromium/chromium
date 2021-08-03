@@ -723,6 +723,8 @@ static_library("browser") {
     "media/webrtc/native_desktop_media_list.h",
     "media/webrtc/permission_bubble_media_access_handler.cc",
     "media/webrtc/permission_bubble_media_access_handler.h",
+    "media/webrtc/same_origin_observer.cc",
+    "media/webrtc/same_origin_observer.h",
     "media/webrtc/webrtc_event_log_history.cc",
     "media/webrtc/webrtc_event_log_history.h",
     "media/webrtc/webrtc_event_log_manager.cc",
