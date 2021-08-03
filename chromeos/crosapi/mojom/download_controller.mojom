@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // This mirrors `download::DownloadItem::DownloadState`, anything added or
 // removed here must also be added or removed there.
@@ -24,7 +25,7 @@ enum DownloadState {
 // non-nullable `field`. This is for backwards compatibility, so that older
 // clients know when values are present or are absent by default.
 //
-// Next MinVersion: 2
+// Next MinVersion: 3
 // Next ID: 13
 [Stable, RenamedFrom="crosapi.mojom.DownloadEvent"]
 struct DownloadItem {
@@ -41,12 +42,20 @@ struct DownloadItem {
   [MinVersion=1] int64 received_bytes@10;
   [MinVersion=1] bool has_total_bytes@11;
   [MinVersion=1] int64 total_bytes@12;
+  [MinVersion=2] mojo_base.mojom.Time? start_time@13;
 };
 
 // A client implemented in lacros-chrome for the DownloadController which is
 // implemented in ash-chrome.
+//
+// Next MinVersion: 2
+// Next ID: 6
 [Stable, Uuid="eccf720b-538a-4943-a6fd-d073639c4140"]
 interface DownloadControllerClient {
+  // Returns all downloads, no matter the type or state, sorted chronologically
+  // by start time. This method will ultimately invoke
+  // `download::SimpleDownloadManager::GetAllDownloads()`.
+  [MinVersion=1] GetAllDownloads@5() => (array<DownloadItem> downloads);
 
   // Pauses the download associated with the specified `download_guid`. This
   // method will ultimately invoke `download::DownloadItem::Pause()`.

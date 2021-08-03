@@ -48,6 +48,12 @@ class DownloadControllerAsh : public mojom::DownloadController {
   void AddObserver(DownloadControllerObserver* observer);
   void RemoveObserver(DownloadControllerObserver* observer);
 
+  // Asynchronously returns all downloads from each Lacros client via the
+  // specified `callback`, no matter the type or state. Downloads are sorted
+  // chronologically by start time.
+  void GetAllDownloads(
+      mojom::DownloadControllerClient::GetAllDownloadsCallback callback);
+
   // Pauses the download associated with the specified `download_guid`. This
   // method will ultimately invoke `download::DownloadItem::Pause()`.
   void Pause(const std::string& download_guid);

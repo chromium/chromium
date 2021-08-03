@@ -63,6 +63,7 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
   mojo_download_item->has_received_bytes = true;
   mojo_download_item->total_bytes = item->GetTotalBytes();
   mojo_download_item->has_total_bytes = true;
+  mojo_download_item->start_time = item->GetStartTime();
 
   // NOTE: `browser_context` may be `nullptr` in tests.
   auto* browser_context = content::DownloadItemUtils::GetBrowserContext(item);

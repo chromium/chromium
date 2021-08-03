@@ -42,6 +42,9 @@ class DownloadControllerClientLacros
   class ObservableDownloadManager;
 
   // crosapi::mojom::DownloadControllerClient:
+  void GetAllDownloads(
+      crosapi::mojom::DownloadControllerClient::GetAllDownloadsCallback
+          callback) override;
   void Pause(const std::string& download_guid) override;
   void Resume(const std::string& download_guid, bool user_resume) override;
   void Cancel(const std::string& download_guid, bool user_cancel) override;

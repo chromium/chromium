@@ -52,6 +52,7 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
   download->has_received_bytes = true;
   download->total_bytes = item->GetTotalBytes();
   download->has_total_bytes = true;
+  download->start_time = item->GetStartTime();
   return download;
 }
 
@@ -75,6 +76,13 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   }
 
   ~ObservableDownloadManager() override = default;
+
+  // Returns all downloads, no matter the type or state.
+  std::vector<download::DownloadItem*> GetAllDownloads() {
+    download::SimpleDownloadManager::DownloadVector downloads;
+    manager_->GetAllDownloads(&downloads);
+    return downloads;
+  }
 
   // Pauses the download associated with the specified `download_guid`.
   void Pause(const std::string& download_guid) {
@@ -202,6 +210,27 @@ DownloadControllerClientLacros::DownloadControllerClientLacros() {
 DownloadControllerClientLacros::~DownloadControllerClientLacros() {
   if (g_browser_process && g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
+}
+
+void DownloadControllerClientLacros::GetAllDownloads(
+    crosapi::mojom::DownloadControllerClient::GetAllDownloadsCallback
+        callback) {
+  std::vector<crosapi::mojom::DownloadItemPtr> downloads;
+
+  // Aggregate all downloads.
+  for (auto& observable_download_manager : observable_download_managers_) {
+    for (auto* download : observable_download_manager->GetAllDownloads())
+      downloads.push_back(ConvertToMojoDownloadItem(download));
+  }
+
+  // Sort chronologically by start time.
+  std::sort(downloads.begin(), downloads.end(),
+            [](const auto& a, const auto& b) {
+              return a->start_time.value_or(base::Time()) <
+                     b->start_time.value_or(base::Time());
+            });
+
+  std::move(callback).Run(std::move(downloads));
 }
 
 void DownloadControllerClientLacros::Pause(const std::string& download_guid) {

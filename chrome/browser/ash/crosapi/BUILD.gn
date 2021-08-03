@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "browser_loader_unittest.cc",
     "browser_manager_unittest.cc",
     "browser_util_unittest.cc",
+    "download_controller_ash_unittest.cc",
     "keystore_service_ash_unittest.cc",
     "local_printer_ash_unittest.cc",
     "message_center_ash_unittest.cc",
