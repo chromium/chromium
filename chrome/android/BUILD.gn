@@ -2737,23 +2737,40 @@ jinja_template("chrome_public_test_vr_apk_manifest") {
   ]
 }
 
-jinja_template("monochrome_public_test_ar_apk_manifest") {
-  input = "javatests/AndroidManifest_monochrome.xml"
-  includes = [
-    "java/AndroidManifest.xml",
-    "java/AndroidManifest_monochrome.xml",
-    "javatests/AndroidManifest.xml",
-    "//android_webview/nonembedded/java/AndroidManifest.xml",
-  ]
+template("monochrome_public_test_ar_apk_manifest_tmpl") {
+  jinja_template(target_name) {
+    forward_variables_from(invoker, "*")
+    input = "javatests/AndroidManifest_monochrome.xml"
+    includes = [
+      "java/AndroidManifest.xml",
+      "java/AndroidManifest_monochrome.xml",
+      "javatests/AndroidManifest.xml",
+      "//android_webview/nonembedded/java/AndroidManifest.xml",
+    ]
+    variables = chrome_public_jinja_variables +
+                monochrome_android_manifest_jinja_variables +
+                [
+                  "target_sdk_version=$android_sdk_version",
+                  "test_manifest_package=$chrome_public_test_manifest_package",
+                  "webview_library=$webview_library_name",
+                  "include_arcore_manifest_flag=$enable_arcore",
+                ]
+  }
+}
+
+monochrome_public_test_ar_apk_manifest_tmpl(
+    "monochrome_public_test_ar_apk_manifest") {
   output = monochrome_public_test_ar_apk_manifest
-  variables = chrome_public_jinja_variables +
-              monochrome_android_manifest_jinja_variables +
-              [
-                "target_sdk_version=$android_sdk_version",
-                "test_manifest_package=$chrome_public_test_manifest_package",
-                "webview_library=libmonochrome.so",
-                "include_arcore_manifest_flag=$enable_arcore",
-              ]
+  webview_library_name = "libmonochrome.so"
+}
+
+if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+  monochrome_public_test_ar_64_apk_manifest = "$root_gen_dir/monochrome_public_test_ar_64_apk_manifest/AndroidManifest.xml"
+  monochrome_public_test_ar_apk_manifest_tmpl(
+      "monochrome_public_test_ar_64_apk_manifest") {
+    output = monochrome_public_test_ar_64_apk_manifest
+    webview_library_name = "libmonochrome_64.so"
+  }
 }
 
 template("chrome_test_apk_tmpl") {
@@ -2811,6 +2828,7 @@ template("monochrome_test_apk_tmpl") {
                              "data_deps",
                              "is_64_bit_browser",
                              "include_64_bit_webview",
+                             "include_32_bit_webview",
                              "loadable_modules",
                              "min_sdk_version",
                              "proguard_configs",
@@ -2927,14 +2945,21 @@ if (enable_vr) {
 if (enable_arcore) {
   monochrome_test_apk_tmpl("monochrome_public_test_ar_apk") {
     apk_name = "MonochromePublicTestAr"
-    android_manifest = monochrome_public_test_ar_apk_manifest
-    android_manifest_dep = ":monochrome_public_test_ar_apk_manifest"
     min_sdk_version = 24
     target_sdk_version = android_sdk_version
 
+    android_manifest = monochrome_public_test_ar_apk_manifest
+    android_manifest_dep = ":monochrome_public_test_ar_apk_manifest"
     if (android_64bit_target_cpu) {
-      is_64_bit_browser = false
-      include_64_bit_webview = true
+      if (skip_secondary_abi_for_cq) {
+        android_manifest = monochrome_public_test_ar_64_apk_manifest
+        android_manifest_dep = ":monochrome_public_test_ar_64_apk_manifest"
+        is_64_bit_browser = true
+        include_32_bit_webview = false
+      } else {
+        is_64_bit_browser = false
+        include_64_bit_webview = true
+      }
     }
 
     # This is where we would add the shared_libraries entry for
@@ -2964,9 +2989,13 @@ if (enable_arcore) {
                          "target_out_dir") + "/com_google_ar_core_java/jni"
 
     # We store this as a separate .so in the APK and only load as needed.
-    if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-      secondary_abi_loadable_modules =
-          [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
+    if (android_64bit_target_cpu) {
+      if (skip_secondary_abi_for_cq) {
+        loadable_modules = [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
+      } else {
+        secondary_abi_loadable_modules =
+            [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
+      }
     } else {
       loadable_modules = [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
     }

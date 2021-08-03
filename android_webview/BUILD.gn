@@ -19,6 +19,10 @@ import("//tools/resources/generate_resource_allowlist.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 
+if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
+  assert(current_toolchain != android_secondary_abi_toolchain)
+}
+
 if (enable_resource_allowlist_generation) {
   system_webview_pak_allowlist =
       "$target_gen_dir/system_webview_pak_allowlist.txt"
@@ -34,11 +38,18 @@ _verify_android_configuration =
 template("standalone_system_webview_apk_tmpl") {
   system_webview_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker, "*")
-    android_manifest = system_webview_android_manifest
-    android_manifest_dep =
-        "//android_webview/nonembedded:system_webview_manifest"
     deps = upstream_only_webview_deps
     min_sdk_version = 21
+    if (android_64bit_target_cpu && defined(include_32_bit_webview) &&
+        !include_32_bit_webview) {
+      android_manifest = system_webview_64_android_manifest
+      android_manifest_dep =
+          "//android_webview/nonembedded:system_webview_64_manifest"
+    } else {
+      android_manifest = system_webview_android_manifest
+      android_manifest_dep =
+          "//android_webview/nonembedded:system_webview_manifest"
+    }
   }
 }
 
@@ -172,9 +183,6 @@ if (android_64bit_target_cpu) {
 template("trichrome_webview_tmpl") {
   system_webview_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker, "*")
-    android_manifest = trichrome_webview_android_manifest
-    android_manifest_dep =
-        "//android_webview/nonembedded:trichrome_webview_manifest"
     min_sdk_version = 29
 
     deps = upstream_only_webview_deps
@@ -197,6 +205,9 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       is_64_bit_browser = false
       include_64_bit_webview = true
     }
+    android_manifest = trichrome_webview_android_manifest
+    android_manifest_dep =
+        "//android_webview/nonembedded:trichrome_webview_manifest"
     static_library_provider = "//chrome/android:trichrome_library_apk"
   }
 }
@@ -210,6 +221,9 @@ if (android_64bit_target_cpu) {
     }
     is_64_bit_browser = true
     include_32_bit_webview = false
+    android_manifest = trichrome_webview_64_android_manifest
+    android_manifest_dep =
+        "//android_webview/nonembedded:trichrome_webview_64_manifest"
     static_library_provider = "//chrome/android:trichrome_library_64_apk"
   }
 }
@@ -228,6 +242,10 @@ if (enable_webview_bundles) {
         is_64_bit_browser = false
         include_64_bit_webview = true
       }
+
+      android_manifest = trichrome_webview_android_manifest
+      android_manifest_dep =
+          "//android_webview/nonembedded:trichrome_webview_manifest"
 
       if (_verify_android_configuration) {
         expected_android_manifest =
@@ -260,6 +278,9 @@ if (enable_webview_bundles) {
       bundle_target = ":trichrome_webview_64_bundle"
       is_64_bit_browser = true
       include_32_bit_webview = false
+      android_manifest = trichrome_webview_64_android_manifest
+      android_manifest_dep =
+          "//android_webview/nonembedded:trichrome_webview_64_manifest"
       static_library_provider = "//chrome/android:trichrome_library_64_apk"
     }
   }
