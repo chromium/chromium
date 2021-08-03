@@ -123,7 +123,6 @@ if (is_linux) {
 
   cast_source_set("core_runtime") {
     sources = [
-      "cast_core_switches.h",
       "runtime_application_service.cc",
       "runtime_application_service.h",
       "runtime_service.cc",
@@ -174,6 +173,7 @@ cast_source_set("renderer") {
 
 cast_source_set("browser") {
   sources = [
+    "cast_core_switches.h",
     "cast_runtime_content_browser_client.cc",
     "cast_runtime_content_browser_client.h",
   ]
@@ -183,6 +183,7 @@ cast_source_set("browser") {
     "//base",
     "//chromecast/browser",
     "//chromecast/common:cors_exempt_headers",
+    "//media",
   ]
 
   if (chromecast_branding == "public") {

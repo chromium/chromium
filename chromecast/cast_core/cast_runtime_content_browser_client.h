@@ -27,6 +27,10 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       PrefService* pref_service,
       media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager) final;
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
+                           blink::web_pref::WebPreferences* prefs) override;
+  std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
+      ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
 };
 
 }  // namespace chromecast
