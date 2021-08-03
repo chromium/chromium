@@ -761,7 +761,7 @@ TEST_P(WaylandDataDragControllerTest,
     auto* surface =
         self->GetMockSurface(popup_window->root_surface()->GetSurfaceId());
     ASSERT_TRUE(surface);
-    EXPECT_NE(nullptr, surface->sub_surface());
+    EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
   };
 
   ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));

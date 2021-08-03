@@ -3101,6 +3101,9 @@ TEST_P(WaylandWindowTest, RepositionPopups) {
 
   VerifyAndClearExpectations();
 
+  const gfx::Rect damage_rect = {0, 0, menu_window_bounds.width(),
+                                 menu_window_bounds.height()};
+  EXPECT_CALL(delegate_, OnDamageRect(Eq(damage_rect))).Times(1);
   menu_window_bounds.set_origin({10, 10});
   menu_window->SetBounds(menu_window_bounds);
 

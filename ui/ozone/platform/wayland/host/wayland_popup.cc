@@ -127,11 +127,21 @@ void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
   if (shell_popup_ && old_bounds != bounds && !wayland_sets_bounds_) {
     const auto bounds_dip =
         wl::TranslateWindowBoundsToParentDIP(this, parent_window());
+
+    // If Wayland moved the popup (for example, a dnd arrow icon), schedule
+    // redraw as Aura doesn't do that for moved surfaces. If redraw has not been
+    // scheduled and a new buffer is not attached, some compositors may not
+    // apply a new state. And committing the surface without attaching a buffer
+    // won't make Wayland compositor apply these new bounds.
+    schedule_redraw_ = old_bounds.origin() != GetBounds().origin();
+
     // If ShellPopup doesn't support repositioning, the popup will be recreated
     // with new geometry applied. Availability of methods to move/resize popup
     // surfaces purely depends on a protocol. See implementations of ShellPopup
     // for more details.
     if (!shell_popup_->SetBounds(bounds_dip)) {
+      // Always force redraw for recreated objects.
+      schedule_redraw_ = true;
       // This will also close all the children windows...
       Hide();
       // ... and will result in showing them again starting with their parents.
@@ -190,6 +200,11 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
 }
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
+  if (schedule_redraw_) {
+    delegate()->OnDamageRect(gfx::Rect{{0, 0}, GetBounds().size()});
+    schedule_redraw_ = false;
+  }
+
   shell_popup()->AckConfigure(serial);
 }
 

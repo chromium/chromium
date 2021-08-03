@@ -63,8 +63,6 @@ source_set("wayland") {
     "host/shell_surface_wrapper.h",
     "host/shell_toplevel_wrapper.cc",
     "host/shell_toplevel_wrapper.h",
-    "host/wayland_auxiliary_window.cc",
-    "host/wayland_auxiliary_window.h",
     "host/wayland_buffer_manager_connector.cc",
     "host/wayland_buffer_manager_connector.h",
     "host/wayland_buffer_manager_host.cc",

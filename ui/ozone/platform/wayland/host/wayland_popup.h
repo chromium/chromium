@@ -60,6 +60,11 @@ class WaylandPopup : public WaylandWindow {
   // resulted in calling SetBounds.
   bool wayland_sets_bounds_ = false;
 
+  // If WaylandPopup has been moved, schedule redraw as the client of the
+  // Ozone/Wayland may not do so. Otherwise, a new state (if bounds has been
+  // changed) won't be applied.
+  bool schedule_redraw_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(WaylandPopup);
 };
 

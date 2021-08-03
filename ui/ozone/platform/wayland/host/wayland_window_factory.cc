@@ -7,7 +7,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/platform/wayland/host/wayland_auxiliary_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
@@ -36,7 +35,7 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       if (connection->IsDragInProgress()) {
         // We are in the process of drag and requested a popup. Most probably,
         // it is an arrow window.
-        window = std::make_unique<WaylandAuxiliaryWindow>(
+        window = std::make_unique<WaylandPopup>(
             delegate, connection,
             GetParentWindow(connection, properties.parent_widget));
         break;
