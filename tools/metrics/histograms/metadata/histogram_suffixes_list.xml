@@ -13167,6 +13167,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       useful data any longer.
     </obsolete>
   </affected-histogram>
+  <affected-histogram name="Permissions.DSE.AutoPermissionRevertTransition"/>
+  <affected-histogram name="Permissions.DSE.EffectiveSetting"/>
   <affected-histogram name="Permissions.MissingOSLevelPermission.Action"/>
   <affected-histogram name="Permissions.MissingOSLevelPermission.ShouldShow"/>
   <affected-histogram name="Permissions.Prompt.Accepted.Persisted"/>

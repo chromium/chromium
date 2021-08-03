@@ -23,6 +23,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -224,6 +225,8 @@ SearchPermissionsService::~SearchPermissionsService() {}
 void SearchPermissionsService::OnDSEChanged() {
   InitializeSettingsIfNeeded();
 
+  RecordEffectiveDSEOriginPermissions();
+
   // If we didn't initialize properly because there is no DSE don't do anything.
   if (!pref_service_->HasPrefPath(prefs::kDSEPermissionsSettings))
     return;
@@ -346,13 +349,25 @@ void SearchPermissionsService::InitializeSettingsIfNeeded() {
 
       PrefValue pref = GetDSEPref();
       GURL old_dse_origin(pref.dse_origin);
-      RestoreOldSettingAndReturnPrevious(
+
+      ContentSetting effective_setting = RestoreOldSettingAndReturnPrevious(
           old_dse_origin, ContentSettingsType::GEOLOCATION,
           pref.geolocation_setting_to_restore, !disabled_by_policy);
+      if (!disabled_by_policy) {
+        RecordAutoDSEPermissionReverted(ContentSettingsType::GEOLOCATION,
+                                        pref.geolocation_setting_to_restore,
+                                        effective_setting, dse_origin);
+      }
+
       if (pref.notifications_setting_to_restore != CONTENT_SETTING_DEFAULT) {
-        RestoreOldSettingAndReturnPrevious(
+        effective_setting = RestoreOldSettingAndReturnPrevious(
             old_dse_origin, ContentSettingsType::NOTIFICATIONS,
             pref.notifications_setting_to_restore, !disabled_by_policy);
+        if (!disabled_by_policy) {
+          RecordAutoDSEPermissionReverted(ContentSettingsType::NOTIFICATIONS,
+                                          pref.notifications_setting_to_restore,
+                                          effective_setting, dse_origin);
+        }
       }
       pref_service_->ClearPref(prefs::kDSEPermissionsSettings);
     }
@@ -517,4 +532,28 @@ void SearchPermissionsService::SetSearchEngineDelegateForTest(
   delegate_ = std::move(delegate);
   delegate_->SetDSEChangedCallback(base::BindRepeating(
       &SearchPermissionsService::OnDSEChanged, base::Unretained(this)));
+}
+
+void SearchPermissionsService::RecordAutoDSEPermissionReverted(
+    ContentSettingsType permission_type,
+    ContentSetting backed_up_setting,
+    ContentSetting effective_setting,
+    const GURL& origin) {
+  ContentSetting end_state_setting = GetContentSetting(origin, permission_type);
+  permissions::PermissionUmaUtil::RecordAutoDSEPermissionReverted(
+      permission_type, backed_up_setting, effective_setting, end_state_setting);
+}
+
+void SearchPermissionsService::RecordEffectiveDSEOriginPermissions() {
+  GURL dse_origin = delegate_->GetDSEOrigin().GetURL();
+  if (!dse_origin.is_valid())
+    return;
+
+  permissions::PermissionUmaUtil::RecordDSEEffectiveSetting(
+      ContentSettingsType::NOTIFICATIONS,
+      GetContentSetting(dse_origin, ContentSettingsType::NOTIFICATIONS));
+
+  permissions::PermissionUmaUtil::RecordDSEEffectiveSetting(
+      ContentSettingsType::GEOLOCATION,
+      GetContentSetting(dse_origin, ContentSettingsType::GEOLOCATION));
 }
