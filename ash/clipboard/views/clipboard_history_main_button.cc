@@ -5,8 +5,8 @@
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"

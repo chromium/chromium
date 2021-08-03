@@ -1,8 +1,8 @@
 include_rules = [
   "+ash/frame/non_client_frame_view_ash.h",
+  "+ash/public/cpp/style/scoped_light_mode_as_default.h",
   "+ash/resources/vector_icons",
   "+ash/shell.h",
-  "+ash/style/scoped_light_mode_as_default.h",
   "+chromeos/ui/base/window_properties.h",
   "+chromeos/ui/frame/caption_buttons/frame_center_button.h",
   "+chromeos/ui/frame/default_frame_header.h",

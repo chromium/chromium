@@ -706,6 +706,7 @@ component("ash") {
     "public/cpp/shelf_config.h",
     "public/cpp/shelf_test_api.h",
     "public/cpp/split_view_test_api.h",
+    "public/cpp/style/scoped_light_mode_as_default.h",
     "public/cpp/window_finder.h",
     "public/cpp/window_tree_host_lookup.h",
     "quick_answers/quick_answers_controller_impl.cc",
@@ -877,7 +878,6 @@ component("ash") {
     "style/default_colors.cc",
     "style/default_colors.h",
     "style/scoped_light_mode_as_default.cc",
-    "style/scoped_light_mode_as_default.h",
     "system/accessibility/accessibility_feature_disable_dialog.cc",
     "system/accessibility/accessibility_feature_disable_dialog.h",
     "system/accessibility/accessibility_feature_pod_controller.cc",
@@ -2471,9 +2471,7 @@ test("ash_unittests") {
     "wm/workspace/workspace_window_resizer_unittest.cc",
     "wm/workspace_controller_unittest.cc",
   ]
-  configs += [
-    "//build/config:precompiled_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
     ":ash",

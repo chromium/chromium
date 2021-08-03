@@ -6,9 +6,9 @@
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"

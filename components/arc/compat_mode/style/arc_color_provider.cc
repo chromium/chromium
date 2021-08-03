@@ -5,7 +5,7 @@
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 
 namespace arc {
 

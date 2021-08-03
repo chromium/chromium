@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 
 #include "ash/style/ash_color_provider.h"
 

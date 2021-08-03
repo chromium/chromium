@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/input_method/ui/undo_window.h"
 
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

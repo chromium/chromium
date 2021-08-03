@@ -5,8 +5,8 @@
 #include "ash/clipboard/views/clipboard_history_label.h"
 
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 
 namespace ash {
 ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
