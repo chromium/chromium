@@ -7,40 +7,52 @@ import './advanced_settings_dialog.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {Settings} from '../data/model.js';
 
-Polymer({
-  is: 'print-preview-advanced-options-settings',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class PrintPreviewAdvancedOptionsSettingsElement extends PolymerElement {
+  static get is() {
+    return 'print-preview-advanced-options-settings';
+  }
 
-  properties: {
-    disabled: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Destination} */
-    destination: Object,
+  static get properties() {
+    return {
+      disabled: Boolean,
 
-    /** @type {!Settings} */
-    settings: Object,
+      /** @type {!Destination} */
+      destination: Object,
 
-    /** @private {boolean} */
-    showAdvancedDialog_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @type {!Settings} */
+      settings: Object,
+
+      /** @private {boolean} */
+      showAdvancedDialog_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @private */
   onButtonClick_() {
     this.showAdvancedDialog_ = true;
-  },
+  }
 
   /** @private */
   onDialogClose_() {
     this.showAdvancedDialog_ = false;
     this.$.button.focus();
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewAdvancedOptionsSettingsElement.is,
+    PrintPreviewAdvancedOptionsSettingsElement);

@@ -36,6 +36,8 @@ export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, NativeInitialSe
 export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer, PrintServersConfig} from './native_layer_cros.js';
 // </if>
 export {getSelectDropdownBackground} from './print_preview_utils.js';
+export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';
+export {PrintPreviewAdvancedSettingsItemElement} from './ui/advanced_settings_item.js';
 export {DEFAULT_MAX_COPIES} from './ui/copies_settings.js';
 export {DestinationState, NUM_PERSISTED_DESTINATIONS} from './ui/destination_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';

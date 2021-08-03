@@ -127,7 +127,7 @@ suite(key_event_test.suiteName, function() {
     moreSettingsElement.$.label.click();
     const button = page.$$('print-preview-sidebar')
                        .$$('print-preview-advanced-options-settings')
-                       .$$('cr-button');
+                       .shadowRoot.querySelector('cr-button');
     const whenKeyEventFired = eventToPromise('keydown', button);
     keyEventOn(button, 'keydown', 'Enter', [], 'Enter');
     await whenKeyEventFired;

@@ -11,59 +11,84 @@ import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-advanced-settings-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewAdvancedSettingsDialogElementBase =
+    mixinBehaviors([SettingsBehavior, I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewAdvancedSettingsDialogElement extends
+    PrintPreviewAdvancedSettingsDialogElementBase {
+  static get is() {
+    return 'print-preview-advanced-settings-dialog';
+  }
 
-  behaviors: [SettingsBehavior, I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!Destination} */
-    destination: Object,
+  static get properties() {
+    return {
+      /** @type {!Destination} */
+      destination: Object,
 
-    /** @private {?RegExp} */
-    searchQuery_: {
-      type: Object,
-      value: null,
-    },
+      /** @private {?RegExp} */
+      searchQuery_: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private {boolean} */
-    hasMatching_: {
-      type: Boolean,
-      notify: true,
-      computed: 'computeHasMatching_(searchQuery_)',
-    },
-  },
+      /** @private {boolean} */
+      hasMatching_: {
+        type: Boolean,
+        notify: true,
+        computed: 'computeHasMatching_(searchQuery_)',
+      },
+    };
+  }
 
-  listeners: {
-    'keydown': 'onKeydown_',
-  },
+  constructor() {
+    super();
 
-  /** @private {!Array<!Node>} */
-  highlights_: [],
+    /** @private {!Array<!Node>} */
+    this.highlights_ = [];
 
-  /** @private {!Map<!Node, number>} */
-  bubbles_: new Map,
+    /** @private {!Map<!Node, number>} */
+    this.bubbles_ = new Map();
 
-  /** @private {!MetricsContext} */
-  metrics_: MetricsContext.printSettingsUi(),
+    /** @private {!MetricsContext} */
+    this.metrics_ = MetricsContext.printSettingsUi();
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.metrics_.record(
         Metrics.PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_SHOWN);
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e Event containing the key
@@ -89,7 +114,7 @@ Polymer({
       e.preventDefault();
       return;
     }
-  },
+  }
 
   /**
    * @return {boolean} Whether there is more than one vendor item to display.
@@ -97,7 +122,7 @@ Polymer({
    */
   hasMultipleItems_() {
     return this.destination.capabilities.printer.vendor_capability.length > 1;
-  },
+  }
 
   /**
    * @return {boolean} Whether there is a setting matching the query.
@@ -124,7 +149,7 @@ Polymer({
           ...item.updateHighlighting(this.searchQuery_, this.bubbles_));
     });
     return hasMatch;
-  },
+  }
 
   /**
    * @return {boolean} Whether the no matching settings hint should be shown.
@@ -132,7 +157,7 @@ Polymer({
    */
   shouldShowHint_() {
     return !!this.searchQuery_ && !this.hasMatching_;
-  },
+  }
 
   /** @private */
   onCloseOrCancel_() {
@@ -143,12 +168,12 @@ Polymer({
       this.metrics_.record(
           Metrics.PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_CANCELED);
     }
-  },
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /** @private */
   onApplyButtonClick_() {
@@ -159,11 +184,11 @@ Polymer({
         });
     this.setSetting('vendorItems', settingsValues);
     this.$.dialog.close();
-  },
+  }
 
   close() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @return {string}
@@ -171,5 +196,9 @@ Polymer({
    */
   isSearching_() {
     return this.searchQuery_ ? 'searching' : '';
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewAdvancedSettingsDialogElement.is,
+    PrintPreviewAdvancedSettingsDialogElement);

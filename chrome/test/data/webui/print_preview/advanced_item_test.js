@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {PrintPreviewAdvancedSettingsItemElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -54,19 +54,20 @@ suite(advanced_item_test.suiteName, function() {
 
   // Test that a select capability is displayed correctly.
   test(assert(advanced_item_test.TestNames.DisplaySelect), function() {
-    const label = item.$$('.label');
+    const label = item.shadowRoot.querySelector('.label');
     assertEquals('Paper Type', label.textContent);
 
     // Check that the default option is selected.
-    const select = item.$$('select');
+    const select = item.shadowRoot.querySelector('select');
     assertEquals(0, select.selectedIndex);
     assertEquals('Standard', select.options[0].textContent.trim());
     assertEquals('Recycled', select.options[1].textContent.trim());
     assertEquals('Special', select.options[2].textContent.trim());
 
     // Don't show input or checkbox.
-    assertTrue(item.$$('cr-input').parentElement.hidden);
-    assertTrue(item.$$('cr-checkbox').parentElement.hidden);
+    assertTrue(item.shadowRoot.querySelector('cr-input').parentElement.hidden);
+    assertTrue(
+        item.shadowRoot.querySelector('cr-checkbox').parentElement.hidden);
   });
 
   test(assert(advanced_item_test.TestNames.DisplayInput), function() {
@@ -75,17 +76,18 @@ suite(advanced_item_test.suiteName, function() {
                           .capabilities.printer.vendor_capability[2];
     flush();
 
-    const label = item.$$('.label');
+    const label = item.shadowRoot.querySelector('.label');
     assertEquals('Watermark', label.textContent);
 
     // The input should be shown.
-    const input = item.$$('cr-input');
+    const input = item.shadowRoot.querySelector('cr-input');
     assertFalse(input.parentElement.hidden);
     assertEquals('', input.inputElement.value);
 
     // Don't show select or checkbox.
-    assertEquals(null, item.$$('select'));
-    assertTrue(item.$$('cr-checkbox').parentElement.hidden);
+    assertEquals(null, item.shadowRoot.querySelector('select'));
+    assertTrue(
+        item.shadowRoot.querySelector('cr-checkbox').parentElement.hidden);
   });
 
   test(assert(advanced_item_test.TestNames.DisplayCheckbox), function() {
@@ -94,24 +96,24 @@ suite(advanced_item_test.suiteName, function() {
                           .capabilities.printer.vendor_capability[3];
     flush();
 
-    const label = item.$$('.label');
+    const label = item.shadowRoot.querySelector('.label');
     assertEquals('Staple', label.textContent);
 
     // The checkbox should be shown.
-    const checkbox = item.$$('cr-checkbox');
+    const checkbox = item.shadowRoot.querySelector('cr-checkbox');
     assertFalse(checkbox.parentElement.hidden);
     assertFalse(checkbox.checked);
 
     // Don't show select or input.
-    assertEquals(null, item.$$('select'));
-    assertTrue(item.$$('cr-input').parentElement.hidden);
+    assertEquals(null, item.shadowRoot.querySelector('select'));
+    assertTrue(item.shadowRoot.querySelector('cr-input').parentElement.hidden);
   });
 
   // Test that a select capability updates correctly when the setting is
   // updated (e.g. when sticky settings are set).
   test(assert(advanced_item_test.TestNames.UpdateSelect), function() {
     // Check that the default option is selected.
-    const select = item.$$('select');
+    const select = item.shadowRoot.querySelector('select');
     assertEquals(0, select.selectedIndex);
 
     // Update the setting.
@@ -128,7 +130,7 @@ suite(advanced_item_test.suiteName, function() {
     flush();
 
     // Check that the default value is set.
-    const input = item.$$('cr-input');
+    const input = item.shadowRoot.querySelector('cr-input');
     assertEquals('', input.inputElement.value);
 
     // Update the setting.
@@ -145,7 +147,7 @@ suite(advanced_item_test.suiteName, function() {
     flush();
 
     // Check that checkbox is unset.
-    const checkbox = item.$$('cr-checkbox');
+    const checkbox = item.shadowRoot.querySelector('cr-checkbox');
     assertFalse(checkbox.checked);
 
     // Update the setting.
@@ -160,7 +162,7 @@ suite(advanced_item_test.suiteName, function() {
     assertTrue(item.hasMatch(query));
     item.updateHighlighting(query, new Map);
 
-    const label = item.$$('.label');
+    const label = item.shadowRoot.querySelector('.label');
     assertEquals(
         item.capability.display_name + item.capability.display_name,
         label.textContent);
@@ -171,7 +173,7 @@ suite(advanced_item_test.suiteName, function() {
     assertEquals('Type', searchHits[0].textContent);
 
     // No highlighting on the control.
-    const control = item.$$('.value');
+    const control = item.shadowRoot.querySelector('.value');
     assertEquals(0, control.querySelectorAll('.search-highlight-hit').length);
     assertEquals(0, control.querySelectorAll('.search-bubble').length);
   });
@@ -183,14 +185,14 @@ suite(advanced_item_test.suiteName, function() {
     assertTrue(item.hasMatch(query));
     item.updateHighlighting(query, new Map);
 
-    const label = item.$$('.label');
+    const label = item.shadowRoot.querySelector('.label');
     assertEquals('Paper Type', label.textContent);
 
     // Label should not be highlighted.
     assertEquals(0, label.querySelectorAll('.search-highlight-hit').length);
 
     // Control should have highlight bubble but no highlighting.
-    const control = item.$$('.value');
+    const control = item.shadowRoot.querySelector('.value');
     assertEquals(0, control.querySelectorAll('.search-highlight-hit').length);
     const searchBubbleHits = control.querySelectorAll('.search-bubble');
     assertEquals(1, searchBubbleHits.length);

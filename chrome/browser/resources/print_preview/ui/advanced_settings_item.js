@@ -10,33 +10,50 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
 import {Destination} from '../data/destination.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {updateHighlights} from './highlight_utils.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-advanced-settings-item',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewAdvancedSettingsItemElementBase =
+    mixinBehaviors([SettingsBehavior], PolymerElement);
 
-  behaviors: [SettingsBehavior],
+/** @polymer */
+export class PrintPreviewAdvancedSettingsItemElement extends
+    PrintPreviewAdvancedSettingsItemElementBase {
+  static get is() {
+    return 'print-preview-advanced-settings-item';
+  }
 
-  properties: {
-    /** @type {!VendorCapability} */
-    capability: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {string} */
-    currentValue_: String,
-  },
+  static get properties() {
+    return {
+      /** @type {!VendorCapability} */
+      capability: Object,
 
-  observers: [
-    'updateFromSettings_(capability, settings.vendorItems.value)',
-  ],
+      /** @private {string} */
+      currentValue_: String,
+    };
+  }
+
+  static get observers() {
+    return [
+      'updateFromSettings_(capability, settings.vendorItems.value)',
+    ];
+  }
 
   /** @private */
   updateFromSettings_() {
@@ -58,9 +75,9 @@ Polymer({
       }
     } else {
       this.currentValue_ = value;
-      this.$$('cr-input').value = this.currentValue_;
+      this.shadowRoot.querySelector('cr-input').value = this.currentValue_;
     }
-  },
+  }
 
   /**
    * @param {!VendorCapability |
@@ -74,7 +91,7 @@ Polymer({
       displayName = getStringForCurrentLocale(item.display_name_localized);
     }
     return displayName || '';
-  },
+  }
 
   /**
    * @return {boolean} Whether the capability represented by this item is
@@ -83,7 +100,7 @@ Polymer({
    */
   isCapabilityTypeSelect_() {
     return this.capability.type === 'SELECT';
-  },
+  }
 
   /**
    * @return {boolean} Whether the capability represented by this item is
@@ -93,7 +110,7 @@ Polymer({
   isCapabilityTypeCheckbox_() {
     return this.capability.type === 'TYPED_VALUE' &&
         this.capability.typed_value_cap.value_type === 'BOOLEAN';
-  },
+  }
 
   /**
    * @return {boolean} Whether the capability represented by this item is
@@ -102,7 +119,7 @@ Polymer({
    */
   isCapabilityTypeInput_() {
     return !this.isCapabilityTypeSelect_() && !this.isCapabilityTypeCheckbox_();
-  },
+  }
 
   /**
    * @return {boolean} Whether the checkbox setting is checked.
@@ -110,7 +127,7 @@ Polymer({
    */
   isChecked_() {
     return this.currentValue_ === 'true';
-  },
+  }
 
   /**
    * @param {!VendorCapabilitySelectOption} option The option
@@ -122,7 +139,7 @@ Polymer({
     return this.currentValue_ === undefined ?
         !!option.is_default :
         option.value === this.currentValue_;
-  },
+  }
 
   /**
    * @return {string} The placeholder value for the capability's text input.
@@ -139,7 +156,7 @@ Polymer({
       return this.capability.range_cap.default.toString() || '';
     }
     return '';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -150,7 +167,7 @@ Polymer({
         !!this.capability.select_cap.option &&
         this.capability.select_cap.option.some(
             option => option.value === value);
-  },
+  }
 
   /**
    * @param {?RegExp} query The current search query.
@@ -173,7 +190,7 @@ Polymer({
       }
     }
     return false;
-  },
+  }
 
   /**
    * @param {!Event} e Event containing the new value.
@@ -181,7 +198,7 @@ Polymer({
    */
   onUserInput_(e) {
     this.currentValue_ = e.target.value;
-  },
+  }
 
   /**
    * @param {!Event} e Event containing the new value.
@@ -189,7 +206,7 @@ Polymer({
    */
   onCheckboxInput_(e) {
     this.currentValue_ = e.target.checked ? 'true' : 'false';
-  },
+  }
 
   /**
    * @return {string} The current value of the setting, or the empty string if
@@ -197,7 +214,7 @@ Polymer({
    */
   getCurrentValue() {
     return this.currentValue_ || '';
-  },
+  }
 
   /**
    * Only used in tests.
@@ -205,7 +222,7 @@ Polymer({
    */
   setCurrentValueForTest(value) {
     this.currentValue_ = value;
-  },
+  }
 
   /**
    * @param {?RegExp} query The current search query.
@@ -214,5 +231,9 @@ Polymer({
    */
   updateHighlighting(query, bubbles) {
     return updateHighlights(this, query, bubbles);
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewAdvancedSettingsItemElement.is,
+    PrintPreviewAdvancedSettingsItemElement);
