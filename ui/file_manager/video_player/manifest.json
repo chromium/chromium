@@ -59,10 +59,8 @@
     "background": {
       "page": "background.html"
     },
-    // enhhojjnijigcajfphajepfemndkmdlo is the Dev Media Router component extension ID.
-    // pkedcjkdefgpdelpbcmbmeomcjbeemfm is the Stable Media Router component extension ID.
     // ljoplibgfehghmibaoaepfagnmbbfiga is the ui/file_manager/integration_tests component extension ID.
     // connect-src for Polymer: crbug.com/1022018
-    "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj chrome-extension://enhhojjnijigcajfphajepfemndkmdlo chrome-extension://pkedcjkdefgpdelpbcmbmeomcjbeemfm chrome-extension://ljoplibgfehghmibaoaepfagnmbbfiga; style-src 'self' blob: filesystem: chrome://resources 'unsafe-inline'; img-src 'self' blob: filesystem: chrome://theme chrome://resources data: https://www.googledrive.com; media-src 'self' blob: filesystem:; object-src 'self' blob: filesystem:; font-src chrome://resources; connect-src chrome://resources;"
+    "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj chrome-extension://ljoplibgfehghmibaoaepfagnmbbfiga; style-src 'self' blob: filesystem: chrome://resources 'unsafe-inline'; img-src 'self' blob: filesystem: chrome://theme chrome://resources data: https://www.googledrive.com; media-src 'self' blob: filesystem:; object-src 'self' blob: filesystem:; font-src chrome://resources; connect-src chrome://resources;"
   }
 }
