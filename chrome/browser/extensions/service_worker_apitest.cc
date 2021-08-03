@@ -2335,8 +2335,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
   EXPECT_EQ(0u, GetWorkerRefCount(extension_key));
 }
 
+// Disabled on Ozone due to flakiness: https://crbug.com/1236184.
+#if defined(USE_OZONE)
+#define MAYBE_PRE_EventsAfterRestart DISABLED_PRE_EventsAfterRestart
+#define MAYBE_EventsAfterRestart DISABLED_EventsAfterRestart
+#else
+#define MAYBE_PRE_EventsAfterRestart PRE_EventsAfterRestart
+#define MAYBE_EventsAfterRestart EventsAfterRestart
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       PRE_EventsAfterRestart) {
+                       MAYBE_PRE_EventsAfterRestart) {
   ExtensionTestMessageListener event_added_listener("ready", false);
 
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2366,7 +2374,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // tabs.onCreated event listener to the extension without explicitly loading the
 // extension. This is because the extension registered a listener for
 // tabs.onMoved before browser restarted in PRE_EventsAfterRestart.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       MAYBE_EventsAfterRestart) {
   // Verify there is no RenderProcessHost for the extension.
   EXPECT_FALSE(ExtensionHasRenderProcessHost(kTestExtensionId));
 
