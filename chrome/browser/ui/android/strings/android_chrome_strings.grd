@@ -1274,11 +1274,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_LANGUAGES_SPLIT_READY" desc="Text to display next to the native name of a language when it has been downloaded to use as Chrome's UI language. The dash separates the native name from the description.">
         <ph name="LANG">%1$s<ex>हिन्दी</ex></ph> - Language ready, restart <ph name="APP_NAME">%2$s<ex>Chrome</ex></ph>.
       </message>
-      <message name="IDS_LANGUAGES_SPLIT_FAILED" desc="Text to display next to the native name of a language when a langauge pack has failed to download. The dash separates the native name from the description. The message asks the user to try again.">
+      <message name="IDS_LANGUAGES_SPLIT_FAILED" desc="Text to display next to the native name of a language when a language pack has failed to download. The dash separates the native name from the description. The message asks the user to try again.">
         <ph name="LANG">%1$s<ex>हिन्दी</ex></ph> - This language couldn't be downloaded. Try again later.
       </message>
       <message name="IDS_LANGUAGES_INFOBAR_READY" desc="Infobar text to appear when a new language pack has been downloaded. [CHAR_LIMIT=32]">
-        <ph name="LANG">%1$s<ex>Hindi</ex></ph> is ready.
+        <ph name="LANG">%1$s<ex>Hindi</ex></ph> is ready
       </message>
       <message name="IDS_LANGUAGES_INFOBAR_RESTART" desc="The clickable link letting the user know they can click to restart Chrome. [CHAR_LIMIT=32]">
         Restart Chrome
