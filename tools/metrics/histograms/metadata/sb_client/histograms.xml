@@ -525,7 +525,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.DOMFeatureTimeout" units="units"
-    expires_after="M94">
+    expires_after="2022-08-03">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -717,7 +717,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.RequestSatisfiedFromCache" enum="BooleanHit"
-    expires_after="M94">
+    expires_after="2022-08-03">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -805,7 +805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.TermFeatureTotalTime" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2022-08-03">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -829,7 +829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.URLFeatureTime" units="ms"
-    expires_after="M94">
+    expires_after="2022-08-03">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
