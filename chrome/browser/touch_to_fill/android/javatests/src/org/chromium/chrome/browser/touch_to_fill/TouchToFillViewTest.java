@@ -106,7 +106,7 @@ public class TouchToFillViewTest {
     public void testVisibilityChangedByModel() {
         // After setting the visibility to true, the view should exist and be visible.
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         assertThat(mTouchToFillView.getContentView().isShown(), is(true));
 
         // After hiding the view, the view should still exist but be invisible.
@@ -128,7 +128,7 @@ public class TouchToFillViewTest {
                                     .build()));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TextView title =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
 
@@ -149,7 +149,7 @@ public class TouchToFillViewTest {
                                     .build()));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TextView title =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
 
@@ -169,7 +169,7 @@ public class TouchToFillViewTest {
                                     .build()));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
@@ -188,7 +188,7 @@ public class TouchToFillViewTest {
                                     .build()));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
@@ -205,7 +205,7 @@ public class TouchToFillViewTest {
                             buildCredentialItem(BOB)));
         });
 
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         assertThat(getCredentials().getChildCount(), is(3));
         assertThat(getCredentialOriginAt(0).getVisibility(), is(View.GONE));
         assertThat(getCredentialNameAt(0).getText(), is(ANA.getFormattedUsername()));
@@ -233,7 +233,7 @@ public class TouchToFillViewTest {
             mModel.get(SHEET_ITEMS).addAll(Collections.singletonList(buildCredentialItem(ANA)));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         assertNotNull(getCredentials().getChildAt(0));
 
@@ -252,7 +252,7 @@ public class TouchToFillViewTest {
                             buildConfirmationButton(ANA)));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         assertNotNull(getCredentials().getChildAt(0));
         assertNotNull(getCredentials().getChildAt(1));
@@ -270,7 +270,7 @@ public class TouchToFillViewTest {
             mModel.set(ON_CLICK_MANAGE, () -> manageButtonClicked.set(true));
             mModel.set(VISIBLE, true);
         });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(
                 getActivity().getRootUiCoordinatorForTesting().getBottomSheetController());
 
@@ -289,7 +289,7 @@ public class TouchToFillViewTest {
     @MediumTest
     public void testDismissesWhenHidden() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         verify(mDismissHandler).onResult(BottomSheetController.StateChangeReason.NONE);
