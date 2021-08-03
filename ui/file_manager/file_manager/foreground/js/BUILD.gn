@@ -1032,6 +1032,17 @@ js_library("path_component") {
   ]
 }
 
+js_unittest("path_component_unittest.m") {
+  deps = [
+    ":path_component",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_info",
+  ]
+}
+
 js_library("providers_model") {
   deps = [
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -1276,6 +1287,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":import_controller_unittest.m",
     ":list_thumbnail_loader_unittest.m",
     ":navigation_list_model_unittest.m",
+    ":path_component_unittest.m",
     ":providers_model_unittest.m",
     ":spinner_controller_unittest.m",
     ":task_controller_unittest.m",

@@ -142,6 +142,8 @@ export class MockVolumeManager {
           rootType = VolumeManagerCommon.RootType.COMPUTER;
           isRootEntry = util.isComputersRoot(entry);
         }
+      } else if (entry.fullPath.startsWith('/.files-by-id')) {
+        rootType = VolumeManagerCommon.RootType.DRIVE_OTHER;
       }
       return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, true);
     }
