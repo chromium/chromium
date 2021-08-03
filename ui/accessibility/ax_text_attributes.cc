@@ -4,21 +4,11 @@
 
 #include "ui/accessibility/ax_text_attributes.h"
 
-constexpr int kUnsetValue = -1;
-
 namespace ui {
-AXTextAttributes::AXTextAttributes()
-    : background_color(kUnsetValue),
-      color(kUnsetValue),
-      invalid_state(kUnsetValue),
-      overline_style(kUnsetValue),
-      strikethrough_style(kUnsetValue),
-      text_direction(kUnsetValue),
-      text_position(kUnsetValue),
-      text_style(kUnsetValue),
-      underline_style(kUnsetValue),
-      font_size(kUnsetValue),
-      font_weight(kUnsetValue) {}
+
+AXTextAttributes::AXTextAttributes() = default;
+
+AXTextAttributes::~AXTextAttributes() = default;
 
 AXTextAttributes::AXTextAttributes(AXTextAttributes&& other)
     : background_color(other.background_color),
@@ -35,6 +25,9 @@ AXTextAttributes::AXTextAttributes(AXTextAttributes&& other)
       font_family(std::move(other.font_family)) {}
 
 AXTextAttributes& AXTextAttributes::operator=(AXTextAttributes&& other) {
+  if (this == &other)
+    return *this;
+
   background_color = other.background_color;
   color = other.color;
   invalid_state = other.invalid_state;
