@@ -2,7 +2,6 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -27,5 +26,5 @@
         android:layout_weight="0"
         android:gravity="center"
         android:src="@drawable/btn_close"
-        tools:ignore="ContentDescription" />
+        android:contentDescription="@string/close" />
 </LinearLayout>
