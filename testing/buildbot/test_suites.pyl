@@ -79,7 +79,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'content_browsertests': {
@@ -113,7 +113,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
 
@@ -152,7 +152,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'webview_instrumentation_test_apk': {
@@ -180,7 +180,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'content_browsertests': {
@@ -224,7 +224,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'chrome_public_test_vr_apk': {
@@ -287,7 +287,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -325,7 +325,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'test': 'chrome_public_test_apk',
       },
@@ -1601,26 +1601,26 @@
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'depth_capture': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gpu_process': {
         'name': 'gpu_process_launch_tests',
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'hardware_accelerated_feature': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'info_collection': {
@@ -1631,7 +1631,7 @@
         ],
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'maps': {
@@ -1639,7 +1639,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'mediapipe_validating': {
@@ -1650,7 +1650,7 @@
           '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'pixel': {
@@ -1658,25 +1658,25 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'screenshot_sync': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'trace_test': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'webgl_conformance': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 18,
@@ -2607,7 +2607,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'trace_test': {
@@ -2622,7 +2622,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -2853,7 +2853,7 @@
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gl_renderer_depth_capture_tests': {
@@ -2862,7 +2862,7 @@
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gl_renderer_gpu_process_launch_tests': {
@@ -2871,7 +2871,7 @@
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gl_renderer_hardware_accelerated_feature_tests': {
@@ -2880,7 +2880,7 @@
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gl_renderer_maps_pixel_tests': {
@@ -2893,7 +2893,7 @@
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
           'skia_gold_test',
         ],
       },
@@ -2907,7 +2907,7 @@
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
           'skia_gold_test',
         ],
       },
@@ -2918,7 +2918,7 @@
           '--extra-browser-args=--disable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -2937,7 +2937,7 @@
         ],
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -2960,7 +2960,7 @@
           '--extra-browser-args=--force_high_performance_gpu',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -2983,7 +2983,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -3006,7 +3006,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -3043,7 +3043,7 @@
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'depth_capture': {
@@ -3058,7 +3058,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gpu_process': {
@@ -3074,7 +3074,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'hardware_accelerated_feature': {
@@ -3089,7 +3089,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'maps_passthrough': {
@@ -3118,7 +3118,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'pixel_skia_passthrough': {
@@ -3146,7 +3146,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -3172,7 +3172,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -3213,7 +3213,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -3236,7 +3236,7 @@
           '--test-filter=ScreenshotSync_GPURasterWithDivs',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -3257,7 +3257,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -3269,7 +3269,7 @@
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'depth_capture': {
@@ -3277,7 +3277,7 @@
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gpu_process': {
@@ -3286,7 +3286,7 @@
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'hardware_accelerated_feature': {
@@ -3294,7 +3294,7 @@
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'maps': {
@@ -3312,7 +3312,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'screenshot_sync': {
@@ -3325,7 +3325,7 @@
           '--extra-browser-args=--force-online-connection-state-for-indicator',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'skia_renderer_pixel_skia_gold_test': {
@@ -3343,7 +3343,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -3383,7 +3383,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -3412,7 +3412,7 @@
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'depth_capture': {
@@ -3427,7 +3427,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'gpu_process': {
@@ -3443,7 +3443,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'hardware_accelerated_feature': {
@@ -3458,7 +3458,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'maps_validating': {
@@ -3487,7 +3487,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
       'pixel_skia_validating': {
@@ -3515,7 +3515,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -3541,7 +3541,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -3575,7 +3575,7 @@
           '--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
@@ -3608,7 +3608,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
@@ -3631,7 +3631,7 @@
           '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
@@ -3654,7 +3654,7 @@
           '--extra-browser-args=--force_high_performance_gpu',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
@@ -3687,7 +3687,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
@@ -3709,7 +3709,7 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -3729,7 +3729,7 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -3745,7 +3745,7 @@
           '--extra-browser-args=--enable-unsafe-fast-js-calls --enable-fake-no-alloc-direct-call-for-testing --use-gl=angle --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -3775,7 +3775,7 @@
           '--weston-use-gl',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -3795,7 +3795,7 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 6,
@@ -3815,7 +3815,7 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 3,
@@ -3834,7 +3834,7 @@
           '--test-filter=conformance/rendering/gl-drawelements.html',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 1,
@@ -3850,7 +3850,7 @@
           '--xvfb',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 1,
@@ -3866,7 +3866,7 @@
           '--xvfb',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 1,
@@ -3888,7 +3888,7 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -3924,7 +3924,7 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -3943,7 +3943,7 @@
           '--extra-browser-args=--use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'swarming': {
           'shards': 2,
@@ -4082,7 +4082,7 @@
       'power_measurement_test': {
         'telemetry_test_name': 'power',
         'mixins': [
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -4780,7 +4780,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
-          'enable_resultdb',
+          'has_native_resultdb_integration',
         ],
         'test': 'chrome_public_test_apk',
       },
