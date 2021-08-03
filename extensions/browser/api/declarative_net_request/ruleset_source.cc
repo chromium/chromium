@@ -50,7 +50,7 @@ ParseInfo RulesetSource::IndexRules(
       int rule_id = rule.id;
       bool inserted = id_set.insert(rule_id).second;
       if (!inserted)
-        return ParseInfo(ParseResult::ERROR_DUPLICATE_IDS, &rule_id);
+        return ParseInfo(ParseResult::ERROR_DUPLICATE_IDS, rule_id);
 
       IndexedRule indexed_rule;
       ParseResult parse_result = IndexedRule::CreateIndexedRule(
@@ -62,7 +62,7 @@ ParseInfo RulesetSource::IndexRules(
       }
 
       if (parse_result != ParseResult::SUCCESS)
-        return ParseInfo(parse_result, &rule_id);
+        return ParseInfo(parse_result, rule_id);
 
       indexer.AddUrlRule(indexed_rule);
       rules_count++;

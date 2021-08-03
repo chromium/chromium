@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -233,6 +234,10 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
   DCHECK(error);
   DCHECK(status);
 
+  // Dynamic JSON and indexed rulesets for an extension are stored in the same
+  // directory.
+  DCHECK_EQ(source.indexed_path().DirName(), source.json_path().DirName());
+
   std::set<int> rule_ids_to_add;
   for (const dnr_api::Rule& rule : rules_to_add)
     rule_ids_to_add.insert(rule.id);
@@ -244,35 +249,21 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
     return false;  // |error| and |status| already populated.
   }
 
-  // Initially write the new JSON and indexed rulesets to temporary files to
-  // ensure we don't leave the actual files in an inconsistent state.
-  std::unique_ptr<FileBackedRulesetSource> temporary_source =
-      FileBackedRulesetSource::CreateTemporarySource(
-          source.id(), source.rule_count_limit(), source.extension_id());
-  if (!temporary_source) {
+  // Serialize rules to JSON.
+  std::string json;
+  if (!source.SerializeRulesToJSON(new_rules, &json)) {
     *error = kInternalErrorUpdatingDynamicRules;
-    *status = UpdateDynamicRulesStatus::kErrorCreateTemporarySource;
+    *status = UpdateDynamicRulesStatus::kErrorSerializeToJson;
     return false;
   }
 
-  // Persist JSON.
-  if (!temporary_source->WriteRulesToJSON(new_rules)) {
-    *error = kInternalErrorUpdatingDynamicRules;
-    *status = UpdateDynamicRulesStatus::kErrorWriteTemporaryJSONRuleset;
-    return false;
-  }
-
-  // Index and persist the indexed ruleset.
-  ParseInfo info = temporary_source->IndexAndPersistRules(std::move(new_rules));
+  // Index rules.
+  ParseInfo info = source.IndexRules(std::move(new_rules));
   if (info.has_error()) {
     *error = info.error();
-    *status = info.error_reason() == ParseResult::ERROR_PERSISTING_RULESET
-                  ? UpdateDynamicRulesStatus::kErrorWriteTemporaryIndexedRuleset
-                  : UpdateDynamicRulesStatus::kErrorInvalidRules;
+    *status = UpdateDynamicRulesStatus::kErrorInvalidRules;
     return false;
   }
-
-  *ruleset_checksum = info.ruleset_checksum();
 
   // Treat rules which exceed the regex memory limit as errors if these are new
   // rules. Just surface an error for the first such rule.
@@ -290,44 +281,48 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
     return false;
   }
 
-  // Dynamic JSON and indexed rulesets for an extension are stored in the same
-  // directory.
-  DCHECK_EQ(source.indexed_path().DirName(), source.json_path().DirName());
-
-  // Place the indexed ruleset at the correct location. base::ReplaceFile should
-  // involve a rename and ideally be atomic at the system level. Before doing so
-  // ensure that the destination directory exists, since this is not handled by
-  // base::ReplaceFile.
+  // Ensure that the destination directory exists.
   if (!base::CreateDirectory(source.indexed_path().DirName())) {
     *error = kInternalErrorUpdatingDynamicRules;
     *status = UpdateDynamicRulesStatus::kErrorCreateDynamicRulesDirectory;
     return false;
   }
 
-  // TODO(karandeepb): ReplaceFile can fail if the source and destination files
-  // are on different volumes. Investigate if temporary files can be created on
-  // a different volume than the profile path.
-  if (!base::ReplaceFile(temporary_source->indexed_path(),
-                         source.indexed_path(), nullptr /* error */)) {
+  // Persist indexed ruleset. Use `ImportantFileWriter` to make this atomic and
+  // decrease the likelihood of file corruption.
+  if (!base::ImportantFileWriter::WriteFileAtomically(
+          source.indexed_path(), GetIndexedRulesetData(info.GetBuffer()),
+          "DNRDynamicRulesFlatbuffer")) {
+    // If this fails, we might have corrupted the existing indexed ruleset file.
+    // However the JSON source of truth hasn't been modified. The next time the
+    // extension is loaded, the indexed ruleset will fail checksum verification
+    // leading to reindexing of the JSON ruleset.
     *error = kInternalErrorUpdatingDynamicRules;
-    *status = UpdateDynamicRulesStatus::kErrorReplaceIndexedFile;
+    *status = UpdateDynamicRulesStatus::kErrorWriteFlatbuffer;
     return false;
   }
 
-  // Place the json ruleset at the correct location.
-  if (!base::ReplaceFile(temporary_source->json_path(), source.json_path(),
-                         nullptr /* error */)) {
+  // Persist JSON. Since the JSON ruleset is the source of truth, use
+  // `ImportantFileWriter` to make this atomic and decrease the likelihood of
+  // file corruption.
+  if (!base::ImportantFileWriter::WriteFileAtomically(
+          source.json_path(), json, "DNRDynamicRulesetJson")) {
     // We have entered into an inconsistent state where the indexed ruleset was
     // updated but not the JSON ruleset. This should be extremely rare. However
     // if we get here, the next time the extension is loaded, we'll identify
     // that the indexed ruleset checksum is inconsistent and reindex the JSON
     // ruleset.
+    // If the JSON ruleset is corrupted here though, loading the dynamic ruleset
+    // subsequently will fail. A call by extension to `updateDynamicRules`
+    // should help it start from a clean slate in this case (See
+    // `GetNewDynamicRules` above).
     *error = kInternalErrorUpdatingDynamicRules;
-    *status = UpdateDynamicRulesStatus::kErrorReplaceJSONFile;
+    *status = UpdateDynamicRulesStatus::kErrorWriteJson;
     return false;
   }
 
-  return true;  // |ruleset_checksum| already populated.
+  *ruleset_checksum = info.ruleset_checksum();
+  return true;
 }
 
 }  // namespace

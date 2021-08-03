@@ -28,7 +28,7 @@ class ParseInfo {
             int ruleset_checksum);
 
   // Constructor to be used on error.
-  ParseInfo(ParseResult error_reason, const int* rule_id);
+  ParseInfo(ParseResult error_reason, int rule_id);
 
   ParseInfo(ParseInfo&&);
   ParseInfo& operator=(ParseInfo&&);

@@ -57,7 +57,7 @@ std::string GetFilename(const base::FilePath& file_path) {
 }
 
 std::string GetErrorWithFilename(const base::FilePath& json_path,
-                                 const std::string& error) {
+                                 base::StringPiece error) {
   return base::StrCat({GetFilename(json_path), ": ", error});
 }
 
@@ -220,13 +220,15 @@ IndexAndPersistJSONRulesetResult IndexAndPersistRuleset(
 
   DCHECK_EQ(Status::kSuccess, read_result.status);
 
-  const ParseInfo info =
-      source.IndexAndPersistRules(std::move(read_result.rules));
-
+  const ParseInfo info = source.IndexRules(std::move(read_result.rules));
   if (info.has_error()) {
-    std::string error = GetErrorWithFilename(source.json_path(), info.error());
     return IndexAndPersistJSONRulesetResult::CreateErrorResult(
-        std::move(error));
+        GetErrorWithFilename(source.json_path(), info.error()));
+  }
+
+  if (!PersistIndexedRuleset(source.indexed_path(), info.GetBuffer())) {
+    return IndexAndPersistJSONRulesetResult::CreateErrorResult(
+        GetErrorWithFilename(source.json_path(), kErrorPersisting));
   }
 
   // Don't cause a hard error if the regex failed compilation due to
@@ -422,20 +424,6 @@ void FileBackedRulesetSource::IndexAndPersistJSONRuleset(
                                     std::move(callback)));
 }
 
-ParseInfo FileBackedRulesetSource::IndexAndPersistRules(
-    std::vector<dnr_api::Rule> rules) const {
-  ParseInfo info = IndexRules(std::move(rules));
-  if (info.has_error())
-    return info;
-
-  if (!PersistIndexedRuleset(indexed_path_, info.GetBuffer())) {
-    return ParseInfo(ParseResult::ERROR_PERSISTING_RULESET,
-                     nullptr /* rule_id */);
-  }
-
-  return info;
-}
-
 ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRulesUnsafe() const {
   ReadJSONRulesResult result;
 
@@ -462,8 +450,9 @@ ReadJSONRulesResult FileBackedRulesetSource::ReadJSONRulesUnsafe() const {
                             rule_count_limit(), is_dynamic_ruleset());
 }
 
-bool FileBackedRulesetSource::WriteRulesToJSON(
-    const std::vector<dnr_api::Rule>& rules) const {
+bool FileBackedRulesetSource::SerializeRulesToJSON(
+    const std::vector<dnr_api::Rule>& rules,
+    std::string* json) const {
   DCHECK_LE(rules.size(), rule_count_limit());
 
   std::unique_ptr<base::Value> rules_value =
@@ -471,18 +460,9 @@ bool FileBackedRulesetSource::WriteRulesToJSON(
   DCHECK(rules_value);
   DCHECK(rules_value->is_list());
 
-  if (!base::CreateDirectory(json_path_.DirName()))
-    return false;
-
-  std::string json_contents;
-  JSONStringValueSerializer serializer(&json_contents);
+  JSONStringValueSerializer serializer(json);
   serializer.set_pretty_print(false);
-  if (!serializer.Serialize(*rules_value))
-    return false;
-
-  int data_size = static_cast<int>(json_contents.size());
-  return base::WriteFile(json_path_, json_contents.data(), data_size) ==
-         data_size;
+  return serializer.Serialize(*rules_value);
 }
 
 LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(

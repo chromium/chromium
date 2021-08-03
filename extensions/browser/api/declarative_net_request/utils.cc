@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -123,12 +124,24 @@ void OverrideGetChecksumForTest(int checksum) {
   g_override_checksum_for_test = checksum;
 }
 
+std::string GetIndexedRulesetData(base::span<const uint8_t> data) {
+  return base::StrCat(
+      {GetVersionHeader(),
+       base::StringPiece(reinterpret_cast<const char*>(data.data()),
+                         data.size())});
+}
+
 bool PersistIndexedRuleset(const base::FilePath& path,
                            base::span<const uint8_t> data) {
   // Create the directory corresponding to |path| if it does not exist.
   if (!base::CreateDirectory(path.DirName()))
     return false;
 
+  // Unlike for dynamic rules, we don't use `ImportantFileWriter` here since it
+  // can be quite slow (and this will be called for the extension's indexed
+  // static rulesets). Also the file persisting logic here is simpler than for
+  // dynamic rules where we need to persist both the JSON and indexed rulesets
+  // and keep them in sync.
   base::File ruleset_file(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   if (!ruleset_file.IsValid())

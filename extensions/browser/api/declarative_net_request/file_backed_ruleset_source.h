@@ -193,18 +193,14 @@ class FileBackedRulesetSource : public RulesetSource {
       data_decoder::DataDecoder* decoder,
       IndexAndPersistJSONRulesetCallback callback) const;
 
-  // Indexes the given |rules| in indexed/flatbuffer format. The number of
-  // |rules| must be less than the rule count limit.
-  ParseInfo IndexAndPersistRules(
-      std::vector<api::declarative_net_request::Rule> rules) const;
-
   // Reads JSON rules synchronously. Callers should only use this if the JSON is
   // trusted. Must be called on a sequence which supports file IO.
   ReadJSONRulesResult ReadJSONRulesUnsafe() const;
 
-  // Serializes and writes |rules| to the json path. Returns false on failure.
-  bool WriteRulesToJSON(
-      const std::vector<api::declarative_net_request::Rule>& rules) const;
+  // Serializes |rules| into the `json` string. Returns false on failure.
+  bool SerializeRulesToJSON(
+      const std::vector<api::declarative_net_request::Rule>& rules,
+      std::string* json) const;
 
   // Creates a verified RulesetMatcher corresponding to indexed ruleset on disk.
   // Returns kSuccess on success along with the ruleset |matcher|. Must be

@@ -55,6 +55,11 @@ int GetChecksum(base::span<const uint8_t> data);
 // |checksum|. Note: If |checksum| is -1, no such override is performed.
 void OverrideGetChecksumForTest(int checksum);
 
+// Returns the indexed ruleset data to be persisted to disk. The ruleset is
+// composed of a version header corresponding to the current ruleset format
+// version, followed by the actual ruleset data.
+std::string GetIndexedRulesetData(base::span<const uint8_t> data);
+
 // Helper function to persist the indexed ruleset |data| at the given |path|.
 // The ruleset is composed of a version header corresponding to the current
 // ruleset format version, followed by the actual ruleset data.

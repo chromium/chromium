@@ -80,7 +80,7 @@ using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 std::string GetParseError(ParseResult result, int rule_id) {
-  return ParseInfo(result, &rule_id).error();
+  return ParseInfo(result, rule_id).error();
 }
 
 std::string GetErrorWithFilename(

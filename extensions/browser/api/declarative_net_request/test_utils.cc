@@ -200,9 +200,6 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_DUPLICATE_IDS:
       output << "ERROR_DUPLICATE_IDS";
       break;
-    case ParseResult::ERROR_PERSISTING_RULESET:
-      output << "ERROR_PERSISTING_RULESET";
-      break;
     case ParseResult::ERROR_NON_ASCII_URL_FILTER:
       output << "ERROR_NON_ASCII_URL_FILTER";
       break;

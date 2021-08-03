@@ -82398,19 +82398,22 @@ Full version information for the fingerprint enum values:
   <int value="0" label="kSuccess"/>
   <int value="1" label="kErrorReadJSONRules"/>
   <int value="2" label="kErrorRuleCountExceeded"/>
-  <int value="3" label="kErrorCreateTemporarySource"/>
-  <int value="4" label="kErrorWriteTemporaryJSONRuleset"/>
-  <int value="5" label="kErrorWriteTemporaryIndexedRuleset"/>
+  <int value="3" label="kErrorCreateTemporarySource_Deprecated"/>
+  <int value="4" label="kErrorWriteTemporaryJSONRuleset_Deprecated"/>
+  <int value="5" label="kErrorWriteTemporaryIndexedRuleset_Deprecated"/>
   <int value="6" label="kErrorInvalidRules"/>
   <int value="7" label="kErrorCreateDynamicRulesDirectory"/>
-  <int value="8" label="kErrorReplaceIndexedFile"/>
-  <int value="9" label="kErrorReplaceJSONFile"/>
+  <int value="8" label="kErrorReplaceIndexedFile_Deprecated"/>
+  <int value="9" label="kErrorReplaceJSONFile_Deprecated"/>
   <int value="10" label="kErrorCreateMatcher_InvalidPath"/>
   <int value="11" label="kErrorCreateMatcher_FileReadError"/>
   <int value="12" label="kErrorCreateMatcher_ChecksumMismatch"/>
   <int value="13" label="kErrorCreateMatcher_VersionMismatch"/>
   <int value="14" label="kErrorRegexTooLarge"/>
   <int value="15" label="kErrorRegexRuleCountExceeded"/>
+  <int value="16" label="kErrorSerializeToJson"/>
+  <int value="17" label="kErrorWriteJson"/>
+  <int value="18" label="kErrorWriteFlatbuffer"/>
 </enum>
 
 <enum name="UpdateEngineAttemptResult">
