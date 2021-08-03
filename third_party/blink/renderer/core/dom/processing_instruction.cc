@@ -120,12 +120,12 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   if (!is_css_ && !is_xsl_)
     return false;
 
-  href = attrs.at("href");
-  charset = attrs.at("charset");
-  String alternate = attrs.at("alternate");
+  href = attrs.DeprecatedAtOrEmptyValue("href");
+  charset = attrs.DeprecatedAtOrEmptyValue("charset");
+  String alternate = attrs.DeprecatedAtOrEmptyValue("alternate");
   alternate_ = alternate == "yes";
-  title_ = attrs.at("title");
-  media_ = attrs.at("media");
+  title_ = attrs.DeprecatedAtOrEmptyValue("title");
+  media_ = attrs.DeprecatedAtOrEmptyValue("media");
 
   return !alternate_ || !title_.IsEmpty();
 }
