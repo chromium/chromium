@@ -485,7 +485,8 @@ static void AdjustSVGTagNameCase(AtomicHTMLToken* token) {
     MapLoweredLocalNameToName(case_map, svg_tags.get(), svg_names::kTagsCount);
   }
 
-  const QualifiedName& cased_name = case_map->at(token->GetName());
+  const QualifiedName& cased_name =
+      case_map->DeprecatedAtOrEmptyValue(token->GetName());
   if (cased_name.LocalName().IsNull())
     return;
   token->SetName(cased_name.LocalName());
@@ -501,7 +502,8 @@ static void AdjustAttributes(AtomicHTMLToken* token) {
   }
 
   for (auto& token_attribute : token->Attributes()) {
-    const QualifiedName& cased_name = case_map->at(token_attribute.LocalName());
+    const QualifiedName& cased_name =
+        case_map->DeprecatedAtOrEmptyValue(token_attribute.LocalName());
     if (!cased_name.LocalName().IsNull())
       token_attribute.ParserSetName(cased_name);
   }
@@ -550,7 +552,8 @@ static void AdjustForeignAttributes(AtomicHTMLToken* token) {
 
   for (unsigned i = 0; i < token->Attributes().size(); ++i) {
     Attribute& token_attribute = token->Attributes().at(i);
-    const QualifiedName& name = map->at(token_attribute.LocalName());
+    const QualifiedName& name =
+        map->DeprecatedAtOrEmptyValue(token_attribute.LocalName());
     if (!name.LocalName().IsNull())
       token_attribute.ParserSetName(name);
   }
