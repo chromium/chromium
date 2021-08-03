@@ -268,13 +268,27 @@ void BookmarkRemoteUpdatesHandler::Process(
     // Ignore updates that have already been seen according to the version.
     if (tracked_entity && tracked_entity->metadata()->server_version() >=
                               update->response_version) {
-      // Seen this update before. This update may be a reflection and may have
-      // missing the GUID in specifics. Next reupload will populate GUID in
-      // specifics and this codepath will not repeat indefinitely. This logic is
-      // needed for the case when there is only one device and hence the GUID
-      // will not be set by other devices.
-      ReuploadEntityIfNeeded(update_entity, tracked_entity);
+      if (update_entity.id == tracked_entity->metadata()->server_id()) {
+        // Seen this update before. This update may be a reflection and may have
+        // missing the GUID in specifics. Next reupload will populate GUID in
+        // specifics and this codepath will not repeat indefinitely. This logic
+        // is needed for the case when there is only one device and hence the
+        // GUID will not be set by other devices.
+        ReuploadEntityIfNeeded(update_entity, tracked_entity);
+      }
       continue;
+    }
+
+    // The server ID has changed for a tracked entity (matched via client tag).
+    // This can happen if a commit succeeds, but the response does not come back
+    // fast enough(e.g. before shutdown or crash), then the |bookmark_tracker_|
+    // might assume that it was never committed. The server will track the
+    // client that sent up the original commit and return this in a get updates
+    // response. This also may happen due to duplicate GUIDs. In this case it's
+    // better to update to the latest server ID.
+    if (tracked_entity) {
+      bookmark_tracker_->UpdateSyncIdIfNeeded(tracked_entity,
+                                              /*sync_id=*/update_entity.id);
     }
 
     if (tracked_entity && tracked_entity->IsUnsynced()) {
@@ -503,14 +517,6 @@ BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
   DCHECK(tracked_entity_by_client_tag);
   DCHECK(!tracked_entity_by_sync_id);
 
-  // The server ID has changed for a tracked entity (matched via client tag).
-  // This can happen if a commit succeeds, but the response does not come back
-  // fast enough(e.g. before shutdown or crash), then the |bookmark_tracker_|
-  // might assume that it was never committed. The server will track the client
-  // that sent up the original commit and return this in a get updates response.
-  bookmark_tracker_->UpdateSyncIdForLocalCreationIfNeeded(
-      tracked_entity_by_client_tag,
-      /*sync_id=*/update_entity.id);
   return tracked_entity_by_client_tag;
 }
 

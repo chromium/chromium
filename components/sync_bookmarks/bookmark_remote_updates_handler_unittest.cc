@@ -1062,8 +1062,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // |originator_client_item_id| is used a temp sync id and mark the entity that
   // it needs to be committed..
   const SyncedBookmarkTracker::Entity* entity =
-      tracker()->Add(&node, /*sync_id=*/kOriginatorClientItemId, kServerVersion,
-                     kModificationTime, specifics);
+      tracker()->Add(&node, /*sync_id=*/kOriginatorClientItemId,
+                     /*server_version=*/0, kModificationTime, specifics);
   tracker()->IncrementSequenceNumber(entity);
 
   ASSERT_THAT(tracker()->GetEntityForSyncId(kOriginatorClientItemId),
@@ -1084,7 +1084,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
-  response_data.response_version = 0;
+  response_data.response_version = kServerVersion;
   updates.push_back(std::move(response_data));
 
   updates_handler()->Process(updates,
@@ -1129,7 +1129,7 @@ TEST_F(
   // |originator_client_item_id| is used a temp sync id and mark the entity that
   // it needs to be committed..
   const SyncedBookmarkTracker::Entity* entity =
-      tracker()->Add(&node, /*sync_id=*/kBookmarkGuid, kServerVersion,
+      tracker()->Add(&node, /*sync_id=*/kBookmarkGuid, /*server_version=*/0,
                      kModificationTime, specifics);
   tracker()->IncrementSequenceNumber(entity);
 
@@ -1151,7 +1151,7 @@ TEST_F(
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
-  response_data.response_version = 0;
+  response_data.response_version = kServerVersion;
   updates.push_back(std::move(response_data));
 
   updates_handler()->Process(updates,
@@ -1919,6 +1919,56 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_EQ(entity, tracker->GetEntityForSyncId(kFolderId));
 
   EXPECT_TRUE(entity->IsUnsynced());
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldProcessDifferentEntitiesWithSameGuid) {
+  const std::string kServerId1 = "server_id_1";
+  const std::string kServerId2 = "server_id_2";
+
+  const std::string kTitle = "Title";
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+
+  // Initialize the model with one node.
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kServerId1,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/kGuid,
+      /*is_deletion=*/false,
+      /*version=*/0));
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  ASSERT_THAT(tracker()->TrackedEntitiesCountForTest(), Eq(4U));
+  ASSERT_THAT(tracker()->GetEntityForSyncId(kServerId1), NotNull());
+  updates.clear();
+
+  // Create two updates having the same GUID, one is a tombstone for the old
+  // |server_id|, another with a new one. The tombstone is processed after the
+  // update and should be ignored due to its server version.
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kServerId2,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/kGuid,
+      /*is_deletion=*/false,
+      /*version=*/2));
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kServerId1,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/kGuid,
+      /*is_deletion=*/true,
+      /*version=*/1));
+
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  EXPECT_THAT(tracker()->TrackedEntitiesCountForTest(), Eq(4U));
+  EXPECT_THAT(tracker()->GetEntityForSyncId(kServerId1), IsNull());
+  const SyncedBookmarkTracker::Entity* entity =
+      tracker()->GetEntityForSyncId(kServerId2);
+  EXPECT_THAT(entity, NotNull());
+  EXPECT_THAT(entity->bookmark_node(), NotNull());
+  EXPECT_THAT(entity->bookmark_node()->guid(), Eq(kGuid));
 }
 
 TEST(BookmarkRemoteUpdatesHandlerTest,

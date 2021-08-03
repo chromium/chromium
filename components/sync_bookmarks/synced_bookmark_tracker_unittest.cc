@@ -329,7 +329,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateId) {
 
   ASSERT_THAT(entity, NotNull());
   // Update the sync id.
-  tracker->UpdateSyncIdForLocalCreationIfNeeded(entity, kNewSyncId);
+  tracker->UpdateSyncIdIfNeeded(entity, kNewSyncId);
 
   // Old id shouldn't be there, but the new one should.
   EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), IsNull());

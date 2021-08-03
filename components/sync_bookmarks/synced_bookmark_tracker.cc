@@ -727,12 +727,11 @@ void SyncedBookmarkTracker::UpdateUponCommitResponse(
     return;
   }
 
-  UpdateSyncIdForLocalCreationIfNeeded(mutable_entity, sync_id);
+  UpdateSyncIdIfNeeded(mutable_entity, sync_id);
 }
 
-void SyncedBookmarkTracker::UpdateSyncIdForLocalCreationIfNeeded(
-    const Entity* entity,
-    const std::string& sync_id) {
+void SyncedBookmarkTracker::UpdateSyncIdIfNeeded(const Entity* entity,
+                                                 const std::string& sync_id) {
   DCHECK(entity);
 
   const std::string old_id = entity->metadata()->server_id();

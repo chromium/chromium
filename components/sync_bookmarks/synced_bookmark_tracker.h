@@ -230,8 +230,7 @@ class SyncedBookmarkTracker {
   // Informs the tracker that the sync ID for |entity| has changed. It updates
   // the internal state of the tracker accordingly. |entity| must be owned by
   // this tracker.
-  void UpdateSyncIdForLocalCreationIfNeeded(const Entity* entity,
-                                            const std::string& sync_id);
+  void UpdateSyncIdIfNeeded(const Entity* entity, const std::string& sync_id);
 
   // Used to start tracking an entity that overwrites a previous local tombstone
   // (e.g. user-initiated bookmark deletion undo). |entity| must be owned by
