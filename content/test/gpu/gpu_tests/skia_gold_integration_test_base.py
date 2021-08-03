@@ -411,7 +411,10 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
           'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
           error)
     if self._ShouldReportGoldFailure(page):
-      raise Exception('goldctl command failed, see above for details')
+      raise Exception(
+          'goldctl command returned non-zero exit code, see above for details. '
+          'This probably just means that the test produced an image that has '
+          'not been triaged as positive.')
 
   def _ShouldReportGoldFailure(self, page):
     """Determines if a Gold failure should actually be surfaced.
