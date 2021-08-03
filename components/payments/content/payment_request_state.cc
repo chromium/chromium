@@ -67,7 +67,7 @@ PaymentRequestState::PaymentRequestState(
     base::WeakPtr<Delegate> delegate,
     const std::string& app_locale,
     autofill::PersonalDataManager* personal_data_manager,
-    ContentPaymentRequestDelegate* payment_request_delegate,
+    base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
     JourneyLogger* journey_logger)
     : frame_routing_id_(content::GlobalRenderFrameHostId(
           initiator_render_frame_host->GetProcess()->GetID(),
@@ -102,8 +102,8 @@ content::WebContents* PaymentRequestState::GetWebContents() {
                                 : nullptr;
 }
 
-ContentPaymentRequestDelegate* PaymentRequestState::GetPaymentRequestDelegate()
-    const {
+base::WeakPtr<ContentPaymentRequestDelegate>
+PaymentRequestState::GetPaymentRequestDelegate() const {
   return payment_request_delegate_;
 }
 
@@ -376,7 +376,9 @@ void PaymentRequestState::CheckRequestedMethodsSupported(
 }
 
 std::string PaymentRequestState::GetAuthenticatedEmail() const {
-  return payment_request_delegate_->GetAuthenticatedEmail();
+  return payment_request_delegate_
+             ? payment_request_delegate_->GetAuthenticatedEmail()
+             : std::string();
 }
 
 void PaymentRequestState::AddObserver(Observer* observer) {
@@ -517,11 +519,13 @@ void PaymentRequestState::SetSelectedShippingProfile(
   // merchant.
   is_waiting_for_merchant_validation_ = true;
 
-  // Start the normalization of the shipping address.
-  payment_request_delegate_->GetAddressNormalizer()->NormalizeAddressAsync(
-      *selected_shipping_profile_, /*timeout_seconds=*/2,
-      base::BindOnce(&PaymentRequestState::OnAddressNormalized,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (payment_request_delegate_) {
+    // Start the normalization of the shipping address.
+    payment_request_delegate_->GetAddressNormalizer()->NormalizeAddressAsync(
+        *selected_shipping_profile_, /*timeout_seconds=*/2,
+        base::BindOnce(&PaymentRequestState::OnAddressNormalized,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void PaymentRequestState::SetSelectedContactProfile(
@@ -554,7 +558,9 @@ autofill::PersonalDataManager* PaymentRequestState::GetPersonalDataManager() {
 }
 
 autofill::RegionDataLoader* PaymentRequestState::GetRegionDataLoader() {
-  return payment_request_delegate_->GetRegionDataLoader();
+  return payment_request_delegate_
+             ? payment_request_delegate_->GetRegionDataLoader()
+             : nullptr;
 }
 
 bool PaymentRequestState::IsPaymentAppInvoked() const {
@@ -562,7 +568,9 @@ bool PaymentRequestState::IsPaymentAppInvoked() const {
 }
 
 autofill::AddressNormalizer* PaymentRequestState::GetAddressNormalizer() {
-  return payment_request_delegate_->GetAddressNormalizer();
+  return payment_request_delegate_
+             ? payment_request_delegate_->GetAddressNormalizer()
+             : nullptr;
 }
 
 bool PaymentRequestState::IsInitialized() const {
@@ -758,7 +766,9 @@ void PaymentRequestState::OnAddressNormalized(
 }
 
 bool PaymentRequestState::IsInTwa() const {
-  return !payment_request_delegate_->GetTwaPackageName().empty();
+  return payment_request_delegate_
+             ? !payment_request_delegate_->GetTwaPackageName().empty()
+             : false;
 }
 
 bool PaymentRequestState::GetCanMakePaymentValue() const {

@@ -86,8 +86,8 @@ class PaymentAppFactory {
     virtual const std::vector<autofill::AutofillProfile*>&
     GetBillingProfiles() = 0;
     virtual bool IsRequestedAutofillDataAvailable() = 0;
-    virtual ContentPaymentRequestDelegate* GetPaymentRequestDelegate()
-        const = 0;
+    virtual base::WeakPtr<ContentPaymentRequestDelegate>
+    GetPaymentRequestDelegate() const = 0;
 
     // Called when an app is created.
     virtual void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) = 0;

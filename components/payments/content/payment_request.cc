@@ -209,7 +209,7 @@ void PaymentRequest::Init(
       initiator_frame, top_level_origin_, frame_origin_, frame_security_origin_,
       spec(), /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale(), delegate_->GetPersonalDataManager(),
-      delegate_.get(), &journey_logger_);
+      delegate_->GetContentWeakPtr(), &journey_logger_);
 
   journey_logger_.SetRequestedInformation(
       spec_->request_shipping(), spec_->request_payer_email(),
@@ -291,7 +291,7 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
   journey_logger_.SetTriggerTime();
 
   // A tab can display only one PaymentRequest UI at a time.
-  display_handle_ = display_manager_->TryShow(delegate_.get());
+  display_handle_ = display_manager_->TryShow(delegate_->GetContentWeakPtr());
   if (!display_handle_) {
     log_.Error(errors::kAnotherUiShowing);
     DCHECK(!has_recorded_completion_);

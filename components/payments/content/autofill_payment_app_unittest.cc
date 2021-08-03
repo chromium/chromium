@@ -322,7 +322,8 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_NormalizationBeforeUnmask) {
 
   autofill::CreditCard& card = local_credit_card();
   card.SetNumber(u"");
-  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", &delegate);
+  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US",
+                         delegate.GetWeakPtr());
 
   FakePaymentAppDelegate app_delegate;
 
@@ -352,7 +353,8 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_UnmaskBeforeNormalization) {
 
   autofill::CreditCard& card = local_credit_card();
   card.SetNumber(u"");
-  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", &delegate);
+  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US",
+                         delegate.GetWeakPtr());
 
   FakePaymentAppDelegate app_delegate;
 

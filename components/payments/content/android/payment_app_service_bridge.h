@@ -80,7 +80,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   bool IsOffTheRecord() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
   bool IsRequestedAutofillDataAvailable() override;
-  ContentPaymentRequestDelegate* GetPaymentRequestDelegate() const override;
+  base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
+      const override;
   void ShowProcessingSpinner() override;
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;

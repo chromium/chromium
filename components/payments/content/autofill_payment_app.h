@@ -33,7 +33,7 @@ class AutofillPaymentApp
       const autofill::CreditCard& card,
       const std::vector<autofill::AutofillProfile*>& billing_profiles,
       const std::string& app_locale,
-      PaymentRequestBaseDelegate* payment_request_delegate);
+      base::WeakPtr<PaymentRequestBaseDelegate> payment_request_delegate);
   ~AutofillPaymentApp() override;
 
   // PaymentApp:
@@ -97,7 +97,7 @@ class AutofillPaymentApp
   const std::string app_locale_;
 
   base::WeakPtr<Delegate> delegate_;
-  PaymentRequestBaseDelegate* payment_request_delegate_;
+  base::WeakPtr<PaymentRequestBaseDelegate> payment_request_delegate_;
   autofill::AutofillProfile billing_address_;
 
   std::u16string cvc_;

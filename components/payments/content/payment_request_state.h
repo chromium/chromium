@@ -98,21 +98,23 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
                               const std::string& error_message)>;
 
   // The `spec` parameter should not be null.
-  PaymentRequestState(content::RenderFrameHost* initiator_render_frame_host,
-                      const GURL& top_level_origin,
-                      const GURL& frame_origin,
-                      const url::Origin& frame_security_origin,
-                      base::WeakPtr<PaymentRequestSpec> spec,
-                      base::WeakPtr<Delegate> delegate,
-                      const std::string& app_locale,
-                      autofill::PersonalDataManager* personal_data_manager,
-                      ContentPaymentRequestDelegate* payment_request_delegate,
-                      JourneyLogger* journey_logger);
+  PaymentRequestState(
+      content::RenderFrameHost* initiator_render_frame_host,
+      const GURL& top_level_origin,
+      const GURL& frame_origin,
+      const url::Origin& frame_security_origin,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<Delegate> delegate,
+      const std::string& app_locale,
+      autofill::PersonalDataManager* personal_data_manager,
+      base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
+      JourneyLogger* journey_logger);
   ~PaymentRequestState() override;
 
   // PaymentAppFactory::Delegate
   content::WebContents* GetWebContents() override;
-  ContentPaymentRequestDelegate* GetPaymentRequestDelegate() const override;
+  base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
+      const override;
   void ShowProcessingSpinner() override;
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;
@@ -399,7 +401,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // Credit cards are directly owned by the apps in this list.
   std::vector<std::unique_ptr<PaymentApp>> available_apps_;
 
-  ContentPaymentRequestDelegate* payment_request_delegate_;
+  base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate_;
 
   std::unique_ptr<PaymentResponseHelper> response_helper_;
 

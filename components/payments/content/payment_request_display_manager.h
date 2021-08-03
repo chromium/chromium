@@ -33,7 +33,7 @@ class PaymentRequestDisplayManager : public KeyedService {
   class DisplayHandle {
    public:
     DisplayHandle(PaymentRequestDisplayManager* display_manager,
-                  ContentPaymentRequestDelegate* delegate);
+                  base::WeakPtr<ContentPaymentRequestDelegate> delegate);
     ~DisplayHandle();
     void Show(base::WeakPtr<PaymentRequest> request);
     void Retry();
@@ -48,7 +48,7 @@ class PaymentRequestDisplayManager : public KeyedService {
 
    private:
     PaymentRequestDisplayManager* display_manager_;
-    ContentPaymentRequestDelegate* delegate_;
+    base::WeakPtr<ContentPaymentRequestDelegate> delegate_;
     bool was_shown_ = false;
     DISALLOW_COPY_AND_ASSIGN(DisplayHandle);
   };
@@ -62,7 +62,7 @@ class PaymentRequestDisplayManager : public KeyedService {
   // called with true if the window is finished opening successfully, false if
   // opening it failed.
   std::unique_ptr<DisplayHandle> TryShow(
-      ContentPaymentRequestDelegate* delegate);
+      base::WeakPtr<ContentPaymentRequestDelegate> delegate);
   void ShowPaymentHandlerWindow(const GURL& url,
                                 PaymentHandlerOpenWindowCallback callback);
 

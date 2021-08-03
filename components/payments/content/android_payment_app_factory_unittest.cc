@@ -82,7 +82,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
                const std::vector<autofill::AutofillProfile*>&());
   MOCK_METHOD0(IsRequestedAutofillDataAvailable, bool());
   MOCK_CONST_METHOD0(GetPaymentRequestDelegate,
-                     ContentPaymentRequestDelegate*());
+                     base::WeakPtr<ContentPaymentRequestDelegate>());
   MOCK_METHOD1(OnPaymentAppCreated, void(std::unique_ptr<PaymentApp> app));
   MOCK_METHOD1(OnPaymentAppCreationError,
                void(const std::string& error_message));

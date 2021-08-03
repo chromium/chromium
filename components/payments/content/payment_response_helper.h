@@ -35,13 +35,14 @@ class PaymentResponseHelper
   };
 
   // The spec, selected_app and delegate cannot be null.
-  PaymentResponseHelper(const std::string& app_locale,
-                        base::WeakPtr<PaymentRequestSpec> spec,
-                        base::WeakPtr<PaymentApp> selected_app,
-                        PaymentRequestDelegate* payment_request_delegate,
-                        autofill::AutofillProfile* selected_shipping_profile,
-                        autofill::AutofillProfile* selected_contact_profile,
-                        base::WeakPtr<Delegate> delegate);
+  PaymentResponseHelper(
+      const std::string& app_locale,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentApp> selected_app,
+      base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
+      autofill::AutofillProfile* selected_shipping_profile,
+      autofill::AutofillProfile* selected_contact_profile,
+      base::WeakPtr<Delegate> delegate);
   ~PaymentResponseHelper() override;
 
   // PaymentApp::Delegate
@@ -68,8 +69,7 @@ class PaymentResponseHelper
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
   base::WeakPtr<PaymentApp> selected_app_;
-  // Not owned, cannot be null.
-  PaymentRequestDelegate* payment_request_delegate_;
+  base::WeakPtr<PaymentRequestDelegate> payment_request_delegate_;
 
   // Not owned, can be null (dependent on the spec).
   autofill::AutofillProfile* selected_contact_profile_;

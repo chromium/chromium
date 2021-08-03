@@ -26,7 +26,7 @@ PaymentResponseHelper::PaymentResponseHelper(
     const std::string& app_locale,
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentApp> selected_app,
-    PaymentRequestDelegate* payment_request_delegate,
+    base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
     autofill::AutofillProfile* selected_shipping_profile,
     autofill::AutofillProfile* selected_contact_profile,
     base::WeakPtr<Delegate> delegate)
@@ -50,11 +50,13 @@ PaymentResponseHelper::PaymentResponseHelper(
 
     is_waiting_for_shipping_address_normalization_ = true;
 
-    payment_request_delegate_->GetAddressNormalizer()->NormalizeAddressAsync(
-        *selected_shipping_profile,
-        /*timeout_seconds=*/5,
-        base::BindOnce(&PaymentResponseHelper::OnAddressNormalized,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (payment_request_delegate_) {
+      payment_request_delegate_->GetAddressNormalizer()->NormalizeAddressAsync(
+          *selected_shipping_profile,
+          /*timeout_seconds=*/5,
+          base::BindOnce(&PaymentResponseHelper::OnAddressNormalized,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   // Start to get the instrument details. Will call back into

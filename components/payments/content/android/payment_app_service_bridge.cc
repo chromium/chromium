@@ -307,7 +307,7 @@ bool PaymentAppServiceBridge::IsRequestedAutofillDataAvailable() {
   return false;
 }
 
-ContentPaymentRequestDelegate*
+base::WeakPtr<ContentPaymentRequestDelegate>
 PaymentAppServiceBridge::GetPaymentRequestDelegate() const {
   // PaymentAppService flow should have short-circuited before this point.
   NOTREACHED();
