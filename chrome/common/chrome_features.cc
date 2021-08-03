@@ -720,7 +720,7 @@ const base::Feature kPermissionAuditing{"PermissionAuditing",
 
 // Enables using the prediction service for permission prompts.
 const base::Feature kPermissionPredictions{"PermissionPredictions",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<double> kPermissionPredictionsHoldbackChance(
     &kPermissionPredictions,

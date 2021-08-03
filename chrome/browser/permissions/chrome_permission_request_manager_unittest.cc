@@ -321,7 +321,7 @@ TEST_F(ChromePermissionRequestManagerTest,
           "true"},
          {QuietNotificationPermissionUiConfig::kEnableAdaptiveActivationDryRun,
           "true"}}}},
-      {});
+      {features::kPermissionPredictions});
 
   ASSERT_TRUE(
       QuietNotificationPermissionUiConfig::IsAdaptiveActivationDryRunEnabled());
@@ -403,7 +403,7 @@ TEST_F(ChromePermissionRequestManagerTest,
          {QuietNotificationPermissionUiConfig::
               kAdaptiveActivationActionWindowSizeInDays,
           "7"}}}},
-      {});
+      {features::kPermissionPredictions});
 
   ASSERT_EQ(
       base::TimeDelta::FromDays(7),
@@ -447,7 +447,8 @@ TEST_F(ChromePermissionRequestManagerTest,
       {{features::kQuietNotificationPrompts,
         {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
           "true"}}}},
-      {permissions::features::kBlockRepeatedNotificationPermissionPrompts});
+      {permissions::features::kBlockRepeatedNotificationPermissionPrompts,
+       features::kPermissionPredictions});
 
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
       prefs::kEnableQuietNotificationPermissionUi));
