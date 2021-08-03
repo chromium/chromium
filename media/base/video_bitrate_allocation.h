@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
 
 #include "base/macros.h"
 #include "media/base/media_export.h"
@@ -32,6 +33,8 @@ class MEDIA_EXPORT VideoBitrateAllocation {
 
   // Sum of all bitrates.
   int32_t GetSumBps() const;
+
+  std::string ToString() const;
 
   bool operator==(const VideoBitrateAllocation& other) const;
   inline bool operator!=(const VideoBitrateAllocation& other) const {
