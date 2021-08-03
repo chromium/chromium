@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3"
-    units="janks" expires_after="2021-07-31">
+    units="janks" expires_after="2021-09-30">
 <!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
 
   <owner>etienneb@chromium.org</owner>
