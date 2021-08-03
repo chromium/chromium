@@ -8549,7 +8549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageSettings.PageImpression"
-    enum="LanguageSettingsPageType" expires_after="2021-12-01">
+    enum="LanguageSettingsPageType" expires_after="2022-01-30">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8560,7 +8560,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8570,7 +8570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8580,7 +8580,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8590,7 +8590,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8608,7 +8608,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Availability"
-    enum="LanguageUsage.UI.Android.Availability" expires_after="2021-12-01">
+    enum="LanguageUsage.UI.Android.Availability" expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8636,7 +8636,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness.NoOverride"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2021-12-01">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8650,7 +8650,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness.Override"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2021-12-01">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2022-01-30">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -12704,7 +12704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.CookieDomainCount" units="units"
-    expires_after="2021-11-28">
+    expires_after="2022-01-30">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12715,7 +12715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.DatabaseSize" units="KiB"
-    expires_after="2021-11-28">
+    expires_after="2022-01-30">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12726,7 +12726,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.RecordCount" units="units"
-    expires_after="2021-11-28">
+    expires_after="2022-01-30">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12737,7 +12737,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.StorageOriginCount" units="units"
-    expires_after="2021-11-28">
+    expires_after="2022-01-30">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -12748,7 +12748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.AccessContextAudit.TopFrameOriginCount" units="units"
-    expires_after="2021-11-28">
+    expires_after="2022-01-30">
   <owner>msramek@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -15490,7 +15490,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2021-11-30">
+    units="origins" expires_after="2022-01-30">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -16584,7 +16584,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.AppDrag.EndWindowState"
-    enum="AppWindowDragEndWindowState" expires_after="2021-12-01">
+    enum="AppWindowDragEndWindowState" expires_after="2022-01-30">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -16605,7 +16605,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.AppWindowDrag.InSplitView.CountOfPerUserSession"
-    units="times" expires_after="2021-12-01">
+    units="times" expires_after="2022-01-30">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>

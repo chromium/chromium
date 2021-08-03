@@ -362,7 +362,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
-    expires_after="2021-11-30">
+    expires_after="2022-01-30">
   <owner>dubin@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
@@ -384,7 +384,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DeviceSettings.FeatureFlagsMigration"
-    enum="DeviceSettingsFeatureFlagsMigrationStatus" expires_after="2021-11-30">
+    enum="DeviceSettingsFeatureFlagsMigrationStatus" expires_after="2022-01-30">
   <owner>mnissler@chromium.org</owner>
   <owner>src/chrome/browser/ash/settings/OWNERS</owner>
   <summary>
@@ -1792,7 +1792,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.UrlXattrsCount" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>jorgelo@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>

@@ -40,7 +40,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
-    expires_after="2021-11-30">
+    expires_after="2022-01-30">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -202,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PhoneHub.OptInEntryPoint" enum="PhoneHubOptInEntryPoint"
-    expires_after="2021-11-25">
+    expires_after="2022-01-30">
   <owner>meilinw@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Tracks the UI surface with which users enable Phone Hub.</summary>

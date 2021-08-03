@@ -793,7 +793,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Cellular.3GPPRegistrationDelayedDrop"
     enum="NetworkCellular3GPPRegistrationDelayedDrop"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -804,7 +804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.AutoConnectTotalTime" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -815,7 +815,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.AutoConnectTries" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -839,7 +839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2021-12-01">
+    enum="BooleanPresent" expires_after="2022-01-30">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -982,7 +982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToConnect" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1022,7 +1022,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToOnline" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1261,7 +1261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2021-12-01">
+    enum="BooleanPresent" expires_after="2022-01-30">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1622,7 +1622,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.Driver" enum="VPNDriver"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>akhouderchah@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1642,7 +1642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.TimeOnline" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>akhouderchah@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1676,7 +1676,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.UserAuthenticationType"
-    enum="VPNUserAuthenticationType" expires_after="2021-12-01">
+    enum="VPNUserAuthenticationType" expires_after="2022-01-30">
   <owner>akhouderchah@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1748,7 +1748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.ApDisconnectReason" enum="WiFiReasonCode"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1768,7 +1768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.AssocFailureType" enum="WiFiStatusCode"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>akhouderchah@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1780,7 +1780,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.AuthFailureType" enum="WiFiStatusCode"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>akhouderchah@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1792,7 +1792,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.AutoConnectableServices" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1823,7 +1823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.Channel" enum="NetworkChannelType"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1833,7 +1833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.ClientDisconnectReason"
-    enum="WiFiReasonCode" expires_after="2021-12-01">
+    enum="WiFiReasonCode" expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1895,7 +1895,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.EapInnerProtocol" enum="EAPInnerProtocol"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1905,7 +1905,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.EapOuterProtocol" enum="EAPOuterProtocol"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1979,7 +1979,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.HiddenSSIDNetworkCount" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <owner>cros-privacy-core@google.com</owner>
@@ -2132,7 +2132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.NeighborLinkMonitorFailure"
-    enum="NeighborLinkMonitorFailureType" expires_after="2021-12-01">
+    enum="NeighborLinkMonitorFailureType" expires_after="2022-01-30">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2143,7 +2143,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.NetworkConnectionIPType"
-    enum="NetworkConnectionIPType" expires_after="2021-12-01">
+    enum="NetworkConnectionIPType" expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2217,7 +2217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.RememberedNetworkCount" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2229,7 +2229,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.RememberedSystemNetworkCount" units="units"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2302,7 +2302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.Security" enum="NetworkSecurityType"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2344,7 +2344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.SignalStrength" units="negative dBm"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2470,7 +2470,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.TimeResumeToReady" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2577,7 +2577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.TransmitBitrateMbps" units="Mbps"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2611,7 +2611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.UserInitiatedConnectionResult"
-    enum="ConnectionResult" expires_after="2021-12-01">
+    enum="ConnectionResult" expires_after="2022-01-30">
   <owner>briannorris@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>

@@ -1804,7 +1804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionMedium"
-    enum="SecureChannelNearbyConnectionMedium" expires_after="2021-11-30">
+    enum="SecureChannelNearbyConnectionMedium" expires_after="2022-01-30">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1845,7 +1845,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
-    enum="BooleanSuccess" expires_after="2021-11-30">
+    enum="BooleanSuccess" expires_after="2022-01-30">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1893,7 +1893,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
-    enum="BooleanSuccess" expires_after="2021-11-30">
+    enum="BooleanSuccess" expires_after="2022-01-30">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

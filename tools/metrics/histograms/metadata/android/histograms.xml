@@ -440,7 +440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStarted"
-    enum="BackgroundTaskId" expires_after="2021-12-01">
+    enum="BackgroundTaskId" expires_after="2022-01-30">
   <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>Records that a specific background task has been started.</summary>
@@ -869,7 +869,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DexFixer" enum="DexFixerReason"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>agrieve@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
@@ -2128,7 +2128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.OmniboxFocusReason" enum="OmniboxFocusReason"
-    expires_after="2021-12-01">
+    expires_after="2022-01-30">
   <owner>mdjones@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>amaralp@chromium.org</owner>
