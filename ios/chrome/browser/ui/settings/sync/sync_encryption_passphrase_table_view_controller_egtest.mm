@@ -6,6 +6,7 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -26,6 +27,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SyncSettingsConfirmButton;
 using chrome_test_util::PrimarySignInButton;
@@ -96,7 +98,7 @@ NSString* const kPassphrase = @"hello";
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
 
   // Scroll to bottom of Manage Sync Settings, if necessary.
   [[EarlGrey selectElementWithMatcher:

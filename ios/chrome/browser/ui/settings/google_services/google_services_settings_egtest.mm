@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -40,6 +41,7 @@ using chrome_test_util::AddAccountButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SyncSettingsConfirmButton;
 
@@ -126,7 +128,7 @@ using chrome_test_util::SyncSettingsConfirmButton;
   [[EarlGrey selectElementWithMatcher:signinCellMatcher]
       performAction:grey_tap()];
   // Open Settings link.
-  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   // Open "Manage Sync" settings.
   id<GREYMatcher> manageSyncMatcher =
       [self cellMatcherWithTitleID:IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE
@@ -295,7 +297,7 @@ using chrome_test_util::SyncSettingsConfirmButton;
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
-  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   // Open "Manage Sync" settings.
   id<GREYMatcher> manageSyncMatcher =
       [self cellMatcherWithTitleID:IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE

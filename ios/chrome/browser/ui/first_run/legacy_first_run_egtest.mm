@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -23,6 +24,7 @@
 #endif
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::SettingsLink;
 using chrome_test_util::SyncSettingsConfirmButton;
 using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::MatchInBlockerWindowWithNumber;
@@ -153,7 +155,7 @@ id<GREYMatcher> SkipSigninButton() {
       performAction:grey_tap()];
 
   // Tap Settings link.
-  [SigninEarlGreyUI tapSettingsLink];
+  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
 
   // Check Sync hasn't started yet, allowing the user to change some settings.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],

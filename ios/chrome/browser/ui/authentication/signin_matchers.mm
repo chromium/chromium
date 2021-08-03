@@ -17,4 +17,10 @@ id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email) {
   return [SigninEarlGreyAppInterface identityCellMatcherForEmail:email];
 }
 
+id<GREYMatcher> SettingsLink() {
+  return grey_allOf(grey_accessibilityLabel(@"settings"),
+                    grey_accessibilityTrait(UIAccessibilityTraitLink),
+                    grey_interactable(), nil);
+}
+
 }  // namespace chrome_test_util
