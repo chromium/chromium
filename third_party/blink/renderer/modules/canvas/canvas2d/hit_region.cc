@@ -96,7 +96,7 @@ HitRegion* HitRegionManager::GetHitRegionById(const String& id) const {
 HitRegion* HitRegionManager::GetHitRegionByControl(
     const Element* control) const {
   if (control)
-    return hit_region_control_map_.at(control);
+    return hit_region_control_map_.DeprecatedAtOrEmptyValue(control);
 
   return nullptr;
 }
