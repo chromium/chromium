@@ -67,16 +67,6 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
       const PasswordFormDigest& observed_form,
       AffiliatedRealmsCallback result_callback);
 
-  // Retrieves realms of web sites affiliated with the Android application that
-  // |android_form| belongs to and invokes |result_callback| on the same thread;
-  // or yields the empty list if  |android_form| is not an Android credential.
-  // NOTE: This will issue an on-demand network request against the Affiliation
-  // API if affiliations of the Android application are not cached. However, as
-  // long as the |android_form| is from the PasswordStore, this should rarely
-  // happen as affiliation information for those applications are prefetched.
-  virtual void GetAffiliatedWebRealms(const PasswordFormDigest& android_form,
-                                      AffiliatedRealmsCallback result_callback);
-
   // Retrieves affiliation and branding information about the Android
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
   // |app_icon_url| of forms, and invokes |result_callback|.
@@ -117,13 +107,6 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
       AffiliatedRealmsCallback result_callback,
       const AffiliatedFacets& results,
       bool success);
-
-  // Called back by AndroidAffiliationService to supply the list of facets
-  // affiliated with the Android application that GetAffiliatedWebRealms() was
-  // called with, so that the call can be completed.
-  void CompleteGetAffiliatedWebRealms(AffiliatedRealmsCallback result_callback,
-                                      const AffiliatedFacets& results,
-                                      bool success);
 
   // Called back by AndroidAffiliationService to supply the list of facets
   // affiliated with the Android credential in |form|. Injects affiliation and
