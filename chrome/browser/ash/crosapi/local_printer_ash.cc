@@ -82,17 +82,12 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
     const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
   return mojom::CapabilitiesResponse::New(
       LocalPrinterAsh::PrinterToMojom(printer), printer.HasSecureProtocol(),
-      caps, prefs->GetInteger(prefs::kPrintingAllowedColorModes),
-      prefs->GetInteger(prefs::kPrintingAllowedDuplexModes),
-      static_cast<printing::mojom::PinModeRestriction>(
-          prefs->GetInteger(prefs::kPrintingAllowedPinModes)),
-      static_cast<printing::mojom::ColorModeRestriction>(
-          prefs->GetInteger(prefs::kPrintingColorDefault)),
-      static_cast<printing::mojom::DuplexModeRestriction>(
-          prefs->GetInteger(prefs::kPrintingDuplexDefault)),
-      static_cast<printing::mojom::PinModeRestriction>(
-          prefs->GetInteger(prefs::kPrintingPinDefault)),
-      0);  // deprecated
+      caps,     // comment to prevent git cl format
+      0, 0, 0,  // deprecated
+      printing::mojom::PinModeRestriction::kUnset,     // deprecated
+      printing::mojom::ColorModeRestriction::kUnset,   // deprecated
+      printing::mojom::DuplexModeRestriction::kUnset,  // deprecated
+      printing::mojom::PinModeRestriction::kUnset);    // deprecated
 }
 
 }  // namespace
@@ -385,6 +380,7 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
   Profile* profile = GetProfile();
   PrefService* prefs = profile->GetPrefs();
   mojom::PoliciesPtr policies = mojom::Policies::New();
+
   if (prefs->HasPrefPath(prefs::kPrintHeaderFooter)) {
     (prefs->IsManagedPreference(prefs::kPrintHeaderFooter)
          ? policies->print_header_footer_allowed
@@ -393,6 +389,7 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
             ? mojom::Policies::OptionalBool::kTrue
             : mojom::Policies::OptionalBool::kFalse;
   }
+
   if (prefs->HasPrefPath(prefs::kPrintingAllowedBackgroundGraphicsModes)) {
     policies->allowed_background_graphics_modes =
         static_cast<mojom::Policies::BackgroundGraphicsModeRestriction>(
@@ -403,6 +400,7 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
         static_cast<mojom::Policies::BackgroundGraphicsModeRestriction>(
             prefs->GetInteger(prefs::kPrintingBackgroundGraphicsDefault));
   }
+
   policies->paper_size_default = printing::ParsePaperSizeDefault(*prefs);
   if (prefs->HasPrefPath(prefs::kPrintingMaxSheetsAllowed)) {
     int max_sheets = prefs->GetInteger(prefs::kPrintingMaxSheetsAllowed);
@@ -411,6 +409,30 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
       policies->max_sheets_allowed_has_value = true;
     }
   }
+
+  if (prefs->HasPrefPath(prefs::kPrintingAllowedColorModes))
+    policies->allowed_color_modes =
+        prefs->GetInteger(prefs::kPrintingAllowedColorModes);
+  if (prefs->HasPrefPath(prefs::kPrintingAllowedDuplexModes))
+    policies->allowed_duplex_modes =
+        prefs->GetInteger(prefs::kPrintingAllowedDuplexModes);
+  if (prefs->HasPrefPath(prefs::kPrintingAllowedPinModes))
+    policies->allowed_pin_modes =
+        static_cast<printing::mojom::PinModeRestriction>(
+            prefs->GetInteger(prefs::kPrintingAllowedPinModes));
+  if (prefs->HasPrefPath(prefs::kPrintingColorDefault))
+    policies->default_color_mode =
+        static_cast<printing::mojom::ColorModeRestriction>(
+            prefs->GetInteger(prefs::kPrintingColorDefault));
+  if (prefs->HasPrefPath(prefs::kPrintingDuplexDefault))
+    policies->default_duplex_mode =
+        static_cast<printing::mojom::DuplexModeRestriction>(
+            prefs->GetInteger(prefs::kPrintingDuplexDefault));
+  if (prefs->HasPrefPath(prefs::kPrintingPinDefault))
+    policies->default_pin_mode =
+        static_cast<printing::mojom::PinModeRestriction>(
+            prefs->GetInteger(prefs::kPrintingPinDefault));
+
   std::move(callback).Run(std::move(policies));
 }
 

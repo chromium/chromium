@@ -1099,9 +1099,6 @@ export class DestinationStore extends EventTarget {
           parseDestination(originToType(origin), assert(settingsInfo.printer)));
     }
     if (dest) {
-      if (settingsInfo.printer && settingsInfo.printer.policies) {
-        dest.policies = settingsInfo.printer.policies;
-      }
       if ((origin === DestinationOrigin.LOCAL ||
            origin === DestinationOrigin.CROS) &&
           dest.capabilities) {

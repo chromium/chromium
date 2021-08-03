@@ -173,17 +173,17 @@ struct CapabilitiesResponse {
   // Printer capabilities and defaults corresponding to the
   // PrinterSemanticCapsAndDefaults class in printing/backend/print_backend.h.
   printing.mojom.PrinterSemanticCapsAndDefaults? capabilities@2;
+  // The fields below are no longer used.
   // Bitmask of allowed color modes corresponding to the ColorModeRestriction
   // enum in printing/backend/printing_restrictions.h.
-  uint32 allowed_color_modes@3;
+  uint32 allowed_color_modes_deprecated@3;
   // Bitmask of allowed duplex modes.
-  uint32 allowed_duplex_modes@4;
-  [MinVersion=1] printing.mojom.PinModeRestriction allowed_pin_modes@9;
-  printing.mojom.ColorModeRestriction default_color_mode@6;
-  printing.mojom.DuplexModeRestriction default_duplex_mode@7;
-  printing.mojom.PinModeRestriction default_pin_mode@8;
-  // No longer used.
-  uint32 allowed_pin_modes_deprecated@5;
+  uint32 allowed_duplex_modes_deprecated@4;
+  uint32 allowed_pin_modes_deprecated_version_0@5;
+  [MinVersion=1] printing.mojom.PinModeRestriction allowed_pin_modes_deprecated_version_1@9;
+  printing.mojom.ColorModeRestriction default_color_mode_deprecated@6;
+  printing.mojom.DuplexModeRestriction default_duplex_mode_deprecated@7;
+  printing.mojom.PinModeRestriction default_pin_mode_deprecated@8;
 };
 
 // Global print policies that are not printer specific.
@@ -202,6 +202,15 @@ struct Policies {
   // Indicates how many sheets is allowed to use for a single print job.
   uint32 max_sheets_allowed@5;
   bool max_sheets_allowed_has_value@6;
+  // Bitmask of allowed color modes corresponding to the ColorModeRestriction
+  // enum in printing/backend/printing_restrictions.h.
+  [MinVersion=1] uint32 allowed_color_modes@7;
+  // Bitmask of allowed duplex modes.
+  [MinVersion=1] uint32 allowed_duplex_modes@8;
+  [MinVersion=1] printing.mojom.PinModeRestriction allowed_pin_modes@9;
+  [MinVersion=1] printing.mojom.ColorModeRestriction default_color_mode@10;
+  [MinVersion=1] printing.mojom.DuplexModeRestriction default_duplex_mode@11;
+  [MinVersion=1] printing.mojom.PinModeRestriction default_pin_mode@12;
   // Allowed background graphics modes.
   // This is used in pref file and should never change.
   // Corresponds to enum class BackgroundGraphicsModeRestriction in

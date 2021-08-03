@@ -8,13 +8,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
+import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, PinModeRestriction, Policies} from '../native_layer.js';
 import {Cdd, CddCapabilities, VendorCapability} from './cdd.js';
 import {Destination, DestinationOrigin, DestinationType, RecentDestination} from './destination.js';
 import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
-// <if expr="chromeos or lacros">
-import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from './destination_policies.js';
-// </if>
 import {DocumentSettings} from './document_info.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
 import {ScalingType} from './scaling.js';
@@ -112,6 +109,9 @@ export let PolicyEntry;
  *   cssBackground: (PolicyEntry | undefined),
  *   mediaSize: (PolicyEntry | undefined),
  *   sheets: (number | undefined),
+ *   color: (PolicyEntry | undefined),
+ *   duplex: (PolicyEntry | undefined),
+ *   pin: (PolicyEntry | undefined),
  * }}
  */
 export let PolicySettings;
@@ -1108,6 +1108,33 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         break;
       }
+      case 'color': {
+        const value = allowedMode ? allowedMode : defaultMode;
+        if (value !== undefined) {
+          this.setPolicySetting_(
+              settingName, value, !!allowedMode,
+              /*applyOnDestinationUpdate=*/ false);
+        }
+        break;
+      }
+      case 'duplex': {
+        const value = allowedMode ? allowedMode : defaultMode;
+        if (value !== undefined) {
+          this.setPolicySetting_(
+              settingName, value, !!allowedMode,
+              /*applyOnDestinationUpdate=*/ false);
+        }
+        break;
+      }
+      case 'pin': {
+        const value = allowedMode ? allowedMode : defaultMode;
+        if (value !== undefined) {
+          this.setPolicySetting_(
+              settingName, value, !!allowedMode,
+              /*applyOnDestinationUpdate=*/ false);
+        }
+        break;
+      }
       default:
         break;
     }
@@ -1140,6 +1167,14 @@ export class PrintPreviewModelElement extends PolymerElement {
         applyOnDestinationUpdate: false
       };
     }
+    ['color', 'duplex', 'pin'].forEach(settingName => {
+      if (!policies[settingName]) {
+        return;
+      }
+      const defaultMode = policies[settingName].defaultMode;
+      const allowedMode = policies[settingName].allowedMode;
+      this.configurePolicySetting_(settingName, allowedMode, defaultMode);
+    });
     // </if>
   }
 
@@ -1202,6 +1237,42 @@ export class PrintPreviewModelElement extends PolymerElement {
           this.maxSheets = this.policySettings_['sheets'].value;
           continue;
         }
+        if (settingName === 'color') {
+          this.set(
+              'settings.color.value',
+              policy.value === ColorModeRestriction.COLOR);
+          this.set('settings.color.setByPolicy', policy.managed);
+          continue;
+        }
+        if (settingName === 'duplex') {
+          let setDuplexTypeByPolicy = false;
+          this.set(
+              'settings.duplex.value',
+              policy.value !== DuplexModeRestriction.SIMPLEX);
+          if (policy.value === DuplexModeRestriction.SHORT_EDGE) {
+            this.set('settings.duplexShortEdge.value', true);
+            setDuplexTypeByPolicy = true;
+          } else if (policy.value === DuplexModeRestriction.LONG_EDGE) {
+            this.set('settings.duplexShortEdge.value', false);
+            setDuplexTypeByPolicy = true;
+          }
+          this.set('settings.duplex.setByPolicy', policy.managed);
+          this.set(
+              'settings.duplexShortEdge.setByPolicy',
+              policy.managed && setDuplexTypeByPolicy);
+          continue;
+        }
+        if (settingName === 'pin') {
+          if (policy.value === PinModeRestriction.NO_PIN && policy.managed) {
+            this.set('settings.pin.available', false);
+            this.set('settings.pinValue.available', false);
+          } else {
+            this.set(
+                'settings.pin.value', policy.value === PinModeRestriction.PIN);
+          }
+          this.set('settings.pin.setByPolicy', policy.managed);
+          continue;
+        }
         // </if>
         if (policy.value !== undefined && !policy.applyOnDestinationUpdate) {
           this.setSetting(settingName, policy.value, true);
@@ -1213,58 +1284,11 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
   }
 
-  // TODO (crbug.com/1069802): Migrate these policies from Destination.policies
-  // to NativeInitialSettings.policies.
   /**
    * Restricts settings and applies defaults as defined by policy applicable to
    * current destination.
    */
   applyDestinationSpecificPolicies() {
-    // <if expr="chromeos or lacros">
-    const colorPolicy = this.destination.colorPolicy;
-    const colorValue =
-        colorPolicy ? colorPolicy : this.destination.defaultColorPolicy;
-    if (colorValue) {
-      // |this.setSetting| does nothing if policy is present.
-      // We want to set the value nevertheless so we call |this.set| directly.
-      this.set(
-          'settings.color.value', colorValue === ColorModeRestriction.COLOR);
-    }
-    this.set('settings.color.setByPolicy', !!colorPolicy);
-
-    const duplexPolicy = this.destination.duplexPolicy;
-    const duplexValue =
-        duplexPolicy ? duplexPolicy : this.destination.defaultDuplexPolicy;
-    let setDuplexTypeByPolicy = false;
-    if (duplexValue) {
-      this.set(
-          'settings.duplex.value',
-          duplexValue !== DuplexModeRestriction.SIMPLEX);
-      if (duplexValue === DuplexModeRestriction.SHORT_EDGE) {
-        this.set('settings.duplexShortEdge.value', true);
-        setDuplexTypeByPolicy = true;
-      } else if (duplexValue === DuplexModeRestriction.LONG_EDGE) {
-        this.set('settings.duplexShortEdge.value', false);
-        setDuplexTypeByPolicy = true;
-      }
-    }
-    this.set('settings.duplex.setByPolicy', !!duplexPolicy);
-    this.set(
-        'settings.duplexShortEdge.setByPolicy',
-        !!duplexPolicy && setDuplexTypeByPolicy);
-
-    const pinPolicy = this.destination.pinPolicy;
-    if (pinPolicy === PinModeRestriction.NO_PIN) {
-      this.set('settings.pin.available', false);
-      this.set('settings.pinValue.available', false);
-    }
-    const pinValue = pinPolicy ? pinPolicy : this.destination.defaultPinPolicy;
-    if (pinValue) {
-      this.set('settings.pin.value', pinValue === PinModeRestriction.PIN);
-    }
-    this.set('settings.pin.setByPolicy', !!pinPolicy);
-    // </if>
-
     if (this.settings.mediaSize.available && this.policySettings_) {
       const mediaSizePolicy = this.policySettings_['mediaSize'] &&
           this.policySettings_['mediaSize'].value;

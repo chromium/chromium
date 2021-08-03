@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxy, PrinterType} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -578,21 +578,10 @@ suite(destination_store_test.suiteName, function() {
               assertEquals(
                   Destination.GooglePromotedId.SAVE_AS_PDF,
                   destinationStore.selectedDestination.id);
-              // Update destination with ID 1 so that it has policies.
               const localDestinationInfo = {
                 deviceName: id1,
                 printerName: name1
               };
-              if (isChromeOS || isLacros) {
-                localDestinationInfo.policies = {
-                  allowedColorModes: 0x1,  // ColorModeRestriction.MONOCHROME
-                  defaultColorMode: 0x1,   // ColorModeRestriction.MONOCHROME
-                  allowedPinMode: null,
-                  defaultPinMode: null,
-                  allowedDuplexModes: null,
-                  defaultDuplexMode: null,
-                };
-              }
               // Typecast localDestinationInfo to work around the fact that
               // policy types are only defined on Chrome OS.
               nativeLayer.setLocalDestinationCapabilities({
@@ -608,9 +597,6 @@ suite(destination_store_test.suiteName, function() {
                   destinationStore.destinations().find(d => d.id === id1);
               // No capabilities or policies yet.
               assertFalse(!!destination.capabilities);
-              if (isChromeOS || isLacros) {
-                assertEquals(null, destination.policies);
-              }
               destinationStore.selectDestination(destination);
               return nativeLayer.whenCalled('getPrinterCapabilities');
             })
@@ -618,10 +604,6 @@ suite(destination_store_test.suiteName, function() {
               assertEquals(destination, destinationStore.selectedDestination);
               // Capabilities are updated.
               assertTrue(!!destination.capabilities);
-              if (isChromeOS || isLacros) {
-                // Policies are updated.
-                assertTrue(!!destination.policies);
-              }
             });
       });
 

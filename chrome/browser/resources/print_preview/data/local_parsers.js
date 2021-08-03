@@ -7,9 +7,6 @@ import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationProvisionalType, DestinationType} from './destination.js';
 import {PrinterType} from './destination_match.js';
-// <if expr="chromeos or lacros">
-import {DestinationPolicies} from './destination_policies.js';
-// </if>
 
 /**
  * @typedef {{
@@ -18,7 +15,6 @@ import {DestinationPolicies} from './destination_policies.js';
  *   printerDescription: (string | undefined),
  *   cupsEnterprisePrinter: (boolean | undefined),
  *   printerOptions: (Object | undefined),
- *   policies: (DestinationPolicies | undefined),
  * }}
  */
 export let LocalDestinationInfo;
@@ -81,7 +77,6 @@ function parseLocalDestination(destinationInfo) {
   const options = {
     description: destinationInfo.printerDescription,
     isEnterprisePrinter: destinationInfo.cupsEnterprisePrinter,
-    policies: destinationInfo.policies,
   };
   if (destinationInfo.printerOptions) {
     // Convert options into cloud print tags format.

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundGraphicsModeRestriction, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+import {BackgroundGraphicsModeRestriction, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+// <if expr="chromeos or lacros">
+import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
+// </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
 import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
 import {TestPluralStringProxy} from 'chrome://test/test_plural_string_proxy.js';
 
@@ -22,6 +25,9 @@ policy_tests.TestNames = {
   CssBackgroundPolicy: 'css background policy',
   MediaSizePolicy: 'media size policy',
   SheetsPolicy: 'sheets policy',
+  ColorPolicy: 'color policy',
+  DuplexPolicy: 'duplex policy',
+  PinPolicy: 'pin policy',
 };
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
@@ -137,7 +143,7 @@ suite(policy_tests.suiteName, function() {
         .$$(`#${settingName}`);
   }
 
-  /** Tests different scenarios of applying header/footer policy. */
+  // Tests different scenarios of applying header/footer policy.
   test(assert(policy_tests.TestNames.HeaderFooterPolicy), async () => {
     const tests = [
       {
@@ -187,7 +193,7 @@ suite(policy_tests.suiteName, function() {
     }
   });
 
-  /** Tests different scenarios of applying background graphics policy. */
+  // Tests different scenarios of applying background graphics policy.
   test(assert(policy_tests.TestNames.CssBackgroundPolicy), async () => {
     const tests = [
       {
@@ -239,7 +245,7 @@ suite(policy_tests.suiteName, function() {
     }
   });
 
-  /** Tests different scenarios of applying default paper policy. */
+  // Tests different scenarios of applying default paper policy.
   test(assert(policy_tests.TestNames.MediaSizePolicy), async () => {
     const tests = [
       {
@@ -341,4 +347,320 @@ suite(policy_tests.suiteName, function() {
           !errorMessage.hidden && !!errorMessage.innerText);
     }
   });
+
+  // <if expr="chromeos or lacros">
+  // Tests different scenarios of color printing policy.
+  test(assert(policy_tests.TestNames.ColorPolicy), async () => {
+    const tests = [
+      {
+        // No policies.
+        allowedMode: undefined,
+        defaultMode: undefined,
+        expectedDisabled: false,
+        expectedValue: 'color',
+      },
+      {
+        // Print in color by default.
+        allowedMode: undefined,
+        defaultMode: ColorModeRestriction.COLOR,
+        expectedDisabled: false,
+        expectedValue: 'color',
+      },
+      {
+        // Print in black and white by default.
+        allowedMode: undefined,
+        defaultMode: ColorModeRestriction.MONOCHROME,
+        expectedDisabled: false,
+        expectedValue: 'bw',
+      },
+      {
+        // Allowed and default policies unset.
+        allowedMode: ColorModeRestriction.UNSET,
+        defaultMode: ColorModeRestriction.UNSET,
+        expectedDisabled: false,
+        expectedValue: 'bw',
+      },
+      {
+        // Allowed unset, default set to color printing.
+        allowedMode: ColorModeRestriction.UNSET,
+        defaultMode: ColorModeRestriction.COLOR,
+        expectedDisabled: false,
+        expectedValue: 'color',
+      },
+      {
+        // Enforce color printing.
+        allowedMode: ColorModeRestriction.COLOR,
+        defaultMode: ColorModeRestriction.UNSET,
+        expectedDisabled: true,
+        expectedValue: 'color',
+      },
+      {
+        // Enforce black and white printing.
+        allowedMode: ColorModeRestriction.MONOCHROME,
+        defaultMode: undefined,
+        expectedDisabled: true,
+        expectedValue: 'bw',
+      },
+      {
+        // Enforce color printing, default is ignored.
+        allowedMode: ColorModeRestriction.COLOR,
+        defaultMode: ColorModeRestriction.MONOCHROME,
+        expectedDisabled: true,
+        expectedValue: 'color',
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePolicySetup(
+          'color', 'isColorEnabled', subtestParams.allowedMode,
+          subtestParams.defaultMode);
+      const colorSettingsSelect = page.$$('print-preview-sidebar')
+                                      .$$('print-preview-color-settings')
+                                      .$$('select');
+      assertEquals(
+          subtestParams.expectedDisabled, colorSettingsSelect.disabled);
+      assertEquals(subtestParams.expectedValue, colorSettingsSelect.value);
+    }
+  });
+
+  // Tests different scenarios of duplex printing policy.
+  test(assert(policy_tests.TestNames.DuplexPolicy), async () => {
+    const tests = [
+      {
+        // No policies.
+        allowedMode: undefined,
+        defaultMode: undefined,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to SIMPLEX.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.SIMPLEX,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to UNSET.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.UNSET,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Allowed mode set to UNSET.
+        allowedMode: DuplexModeRestriction.UNSET,
+        defaultMode: undefined,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to LONG_EDGE.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to SHORT_EDGE.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.SHORT_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+      {
+        // No restriction, default set to DUPLEX.
+        allowedMode: undefined,
+        defaultMode: DuplexModeRestriction.DUPLEX,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // No restriction, default set to SHORT_EDGE.
+        allowedMode: DuplexModeRestriction.SIMPLEX,
+        defaultMode: undefined,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to LONG_EDGE.
+        allowedMode: DuplexModeRestriction.LONG_EDGE,
+        defaultMode: undefined,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: true,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to SHORT_EDGE.
+        allowedMode: DuplexModeRestriction.SHORT_EDGE,
+        defaultMode: undefined,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: true,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+      {
+        // Restricted to DUPLEX.
+        allowedMode: DuplexModeRestriction.DUPLEX,
+        defaultMode: undefined,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to SHORT_EDGE, default is ignored.
+        allowedMode: DuplexModeRestriction.SHORT_EDGE,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: true,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePolicySetup(
+          'duplex', 'isDuplexEnabled', subtestParams.allowedMode,
+          subtestParams.defaultMode);
+      toggleMoreSettings();
+      const duplexSettingsSection =
+          page.$$('print-preview-sidebar').$$('print-preview-duplex-settings');
+      const checkbox = duplexSettingsSection.$$('cr-checkbox');
+      const collapse = duplexSettingsSection.$$('iron-collapse');
+      const select = duplexSettingsSection.$$('select');
+      const expectedValue = subtestParams.expectedValue.toString();
+      assertEquals(subtestParams.expectedChecked, checkbox.checked);
+      assertEquals(subtestParams.expectedOpened, collapse.opened);
+      assertEquals(subtestParams.expectedDisabled, select.disabled);
+      assertEquals(expectedValue, select.value);
+    }
+  });
+
+  // Tests different scenarios of pin printing policy.
+  test(assert(policy_tests.TestNames.PinPolicy), async () => {
+    const tests = [
+      {
+        // No policies.
+        allowedMode: undefined,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // No restriction, default set to UNSET.
+        allowedMode: undefined,
+        defaultMode: PinModeRestriction.UNSET,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // No restriction, default set to PIN.
+        allowedMode: undefined,
+        defaultMode: PinModeRestriction.PIN,
+        expectedCheckboxDisabled: false,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedInputDisabled: false,
+      },
+      {
+        // No restriction, default set to NO_PIN.
+        allowedMode: undefined,
+        defaultMode: PinModeRestriction.NO_PIN,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // Restriction se to UNSET.
+        allowedMode: PinModeRestriction.UNSET,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: false,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // Restriction set to PIN.
+        allowedMode: PinModeRestriction.PIN,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: true,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedInputDisabled: false,
+      },
+      {
+        // Restriction set to NO_PIN.
+        allowedMode: PinModeRestriction.NO_PIN,
+        defaultMode: undefined,
+        expectedCheckboxDisabled: true,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+      {
+        // Restriction set to PIN, default is ignored.
+        allowedMode: PinModeRestriction.NO_PIN,
+        defaultMode: PinModeRestriction.PIN,
+        expectedCheckboxDisabled: true,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedInputDisabled: true,
+      },
+    ];
+    for (const subtestParams of tests) {
+      const initialSettings = getDefaultInitialSettings();
+
+      if (subtestParams.allowedMode !== undefined ||
+          subtestParams.defaultMode !== undefined) {
+        const policy = {};
+        if (subtestParams.allowedMode !== undefined) {
+          policy.allowedMode = subtestParams.allowedMode;
+        }
+        if (subtestParams.defaultMode !== undefined) {
+          policy.defaultMode = subtestParams.defaultMode;
+        }
+        initialSettings.policies = {"pin": policy};
+      }
+
+      const appState = {version: 2, "pinValue": "0000"};
+      if (subtestParams.defaultMode !== undefined) {
+        appState.isPinEnabled = !subtestParams.defaultMode;
+      }
+      initialSettings.serializedAppStateStr = JSON.stringify(appState);
+
+      await loadInitialSettings(initialSettings);
+
+      const pinSettingsSection =
+          page.$$('print-preview-sidebar').$$('print-preview-pin-settings');
+      const checkbox = pinSettingsSection.$$('cr-checkbox');
+      const collapse = pinSettingsSection.$$('iron-collapse');
+      const input = pinSettingsSection.$$('cr-input');
+      assertEquals(subtestParams.expectedCheckboxDisabled, checkbox.disabled);
+      assertEquals(subtestParams.expectedChecked, checkbox.checked);
+      assertEquals(subtestParams.expectedOpened, collapse.opened);
+      assertEquals(subtestParams.expectedInputDisabled, input.disabled);
+    }
+  });
+  // </if>
 });

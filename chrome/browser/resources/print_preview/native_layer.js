@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
-import {Destination} from './data/destination.js';
 import {PrinterType} from './data/destination_match.js';
 import {LocalDestinationInfo, PrivetPrinterDescription} from './data/local_parsers.js';
 import {MeasurementSystemUnitType} from './data/measurement_system.js';
@@ -36,6 +35,44 @@ export const BackgroundGraphicsModeRestriction = {
 };
 
 /**
+ * Enumeration of color mode restrictions used by Chromium.
+ * This has to coincide with |printing::ColorModeRestriction| as defined in
+ * printing/backend/printing_restrictions.h
+ * @enum {number}
+ */
+export const ColorModeRestriction = {
+  UNSET: 0x0,
+  MONOCHROME: 0x1,
+  COLOR: 0x2,
+};
+
+/**
+ * Enumeration of duplex mode restrictions used by Chromium.
+ * This has to coincide with |printing::DuplexModeRestriction| as defined in
+ * printing/backend/printing_restrictions.h
+ * @enum {number}
+ */
+export const DuplexModeRestriction = {
+  UNSET: 0x0,
+  SIMPLEX: 0x1,
+  LONG_EDGE: 0x2,
+  SHORT_EDGE: 0x4,
+  DUPLEX: 0x6,
+};
+
+/**
+ * Enumeration of PIN printing mode restrictions used by Chromium.
+ * This has to coincide with |printing::PinModeRestriction| as defined in
+ * printing/backend/printing_restrictions.h
+ * @enum {number}
+ */
+export const PinModeRestriction = {
+  UNSET: 0,
+  PIN: 1,
+  NO_PIN: 2,
+};
+
+/**
  * Policies affecting print settings values and availability.
  * @typedef {{
  *   headerFooter: ({
@@ -54,7 +91,19 @@ export const BackgroundGraphicsModeRestriction = {
  *   } | undefined),
  *   sheets: ({
  *     value: (number | undefined),
- *   } | undefined)
+ *   } | undefined),
+ *   color: ({
+ *     allowedMode: (ColorModeRestriction | undefined),
+ *     defaultMode: (ColorModeRestriction | undefined),
+ *   } | undefined),
+ *   duplex: ({
+ *     allowedMode: (DuplexModeRestriction | undefined),
+ *     defaultMode: (DuplexModeRestriction | undefined),
+ *   } | undefined),
+ *   pin: ({
+ *     allowedMode: (PinModeRestriction | undefined),
+ *     defaultMode: (PinModeRestriction | undefined),
+ *   } | undefined),
  * }}
  */
 export let Policies;

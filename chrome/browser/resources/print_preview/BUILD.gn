@@ -94,7 +94,6 @@ preprocess_if_expr("preprocess") {
     "data/coordinate2d.js",
     "data/destination.js",
     "data/destination_match.js",
-    "data/destination_policies.js",
     "data/destination_store.js",
     "data/document_info.js",
     "data/local_parsers.js",
@@ -327,7 +326,6 @@ js_library("native_layer") {
 
 js_library("native_layer_cros") {
   deps = [
-    "data:destination_policies",
     "data:printer_status_cros",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",

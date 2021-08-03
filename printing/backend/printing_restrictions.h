@@ -16,11 +16,11 @@ namespace printing {
 
 #if defined(OS_CHROMEOS)
 // Allowed printing modes as a bitmask.
-// This is used in pref file and should never change.
+// This is used in pref file and crosapi. It should never change.
 using ColorModeRestriction = mojom::ColorModeRestriction;
 
 // Allowed duplex modes as a bitmask.
-// This is used in pref file and should never change.
+// This is used in pref file and crosapi. It should never change.
 using DuplexModeRestriction = mojom::DuplexModeRestriction;
 
 // Allowed PIN printing modes.

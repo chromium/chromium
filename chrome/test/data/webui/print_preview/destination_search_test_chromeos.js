@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, DuplexModeRestriction, NativeLayer, NativeLayerCrosImpl, NativeLayerImpl} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, NativeLayerCrosImpl, NativeLayerImpl} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -172,43 +172,5 @@ suite(destination_search_test_chromeos.suiteName, function() {
 
         // Verify that the destination has been selected.
         assertEquals(printerId, destinationStore.selectedDestination.id);
-      });
-
-  // Tests that if policies are set correctly if they are present
-  // for a destination.
-  test(
-      assert(destination_search_test_chromeos.TestNames
-                 .ReceiveSuccessfulSetupWithPolicies),
-      function() {
-        const destId = '00112233DEADBEEF';
-        const response = {
-          printerId: destId,
-          capabilities: getCddTemplate(destId).capabilities,
-          policies: {
-            allowedColorModes: ColorModeRestriction.MONOCHROME,
-            allowedDuplexModes: DuplexModeRestriction.DUPLEX,
-            allowedPinMode: null,
-            defaultColorMode: null,
-            defaultDuplexMode: null,
-            defaultPinMode: null,
-          },
-        };
-        nativeLayerCros.setSetupPrinterResponse(response);
-        requestSetup(destId);
-        return nativeLayerCros.whenCalled('setupPrinter')
-            .then(function(actualId) {
-              assertEquals(destId, actualId);
-              const selectedDestination = destinationStore.selectedDestination;
-              assertNotEquals(null, selectedDestination);
-              assertEquals(destId, selectedDestination.id);
-              assertNotEquals(null, selectedDestination.capabilities);
-              assertNotEquals(null, selectedDestination.policies);
-              assertEquals(
-                  ColorModeRestriction.MONOCHROME,
-                  selectedDestination.policies.allowedColorModes);
-              assertEquals(
-                  DuplexModeRestriction.DUPLEX,
-                  selectedDestination.policies.allowedDuplexModes);
-            });
       });
 });

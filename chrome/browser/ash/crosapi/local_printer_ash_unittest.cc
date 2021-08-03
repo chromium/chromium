@@ -458,22 +458,6 @@ TEST_F(LocalPrinterAshTest, GetPrinters) {
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
 TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
-  auto* prefs = GetPrefs();
-  // printing::mojom::ColorModeRestriction::kMonochrome |
-  // printing::mojom::ColorModeRestriction::kColor
-  prefs->SetInteger(prefs::kPrintingAllowedColorModes, 3);
-  // printing::mojom::DuplexModeRestriction::kSimplex |
-  // printing::mojom::DuplexModeRestriction::kDuplex
-  prefs->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
-  // printing::mojom::PinModeRestriction::kPin
-  prefs->SetInteger(prefs::kPrintingAllowedPinModes, 1);
-  // printing::mojom::ColorModeRestriction::kColor
-  prefs->SetInteger(prefs::kPrintingColorDefault, 2);
-  // printing::mojom::DuplexModeRestriction::kSimplex
-  prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
-  // printing::mojom::PinModeRestriction::kNoPin
-  prefs->SetInteger(prefs::kPrintingPinDefault, 2);
-
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
@@ -498,21 +482,6 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   EXPECT_FALSE(fetched_caps->basic_info->configured_via_policy);
   ASSERT_TRUE(fetched_caps->basic_info->uri);
   EXPECT_EQ(kPrinterUri, *fetched_caps->basic_info->uri);
-
-  // printing::mojom::ColorModeRestriction::kMonochrome |
-  // printing::mojom::ColorModeRestriction::kColor
-  EXPECT_EQ(3, fetched_caps->allowed_color_modes);
-  // printing::mojom::DuplexModeRestriction::kSimplex |
-  // printing::mojom::DuplexModeRestriction::kDuplex
-  EXPECT_EQ(7, fetched_caps->allowed_duplex_modes);
-  EXPECT_EQ(printing::mojom::PinModeRestriction::kPin,
-            fetched_caps->allowed_pin_modes);
-  EXPECT_EQ(printing::mojom::ColorModeRestriction::kColor,
-            fetched_caps->default_color_mode);
-  EXPECT_EQ(printing::mojom::DuplexModeRestriction::kSimplex,
-            fetched_caps->default_duplex_mode);
-  EXPECT_EQ(printing::mojom::PinModeRestriction::kNoPin,
-            fetched_caps->default_pin_mode);
 
   ASSERT_TRUE(fetched_caps->capabilities);
   EXPECT_EQ(kPapers, fetched_caps->capabilities->papers);
@@ -857,6 +826,55 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_ManagedEnabled) {
             policies->print_header_footer_allowed);
   EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
             policies->print_header_footer_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Color) {
+  const uint32_t expected_allowed_color_modes = static_cast<uint32_t>(
+      static_cast<int32_t>(printing::mojom::ColorModeRestriction::kMonochrome) |
+      static_cast<int32_t>(printing::mojom::ColorModeRestriction::kColor));
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingAllowedColorModes, 3);
+  prefs->SetInteger(prefs::kPrintingColorDefault, 2);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_EQ(expected_allowed_color_modes, policies->allowed_color_modes);
+  EXPECT_EQ(printing::mojom::ColorModeRestriction::kColor,
+            policies->default_color_mode);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Duplex) {
+  const uint32_t expected_allowed_duplex_modes = static_cast<uint32_t>(
+      static_cast<int32_t>(printing::mojom::DuplexModeRestriction::kSimplex) |
+      static_cast<int32_t>(printing::mojom::DuplexModeRestriction::kDuplex));
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
+  prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_EQ(expected_allowed_duplex_modes, policies->allowed_duplex_modes);
+  EXPECT_EQ(printing::mojom::DuplexModeRestriction::kSimplex,
+            policies->default_duplex_mode);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingAllowedPinModes, 1);
+  prefs->SetInteger(prefs::kPrintingPinDefault, 2);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_EQ(printing::mojom::PinModeRestriction::kPin,
+            policies->allowed_pin_modes);
+  EXPECT_EQ(printing::mojom::PinModeRestriction::kNoPin,
+            policies->default_pin_mode);
 }
 
 TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {

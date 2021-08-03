@@ -14,7 +14,6 @@ js_type_check("closure_compile_module") {
     ":coordinate2d",
     ":destination",
     ":destination_match",
-    ":destination_policies",
     ":destination_store",
     ":document_info",
     ":local_parsers",
@@ -35,9 +34,6 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("cdd") {
-}
-
-js_library("destination_policies") {
 }
 
 js_library("destination_store") {
@@ -72,7 +68,6 @@ js_library("local_parsers") {
   deps = [
     ":destination",
     ":destination_match",
-    ":destination_policies",
     "..:native_layer",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -100,10 +95,7 @@ js_library("destination") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      ":destination_policies",
-      "..:native_layer_cros",
-    ]
+    deps += [ "..:native_layer_cros" ]
   }
 }
 
