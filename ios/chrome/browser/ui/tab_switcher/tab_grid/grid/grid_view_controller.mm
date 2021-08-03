@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/ios/block_types.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -1069,6 +1070,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self deselectItemWithIDForEditing:itemID];
     } else {
       [self selectItemWithIDForEditing:itemID];
+    }
+    // Dragging multiple tabs to reorder them is not supported. So there is no
+    // need to enable dragging when multiple items are selected in devices that
+    // don't support multiple windows.
+    if (self.selectedItemIDsForEditing.count > 1 &&
+        !base::ios::IsMultipleScenesSupported()) {
+      self.collectionView.dragInteractionEnabled = NO;
+    } else {
+      self.collectionView.dragInteractionEnabled = YES;
     }
     [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
   }
