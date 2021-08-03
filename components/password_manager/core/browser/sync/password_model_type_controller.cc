@@ -49,7 +49,7 @@ PasswordModelTypeController::PasswordModelTypeController(
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_transport_mode,
-    scoped_refptr<PasswordStore> account_password_store_for_cleanup,
+    scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
@@ -205,7 +205,7 @@ void PasswordModelTypeController::OnOptInStateMaybeChanged() {
 }
 
 void PasswordModelTypeController::MaybeClearStore(
-    scoped_refptr<PasswordStore> account_password_store_for_cleanup) {
+    scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup) {
   DCHECK(account_password_store_for_cleanup);
   if (features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)) {
     RecordClearedOnStartup(ClearedOnStartup::kOptedInSoNoNeedToClear);
