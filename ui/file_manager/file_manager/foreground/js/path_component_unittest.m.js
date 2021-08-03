@@ -49,6 +49,22 @@ export async function testComputeComponentsFromEntry() {
     ['a', 'filesystem:drive/.files-by-id/1234/a'],
     ['file', 'filesystem:drive/.files-by-id/1234/a/file'],
   ]);
+  // .shortcut-targets-by-id.
+  await validate('/.shortcut-targets-by-id/1-abc-xyz/file', [
+    [
+      'DRIVE_SHARED_WITH_ME_COLLECTION_LABEL',
+      'fake-entry://drive_shared_with_me'
+    ],
+    ['file', 'filesystem:drive/.shortcut-targets-by-id/1-abc-xyz/file'],
+  ]);
+  await validate('/.shortcut-targets-by-id/1-abc-xyz/a/file', [
+    [
+      'DRIVE_SHARED_WITH_ME_COLLECTION_LABEL',
+      'fake-entry://drive_shared_with_me'
+    ],
+    ['a', 'filesystem:drive/.shortcut-targets-by-id/1-abc-xyz/a'],
+    ['file', 'filesystem:drive/.shortcut-targets-by-id/1-abc-xyz/a/file'],
+  ]);
   // Computers.
   await validate('/Computers/C1/file', [
     ['DRIVE_COMPUTERS_LABEL', 'filesystem:drive/Computers'],

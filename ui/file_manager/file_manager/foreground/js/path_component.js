@@ -88,13 +88,15 @@ export class PathComponent {
           prefixEntry.name, prefixEntry.toURL(), prefixEntry));
     }
     if (locationInfo.rootType === VolumeManagerCommon.RootType.DRIVE_OTHER) {
-      // When target path is a shared directory, volume should be shared with
-      // me.
-      const match = entry.fullPath.match(/\/\.files-by-id\/\d+\//);
+      // DriveFS shared items are in either of:
+      // <drivefs>/.files-by-id/<id>/<item>
+      // <drivefs>/.shortcut-targets-by-id/<id>/<item>
+      const match =
+          entry.fullPath.match(/^\/\.(files|shortcut-targets)-by-id\/.+?\//);
       if (match) {
         displayRootFullPath = match[0];
       } else {
-        displayRootFullPath = '/other';
+        console.error('Unexpected shared DriveFS path: ', entry.fullPath);
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =
