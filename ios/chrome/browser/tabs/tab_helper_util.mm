@@ -67,8 +67,6 @@
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
-#import "ios/chrome/browser/web/features.h"
-#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
@@ -85,6 +83,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 
@@ -129,7 +128,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     TranslateOverlayTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(web::kWebPageTextAccessibility)) {
+  if (ios::provider::IsTextZoomEnabled()) {
     FontSizeTabHelper::CreateForWebState(web_state);
   }
 

@@ -109,6 +109,7 @@ source_set("tabs_internal") {
     "//ios/components/security_interstitials/legacy_tls",
     "//ios/components/security_interstitials/lookalikes",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/web/common:features",
     "//ios/web/public/security",
     "//ios/web/public/session",

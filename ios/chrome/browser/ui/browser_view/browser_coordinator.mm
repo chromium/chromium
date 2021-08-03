@@ -81,7 +81,6 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
@@ -89,6 +88,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -876,7 +876,7 @@
 }
 
 - (void)closeTextZoom {
-  if (!base::FeatureList::IsEnabled(web::kWebPageTextAccessibility)) {
+  if (!ios::provider::IsTextZoomEnabled()) {
     return;
   }
 
