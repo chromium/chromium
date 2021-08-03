@@ -135,3 +135,10 @@ source_set("unit_test") {
     "//ui/gl",
   ]
 }
+
+executable("v4l2_stateless_decoder") {
+  testonly = true
+  sources = [ "test/v4l2_stateless_decoder.cc" ]
+
+  deps = [ "//media/gpu:common" ]
+}
