@@ -9,9 +9,11 @@
 
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
+#include "ash/constants/app_types.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,6 +33,8 @@
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/viz/common/features.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
@@ -40,11 +44,54 @@ namespace arc {
 
 using ::ash::AccessibilityManager;
 
+namespace {
+
 struct ArcTestWindow {
   std::unique_ptr<exo::Buffer> buffer;
   std::unique_ptr<exo::Surface> surface;
   std::unique_ptr<exo::ClientControlledShellSurface> shell_surface;
 };
+
+class MockAutomationEventRouter
+    : public extensions::AutomationEventRouterInterface {
+ public:
+  MockAutomationEventRouter() = default;
+  virtual ~MockAutomationEventRouter() = default;
+
+  // extensions::AutomationEventRouterInterface:
+  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
+                                   std::vector<ui::AXTreeUpdate> updates,
+                                   const gfx::Point& mouse_location,
+                                   std::vector<ui::AXEvent> events) override {}
+
+  void DispatchAccessibilityLocationChange(
+      const ExtensionMsg_AccessibilityLocationChangeParams& params) override {}
+
+  void DispatchTreeDestroyedEvent(
+      ui::AXTreeID tree_id,
+      content::BrowserContext* browser_context) override {}
+
+  void DispatchActionResult(
+      const ui::AXActionData& data,
+      bool result,
+      content::BrowserContext* browser_context = nullptr) override {
+    last_dispatched_action_data_ = data;
+    last_dispatched_action_result_ = result;
+  }
+
+  void DispatchGetTextLocationDataResult(
+      const ui::AXActionData& data,
+      const absl::optional<gfx::Rect>& rect) override {
+    last_dispatched_action_data_ = data;
+    last_dispatched_text_location_ = rect;
+  }
+
+  absl::optional<ui::AXActionData> last_dispatched_action_data_;
+  absl::optional<bool> last_dispatched_action_result_;
+  absl::optional<gfx::Rect> last_dispatched_text_location_;
+};
+
+}  // namespace
 
 class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -95,6 +142,11 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
 
     // Forcefully set task_id for each window.
     ret.surface->SetApplicationId(name.c_str());
+
+    // CreateClientControlledShellSurface doesn't set AppType so do it here.
+    ret.shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+        aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+
     return ret;
   }
 
@@ -176,11 +228,9 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
   EXPECT_TRUE(
       fake_accessibility_helper_instance_->last_requested_tree_window_key()
-          ->get()
           ->is_window_id());
   EXPECT_EQ(
       10U, fake_accessibility_helper_instance_->last_requested_tree_window_key()
-               ->get()
                ->get_window_id());
 
   exo::SetShellClientAccessibilityId(
@@ -188,7 +238,6 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
   EXPECT_EQ(
       20U, fake_accessibility_helper_instance_->last_requested_tree_window_key()
-               ->get()
                ->get_window_id());
 
   exo::SetShellClientAccessibilityId(
@@ -196,7 +245,6 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
   EXPECT_EQ(
       21U, fake_accessibility_helper_instance_->last_requested_tree_window_key()
-               ->get()
                ->get_window_id());
 }
 
@@ -283,6 +331,90 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
   EXPECT_TRUE(drawn_rect2.Contains(node_rect2))
       << "drawn_rect " << drawn_rect2.ToString()
       << " should contain the given rect " << node_rect2.ToString();
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest, PerformAction) {
+  ArcTestWindow test_window = MakeTestWindow("org.chromium.arc.1");
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+
+  ArcAccessibilityHelperBridge* bridge =
+      ArcAccessibilityHelperBridge::GetForBrowserContext(browser()->profile());
+  auto& tree_map = bridge->trees_for_test();
+  ASSERT_EQ(1, tree_map.size());
+  AXTreeSourceArc* tree_source = tree_map.begin()->second.get();
+  MockAutomationEventRouter router;
+  tree_source->set_automation_event_router_for_test(&router);
+  tree_source->set_window_id_for_test(5);
+
+  ui::AXActionData action_data;
+  action_data.target_node_id = 10;
+  action_data.target_tree_id = tree_source->ax_tree_id();
+  action_data.action = ax::mojom::Action::kDoDefault;
+  bridge->OnAction(action_data);
+
+  mojom::AccessibilityActionData* requested_action =
+      fake_accessibility_helper_instance_->last_requested_action();
+  EXPECT_EQ(10, requested_action->node_id);
+  EXPECT_EQ(mojom::AccessibilityActionType::CLICK,
+            requested_action->action_type);
+  EXPECT_EQ(5, requested_action->window_id);
+
+  ui::AXActionData dispatched_action =
+      router.last_dispatched_action_data_.value();
+  EXPECT_EQ(10, dispatched_action.target_node_id);
+  EXPECT_EQ(tree_source->ax_tree_id(), dispatched_action.target_tree_id);
+  EXPECT_EQ(ax::mojom::Action::kDoDefault, dispatched_action.action);
+
+  EXPECT_TRUE(router.last_dispatched_action_result_.has_value());
+  EXPECT_TRUE(router.last_dispatched_action_result_.value());
+
+  // Clear event router to prevent invalid access.
+  tree_source->set_automation_event_router_for_test(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
+                       GetTextLocation) {
+  ArcTestWindow test_window = MakeTestWindow("org.chromium.arc.1");
+  AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
+
+  ArcAccessibilityHelperBridge* bridge =
+      ArcAccessibilityHelperBridge::GetForBrowserContext(browser()->profile());
+  auto& tree_map = bridge->trees_for_test();
+  ASSERT_EQ(1, tree_map.size());
+  AXTreeSourceArc* tree_source = tree_map.begin()->second.get();
+  MockAutomationEventRouter router;
+  tree_source->set_automation_event_router_for_test(&router);
+  tree_source->set_window_id_for_test(5);
+
+  ui::AXActionData action_data;
+  action_data.target_node_id = 10;
+  action_data.target_tree_id = tree_source->ax_tree_id();
+  action_data.action = ax::mojom::Action::kGetTextLocation;
+  action_data.start_index = 3;
+  action_data.end_index = 6;
+  bridge->OnAction(action_data);
+
+  mojom::AccessibilityActionData* requested_action =
+      fake_accessibility_helper_instance_->last_requested_action();
+  fake_accessibility_helper_instance_->refresh_with_extra_data_callback().Run(
+      gfx::Rect(10, 20, 30, 40));
+
+  EXPECT_EQ(10, requested_action->node_id);
+  EXPECT_EQ(mojom::AccessibilityActionType::GET_TEXT_LOCATION,
+            requested_action->action_type);
+  EXPECT_EQ(5, requested_action->window_id);
+  EXPECT_EQ(3, requested_action->start_index);
+  EXPECT_EQ(6, requested_action->end_index);
+
+  EXPECT_TRUE(router.last_dispatched_text_location_.has_value());
+  EXPECT_EQ(gfx::Rect(10, 20, 30, 40),
+            router.last_dispatched_text_location_.value());
+
+  // General action path should not be used.
+  EXPECT_FALSE(router.last_dispatched_action_result_.has_value());
+
+  // Clear event router to prevent invalid access.
+  tree_source->set_automation_event_router_for_test(nullptr);
 }
 
 }  // namespace arc

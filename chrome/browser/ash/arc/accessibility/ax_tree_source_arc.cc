@@ -284,6 +284,9 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
 extensions::AutomationEventRouterInterface*
 AXTreeSourceArc::GetAutomationEventRouter() const {
+  if (automation_event_router_for_test_)
+    return automation_event_router_for_test_;
+
   return extensions::AutomationEventRouter::GetInstance();
 }
 

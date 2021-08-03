@@ -42,6 +42,8 @@ using AXWindowIntProperty = mojom::AccessibilityWindowIntProperty;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 using AXWindowStringProperty = mojom::AccessibilityWindowStringProperty;
 
+namespace {
+
 class MockAutomationEventRouter
     : public extensions::AutomationEventRouterInterface {
  public:
@@ -91,27 +93,21 @@ class MockAutomationEventRouter
   std::vector<ui::AXEvent> last_dispatched_events_;
 };
 
+}  // namespace
+
 class AXTreeSourceArcTest : public testing::Test,
                             public AXTreeSourceArc::Delegate {
  public:
-  class TestAXTreeSourceArc : public AXTreeSourceArc {
-   public:
-    TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate,
-                        MockAutomationEventRouter* router)
-        : AXTreeSourceArc(delegate, /*window=*/nullptr), router_(router) {}
-
-   private:
-    extensions::AutomationEventRouterInterface* GetAutomationEventRouter()
-        const override {
-      return router_;
-    }
-
-    MockAutomationEventRouter* const router_;
-  };
-
   AXTreeSourceArcTest()
-      : router_(new MockAutomationEventRouter()),
-        tree_source_(new TestAXTreeSourceArc(this, router_.get())) {}
+      : router_(std::make_unique<MockAutomationEventRouter>()),
+        tree_source_(
+            std::make_unique<AXTreeSourceArc>(this, /*window=*/nullptr)) {
+    tree_source_->set_automation_event_router_for_test(router_.get());
+  }
+
+  // AXTreeSourceArc::Delegate overrides.
+  void OnAction(const ui::AXActionData& data) const override {}
+  bool UseFullFocusMode() const override { return full_focus_mode_; }
 
  protected:
   void CallNotifyAccessibilityEvent(AXEventData* event_data) {
@@ -161,11 +157,7 @@ class AXTreeSourceArcTest : public testing::Test,
 
   void set_full_focus_mode(bool enabled) { full_focus_mode_ = enabled; }
 
-  bool UseFullFocusMode() const override { return full_focus_mode_; }
-
  private:
-  void OnAction(const ui::AXActionData& data) const override {}
-
   const std::unique_ptr<MockAutomationEventRouter> router_;
   const std::unique_ptr<AXTreeSourceArc> tree_source_;
 
