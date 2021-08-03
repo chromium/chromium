@@ -5693,4 +5693,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     1x
   </message>
 
+  <!-- Dictation accessibility feature confirmation dialog -->
+  <message name="IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TITLE" desc="The title for the modal dialog shown the first time the user enables dictation. Only displayed if the user is using network speech recognition.">
+    Dictation
+  </message>
+  <message name="IDS_ACCESSIBILITY_DICTATION_CONFIRMATION_TEXT" desc="The message shown the first time the user enables Dictation, explaining that the audio data will be sent to Google for transcription. Only displayed if the user is using network speech recognition.">
+    Dictation sends your voice to Google to allow voice typing in any text field.
+  </message>
+
 </grit-part>

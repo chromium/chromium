@@ -179,7 +179,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   Feature& autoclick() const;
   Feature& caret_highlight() const;
   Feature& cursor_highlight() const;
-  FeatureWithDialog& dictation() const;
+  Feature& dictation() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   FeatureWithDialog& fullscreen_magnifier() const;

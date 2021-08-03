@@ -79,7 +79,6 @@ class DictationButtonTrayTest : public AshTestBase {
 TEST_F(DictationButtonTrayTest, BasicConstruction) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  controller->dictation().SetDialogAccepted();
   controller->dictation().SetEnabled(true);
   EXPECT_TRUE(GetImageView(GetTray()));
   EXPECT_TRUE(GetTray()->GetVisible());
@@ -90,7 +89,6 @@ TEST_F(DictationButtonTrayTest, ButtonActivatesDictation) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
-  controller->dictation().SetDialogAccepted();
   controller->dictation().SetEnabled(true);
   EXPECT_FALSE(controller->dictation_active());
 
@@ -105,7 +103,6 @@ TEST_F(DictationButtonTrayTest, ButtonActivatesDictation) {
 TEST_F(DictationButtonTrayTest, ActivatingDictationActivatesButton) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  controller->dictation().SetDialogAccepted();
   controller->dictation().SetEnabled(true);
   Shell::Get()->OnDictationStarted();
   EXPECT_TRUE(GetTray()->is_active());
@@ -120,7 +117,6 @@ TEST_F(DictationButtonTrayTest, ActiveStateOnlyDuringDictation) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
-  controller->dictation().SetDialogAccepted();
   controller->dictation().SetEnabled(true);
 
   ASSERT_FALSE(controller->dictation_active());

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "base/bind.h"
@@ -39,6 +40,7 @@
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace extension_ime_util = chromeos::extension_ime_util;
@@ -283,12 +285,20 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     default_autoclick_delay_ = GetAutoclickDelay();
+    // For general AccessibilityManagerTests, pretend that the Dictation
+    // confirmation dialog has been accepted so that it doesn't interfere with
+    // tests. There is a dedicated test suite to exercise the logic for the
+    // dialog.
+    GetActiveUserPrefs()->SetBoolean(
+        prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityDictationOffline);
+    std::vector<base::Feature> enabled_features = {
+        ::features::kExperimentalAccessibilityDictationOffline,
+        ash::features::kOnDeviceSpeechRecognition};
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -298,6 +308,11 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   const AccountId test_account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+
+  bool ShouldShowNetworkDictationDialog(const std::string& locale) {
+    return AccessibilityManager::Get()->ShouldShowNetworkDictationDialog(
+        locale);
+  }
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;
@@ -623,6 +638,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaDownload) {
   UninstallSodaForTesting();
   EXPECT_FALSE(IsSodaDownloading());
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog("en-US"));
   SetDictationEnabled(true);
   EXPECT_TRUE(IsSodaDownloading());
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -633,11 +649,165 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaDownload) {
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaError) {
   UninstallSodaForTesting();
   EXPECT_FALSE(IsSodaDownloading());
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog("en-US"));
   SetDictationEnabled(true);
   EXPECT_TRUE(IsSodaDownloading());
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
   EXPECT_FALSE(IsSodaDownloading());
   UninstallSodaForTesting();
+}
+
+class AccessibilityManagerDictationDialogTest
+    : public AccessibilityManagerTest {
+ protected:
+  AccessibilityManagerDictationDialogTest()
+      : disable_animations_(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+  ~AccessibilityManagerDictationDialogTest() override = default;
+  AccessibilityManagerDictationDialogTest(
+      const AccessibilityManagerDictationDialogTest&) = delete;
+  AccessibilityManagerDictationDialogTest& operator=(
+      const AccessibilityManagerDictationDialogTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    // Ensure the dialog has not been accepted yet.
+    GetActiveUserPrefs()->SetBoolean(
+        prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Set the device language to one that is not supported by SODA on Chrome
+    // OS. This will force Dictation to show the confirmation dialog when
+    // enabled.
+    locale_ = "it-IT";
+    command_line->AppendSwitchASCII(::switches::kLang, locale_);
+    AccessibilityManagerTest::SetUpCommandLine(command_line);
+  }
+
+  std::string locale() { return locale_; }
+
+  void AcceptDialog() {
+    AccessibilityManager::Get()->OnNetworkDictationDialogAccepted();
+  }
+
+  void DismissDialog() {
+    AccessibilityManager::Get()->OnNetworkDictationDialogDismissed();
+  }
+
+ private:
+  std::string locale_;
+  ui::ScopedAnimationDurationScaleMode disable_animations_;
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDictationDialogTest,
+                       ShouldShowNetworkDictationDialog) {
+  // The dialog should be shown for languages not supported by SODA. Currently,
+  // the only supported language is English.
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog("en-US"));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(""));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog("fr-FR"));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog("ja-JP"));
+
+  PrefService* prefs = GetActiveUserPrefs();
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+  // If we have already shown the dialog, then we never need to do so again.
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog("fr-FR"));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDictationDialogTest, DismissDialog) {
+  PrefService* prefs = GetActiveUserPrefs();
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(locale()));
+
+  SetDictationEnabled(true);
+  EXPECT_TRUE(IsDictationEnabled());
+
+  // Dismissing the dialog should turn Dictation off.
+  DismissDialog();
+  EXPECT_FALSE(IsDictationEnabled());
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(locale()));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDictationDialogTest, AcceptDialog) {
+  PrefService* prefs = GetActiveUserPrefs();
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(locale()));
+
+  SetDictationEnabled(true);
+  EXPECT_TRUE(IsDictationEnabled());
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+
+  // Accepting the dialog should keep Dictation on and change the pref that
+  // tracks whether or not the dialog has been accepted.
+  AcceptDialog();
+  EXPECT_TRUE(IsDictationEnabled());
+  EXPECT_TRUE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog(locale()));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDictationDialogTest,
+                       DialogNotShownAfterAccepted) {
+  PrefService* prefs = GetActiveUserPrefs();
+  // Pretend that the dialog was already accepted.
+  AcceptDialog();
+  EXPECT_TRUE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog(locale()));
+
+  // Once the dialog has been accepted, we should not show it again.
+  SetDictationEnabled(true);
+  EXPECT_TRUE(IsDictationEnabled());
+  EXPECT_TRUE(
+      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
+  EXPECT_FALSE(ShouldShowNetworkDictationDialog(locale()));
+}
+
+class AccessibilityManagerNoOnDeviceSpeechRecognitionTest
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  AccessibilityManagerNoOnDeviceSpeechRecognitionTest()
+      : disable_animations_(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+  ~AccessibilityManagerNoOnDeviceSpeechRecognitionTest() override = default;
+  AccessibilityManagerNoOnDeviceSpeechRecognitionTest(
+      const AccessibilityManagerNoOnDeviceSpeechRecognitionTest&) = delete;
+  AccessibilityManagerNoOnDeviceSpeechRecognitionTest& operator=(
+      const AccessibilityManagerNoOnDeviceSpeechRecognitionTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::Feature> enabled_features = {
+        ::features::kExperimentalAccessibilityDictationOffline};
+    // Disable on-device speech recognition.
+    std::vector<base::Feature> disabled_features = {
+        ash::features::kOnDeviceSpeechRecognition};
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool ShouldShowNetworkDictationDialog(const std::string& locale) {
+    return AccessibilityManager::Get()->ShouldShowNetworkDictationDialog(
+        locale);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ui::ScopedAnimationDurationScaleMode disable_animations_;
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerNoOnDeviceSpeechRecognitionTest,
+                       ShouldShowNetworkDictationDialog) {
+  // The dialog should be shown for all languages if SODA is unavailable.
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog("en-US"));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(""));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog("fr-FR"));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog("ja-JP"));
 }
 
 // For signin screen to user session accessibility manager tests.

@@ -460,6 +460,10 @@ class AccessibilityManager
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  bool ShouldShowNetworkDictationDialog(const std::string& locale);
+  void ShowNetworkDictationDialog();
+  void OnNetworkDictationDialogAccepted();
+  void OnNetworkDictationDialogDismissed();
   void MaybeInstallSoda(const std::string& locale);
 
   // Profile which has the current a11y context.
@@ -544,6 +548,8 @@ class AccessibilityManager
   friend class DictationTest;
   friend class SwitchAccessTest;
   friend class AccessibilityManagerTest;
+  friend class AccessibilityManagerDictationDialogTest;
+  friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManager);
 };

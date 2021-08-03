@@ -91,7 +91,6 @@ class TrayBackgroundViewTest : public AshTestBase {
     // Set Dictation button to be visible.
     AccessibilityControllerImpl* controller =
         Shell::Get()->accessibility_controller();
-    controller->dictation().SetDialogAccepted();
     controller->dictation().SetEnabled(true);
   }
 

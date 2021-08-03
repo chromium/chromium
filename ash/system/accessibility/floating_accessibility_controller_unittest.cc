@@ -387,8 +387,6 @@ TEST_F(FloatingAccessibilityControllerTest, ActiveFeaturesButtons) {
                          {FloatingAccessibilityView::ButtonId::kVirtualKeyboard,
                           AccessibilityControllerImpl::kVirtualKeyboard}};
 
-  accessibility_controller()->dictation().SetDialogAccepted();
-
   gfx::Rect original_bounds = GetMenuViewBounds();
 
   for (FeatureWithButton feature : kFeatureButtons) {
@@ -492,7 +490,6 @@ TEST_F(FloatingAccessibilityControllerTest, AccelatorFocusMenu) {
 }
 
 TEST_F(FloatingAccessibilityControllerTest, ShowingAlreadyEnabledFeatures) {
-  accessibility_controller()->dictation().SetDialogAccepted();
   accessibility_controller()->select_to_speak().SetEnabled(true);
   accessibility_controller()->dictation().SetEnabled(true);
   accessibility_controller()->virtual_keyboard().SetEnabled(true);

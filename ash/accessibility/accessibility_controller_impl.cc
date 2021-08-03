@@ -129,9 +129,6 @@ const FeatureData kFeatures[] = {
 // An array describing the confirmation dialogs for the features which have
 // them.
 const FeatureDialogData kFeatureDialogs[] = {
-    {FeatureType::kDictation, prefs::kDictationAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_DICTATION_CONFIRMATION_TITLE, IDS_ASH_DICTATION_CONFIRMATION_BODY,
-     true},
     {FeatureType::kFullscreenMagnifier,
      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
      IDS_ASH_SCREEN_MAGNIFIER_TITLE, IDS_ASH_SCREEN_MAGNIFIER_BODY, false},
@@ -807,9 +804,9 @@ AccessibilityControllerImpl::cursor_color() const {
   return GetFeature(FeatureType::kCursorColor);
 }
 
-AccessibilityControllerImpl::FeatureWithDialog&
-AccessibilityControllerImpl::dictation() const {
-  return static_cast<FeatureWithDialog&>(GetFeature(FeatureType::kDictation));
+AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::dictation()
+    const {
+  return GetFeature(FeatureType::kDictation);
 }
 
 AccessibilityControllerImpl::Feature&

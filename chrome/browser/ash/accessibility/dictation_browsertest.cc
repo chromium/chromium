@@ -7,14 +7,18 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_test.h"
@@ -40,6 +44,10 @@ const char16_t kFinalSpeechResult16[] = u"hello world";
 const int kNoSpeechTimeoutInSeconds = 10;
 const int kShortNoSpeechTimeoutInSeconds = 5;
 const int kVeryShortNoSpeechTimeoutInSeconds = 2;
+
+PrefService* GetActiveUserPrefs() {
+  return ProfileManager::GetActiveUserProfile()->GetPrefs();
+}
 
 }  // namespace
 
@@ -89,17 +97,19 @@ class DictationTest : public InProcessBrowserTest,
     std::vector<base::Feature> disabled_features;
     if (GetParam().first == kTestWithLongerListening) {
       enabled_features.push_back(
-          features::kExperimentalAccessibilityDictationListening);
+          ::features::kExperimentalAccessibilityDictationListening);
     } else {
       disabled_features.push_back(
-          features::kExperimentalAccessibilityDictationListening);
+          ::features::kExperimentalAccessibilityDictationListening);
     }
     if (GetParam().second == kOnDeviceRecognition) {
       enabled_features.push_back(
-          features::kExperimentalAccessibilityDictationOffline);
+          ::features::kExperimentalAccessibilityDictationOffline);
+      enabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
     } else {
       disabled_features.push_back(
-          features::kExperimentalAccessibilityDictationOffline);
+          ::features::kExperimentalAccessibilityDictationOffline);
+      disabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -115,10 +125,8 @@ class DictationTest : public InProcessBrowserTest,
     ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
     generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::Get()->GetPrimaryRootWindow());
-    ash::Shell::Get()
-        ->accessibility_controller()
-        ->dictation()
-        .SetDialogAccepted();
+    GetActiveUserPrefs()->SetBoolean(
+        prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
     ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
     if (GetParam().second == kOnDeviceRecognition) {
       // Replaces normal CrosSpeechRecognitionService with a fake one.

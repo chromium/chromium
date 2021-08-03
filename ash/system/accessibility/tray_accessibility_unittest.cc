@@ -45,9 +45,6 @@ void EnableSelectToSpeak(bool enabled) {
 }
 
 void EnableDictation(bool enabled) {
-  if (enabled) {
-    Shell::Get()->accessibility_controller()->dictation().SetDialogAccepted();
-  }
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(enabled);
 }
 
@@ -637,7 +634,6 @@ TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
 
   // Confirms that the check item toggles dictation.
   EXPECT_FALSE(accessibility_controller->dictation().enabled());
-  Shell::Get()->accessibility_controller()->dictation().SetDialogAccepted();
 
   CreateDetailedMenu();
   ClickDictationOnDetailMenu();
