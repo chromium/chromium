@@ -32,6 +32,7 @@
 #include "remoting/host/remote_open_url_message_handler.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
+#include "remoting/host/url_forwarder_configurator.h"
 #include "remoting/host/url_forwarder_control_message_handler.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
@@ -909,7 +910,9 @@ void ClientSession::CreateUrlForwarderControlMessageHandler(
   // UrlForwarderControlMessageHandler manages its own lifetime and is tied to
   // the lifetime of |pipe|. Once |pipe| is closed, this instance will be
   // cleaned up.
-  new UrlForwarderControlMessageHandler(channel_name, std::move(pipe));
+  new UrlForwarderControlMessageHandler(
+      desktop_environment_->CreateUrlForwarderConfigurator(), channel_name,
+      std::move(pipe));
 }
 
 }  // namespace remoting

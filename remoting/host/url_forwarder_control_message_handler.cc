@@ -17,9 +17,11 @@ namespace remoting {
 constexpr char UrlForwarderControlMessageHandler::kDataChannelName[];
 
 UrlForwarderControlMessageHandler::UrlForwarderControlMessageHandler(
+    std::unique_ptr<UrlForwarderConfigurator> url_forwarder_configurator,
     const std::string& name,
     std::unique_ptr<protocol::MessagePipe> pipe)
-    : protocol::NamedMessagePipeHandler(name, std::move(pipe)) {
+    : protocol::NamedMessagePipeHandler(name, std::move(pipe)),
+      url_forwarder_configurator_(std::move(url_forwarder_configurator)) {
   DCHECK_EQ(kDataChannelName, name);
 }
 
@@ -35,14 +37,13 @@ void UrlForwarderControlMessageHandler::OnIncomingMessage(
   auto url_forwarder_config =
       protocol::ParseMessage<protocol::UrlForwarderControl>(message.get());
   if (url_forwarder_config->has_query_config_state_request()) {
-    UrlForwarderConfigurator::GetInstance()->IsUrlForwarderSetUp(base::BindOnce(
+    url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
         &UrlForwarderControlMessageHandler::OnIsUrlForwarderSetUpResult,
         weak_factory_.GetWeakPtr()));
   } else if (url_forwarder_config->has_set_up_url_forwarder_request()) {
-    UrlForwarderConfigurator::GetInstance()->SetUpUrlForwarder(
-        base::BindRepeating(
-            &UrlForwarderControlMessageHandler::OnSetUpUrlForwarderResult,
-            weak_factory_.GetWeakPtr()));
+    url_forwarder_configurator_->SetUpUrlForwarder(base::BindRepeating(
+        &UrlForwarderControlMessageHandler::OnSetUpUrlForwarderResult,
+        weak_factory_.GetWeakPtr()));
   } else {
     LOG(ERROR) << "Unrecognized UrlForwarderControl message.";
   }

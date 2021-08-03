@@ -7,10 +7,14 @@
 
 #include "remoting/protocol/named_message_pipe_handler.h"
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 
 namespace remoting {
+
+class UrlForwarderConfigurator;
 
 // Message handler for the url-forwarder-control data channel.
 class UrlForwarderControlMessageHandler final
@@ -19,6 +23,7 @@ class UrlForwarderControlMessageHandler final
   static constexpr char kDataChannelName[] = "url-forwarder-control";
 
   UrlForwarderControlMessageHandler(
+      std::unique_ptr<UrlForwarderConfigurator> url_forwarder_configurator,
       const std::string& name,
       std::unique_ptr<protocol::MessagePipe> pipe);
   ~UrlForwarderControlMessageHandler() override;
@@ -37,6 +42,8 @@ class UrlForwarderControlMessageHandler final
   void OnIsUrlForwarderSetUpResult(bool is_set_up);
   void OnSetUpUrlForwarderResult(
       protocol::UrlForwarderControl::SetUpUrlForwarderResponse::State state);
+
+  std::unique_ptr<UrlForwarderConfigurator> url_forwarder_configurator_;
 
   base::WeakPtrFactory<UrlForwarderControlMessageHandler> weak_factory_{this};
 };

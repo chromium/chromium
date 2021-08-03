@@ -4,11 +4,12 @@
 
 #include "remoting/host/url_forwarder_configurator_linux.h"
 
+#include <memory>
+
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/task/thread_pool.h"
@@ -42,7 +43,7 @@ SetUpForwarderAndGetResponseState() {
   return ExecuteConfigScriptWithSwitch("setup")
              ? protocol::UrlForwarderControl::SetUpUrlForwarderResponse::
                    COMPLETE
-             : protocol::UrlForwarderControl::SetUpUrlForwarderResponse::ERROR;
+             : protocol::UrlForwarderControl::SetUpUrlForwarderResponse::FAILED;
 }
 
 }  // namespace
@@ -68,9 +69,8 @@ void UrlForwarderConfiguratorLinux::SetUpUrlForwarder(
 }
 
 // static
-UrlForwarderConfigurator* UrlForwarderConfigurator::GetInstance() {
-  static base::NoDestructor<UrlForwarderConfiguratorLinux> instance;
-  return instance.get();
+std::unique_ptr<UrlForwarderConfigurator> UrlForwarderConfigurator::Create() {
+  return std::make_unique<UrlForwarderConfiguratorLinux>();
 }
 
 }  // namespace remoting

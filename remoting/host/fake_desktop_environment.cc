@@ -12,6 +12,7 @@
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/url_forwarder_configurator.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 
@@ -107,6 +108,11 @@ FakeDesktopEnvironment::CreateKeyboardLayoutMonitor(
 }
 
 std::unique_ptr<FileOperations> FakeDesktopEnvironment::CreateFileOperations() {
+  return nullptr;
+}
+
+std::unique_ptr<UrlForwarderConfigurator>
+FakeDesktopEnvironment::CreateUrlForwarderConfigurator() {
   return nullptr;
 }
 

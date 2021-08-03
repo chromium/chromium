@@ -15,6 +15,7 @@ namespace remoting {
 class UrlForwarderConfiguratorLinux final : public UrlForwarderConfigurator {
  public:
   UrlForwarderConfiguratorLinux();
+  ~UrlForwarderConfiguratorLinux() override;
 
   void IsUrlForwarderSetUp(IsUrlForwarderSetUpCallback callback) override;
   void SetUpUrlForwarder(const SetUpUrlForwarderCallback& callback) override;
@@ -24,8 +25,6 @@ class UrlForwarderConfiguratorLinux final : public UrlForwarderConfigurator {
       const UrlForwarderConfiguratorLinux&) = delete;
 
  private:
-  ~UrlForwarderConfiguratorLinux() override;
-
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 };
 

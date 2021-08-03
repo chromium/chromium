@@ -16,7 +16,7 @@ UrlForwarderConfigurator::~UrlForwarderConfigurator() = default;
 #if !defined(OS_LINUX) && !defined(OS_WIN)
 
 // static
-UrlForwarderConfigurator* UrlForwarderConfigurator::GetInstance() {
+std::unique_ptr<UrlForwarderConfigurator> UrlForwarderConfigurator::Create() {
   // Unsupported platforms.
   NOTREACHED();
   return nullptr;

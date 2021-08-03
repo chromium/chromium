@@ -61,6 +61,8 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
+  std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
+      override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
   uint32_t GetDesktopSessionId() const override;

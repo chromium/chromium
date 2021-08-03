@@ -22,6 +22,7 @@
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
+#include "remoting/host/url_forwarder_configurator.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,6 +52,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
       KeyboardLayoutMonitor*(
           base::RepeatingCallback<void(const protocol::KeyboardLayout&)>));
   MOCK_METHOD0(CreateFileOperationsPtr, FileOperations*());
+  MOCK_METHOD0(CreateUrlForwarderConfiguratorPtr, UrlForwarderConfigurator*());
   MOCK_CONST_METHOD0(GetCapabilities, std::string());
   MOCK_METHOD1(SetCapabilities, void(const std::string&));
   MOCK_CONST_METHOD0(GetDesktopSessionId, uint32_t());
@@ -69,6 +71,8 @@ class MockDesktopEnvironment : public DesktopEnvironment {
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
+  std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
+      override;
   std::unique_ptr<DesktopAndCursorConditionalComposer>
   CreateComposingVideoCapturer() override;
 };
