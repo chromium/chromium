@@ -88,6 +88,10 @@
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace {
 
 constexpr const char kExampleURL[] = "http://example.org/";
@@ -952,13 +956,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
 }
 
 #if defined(OS_MAC) || defined(OS_WIN)
-// crbug.com/1235246: Disable the test on Windows due to a consistent failure.
-#if defined(OS_WIN)
-#define MAYBE_ShortcutIconCorrectColor DISABLED_ShortcutIconCorrectColor
-#else
-#define MAYBE_ShortcutIconCorrectColor ShortcutIconCorrectColor
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_ShortcutIconCorrectColor) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -995,15 +993,18 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_ShortcutIconCorrectColor) {
 
   base::FilePath shortcut_path;
   auto* provider = WebAppProvider::Get(profile());
+  SkColor expected_pixel_color = SkColorSetRGB(92, 92, 92);
 #if defined(OS_MAC)
   shortcut_path = application_dir.Append(
       provider->registrar().GetAppShortName(app_id) + ".app");
 #elif defined(OS_WIN)
   shortcut_path = application_dir.AppendASCII(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
+  if (base::win::GetVersion() == base::win::Version::WIN7)
+    expected_pixel_color = SkColorSetRGB(91, 91, 91);
 #endif
   SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
-  EXPECT_EQ(SkColorSetRGB(92, 92, 92), icon_pixel_color);
+  EXPECT_EQ(expected_pixel_color, icon_pixel_color);
 }
 #endif
 
