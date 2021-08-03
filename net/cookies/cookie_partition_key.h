@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace network {
 namespace mojom {
@@ -24,7 +25,6 @@ struct StructTraits;
 
 namespace net {
 
-// TODO(crbug.com/1225444): Add fuzzer test.
 class NET_EXPORT CookiePartitionKey {
  public:
   CookiePartitionKey();

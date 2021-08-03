@@ -5164,6 +5164,14 @@ fuzzer_test("net_canonical_cookie_fuzzer") {
   seed_corpus = "data/fuzzer_data/net_canonical_cookie_fuzzer/"
 }
 
+fuzzer_test("net_cookie_partition_key_fuzzer") {
+  sources = [ "cookies/cookie_partition_key_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//net",
+  ]
+}
+
 fuzzer_test("net_parse_cookie_line_fuzzer") {
   sources = [ "cookies/parse_cookie_line_fuzzer.cc" ]
   deps = [
