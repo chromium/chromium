@@ -20,6 +20,10 @@
 // NO, the banner will be of normal height (25% of view height). Defaults to NO.
 @property(nonatomic, assign) BOOL isTallBanner;
 
+// The label of the headline below the image. Must be set before the view is
+// loaded. This is declared public so the accessibility can be enabled.
+@property(nonatomic, strong) UILabel* titleLabel;
+
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleText;
 

@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
@@ -98,6 +99,7 @@
 #endif
 
 @interface ContentSuggestionsCoordinator () <
+    AppStateObserver,
     ContentSuggestionsActionHandler,
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
@@ -207,6 +209,20 @@
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   self.headerController.toolbarDelegate = self.toolbarDelegate;
+
+  // Only handle app state for the new First Run UI.
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    AppState* appState = sceneState.appState;
+    [appState addObserver:self];
+
+    // Do not focus on omnibox for voice over if there are other screens to
+    // show.
+    if (appState.initStage < InitStageFinal) {
+      self.headerController.focusOmniboxWhenViewAppears = NO;
+    }
+  }
 
   favicon::LargeIconService* largeIconService =
       IOSChromeLargeIconServiceFactory::GetForBrowserState(
@@ -858,6 +874,20 @@
   return self.contentSuggestionsEnabled &&
          [self.contentSuggestionsExpanded value] &&
          !tests_hook::DisableDiscoverFeed();
+}
+
+#pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+    if (previousInitStage == InitStageFirstRun) {
+      self.headerController.focusOmniboxWhenViewAppears = YES;
+      [self.headerController focusAccessibilityOnOmnibox];
+
+      [appState removeObserver:self];
+    }
+  }
 }
 
 @end

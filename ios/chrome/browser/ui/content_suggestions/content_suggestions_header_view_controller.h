@@ -53,12 +53,19 @@ class ReadingListModel;
 // |YES| if a what's new promo can be displayed.
 @property(nonatomic, assign) BOOL promoCanShow;
 
+// |YES| if the omnibox should be focused on when the view appears for voice
+// over.
+@property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;
+
 // Return the toolbar view;
 - (UIView*)toolBarView;
 
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
+
+// Sends notification to focus the accessibility of the omnibox.
+- (void)focusAccessibilityOnOmnibox;
 
 // Identity disc shown in this ViewController.
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports

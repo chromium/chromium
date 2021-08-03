@@ -51,7 +51,6 @@ constexpr CGFloat kSeparatorHeight = 1;
 @property(nonatomic, strong) UIImageView* imageView;
 // UIView that wraps the scrollable content.
 @property(nonatomic, strong) UIView* scrollContentView;
-@property(nonatomic, strong) UILabel* titleLabel;
 @property(nonatomic, strong) UILabel* subtitleLabel;
 @property(nonatomic, strong) HighlightedButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;

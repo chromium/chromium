@@ -120,6 +120,13 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   [super viewDidLoad];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.titleLabel);
+}
+
 #pragma mark - Accessors
 
 - (BOOL)checkBoxSelected {

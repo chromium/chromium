@@ -110,7 +110,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @synthesize logoFetched = _logoFetched;
 
 - (instancetype)init {
-  return [super initWithNibName:nil bundle:nil];
+  if (self = [super initWithNibName:nil bundle:nil]) {
+    _focusOmniboxWhenViewAppears = YES;
+  }
+  return self;
 }
 
 #pragma mark - Public
@@ -229,8 +232,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.fakeOmnibox);
+
+  if (self.focusOmniboxWhenViewAppears) {
+    [self focusAccessibilityOnOmnibox];
+  }
 }
 
 - (CGFloat)headerHeight {
@@ -444,6 +449,11 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   [self shiftTilesUp];
+}
+
+- (void)focusAccessibilityOnOmnibox {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.fakeOmnibox);
 }
 
 - (void)identityDiscTapped {

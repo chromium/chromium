@@ -51,6 +51,7 @@ source_set("content_suggestions") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
