@@ -115,7 +115,7 @@ base::FilePath PlatformCrashpadInitialization(
     if (!base::PathService::Get(base::DIR_EXE, &handler_path)) {
       return database_path;
     }
-    handler_path = handler_path.Append("crashpad_handler");
+    handler_path = handler_path.Append("chrome_crashpad_handler");
 
     // When --use-cros-crash-reporter is set (below), the handler passes dumps
     // to ChromeOS's /sbin/crash_reporter which in turn passes the dump to

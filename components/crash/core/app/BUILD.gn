@@ -128,10 +128,6 @@ static_library("app") {
   if (is_ios) {
     sources += [ "crashpad_ios.mm" ]
   }
-
-  if (is_linux || is_chromeos) {
-    data_deps = [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
-  }
 }
 
 if (is_win) {
@@ -214,7 +210,7 @@ if (is_win) {
   }
 }
 
-if (is_mac || is_android) {
+if (is_mac || is_android || is_linux || is_chromeos) {
   # We build a chromium-specific crashpad_handler executable so that we can
   # define custom UserStreamDataSources.
   executable("chrome_crashpad_handler") {

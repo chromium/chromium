@@ -273,6 +273,8 @@ if (!is_android && !is_mac) {
         "//chrome/common:buildflags",
       ]
 
+      data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+
       ldflags = []
 
       # Chrome OS debug builds for arm need to pass --long-plt to the linker.
@@ -1681,8 +1683,8 @@ if (is_linux || is_chromeos) {
       deps = [
         ":angle_egl_symbols",
         ":angle_gles_symbols",
+        ":chrome_crashpad_symbols",
         ":chrome_symbols",
-        ":crashpad_symbols",
         ":swiftshader_egl_symbols",
         ":swiftshader_gles_symbols",
       ]
@@ -1705,8 +1707,8 @@ if (is_linux || is_chromeos) {
 
       deps = [ ":chrome" ]
     }
-    extract_symbols("crashpad_symbols") {
-      binary = "$root_out_dir/crashpad_handler"
+    extract_symbols("chrome_crashpad_symbols") {
+      binary = "$root_out_dir/chrome_crashpad_handler"
 
       if (current_cpu == "x86") {
         # GYP used "ia32" so keep that naming for back-compat.
@@ -1715,7 +1717,7 @@ if (is_linux || is_chromeos) {
         symbol_file = "$root_out_dir/crashpad.breakpad.$current_cpu"
       }
 
-      deps = [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
+      deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
     }
     extract_symbols("swiftshader_egl_symbols") {
       binary = "$root_out_dir/swiftshader/libEGL.so"

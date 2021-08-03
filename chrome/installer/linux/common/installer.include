@@ -143,11 +143,11 @@ stage_install_common() {
   install -m 755 "${STRIPPEDFILE}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}"
 
   # crashpad
-  buildfile="${OUTPUTDIR}/crashpad_handler"
+  buildfile="${OUTPUTDIR}/chrome_crashpad_handler"
   strippedfile="${buildfile}.stripped"
   debugfile="${buildfile}.debug"
   "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/crashpad_handler"
+  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome_crashpad_handler"
 
   # resources
   install -m 644 "${OUTPUTDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"
