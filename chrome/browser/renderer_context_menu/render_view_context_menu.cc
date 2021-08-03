@@ -131,6 +131,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -155,6 +156,8 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -1078,6 +1081,19 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
       base::RecordAction(base::UserMetricsAction(
           "NewTabPage.LinkOpenedFromContextMenu.WebUI"));
     }
+  }
+
+  // Log UKM for Lens context menu items.
+  if ((id == IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH &&
+       lens::features::GetEnableUKMLoggingForRegionSearch()) ||
+      (id == IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE &&
+       lens::features::GetEnableUKMLoggingForImageSearch())) {
+    // Enum id should correspond to the RenderViewContextMenuItem enum.
+    ukm::SourceId source_id =
+        ukm::GetSourceIdForWebContentsDocument(source_web_contents_);
+    ukm::builders::RenderViewContextMenu_Used(source_id)
+        .SetSelectedMenuItem(enum_id)
+        .Record(ukm::UkmRecorder::Get());
   }
 
   // Log for specific contexts. Note that since the menu is displayed for

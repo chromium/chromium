@@ -25,6 +25,12 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
     &kLensRegionSearch, "use-menu-item-alt-text-3", false};
 
+const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
+    &kLensRegionSearch, "enable-ukm-logging", false};
+
+const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch{
+    &kLensStandalone, "enable-ukm-logging", false};
+
 constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
     &kLensRegionSearch, "dimensions-max-pixels", 1000};
 
@@ -39,6 +45,14 @@ constexpr base::FeatureParam<std::string> kHomepageURLForImageSearch{
 
 constexpr base::FeatureParam<std::string> kHomepageURLForRegionSearch{
     &kLensRegionSearch, "lens-homepage-url", "https://lens.google.com/"};
+
+bool GetEnableUKMLoggingForRegionSearch() {
+  return kEnableUKMLoggingForRegionSearch.Get();
+}
+
+bool GetEnableUKMLoggingForImageSearch() {
+  return kEnableUKMLoggingForImageSearch.Get();
+}
 
 int GetMaxPixelsForRegionSearch() {
   return kMaxPixelsForRegionSearch.Get();
