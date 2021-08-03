@@ -7,10 +7,39 @@
 #include <drm_fourcc.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMaxLinuxDmabufVersion = 3;
+}
+
+// static
+void WaylandZwpLinuxDmabuf::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("zwp_linux_dmabuf_v1",
+                                          &WaylandZwpLinuxDmabuf::Instantiate);
+}
+
+// static
+void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
+                                        wl_registry* registry,
+                                        uint32_t name,
+                                        uint32_t version) {
+  if (connection->zwp_dmabuf())
+    return;
+
+  auto zwp_linux_dmabuf = wl::Bind<zwp_linux_dmabuf_v1>(
+      registry, name, std::min(version, kMaxLinuxDmabufVersion));
+  if (!zwp_linux_dmabuf) {
+    LOG(ERROR) << "Failed to bind zwp_linux_dmabuf_v1";
+    return;
+  }
+  connection->zwp_dmabuf_ = std::make_unique<WaylandZwpLinuxDmabuf>(
+      zwp_linux_dmabuf.release(), connection);
+}
 
 WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
     zwp_linux_dmabuf_v1* zwp_linux_dmabuf,

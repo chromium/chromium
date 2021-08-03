@@ -16,8 +16,14 @@ namespace ui {
 
 // WaylandOutput objects keep track of the current output of display
 // that are available to the application.
-class WaylandOutput {
+class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   class Delegate {
    public:
     virtual void OnOutputHandleMetrics(uint32_t output_id,

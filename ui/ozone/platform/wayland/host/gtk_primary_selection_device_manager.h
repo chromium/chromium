@@ -15,10 +15,17 @@ namespace ui {
 class GtkPrimarySelectionDevice;
 class WaylandConnection;
 
-class GtkPrimarySelectionDeviceManager {
+class GtkPrimarySelectionDeviceManager
+    : public wl::GlobalObjectRegistrar<GtkPrimarySelectionDeviceManager> {
  public:
   using DataSource = GtkPrimarySelectionSource;
   using DataDevice = GtkPrimarySelectionDevice;
+
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
 
   GtkPrimarySelectionDeviceManager(
       gtk_primary_selection_device_manager* manager,

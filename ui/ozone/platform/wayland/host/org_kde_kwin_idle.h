@@ -17,8 +17,14 @@ class WaylandConnection;
 
 // Wraps the KDE Wayland user idle time manager, which is provided via
 // org_kde_kwin_idle interface.
-class OrgKdeKwinIdle {
+class OrgKdeKwinIdle : public wl::GlobalObjectRegistrar<OrgKdeKwinIdle> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   OrgKdeKwinIdle(org_kde_kwin_idle* idle, WaylandConnection* connection);
   OrgKdeKwinIdle(const OrgKdeKwinIdle&) = delete;
   OrgKdeKwinIdle& operator=(const OrgKdeKwinIdle&) = delete;

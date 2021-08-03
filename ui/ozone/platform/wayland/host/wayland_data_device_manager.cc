@@ -6,11 +6,41 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMaxDeviceManagerVersion = 3;
+}
+
+// static
+void WaylandDataDeviceManager::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory(
+      "wl_data_device_manager", &WaylandDataDeviceManager::Instantiate);
+}
+
+// static
+void WaylandDataDeviceManager::Instantiate(WaylandConnection* connection,
+                                           wl_registry* registry,
+                                           uint32_t name,
+                                           uint32_t version) {
+  if (connection->data_device_manager_)
+    return;
+
+  auto data_device_manager = wl::Bind<wl_data_device_manager>(
+      registry, name, std::min(version, kMaxDeviceManagerVersion));
+  if (!data_device_manager) {
+    LOG(ERROR) << "Failed to bind to wl_data_device_manager global";
+    return;
+  }
+  connection->data_device_manager_ = std::make_unique<WaylandDataDeviceManager>(
+      data_device_manager.release(), connection);
+  connection->CreateDataObjectsIfReady();
+}
 
 WaylandDataDeviceManager::WaylandDataDeviceManager(
     wl_data_device_manager* device_manager,

@@ -27,8 +27,15 @@ class WaylandConnection;
 
 // Wrapper around |zwp_linux_dmabuf_v1| Wayland factory, which creates
 // |wl_buffer|s backed by dmabuf prime file descriptor.
-class WaylandZwpLinuxDmabuf {
+class WaylandZwpLinuxDmabuf
+    : public wl::GlobalObjectRegistrar<WaylandZwpLinuxDmabuf> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   WaylandZwpLinuxDmabuf(zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
                         WaylandConnection* connection);
   ~WaylandZwpLinuxDmabuf();

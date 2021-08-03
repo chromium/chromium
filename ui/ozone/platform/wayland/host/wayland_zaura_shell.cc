@@ -7,11 +7,41 @@
 #include <components/exo/wayland/protocol/aura-shell-client-protocol.h>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMaxAuraShellVersion = 21;
+}
+
+// static
+void WaylandZAuraShell::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("zaura_shell",
+                                          &WaylandZAuraShell::Instantiate);
+}
+
+// static
+void WaylandZAuraShell::Instantiate(WaylandConnection* connection,
+                                    wl_registry* registry,
+                                    uint32_t name,
+                                    uint32_t version) {
+  if (connection->zaura_shell_)
+    return;
+
+  auto zaura_shell = wl::Bind<struct zaura_shell>(
+      registry, name, std::min(version, kMaxAuraShellVersion));
+  if (!zaura_shell) {
+    LOG(ERROR) << "Failed to bind zaura_shell";
+    return;
+  }
+  connection->zaura_shell_ =
+      std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
+  ReportShellUMA(UMALinuxWaylandShell::kZauraShell);
+}
 
 WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
                                      WaylandConnection* connection)

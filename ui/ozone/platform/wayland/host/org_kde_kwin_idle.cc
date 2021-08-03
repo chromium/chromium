@@ -6,11 +6,14 @@
 
 #include <idle-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
 
 namespace {
+
+constexpr uint32_t kMaxOrgKdeKwinIdleVersion = 1;
 
 // After the system has gone idle, it will wait for this time before notifying
 // us.  This reduces "jitter" of the idle/active state, but also adds some lag
@@ -43,6 +46,30 @@ class OrgKdeKwinIdle::Timeout {
   // Time when the system went into idle state.
   base::Time idle_timestamp_;
 };
+
+// static
+void OrgKdeKwinIdle::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("org_kde_kwin_idle",
+                                          &OrgKdeKwinIdle::Instantiate);
+}
+
+// static
+void OrgKdeKwinIdle::Instantiate(WaylandConnection* connection,
+                                 wl_registry* registry,
+                                 uint32_t name,
+                                 uint32_t version) {
+  if (connection->org_kde_kwin_idle_)
+    return;
+
+  auto idle = wl::Bind<struct org_kde_kwin_idle>(
+      registry, name, std::min(version, kMaxOrgKdeKwinIdleVersion));
+  if (!idle) {
+    LOG(ERROR) << "Failed to bind to org_kde_kwin_idle global";
+    return;
+  }
+  connection->org_kde_kwin_idle_ =
+      std::make_unique<OrgKdeKwinIdle>(idle.release(), connection);
+}
 
 OrgKdeKwinIdle::OrgKdeKwinIdle(org_kde_kwin_idle* idle,
                                WaylandConnection* connection)

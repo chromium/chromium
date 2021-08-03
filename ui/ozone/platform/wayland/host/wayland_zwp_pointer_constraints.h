@@ -13,8 +13,15 @@ class WaylandConnection;
 class WaylandSurface;
 
 // Wraps the zwp_pointer_constraints_v1 object.
-class WaylandZwpPointerConstraints {
+class WaylandZwpPointerConstraints
+    : public wl::GlobalObjectRegistrar<WaylandZwpPointerConstraints> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   WaylandZwpPointerConstraints(zwp_pointer_constraints_v1* pointer_constraints,
                                WaylandConnection* connection);
 

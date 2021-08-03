@@ -7,14 +7,51 @@
 
 #include <memory>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "ui/ozone/platform/wayland/common/wayland.h"
 
 struct wl_proxy;
+
+namespace ui {
+class WaylandConnection;
+}
 
 namespace wl {
 
 template <typename T>
 struct ObjectTraits;
+
+using GlobalObjectFactory = void (*)(ui::WaylandConnection* connection,
+                                     wl_registry* registry,
+                                     uint32_t name,
+                                     uint32_t version);
+
+// This template forces T to declare two static methods, Register() and
+// Instantiate().  The subclass must implement them as follows:
+//
+// void Register(ui::WaylandConnection* connection)
+// - must call connection->RegisterGlobalObjectFactory() and pass there the name
+//   of the Wayland interface and the address of the subclass's Instantiate()
+//   method.  The connection will use the name of the interface as a key to find
+//   and call the instantiation method when that interface is announced by the
+//   server.
+//
+// void Instantiate(WaylandConnection* connection,
+//                  wl_registry* registry,
+//                  uint32_t name,
+//                  uint32_t version)
+// - must bind the Wayland object and store it in the connection.
+template <typename T>
+class GlobalObjectRegistrar {
+ public:
+  GlobalObjectRegistrar() {
+    void (*Register)(ui::WaylandConnection*) = T::Register;
+    ALLOW_UNUSED_LOCAL(Register);
+    GlobalObjectFactory Instantiate = T::Instantiate;
+    ALLOW_UNUSED_LOCAL(Instantiate);
+  }
+};
 
 struct Deleter {
   template <typename T>

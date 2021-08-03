@@ -7,14 +7,47 @@
 #include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <wayland-util.h>
 
+#include "base/logging.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
+}
+
+// static
+void WaylandZwpPointerGestures::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory(
+      "zwp_pointer_gestures_v1", &WaylandZwpPointerGestures::Instantiate);
+}
+
+// static
+void WaylandZwpPointerGestures::Instantiate(WaylandConnection* connection,
+                                            wl_registry* registry,
+                                            uint32_t name,
+                                            uint32_t version) {
+  if (connection->wayland_zwp_pointer_gestures_ ||
+      version < kMinZwpPointerGesturesVersion)
+    return;
+
+  auto zwp_pointer_gestures_v1 =
+      wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, version);
+  if (!zwp_pointer_gestures_v1) {
+    LOG(ERROR) << "Failed to bind wp_pointer_gestures_v1";
+    return;
+  }
+  connection->wayland_zwp_pointer_gestures_ =
+      std::make_unique<WaylandZwpPointerGestures>(
+          zwp_pointer_gestures_v1.release(), connection,
+          connection->event_source());
+}
 
 WaylandZwpPointerGestures::WaylandZwpPointerGestures(
     zwp_pointer_gestures_v1* pointer_gestures,

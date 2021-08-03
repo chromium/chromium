@@ -14,8 +14,14 @@ namespace ui {
 class WaylandConnection;
 
 // Wraps the zaura_shell object.
-class WaylandZAuraShell {
+class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   WaylandZAuraShell(zaura_shell* aura_shell, WaylandConnection* connection);
   WaylandZAuraShell(const WaylandZAuraShell&) = delete;
   WaylandZAuraShell& operator=(const WaylandZAuraShell&) = delete;

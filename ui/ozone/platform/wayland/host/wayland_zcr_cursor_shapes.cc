@@ -15,7 +15,35 @@
 
 namespace ui {
 
+namespace {
+constexpr uint32_t kMaxCursorShapesVersion = 1;
+}
+
 using mojom::CursorType;
+
+// static
+void WaylandZcrCursorShapes::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("zcr_cursor_shapes_v1",
+                                          &WaylandZcrCursorShapes::Instantiate);
+}
+
+// static
+void WaylandZcrCursorShapes::Instantiate(WaylandConnection* connection,
+                                         wl_registry* registry,
+                                         uint32_t name,
+                                         uint32_t version) {
+  if (connection->zcr_cursor_shapes_)
+    return;
+
+  auto zcr_cursor_shapes = wl::Bind<zcr_cursor_shapes_v1>(
+      registry, name, std::min(version, kMaxCursorShapesVersion));
+  if (!zcr_cursor_shapes) {
+    LOG(ERROR) << "Failed to bind zcr_cursor_shapes_v1";
+    return;
+  }
+  connection->zcr_cursor_shapes_ = std::make_unique<WaylandZcrCursorShapes>(
+      zcr_cursor_shapes.release(), connection);
+}
 
 WaylandZcrCursorShapes::WaylandZcrCursorShapes(
     zcr_cursor_shapes_v1* zcr_cursor_shapes,

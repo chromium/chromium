@@ -16,8 +16,15 @@ class WaylandConnection;
 // Wraps the zcr_cursor_shapes interface for Wayland (exo) server-side cursor
 // support. Exists to support Lacros, which uses server-side cursors for
 // consistency with ARC++ and for accessibility support.
-class WaylandZcrCursorShapes {
+class WaylandZcrCursorShapes
+    : public wl::GlobalObjectRegistrar<WaylandZcrCursorShapes> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   WaylandZcrCursorShapes(zcr_cursor_shapes_v1* zcr_cursor_shapes,
                          WaylandConnection* connection);
   WaylandZcrCursorShapes(const WaylandZcrCursorShapes&) = delete;

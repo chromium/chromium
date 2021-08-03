@@ -15,8 +15,15 @@ namespace ui {
 class ZwpPrimarySelectionDevice;
 class WaylandConnection;
 
-class ZwpPrimarySelectionDeviceManager {
+class ZwpPrimarySelectionDeviceManager
+    : public wl::GlobalObjectRegistrar<ZwpPrimarySelectionDeviceManager> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   using DataSource = ZwpPrimarySelectionSource;
   using DataDevice = ZwpPrimarySelectionDevice;
 

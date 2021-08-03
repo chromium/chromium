@@ -6,9 +6,38 @@
 
 #include <idle-inhibit-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMaxZwpIdleInhibitManagerVersion = 1;
+}
+
+// static
+void ZwpIdleInhibitManager::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("zwp_idle_inhibit_manager_v1",
+                                          &ZwpIdleInhibitManager::Instantiate);
+}
+
+// static
+void ZwpIdleInhibitManager::Instantiate(WaylandConnection* connection,
+                                        wl_registry* registry,
+                                        uint32_t name,
+                                        uint32_t version) {
+  if (connection->zwp_idle_inhibit_manager_)
+    return;
+
+  auto manager = wl::Bind<zwp_idle_inhibit_manager_v1>(
+      registry, name, std::min(version, kMaxZwpIdleInhibitManagerVersion));
+  if (!manager) {
+    LOG(ERROR) << "Failed to bind zwp_idle_inhibit_manager_v1";
+    return;
+  }
+  connection->zwp_idle_inhibit_manager_ =
+      std::make_unique<ZwpIdleInhibitManager>(manager.release(), connection);
+}
 
 ZwpIdleInhibitManager::ZwpIdleInhibitManager(
     zwp_idle_inhibit_manager_v1* manager,

@@ -4,11 +4,48 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
+#include "base/logging.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMinWlOutputVersion = 2;
+}
+
+// static
+void WaylandOutput::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("wl_output",
+                                          &WaylandOutput::Instantiate);
+}
+
+// static
+void WaylandOutput::Instantiate(WaylandConnection* connection,
+                                wl_registry* registry,
+                                uint32_t name,
+                                uint32_t version) {
+  if (version < kMinWlOutputVersion) {
+    LOG(ERROR)
+        << "Unable to bind to the unsupported wl_output object with version= "
+        << version << ". Minimum supported version is " << kMinWlOutputVersion;
+    return;
+  }
+
+  auto output = wl::Bind<wl_output>(registry, name, version);
+  if (!output) {
+    LOG(ERROR) << "Failed to bind to wl_output global";
+    return;
+  }
+
+  if (!connection->wayland_output_manager_) {
+    connection->wayland_output_manager_ =
+        std::make_unique<WaylandOutputManager>(connection);
+  }
+  connection->wayland_output_manager_->AddWaylandOutput(name, output.release());
+}
 
 WaylandOutput::WaylandOutput(uint32_t output_id, wl_output* output)
     : output_id_(output_id),

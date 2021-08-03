@@ -8,11 +8,44 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
+}
+
+// static
+void GtkPrimarySelectionDeviceManager::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory(
+      "gtk_primary_selection_device_manager",
+      &GtkPrimarySelectionDeviceManager::Instantiate);
+}
+
+// static
+void GtkPrimarySelectionDeviceManager::Instantiate(
+    WaylandConnection* connection,
+    wl_registry* registry,
+    uint32_t name,
+    uint32_t version) {
+  if (connection->gtk_primary_selection_device_manager())
+    return;
+
+  auto manager = wl::Bind<gtk_primary_selection_device_manager>(
+      registry, name,
+      std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
+  if (!manager) {
+    LOG(ERROR) << "Failed to bind gtk_primary_selection_device_manager";
+    return;
+  }
+  connection->gtk_primary_selection_device_manager_ =
+      std::make_unique<GtkPrimarySelectionDeviceManager>(manager.release(),
+                                                         connection);
+}
 
 GtkPrimarySelectionDeviceManager::GtkPrimarySelectionDeviceManager(
     gtk_primary_selection_device_manager* manager,

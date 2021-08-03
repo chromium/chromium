@@ -16,6 +16,31 @@
 
 namespace ui {
 
+namespace {
+constexpr uint32_t kMinWlDrmVersion = 2;
+}
+
+// static
+void WaylandDrm::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("wl_drm", &WaylandDrm::Instantiate);
+}
+
+// static
+void WaylandDrm::Instantiate(WaylandConnection* connection,
+                             wl_registry* registry,
+                             uint32_t name,
+                             uint32_t version) {
+  if (connection->drm_ || version < kMinWlDrmVersion)
+    return;
+
+  auto wl_drm = wl::Bind<struct wl_drm>(registry, name, version);
+  if (!wl_drm) {
+    LOG(ERROR) << "Failed to bind wl_drm";
+    return;
+  }
+  connection->drm_ = std::make_unique<WaylandDrm>(wl_drm.release(), connection);
+}
+
 WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
     : wl_drm_(drm), connection_(connection) {
   static constexpr wl_drm_listener kDrmListener = {

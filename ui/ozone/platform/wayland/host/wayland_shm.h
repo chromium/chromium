@@ -18,8 +18,14 @@ class WaylandConnection;
 
 // Wrapper around |wl_shm| Wayland factory, which creates
 // |wl_buffer|s backed by a fd to a shared memory.
-class WaylandShm {
+class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   WaylandShm(wl_shm* shm, WaylandConnection* connection);
   ~WaylandShm();
 

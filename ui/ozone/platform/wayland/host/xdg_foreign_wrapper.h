@@ -21,8 +21,15 @@ class WaylandConnection;
 // may be exported. Currently supports only exporting surfaces.
 //
 // TODO(1126817): consider supporting xdg-foreign-v2.
-class XdgForeignWrapper : public WaylandWindowObserver {
+class XdgForeignWrapper : public wl::GlobalObjectRegistrar<XdgForeignWrapper>,
+                          public WaylandWindowObserver {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   using OnHandleExported = base::OnceCallback<void(const std::string&)>;
 
   XdgForeignWrapper(WaylandConnection* connection,

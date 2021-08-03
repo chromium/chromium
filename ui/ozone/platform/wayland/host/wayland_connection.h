@@ -7,8 +7,10 @@
 
 #include <time.h>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/event.h"
@@ -58,6 +60,25 @@ class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
 class XdgForeignWrapper;
 
+// These values are persisted to logs.  Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Append new shells before kMaxValue and update LinuxWaylandShell
+// in tools/metrics/histograms/enums.xml accordingly.
+//
+// See also tools/metrics/histograms/README.md#enum-histograms
+enum class UMALinuxWaylandShell {
+  kZauraShell = 0,
+  kGtkShell1 = 1,
+  kOrgKdePlasmaShell = 2,
+  kXdgWmBase = 3,
+  kXdgShellV6 = 4,
+  kZwlrLayerShellV1 = 5,
+  kMaxValue = kZwlrLayerShellV1,
+};
+
+void ReportShellUMA(UMALinuxWaylandShell shell);
+
 class WaylandConnection {
  public:
   // Stores the last serial and the event type it is associated with.
@@ -72,6 +93,9 @@ class WaylandConnection {
   ~WaylandConnection();
 
   bool Initialize();
+
+  void RegisterGlobalObjectFactory(const char* interface_name,
+                                   wl::GlobalObjectFactory factory);
 
   // Schedules a flush of the Wayland connection.
   void ScheduleFlush();
@@ -246,6 +270,29 @@ class WaylandConnection {
  private:
   friend class WaylandConnectionTestApi;
 
+  // All global Wayland objects are friends of the Wayland connection.
+  // Conceptually, this is correct: globals are owned by the connection and are
+  // accessed via it, so they are essentially parts of it.  Also this friendship
+  // makes it possible to avoid exposing setters for all those global objects:
+  // these setters would only be needed by the globals but would be visible to
+  // everyone.
+  friend class GtkPrimarySelectionDeviceManager;
+  friend class GtkShell1;
+  friend class OrgKdeKwinIdle;
+  friend class WaylandDataDeviceManager;
+  friend class WaylandDrm;
+  friend class WaylandOutput;
+  friend class WaylandShm;
+  friend class WaylandZAuraShell;
+  friend class WaylandZwpLinuxDmabuf;
+  friend class WaylandZwpPointerConstraints;
+  friend class WaylandZwpPointerGestures;
+  friend class WaylandZwpRelativePointerManager;
+  friend class WaylandZcrCursorShapes;
+  friend class XdgForeignWrapper;
+  friend class ZwpIdleInhibitManager;
+  friend class ZwpPrimarySelectionDeviceManager;
+
   void Flush();
   void UpdateInputDevices(wl_seat* seat, uint32_t capabilities);
 
@@ -279,6 +326,8 @@ class WaylandConnection {
 
   // xdg_wm_base_listener
   static void ClockId(void* data, wp_presentation* shell_v6, uint32_t clk_id);
+
+  base::flat_map<std::string, wl::GlobalObjectFactory> global_object_factories_;
 
   uint32_t compositor_version_ = 0;
   wl::Object<wl_display> display_;

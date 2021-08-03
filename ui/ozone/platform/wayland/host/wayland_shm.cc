@@ -4,15 +4,37 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
 
 namespace {
-
+constexpr uint32_t kMaxShmVersion = 1;
 constexpr uint32_t kShmFormat = WL_SHM_FORMAT_ARGB8888;
-
 }  // namespace
+
+// static
+void WaylandShm::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory("wl_shm", &WaylandShm::Instantiate);
+}
+
+// static
+void WaylandShm::Instantiate(WaylandConnection* connection,
+                             wl_registry* registry,
+                             uint32_t name,
+                             uint32_t version) {
+  if (connection->shm_)
+    return;
+
+  auto shm =
+      wl::Bind<wl_shm>(registry, name, std::min(version, kMaxShmVersion));
+  if (!shm) {
+    LOG(ERROR) << "Failed to bind to wl_shm global";
+    return;
+  }
+  connection->shm_ = std::make_unique<WaylandShm>(shm.release(), connection);
+}
 
 WaylandShm::WaylandShm(wl_shm* shm, WaylandConnection* connection)
     : shm_(shm), connection_(connection) {}

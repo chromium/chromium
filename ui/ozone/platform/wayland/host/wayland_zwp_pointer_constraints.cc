@@ -6,12 +6,44 @@
 
 #include <pointer-constraints-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMinZwpPointerConstraintsVersion = 1;
+}
+
+// static
+void WaylandZwpPointerConstraints::Register(WaylandConnection* connection) {
+  connection->RegisterGlobalObjectFactory(
+      "zwp_pointer_constraints_v1", &WaylandZwpPointerConstraints::Instantiate);
+}
+
+// static
+void WaylandZwpPointerConstraints::Instantiate(WaylandConnection* connection,
+                                               wl_registry* registry,
+                                               uint32_t name,
+                                               uint32_t version) {
+  if (connection->wayland_zwp_pointer_constraints_ ||
+      version < kMinZwpPointerConstraintsVersion) {
+    return;
+  }
+
+  auto zwp_pointer_constraints_v1 =
+      wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, version);
+  if (!zwp_pointer_constraints_v1) {
+    LOG(ERROR) << "Failed to bind wp_pointer_constraints_v1";
+    return;
+  }
+  connection->wayland_zwp_pointer_constraints_ =
+      std::make_unique<WaylandZwpPointerConstraints>(
+          zwp_pointer_constraints_v1.release(), connection);
+}
 
 WaylandZwpPointerConstraints::WaylandZwpPointerConstraints(
     zwp_pointer_constraints_v1* pointer_constraints,

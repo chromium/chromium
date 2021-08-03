@@ -19,8 +19,15 @@ namespace ui {
 class WaylandConnection;
 
 // Wraps the zwp_pointer_gestures and zwp_pointer_gesture_pinch_v1 objects.
-class WaylandZwpPointerGestures {
+class WaylandZwpPointerGestures
+    : public wl::GlobalObjectRegistrar<WaylandZwpPointerGestures> {
  public:
+  static void Register(WaylandConnection* connection);
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          uint32_t version);
+
   class Delegate;
 
   WaylandZwpPointerGestures(zwp_pointer_gestures_v1* pointer_gestures,

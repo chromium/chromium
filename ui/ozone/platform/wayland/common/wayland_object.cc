@@ -85,9 +85,9 @@ const wl_interface* ObjectTraits<struct wl_proxy>::interface = nullptr;
 void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
 
 // The overwhelming majority of Wayland interfaces follow the fixed pattern for
-// naming their interface definition struct and their deleter function, which
-// lets us generate a lot of boilerplate code by a simple macro and.  A few
-// interfaces use special deleter functions.  Two macros below generalise that.
+// naming their interface definition struct and their deleter function, with the
+// exception for a few interfaces that use special deleter functions.  This lets
+// us generate a lot of boilerplate code by two simple macros defined below.
 #define IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(TYPE, DELETER) \
   const wl_interface* ObjectTraits<struct TYPE>::interface =        \
       &TYPE##_interface;                                            \

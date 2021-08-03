@@ -67,60 +67,20 @@ namespace ui {
 
 namespace {
 
-// These values are persisted to logs.  Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Append new shells before kMaxValue and update LinuxWaylandShell
-// in tools/metrics/histograms/enums.xml accordingly.
-//
-// See also tools/metrics/histograms/README.md#enum-histograms
-enum class UMALinuxWaylandShell {
-  kZauraShell = 0,
-  kGtkShell1 = 1,
-  kOrgKdePlasmaShell = 2,
-  kXdgWmBase = 3,
-  kXdgShellV6 = 4,
-  kZwlrLayerShellV1 = 5,
-  kMaxValue = kZwlrLayerShellV1,
-};
-
 // The maximum supported versions for a given interface.
 // The version bound will be the minimum of the value and the version
 // advertised by the server.
-constexpr uint32_t kMaxAuraShellVersion = 21;
 constexpr uint32_t kMaxCompositorVersion = 4;
-constexpr uint32_t kMaxCursorShapesVersion = 1;
-constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
 constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
-constexpr uint32_t kMaxLinuxDmabufVersion = 3;
 constexpr uint32_t kMaxSeatVersion = 5;
-constexpr uint32_t kMaxShmVersion = 1;
 constexpr uint32_t kMaxXdgShellVersion = 3;
 constexpr uint32_t kMaxZXdgShellVersion = 1;
-constexpr uint32_t kMaxDeviceManagerVersion = 3;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
-// The minimum required version for a given interface.
-// Ensures that the version bound (advertised by server) is higher than this
-// value.
-constexpr uint32_t kMinWlDrmVersion = 2;
-constexpr uint32_t kMinWlOutputVersion = 2;
-constexpr uint32_t kMinZwpPointerConstraintsVersion = 1;
-constexpr uint32_t kMinZwpPointerGesturesVersion = 1;
-constexpr uint32_t kMinZwpRelativePointerManagerVersion = 1;
-
-// gtk_shell1 exposes request_focus() since version 3.  Below that, it is not
-// interesting for us, although it provides some shell integration that might be
-// useful.
-constexpr uint32_t kMinGtkShell1Version = 3;
-constexpr uint32_t kMaxGtkShell1Version = 4;
-
-constexpr uint32_t kMaxOrgKdeKwinIdleVersion = 1;
-constexpr uint32_t kMaxZwpIdleInhibitManagerVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -147,6 +107,8 @@ int64_t ConvertTimespecResultToMicros(uint32_t tv_sec_hi,
   return result.ValueOrDie();
 }
 
+}  // namespace
+
 void ReportShellUMA(UMALinuxWaylandShell shell) {
   static std::set<UMALinuxWaylandShell> reported_shells;
   if (reported_shells.count(shell) > 0)
@@ -154,8 +116,6 @@ void ReportShellUMA(UMALinuxWaylandShell shell) {
   base::UmaHistogramEnumeration("Linux.Wayland.Shell", shell);
   reported_shells.insert(shell);
 }
-
-}  // namespace
 
 WaylandConnection::WaylandConnection() = default;
 
@@ -190,6 +150,25 @@ bool WaylandConnection::Initialize() {
     return false;
   }
 #endif
+
+  // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
+  // Keep alphabetical order for convenience.
+  GtkPrimarySelectionDeviceManager::Register(this);
+  GtkShell1::Register(this);
+  OrgKdeKwinIdle::Register(this);
+  WaylandDataDeviceManager::Register(this);
+  WaylandDrm::Register(this);
+  WaylandOutput::Register(this);
+  WaylandShm::Register(this);
+  WaylandZAuraShell::Register(this);
+  WaylandZcrCursorShapes::Register(this);
+  WaylandZwpLinuxDmabuf::Register(this);
+  WaylandZwpPointerConstraints::Register(this);
+  WaylandZwpPointerGestures::Register(this);
+  WaylandZwpRelativePointerManager::Register(this);
+  XdgForeignWrapper::Register(this);
+  ZwpIdleInhibitManager::Register(this);
+  ZwpPrimarySelectionDeviceManager::Register(this);
 
   static constexpr wl_registry_listener registry_listener = {
       &Global,
@@ -250,6 +229,14 @@ bool WaylandConnection::Initialize() {
   if (UseTestConfigForPlatformWindows())
     wayland_proxy_ = std::make_unique<wl::WaylandProxyImpl>(this);
   return true;
+}
+
+void WaylandConnection::RegisterGlobalObjectFactory(
+    const char* interface_name,
+    wl::GlobalObjectFactory factory) {
+  DCHECK_EQ(global_object_factories_.count(interface_name), 0U);
+
+  global_object_factories_[interface_name] = factory;
 }
 
 void WaylandConnection::ScheduleFlush() {
@@ -447,7 +434,12 @@ void WaylandConnection::Global(void* data,
   };
 
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
-  if (!connection->compositor_ && strcmp(interface, "wl_compositor") == 0) {
+
+  auto factory_it = connection->global_object_factories_.find(interface);
+  if (factory_it != connection->global_object_factories_.end()) {
+    (*factory_it->second)(connection, registry, name, version);
+  } else if (!connection->compositor_ &&
+             strcmp(interface, "wl_compositor") == 0) {
     connection->compositor_ = wl::Bind<wl_compositor>(
         registry, name, std::min(version, kMaxCompositorVersion));
     connection->compositor_version_ = version;
@@ -460,14 +452,6 @@ void WaylandConnection::Global(void* data,
     connection->subcompositor_ = wl::Bind<wl_subcompositor>(registry, name, 1);
     if (!connection->subcompositor_) {
       LOG(ERROR) << "Failed to bind to wl_subcompositor global";
-      return;
-    }
-  } else if (!connection->shm_ && strcmp(interface, "wl_shm") == 0) {
-    wl::Object<wl_shm> shm =
-        wl::Bind<wl_shm>(registry, name, std::min(version, kMaxShmVersion));
-    connection->shm_ = std::make_unique<WaylandShm>(shm.release(), connection);
-    if (!connection->shm_) {
-      LOG(ERROR) << "Failed to bind to wl_shm global";
       return;
     }
   } else if (!connection->seat_ && strcmp(interface, "wl_seat") == 0) {
@@ -501,84 +485,6 @@ void WaylandConnection::Global(void* data,
     xdg_wm_base_add_listener(connection->shell_.get(), &shell_listener,
                              connection);
     ReportShellUMA(UMALinuxWaylandShell::kXdgWmBase);
-  } else if (base::EqualsCaseInsensitiveASCII(interface, "wl_output")) {
-    if (version < kMinWlOutputVersion) {
-      LOG(ERROR)
-          << "Unable to bind to the unsupported wl_output object with version= "
-          << version << ". Minimum supported version is "
-          << kMinWlOutputVersion;
-      return;
-    }
-
-    auto output = wl::Bind<wl_output>(registry, name, version);
-    if (!output) {
-      LOG(ERROR) << "Failed to bind to wl_output global";
-      return;
-    }
-
-    if (!connection->wayland_output_manager_) {
-      connection->wayland_output_manager_ =
-          std::make_unique<WaylandOutputManager>(connection);
-    }
-    connection->wayland_output_manager_->AddWaylandOutput(name,
-                                                          output.release());
-  } else if (!connection->data_device_manager_ &&
-             strcmp(interface, "wl_data_device_manager") == 0) {
-    auto data_device_manager = wl::Bind<wl_data_device_manager>(
-        registry, name, std::min(version, kMaxDeviceManagerVersion));
-    if (!data_device_manager) {
-      LOG(ERROR) << "Failed to bind to wl_data_device_manager global";
-      return;
-    }
-    connection->data_device_manager_ =
-        std::make_unique<WaylandDataDeviceManager>(
-            data_device_manager.release(), connection);
-    connection->CreateDataObjectsIfReady();
-  } else if (!connection->gtk_primary_selection_device_manager_ &&
-             strcmp(interface, "gtk_primary_selection_device_manager") == 0) {
-    auto manager = wl::Bind<::gtk_primary_selection_device_manager>(
-        registry, name,
-        std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
-    if (!manager) {
-      LOG(ERROR) << "Failed to bind gtk_primary_selection_device_manager";
-      return;
-    }
-    connection->gtk_primary_selection_device_manager_ =
-        std::make_unique<GtkPrimarySelectionDeviceManager>(manager.release(),
-                                                           connection);
-  } else if (!connection->gtk_shell1_ && strcmp(interface, "gtk_shell1") == 0 &&
-             version >= kMinGtkShell1Version) {
-    auto gtk_shell1 = wl::Bind<::gtk_shell1>(
-        registry, name, std::min(version, kMaxGtkShell1Version));
-    if (!gtk_shell1) {
-      LOG(ERROR) << "Failed to bind gtk_shell1";
-      return;
-    }
-    connection->gtk_shell1_ = std::make_unique<GtkShell1>(gtk_shell1.release());
-    ReportShellUMA(UMALinuxWaylandShell::kGtkShell1);
-  } else if (!connection->zwp_idle_inhibit_manager_ &&
-             strcmp(interface, "zwp_idle_inhibit_manager_v1") == 0) {
-    auto manager = wl::Bind<zwp_idle_inhibit_manager_v1>(
-        registry, name, std::min(version, kMaxZwpIdleInhibitManagerVersion));
-    if (!manager) {
-      LOG(ERROR) << "Failed to bind zwp_idle_inhibit_manager_v1";
-      return;
-    }
-    connection->zwp_idle_inhibit_manager_ =
-        std::make_unique<ZwpIdleInhibitManager>(manager.release(), connection);
-  } else if (!connection->zwp_primary_selection_device_manager_ &&
-             strcmp(interface, "zwp_primary_selection_device_manager_v1") ==
-                 0) {
-    auto manager = wl::Bind<zwp_primary_selection_device_manager_v1>(
-        registry, name,
-        std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
-    if (!manager) {
-      LOG(ERROR) << "Failed to bind zwp_primary_selection_device_manager_v1";
-      return;
-    }
-    connection->zwp_primary_selection_device_manager_ =
-        std::make_unique<ZwpPrimarySelectionDeviceManager>(manager.release(),
-                                                           connection);
   } else if (!connection->linux_explicit_synchronization_ &&
              (strcmp(interface, "zwp_linux_explicit_synchronization_v1") ==
               0)) {
@@ -589,16 +495,6 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind zwp_linux_explicit_synchronization_v1";
       return;
     }
-  } else if (!connection->zwp_dmabuf_ &&
-             (strcmp(interface, "zwp_linux_dmabuf_v1") == 0)) {
-    auto zwp_linux_dmabuf = wl::Bind<zwp_linux_dmabuf_v1>(
-        registry, name, std::min(version, kMaxLinuxDmabufVersion));
-    if (!zwp_linux_dmabuf) {
-      LOG(ERROR) << "Failed to bind zwp_linux_dmabuf_v1";
-      return;
-    }
-    connection->zwp_dmabuf_ = std::make_unique<WaylandZwpLinuxDmabuf>(
-        zwp_linux_dmabuf.release(), connection);
   } else if (!connection->presentation_ &&
              (strcmp(interface, "wp_presentation") == 0)) {
     connection->presentation_ = wl::Bind<wp_presentation>(
@@ -617,16 +513,6 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind wp_viewporter";
       return;
     }
-  } else if (!connection->zcr_cursor_shapes_ &&
-             strcmp(interface, "zcr_cursor_shapes_v1") == 0) {
-    auto zcr_cursor_shapes = wl::Bind<zcr_cursor_shapes_v1>(
-        registry, name, std::min(version, kMaxCursorShapesVersion));
-    if (!zcr_cursor_shapes) {
-      LOG(ERROR) << "Failed to bind zcr_cursor_shapes_v1";
-      return;
-    }
-    connection->zcr_cursor_shapes_ = std::make_unique<WaylandZcrCursorShapes>(
-        zcr_cursor_shapes.release(), connection);
   } else if (!connection->keyboard_extension_v1_ &&
              strcmp(interface, "zcr_keyboard_extension_v1") == 0) {
     connection->keyboard_extension_v1_ = wl::Bind<zcr_keyboard_extension_v1>(
@@ -646,73 +532,6 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to zwp_text_input_manager_v1 global";
       return;
     }
-  } else if (!connection->xdg_foreign_ &&
-             strcmp(interface, "zxdg_exporter_v1") == 0) {
-    auto zxdg_exporter = wl::Bind<zxdg_exporter_v1>(registry, name, version);
-    if (!zxdg_exporter) {
-      LOG(ERROR) << "Failed to bind zxdg_exporter";
-      return;
-    }
-    connection->xdg_foreign_ = std::make_unique<XdgForeignWrapper>(
-        connection, std::move(zxdg_exporter));
-  } else if (!connection->drm_ && (strcmp(interface, "wl_drm") == 0) &&
-             version >= kMinWlDrmVersion) {
-    auto wl_drm = wl::Bind<struct wl_drm>(registry, name, version);
-    if (!wl_drm) {
-      LOG(ERROR) << "Failed to bind wl_drm";
-      return;
-    }
-    connection->drm_ =
-        std::make_unique<WaylandDrm>(wl_drm.release(), connection);
-  } else if (!connection->zaura_shell_ &&
-             (strcmp(interface, "zaura_shell") == 0)) {
-    auto zaura_shell = wl::Bind<struct zaura_shell>(
-        registry, name, std::min(version, kMaxAuraShellVersion));
-    if (!zaura_shell) {
-      LOG(ERROR) << "Failed to bind zaura_shell";
-      return;
-    }
-    connection->zaura_shell_ =
-        std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
-    ReportShellUMA(UMALinuxWaylandShell::kZauraShell);
-  } else if (!connection->wayland_zwp_pointer_gestures_ &&
-             strcmp(interface, "zwp_pointer_gestures_v1") == 0 &&
-             version >= kMinZwpPointerGesturesVersion) {
-    auto zwp_pointer_gestures_v1 =
-        wl::Bind<struct zwp_pointer_gestures_v1>(registry, name, version);
-    if (!zwp_pointer_gestures_v1) {
-      LOG(ERROR) << "Failed to bind wp_pointer_gestures_v1";
-      return;
-    }
-    connection->wayland_zwp_pointer_gestures_ =
-        std::make_unique<WaylandZwpPointerGestures>(
-            zwp_pointer_gestures_v1.release(), connection,
-            connection->event_source());
-  } else if (!connection->wayland_zwp_pointer_constraints_ &&
-             strcmp(interface, "zwp_pointer_constraints_v1") == 0 &&
-             version >= kMinZwpPointerConstraintsVersion) {
-    auto zwp_pointer_constraints_v1 =
-        wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, version);
-    if (!zwp_pointer_constraints_v1) {
-      LOG(ERROR) << "Failed to bind wp_pointer_constraints_v1";
-      return;
-    }
-    connection->wayland_zwp_pointer_constraints_ =
-        std::make_unique<WaylandZwpPointerConstraints>(
-            zwp_pointer_constraints_v1.release(), connection);
-  } else if (!connection->wayland_zwp_relative_pointer_manager_ &&
-             strcmp(interface, "zwp_relative_pointer_manager_v1") == 0 &&
-             version >= kMinZwpRelativePointerManagerVersion) {
-    auto zwp_relative_pointer_manager_v1 =
-        wl::Bind<struct zwp_relative_pointer_manager_v1>(registry, name,
-                                                         version);
-    if (!zwp_relative_pointer_manager_v1) {
-      LOG(ERROR) << "Failed to bind zwp_relative_pointer_manager_v1";
-      return;
-    }
-    connection->wayland_zwp_relative_pointer_manager_ =
-        std::make_unique<WaylandZwpRelativePointerManager>(
-            zwp_relative_pointer_manager_v1.release(), connection);
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     connection->xdg_decoration_manager_ =
@@ -730,16 +549,6 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to zcr_extended_drag_v1 global";
       return;
     }
-  } else if (!connection->org_kde_kwin_idle_ &&
-             strcmp(interface, "org_kde_kwin_idle") == 0) {
-    auto idle = wl::Bind<struct org_kde_kwin_idle>(
-        registry, name, std::min(version, kMaxOrgKdeKwinIdleVersion));
-    if (!idle) {
-      LOG(ERROR) << "Failed to bind to org_kde_kwin_idle global";
-      return;
-    }
-    connection->org_kde_kwin_idle_ =
-        std::make_unique<OrgKdeKwinIdle>(idle.release(), connection);
   } else if (strcmp(interface, "org_kde_plasma_shell") == 0) {
     NOTIMPLEMENTED_LOG_ONCE()
         << interface << " is recognized but not yet supported";
