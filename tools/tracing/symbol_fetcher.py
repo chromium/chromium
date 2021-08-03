@@ -41,9 +41,6 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
     Exception: if failed to extract trace OS name or version number, or
       they are not supported or recognized.
   """
-  # TODO(rhuckleberry): Cache symbols so we do not have to download symbols
-  # from GCS for every trace.
-
   metadata.Initialize()
   if metadata.os_name is None:
     raise Exception('Failed to extract trace OS name: ' + metadata.trace_file)

@@ -35,6 +35,8 @@ def SymbolizeTrace(trace_file, options):
     Exception: if breakpad_output_dir is not empty or if path to local breakpad
       directory is invalid.
   """
+  print('Symbolizing file')
+
   need_cleanup = False
   if options.local_breakpad_dir is None:
     # Ensure valid |breakpad_output_dir|
@@ -67,6 +69,8 @@ def SymbolizeTrace(trace_file, options):
 
   _Symbolize(trace_file, options.symbolizer_path, options.breakpad_output_dir,
              options.output_file)
+
+  print('Symbolized trace saved to: ' + os.path.abspath(options.output_file))
 
   # Cleanup
   if need_cleanup:
@@ -149,8 +153,9 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
     with open(output_file, 'w') as f:
       f.write(trace_data)
       f.write(symbol_data)
-      logging.debug('Symbolized %s(%d bytes) with %d bytes of symbol data',
-                    trace_file, len(trace_data), len(symbol_data))
+      logging.info('Symbolized %s(%d bytes) with %d bytes of symbol data',
+                   os.path.abspath(trace_file), len(trace_data),
+                   len(symbol_data))
 
 
 def _RunSymbolizer(cmd, env, stdout):
