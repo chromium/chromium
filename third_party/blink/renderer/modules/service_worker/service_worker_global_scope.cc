@@ -707,7 +707,8 @@ ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
     WebServiceWorkerObjectInfo info) {
   if (info.version_id == mojom::blink::kInvalidServiceWorkerVersionId)
     return nullptr;
-  ::blink::ServiceWorker* worker = service_worker_objects_.at(info.version_id);
+  ::blink::ServiceWorker* worker =
+      service_worker_objects_.DeprecatedAtOrEmptyValue(info.version_id);
   if (!worker) {
     const int64_t version_id = info.version_id;
     worker = ::blink::ServiceWorker::Create(this, std::move(info));

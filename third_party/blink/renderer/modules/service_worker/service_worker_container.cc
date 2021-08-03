@@ -573,7 +573,8 @@ ServiceWorkerContainer::GetOrCreateServiceWorkerRegistration(
     return nullptr;
 
   ServiceWorkerRegistration* registration =
-      service_worker_registration_objects_.at(info.registration_id);
+      service_worker_registration_objects_.DeprecatedAtOrEmptyValue(
+          info.registration_id);
   if (registration) {
     registration->Attach(std::move(info));
     return registration;
@@ -590,7 +591,8 @@ ServiceWorker* ServiceWorkerContainer::GetOrCreateServiceWorker(
     WebServiceWorkerObjectInfo info) {
   if (info.version_id == mojom::blink::kInvalidServiceWorkerVersionId)
     return nullptr;
-  ServiceWorker* worker = service_worker_objects_.at(info.version_id);
+  ServiceWorker* worker =
+      service_worker_objects_.DeprecatedAtOrEmptyValue(info.version_id);
   if (!worker) {
     const int64_t version_id = info.version_id;
     worker = ServiceWorker::Create(GetSupplementable()->GetExecutionContext(),
