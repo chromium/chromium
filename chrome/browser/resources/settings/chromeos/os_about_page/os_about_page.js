@@ -7,48 +7,14 @@
  * information.
  */
 
-import '../../icons.js';
-import '../../prefs/prefs.js';
-import '../../settings_page/settings_animated_pages.js';
-import '../../settings_page/settings_section.js';
-import '../../settings_page/settings_subpage.js';
-import '../../settings_page_css.js';
-import '../../settings_shared_css.js';
-import '../os_icons.m.js';
-import '../os_reset_page/os_powerwash_dialog.js';
-import '../localized_link/localized_link.js';
-import './detailed_build_info.js';
-import './update_warning_dialog.js';
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {parseHtmlSubset} from '//resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from '../../about_page/about_page_browser_proxy.js';
-import {loadTimeData} from '../../i18n_setup.js';
-import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
-import {Route, RouteObserverBehavior, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
-import {routes} from '../os_route.m.js';
-import {MainPageBehavior} from '../os_settings_page/main_page_behavior.m.js';
-
 Polymer({
-  _template: html`{__html_template__}`,
   is: 'os-settings-about-page',
 
   behaviors: [
     DeepLinkingBehavior,
     WebUIListenerBehavior,
-    MainPageBehavior,
-    RouteObserverBehavior,
+    settings.MainPageBehavior,
+    settings.RouteObserverBehavior,
     I18nBehavior,
   ],
 
@@ -161,9 +127,10 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (routes.DETAILED_BUILD_INFO) {
+        if (settings.routes.DETAILED_BUILD_INFO) {
           map.set(
-              routes.DETAILED_BUILD_INFO.path, '#detailed-build-info-trigger');
+              settings.routes.DETAILED_BUILD_INFO.path,
+              '#detailed-build-info-trigger');
         }
         return map;
       },
@@ -223,18 +190,19 @@ Polymer({
     'handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
   ],
 
-  /** @private {?AboutPageBrowserProxy} */
+  /** @private {?settings.AboutPageBrowserProxy} */
   aboutBrowserProxy_: null,
 
-  /** @private {?LifetimeBrowserProxy} */
+  /** @private {?settings.LifetimeBrowserProxy} */
   lifetimeBrowserProxy_: null,
 
   /** @override */
   attached() {
-    this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
+    this.aboutBrowserProxy_ = settings.AboutPageBrowserProxyImpl.getInstance();
     this.aboutBrowserProxy_.pageReady();
 
-    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
+    this.lifetimeBrowserProxy_ =
+        settings.LifetimeBrowserProxyImpl.getInstance();
 
     this.addEventListener('target-channel-changed', e => {
       this.targetChannel_ = e.detail;
@@ -260,21 +228,22 @@ Polymer({
       this.hasInternetConnection_ = result;
     });
 
-    if (Router.getInstance().getQueryParameters().get('checkForUpdate') ===
-        'true') {
+    if (settings.Router.getInstance().getQueryParameters().get(
+            'checkForUpdate') === 'true') {
       this.onCheckUpdatesClick_();
     }
   },
 
   /**
-   * @param {!Route} newRoute
-   * @param {Route} oldRoute
+   * @param {!settings.Route} newRoute
+   * @param {settings.Route} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
-    MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
+    settings.MainPageBehavior.currentRouteChanged.call(
+        this, newRoute, oldRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.ABOUT_ABOUT) {
+    if (newRoute !== settings.routes.ABOUT_ABOUT) {
       return;
     }
 
@@ -290,9 +259,9 @@ Polymer({
     });
   },
 
-  // Override MainPageBehavior method.
+  // Override settings.MainPageBehavior method.
   containsRoute(route) {
-    return !route || routes.ABOUT.contains(route);
+    return !route || settings.routes.ABOUT.contains(route);
   },
 
   /** @private */
@@ -344,12 +313,12 @@ Polymer({
   onDiagnosticsClick_() {
     assert(this.showDiagnosticsApp_);
     this.aboutBrowserProxy_.openDiagnostics();
-    recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
+    settings.recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
   },
 
   /** @private */
   onRelaunchClick_() {
-    recordSettingChange();
+    settings.recordSettingChange();
     this.lifetimeBrowserProxy_.relaunch();
   },
 
@@ -440,8 +409,8 @@ Polymer({
         if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
             substitutions: [
-              this.i18nAdvanced(
-                  browserChannelToI18nId(this.targetChannel_, this.isLts_)),
+              this.i18nAdvanced(settings.browserChannelToI18nId(
+                  this.targetChannel_, this.isLts_)),
               progressPercent
             ]
           });
@@ -555,7 +524,8 @@ Polymer({
 
   /** @private */
   onDetailedBuildInfoClick_() {
-    Router.getInstance().navigateTo(routes.DETAILED_BUILD_INFO);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.DETAILED_BUILD_INFO);
   },
 
   /**
