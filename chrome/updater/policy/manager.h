@@ -17,25 +17,23 @@ namespace updater {
 // For instance, if the start time is 22:00 hours, and with a duration of 8
 // hours, the updates will be suppressed for 8 hours regardless of whether
 // daylight savings time changes happen in between.
-struct UpdatesSuppressedTimes {
-  int start_hour = kPolicyNotSet;
-  int start_minute = kPolicyNotSet;
-  int duration_minute = kPolicyNotSet;
+class UpdatesSuppressedTimes {
+ public:
+  UpdatesSuppressedTimes();
+  ~UpdatesSuppressedTimes();
 
-  bool operator==(const UpdatesSuppressedTimes& other) const {
-    return start_hour == other.start_hour &&
-           start_minute == other.start_minute &&
-           duration_minute == other.duration_minute;
-  }
+  bool operator==(const UpdatesSuppressedTimes& other) const;
+  bool operator!=(const UpdatesSuppressedTimes& other) const;
 
-  bool operator!=(const UpdatesSuppressedTimes& other) const {
-    return !(*this == other);
-  }
+  bool valid() const;
 
-  bool valid() const {
-    return start_hour != kPolicyNotSet && start_minute != kPolicyNotSet &&
-           duration_minute != kPolicyNotSet;
-  }
+  // Returns true if and only if the `hour`:`minute` wall clock time falls
+  // within this suppression period.
+  bool contains(int hour, int minute) const;
+
+  int start_hour_ = kPolicyNotSet;
+  int start_minute_ = kPolicyNotSet;
+  int duration_minute_ = kPolicyNotSet;
 };
 
 // The Policy Manager Interface is implemented by policy managers such as Group

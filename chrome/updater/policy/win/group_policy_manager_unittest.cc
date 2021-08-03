@@ -143,9 +143,9 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
 
   UpdatesSuppressedTimes suppressed_times = {};
   EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-  EXPECT_EQ(suppressed_times.start_hour, 2);
-  EXPECT_EQ(suppressed_times.start_minute, 30);
-  EXPECT_EQ(suppressed_times.duration_minute, 500);
+  EXPECT_EQ(suppressed_times.start_hour_, 2);
+  EXPECT_EQ(suppressed_times.start_minute_, 30);
+  EXPECT_EQ(suppressed_times.duration_minute_, 500);
 
   std::string download_preference;
   EXPECT_TRUE(

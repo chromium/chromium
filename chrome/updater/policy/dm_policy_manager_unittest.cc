@@ -192,9 +192,9 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 
   UpdatesSuppressedTimes suppressed_times;
   EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-  EXPECT_EQ(suppressed_times.start_hour, 9);
-  EXPECT_EQ(suppressed_times.start_minute, 30);
-  EXPECT_EQ(suppressed_times.duration_minute, 120);
+  EXPECT_EQ(suppressed_times.start_hour_, 9);
+  EXPECT_EQ(suppressed_times.start_minute_, 30);
+  EXPECT_EQ(suppressed_times.duration_minute_, 120);
 
   std::string download_preference;
   EXPECT_TRUE(

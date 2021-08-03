@@ -65,7 +65,10 @@ int Configurator::ServerKeepAliveSeconds() const {
 }
 
 int Configurator::NextCheckDelay() const {
-  return 5 * kDelayOneHour;
+  int minutes = 0;
+  return policy_service_->GetLastCheckPeriodMinutes(nullptr, &minutes)
+             ? minutes * kDelayOneMinute
+             : 5 * kDelayOneHour;
 }
 
 int Configurator::OnDemandDelay() const {
@@ -114,7 +117,10 @@ base::flat_map<std::string, std::string> Configurator::ExtraRequestParams()
 }
 
 std::string Configurator::GetDownloadPreference() const {
-  return {};
+  std::string preference;
+  return policy_service_->GetDownloadPreferenceGroupPolicy(nullptr, &preference)
+             ? preference
+             : std::string();
 }
 
 scoped_refptr<update_client::NetworkFetcherFactory>
