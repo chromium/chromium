@@ -197,6 +197,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       base::Time last_access_time,
       bool transient,
       const std::vector<DownloadItem::ReceivedSlice>& received_slices,
+      const DownloadItemRerouteInfo& reroute_info,
       absl::optional<DownloadSchedule> download_schedule,
       std::unique_ptr<DownloadEntry> download_entry);
 

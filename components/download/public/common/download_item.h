@@ -29,6 +29,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -47,14 +48,9 @@ namespace net {
 class HttpResponseHeaders;
 }
 
-namespace enterprise_connectors {
-class DownloadItemRerouteInfo;
-}
-
 namespace download {
 class DownloadFile;
 class DownloadItemRenameHandler;
-using enterprise_connectors::DownloadItemRerouteInfo;
 
 // One DownloadItem per download. This is the model class that stores all the
 // state for a download.

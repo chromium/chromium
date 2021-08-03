@@ -15,7 +15,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
-#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
+#include "components/enterprise/common/download_item_reroute_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"

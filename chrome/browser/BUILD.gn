@@ -1866,7 +1866,7 @@ static_library("browser") {
     "//chrome/services/file_util/public/mojom",
     "//components/account_id",
     "//components/autofill/core/browser",
-    "//components/enterprise/common/proto:download_item_reroute_info_proto",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/nacl/common:buildflags",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/page_info",

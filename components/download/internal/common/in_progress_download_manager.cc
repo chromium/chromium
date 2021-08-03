@@ -70,7 +70,8 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
       in_progress_info->interrupt_reason, in_progress_info->paused,
       in_progress_info->metered, false, base::Time(),
       in_progress_info->transient, in_progress_info->received_slices,
-      in_progress_info->download_schedule, std::move(download_entry));
+      in_progress_info->reroute_info, in_progress_info->download_schedule,
+      std::move(download_entry));
 }
 
 void OnUrlDownloadHandlerCreated(

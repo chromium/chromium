@@ -406,7 +406,7 @@ static_library("test_support") {
   public_deps = [
     ":test_interfaces",
     "//components/download/public/common:test_support",
-    "//components/enterprise/common/proto:download_item_reroute_info_proto",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/services/filesystem/public/mojom",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
@@ -1351,9 +1351,7 @@ test("content_browsertests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     ":test_interfaces",

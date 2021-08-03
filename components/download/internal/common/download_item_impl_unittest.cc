@@ -277,9 +277,10 @@ class DownloadItemTest : public testing::Test {
     return download;
   }
 
-  std::unique_ptr<DownloadItemImpl> CreateDownloadItem(
+  std::unique_ptr<DownloadItemImpl> CreateReroutedDownloadItem(
       DownloadItem::DownloadState state,
-      download::DownloadInterruptReason reason) {
+      download::DownloadInterruptReason reason,
+      const download::DownloadItemRerouteInfo& reroute_info) {
     auto item = std::make_unique<download::DownloadItemImpl>(
         mock_delegate(), kGuid, 10, base::FilePath(), base::FilePath(),
         std::vector<GURL>(), GURL("http://example.com/a"),
@@ -291,9 +292,16 @@ class DownloadItemTest : public testing::Test {
         10, 0, std::string(), state,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, reason, false, false,
         false, base::Time::Now(), true,
-        std::vector<download::DownloadItem::ReceivedSlice>(),
+        std::vector<download::DownloadItem::ReceivedSlice>(), reroute_info,
         absl::nullopt /*download_schedule*/, nullptr /* download_entry */);
     return item;
+  }
+
+  std::unique_ptr<DownloadItemImpl> CreateDownloadItem(
+      DownloadItem::DownloadState state,
+      download::DownloadInterruptReason reason) {
+    download::DownloadItemRerouteInfo empty_reroute_info;
+    return CreateReroutedDownloadItem(state, reason, empty_reroute_info);
   }
 
   // Add DownloadFile to DownloadItem.
@@ -2851,11 +2859,10 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   TestDownloadItemObserver observer(item);
 
   // Invoke the update callback. This should update the target name and stored
-  // reroute info, regardless of |update_observers|.
+  // reroute info.
   base::FilePath file_name(FILE_PATH_LITERAL("foo.txt"));
   DownloadItemRerouteInfo reroute_info;
   reroute_info.set_service_provider(RerouteProvider::GOOGLE_DRIVE);
-  reroute_info.mutable_box()->set_file_id("12345");
 
   update_callback.Run(ProgressUpdate{file_name, reroute_info});
   EXPECT_EQ(item->GetFileNameToReportUser(), file_name);
@@ -2880,6 +2887,31 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
 
   ASSERT_NE(nullptr, item->GetRenameHandler());
+  rename_handler_ptr->VerifyAndClearExpectations();
+}
+
+TEST_F(DownloadItemTest, RerouteInfoLoadedFromDB) {
+  using RerouteProvider = enterprise_connectors::FileSystemServiceProvider;
+  DownloadItemRerouteInfo reroute_info;
+  reroute_info.set_service_provider(RerouteProvider::BOX);
+  reroute_info.mutable_box()->set_file_id("12345");
+  // reroute_info.mutable_box()->set_folder_id("67890");
+  ASSERT_TRUE(reroute_info.IsInitialized());
+
+  std::unique_ptr<DownloadItemImpl> item = CreateReroutedDownloadItem(
+      DownloadItem::COMPLETE, DOWNLOAD_INTERRUPT_REASON_NONE, reroute_info);
+  ASSERT_EQ(reroute_info.SerializeAsString(),
+            item->GetRerouteInfo().SerializeAsString());
+
+  auto rename_handler =
+      std::make_unique<MockDownloadItemRenameHandler>(item.get());
+  MockDownloadItemRenameHandler* rename_handler_ptr = rename_handler.get();
+
+  ASSERT_EQ(item.get(), rename_handler->download_item());
+  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item.get()))
+      .WillOnce(Return(ByMove(std::move(rename_handler))));
+
+  ASSERT_TRUE(item->GetRenameHandler());
   rename_handler_ptr->VerifyAndClearExpectations();
 }
 
