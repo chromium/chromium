@@ -350,9 +350,8 @@ export class ResolutionSettings extends BaseSettings {
      */
     this.openedSettingDeviceId_ = null;
 
-    infoUpdater.addDeviceChangeListener(async (updater) => {
-      /** @type {?Array<!Camera3DeviceInfo>} */
-      const devices = await updater.getCamera3DevicesInfo();
+    infoUpdater.addDeviceChangeListener((updater) => {
+      const devices = updater.getCamera3DevicesInfo();
       if (devices === null) {
         state.set(state.State.NO_RESOLUTION_SETTINGS, true);
         return;

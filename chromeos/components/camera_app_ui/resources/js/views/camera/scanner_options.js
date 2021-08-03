@@ -121,8 +121,8 @@ export class ScannerOptions {
       this.doReconfigure_();
       updateShowScannerMode();
     });
-    infoUpdater.addDeviceChangeListener(async () => {
-      const devicesInfo = await infoUpdater.getCamera3DevicesInfo();
+    infoUpdater.addDeviceChangeListener(() => {
+      const devicesInfo = infoUpdater.getCamera3DevicesInfo();
       if (devicesInfo === null) {
         return;
       }

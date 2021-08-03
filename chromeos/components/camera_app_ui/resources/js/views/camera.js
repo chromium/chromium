@@ -971,7 +971,7 @@ export class Camera extends View {
     try {
       await this.infoUpdater_.lockDeviceInfo(async () => {
         if (!this.isSuspended()) {
-          for (const id of await this.options_.videoDeviceIds()) {
+          for (const id of this.options_.videoDeviceIds()) {
             if (await this.startWithDevice_(id)) {
               // Make the different active camera announced by screen reader.
               const currentId = this.options_.currentDeviceId;
@@ -980,7 +980,7 @@ export class Camera extends View {
                 return;
               }
               this.activeDeviceId_ = currentId;
-              const info = await this.infoUpdater_.getDeviceInfo(currentId);
+              const info = this.infoUpdater_.getDeviceInfo(currentId);
               if (info !== null) {
                 toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
               }

@@ -53,7 +53,7 @@ export class DeviceInfoUpdater {
 
     /**
      * Listeners to be called after new camera information is available.
-     * @type {!Array<function(!DeviceInfoUpdater): !Promise>}
+     * @type {!Array<function(!DeviceInfoUpdater): void>}
      * @private
      */
     this.deviceChangeListeners_ = [];
@@ -142,7 +142,7 @@ export class DeviceInfoUpdater {
     if (await DeviceOperator.isSupported()) {
       this.photoPreferrer_.updateDevicesInfo(this.camera3DevicesInfo_);
       this.videoPreferrer_.updateDevicesInfo(this.camera3DevicesInfo_);
-      await Promise.all(this.deviceChangeListeners_.map((l) => l(this)));
+      this.deviceChangeListeners_.forEach((l) => l(this));
     } else {
       this.camera3DevicesInfo_ = null;
     }
@@ -150,7 +150,7 @@ export class DeviceInfoUpdater {
 
   /**
    * Registers listener to be called when state of available devices changes.
-   * @param {function(!DeviceInfoUpdater): !Promise} listener
+   * @param {function(!DeviceInfoUpdater): void} listener
    */
   addDeviceChangeListener(listener) {
     this.deviceChangeListeners_.push(listener);
@@ -186,27 +186,27 @@ export class DeviceInfoUpdater {
 
   /**
    * Gets MediaDeviceInfo for all available video devices.
-   * @return {!Promise<!Array<!MediaDeviceInfo>>}
+   * @return {!Array<!MediaDeviceInfo>}
    */
-  async getDevicesInfo() {
+  getDevicesInfo() {
     return this.devicesInfo_;
   }
 
   /**
    * Gets MediaDeviceInfo of specific video device.
    * @param {string} deviceId Device id of video device to get information from.
-   * @return {!Promise<?MediaDeviceInfo>}
+   * @return {?MediaDeviceInfo}
    */
-  async getDeviceInfo(deviceId) {
-    const /** !Array<!MediaDeviceInfo> */ infos = await this.getDevicesInfo();
+  getDeviceInfo(deviceId) {
+    const /** !Array<!MediaDeviceInfo> */ infos = this.getDevicesInfo();
     return infos.find((d) => d.deviceId === deviceId) || null;
   }
 
   /**
    * Gets Camera3DeviceInfo for all available video devices.
-   * @return {!Promise<?Array<!Camera3DeviceInfo>>}
+   * @return {?Array<!Camera3DeviceInfo>}
    */
-  async getCamera3DevicesInfo() {
+  getCamera3DevicesInfo() {
     return this.camera3DevicesInfo_;
   }
 }

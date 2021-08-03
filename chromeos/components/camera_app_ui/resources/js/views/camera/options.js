@@ -104,10 +104,8 @@ export class Options {
     // Remove the deprecated values.
     localStorage.remove('effectIndex', 'toggleMulti', 'toggleMirror');
 
-    this.infoUpdater_.addDeviceChangeListener(async (updater) => {
-      state.set(
-          state.State.MULTI_CAMERA,
-          (await updater.getDevicesInfo()).length >= 2);
+    this.infoUpdater_.addDeviceChangeListener((updater) => {
+      state.set(state.State.MULTI_CAMERA, updater.getDevicesInfo().length >= 2);
     });
   }
 
@@ -130,7 +128,7 @@ export class Options {
     }
     state.set(PerfEvent.CAMERA_SWITCHING, true);
     if (deviceId === undefined) {
-      const devices = await this.infoUpdater_.getDevicesInfo();
+      const devices = this.infoUpdater_.getDevicesInfo();
       let index =
           devices.findIndex((entry) => entry.deviceId === this.videoDeviceId_);
       if (index === -1) {
@@ -200,9 +198,9 @@ export class Options {
 
   /**
    * Gets the video device ids sorted by preference.
-   * @return {!Promise<!Array<string>>}
+   * @return {!Array<string>}
    */
-  async videoDeviceIds() {
+  videoDeviceIds() {
     /** @type {!Array<(!Camera3DeviceInfo|!MediaDeviceInfo)>} */
     let devices;
     /**
@@ -211,7 +209,7 @@ export class Options {
      */
     let facings = null;
 
-    const camera3Info = await this.infoUpdater_.getCamera3DevicesInfo();
+    const camera3Info = this.infoUpdater_.getCamera3DevicesInfo();
     if (camera3Info) {
       devices = camera3Info;
       facings = {};
@@ -219,7 +217,7 @@ export class Options {
         facings[deviceId] = facing;
       }
     } else {
-      devices = await this.infoUpdater_.getDevicesInfo();
+      devices = this.infoUpdater_.getDevicesInfo();
     }
 
     const defaultFacing = util.getDefaultFacing();
