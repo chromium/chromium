@@ -7,13 +7,22 @@
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
 const INPUT_EMAIL_PATTERN = '^[a-zA-Z0-9.!#$%&\'*+=?^_`{|}~-]+(@[^\\s@]+)?$';
 
+const LOGIN_SECTION = {
+  EMAIL: 'emailSection',
+  PASSWORD: 'passwordSection',
+};
+
 Polymer({
   is: 'offline-login-element',
 
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   EXTERNAL_API: [
-    'loadParams', 'reset', 'proceedToPasswordPage', 'showOnlineRequiredDialog'
+    'loadParams',
+    'reset',
+    'proceedToPasswordPage',
+    'showOnlineRequiredDialog',
+    'showPasswordMismatchMessage',
   ],
 
   properties: {
@@ -65,7 +74,7 @@ Polymer({
 
     activeSection: {
       type: String,
-      value: 'emailSection',
+      value: LOGIN_SECTION.EMAIL,
     },
 
     animationInProgress: Boolean,
@@ -98,6 +107,8 @@ Polymer({
   onBeforeShow() {
     cr.ui.login.invokePolymerMethod(this.$.dialog, 'onBeforeShow');
     this.$.emailInput.pattern = INPUT_EMAIL_PATTERN;
+    if (!this.email_)
+      this.switchToEmailCard(false /* animated */);
   },
 
   reset() {
@@ -108,6 +119,7 @@ Polymer({
     this.fullEmail_ = '';
     this.$.emailInput.invalid = false;
     this.$.passwordInput.invalid = false;
+    this.activeSection = LOGIN_SECTION.EMAIL;
   },
 
   /**
@@ -119,7 +131,6 @@ Polymer({
       this.manager = params['enterpriseDomainManager'];
     if ('emailDomain' in params)
       this.emailDomain = '@' + params['emailDomain'];
-    this.setEmail(params.email);
   },
 
   proceedToPasswordPage() {
@@ -149,27 +160,12 @@ Polymer({
     this.disabled = false;
   },
 
-  /**
-   * @param {string} email
-   */
-  setEmail(email) {
-    if (email) {
-      if (this.emailDomain)
-        email = email.replace(this.emailDomain, '');
-      this.switchToPasswordCard(email, false /* animated */);
-      this.$.passwordInput.invalid = true;
-    } else {
-      this.email_ = '';
-      this.switchToEmailCard(false /* animated */);
-    }
-  },
-
   isRTL_() {
     return !!document.querySelector('html[dir=rtl]');
   },
 
   isEmailSectionActive_() {
-    return this.activeSection == 'emailSection';
+    return this.activeSection == LOGIN_SECTION.EMAIL;
   },
 
   /**
@@ -183,7 +179,7 @@ Polymer({
       return;
 
     this.animationInProgress = animated;
-    this.activeSection = 'emailSection';
+    this.activeSection = LOGIN_SECTION.EMAIL;
   },
 
   /**
@@ -204,7 +200,7 @@ Polymer({
       return;
 
     this.animationInProgress = animated;
-    this.activeSection = 'passwordSection';
+    this.activeSection = LOGIN_SECTION.PASSWORD;
   },
 
   onSlideAnimationEnd_() {
@@ -244,10 +240,25 @@ Polymer({
     this.onPasswordSubmitted_();
   },
 
+  /**
+   * @param {string} domain
+   * @param {string} email
+   */
   computeDomain_(domain, email) {
     if (email && email.indexOf('@') !== -1)
       return '';
     return domain;
+  },
+
+  showPasswordMismatchMessage() {
+    this.$.passwordInput.invalid = true;
+  },
+
+  /**
+   * @param {string} email
+   */
+  setEmailForTest(email) {
+    this.email_ = email;
   },
 });
 })();

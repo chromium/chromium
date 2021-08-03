@@ -108,4 +108,8 @@ void OfflineLoginScreenHandler::ShowOnlineRequiredDialog() {
   CallJS("login.OfflineLoginScreen.showOnlineRequiredDialog");
 }
 
+void OfflineLoginScreenHandler::ShowPasswordMismatchMessage() {
+  CallJS("login.OfflineLoginScreen.showPasswordMismatchMessage");
+}
+
 }  // namespace chromeos

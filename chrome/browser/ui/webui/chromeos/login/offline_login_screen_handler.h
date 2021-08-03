@@ -45,6 +45,9 @@ class OfflineLoginView {
 
   // Shows error pop-up when the user cannot login offline.
   virtual void ShowOnlineRequiredDialog() = 0;
+
+  // Shows error message for not matching email/password pair.
+  virtual void ShowPasswordMismatchMessage() = 0;
 };
 
 class OfflineLoginScreenHandler : public BaseScreenHandler,
@@ -72,6 +75,7 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
   void LoadParams(base::DictionaryValue& params) override;
   void ShowPasswordPage() override;
   void ShowOnlineRequiredDialog() override;
+  void ShowPasswordMismatchMessage() override;
 
   // BaseScreenHandler:
   void RegisterMessages() override;

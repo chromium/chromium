@@ -41,7 +41,7 @@ class OfflineLoginScreen
   // Unbind() on the associated View if this class is destroyed before that.
   void OnViewDestroyed(OfflineLoginView* view);
 
-  void LoadOffline(std::string email);
+  void LoadOffline();
 
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);

@@ -41,10 +41,6 @@ enum class TrayActionState;
 }  // namespace mojom
 }  // namespace ash
 
-namespace base {
-class ListValue;
-}
-
 namespace chromeos {
 
 class CoreOobeView;
@@ -195,7 +191,7 @@ class SigninScreenHandler
                               bool authenticated_by_pin);
   void HandleLaunchIncognito();
   void HandleLaunchSAMLPublicSession(const std::string& email);
-  void HandleOfflineLogin(const base::ListValue* args);
+  void HandleOfflineLogin();
   void HandleToggleEnrollmentScreen();
   void HandleToggleResetScreen();
   void HandleToggleKioskAutolaunchScreen();

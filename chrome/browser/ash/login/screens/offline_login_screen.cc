@@ -106,10 +106,9 @@ void OfflineLoginScreen::HideImpl() {
     view_->Hide();
 }
 
-void OfflineLoginScreen::LoadOffline(std::string email) {
+void OfflineLoginScreen::LoadOffline() {
   base::DictionaryValue params;
 
-  params.SetString("email", email);
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
   if (!enterprise_domain_manager.empty())
     params.SetString("enterpriseDomainManager", enterprise_domain_manager);
@@ -146,9 +145,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
     LOG(ERROR) << "OfflineLoginScreen::HandleCompleteAuth: User not found! "
                   "account type="
                << AccountId::AccountTypeToString(account_id.GetAccountType());
-    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-        SigninError::kOfflineFailedNetworkNotConnected,
-        /*details=*/std::string());
+    view_->ShowPasswordMismatchMessage();
     return;
   }
 

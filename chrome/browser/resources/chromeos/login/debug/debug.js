@@ -597,12 +597,12 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          // Retry after incorrect password attempt, user name is already known.
-          id: 'offline-gaia-user',
+          // Password and email mismatch error message.
+          id: 'offline-login-password-mismatch',
           trigger: (screen) => {
-            screen.loadParams({
-              email: 'someone@example.com',
-            });
+            screen.setEmailForTest('someuser@gmail.com');
+            screen.proceedToPasswordPage();
+            screen.showPasswordMismatchMessage();
           },
         },
       ],
