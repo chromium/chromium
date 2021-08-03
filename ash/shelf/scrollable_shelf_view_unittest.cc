@@ -601,9 +601,10 @@ TEST_P(ScrollableShelfViewRTLTest, CheckTappableIndicesOnSecondDisplay) {
   EXPECT_EQ(0, secondary_scrollable_shelf_view->first_tappable_app_index());
 }
 
+// TODO(crbug.com/1236067): This test is flaky. Re-enable once fixed.
 // Verifies that the scrollable shelf in oveflow mode has the correct layout
 // after switching to tablet mode (https://crbug.com/1017979).
-TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
+TEST_P(ScrollableShelfViewRTLTest, DISABLED_CorrectUIAfterSwitchingToTablet) {
   // Add enough app shortcuts to ensure that at least three pages of icons show.
   for (int i = 0; i < 25; i++)
     AddAppShortcut();
