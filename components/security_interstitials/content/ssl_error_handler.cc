@@ -21,7 +21,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/captive_portal/core/captive_portal_types.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
@@ -424,8 +423,7 @@ SSLErrorHandlerDelegateImpl::~SSLErrorHandlerDelegateImpl() {
 
 void SSLErrorHandlerDelegateImpl::CheckForCaptivePortal() {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  captive_portal_service_->DetectCaptivePortal(
-      captive_portal::CaptivePortalProbeReason::kCertificateError);
+  captive_portal_service_->DetectCaptivePortal();
 #else
   NOTREACHED();
 #endif

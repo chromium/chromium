@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "net/base/backoff_entry.h"
@@ -71,7 +72,7 @@ class CaptivePortalService : public KeyedService {
   // Triggers a check for a captive portal.  If there's already a check in
   // progress, does nothing.  Throttles the rate at which requests are sent.
   // Always sends the result notification asynchronously.
-  void DetectCaptivePortal(CaptivePortalProbeReason probe_reason);
+  void DetectCaptivePortal();
 
   base::CallbackListSubscription RegisterCallback(
       const base::RepeatingCallback<void(const Results&)>& cb) {
@@ -131,7 +132,7 @@ class CaptivePortalService : public KeyedService {
 
   // Initiates a captive portal check, without any throttling.  If the service
   // is disabled, just acts like there's an Internet connection.
-  void DetectCaptivePortalInternal(CaptivePortalProbeReason probe_reason);
+  void DetectCaptivePortalInternal();
 
   // Called by CaptivePortalDetector when detection completes.
   void OnPortalDetectionCompleted(

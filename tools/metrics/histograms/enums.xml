@@ -10615,6 +10615,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="CaptivePortalProbeReason">
+  <obsolete>
+    Removed from code 2021-08.
+  </obsolete>
   <int value="0" label="UNSPECIFIED"/>
   <int value="1" label="TIMEOUT"/>
   <int value="2" label="CERTIFICATE_ERROR"/>

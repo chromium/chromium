@@ -2061,8 +2061,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   CaptivePortalObserver portal_observer(browser()->profile());
   captive_portal::CaptivePortalService* captive_portal_service =
       CaptivePortalServiceFactory::GetForProfile(browser()->profile());
-  captive_portal_service->DetectCaptivePortal(
-      captive_portal::CaptivePortalProbeReason::kCertificateError);
+  captive_portal_service->DetectCaptivePortal();
   portal_observer.WaitForResults(1);
   EXPECT_EQ(SSLBlockingPage::kTypeForTesting,
             GetInterstitialType(broken_tab_contents));
@@ -2071,8 +2070,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   // captive portal interstitial should still not get recreated.
   SetBehindCaptivePortal(true);
   CaptivePortalObserver final_portal_observer(browser()->profile());
-  captive_portal_service->DetectCaptivePortal(
-      captive_portal::CaptivePortalProbeReason::kCertificateError);
+  captive_portal_service->DetectCaptivePortal();
   final_portal_observer.WaitForResults(1);
   EXPECT_EQ(SSLBlockingPage::kTypeForTesting,
             GetInterstitialType(broken_tab_contents));
@@ -2122,8 +2120,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   CaptivePortalObserver portal_observer2(browser()->profile());
   captive_portal::CaptivePortalService* captive_portal_service =
       CaptivePortalServiceFactory::GetForProfile(browser()->profile());
-  captive_portal_service->DetectCaptivePortal(
-      captive_portal::CaptivePortalProbeReason::kCertificateError);
+  captive_portal_service->DetectCaptivePortal();
   portal_observer2.WaitForResults(1);
 
   EXPECT_FALSE(IsShowingInterstitial(broken_tab_contents));
@@ -2178,8 +2175,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   CaptivePortalObserver portal_observer2(browser()->profile());
   captive_portal::CaptivePortalService* captive_portal_service =
       CaptivePortalServiceFactory::GetForProfile(browser()->profile());
-  captive_portal_service->DetectCaptivePortal(
-      captive_portal::CaptivePortalProbeReason::kCertificateError);
+  captive_portal_service->DetectCaptivePortal();
   portal_observer2.WaitForResults(1);
 
   EXPECT_FALSE(IsShowingInterstitial(broken_tab_contents));
@@ -2239,8 +2235,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   CaptivePortalObserver portal_observer2(browser()->profile());
   captive_portal::CaptivePortalService* captive_portal_service =
       CaptivePortalServiceFactory::GetForProfile(browser()->profile());
-  captive_portal_service->DetectCaptivePortal(
-      captive_portal::CaptivePortalProbeReason::kCertificateError);
+  captive_portal_service->DetectCaptivePortal();
   portal_observer2.WaitForResults(1);
 
   EXPECT_FALSE(IsShowingInterstitial(broken_tab_contents));

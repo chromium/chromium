@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/content/captive_portal_service.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -138,13 +138,11 @@ class CaptivePortalTabReloader {
   // Sets |state_| and takes any action associated with the new state.  Also
   // stops the timer, if needed. If |new_state| is STATE_MAYBE_BROKEN_BY_PORTAL,
   // |probe_trigger| should be specified.
-  void SetState(
-      State new_state,
-      absl::optional<CaptivePortalProbeReason> probe_reason = absl::nullopt);
+  void SetState(State new_state);
 
   // Called by a timer when an SSL main frame provisional load is taking a
   // while to commit.
-  void OnSlowSSLConnect(CaptivePortalProbeReason probe_reason);
+  void OnSlowSSLConnect();
 
   // Called when a main frame loads with a secure DNS network error.
   void OnSecureDnsNetworkError();
@@ -165,7 +163,7 @@ class CaptivePortalTabReloader {
   virtual void MaybeOpenCaptivePortalLoginTab();
 
   // Has |captive_portal_service_| (if present) start a captive portal check.
-  virtual void CheckForCaptivePortal(CaptivePortalProbeReason probe_reason);
+  virtual void CheckForCaptivePortal();
 
   CaptivePortalService* captive_portal_service_;
   content::WebContents* web_contents_;
