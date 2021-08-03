@@ -171,8 +171,8 @@ if (is_win || is_mac) {
         "launchd_util.cc",
         "launchd_util.h",
         "lib_util_mac.mm",
-        "mac/installer_dmg.h",
-        "mac/installer_dmg.mm",
+        "mac/install_from_archive.h",
+        "mac/install_from_archive.mm",
         "mac/mac_util.h",
         "mac/mac_util.mm",
         "mac/net/network.h",
@@ -193,6 +193,7 @@ if (is_win || is_mac) {
         "prefs_mac.mm",
         "service_factory_mac.mm",
         "setup_mac.mm",
+        "util_mac.mm",
       ]
 
       deps += [

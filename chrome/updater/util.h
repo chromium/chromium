@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -85,6 +86,16 @@ struct CaseInsensitiveASCIICompare {
 GURL AppendQueryParameter(const GURL& url,
                           const std::string& name,
                           const std::string& value);
+
+#if defined(OS_MAC)
+// Uses the builtin unzip utility within macOS /usr/bin/unzip to unzip instead
+// of using the configurator's UnzipperFactory. The UnzipperFactory utilizes the
+// //third_party/zlib/google, which has a bug that does not preserve the
+// permissions when it extracts the contents. For updates via zip or
+// differentials, use UnzipWithExe.
+bool UnzipWithExe(const base::FilePath& src_path,
+                  const base::FilePath& dest_path);
+#endif  // defined(OS_MAC)
 
 }  // namespace updater
 
