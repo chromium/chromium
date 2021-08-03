@@ -30,6 +30,8 @@ constexpr CGFloat kMarginBetweenContents = 12;
 
 @dynamic delegate;
 
+#pragma mark - UIViewController
+
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSyncScreenAccessibilityIdentifier;
@@ -129,7 +131,8 @@ constexpr CGFloat kMarginBetweenContents = 12;
 - (UIButton*)createAdvanceSyncSettingsButton {
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.adjustsFontSizeToFitWidth = YES;
+  button.titleLabel.numberOfLines = 0;
+  button.titleLabel.adjustsFontForContentSizeCategory = YES;
   [button.titleLabel
       setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
   [button setTitle:[self contentTextWithStringID:
