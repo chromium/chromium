@@ -107,8 +107,8 @@ def try_builder(
         specifying additional parameters for exporting test results to BigQuery.
         Will always upload to the following tables in addition to any tables
         specified by the list's elements:
-          luci-resultdb.chromium.try_test_results
-          luci-resultdb.chromium.gpu_try_test_results
+          chrome-luci-data.chromium.try_test_results
+          chrome-luci-data.gpu_try_test_results
     """
     if not branches.matches(branch_selector):
         return
@@ -119,19 +119,13 @@ def try_builder(
     experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
     merged_resultdb_bigquery_exports = [
+        # TODO(crbug.com/1230801): Remove when all usages of this table have
+        # been migrated to `chrome-luci-data.chromium.try_test_results`.
         resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.try_test_results",
         ),
         resultdb.export_test_results(
-            bq_table = "luci-resultdb.chromium.gpu_try_test_results",
-            predicate = resultdb.test_result_predicate(
-                # Only match the telemetry_gpu_integration_test and
-                # fuchsia_telemetry_gpu_integration_test targets.
-                # Android Telemetry targets also have a suffix added to the end
-                # denoting the binary that's included, so also catch those with
-                # [^/]*.
-                test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test[^/]*/.+",
-            ),
+            bq_table = "chrome-luci-data.chromium.try_test_results",
         ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_try_test_results",
@@ -142,14 +136,6 @@ def try_builder(
                 # denoting the binary that's included, so also catch those with
                 # [^/]*.
                 test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test[^/]*/.+",
-            ),
-        ),
-        resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.blink_web_tests_try_test_results",
-            predicate = resultdb.test_result_predicate(
-                # Match the "blink_web_tests" target and all of its
-                # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
-                test_id_regexp = "ninja://[^/]*blink_web_tests/.+",
             ),
         ),
     ]
