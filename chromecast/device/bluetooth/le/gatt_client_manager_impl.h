@@ -17,6 +17,7 @@
 #include "chromecast/device/bluetooth/le/ble_notification_logger.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager.h"
 #include "chromecast/device/bluetooth/shlib/gatt_client.h"
+#include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
 namespace bluetooth {
@@ -67,9 +68,12 @@ class GattClientManagerImpl
 
   // Add a Connect or Disconnect request to the queue. |is_connect| is true for
   // Connect request and false for Disconnect request. They can only be executed
-  // serially.
-  void EnqueueConnectRequest(const bluetooth_v2_shlib::Addr& addr,
-                             bool is_connect);
+  // serially. |transport| need only be set if is_connect == true and you wish
+  // to force a BT Classic or LE connection.
+  void EnqueueConnectRequest(
+      const bluetooth_v2_shlib::Addr& addr,
+      bool is_connect,
+      bluetooth_v2_shlib::Gatt::Client::Transport transport = bluetooth_v2_shlib::Gatt::Client::Transport::kAuto);
 
   // Add a ReadRemoteRssi request to the queue. They can only be executed
   // serially.
@@ -160,8 +164,17 @@ class GattClientManagerImpl
   // Queue for concurrent Connect/Disconnect requests. Each request is
   // represented using a <addr, is_connect> pair. |is_connect| is true for
   // Connect requests and false for Disconnect requests.
-  std::deque<std::pair<bluetooth_v2_shlib::Addr, bool>>
-      pending_connect_requests_;
+  struct PendingRequest {
+    PendingRequest(const bluetooth_v2_shlib::Addr& addr,
+                   bool is_connect,
+                   bluetooth_v2_shlib::Gatt::Client::Transport transport);
+    ~PendingRequest();
+
+    bluetooth_v2_shlib::Addr addr;
+    bool is_connect;
+    bluetooth_v2_shlib::Gatt::Client::Transport transport;
+  };
+  std::deque<PendingRequest> pending_connect_requests_;
 
   bool disconnect_all_pending_ = false;
 

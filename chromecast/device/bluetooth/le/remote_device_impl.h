@@ -20,6 +20,7 @@
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"
 #include "chromecast/device/bluetooth/le/remote_device.h"
+#include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
 namespace bluetooth {
@@ -38,7 +39,7 @@ class RemoteDeviceImpl : public RemoteDevice {
       base::TimeDelta::FromSeconds(30);
 
   // RemoteDevice implementation
-  void Connect(ConnectCallback cb) override;
+  void Connect(ConnectCallback cb, bluetooth_v2_shlib::Gatt::Client::Transport transport) override;
   void Disconnect(StatusCallback cb) override;
   void CreateBond(StatusCallback cb) override;
   void RemoveBond(StatusCallback cb) override;

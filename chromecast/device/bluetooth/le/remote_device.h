@@ -38,7 +38,9 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
   // Initiate a connection to this device. Callback will return |true| if
   // connected successfully, otherwise false. Only one pending call is allowed
   // at a time.
-  virtual void Connect(ConnectCallback cb) = 0;
+  virtual void Connect(
+      ConnectCallback cb,
+      bluetooth_v2_shlib::Gatt::Client::Transport transport = bluetooth_v2_shlib::Gatt::Client::Transport::kAuto) = 0;
 
   // Disconnect from this device. Callback will return |true| if disconnected
   // successfully, otherwise false. Only one pending call is allowed at a time.
