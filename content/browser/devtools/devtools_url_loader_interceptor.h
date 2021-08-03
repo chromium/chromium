@@ -97,7 +97,8 @@ class DevToolsURLLoaderInterceptor {
     Modifications(protocol::Maybe<std::string> modified_url,
                   protocol::Maybe<std::string> modified_method,
                   protocol::Maybe<protocol::Binary> modified_post_data,
-                  std::unique_ptr<HeadersVector> modified_headers);
+                  std::unique_ptr<HeadersVector> modified_headers,
+                  protocol::Maybe<bool> intercept_response);
     Modifications(
         absl::optional<net::Error> error_reason,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -124,6 +125,7 @@ class DevToolsURLLoaderInterceptor {
     protocol::Maybe<std::string> modified_method;
     protocol::Maybe<protocol::Binary> modified_post_data;
     std::unique_ptr<HeadersVector> modified_headers;
+    protocol::Maybe<bool> intercept_response;
     // AuthChallengeResponse is mutually exclusive with the above.
     std::unique_ptr<AuthChallengeResponse> auth_challenge_response;
   };

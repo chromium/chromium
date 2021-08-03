@@ -253,6 +253,7 @@ void FetchHandler::ContinueRequest(
     Maybe<String> method,
     Maybe<protocol::Binary> postData,
     Maybe<Array<Fetch::HeaderEntry>> headers,
+    Maybe<bool> interceptResponse,
     std::unique_ptr<ContinueRequestCallback> callback) {
   if (!interceptor_) {
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
@@ -273,7 +274,7 @@ void FetchHandler::ContinueRequest(
   auto modifications =
       std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(
           std::move(url), std::move(method), std::move(postData),
-          std::move(request_headers));
+          std::move(request_headers), std::move(interceptResponse));
   interceptor_->ContinueInterceptedRequest(requestId, std::move(modifications),
                                            WrapCallback(std::move(callback)));
 }

@@ -73,6 +73,7 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
       Maybe<String> method,
       Maybe<protocol::Binary> postData,
       Maybe<Array<Fetch::HeaderEntry>> headers,
+      Maybe<bool> interceptResponse,
       std::unique_ptr<ContinueRequestCallback> callback) override;
   void ContinueWithAuth(
       const String& fetchId,
