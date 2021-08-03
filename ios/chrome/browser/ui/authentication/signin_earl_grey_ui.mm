@@ -127,6 +127,14 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
       confirmationLabelID:confirmationLabelID];
 }
 
++ (void)tapSettingsLink {
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"settings"),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitLink),
+                                          nil)] performAction:grey_tap()];
+}
+
 + (void)tapSigninConfirmationDialog {
   // To confirm the dialog, the scroll view content has to be scrolled to the
   // bottom to transform "MORE" button into the validation button.

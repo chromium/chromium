@@ -41,7 +41,6 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsImportDataContinueButton;
 using chrome_test_util::SettingsImportDataImportButton;
 using chrome_test_util::SettingsImportDataKeepSeparateButton;
-using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using chrome_test_util::SyncSettingsConfirmButton;
@@ -466,8 +465,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   }
   if (tapSettingsLink) {
     [ChromeEarlGreyUI waitForAppToIdle];
-    [[EarlGrey selectElementWithMatcher:SettingsLink()]
-        performAction:grey_tap()];
+    [SigninEarlGreyUI tapSettingsLink];
   }
   [ChromeEarlGreyUI waitForAppToIdle];
 }

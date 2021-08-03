@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -33,7 +32,6 @@ using chrome_test_util::GoogleServicesSettingsView;
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsLink;
 using chrome_test_util::SyncSettingsConfirmButton;
 using l10n_util::GetNSString;
 using testing::ButtonWithAccessibilityLabel;
@@ -82,7 +80,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
       performAction:grey_tap()];
 
@@ -99,7 +97,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
       performAction:grey_tap()];
 
@@ -145,7 +143,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
       performAction:grey_tap()];
 
@@ -189,7 +187,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
 
   [[[EarlGrey selectElementWithMatcher:
                   grey_accessibilityLabel(l10n_util::GetNSString(
@@ -209,7 +207,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
       performAction:grey_tap()];
 
@@ -241,7 +239,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kManageSyncTableViewAccessibilityIdentifier)]
@@ -266,7 +264,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
@@ -285,7 +283,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   [ChromeEarlGreyUI tapToolsMenuButton:chrome_test_util::BookmarksMenuButton()];
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
@@ -301,7 +299,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
@@ -317,7 +315,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI tapPrimarySignInButtonInTabSwitcher];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
@@ -333,7 +331,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
