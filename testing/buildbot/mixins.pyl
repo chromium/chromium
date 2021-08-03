@@ -309,11 +309,6 @@
       },
     },
   },
-  'enable_resultdb': {
-    'resultdb': {
-      'enable': True,
-    },
-  },
   'femu-additional-ram': {
     '$mixin_append': {
       'args': [
@@ -378,6 +373,16 @@
         'device_type': 'hammerhead',
         'os': 'Android',
       },
+    },
+  },
+  # Use of this mixin signals to the recipe that the test uploads its results
+  # to result-sink and doesn't need to be wrapped by result_adapter.
+  'has_native_resultdb_integration': {
+    'resultdb': {
+      'enable': True,
+      # TODO(crbug.com/1163797): Remove the 'enable' field in favor of
+      # 'has_native_resultdb_integration'.
+      'has_native_resultdb_integration': True,
     },
   },
   'intel_iris_5100': {

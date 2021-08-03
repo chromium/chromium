@@ -20,7 +20,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -70,7 +71,8 @@
         },
         "name": "chrome_public_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -108,7 +110,8 @@
         },
         "name": "system_webview_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -146,7 +149,8 @@
         },
         "name": "weblayer_shell_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -195,7 +199,8 @@
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -268,7 +273,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -347,7 +353,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -426,7 +433,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -505,7 +513,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -584,7 +593,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -663,7 +673,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -736,7 +747,8 @@
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -809,7 +821,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -888,7 +901,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -967,7 +981,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1046,7 +1061,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1125,7 +1141,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1204,7 +1221,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1277,7 +1295,8 @@
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1350,7 +1369,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1429,7 +1449,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1508,7 +1529,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1587,7 +1609,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1666,7 +1689,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1745,7 +1769,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1818,7 +1843,8 @@
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1891,7 +1917,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1970,7 +1997,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2049,7 +2077,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2128,7 +2157,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 88.0.4324.206",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2207,7 +2237,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 89.0.4389.70",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2286,7 +2317,8 @@
         },
         "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 87.0.4280.152",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2355,7 +2387,8 @@
         },
         "name": "weblayer_shell_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {

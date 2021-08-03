@@ -21,7 +21,8 @@
         },
         "name": "webgl_conformance_swangle_passthrough_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -57,7 +58,8 @@
         },
         "name": "webgl_conformance_swiftshader_validating_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -2652,7 +2654,8 @@
         },
         "name": "webgl_conformance_swangle_passthrough_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -2687,7 +2690,8 @@
         },
         "name": "webgl_conformance_swiftshader_validating_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -2726,7 +2730,8 @@
         },
         "name": "webgl_conformance_swangle_passthrough_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -2761,7 +2766,8 @@
         },
         "name": "webgl_conformance_swiftshader_validating_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
