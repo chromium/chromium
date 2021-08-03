@@ -12,7 +12,7 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
 
-@benchmark.Info(emails=['mythria@chromium.org','ulan@chromium.org'],
+@benchmark.Info(emails=['cbruni@chromium.org', 'leszeks@chromium.org'],
                 component='Blink>JavaScript')
 class V8Top25RuntimeStats(perf_benchmark.PerfBenchmark):
   """Runtime Stats benchmark for a 25 top V8 web pages.

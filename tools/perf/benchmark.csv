@@ -5,8 +5,8 @@ Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_blink_perf.performance_apis,yoavweiss@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.service_worker,"shimazu@chromium.org, falken@chromium.org, ting.shao@intel.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_loading.mbi,blink-isolation-dev@chromium.org,Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
-UNSCHEDULED_v8.loading_desktop,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
-UNSCHEDULED_v8.loading_mobile,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
+UNSCHEDULED_v8.loading_desktop,"cbruni@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
+UNSCHEDULED_v8.loading_mobile,"cbruni@chromium.org, leszeks@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
 base_perftests,"skyostil@chromium.org, gab@chromium.org",Internals>SequenceManager,https://chromium.googlesource.com/chromium/src/+/HEAD/base/README.md#performance-testing,
 blink_perf.accessibility,dmazzoni@chromium.org,Blink>Accessibility,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.bindings,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all
@@ -77,11 +77,11 @@ system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org, changwa
 tab_switching.typical_25,vovoy@chromium.org,OS>Performance,,"2016,tabs_switching"
 tracing.tracing_with_background_memory_infra,ssid@chromium.org,,,
 tracing_perftests,"eseckler@chromium.org, oysteine@chromium.org",Speed>Tracing,,
-v8.browsing_desktop,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
-v8.browsing_desktop-future,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
-v8.browsing_mobile,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
-v8.browsing_mobile-future,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
-v8.runtime_stats.top_25,"mythria@chromium.org, ulan@chromium.org",Blink>JavaScript,,"cold,hot,warm"
+v8.browsing_desktop,"cbruni@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
+v8.browsing_desktop-future,"cbruni@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
+v8.browsing_mobile,"cbruni@chromium.org, leszeks@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
+v8.browsing_mobile-future,"cbruni@chromium.org, leszeks@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
+v8.runtime_stats.top_25,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,,"cold,hot,warm"
 views_perftests,tapted@chromium.org,Internals>Views,,
 wasmpspdfkit,ahaas@chromium.org,Blink>JavaScript>WebAssembly,,
 webrtc,"qiangchen@chromium.org, mbonadei@chromium.org",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"datachannel,getusermedia,insertableStreams,pauseplay,sdp,smoothness,stress,videoConstraints"
