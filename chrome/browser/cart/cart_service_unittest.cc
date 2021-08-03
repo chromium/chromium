@@ -1435,7 +1435,7 @@ TEST_F(CartServiceDiscountTest, TestNoFetchWhenFeatureDisabled) {
 TEST_F(CartServiceDiscountTest, TestReturnDiscountURL) {
   base::RunLoop run_loop[4];
   const double timestamp = 1;
-  GURL discount_url("https://www.discount.com");
+  GURL discount_url("https://www.foo.com/discounted");
   SetCartDiscountURLForTesting(discount_url, true);
   EXPECT_FALSE(service_->IsDiscountUsed(kMockMerchantADiscountRuleId));
   cart_db::ChromeCartContentProto cart_proto = AddDiscountToProto(
@@ -1557,4 +1557,33 @@ TEST_F(CartServiceSkipExtractionTest, TestLoadCartForSkippedMerchants) {
                                         base::Unretained(this),
                                         run_loop[3].QuitClosure(), kExpectedC));
   run_loop[3].Run();
+}
+
+class CartServiceRbdFastPathTest : public CartServiceTest {
+ public:
+  CartServiceRbdFastPathTest() {
+    // This needs to be called before any tasks that run on other threads check
+    // if a feature is enabled.
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
+         {"partner-merchant-pattern", "(foo.com)"},
+         {ntp_features::NtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
+          "true"}});
+  }
+  void TearDown() override {
+    // Set the feature to default disabled state after test.
+    profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  }
+};
+
+TEST_F(CartServiceRbdFastPathTest, TestAppendUTM) {
+  EXPECT_FALSE(service_->IsCartDiscountEnabled());
+  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_no_rbd"),
+            CartService::AppendUTM(GURL(kMockMerchantURLA), false));
+
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  EXPECT_TRUE(service_->IsCartDiscountEnabled());
+  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
+            CartService::AppendUTM(GURL(kMockMerchantURLA), true));
 }

@@ -38,6 +38,22 @@ void GetEvaluationMerchantCarts(
   std::move(closure).Run();
 }
 
+void GetEvaluationMerchantCartWithUtmSource(
+    base::OnceClosure closure,
+    bool expected_has_utm_source,
+    const std::string& expected_utm_source_tag_and_value,
+    std::vector<chrome_cart::mojom::MerchantCartPtr> found) {
+  EXPECT_EQ(1U, found.size());
+  EXPECT_EQ(expected_has_utm_source,
+            found[0]->cart_url.spec().find("utm_source") != std::string::npos);
+  if (expected_has_utm_source) {
+    EXPECT_EQ(expected_has_utm_source,
+              found[0]->cart_url.spec().find(
+                  expected_utm_source_tag_and_value) != std::string::npos);
+  }
+  std::move(closure).Run();
+}
+
 cart_db::ChromeCartContentProto BuildProto(const char* key,
                                            const char* domain,
                                            const char* merchant_url) {
@@ -552,4 +568,58 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataWithFeature) {
       base::BindOnce(&GetEvaluationMerchantCarts,
                      run_loop[run_loop_index].QuitClosure(), std::move(carts)));
   run_loop[run_loop_index++].Run();
+}
+
+// Override CartHandlerTest so that we can initialize feature_list_ in our
+// constructor, before CartHandlerTest::SetUp is called.
+class CartHandlerNtpModuleDiscountFastPathTest : public CartHandlerTest {
+ public:
+  CartHandlerNtpModuleDiscountFastPathTest() {
+    // This needs to be called before any tasks that run on other threads check
+    // if a feature is enabled.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
+         {"partner-merchant-pattern", "(foo.com)"},
+         {ntp_features::NtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
+          "true"}});
+  }
+};
+
+// Verifies utm_source tag is appended to partner merchant's cart.
+TEST_F(CartHandlerNtpModuleDiscountFastPathTest,
+       TestAppendUtmSourceToPartnerMerchant) {
+  base::RunLoop run_loop[2];
+  service_->AddCart(kFakeMerchantKey, absl::nullopt, kFakeProto);
+  task_environment_.RunUntilIdle();
+
+  // Verifies utm_source tag for discount is disabled.
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+  handler_->GetMerchantCarts(base::BindOnce(
+      &GetEvaluationMerchantCartWithUtmSource, run_loop[0].QuitClosure(), true,
+      "utm_source=chrome_cart_no_rbd"));
+  run_loop[0].Run();
+
+  // Verifies utm_source tag for discount is enabled.
+  handler_->SetDiscountEnabled(true);
+  ASSERT_TRUE(service_->IsCartDiscountEnabled());
+  handler_->GetMerchantCarts(base::BindOnce(
+      &GetEvaluationMerchantCartWithUtmSource, run_loop[1].QuitClosure(), true,
+      "utm_source=chrome_cart_rbd"));
+  run_loop[1].Run();
+}
+
+// Verifies utm_source tag is not appended to non partner merchant's cart.
+TEST_F(CartHandlerNtpModuleDiscountFastPathTest,
+       TestNotAppendUtmSourceToNonPartnerMerchant) {
+  base::RunLoop run_loop;
+  service_->AddCart(kMockMerchantBKey, absl::nullopt, kMockProtoB);
+  task_environment_.RunUntilIdle();
+
+  // Verifies utm_source tag is not appended.
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
+  handler_->GetMerchantCarts(
+      base::BindOnce(&GetEvaluationMerchantCartWithUtmSource,
+                     run_loop.QuitClosure(), false, ""));
+  run_loop.Run();
 }
