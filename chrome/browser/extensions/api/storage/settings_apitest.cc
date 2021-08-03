@@ -344,9 +344,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest, SplitModeIncognito) {
 
 // TODO(crbug.com/1185226): Change parent class to `ExtensionSettingsApiTest`
 // when chrome.storage.session is released in stable.
-// Flaky across multiple platforms: https://crbug.com/1216449.
+// TODO(crbug.com/1229351): Service worker extension listener should receive an
+// event before the callback is made. Current workaround: wait for the event to
+// be received by the extension before checking for it. Potential solution: once
+// browser-side observation of SW lifetime work is finished, check if it fixes
+// this test.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
-                       DISABLED_OnChangedNotificationsBetweenBackgroundPages) {
+                       OnChangedNotificationsBetweenBackgroundPages) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   ResultCatcher catcher;
@@ -357,24 +361,37 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
 
   StorageAreaNamespace storage_areas[2] = {StorageAreaNamespace::kSync,
                                            StorageAreaNamespace::kSession};
-  LoadAndReplyWhenSatisfied(StorageAreaNamespace::kSync,
-                            "assertNoNotifications", "assertNoNotifications",
-                            "split_incognito");
+
   for (const StorageAreaNamespace& storage_area : storage_areas) {
-    ReplyWhenSatisfied(storage_area, "assertNoNotifications",
-                       "assertNoNotifications");
+    // We need to load the extension when it's the first reply.
+    // kSync is the first storage area to run.
+    if (storage_area == StorageAreaNamespace::kSync) {
+      LoadAndReplyWhenSatisfied(StorageAreaNamespace::kSync,
+                                "assertNoNotifications",
+                                "assertNoNotifications", "split_incognito");
+    } else {
+      ReplyWhenSatisfied(storage_area, "assertNoNotifications",
+                         "assertNoNotifications");
+    }
+
     ReplyWhenSatisfied(storage_area, "noop", "setFoo");
     ReplyWhenSatisfied(storage_area, "assertAddFooNotification",
                        "assertAddFooNotification");
     ReplyWhenSatisfied(storage_area, "clearNotifications",
                        "clearNotifications");
     ReplyWhenSatisfied(storage_area, "removeFoo", "noop");
-    ReplyWhenSatisfied(storage_area, "assertDeleteFooNotification",
-                       "assertDeleteFooNotification");
+
+    // We need to end the test with a final reply when it's the last reply.
+    // kSession is the last storage area to run.
+    if (storage_area == StorageAreaNamespace::kSession) {
+      FinalReplyWhenSatisfied(StorageAreaNamespace::kSession,
+                              "assertDeleteFooNotification",
+                              "assertDeleteFooNotification");
+    } else {
+      ReplyWhenSatisfied(storage_area, "assertDeleteFooNotification",
+                         "assertDeleteFooNotification");
+    }
   }
-  FinalReplyWhenSatisfied(StorageAreaNamespace::kSession,
-                          "assertDeleteFooNotification",
-                          "assertDeleteFooNotification");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
@@ -490,9 +507,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsTrunkApiTest,
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-// https://crbug.com/1216450: Flaky on multiple platforms.
+// TODO(crbug.com/1229351): Service worker extension listener should receive an
+// event before the callback is made. Current workaround: wait for the event to
+// be received by the extension before checking for it. Potential solution: once
+// browser-side observation of SW lifetime work is finished, check if it fixes
+// this test.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
-                       DISABLED_OnChangedNotificationsFromSync) {
+                       OnChangedNotificationsFromSync) {
   // We need 2 ResultCatchers because we'll be running the same test in both
   // regular and incognito mode.
   ResultCatcher catcher, catcher_incognito;
