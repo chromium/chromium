@@ -208,7 +208,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void AppendPasswordItems();
   void AppendPictureInPictureItem();
   void AppendSharingItems();
+#if !defined(OS_FUCHSIA)
   void AppendClickToCallItem();
+#endif
   void AppendSharedClipboardItem();
   void AppendLensRegionSearchItem();
   void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);

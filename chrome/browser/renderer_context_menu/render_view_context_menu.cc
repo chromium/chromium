@@ -1388,7 +1388,9 @@ void RenderViewContextMenu::AppendLinkItems() {
       }
     }
 
+#if !defined(OS_FUCHSIA)
     AppendClickToCallItem();
+#endif
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVELINKAS,
@@ -2000,7 +2002,9 @@ void RenderViewContextMenu::AppendSharingItems() {
   int items_before_sharing = menu_model_.GetItemCount();
   bool starting_separator_added = items_before_sharing > items_initial;
 
+#if !defined(OS_FUCHSIA)
   AppendClickToCallItem();
+#endif
   AppendSharedClipboardItem();
 
   // Add an ending separator if there are sharing items, otherwise remove the
@@ -2012,6 +2016,7 @@ void RenderViewContextMenu::AppendSharingItems() {
     menu_model_.RemoveItemAt(items_initial);
 }
 
+#if !defined(OS_FUCHSIA)
 void RenderViewContextMenu::AppendClickToCallItem() {
   SharingClickToCallEntryPoint entry_point;
   absl::optional<std::string> phone_number;
@@ -2038,6 +2043,7 @@ void RenderViewContextMenu::AppendClickToCallItem() {
   click_to_call_context_menu_observer_->BuildMenu(*phone_number, selection_text,
                                                   entry_point);
 }
+#endif  // !defined(OS_FUCHSIA)
 
 void RenderViewContextMenu::AppendSharedClipboardItem() {
   if (!ShouldOfferSharedClipboard(browser_context_, params_.selection_text))
