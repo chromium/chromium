@@ -122,7 +122,6 @@ class HistoryClustersService : public KeyedService {
 
   // Internally used callback for `QueryClusters()`.
   void OnGotHistoryVisits(const std::string& query,
-                          base::Time original_end_time,
                           QueryClustersCallback callback,
                           std::vector<history::AnnotatedVisit> annotated_visits,
                           base::Time continuation_end_time) const;

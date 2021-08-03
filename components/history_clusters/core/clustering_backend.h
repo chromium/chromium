@@ -29,4 +29,4 @@ class ClusteringBackend {
 
 }  // namespace history_clusters
 
-#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_REMOTE_MODEL_HELPER_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_BACKEND_H_

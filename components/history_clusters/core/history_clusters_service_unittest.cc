@@ -50,7 +50,7 @@ class TestClusteringBackend : public ClusteringBackend {
     std::move(callback_).Run(clusters);
   }
 
-  const std::vector<history::AnnotatedVisit>& last_clustered_visits() const {
+  const std::vector<history::AnnotatedVisit>& LastClusteredVisits() const {
     return last_clustered_visits_;
   }
 
@@ -67,6 +67,7 @@ class TestClusteringBackend : public ClusteringBackend {
     return history::ScoredAnnotatedVisit();
   }
 
+  // Should be invoked before `GetClusters()` is invoked.
   void WaitForGetClustersCall() {
     base::RunLoop loop;
     wait_for_get_clusters_closure_ = loop.QuitClosure();
@@ -94,6 +95,7 @@ class HistoryClustersServiceTest : public testing::Test {
         history::CreateHistoryService(history_dir_.GetPath(), true);
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         history_service_.get(), nullptr);
+
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
@@ -107,6 +109,8 @@ class HistoryClustersServiceTest : public testing::Test {
   HistoryClustersServiceTest& operator=(const HistoryClustersServiceTest&) =
       delete;
 
+  // Add hardcoded completed visits with context annotations to the history
+  // database.
   void AddHardcodedTestDataToHistoryService() {
     history::ContextID context_id = reinterpret_cast<history::ContextID>(1);
 
@@ -139,12 +143,30 @@ class HistoryClustersServiceTest : public testing::Test {
     }
   }
 
+  // Add an incomplete visit context annotations to the in memory incomplete
+  // visit map. Does not touch the history database.
+  void AddIncompleteVisit(history::URLID url_id,
+                          history::VisitID visit_id,
+                          base::Time visit_time) {
+    // It's not possible to have an incomplete visit with URL or visit set but
+    // not the other. The IDs must either both be 0 or both be non-zero.
+    ASSERT_FALSE(url_id ^ visit_id);
+    auto& incomplete_visit_context_annotations =
+        history_clusters_service_->GetOrCreateIncompleteVisitContextAnnotations(
+            next_navigation_id_);
+    incomplete_visit_context_annotations.url_row.set_id(url_id);
+    incomplete_visit_context_annotations.visit_row.visit_id = visit_id;
+    incomplete_visit_context_annotations.visit_row.visit_time = visit_time;
+    incomplete_visit_context_annotations.status.history_rows = url_id;
+    next_navigation_id_++;
+  }
+
   // Verifies that the hardcoded visits were passed to the clustering backend.
   void AwaitAndVerifyTestClusteringBackendRequest() {
     test_clustering_backend_->WaitForGetClustersCall();
 
     std::vector<history::AnnotatedVisit> visits =
-        test_clustering_backend_->last_clustered_visits();
+        test_clustering_backend_->LastClusteredVisits();
     ASSERT_EQ(visits.size(), 2u);
     auto& visit = visits[0];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
@@ -249,6 +271,41 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   run_loop_.Run();
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+}
+
+TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
+  // Create persisted visits 1 and 2.
+  AddHardcodedTestDataToHistoryService();
+
+  auto days_ago = [](int days) {
+    return base::Time::Now() - base::TimeDelta::FromDays(days);
+  };
+
+  // Create incomplete visits; only 3 & 4 should be returned by the query.
+  AddIncompleteVisit(3, 3, days_ago(1));
+  AddIncompleteVisit(0, 0, days_ago(1));  // Missing history rows.
+  AddIncompleteVisit(4, 4, days_ago(90));
+  AddIncompleteVisit(5, 5, days_ago(0));   // Too recent.
+  AddIncompleteVisit(6, 6, days_ago(93));  // Too old.
+
+  history_clusters_service_->QueryClusters(
+      /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,
+      base::DoNothing(),  // Only need to verify the correct request is sent.
+      &task_tracker_);
+
+  test_clustering_backend_->WaitForGetClustersCall();
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  // Persisted visits are ordered before incomplete visits. Persisted visits are
+  // ordered newest first. Incomplete visits are ordered the same as they were
+  // sent to the `HistoryClustersService`.
+  std::vector<history::AnnotatedVisit> visits =
+      test_clustering_backend_->LastClusteredVisits();
+  ASSERT_EQ(visits.size(), 4u);
+  EXPECT_EQ(visits[0].visit_row.visit_id, 2);
+  EXPECT_EQ(visits[1].visit_row.visit_id, 1);
+  EXPECT_EQ(visits[2].visit_row.visit_id, 3);
+  EXPECT_EQ(visits[3].visit_row.visit_id, 4);
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {

@@ -21,7 +21,6 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
@@ -36,16 +35,27 @@ namespace history_clusters {
 
 namespace {
 
-// Gets persisted `AnnotatedVisit`s to cluster.
+// Gets persisted `AnnotatedVisit`s to cluster including both persisted visits
+// from the history DB and incomplete visits.
+// - We don't want incomplete visits to be mysteriously missing from the
+//   Clusters UI. They haven't recorded the page end metrics yet, but that's
+//   fine.
+// - The history backend will return persisted visits with already computed
+//  `referring_visit_of_redirect_chain_start`, while incomplete visits will have
+//   to invoke `GetRedirectChainStart()`.
 class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
  public:
   using Callback = base::OnceCallback<void(std::vector<history::AnnotatedVisit>,
                                            base::Time)>;
 
-  GetAnnotatedVisitsToCluster(base::Time end_time,
-                              size_t max_count,
-                              Callback callback)
-      : callback_(std::move(callback)) {
+  GetAnnotatedVisitsToCluster(
+      HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
+      base::Time end_time,
+      size_t max_count,
+      Callback callback)
+      : incomplete_visit_map_(incomplete_visit_map),
+        original_end_time_(end_time),
+        callback_(std::move(callback)) {
     // As a primitive heuristic, fetch 3x the amount of visits as requested
     // clusters. We don't know in advance how big the clusters will be.
     max_count_ = max_count > 0 ? max_count * 3 : kMaxVisitsToCluster.Get();
@@ -90,6 +100,51 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
       options_.begin_time = options_.end_time - base::TimeDelta::FromDays(1);
     } while (!exhausted_history_ && annotated_visits_.size() < max_count_);
 
+    // Now we have enough visits for clustering, add all incomplete visits
+    // between the current `options.begin_time` and `original_end_time`, as
+    // otherwise they will be mysteriously missing from the Clusters UI. They
+    // haven't recorded the page end metrics yet, but that's fine. Filter
+    // incomplete visits to those that have a `url_row`, have a `visit_row`, and
+    // match `options`.
+    for (const auto& item : incomplete_visit_map_) {
+      auto& incomplete_visit_context_annotations = item.second;
+      // Discard incomplete visits that don't have a `url_row` and `visit_row`.
+      // It's possible that the `url_row` and `visit_row` will be available
+      // before they're needed (i.e. before
+      // `GetAnnotatedVisitsToCluster::RunOnDBThread()`). But since it'll only
+      // have a copy of the incomplete context annotations, the copy won't have
+      // the fields updated. A weak ptr won't help since it can't be accessed on
+      // different threads. A `scoped_refptr` could work. However, only very
+      // recently opened tabs won't have the rows set, so we don't bother using
+      // `scoped_refptr`s.
+      if (!incomplete_visit_context_annotations.status.history_rows)
+        continue;
+
+      // Discard incomplete visits outside the time bounds. `begin_time` is
+      // inclusive, and `end_time` is exclusive.
+      const auto& visit_time =
+          incomplete_visit_context_annotations.visit_row.visit_time;
+      if ((!options_.begin_time.is_null() &&
+           visit_time < options_.begin_time) ||
+          (!original_end_time_.is_null() && visit_time >= original_end_time_)) {
+        continue;
+      }
+
+      // Compute `referring_visit_of_redirect_chain_start` for each incomplete
+      // visit.
+      const auto& first_redirect = backend->GetRedirectChainStart(
+          incomplete_visit_context_annotations.visit_row);
+
+      annotated_visits_.push_back({
+          incomplete_visit_context_annotations.url_row,
+          incomplete_visit_context_annotations.visit_row,
+          incomplete_visit_context_annotations.context_annotations,
+          // TODO(tommycli): Add content annotations.
+          {},
+          first_redirect.referring_visit,
+      });
+    }
+
     return true;
   }
 
@@ -105,6 +160,14 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   }
 
  private:
+  // Incomplete visits that have history rows and are withing the time frame of
+  // the completed visits fetched will be appended to the annotated visits
+  // returned for clustering. It's used in the DB thread as each filtered visit
+  // will need to fetch its `referring_visit_of_redirect_chain_start`.
+  HistoryClustersService::IncompleteVisitMap incomplete_visit_map_;
+  // The end time used in the initial history request for completed visits. Used
+  // in the DB thread to filter `incomplete_visit_map_`.
+  base::Time original_end_time_;
   // Set to true if all annotated visits were fetched. It's set in the DB thread
   // and used in the main thread to determine `continuation_end_time`.
   bool exhausted_history_{false};
@@ -121,52 +184,6 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // The callback called on the main thread on completion.
   Callback callback_;
 };
-
-// Filter and transform the map of `IncompleteVisitContextAnnotations` to a
-// vector of `AnnotatedVisit`.
-std::vector<history::AnnotatedVisit> GetIncompleteAnnotatedVisits(
-    HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
-    base::Time begin_time,
-    base::Time end_time) {
-  // Filter incomplete visits to those that have a `url_row`, have a
-  // `visit_row`, and match `options`.
-  std::vector<history::AnnotatedVisit> annotated_visits;
-  for (const auto& item : incomplete_visit_map) {
-    auto& incomplete_visit_context_annotations = item.second;
-    // Discard incomplete visits that don't have a `url_row` and `visit_row`.
-    // It's possible that the `url_row` and `visit_row` will be available
-    // before they're needed (i.e. before
-    // `GetAnnotatedVisitsToCluster::RunOnDBThread()`). But since it'll only
-    // have a copy of the incomplete context annotations, the copy won't have
-    // the fields updated. A weak ptr won't help since it can't be accessed on
-    // different threads. A `scoped_refptr` could work. However, only very
-    // recently opened tabs won't have the rows set, so we don't bother using
-    // `scoped_refptr`s.
-    if (!incomplete_visit_context_annotations.status.history_rows)
-      continue;
-
-    // Discard incomplete visits outside the time bounds. `begin_time` is
-    // inclusive, and `end_time` is exclusive.
-    // TODO(manukh): `end_time` is intended for the WebUI pagination and should
-    //  not affect which visits are clustered. Once we have a feature param to
-    //  toggle on-the-fly clustering, we should move the `end_time` check to
-    //  `GetClusters()` when using persisted clusters.
-    const auto& visit_time =
-        incomplete_visit_context_annotations.visit_row.visit_time;
-    if ((!begin_time.is_null() && visit_time < begin_time) ||
-        (!end_time.is_null() && visit_time >= end_time)) {
-      continue;
-    }
-
-    annotated_visits.push_back(
-        {incomplete_visit_context_annotations.url_row,
-         incomplete_visit_context_annotations.visit_row,
-         incomplete_visit_context_annotations.context_annotations,
-         // TODO(tommycli): Add content annotations.
-         {}});
-  }
-  return annotated_visits;
-}
 
 // Filter `clusters` matching `query`. There are additional filters (e.g.
 // `max_time`) used when requesting `QueryClusters()`, but this function is only
@@ -364,6 +381,13 @@ void HistoryClustersService::QueryClusters(
 
   DCHECK(history_service_);
 
+  size_t max_visit_count = kMaxVisitsToCluster.Get();
+  if (max_count > 0) {
+    // As a primitive heuristic, fetch 3x the amount of visits as requested
+    // clusters. We don't know in advance how big the clusters will be.
+    max_visit_count = max_count * 3;
+  }
+
   NotifyDebugMessage("Starting History Query:");
   NotifyDebugMessage("  end_time = " + (end_time.is_null()
                                             ? "null"
@@ -372,10 +396,10 @@ void HistoryClustersService::QueryClusters(
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
-          end_time, max_count,
+          incomplete_visit_context_annotations_, end_time, max_visit_count,
           base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
                          weak_ptr_factory_.GetWeakPtr(), query,
-                         /*original_end_time=*/end_time, std::move(callback))),
+                         std::move(callback))),
       task_tracker);
 }
 
@@ -438,7 +462,6 @@ void HistoryClustersService::PopulateClusterKeywordCache(
 
 void HistoryClustersService::OnGotHistoryVisits(
     const std::string& query,
-    base::Time original_end_time,
     QueryClustersCallback callback,
     std::vector<history::AnnotatedVisit> annotated_visits,
     base::Time continuation_end_time) const {
@@ -449,15 +472,6 @@ void HistoryClustersService::OnGotHistoryVisits(
                      (continuation_end_time.is_null()
                           ? "null (i.e. exhausted history)"
                           : base::TimeToISO8601(continuation_end_time)));
-
-  // Now we have enough visits for clustering, add all incomplete visits between
-  // the current `options.begin_time` and `original_end_time`, as otherwise they
-  // will be mysteriously missing from the Clusters UI. They haven't recorded
-  // the page end metrics yet, but that's fine.
-  auto filtered_incomplete_visits =
-      GetIncompleteAnnotatedVisits(incomplete_visit_context_annotations_,
-                                   continuation_end_time, original_end_time);
-
   NotifyDebugMessage("Calling backend_->GetClusters()");
   backend_->GetClusters(
       base::BindOnce(&HistoryClustersService::OnGotClusters,

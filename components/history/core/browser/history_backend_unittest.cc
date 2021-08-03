@@ -518,9 +518,15 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   // Returns true if `bitmap_data` is equal to `expected_data`.
   bool BitmapDataEqual(char expected_data,
                        scoped_refptr<base::RefCountedMemory> bitmap_data) {
-    return bitmap_data.get() &&
-           bitmap_data->size() == 1u &&
+    return bitmap_data.get() && bitmap_data->size() == 1u &&
            *bitmap_data->front() == expected_data;
+  }
+
+  // Helper to get all annotated visits.
+  std::vector<AnnotatedVisit> GetAnnotatedVisitRowsFromBackend() {
+    return backend_
+        ->GetRecentClusterIdsAndAnnotatedVisits(base::Time::Min(), 100)
+        .annotated_visits;
   }
 };
 
@@ -3222,16 +3228,19 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
   EXPECT_EQ(annotated_visits[0].visit_row.visit_id, 3);
   EXPECT_EQ(annotated_visits[0].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[0].context_annotations.omnibox_url_copied, false);
+  EXPECT_EQ(annotated_visits[0].referring_visit_of_redirect_chain_start, 0);
   EXPECT_EQ(annotated_visits[1].url_row.id(), 2);
   EXPECT_EQ(annotated_visits[1].url_row.url(), "http://2.com/");
   EXPECT_EQ(annotated_visits[1].visit_row.visit_id, 2);
   EXPECT_EQ(annotated_visits[1].visit_row.url_id, 2);
   EXPECT_EQ(annotated_visits[1].context_annotations.omnibox_url_copied, true);
+  EXPECT_EQ(annotated_visits[1].referring_visit_of_redirect_chain_start, 0);
   EXPECT_EQ(annotated_visits[2].url_row.id(), 1);
   EXPECT_EQ(annotated_visits[2].url_row.url(), "http://1.com/");
   EXPECT_EQ(annotated_visits[2].visit_row.visit_id, 1);
   EXPECT_EQ(annotated_visits[2].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[2].context_annotations.omnibox_url_copied, true);
+  EXPECT_EQ(annotated_visits[2].referring_visit_of_redirect_chain_start, 0);
 
   delete_url(2);
   delete_visit(3);
@@ -3366,6 +3375,81 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
   backend_->RemoveVisits(visits);
   EXPECT_EQ(0, backend_->visit_tracker().GetLastVisit(
                    context_id, navigation_entry_id, url));
+}
+
+TEST_F(HistoryBackendTest, GetRedirectChainStart) {
+  auto last_visit_time = base::Time::Now();
+  auto add_visit = [&](std::string url, VisitID referring_visit,
+                       bool is_redirect) {
+    // Each visit should have a unique `visit_time` to avoid deduping visits to
+    // the same URL. The exact times don't matter, but we use increasing
+    // values to make the test cases easy to reason about.
+    last_visit_time += base::TimeDelta::FromMilliseconds(1);
+    ui::PageTransition transition =
+        is_redirect ? ui::PageTransition::PAGE_TRANSITION_IS_REDIRECT_MASK
+                    : ui::PageTransition::PAGE_TRANSITION_CHAIN_START;
+    auto ids =
+        backend_->AddPageVisit(GURL(url), last_visit_time, referring_visit,
+                               transition, false, SOURCE_BROWSED, false, false);
+    backend_->AddContextAnnotationsForVisit(ids.second, {});
+  };
+
+  // Navigate to 'google.com'.
+  add_visit("google.com", 0, false);
+  // It redirects to 'https://www.google.com'.
+  add_visit("https://www.google.com", 1, true);
+  // Perform a search.
+  add_visit("https://www.google.com/query=wiki", 2, false);
+  // Navigate to 'https://www.google.com' in a new tab.
+  add_visit("https://www.google.com", 0, false);
+  // Perform a search
+  add_visit("https://www.google.com/query=wiki2", 4, false);
+  // Follow a search result link.
+  add_visit("https://www.wiki2.org", 5, false);
+  // It redirects.
+  add_visit("https://www.wiki2.org/home", 6, true);
+  // Follow a search result in the first tab.
+  add_visit("https://www.wiki.org", 3, false);
+
+  // The redirect/referral chain now look like this:
+  // 1 ->> 2 -> 3 -> 8
+  // 4 -> 5 -> 6 ->> 7
+  // where '->' represents a referral, and '->>' represents a redirect.
+
+  struct Expectation {
+    VisitID referring_visit;
+    VisitID first_redirect;
+    VisitID referring_visit_of_redirect_chain_start;
+  };
+
+  std::vector<Expectation> expectations = {
+      {0, 1, 0}, {1, 1, 0}, {2, 3, 2}, {0, 4, 0},
+      {4, 5, 4}, {5, 6, 5}, {6, 6, 5}, {3, 8, 3},
+  };
+
+  auto annotated_visits = GetAnnotatedVisitRowsFromBackend();
+  ASSERT_EQ(annotated_visits.size(), expectations.size());
+  for (size_t i = 0; i < expectations.size(); ++i) {
+    VisitID visit_id = i + 1;
+    const auto& expectation = expectations[i];
+    VisitRow visit;
+    backend_->db_->GetRowForVisit(visit_id, &visit);
+    EXPECT_EQ(visit.referring_visit, expectation.referring_visit)
+        << "visit id: " << visit_id;
+
+    // Verify `GetRedirectChainStart()`.
+    auto first_redirect = backend_->GetRedirectChainStart(visit);
+    EXPECT_EQ(first_redirect.visit_id, expectation.first_redirect)
+        << "visit id: " << visit_id;
+
+    // Verify `GetAnnotatedVisits()`.
+    const auto& annotated_visit = annotated_visits[i];
+    EXPECT_EQ(annotated_visit.visit_row.visit_id, visit_id)
+        << "visit id: " << visit_id;
+    EXPECT_EQ(annotated_visit.referring_visit_of_redirect_chain_start,
+              expectation.referring_visit_of_redirect_chain_start)
+        << "visit id: " << visit_id;
+  }
 }
 
 }  // namespace history
