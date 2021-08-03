@@ -233,6 +233,11 @@ void OpenPathWithPermissionBroker(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// Small helper to avoid constructing a StringPiece from nullptr.
+base::StringPiece ToStringPiece(const char* str) {
+  return str ? base::StringPiece(str) : base::StringPiece();
+}
+
 }  // namespace
 
 GamepadDeviceLinux::GamepadDeviceLinux(
@@ -442,13 +447,13 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
           device, kInputSubsystem, nullptr);
 
   const base::StringPiece vendor_id =
-      udev_device_get_sysattr_value(parent_device, "id/vendor");
+      ToStringPiece(udev_device_get_sysattr_value(parent_device, "id/vendor"));
   const base::StringPiece product_id =
-      udev_device_get_sysattr_value(parent_device, "id/product");
+      ToStringPiece(udev_device_get_sysattr_value(parent_device, "id/product"));
   const base::StringPiece hid_version =
-      udev_device_get_sysattr_value(parent_device, "id/version");
+      ToStringPiece(udev_device_get_sysattr_value(parent_device, "id/version"));
   const base::StringPiece name =
-      udev_device_get_sysattr_value(parent_device, "name");
+      ToStringPiece(udev_device_get_sysattr_value(parent_device, "name"));
 
   uint16_t vendor_id_int = HexStringToUInt16WithDefault(vendor_id, 0);
   uint16_t product_id_int = HexStringToUInt16WithDefault(product_id, 0);
@@ -465,9 +470,9 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
   std::string name_string(name);
   if (usb_device) {
     const base::StringPiece usb_vendor_id =
-        udev_device_get_sysattr_value(usb_device, "idVendor");
+        ToStringPiece(udev_device_get_sysattr_value(usb_device, "idVendor"));
     const base::StringPiece usb_product_id =
-        udev_device_get_sysattr_value(usb_device, "idProduct");
+        ToStringPiece(udev_device_get_sysattr_value(usb_device, "idProduct"));
 
     if (vendor_id == usb_vendor_id && product_id == usb_product_id) {
       const char* manufacturer =
@@ -483,7 +488,7 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
     }
 
     const base::StringPiece version_number =
-        udev_device_get_sysattr_value(usb_device, "bcdDevice");
+        ToStringPiece(udev_device_get_sysattr_value(usb_device, "bcdDevice"));
     version_number_int = HexStringToUInt16WithDefault(version_number, 0);
   }
 
