@@ -15,7 +15,6 @@ hidden="true" so that these annotations don't show up in the document.
   <group name="Mobile" hidden="true">
     <!-- Android-specific features -->
     <sender name="Android">
-      <traffic_annotation unique_id="affiliation_lookup"/>
       <traffic_annotation unique_id="android_device_manager_socket"/>
       <traffic_annotation unique_id="android_web_socket"/>
       <traffic_annotation unique_id="query_tiles_fetcher"/>
