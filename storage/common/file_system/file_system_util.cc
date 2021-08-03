@@ -284,8 +284,6 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "TransientFile";
     case kFileSystemTypePluginPrivate:
       return "PluginPrivate";
-    case kFileSystemTypeCloudDevice:
-      return "CloudDevice";
     case kFileSystemTypeProvided:
       return "Provided";
     case kFileSystemTypeDeviceMediaAsFileStorage:

@@ -99,7 +99,6 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
 
     case kFileSystemTypeLocalForPlatformApp:
     case kFileSystemTypeLocal:
-    case kFileSystemTypeCloudDevice:
     case kFileSystemTypeProvided:
     case kFileSystemTypeDeviceMediaAsFileStorage:
     case kFileSystemTypeDriveFs:
