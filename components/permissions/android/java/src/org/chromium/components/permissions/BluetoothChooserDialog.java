@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
+import android.os.Build;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.View;
@@ -24,7 +25,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -277,9 +277,7 @@ public class BluetoothChooserDialog
         // Nearby Devices permission and has set the neverForLocation flag on the BLUETOOTH_SCAN
         // permission in its manifest.
         boolean needsLocationServices = false;
-        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-        // against the S SDK.
-        if (!BuildInfo.targetsAtLeastS() || !BuildInfo.isAtLeastS()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             needsLocationServices = !LocationUtils.getInstance().isSystemLocationSettingEnabled();
         }
 
@@ -312,9 +310,7 @@ public class BluetoothChooserDialog
                                 R.string.bluetooth_need_location_permission_and_services_on),
                         permissionSpan, servicesSpan);
             } else {
-                // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts
-                // compiling against the S SDK.
-                if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     needPermissionMessage = SpanApplier.applySpans(
                             mContext.getString(R.string.bluetooth_need_nearby_devices_permission),
                             permissionSpan);
@@ -365,14 +361,10 @@ public class BluetoothChooserDialog
                 break;
             case LinkType.REQUEST_PERMISSIONS:
                 mItemChooserDialog.setIgnorePendingWindowFocusChangeForClose(true);
-                // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts
-                // compiling against the S SDK.
-                if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
-                    // TODO(b/183501112): Replace these permission strings with the actual Manifest
-                    // constants once Chrome starts compiling against the S SDK.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     mWindowAndroid.requestPermissions(
-                            new String[] {"android.permission.BLUETOOTH_SCAN",
-                                    "android.permission.BLUETOOTH_CONNECT"},
+                            new String[] {Manifest.permission.BLUETOOTH_SCAN,
+                                    Manifest.permission.BLUETOOTH_CONNECT},
                             BluetoothChooserDialog.this);
                 } else {
                     mWindowAndroid.requestPermissions(
@@ -401,26 +393,18 @@ public class BluetoothChooserDialog
     }
 
     private static boolean hasSystemPermissions(WindowAndroid windowAndroid) {
-        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-        // against the S SDK.
-        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
-            // TODO(b/183501112): Replace these permission strings with the actual Manifest
-            // constants once Chrome starts compiling against the S SDK.
-            return windowAndroid.hasPermission("android.permission.BLUETOOTH_SCAN")
-                    && windowAndroid.hasPermission("android.permission.BLUETOOTH_CONNECT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)
+                    && windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT);
         }
 
         return windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     private static boolean canRequestSystemPermissions(WindowAndroid windowAndroid) {
-        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-        // against the S SDK.
-        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
-            // TODO(b/183501112): Replace these permission strings with the actual Manifest
-            // constants once Chrome starts compiling against the S SDK.
-            return windowAndroid.canRequestPermission("android.permission.BLUETOOTH_SCAN")
-                    && windowAndroid.canRequestPermission("android.permission.BLUETOOTH_CONNECT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_SCAN)
+                    && windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_CONNECT);
         }
 
         return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);

@@ -4,6 +4,7 @@
 
 package org.chromium.base.compat;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.PictureInPictureParams;
 import android.content.ClipData;
@@ -54,10 +55,8 @@ public final class ApiHelperForS {
     }
 
     public static boolean hasBluetoothConnectPermission() {
-        // TODO(b/183501112): Replace the permission string with the actual Manfifest constant once
-        // Chrome starts compiling against the S SDK.
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                       "android.permission.BLUETOOTH_CONNECT", Process.myPid(), Process.myUid())
+                       Manifest.permission.BLUETOOTH_CONNECT, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
     }
 
