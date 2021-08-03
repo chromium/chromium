@@ -275,8 +275,9 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
       completion_callback;
   // Access token fetching failure propagated immediately in this test, so
   // |completion_callback| should be called immediately as well.
-  EXPECT_CALL(completion_callback,
-              Run(TrustedVaultRequest::HttpStatus::kOtherError, _));
+  EXPECT_CALL(
+      completion_callback,
+      Run(TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure, _));
   std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
       /*access_token=*/absl::nullopt, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/absl::nullopt, completion_callback.Get());

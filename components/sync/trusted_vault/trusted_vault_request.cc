@@ -102,8 +102,9 @@ void TrustedVaultRequest::OnAccessTokenFetched(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     absl::optional<signin::AccessTokenInfo> access_token_info) {
   if (!access_token_info.has_value()) {
-    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
-                                             /*response_body=*/std::string());
+    RunCompletionCallbackAndMaybeDestroySelf(
+        HttpStatus::kAccessTokenFetchingFailure,
+        /*response_body=*/std::string());
     return;
   }
 

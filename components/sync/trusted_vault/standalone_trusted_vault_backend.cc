@@ -542,6 +542,9 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
       per_user_vault->set_keys_are_stale(true);
       return;
+    case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
+      // Request wasn't sent to the server, so there is no need for throttling.
+      return;
     case TrustedVaultRegistrationStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       return;
@@ -587,6 +590,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
         // WriteToDisk() will be called by OnDeviceRegistered().
       }
       break;
+    case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
     case TrustedVaultRegistrationStatus::kOtherError:
       break;
@@ -629,6 +633,9 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       WriteToDisk(data_, file_path_);
       break;
     }
+    case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
+      // Request wasn't sent to the server, so there is no need for throttling.
+      break;
     case TrustedVaultDownloadKeysStatus::kOtherError:
       RecordFailedConnectionRequestForThrottling();
       break;

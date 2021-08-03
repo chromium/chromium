@@ -647,6 +647,44 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotThrottleUponAccessTokenFetchingFailure) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  ON_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _))
+      .WillByDefault(
+          [&](const CoreAccountInfo&, const std::vector<std::vector<uint8_t>>&,
+              int, const SecureBoxPublicKey&, AuthenticationFactorType,
+              absl::optional<int>,
+              TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                  callback) {
+            device_registration_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info);
+  ASSERT_FALSE(device_registration_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Mimic access token fetching failure.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure);
+
+  // Mimic a restart to trigger device registration attempt, which should not be
+  // throttled.
+  ResetBackend();
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
+  backend()->ReadDataFromDisk();
+  backend()->SetPrimaryAccount(account_info);
+}
+
 // System time can be changed to the past and if this situation not handled,
 // requests could be throttled for unreasonable amount of time.
 TEST_F(StandaloneTrustedVaultBackendTest,
