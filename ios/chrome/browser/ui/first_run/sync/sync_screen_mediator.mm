@@ -8,6 +8,7 @@
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -20,7 +21,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SyncScreenMediator ()
+@interface SyncScreenMediator () <ChromeAccountManagerServiceObserver> {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+}
 
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
@@ -43,6 +47,8 @@
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
                  syncSetupService:(SyncSetupService*)syncSetupService
@@ -57,8 +63,15 @@
     _authenticationService = authenticationService;
     _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
+    _accountManagerServiceObserver.reset(
+        new ChromeAccountManagerServiceObserverBridge(self,
+                                                      accountManagerService));
   }
   return self;
+}
+
+- (void)disconnect {
+  _accountManagerServiceObserver = nullptr;
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
@@ -80,6 +93,16 @@
                               consentIDs:consentIDsCopy
                advancedSettingsRequested:advancedSyncSettingsLinkWasTapped];
   }];
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+  if (!identity) {
+    [self.delegate userRemoved];
+  }
 }
 
 #pragma mark - Private

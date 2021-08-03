@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -91,9 +92,14 @@ class SyncScreenMediatorTest : public PlatformTest {
     SyncSetupService* sync_setup_service =
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
 
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
+
     mediator_ = [[SyncScreenMediator alloc]
         initWithAuthenticationService:authentication_service
                       identityManager:identity_manager
+                accountManagerService:account_manager_service
                        consentAuditor:consent_auditor
                      syncSetupService:sync_setup_service
                 unifiedConsentService:UnifiedConsentServiceFactory::
@@ -106,7 +112,10 @@ class SyncScreenMediatorTest : public PlatformTest {
         static_cast<SyncSetupServiceMock*>(sync_setup_service);
   }
 
-  void TearDown() override { PlatformTest::TearDown(); }
+  void TearDown() override {
+    PlatformTest::TearDown();
+    [mediator_ disconnect];
+  }
 
   web::WebTaskEnvironment task_environment_;
   SyncScreenMediator* mediator_;

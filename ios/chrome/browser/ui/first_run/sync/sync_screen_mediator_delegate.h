@@ -16,6 +16,9 @@
 - (void)syncScreenMediator:(SyncScreenMediator*)mediator
     didFinishSigninWithResult:(SigninCoordinatorResult)result;
 
+// Notifies the delegate that the user has been removed.
+- (void)userRemoved;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SYNC_SYNC_SCREEN_MEDIATOR_DELEGATE_H_

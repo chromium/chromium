@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
@@ -113,6 +114,8 @@
       initWithAuthenticationService:authenticationService
                     identityManager:IdentityManagerFactory::GetForBrowserState(
                                         browserState)
+              accountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForBrowserState(browserState)
                      consentAuditor:ConsentAuditorFactory::GetForBrowserState(
                                         browserState)
                    syncSetupService:syncSetupService
@@ -138,6 +141,7 @@
 
   self.delegate = nil;
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
   [self.policySignoutPromptCoordinator stop];
   self.policySignoutPromptCoordinator = nil;
@@ -179,6 +183,10 @@
                                   first_run::kSyncScreenCompletionWithSync);
     [self.delegate willFinishPresenting];
   }
+}
+
+- (void)userRemoved {
+  [self.delegate willFinishPresenting];
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
