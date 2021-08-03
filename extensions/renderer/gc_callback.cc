@@ -8,7 +8,6 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -50,6 +49,18 @@ GCCallback::GCCallback(ScriptContext* context,
   object_.SetWeak(this, OnObjectGC, v8::WeakCallbackType::kParameter);
   context->AddInvalidationObserver(base::BindOnce(
       &GCCallback::OnContextInvalidated, weak_ptr_factory_.GetWeakPtr()));
+  blink::WebLocalFrame* frame = context_->web_frame();
+  if (frame) {
+    // We cache the task runner here instead of fetching it right before we use
+    // it to avoid a potential crash that can happen if the object is GC'd
+    // *during* the script context invalidation process (e.g. before the
+    // extension system has marked the context invalid but after the frame has
+    // already had it's schedueler disconnected). See crbug.com/1216541
+    task_runner_ = frame->GetTaskRunner(blink::TaskType::kInternalDefault);
+  } else {
+    // |frame| can be null on tests.
+    task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  }
 }
 
 GCCallback::~GCCallback() {}
@@ -64,32 +75,9 @@ void GCCallback::OnObjectGC(const v8::WeakCallbackInfo<GCCallback>& data) {
   GCCallback* self = data.GetParameter();
   self->object_.Reset();
 
-  // If it looks like the context is already invalidated, bail early to avoid a
-  // potential crash from trying to get a task runner that no longer exists.
-  // This can happen if the object is GC'd *during* the script context
-  // invalidation process (e.g., before OnContextInvalidated() is called for the
-  // script context).  Since binding::IsContextValid() is one of the first
-  // signals, we check that as well.  If the context is invalidated,
-  // OnContextInvalidated() will be called almost immediately, and finish
-  // calling `fallback_` and deleting the GCCallback.
-  // See crbug.com/1216541
-  {
-    v8::HandleScope handle_scope(self->context_->isolate());
-    if (!binding::IsContextValid(self->context_->v8_context()))
-      return;
-  }
-
-  blink::WebLocalFrame* frame = self->context_->web_frame();
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-  if (frame) {
-    task_runner = frame->GetTaskRunner(blink::TaskType::kInternalDefault);
-  } else {
-    // |frame| can be null on tests.
-    task_runner = base::ThreadTaskRunnerHandle::Get();
-  }
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&GCCallback::RunCallback,
-                                       self->weak_ptr_factory_.GetWeakPtr()));
+  self->task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GCCallback::RunCallback,
+                                self->weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GCCallback::RunCallback() {
