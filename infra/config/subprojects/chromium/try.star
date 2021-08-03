@@ -1881,8 +1881,8 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win10-rel-compilator",
     builderless = False,
-    cores = 16,
     os = os.WINDOWS_10,
+    cores = None,
     ssd = True,
     goma_jobs = goma.jobs.J300,
     executable = "recipe:chromium/compilator",
