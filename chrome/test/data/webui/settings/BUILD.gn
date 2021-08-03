@@ -99,6 +99,7 @@ js_type_check("closure_compile") {
     #":reset_page_test",
     #":reset_profile_banner_test",
     #":route_tests",
+    ":safety_check_chrome_cleaner_test",
     ":safety_check_page_test",
 
     #":search_engines_page_test",
@@ -164,10 +165,6 @@ js_type_check("closure_compile") {
 
     #":zoom_levels_tests",
   ]
-
-  if (is_win) {
-    deps += [ ":safety_check_chrome_cleaner_test" ]
-  }
 
   if (!is_chromeos_ash) {
     deps += [

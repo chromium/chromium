@@ -392,7 +392,6 @@ TEST_F('CrSettingsSafetyCheckPageTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 // eslint-disable-next-line no-var
 var CrSettingsSafetyCheckChromeCleanerTest =
     class extends CrSettingsBrowserTest {
@@ -411,6 +410,7 @@ var CrSettingsSafetyCheckChromeCleanerTest =
   }
 };
 
+GEN('#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 TEST_F('CrSettingsSafetyCheckChromeCleanerTest', 'All', function() {
   mocha.run();
 });

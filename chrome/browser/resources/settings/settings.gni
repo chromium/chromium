@@ -8,5 +8,4 @@ settings_closure_flags =
     default_closure_args + [
       "js_module_root=../../chrome/browser/resources/settings/",
       "js_module_root=./gen/chrome/browser/resources/settings/",
-      "js_module_root=./gen/chrome/browser/resources/settings/tsc/",
     ]
