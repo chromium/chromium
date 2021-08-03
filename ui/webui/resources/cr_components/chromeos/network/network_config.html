@@ -67,10 +67,6 @@
 
       <!-- VPN -->
       <template is="dom-if" if="[[showVpn_]]" restamp>
-        <network-config-input label="[[i18n('OncVPN-Host')]]"
-            value="{{configProperties_.typeConfig.vpn.host}}"
-            property="[[managedProperties_.typeProperties.vpn.host]]">
-        </network-config-input>
         <network-config-input label="[[i18n('OncName')]]"
             value="{{configProperties_.name}}"
             readonly="[[hasGuid_(guid)]]">
@@ -79,6 +75,10 @@
             value="{{vpnType_}}" items="[[vpnTypeItems_]]"
             onc-prefix="VPN.Type" disabled="[[hasGuid_(guid)]]">
         </network-config-select>
+        <network-config-input label="[[i18n('OncVPN-Host')]]"
+            value="{{configProperties_.typeConfig.vpn.host}}"
+            property="[[managedProperties_.typeProperties.vpn.host]]">
+        </network-config-input>
         <template is="dom-if" if="[[!showVpn_.OpenVPN]]">
           <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
               value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
