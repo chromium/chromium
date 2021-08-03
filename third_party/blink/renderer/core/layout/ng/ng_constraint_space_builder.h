@@ -542,10 +542,6 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
     delegate_.SetBlockAutoBehavior(auto_behavior);
   }
 
-  void SetIsInitialBlockSizeIndefinite(bool b) {
-    delegate_.SetIsInitialBlockSizeIndefinite(b);
-  }
-
   const NGConstraintSpace ToConstraintSpace() {
     return delegate_.ToConstraintSpace();
   }

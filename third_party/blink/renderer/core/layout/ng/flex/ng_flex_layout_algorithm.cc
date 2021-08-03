@@ -1379,9 +1379,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
     builder.SetReplacedPercentageResolutionBlockSize(
         child_percentage_size_.block_size);
-    if (is_column_)
-      builder.SetIsInitialBlockSizeIndefinite(true);
-    else if (WillChildCrossSizeBeContainerCrossSize(child))
+    if (!is_column_ && WillChildCrossSizeBeContainerCrossSize(child))
       builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
     const auto space = builder.ToConstraintSpace();
 
