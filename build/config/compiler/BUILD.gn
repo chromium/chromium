@@ -1626,15 +1626,13 @@ config("default_warnings") {
           # TODO(https://crbug.com/1016945) Clean up, enable.
           "-Wno-builtin-assume-aligned-alignment",
 
+          # TODO(https://crbug.com/1028110): Evaluate and possible enable.
+          "-Wno-deprecated-copy",
+
           # TODO(https://crbug.com/1203071): Clean up and enable.
           "-Wno-unused-but-set-parameter",
           "-Wno-unused-but-set-variable",
         ]
-
-        if (is_fuchsia) {
-          # TODO(https://bugs.chromium.org/p/fuchsia/issues/detail?id=77383)
-          cflags += [ "-Wno-deprecated-copy" ]
-        }
 
         if (enable_wmax_tokens) {
           cflags += [ "-Wmax-tokens" ]

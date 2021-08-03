@@ -6,10 +6,9 @@ config("eigen_includes") {
   include_dirs = [ "src" ]
 
   cflags = [
+    "-Wno-unused-result",
     "-Wno-extra-semi",
     "-Wno-unused-function",
-    "-Wno-unused-result",
-    "-Wno-deprecated-copy",
   ]
 
   defines = [
