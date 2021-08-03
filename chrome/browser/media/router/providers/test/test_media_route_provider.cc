@@ -81,8 +81,8 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
     std::move(callback).Run(absl::nullopt, nullptr, route_error_message_,
                             RouteRequestResult::ResultCode::UNKNOWN_ERROR);
   } else if (!delay_.is_zero()) {
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE, {base::TaskPriority::HIGHEST},
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
         base::BindOnce(&TestMediaRouteProvider::CreateRouteTimeOut,
                        GetWeakPtr(), std::move(callback)),
         delay_);

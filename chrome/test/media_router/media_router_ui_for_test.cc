@@ -257,7 +257,6 @@ MediaRoute::Id MediaRouterUiForTest::GetRouteIdForSink(
     const std::string& sink_name) const {
   CastDialogSinkButton* sink_button = GetSinkButton(sink_name);
   if (!sink_button->sink().route) {
-    NOTREACHED() << "Route not found for sink " << sink_name;
     return "";
   }
   return sink_button->sink().route->media_route_id();
