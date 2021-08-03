@@ -2516,6 +2516,13 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="DIRECT"/>
 </enum>
 
+<enum name="AndroidWebViewRenderProcessGoneResult">
+  <int value="0" label="Java Exception thrown inside onRenderProcessGone()"/>
+  <int value="1" label="Renderer crash not handled"/>
+  <int value="2" label="Renderer kill (OOM or update) not handled"/>
+  <int value="3" label="Crash was handled for all WebViews"/>
+</enum>
+
 <enum name="AndroidWebViewSafeModeResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>

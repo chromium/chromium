@@ -3678,6 +3678,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.OnRenderProcessGoneResult"
+    enum="AndroidWebViewRenderProcessGoneResult" expires_after="2022-08-03">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This captures two pieces of information about renderer crashes: did the app
+    developer handle the renderer crash to recover, and if not, what type of
+    crash was this? This is recorded once each time the renderer process dies
+    unexpectedly, and is logged after we have notified the app via the
+    onRenderProcessGone() callback.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.PageTimeSpent.{Scheme}" units="ms"
     expires_after="2022-07-01">
   <owner>mvanouwerkerk@chromium.org</owner>
