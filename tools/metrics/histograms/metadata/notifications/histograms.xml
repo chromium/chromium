@@ -243,7 +243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.DeleteAllForOriginsResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="M98">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -274,7 +274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.DeleteServiceWorkerRegistrationResult"
-    enum="NotificationDatabaseStatus" expires_after="M94">
+    enum="NotificationDatabaseStatus" expires_after="M98">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -628,7 +628,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationClickEventResult"
-    enum="ServiceWorkerStatusCode" expires_after="2021-08-22">
+    enum="ServiceWorkerStatusCode" expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -648,7 +648,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationCloseEventResult"
-    enum="ServiceWorkerStatusCode" expires_after="2021-08-22">
+    enum="ServiceWorkerStatusCode" expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -1202,6 +1202,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Notifications.XPCConnectionEvent" enum="XPCConnectionEvent"
     expires_after="M94">
+  <obsolete>
+    We no longer use an XPC service for macOS notifications from 06/2021.
+  </obsolete>
   <owner>peter@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
