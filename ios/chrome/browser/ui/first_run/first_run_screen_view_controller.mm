@@ -41,6 +41,7 @@ constexpr CGFloat kContentWidthMultiplier = 0.65;
 constexpr CGFloat kContentMaxWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
+constexpr CGFloat kSeparatorHeight = 1;
 
 }  // namespace
 
@@ -56,12 +57,14 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 
+@property(nonatomic, strong) UIView* separator;
+
 @property(nonatomic, assign) BOOL didReachBottom;
 
-// YES if the primary button content can be updated (e.g., change the text
-// label string) which corresponds to the moment where the layout reflects the
-// latest updates.
-@property(nonatomic, assign) BOOL canUpdatePrimaryButton;
+// YES if the views can be updated on scroll updates (e.g., change the text
+// label string of the primary button) which corresponds to the moment where the
+// layout reflects the latest updates.
+@property(nonatomic, assign) BOOL canUpdateViewsOnScroll;
 
 @end
 
@@ -78,6 +81,12 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   // specific content. A layout guide is needed because the margin scales with
   // the view height.
   UILayoutGuide* subtitleMarginLayoutGuide = [[UILayoutGuide alloc] init];
+
+  self.separator = [[UIView alloc] init];
+  self.separator.translatesAutoresizingMaskIntoConstraints = NO;
+  self.separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  self.separator.hidden = YES;
+  [self.view addSubview:self.separator];
 
   self.scrollContentView = [[UIView alloc] init];
   self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -146,6 +155,15 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
     [self.scrollView.bottomAnchor
         constraintEqualToAnchor:actionStackView.topAnchor
                        constant:actionStackViewTopMargin],
+
+    // Separator constraints.
+    [self.separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],
+    [self.separator.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.separator.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [self.separator.topAnchor
+        constraintEqualToAnchor:self.scrollView.bottomAnchor],
 
     // Scroll content view constraints. Constrain its height to at least the
     // scroll view height, so that derived VCs can pin UI elements just above
@@ -236,7 +254,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  self.canUpdatePrimaryButton = NO;
+  self.canUpdateViewsOnScroll = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -262,19 +280,19 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   // done.
   dispatch_async(dispatch_get_main_queue(), ^{
     self.scrollView.delegate = self;
-    self.canUpdatePrimaryButton = YES;
+    self.canUpdateViewsOnScroll = YES;
 
     // At this point, the scroll view has computed its content height. If
     // scrolling to the end is needed, and the entire content is already
     // fully visible (scrolled), set |didReachBottom| to YES. Otherwise, replace
     // the primary button's label with the read more label to indicate that more
     // scrolling is required.
-    if (!self.didReachBottom) {
-      if ([self isScrolledToBottom]) {
-        self.didReachBottom = YES;
-      } else {
-        [self setReadMoreText];
-      }
+    BOOL isScrolledToBottom = [self isScrolledToBottom];
+    self.separator.hidden = isScrolledToBottom;
+    if (isScrolledToBottom) {
+      self.didReachBottom = YES;
+    } else if (!self.didReachBottom) {
+      [self setReadMoreText];
     }
   });
 }
@@ -288,7 +306,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   // right measurements to evaluate the scroll position.
   void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self updatePrimaryButtonIfReachedBottom];
+        [self updateViewsOnScrollViewUpdate];
       };
   [coordinator animateAlongsideTransition:transition completion:nil];
 }
@@ -305,7 +323,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   // Update the primary button once the layout changes take effect to have the
   // right measurements to evaluate the scroll position.
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self updatePrimaryButtonIfReachedBottom];
+    [self updateViewsOnScrollViewUpdate];
   });
 }
 
@@ -488,7 +506,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
     return;
   }
 
-  if (!self.canUpdatePrimaryButton) {
+  if (!self.canUpdateViewsOnScroll) {
     return;
   }
 
@@ -601,16 +619,18 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 // If scrolling to the end of the content is mandatory, this method updates the
 // primary button's label based on whether the scroll view is currently scrolled
 // to the end. If the scroll view has scrolled to the end, also sets
-// |didReachBottom|. If scrolling to the end of the content isn't mandatory, or
-// if the scroll view had already been scrolled to the end previously, this
-// method has no effect.
-- (void)updatePrimaryButtonIfReachedBottom {
-  if (!self.canUpdatePrimaryButton) {
+// |didReachBottom|.
+// It also updates the separator visibility based on scroll position.
+- (void)updateViewsOnScrollViewUpdate {
+  if (!self.canUpdateViewsOnScroll) {
     return;
   }
 
-  if (self.scrollToEndMandatory && !self.didReachBottom &&
-      [self isScrolledToBottom]) {
+  BOOL isScrolledToBottom = [self isScrolledToBottom];
+
+  self.separator.hidden = isScrolledToBottom;
+
+  if (self.scrollToEndMandatory && !self.didReachBottom && isScrolledToBottom) {
     self.didReachBottom = YES;
     [self.primaryActionButton setAttributedTitle:nil
                                         forState:UIControlStateNormal];
@@ -664,7 +684,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self updatePrimaryButtonIfReachedBottom];
+  [self updateViewsOnScrollViewUpdate];
 }
 
 @end
