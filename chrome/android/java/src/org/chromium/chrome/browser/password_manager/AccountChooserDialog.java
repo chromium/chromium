@@ -25,10 +25,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -114,6 +112,11 @@ public class AccountChooserDialog
                     LayoutInflater inflater = LayoutInflater.from(getContext());
                     convertView =
                             inflater.inflate(R.layout.account_chooser_dialog_item, parent, false);
+                    convertView.setOnClickListener(view -> {
+                        mCredential = mCredentials[position];
+                        if (mDialog != null) mDialog.dismiss();
+                    });
+                    convertView.setSelected(false);
                 }
                 convertView.setTag(position);
 
