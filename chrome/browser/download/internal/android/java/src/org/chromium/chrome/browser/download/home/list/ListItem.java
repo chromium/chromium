@@ -144,16 +144,13 @@ public abstract class ListItem {
     /** A {@link ListItem} representing a section header. */
     public static class SectionHeaderListItem extends DateListItem {
         public @SectionHeaderType int type;
-        public boolean showTopDivider;
 
         /**
          * Creates a {@link SectionHeaderListItem} instance for a given {@code timestamp}.
          */
-        public SectionHeaderListItem(
-                long timestamp, @SectionHeaderType int type, boolean showTopDivider) {
+        public SectionHeaderListItem(long timestamp, @SectionHeaderType int type) {
             super(generateStableId(type, timestamp), new Date(timestamp));
             this.type = type;
-            this.showTopDivider = showTopDivider;
         }
 
         @VisibleForTesting

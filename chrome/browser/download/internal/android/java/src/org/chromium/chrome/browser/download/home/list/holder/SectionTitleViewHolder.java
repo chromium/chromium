@@ -21,7 +21,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A {@link ViewHolder} specifically meant to display a section header.
  */
 public class SectionTitleViewHolder extends ListItemViewHolder {
-    private final View mTopDivider;
     private final TextView mTitle;
 
     /** Create a new {@link SectionTitleViewHolder} instance. */
@@ -33,7 +32,6 @@ public class SectionTitleViewHolder extends ListItemViewHolder {
 
     private SectionTitleViewHolder(View view) {
         super(view);
-        mTopDivider = view.findViewById(R.id.divider);
         mTitle = (TextView) view.findViewById(R.id.date);
     }
 
@@ -42,7 +40,6 @@ public class SectionTitleViewHolder extends ListItemViewHolder {
     public void bind(PropertyModel properties, ListItem item) {
         SectionHeaderListItem sectionItem = (SectionHeaderListItem) item;
         mTitle.setText(getSectionTitle(sectionItem, itemView.getContext()));
-        mTopDivider.setVisibility(sectionItem.showTopDivider ? ViewGroup.VISIBLE : ViewGroup.GONE);
     }
 
     private static CharSequence getSectionTitle(

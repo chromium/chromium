@@ -115,7 +115,7 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 1), item1);
     }
 
@@ -134,7 +134,7 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(3, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 2), item1);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 1, 1), item2);
     }
@@ -153,7 +153,7 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(3, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 2), item1);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 1, 1), item2);
     }
@@ -232,7 +232,7 @@ public class DateOrderedListMutatorTest {
         assertJustNowSection(mModel.get(0));
         assertOfflineItem(mModel.get(1), calendar1, item1);
         assertOfflineItem(mModel.get(2), calendar2, item2);
-        assertSectionHeader(mModel.get(3), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(3), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(4), buildCalendar(2018, 1, 1, 10), item3);
     }
 
@@ -315,7 +315,7 @@ public class DateOrderedListMutatorTest {
         Assert.assertEquals(4, mModel.size());
         assertJustNowSection(mModel.get(0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 2, 1, 1), item1);
-        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 1), item2);
     }
 
@@ -344,7 +344,7 @@ public class DateOrderedListMutatorTest {
         assertOfflineItem(mModel.get(1), calendar, item1);
         assertJustNowSection(mModel.get(2));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 2, 1, 1), item2);
-        assertSectionHeader(mModel.get(4), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(4), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(5), buildCalendar(2018, 1, 1, 1), item3);
     }
 
@@ -365,9 +365,9 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(4, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 0), item1);
-        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 0), item2);
     }
 
@@ -386,7 +386,7 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(3, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 5), item2);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 1, 4), item1);
     }
@@ -407,9 +407,9 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(4, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 4), item1);
-        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 5), item2);
     }
 
@@ -429,9 +429,9 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(4, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 4), item1);
-        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 5), item2);
     }
 
@@ -451,9 +451,9 @@ public class DateOrderedListMutatorTest {
         DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
 
         Assert.assertEquals(4, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 3), item2);
-        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 4), item1);
     }
 
@@ -603,7 +603,7 @@ public class DateOrderedListMutatorTest {
         list.onItemsRemoved(Collections.singletonList(item1));
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 2), item2);
     }
 
@@ -629,7 +629,7 @@ public class DateOrderedListMutatorTest {
         list.onItemsRemoved(Collections.singletonList(item2));
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 3), item1);
     }
 
@@ -656,7 +656,7 @@ public class DateOrderedListMutatorTest {
         list.onItemsRemoved(Collections.singletonList(item2));
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 3, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 3, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 3, 3), item1);
     }
 
@@ -688,10 +688,10 @@ public class DateOrderedListMutatorTest {
         list.onItemsAdded(Arrays.asList(item1, item2, item3, item4));
 
         Assert.assertEquals(6, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 12), item4);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 2, 10), item3);
-        assertSectionHeader(mModel.get(3), buildCalendar(2018, 1, 1, 0), true);
+        assertSectionHeader(mModel.get(3), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(4), buildCalendar(2018, 1, 1, 6), item1);
         assertOfflineItem(mModel.get(5), buildCalendar(2018, 1, 1, 4), item2);
     }
@@ -768,7 +768,7 @@ public class DateOrderedListMutatorTest {
         list.onItemsAdded(Collections.singletonList(item1));
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 6), item1);
 
         // Complete the download.
@@ -782,7 +782,7 @@ public class DateOrderedListMutatorTest {
         list.onItemsAdded(Collections.singletonList(item2));
 
         Assert.assertEquals(3, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 6), update1);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 1, 4), item2);
     }
@@ -817,7 +817,7 @@ public class DateOrderedListMutatorTest {
         list.onItemsRemoved(Arrays.asList(item2, item3, item4));
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 6), item1);
     }
 
@@ -847,7 +847,7 @@ public class DateOrderedListMutatorTest {
         list.onItemUpdated(item1, newItem1);
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 4), newItem1);
     }
 
@@ -879,7 +879,7 @@ public class DateOrderedListMutatorTest {
         list.onItemUpdated(item1, newItem1);
 
         Assert.assertEquals(3, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 4), item2);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 1, 3), newItem1);
     }
@@ -912,7 +912,7 @@ public class DateOrderedListMutatorTest {
         list.onItemUpdated(item1, newItem1);
 
         Assert.assertEquals(3, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 1, 4), item2);
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 1, 3), newItem1);
     }
@@ -941,7 +941,7 @@ public class DateOrderedListMutatorTest {
         list.onItemUpdated(item1, newItem1);
 
         Assert.assertEquals(2, mModel.size());
-        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0), false);
+        assertSectionHeader(mModel.get(0), buildCalendar(2018, 1, 2, 0));
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 1, 2, 6), newItem1);
     }
 
@@ -1265,7 +1265,7 @@ public class DateOrderedListMutatorTest {
         Assert.assertEquals(offlineItem, ((OfflineItemListItem) item).item);
     }
 
-    private static void assertSectionHeader(ListItem item, Calendar calendar, boolean showDivider) {
+    private static void assertSectionHeader(ListItem item, Calendar calendar) {
         Assert.assertTrue(item instanceof SectionHeaderListItem);
         SectionHeaderListItem sectionHeader = (SectionHeaderListItem) item;
         assertDatesAreEqual(sectionHeader.date, calendar);
@@ -1278,7 +1278,6 @@ public class DateOrderedListMutatorTest {
         Assert.assertEquals(SectionHeaderListItem.generateStableId(
                                     SectionHeaderType.SCHEDULED_LATER, calendar.getTimeInMillis()),
                 StableIds.SCHEDULE_LATER_SECTION);
-        Assert.assertEquals(sectionHeader.showTopDivider, showDivider);
     }
 
     private static void assertJustNowSection(ListItem item) {
@@ -1291,8 +1290,6 @@ public class DateOrderedListMutatorTest {
     private static void assertScheduledLaterHeader(ListItem item) {
         Assert.assertTrue(item instanceof SectionHeaderListItem);
         SectionHeaderListItem sectionHeader = (SectionHeaderListItem) item;
-        Assert.assertEquals("Schedule for later section is at the top of the list", false,
-                sectionHeader.showTopDivider);
         Assert.assertEquals(SectionHeaderType.SCHEDULED_LATER, sectionHeader.type);
         Assert.assertEquals(StableIds.SCHEDULE_LATER_SECTION, item.stableId);
     }

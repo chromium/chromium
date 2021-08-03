@@ -8,15 +8,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <View
-        android:id="@+id/divider"
-        style="@style/HorizontalDivider" />
-
     <Space
         android:id="@+id/top_space"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/download_manager_section_title_padding_top"
-        android:layout_below="@+id/divider" />
+        android:layout_height="@dimen/download_manager_section_title_padding_top" />
 
     <TextView
         android:id="@+id/date"

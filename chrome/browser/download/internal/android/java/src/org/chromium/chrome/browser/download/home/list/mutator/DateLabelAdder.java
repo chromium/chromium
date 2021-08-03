@@ -73,28 +73,25 @@ public class DateLabelAdder implements ListConsumer {
         @SectionHeaderType
         int previousHeaderType = getSectionHeaderType(previousItem);
 
-        // Add a divider between sections after the first section header.
-        boolean showTopDivider = previousItem != null;
-
         // Add a section header when starting a new section.
         if (currentHeaderType != previousHeaderType) {
-            addSectionHeader(listWithHeaders, currentItem, showTopDivider);
+            addSectionHeader(listWithHeaders, currentItem);
             return;
         }
 
         // For date time section, each day has a header.
         if (currentHeaderType == SectionHeaderType.DATE
                 && startOfNewDay(currentItem, previousItem)) {
-            addSectionHeader(listWithHeaders, currentItem, showTopDivider);
+            addSectionHeader(listWithHeaders, currentItem);
             return;
         }
     }
 
-    private void addSectionHeader(List<ListItem> listWithHeaders, @NonNull OfflineItem currentItem,
-            boolean showTopDivider) {
+    private void addSectionHeader(
+            List<ListItem> listWithHeaders, @NonNull OfflineItem currentItem) {
         Date day = CalendarUtils.getStartOfDay(currentItem.creationTimeMs).getTime();
         ListItem.SectionHeaderListItem sectionHeaderItem = new ListItem.SectionHeaderListItem(
-                day.getTime(), getSectionHeaderType(currentItem), showTopDivider);
+                day.getTime(), getSectionHeaderType(currentItem));
         listWithHeaders.add(sectionHeaderItem);
     }
 
