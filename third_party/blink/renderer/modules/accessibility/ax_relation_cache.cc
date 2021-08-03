@@ -388,7 +388,8 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // Compare this to the current list of owned children, and exit early if
   // there are no changes.
   Vector<AXID> previously_owned_child_ids =
-      aria_owner_to_children_mapping_.at(owner->AXObjectID());
+      aria_owner_to_children_mapping_.DeprecatedAtOrEmptyValue(
+          owner->AXObjectID());
 
   // Only force the refresh if there was or will be owned children; otherwise,
   // there is nothing to refresh even for a new AXObject replacing an old owner.

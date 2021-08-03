@@ -641,7 +641,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   if (!layout_object)
     return nullptr;
 
-  AXID ax_id = layout_object_mapping_.at(layout_object);
+  AXID ax_id = layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
 
   Node* node = layout_object->GetNode();
@@ -683,14 +683,17 @@ AXObject* AXObjectCacheImpl::GetWithoutInvalidation(const Node* node) {
 
   LayoutObject* layout_object = node->GetLayoutObject();
 
-  AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
+  AXID layout_id =
+      layout_object
+          ? layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object)
+          : 0;
   DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
   if (layout_id)
-    return objects_.at(layout_id);
+    return objects_.DeprecatedAtOrEmptyValue(layout_id);
 
-  AXID node_id = node_object_mapping_.at(node);
+  AXID node_id = node_object_mapping_.DeprecatedAtOrEmptyValue(node);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
-  return node_id ? objects_.at(node_id) : nullptr;
+  return node_id ? objects_.DeprecatedAtOrEmptyValue(node_id) : nullptr;
 }
 
 AXObject* AXObjectCacheImpl::Get(const Node* node) {
@@ -699,10 +702,13 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
 
   LayoutObject* layout_object = node->GetLayoutObject();
 
-  AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
+  AXID layout_id =
+      layout_object
+          ? layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object)
+          : 0;
   DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
 
-  AXID node_id = node_object_mapping_.at(node);
+  AXID node_id = node_object_mapping_.DeprecatedAtOrEmptyValue(node);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
 
   if (!layout_id && !node_id)
@@ -749,7 +755,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
   }
 
   if (layout_id) {
-    AXObject* result = objects_.at(layout_id);
+    AXObject* result = objects_.DeprecatedAtOrEmptyValue(layout_id);
 #if DCHECK_IS_ON()
     DCHECK(result) << "Had AXID for LayoutObject but no entry in objects_";
     DCHECK(result->IsAXLayoutObject());
@@ -763,7 +769,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
 
   DCHECK(node_id);
 
-  AXObject* result = objects_.at(node_id);
+  AXObject* result = objects_.DeprecatedAtOrEmptyValue(node_id);
 #if DCHECK_IS_ON()
   DCHECK(result) << "Had AXID for Node but no entry in objects_";
   DCHECK(result->IsAXNodeObject());
@@ -779,12 +785,13 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
   if (!inline_text_box)
     return nullptr;
 
-  AXID ax_id = inline_text_box_object_mapping_.at(inline_text_box);
+  AXID ax_id =
+      inline_text_box_object_mapping_.DeprecatedAtOrEmptyValue(inline_text_box);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
   if (!ax_id)
     return nullptr;
 
-  AXObject* result = objects_.at(ax_id);
+  AXObject* result = objects_.DeprecatedAtOrEmptyValue(ax_id);
 #if DCHECK_IS_ON()
   DCHECK(result) << "Had AXID for inline text box but no entry in objects_";
   DCHECK(result->IsAXInlineTextBox());
@@ -819,12 +826,13 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
   if (!accessible_node)
     return nullptr;
 
-  AXID ax_id = accessible_node_mapping_.at(accessible_node);
+  AXID ax_id =
+      accessible_node_mapping_.DeprecatedAtOrEmptyValue(accessible_node);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
   if (!ax_id)
     return nullptr;
 
-  AXObject* result = objects_.at(ax_id);
+  AXObject* result = objects_.DeprecatedAtOrEmptyValue(ax_id);
 #if DCHECK_IS_ON()
   DCHECK(result) << "Had AXID for accessible_node but no entry in objects_";
   DCHECK(result->IsVirtualObject());
@@ -1102,13 +1110,13 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 
   // One of the above calls could have already created the planned object via a
   // recursive call to GetOrCreate(). If so, just return that object.
-  if (node_object_mapping_.at(node))
+  if (node_object_mapping_.DeprecatedAtOrEmptyValue(node))
     return Get(node);
 
   AXObject* new_obj = CreateFromNode(node);
 
   // Will crash later if we have two objects for the same node.
-  DCHECK(!node_object_mapping_.at(node))
+  DCHECK(!node_object_mapping_.DeprecatedAtOrEmptyValue(node))
       << "Already have an AXObject for " << node;
 
   const AXID ax_id = AssociateAXID(new_obj, use_axid);
@@ -1215,7 +1223,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   // Example: parent calls Init() => ComputeAccessibilityIsIgnored() =>
   // CanSetFocusAttribute() => CanBeActiveDescendant() =>
   // IsARIAControlledByTextboxWithActiveDescendant() => GetOrCreate().
-  if (layout_object_mapping_.at(layout_object)) {
+  if (layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object)) {
     AXObject* result = Get(layout_object);
     DCHECK(result) << "Missing cached AXObject for " << layout_object;
     return result;
@@ -1226,7 +1234,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   DCHECK(new_obj) << "Could not create AXObject for " << layout_object;
 
   // Will crash later if we have two objects for the same layoutObject.
-  DCHECK(!layout_object_mapping_.at(layout_object))
+  DCHECK(!layout_object_mapping_.DeprecatedAtOrEmptyValue(layout_object))
       << "Already have an AXObject for " << layout_object;
 
   const AXID axid = AssociateAXID(new_obj, use_axid);

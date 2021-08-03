@@ -1567,7 +1567,8 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
   HashSet<QualifiedName> set_attributes;
   for (const Attribute& attr : attributes) {
     set_attributes.insert(attr.GetName());
-    AXSparseSetterFunc callback = setter_map.at(attr.GetName());
+    AXSparseSetterFunc callback =
+        setter_map.DeprecatedAtOrEmptyValue(attr.GetName());
 
     if (callback)
       callback.Run(this, node_data, attr.Value());
@@ -1581,7 +1582,7 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
     if (set_attributes.Contains(attr))
       continue;
 
-    AXSparseSetterFunc callback = setter_map.at(attr);
+    AXSparseSetterFunc callback = setter_map.DeprecatedAtOrEmptyValue(attr);
 
     if (callback)
       callback.Run(this, node_data, internals_attributes.at(attr));
@@ -5252,7 +5253,7 @@ ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
   value.Split(' ', role_vector);
   ax::mojom::blink::Role role = ax::mojom::blink::Role::kUnknown;
   for (const auto& child : role_vector) {
-    role = role_map->at(child);
+    role = role_map->DeprecatedAtOrEmptyValue(child);
     if (role != ax::mojom::blink::Role::kUnknown)
       return role;
   }

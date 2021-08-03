@@ -190,7 +190,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void OnTouchAccessibilityHover(const IntPoint&) override;
 
-  AXObject* ObjectFromAXID(AXID id) const { return objects_.at(id); }
+  AXObject* ObjectFromAXID(AXID id) const {
+    return objects_.DeprecatedAtOrEmptyValue(id);
+  }
   AXObject* Root();
 
   // Used for objects without backing DOM nodes, layout objects, etc.
