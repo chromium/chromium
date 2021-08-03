@@ -17,18 +17,6 @@
 // This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
-// auction_worklet::mojom::AuctionWorkletService
-namespace auction_worklet {
-namespace mojom {
-class AuctionWorkletService;
-}
-}  // namespace auction_worklet
-template <>
-inline sandbox::policy::SandboxType content::GetServiceSandboxType<
-    auction_worklet::mojom::AuctionWorkletService>() {
-  return sandbox::policy::SandboxType::kService;
-}
-
 // audio::mojom::AudioService
 namespace audio {
 namespace mojom {

@@ -7,6 +7,7 @@ module auction_worklet.mojom;
 import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
 import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
@@ -20,6 +21,7 @@ struct BrowserSignals {
 // Used by the browser to load and run FLEDGE worklets in a sandboxed utility
 // process.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface AuctionWorkletService {
   // Loads a FLEDGE bidder worklet, its same-origin realtime bidding signals
   // URL (if necessary), and invokes its generateBid() method, returning
