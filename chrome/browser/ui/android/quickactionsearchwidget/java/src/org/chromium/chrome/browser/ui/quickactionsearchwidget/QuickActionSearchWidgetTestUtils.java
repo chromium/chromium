@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
@@ -32,6 +33,7 @@ class QuickActionSearchWidgetTestUtils {
      * Asserts that {@link SearchActivity} is launched in the correct mode after a given {@link
      * Runnable} is ran.
      *
+     * @param testRule BaseActivityTestRule used to start an action and monitor for changes.
      * @param action The runnable such that after it is ran, {@link SearchActivity} is expected to
      *         be launched.
      * @param shouldActivityLaunchVoiceMode Whether the search activity is expected to launched in
@@ -50,6 +52,7 @@ class QuickActionSearchWidgetTestUtils {
      * Asserts that {@link ChromeTabbedActivity} is launched with the URL chrome://dino after a
      * given {@link Runnable} is ran.
      *
+     * @param testRule BaseActivityTestRule used to start an action and monitor for changes.
      * @param action the runnable such that after running {@link ChromeTabbedActivity} is expected
      *         to be launched.
      */
@@ -85,5 +88,29 @@ class QuickActionSearchWidgetTestUtils {
         boolean isVoiceMode = IntentUtils.safeGetBooleanExtra(
                 intent, SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, false);
         Assert.assertEquals(shouldActivityLaunchVoiceMode, isVoiceMode);
+    }
+
+    /**
+     * Asserts that {@link ChromeTabbedActivity} is launched in an incognito mode after a
+     * given {@link Runnable} is ran.
+     *
+     * @param testRule BaseActivityTestRule used to start an action and monitor for changes.
+     * @param action the runnable such that after running {@link ChromeTabbedActivity} is expected
+     *         to be launched.
+     */
+    public static void assertIncognitoModeLaunchedAfterAction(
+            BaseActivityTestRule<Activity> testRule, Runnable action) {
+        ChromeTabbedActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.CREATED, action);
+        testRule.setActivity(activity);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        CriteriaHelper.pollUiThread(() -> {
+            Tab activityTab = activity.getActivityTab();
+            Assert.assertTrue(activity.getTabModelSelector().isIncognitoSelected());
+            Criteria.checkThat(activityTab, Matchers.notNullValue());
+            Criteria.checkThat(
+                    activityTab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.NTP_URL));
+        });
     }
 }

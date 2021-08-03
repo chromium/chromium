@@ -1381,6 +1381,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             final String url = loadUrlParams.getUrl();
             boolean fromLauncherShortcut = IntentUtils.safeGetBooleanExtra(
                     intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);
+            boolean fromAppWidget = IntentUtils.safeGetBooleanExtra(
+                    intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false);
             boolean focus = false;
 
             TabModel tabModel = getCurrentTabModel();
@@ -1488,6 +1490,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                     UrlConstants.NTP_URL, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
                             recordLauncherShortcutAction(true);
                             reportNewTabShortcutUsed(true);
+                        } else if (fromAppWidget) {
+                            getTabCreator(true).launchUrl(
+                                    UrlConstants.NTP_URL, TabLaunchType.FROM_APP_WIDGET);
                         } else if (IncognitoTabLauncher.didCreateIntent(intent)) {
                             Tab tab = getTabCreator(true).launchUrl(UrlConstants.NTP_URL,
                                     TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB);
@@ -2240,6 +2245,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (IntentUtils.safeGetBooleanExtra(
                             intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false)) {
                     launchType = TabLaunchType.FROM_LAUNCHER_SHORTCUT;
+                } else if (IntentUtils.safeGetBooleanExtra(
+                                   intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false)) {
+                    launchType = TabLaunchType.FROM_APP_WIDGET;
                 } else if (IncognitoTabLauncher.didCreateIntent(intent)) {
                     launchType = TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB;
                 } else {

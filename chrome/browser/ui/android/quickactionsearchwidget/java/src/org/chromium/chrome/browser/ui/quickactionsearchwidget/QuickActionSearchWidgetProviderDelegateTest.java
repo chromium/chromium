@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -25,6 +26,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver;
@@ -52,8 +54,8 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     private static final class TestDelegate extends QuickActionSearchWidgetProviderDelegate {
         public TestDelegate(@QuickActionSearchWidgetType int widgetType,
-                ComponentName widgetReceiverComponent) {
-            super(widgetType, widgetReceiverComponent);
+                ComponentName widgetReceiverComponent, Intent startIncognitoTab) {
+            super(widgetType, widgetReceiverComponent, startIncognitoTab);
         }
 
         public final List<RemoteViews> mRemoteViews = new ArrayList<>();
@@ -87,7 +89,9 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         ComponentName widgetReceiverComponent =
                 new ComponentName(mContext, QuickActionSearchWidgetReceiver.class);
-        mDelegate = new TestDelegate(QuickActionSearchWidgetType.SMALL, widgetReceiverComponent);
+
+        mDelegate = new TestDelegate(QuickActionSearchWidgetType.SMALL, widgetReceiverComponent,
+                IntentHandler.createTrustedOpenNewTabIntent(mContext, /*incognito=*/true));
 
         setUpViews();
     }
@@ -108,6 +112,19 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                             view, R.id.quick_action_search_widget_search_bar_container),
                     /*shouldActivityLaunchVoiceMode=*/false);
             // clang-format on
+            ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testIncognitoTabClick() throws Exception {
+        for (View view : mWidgetViews) {
+            QuickActionSearchWidgetTestUtils.assertIncognitoModeLaunchedAfterAction(
+                    mActivityTestRule, () -> {
+                        QuickActionSearchWidgetTestUtils.clickOnView(
+                                view, R.id.incognito_quick_action_button);
+                    });
             ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
         }
     }

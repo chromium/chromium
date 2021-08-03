@@ -94,6 +94,8 @@ class TabModel {
     // Open from the long press context menu item 'Open in new tab in group'.
     // Will not be brought to the foreground.
     FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+    // Opened from an app widget.
+    FROM_APP_WIDGET,
     // Must be last.
     SIZE
   };

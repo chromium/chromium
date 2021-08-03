@@ -193,7 +193,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING
                     || type == TabLaunchType.FROM_EXTERNAL_APP
                     || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
-                    || type == TabLaunchType.FROM_STARTUP) {
+                    || type == TabLaunchType.FROM_STARTUP
+                    || type == TabLaunchType.FROM_APP_WIDGET) {
                 return;
             }
 

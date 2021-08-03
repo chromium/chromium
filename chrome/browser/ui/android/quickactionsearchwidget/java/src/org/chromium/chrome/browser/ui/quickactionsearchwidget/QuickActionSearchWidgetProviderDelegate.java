@@ -21,6 +21,7 @@ import org.chromium.base.IntentUtils;
 public class QuickActionSearchWidgetProviderDelegate {
     private final @QuickActionSearchWidgetType int mWidgetType;
     private final ComponentName mWidgetReceiverComponent;
+    private final Intent mStartIncognitoTabIntent;
 
     /**
      * Constructor for the {@link QuickActionSearchWidgetProviderDelegate}
@@ -30,11 +31,15 @@ public class QuickActionSearchWidgetProviderDelegate {
      *         android.content.BroadcastReceiver} that will receive the intents that are broadcast
      *         when the user interacts with the widget. Generally this component is {@link
      *         QuickActionSearchWidgetReceiver}.
+     * @param startIncognitoIntent A trusted intent starting a new Incognito tab.
      */
-    public QuickActionSearchWidgetProviderDelegate(
-            @QuickActionSearchWidgetType int widgetType, ComponentName widgetReceiverComponent) {
+    public QuickActionSearchWidgetProviderDelegate(@QuickActionSearchWidgetType int widgetType,
+            ComponentName widgetReceiverComponent, Intent startIncognitoTabIntent) {
         mWidgetType = widgetType;
         mWidgetReceiverComponent = widgetReceiverComponent;
+        mStartIncognitoTabIntent = startIncognitoTabIntent;
+        mStartIncognitoTabIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
     }
 
     /**
@@ -95,35 +100,55 @@ public class QuickActionSearchWidgetProviderDelegate {
 
         // Search Bar Intent
         PendingIntent textSearchPendingIntent = createPendingIntentForAction(
-                QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY, context);
+                context, QuickActionSearchWidgetReceiverDelegate.ACTION_START_TEXT_QUERY);
         remoteViews.setOnClickPendingIntent(
                 R.id.quick_action_search_widget_search_bar_container, textSearchPendingIntent);
 
         // Voice Search Intent
         PendingIntent voiceSearchPendingIntent = createPendingIntentForAction(
-                QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY, context);
+                context, QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY);
         remoteViews.setOnClickPendingIntent(
                 R.id.voice_search_quick_action_button, voiceSearchPendingIntent);
 
+        // Incognito Tab Intent
+        PendingIntent incognitoTabPendingIntent =
+                createPendingIntent(context, mStartIncognitoTabIntent);
+        remoteViews.setOnClickPendingIntent(
+                R.id.incognito_quick_action_button, incognitoTabPendingIntent);
+
         // Dino Game intent
         PendingIntent dinoGamePendingIntent = createPendingIntentForAction(
-                QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME, context);
+                context, QuickActionSearchWidgetReceiverDelegate.ACTION_START_DINO_GAME);
         remoteViews.setOnClickPendingIntent(R.id.dino_quick_action_button, dinoGamePendingIntent);
 
         return remoteViews;
     }
 
     /**
-     * Creates a {@link PendingIntent} that will broadcast a trusted intent for a specified action.
+     * Creates a {@link PendingIntent} that will send a trusted intent with a specified action.
      *
      * @param context The Context from which the PendingIntent will perform the broadcast.
      * @param action A String specifying the action for the intent.
      * @return A {@link PendingIntent} that will broadcast a trusted intent for the specified
      *         action.
      */
-    private PendingIntent createPendingIntentForAction(final String action, final Context context) {
+    private PendingIntent createPendingIntentForAction(final Context context, final String action) {
         Intent intent = createTrustedIntentForAction(action);
         return PendingIntent.getBroadcast(context, /*requestCode=*/0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
+    }
+
+    /**
+     * Creates a {@link PendingIntent} that will send a trusted intent with a specified action.
+     *
+     * @param context The Context from which the PendingIntent will perform the broadcast.
+     * @param intent An intent to execute.
+     * @return A {@link PendingIntent} that will broadcast a trusted intent for the specified
+     *         action.
+     */
+    private PendingIntent createPendingIntent(final Context context, final Intent intent) {
+        return PendingIntent.getActivity(context, /*requestCode=*/0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
