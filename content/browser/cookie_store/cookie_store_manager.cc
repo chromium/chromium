@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -46,7 +47,7 @@ CookieStoreManager::~CookieStoreManager() {
   service_worker_context_->RemoveObserver(this);
 }
 
-void CookieStoreManager::CreateService(
+void CookieStoreManager::BindReceiver(
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -129,6 +130,7 @@ void CookieStoreManager::ProcessOnDiskSubscriptions(
 void CookieStoreManager::DidLoadAllSubscriptions(
     bool succeeded,
     base::OnceCallback<void(bool)> load_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(done_loading_subscriptions_);
   succeeded_loading_subscriptions_ = succeeded;
 
@@ -400,6 +402,8 @@ void CookieStoreManager::StoreSubscriptions(
     const GURL& service_worker_origin,
     const std::vector<std::unique_ptr<CookieChangeSubscription>>& subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (subscriptions.empty()) {
     service_worker_context_->ClearRegistrationUserData(
         service_worker_registration_id, {registration_user_data_key_},
@@ -461,6 +465,8 @@ void CookieStoreManager::OnRegistrationDeleted(
 
 void CookieStoreManager::ActivateSubscriptions(
     base::span<const std::unique_ptr<CookieChangeSubscription>> subscriptions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (subscriptions.empty())
     return;
 
@@ -491,6 +497,8 @@ void CookieStoreManager::ActivateSubscriptions(
 
 void CookieStoreManager::DeactivateSubscriptions(
     base::span<const std::unique_ptr<CookieChangeSubscription>> subscriptions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (subscriptions.empty())
     return;
 
@@ -538,6 +546,8 @@ void CookieStoreManager::OnStorageWiped() {
 }
 
 void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Waiting for on-disk subscriptions to be loaded ensures that changes are
   // delivered to all service workers that subscribed to them in previous
   // browser sessions. Without waiting, workers might miss cookie changes.
@@ -605,6 +615,8 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
 void CookieStoreManager::DispatchChangeEvent(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const net::CookieChangeInfo& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   scoped_refptr<ServiceWorkerVersion> active_version =
       registration->active_version();
   if (active_version->running_status() != EmbeddedWorkerStatus::RUNNING) {

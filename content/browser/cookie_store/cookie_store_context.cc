@@ -141,7 +141,7 @@ void CookieStoreContext::CreateServiceOnCoreThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(core_sequence_checker_);
   DCHECK(cookie_store_manager_);
 
-  cookie_store_manager_->CreateService(std::move(receiver), origin);
+  cookie_store_manager_->BindReceiver(std::move(receiver), origin);
 }
 
 }  // namespace content

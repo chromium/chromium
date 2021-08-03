@@ -12,10 +12,10 @@
 #include "base/callback.h"
 #include "base/containers/linked_list.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "content/browser/cookie_store/cookie_change_subscription.h"
 #include "content/browser/cookie_store/cookie_store_host.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
@@ -54,8 +54,11 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
   //
   // The in-memory subscription database must be populated with data from disk,
   // by calling ReadAllSubscriptions().
-  CookieStoreManager(
+  explicit CookieStoreManager(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  CookieStoreManager(const CookieStoreManager&) = delete;
+  CookieStoreManager& operator=(const CookieStoreManager&) = delete;
 
   ~CookieStoreManager() override;
 
@@ -63,8 +66,8 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
   //
   // This is called when service workers use the Cookie Store API to subscribe
   // to cookie changes or obtain the list of cookie changes.
-  void CreateService(mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
-                     const url::Origin& origin);
+  void BindReceiver(mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
+                    const url::Origin& origin);
 
   // Starts loading the on-disk subscription data.
   //
@@ -165,6 +168,13 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
       const net::CookieChangeInfo& change,
       blink::ServiceWorkerStatusCode start_worker_status);
 
+  // Instances of this class are currently bound to the service worker core
+  // thread, because they call ServiceWorkerContextWrapper methods that are
+  // restricted to that thread. However, the class implementation itself is
+  // thread-friendly, so it only checks that methods are called on the same
+  // sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Used to efficiently implement OnRegistrationDeleted().
   //
   // When a service worker registration is removed from the system, the
@@ -175,7 +185,7 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
   // O(1) time.
   std::unordered_map<int64_t,
                      std::vector<std::unique_ptr<CookieChangeSubscription>>>
-      subscriptions_by_registration_;
+      subscriptions_by_registration_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to efficiently implement DispatchCookieChange().
   //
@@ -192,22 +202,26 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
   // linked lists. However, the current approach is more amenable to future
   // optimizations, such as partitioning by (eTLD+1, cookie name).
   std::map<std::string, base::LinkedList<CookieChangeSubscription>>
-      subscriptions_by_url_key_;
+      subscriptions_by_url_key_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to look up and modify service worker registration data.
-  scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
+  const scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Tracks the open mojo pipes created by CreateService().
   //
   // Each pipe is associated with the CookieStoreHost instance that it is
   // connected to. When the pipe is closed, the UniqueReceiverSet automatically
   // deletes the CookieStoreHost.
-  mojo::UniqueReceiverSet<blink::mojom::CookieStore> receivers_;
+  mojo::UniqueReceiverSet<blink::mojom::CookieStore> receivers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to receive cookie changes from the network service.
-  mojo::Remote<::network::mojom::CookieManager> cookie_manager_;
+  mojo::Remote<::network::mojom::CookieManager> cookie_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Receiver<::network::mojom::CookieChangeListener>
-      cookie_change_listener_receiver_{this};
+      cookie_change_listener_receiver_ GUARDED_BY_CONTEXT(sequence_checker_){
+          this};
 
   // The service worker registration user data key for subscription data.
   //
@@ -222,25 +236,20 @@ class CookieStoreManager : public ServiceWorkerContextCoreObserver,
   // and |succeeded_loading_subscriptions_| is set. If the latter is true,
   // |subscriptions_by_registration_| and |subscriptions_by_url_key_| will also
   // be populated.
-  std::vector<base::OnceClosure> subscriptions_loaded_callbacks_;
+  std::vector<base::OnceClosure> subscriptions_loaded_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set to true once all subscriptions have been loaded.
-  bool done_loading_subscriptions_ = false;
+  bool done_loading_subscriptions_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   // Only defined when |done_loading_subscriptions_| is true.
-  bool succeeded_loading_subscriptions_ = false;
-
-  // Instances of this class are currently bound to the service worker core
-  // thread, because they call ServiceWorkerContextWrapper methods that are
-  // restricted to that thread. However, the class implementation itself is
-  // thread-friendly, so it only checks that methods are called on the same
-  // sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
+  bool succeeded_loading_subscriptions_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   // Supports having the manager destroyed while waiting for disk I/O.
-  base::WeakPtrFactory<CookieStoreManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieStoreManager);
+  base::WeakPtrFactory<CookieStoreManager> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
