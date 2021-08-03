@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "media/base/limits.h"
+#include "media/base/media_log.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -51,6 +52,7 @@ base::AtomicRefCount V4L2VideoDecoder::num_instances_(0);
 
 // static
 std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
+    std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
   DCHECK(decoder_task_runner->RunsTasksInCurrentSequence());
@@ -62,8 +64,9 @@ std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
     return nullptr;
   }
 
-  return base::WrapUnique<VideoDecoderMixin>(new V4L2VideoDecoder(
-      std::move(decoder_task_runner), std::move(client), std::move(device)));
+  return base::WrapUnique<VideoDecoderMixin>(
+      new V4L2VideoDecoder(std::move(media_log), std::move(decoder_task_runner),
+                           std::move(client), std::move(device)));
 }
 
 // static
@@ -79,10 +82,13 @@ SupportedVideoDecoderConfigs V4L2VideoDecoder::GetSupportedConfigs() {
 }
 
 V4L2VideoDecoder::V4L2VideoDecoder(
+    std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client,
     scoped_refptr<V4L2Device> device)
-    : VideoDecoderMixin(std::move(decoder_task_runner), std::move(client)),
+    : VideoDecoderMixin(std::move(media_log),
+                        std::move(decoder_task_runner),
+                        std::move(client)),
       device_(std::move(device)),
       weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);

@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -93,10 +94,11 @@ VaapiVideoDecoder::DecodeTask::DecodeTask(DecodeTask&&) = default;
 
 // static
 std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
+    std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
-  return base::WrapUnique<VideoDecoderMixin>(
-      new VaapiVideoDecoder(std::move(decoder_task_runner), std::move(client)));
+  return base::WrapUnique<VideoDecoderMixin>(new VaapiVideoDecoder(
+      std::move(media_log), std::move(decoder_task_runner), std::move(client)));
 }
 
 // static
@@ -111,9 +113,12 @@ SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs() {
 }
 
 VaapiVideoDecoder::VaapiVideoDecoder(
+    std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client)
-    : VideoDecoderMixin(std::move(decoder_task_runner), std::move(client)),
+    : VideoDecoderMixin(std::move(media_log),
+                        std::move(decoder_task_runner),
+                        std::move(client)),
       buffer_id_to_timestamp_(kTimestampCacheSize),
       weak_this_factory_(this) {
   VLOGF(2);

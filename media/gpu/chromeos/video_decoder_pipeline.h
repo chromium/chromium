@@ -69,6 +69,7 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
   };
 
   VideoDecoderMixin(
+      std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
   ~VideoDecoderMixin() override;
@@ -84,6 +85,8 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
   virtual bool NeedsTranscryption();
 
  protected:
+  const std::unique_ptr<MediaLog> media_log_;
+
   // Decoder task runner. All public methods of
   // VideoDecoderMixin are executed at this task runner.
   const scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
@@ -99,6 +102,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
  public:
   using CreateDecoderFunctionCB =
       base::OnceCallback<std::unique_ptr<VideoDecoderMixin>(
+          std::unique_ptr<MediaLog> media_log,
           scoped_refptr<base::SequencedTaskRunner>,
           base::WeakPtr<VideoDecoderMixin::Client>)>;
 

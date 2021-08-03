@@ -50,6 +50,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
                           public DecodeSurfaceHandler<VASurface> {
  public:
   static std::unique_ptr<VideoDecoderMixin> Create(
+      std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
@@ -114,6 +115,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   };
 
   VaapiVideoDecoder(
+      std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
   ~VaapiVideoDecoder() override;

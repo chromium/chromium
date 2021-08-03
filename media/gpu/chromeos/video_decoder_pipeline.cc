@@ -61,10 +61,12 @@ absl::optional<Fourcc> PickRenderableFourcc(
 }  //  namespace
 
 VideoDecoderMixin::VideoDecoderMixin(
+    std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client)
     : decoder_task_runner_(std::move(decoder_task_runner)),
       client_(std::move(client)) {}
+
 VideoDecoderMixin::~VideoDecoderMixin() = default;
 
 bool VideoDecoderMixin::NeedsTranscryption() {
@@ -283,8 +285,9 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   // |decoder_| may be Initialize()d multiple times (e.g. on |config| changes)
   // but can only be created once.
   if (!decoder_ && !create_decoder_function_cb_.is_null()) {
-    decoder_ = std::move(create_decoder_function_cb_)
-                   .Run(decoder_task_runner_, decoder_weak_this_);
+    decoder_ =
+        std::move(create_decoder_function_cb_)
+            .Run(media_log_->Clone(), decoder_task_runner_, decoder_weak_this_);
   }
   // Note: |decoder_| might fail to be created, e.g. on V4L2 platforms.
   if (!decoder_) {

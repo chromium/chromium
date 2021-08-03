@@ -63,7 +63,8 @@ constexpr gfx::Size kCodedSize(48, 36);
 class MockDecoder : public VideoDecoderMixin {
  public:
   MockDecoder()
-      : VideoDecoderMixin(base::ThreadTaskRunnerHandle::Get(),
+      : VideoDecoderMixin(std::make_unique<MockMediaLog>(),
+                          base::ThreadTaskRunnerHandle::Get(),
                           base::WeakPtr<VideoDecoderMixin::Client>(nullptr)) {}
   ~MockDecoder() override = default;
 
@@ -218,6 +219,7 @@ class VideoDecoderPipelineTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static std::unique_ptr<VideoDecoderMixin> CreateNullMockDecoder(
+      std::unique_ptr<MediaLog> /* media_log */,
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<VideoDecoderMixin::Client> /* client */) {
     return nullptr;
@@ -225,6 +227,7 @@ class VideoDecoderPipelineTest
 
   // Creates a MockDecoder with an EXPECT_CALL on Initialize that returns ok.
   static std::unique_ptr<VideoDecoderMixin> CreateGoodMockDecoder(
+      std::unique_ptr<MediaLog> /* media_log */,
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<VideoDecoderMixin::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
@@ -239,6 +242,7 @@ class VideoDecoderPipelineTest
   // Creates a MockDecoder with an EXPECT_CALL on Initialize that returns ok and
   // also indicates that it requires transcryption.
   static std::unique_ptr<VideoDecoderMixin> CreateGoodMockTranscryptDecoder(
+      std::unique_ptr<MediaLog> /* media_log */,
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<VideoDecoderMixin::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
@@ -252,6 +256,7 @@ class VideoDecoderPipelineTest
 
   // Creates a MockDecoder with an EXPECT_CALL on Initialize that returns error.
   static std::unique_ptr<VideoDecoderMixin> CreateBadMockDecoder(
+      std::unique_ptr<MediaLog> /* media_log */,
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<VideoDecoderMixin::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());

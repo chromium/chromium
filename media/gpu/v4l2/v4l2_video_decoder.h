@@ -44,6 +44,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // ensure V4L2VideoDecoder is available on the device. It will be
   // determined in Initialize().
   static std::unique_ptr<VideoDecoderMixin> Create(
+      std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
@@ -82,7 +83,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
  private:
   friend class V4L2VideoDecoderTest;
 
-  V4L2VideoDecoder(scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
+  V4L2VideoDecoder(std::unique_ptr<MediaLog> media_log,
+                   scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
                    base::WeakPtr<VideoDecoderMixin::Client> client,
                    scoped_refptr<V4L2Device> device);
   ~V4L2VideoDecoder() override;
