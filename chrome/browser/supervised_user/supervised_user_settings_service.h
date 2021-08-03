@@ -143,19 +143,19 @@ class SupervisedUserSettingsService : public KeyedService,
   void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
-  const base::DictionaryValue* LocalSettingsForTest() const;
+  const base::Value& LocalSettingsForTest() const;
 
   // Returns the dictionary where a given Sync item should be stored, depending
   // on whether the supervised user setting is atomic or split. In case of a
   // split setting, the split setting prefix of |key| is removed, so that |key|
   // can be used to update the returned dictionary.
-  base::DictionaryValue* GetDictionaryAndSplitKey(std::string* key) const;
+  base::Value* GetDictionaryAndSplitKey(std::string* key) const;
 
  private:
-  base::DictionaryValue* GetOrCreateDictionary(const std::string& key) const;
-  base::DictionaryValue* GetAtomicSettings() const;
-  base::DictionaryValue* GetSplitSettings() const;
-  base::DictionaryValue* GetQueuedItems() const;
+  base::Value* GetOrCreateDictionary(const std::string& key) const;
+  base::Value* GetAtomicSettings() const;
+  base::Value* GetSplitSettings() const;
+  base::Value* GetQueuedItems() const;
 
   // Returns a dictionary with all supervised user settings if the service is
   // active, or NULL otherwise.
@@ -180,7 +180,7 @@ class SupervisedUserSettingsService : public KeyedService,
   base::OnceClosure wait_until_ready_to_sync_cb_;
 
   // A set of local settings that are fixed and not configured remotely.
-  std::unique_ptr<base::DictionaryValue> local_settings_;
+  base::Value local_settings_;
 
   SettingsCallbackList settings_callback_list_;
 

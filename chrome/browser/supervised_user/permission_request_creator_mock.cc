@@ -17,30 +17,17 @@
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> GetManualBehaviorHostDict(
-    Profile* profile) {
+std::unique_ptr<base::Value> GetManualBehaviorHostDict(Profile* profile) {
   SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
-  const base::DictionaryValue* local_settings =
-      settings_service->LocalSettingsForTest();
-  std::unique_ptr<base::DictionaryValue> dict_to_insert;
+  const base::Value& local_settings = settings_service->LocalSettingsForTest();
 
-  if (local_settings->HasKey(
-          supervised_users::kContentPackManualBehaviorHosts)) {
-    const base::DictionaryValue* dict_value;
+  const base::Value* dict_value =
+      local_settings.FindKey(supervised_users::kContentPackManualBehaviorHosts);
+  if (dict_value)
+    return base::Value::ToUniquePtrValue(dict_value->Clone());
 
-    local_settings->GetDictionary(
-        supervised_users::kContentPackManualBehaviorHosts, &dict_value);
-
-    std::unique_ptr<base::Value> clone =
-        std::make_unique<base::Value>(dict_value->Clone());
-
-    dict_to_insert = base::DictionaryValue::From(std::move(clone));
-  } else {
-    dict_to_insert = std::make_unique<base::DictionaryValue>();
-  }
-
-  return dict_to_insert;
+  return std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 }
 
 }  // namespace
