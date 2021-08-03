@@ -447,7 +447,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="1478340334823509079">Détails : <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">L'installation n'a pas été activée</translation>
-<translation id="1480571698637441426">Pour obtenir des réponses personnalisées à vos questions, autorisez l'Assistant à accéder à une capture de votre écran, y compris à des infos sur les titres musicaux ou vidéos en cours de lecture.</translation>
+<translation id="1480571698637441426">Pour que l'Assistant réponde sur mesure à vos questions, autorisez-le à accéder à une capture de votre écran, y compris à des infos sur les titres musicaux ou vidéos en cours de lecture.</translation>
 <translation id="1481537595330271162">Erreur lors du redimensionnement du disque</translation>
 <translation id="1482626744466814421">Ajouter cet onglet aux favoris…</translation>
 <translation id="1483272013430662157">Les applis Web peuvent demander à ouvrir certains types de fichiers</translation>
@@ -1251,11 +1251,11 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2307462900900812319">Configurer le réseau</translation>
 <translation id="2307553512430195144">Si vous êtes d'accord, l'Assistant Google attendra le mot clé "Hey Google" en mode veille et utilisera Voice Match pourra vérifier que c'est bien <ph name="SUPERVISED_USER_NAME" /> qui parle.
     <ph name="BR" />
-    Avec Voice Match, l'Assistant Google peut identifier la voix de <ph name="SUPERVISED_USER_NAME" /> sur votre <ph name="DEVICE_TYPE" /> et la distinguer des autres.
+    Avec l'aide de Voice Match, l'Assistant Google identifie la voix de <ph name="SUPERVISED_USER_NAME" /> sur votre <ph name="DEVICE_TYPE" /> et la distingue des autres.
     <ph name="BR" />
     Il enregistre des extraits de la voix de votre enfant pour créer une empreinte vocale unique, stockée exclusivement sur ses appareils. Cette empreinte peut être transmise temporairement à Google pour mieux identifier la voix de votre enfant.
     <ph name="BR" />
-    Si, par la suite, vous ne voulez plus utiliser Voice Match pour votre enfant, supprimez cette fonctionnalité dans les paramètres de l'Assistant. Pour voir ou supprimer les extraits audio enregistrés par votre enfant pendant la configuration de Voice Match, accédez à <ph name="VOICE_MATCH_SETTINGS_URL" /> depuis son compte.
+    Si, par la suite, vous décidez que Voice Match ne convient pas à votre enfant, supprimez-le dans les paramètres de l'Assistant. Pour voir ou supprimer les extraits audio que votre enfant enregistre quand il configure Voice Match, accédez à <ph name="VOICE_MATCH_SETTINGS_URL" /> depuis son compte.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Cette page veut installer un gestionnaire de services</translation>
@@ -1387,7 +1387,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2450849356604136918">Aucune vue active</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Les sites se connectent généralement aux ports série pour transférer des données, par exemple pour configurer votre réseau</translation>
-<translation id="2453706416476934374">Pour obtenir des réponses personnalisées aux questions de <ph name="SUPERVISED_USER_NAME" />, autorisez l'Assistant à accéder à une capture de l'écran de <ph name="SUPERVISED_USER_NAME" />, y compris à des infos sur les titres musicaux ou vidéos en cours de lecture.</translation>
+<translation id="2453706416476934374">Pour que l'Assistant réponde sur mesure aux questions de <ph name="SUPERVISED_USER_NAME" />, autorisez-le à accéder à une capture de l'écran de <ph name="SUPERVISED_USER_NAME" />, y compris à des infos sur les titres musicaux ou vidéos en cours de lecture.</translation>
 <translation id="2453860139492968684">Terminer</translation>
 <translation id="2454247629720664989">Mot clé</translation>
 <translation id="2454264884354864965">La caméra est désactivée</translation>
@@ -2096,7 +2096,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="32101887417650595">Connexion à l'imprimante impossible</translation>
 <translation id="321084946921799184">Jaune et blanc</translation>
 <translation id="321356136776075234">UO de l'appareil (par exemple, OU=Chromebooks, DC=example, DC=com)</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Une personne ayant une voix semblable à celle de <ph name="SUPERVISED_USER_NAME" /> ou qui en possède un enregistrement pourra éventuellement accéder à ses résultats personnels.</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3216825226035747725">Les administrateurs de G Suite for Education déterminent les services Google auxquels leurs utilisateurs peuvent accéder lorsqu'ils sont connectés à un compte G Suite for Education. Cela peut inclure des fonctionnalités ou des services auxquels votre enfant ne pouvait pas accéder auparavant avec ce compte supervisé. Pour les utilisateurs mineurs, les administrateurs de l'établissement scolaire doivent donner ou obtenir une autorisation avant de permettre l'accès à ces services.</translation>
 <translation id="3217843140356091325">Créer un raccourci ?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2274,7 +2274,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3417836307470882032">Système horaire sur 24 heures</translation>
 <translation id="3420501302812554910">Une réinitialisation est requise pour la clé de sécurité interne</translation>
 <translation id="3421387094817716717">Clé publique de la courbe elliptique</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Une personne ayant une voix semblable à la vôtre ou qui en possède un enregistrement pourra éventuellement accéder à vos résultats personnels ou à l'Assistant.</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder à vos résultats personnels ou à l'Assistant.</translation>
 <translation id="3422291238483866753">Vous demander votre avis lorsqu'un site souhaite créer un plan 3D de votre environnement ou suivre la position de la caméra (recommandé)</translation>
 <translation id="3423463006624419153">Sur votre <ph name="PHONE_NAME_1" /> et votre <ph name="PHONE_NAME_2" /> :</translation>
 <translation id="3423858849633684918">Veuillez relancer <ph name="PRODUCT_NAME" />.</translation>
@@ -4664,7 +4664,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6059652578941944813">Hiérarchie des certificats</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6061882183774845124">Envoyer le lien vers vos appareils</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Une personne ayant une voix semblable à celle de <ph name="SUPERVISED_USER_NAME" /> ou qui en possède un enregistrement pourra éventuellement accéder à ses résultats personnels. Pour économiser la batterie, accédez aux paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" /> pour activer "Hey Google" uniquement quand cet appareil est relié à une source d'alimentation.</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />. Afin d'économiser la batterie, configurez les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" /> pour que "Hey Google" ne soit actif que quand l'appareil est branché à l'alimentation.</translation>
 <translation id="6064217302520318294">Verrouillage de l'écran</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
 <translation id="6066794465984119824">Hachage d'image non défini</translation>
@@ -5005,7 +5005,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6434325376267409267">Vous devez mettre à jour votre appareil avant de pouvoir utiliser <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Afficher dans le Web Store</translation>
-<translation id="6436610005579237680">Pour obtenir des réponses plus personnalisées à vos questions, autorisez l'Assistant Google à accéder à une capture de votre écran, y compris aux infos sur les titres musicaux ou vidéos en cours de lecture.</translation>
+<translation id="6436610005579237680">Pour que l'Assistant Google réponde sur mesure à vos questions, autorisez-le à accéder à une capture de votre écran. Il pourra aussi utiliser les infos sur les titres musicaux ou vidéos en cours de lecture.</translation>
 <translation id="6438234780621650381">Réinitialiser les paramètres</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Lecture audio</translation>
 <translation id="6442187272350399447">Super</translation>
@@ -5342,11 +5342,11 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6808039367995747522">Pour continuer, insérez la clé de sécurité et appuyez dessus</translation>
 <translation id="6808193438228982088">Renard</translation>
 <translation id="6809470175540814047">Ouvrir dans une fenêtre de navigation privée</translation>
-<translation id="6809656734323672573">Si vous êtes d'accord, l'Assistant Google attendra le mot clé "Hey Google" en mode veille et utilisera Voice Match pourra vérifier que c'est bien vous qui parlez.
+<translation id="6809656734323672573">Si vous êtes d'accord, l'Assistant Google attendra le mot clé "Hey Google" en mode veille et utilisera Voice Match pour vérifier que c'est bien vous qui parlez.
     <ph name="BR" />
-    Avec Voice Match, l'Assistant peut reconnaître votre voix et la distinguer des autres. Il enregistre des extraits de votre voix pour créer une empreinte vocale unique, stockée exclusivement sur votre appareil. Cette empreinte peut être transmise temporairement à Google pour mieux identifier votre voix.
+    Avec l'aide de Voice Match, l'Assistant vous reconnaît et vous distingue des autres. Il enregistre des extraits de votre voix pour créer une empreinte vocale unique, stockée exclusivement sur votre appareil. Cette empreinte peut être transmise temporairement à Google pour mieux identifier votre voix.
     <ph name="BR" />
-    Si, par la suite, vous ne voulez plus utiliser Voice Match, supprimez cette fonctionnalité dans les paramètres de l'Assistant. Pour voir ou supprimer les extraits audio que vous enregistrez pendant la configuration de Voice Match, accédez à <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    Si, par la suite, vous décidez que Voice Match ne vous convient pas, supprimez-le dans les paramètres de l'Assistant. Pour voir ou supprimer les extraits audio que vous enregistrez quand vous configurez Voice Match, accédez à <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Permet de se connecter automatiquement aux sites Web à l'aide des identifiants enregistrés. Lorsque la fonctionnalité est désactivée, vous êtes invité à confirmer chaque connexion à un site Web.</translation>
@@ -6341,7 +6341,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7847212883280406910">Appuyez sur Ctrl+Alt+S pour passer à <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7849264908733290972">Ouvrir l'&amp;image dans un nouvel onglet</translation>
 <translation id="784934925303690534">Période</translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Une personne ayant une voix semblable à la vôtre ou qui en possède un enregistrement pourra éventuellement accéder à vos résultats personnels ou à l'Assistant. Pour économiser la batterie, accédez aux paramètres de l'Assistant pour activer "Hey Google" uniquement quand cet appareil est relié à une source d'alimentation.</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder à vos résultats personnels ou à l'Assistant. Afin d'économiser la batterie, configurez les paramètres de l'Assistant pour que "Hey Google" ne soit actif que quand l'appareil est branché à l'alimentation.</translation>
 <translation id="7851457902707056880">La connexion a été limitée au seul compte du propriétaire. Veuillez redémarrer et vous connecter à ce compte. L'appareil redémarrera automatiquement dans 30 secondes.</translation>
 <translation id="7851716364080026749">Toujours bloquer l'accès à la caméra et au micro</translation>
 <translation id="7851720427268294554">Analyseur IPP</translation>
@@ -7577,7 +7577,7 @@ Vous pouvez attribuer plusieurs contacteurs à cette action</translation>
       <ph name="LIST_ITEM" />Exécutez Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
-<translation id="9166813363879986425">Vos préférences et activités seront enregistrées sur n'importe quel appareil Chrome OS quand vous vous connecterez avec votre compte Google. Vous pouvez sélectionner les éléments à synchroniser dans les paramètres.</translation>
+<translation id="9166813363879986425">Vous retrouverez votre activité et vos préférences enregistrées sur tous les appareils Chrome OS sur lesquels vous vous connecterez avec votre compte Google. Vous pouvez sélectionner les éléments à synchroniser dans les paramètres.</translation>
 <translation id="9167063903968449027">Afficher la liste de lecture</translation>
 <translation id="9167450455589251456">Profil non accepté</translation>
 <translation id="9168436347345867845">Plus tard</translation>

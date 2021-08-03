@@ -312,7 +312,7 @@
 <translation id="1336902454946927954">Votre clé de sécurité est verrouillée parce que votre empreinte digitale n'a pas été reconnue. Pour la déverrouiller, entrez votre NIP.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> souhaite ouvrir cette application.</translation>
 <translation id="1338950911836659113">Suppression en cours…</translation>
-<translation id="1339009753652684748">Accédez à votre Assistant lorsque vous dites « Ok Google ». Pour économiser la pile, sélectionnez « Activé (recommandé) ». Votre Assistant répondra seulement votre lorsque votre appareil sera branché ou en recharge.</translation>
+<translation id="1339009753652684748">Accédez à votre Assistant lorsque vous dites « Ok Google ». Pour économiser la pile, sélectionnez « Activé (recommandé) ». Votre Assistant répondra seulement lorsque votre appareil sera branché ou en recharge.</translation>
 <translation id="13392265090583506">Accessibilité</translation>
 <translation id="1340527397989195812">Sauvegarder les fichiers médiatiques de l’appareil en utilisant l’application Fichiers.</translation>
 <translation id="1341988552785875222">Le fond d'écran actuel est défini par « <ph name="APP_NAME" /> ». Il vous faudra peut-être désinstaller « <ph name="APP_NAME" /> » avant de sélectionner un autre fond d'écran.</translation>
@@ -5346,7 +5346,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
     <ph name="BR" />
     La fonctionnalité Voice Match permet à votre Assistant de vous reconnaître et de vous différencier des autres. L'Assistant utilise des extraits de votre voix pour créer un modèle vocal unique, qui est seulement stocké sur votre appareil. Votre modèle vocal pourrait être envoyé temporairement à Google pour améliorer la reconnaissance de votre voix.
     <ph name="BR" />
-    Si vous décidez plus tard que la fonctionnalité Voice Match ne vous convient pas, vous n'avez qu'à la retirer dans les paramètres de l'Assistant. Pour afficher ou supprimer les extraits audio que vous avez enregistrés lors de la configuration de la fonctionnalité Voice Match, accédez à l'adresse<ph name="VOICE_MATCH_SETTINGS_URL" />.
+    Si vous décidez plus tard que la fonctionnalité Voice Match ne vous convient pas, vous n'avez qu'à la retirer dans les paramètres de l'Assistant. Pour afficher ou supprimer les extraits audio que vous avez enregistrés lors de la configuration de la fonctionnalité Voice Match, accédez à l'adresse <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une confirmation vous est demandée avant chaque connexion à un site Web.</translation>
