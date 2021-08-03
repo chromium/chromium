@@ -78,6 +78,22 @@ TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
+TEST_F(BrowserUtilTest, LacrosGoogleRollout) {
+  AddRegularUser("user@google.com");
+  g_browser_process->local_state()->SetInteger(
+      prefs::kLacrosLaunchSwitch,
+      static_cast<int>(browser_util::LacrosLaunchSwitch::kSideBySide));
+
+  EXPECT_EQ(browser_util::GetLaunchSwitchForTesting(),
+            browser_util::LacrosLaunchSwitch::kUserChoice);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({browser_util::kLacrosGooglePolicyRollout}, {});
+
+  EXPECT_EQ(browser_util::GetLaunchSwitchForTesting(),
+            browser_util::LacrosLaunchSwitch::kSideBySide);
+}
+
 TEST_F(BrowserUtilTest, LacrosEnabledForChannels) {
   AddRegularUser("user@test.com");
 

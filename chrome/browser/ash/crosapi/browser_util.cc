@@ -74,6 +74,7 @@
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -116,6 +117,25 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
+// Returns true if the main profile is associated with a google internal
+// account.
+bool IsGoogleInternal() {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* user = user_manager->GetPrimaryUser();
+  if (!user)
+    return false;
+  return gaia::IsGoogleInternalAccountEmail(
+      user->GetAccountId().GetUserEmail());
+}
+
+// Returns the lacros integration suggested by the policy lacros-availability.
+// There are several reasons why we might choose to ignore the
+// lacros-availability policy.
+// 1. The user has set a command line or chrome://flag for
+//    kLacrosAvailabilityIgnore.
+// 2. The user is a Googler and they are not opted into the
+//    kLacrosGooglePolicyRollout trial and they did not have the
+//    kLacrosDisallowed policy.
 LacrosLaunchSwitch GetLaunchSwitch() {
   if (!g_browser_process->local_state() ||
       !g_browser_process->local_state()->FindPreference(
@@ -125,8 +145,15 @@ LacrosLaunchSwitch GetLaunchSwitch() {
     return LacrosLaunchSwitch::kUserChoice;
   }
 
-  return static_cast<LacrosLaunchSwitch>(
+  LacrosLaunchSwitch result = static_cast<LacrosLaunchSwitch>(
       g_browser_process->local_state()->GetInteger(prefs::kLacrosLaunchSwitch));
+  if (IsGoogleInternal() &&
+      !base::FeatureList::IsEnabled(kLacrosGooglePolicyRollout) &&
+      result != LacrosLaunchSwitch::kLacrosDisallowed) {
+    return LacrosLaunchSwitch::kUserChoice;
+  }
+
+  return result;
 }
 
 // Gets called from IsLacrosAllowedToBeEnabled with primary user or from
@@ -271,6 +298,11 @@ static_assert(!HasDuplicatedUuid(),
 // When this feature is enabled, Lacros will be available on stable channel.
 const base::Feature kLacrosAllowOnStableChannel{
     "LacrosAllowOnStableChannel", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When this feature is enabled, Lacros is allowed to roll out by policy to
+// Googlers.
+const base::Feature kLacrosGooglePolicyRollout{
+    "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
 const char kLacrosStabilityLeastStable[] = "least-stable";
@@ -672,6 +704,10 @@ base::Version GetRootfsLacrosVersionMayBlock(
   }
 
   return base::Version{version->GetString()};
+}
+
+LacrosLaunchSwitch GetLaunchSwitchForTesting() {
+  return GetLaunchSwitch();
 }
 
 }  // namespace browser_util

@@ -62,6 +62,7 @@ enum class LacrosLaunchSwitch {
 };
 
 extern const base::Feature kLacrosAllowOnStableChannel;
+extern const base::Feature kLacrosGooglePolicyRollout;
 
 // A command-line switch that can also be set from chrome://flags that affects
 // the frequency of Lacros updates.
@@ -199,6 +200,10 @@ void RecordDataVer(PrefService* local_state,
 // file in the correct format.
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path);
+
+// Exposed for testing. Returns the lacros integration suggested by the policy
+// lacros-availability, modified by Finch flags and user flags as appropriate.
+LacrosLaunchSwitch GetLaunchSwitchForTesting();
 
 }  // namespace browser_util
 }  // namespace crosapi
