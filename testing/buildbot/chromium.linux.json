@@ -4280,7 +4280,8 @@
         },
         "name": "context_lost_validating_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4312,7 +4313,8 @@
         },
         "name": "depth_capture_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4344,7 +4346,8 @@
         },
         "name": "gpu_process_launch_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4376,7 +4379,8 @@
         },
         "name": "hardware_accelerated_feature_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4412,7 +4416,8 @@
         },
         "name": "info_collection_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4450,7 +4455,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4482,7 +4488,8 @@
         },
         "name": "screenshot_sync_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4514,7 +4521,8 @@
         },
         "name": "trace_test",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
@@ -4546,7 +4554,8 @@
         },
         "name": "webgl_conformance_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
         "swarming": {
