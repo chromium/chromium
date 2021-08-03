@@ -89,6 +89,7 @@ public class PageInfoCookiesController
         params.onClearCallback = this::onClearCookiesClicked;
         params.onCookieSettingsLinkClicked = mDelegate::showCookieSettings;
         params.disableCookieDeletion = isDeletionDisabled();
+        params.hostName = mMainController.getURL().getHost();
         mSubPage.setParams(params);
         mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
         mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);

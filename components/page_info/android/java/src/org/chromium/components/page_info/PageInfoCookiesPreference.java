@@ -34,6 +34,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
+    private CharSequence mHostName;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -43,6 +44,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         public Runnable onClearCallback;
         public Runnable onCookieSettingsLinkClicked;
         public boolean disableCookieDeletion;
+        public CharSequence hostName;
     }
 
     @Override
@@ -94,6 +96,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         updateCookieDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
+        mHostName = params.hostName;
     }
 
     private void showClearCookiesConfirmation() {
@@ -103,6 +106,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                 new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
                         .setTitle(R.string.page_info_cookies_clear)
                         .setMessage(R.string.page_info_cookies_clear_confirmation)
+                        .setMessage(
+                                getString(R.string.page_info_cookies_clear_confirmation, mHostName))
                         .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
                                 (dialog, which) -> mOnClearCallback.run())
                         .setNegativeButton(
