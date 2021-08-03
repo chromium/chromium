@@ -521,8 +521,24 @@ const std::vector<display::Display>& RenderWidgetHostViewBase::GetDisplays()
 }
 
 void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
-  if (host() && host()->delegate())
-    host()->delegate()->SendScreenRects();
+  bool force_sync_visual_properties = false;
+  // Delegate, which is usually WebContentsImpl, do not send rect updates for
+  // popups as they are not registered as FrameTreeNodes. Instead, send screen
+  // rects directly to host and force synchronization of visual properties so
+  // that blink knows host changed bounds. This only happens if the change was
+  // instantiated by system server/compositor (for example, Wayland, which
+  // may reposition a popup if part of it is going to be shown outside a
+  // display's work area. Note that Wayland clients cannot know where their
+  // windows are located and cannot adjust bounds).
+  if (widget_type_ == WidgetType::kPopup) {
+    if (host()) {
+      force_sync_visual_properties = true;
+      host()->SendScreenRects();
+    }
+  } else {
+    if (host() && host()->delegate())
+      host()->delegate()->SendScreenRects();
+  }
 
   const display::DisplayList new_display_list =
       display::Screen::GetScreen()->GetDisplayListNearestViewWithFallbacks(
