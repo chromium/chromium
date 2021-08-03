@@ -196,7 +196,8 @@ class Supplementable : public GarbageCollectedMixin {
         "Declare a const char array kSupplementName. See Supplementable.h for "
         "details.");
     return static_cast<SupplementType*>(
-        this->supplements_.at(SupplementType::kSupplementName));
+        this->supplements_.DeprecatedAtOrEmptyValue(
+            SupplementType::kSupplementName));
   }
 
   void ReattachThread() {
