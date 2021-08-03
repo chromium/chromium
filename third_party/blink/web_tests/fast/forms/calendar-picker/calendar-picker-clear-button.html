@@ -27,7 +27,7 @@ for (const inputType of ["date", "week", "datetime-local"]) {
       assert_equals(element.value, "", "Clear button should have updated in-page control to empty string.");
       assert_equals(internals.pagePopupWindow, null, "Click on Clear button should close popup.");
     });
-  }, `Calendar picker: Clear button for input[type="${inputType}""] should clear date`);
+  }, `Calendar picker: Clear button for input[type="${inputType}"] should clear date`);
 }
 
 </script>

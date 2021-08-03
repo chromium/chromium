@@ -36,6 +36,10 @@ class MonthPicker extends HTMLElement {
     this.append(this.yearListView_.element);
     this.initializeYearListView_();
 
+    this.clearButton_ = new ClearButton();
+    this.append(this.clearButton_.element);
+    this.initializeClearButton_();
+
     this.todayButton_ = new CalendarNavigationButton();
     this.append(this.todayButton_.element);
     this.initializeTodayButton_();
@@ -85,6 +89,18 @@ class MonthPicker extends HTMLElement {
     window.pagePopupController.setValueAndClosePopup(0, selectedValue);
   };
 
+  initializeClearButton_ = () => {
+    this.clearButton_.element.textContent = global.params.clearLabel;
+    this.clearButton_.element.setAttribute(
+        'aria-label', global.params.clearLabel);
+    this.clearButton_.on(
+        ClearButton.EventTypeButtonClick, this.onClearButtonClick_);
+  };
+
+  onClearButtonClick_ = () => {
+    window.pagePopupController.setValueAndClosePopup(0, '');
+  };
+
   initializeTodayButton_ = () => {
     this.todayButton_.element.textContent = global.params.todayLabel;
     this.todayButton_.element.setAttribute(
@@ -106,9 +122,11 @@ class MonthPicker extends HTMLElement {
   onKeyDown_ = (event) => {
     switch (event.key) {
       case 'Enter':
-        // Don't do anything here if user has hit Enter on 'This month'
-        // button.  We'll handle that in this.onTodayButtonClick_.
-        if (!event.target.matches('.calendar-navigation-button')) {
+        // Don't do anything here if user has hit Enter on 'Clear' or
+        // 'This month' buttons. We'll handle that respectively in
+        // this.onClearButtonClick_ and this.onTodayButtonClick_.
+        if (!event.target.matches(
+                '.calendar-navigation-button, .clear-button')) {
           if (this.selectedMonth) {
             window.pagePopupController.setValueAndClosePopup(
                 0, this.selectedMonth.toString());
