@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_AX_NODE_TEXT_STYLES_H_
-#define UI_ACCESSIBILITY_AX_NODE_TEXT_STYLES_H_
+#ifndef UI_ACCESSIBILITY_AX_TEXT_ATTRIBUTES_H_
+#define UI_ACCESSIBILITY_AX_TEXT_ATTRIBUTES_H_
 
 #include <string>
 
@@ -15,20 +15,20 @@ namespace ui {
 // a snapshot at a given time and is not intended to be held for periods of
 // time. For this reason, it is a move-only class, to encourage deliberate
 // short-term usage.
-struct AX_BASE_EXPORT AXNodeTextStyles {
-  AXNodeTextStyles();
+struct AX_BASE_EXPORT AXTextAttributes {
+  AXTextAttributes();
 
   // Move-only class, explicitly delete copy-construction and assignment
-  AXNodeTextStyles(const AXNodeTextStyles& other) = delete;
-  AXNodeTextStyles& operator=(const AXNodeTextStyles&) = delete;
+  AXTextAttributes(const AXTextAttributes& other) = delete;
+  AXTextAttributes& operator=(const AXTextAttributes&) = delete;
 
   // Move constructor and assignment
-  AXNodeTextStyles(AXNodeTextStyles&& other);
-  AXNodeTextStyles& operator=(AXNodeTextStyles&& other);
+  AXTextAttributes(AXTextAttributes&& other);
+  AXTextAttributes& operator=(AXTextAttributes&& other);
 
-  bool operator==(const AXNodeTextStyles& other) const;
+  bool operator==(const AXTextAttributes& other) const;
 
-  bool operator!=(const AXNodeTextStyles& other) const;
+  bool operator!=(const AXTextAttributes& other) const;
 
   bool IsUnset() const;
 
@@ -48,4 +48,4 @@ struct AX_BASE_EXPORT AXNodeTextStyles {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_AX_NODE_TEXT_STYLES_H_
+#endif  // UI_ACCESSIBILITY_AX_TEXT_ATTRIBUTES_H_

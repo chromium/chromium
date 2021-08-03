@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_text_attributes.h"
 
 namespace ui {
 
@@ -41,38 +42,38 @@ TEST(AXNodeDataTest, TextAttributes) {
 
   AXNodeData node_2;
   node_2.AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 1.5);
-  EXPECT_TRUE(node_1.GetTextStyles() == node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() == node_2.GetTextAttributes());
 
   node_2.AddIntAttribute(ax::mojom::IntAttribute::kColor, 100);
-  EXPECT_TRUE(node_1.GetTextStyles() != node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
   node_1.AddIntAttribute(ax::mojom::IntAttribute::kColor, 100);
-  EXPECT_TRUE(node_1.GetTextStyles() == node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() == node_2.GetTextAttributes());
 
   node_2.RemoveIntAttribute(ax::mojom::IntAttribute::kColor);
-  EXPECT_TRUE(node_1.GetTextStyles() != node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
   node_2.AddIntAttribute(ax::mojom::IntAttribute::kColor, 100);
-  EXPECT_TRUE(node_1.GetTextStyles() == node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() == node_2.GetTextAttributes());
 
   node_1.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                             "test font");
-  EXPECT_TRUE(node_1.GetTextStyles() != node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
   node_2.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                             "test font");
-  EXPECT_TRUE(node_1.GetTextStyles() == node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() == node_2.GetTextAttributes());
 
   node_2.RemoveStringAttribute(ax::mojom::StringAttribute::kFontFamily);
-  EXPECT_TRUE(node_1.GetTextStyles() != node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
   node_2.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                             "test font");
-  EXPECT_TRUE(node_1.GetTextStyles() == node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() == node_2.GetTextAttributes());
 
   node_2.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                             "different font");
-  EXPECT_TRUE(node_1.GetTextStyles() != node_2.GetTextStyles());
+  EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
   std::string tooltip;
   node_2.AddStringAttribute(ax::mojom::StringAttribute::kTooltip,
@@ -81,10 +82,10 @@ TEST(AXNodeDataTest, TextAttributes) {
                                         &tooltip));
   EXPECT_EQ(tooltip, "test tooltip");
 
-  AXNodeTextStyles node1_styles = node_1.GetTextStyles();
-  AXNodeTextStyles moved_styles = std::move(node1_styles);
-  EXPECT_TRUE(node1_styles != moved_styles);
-  EXPECT_TRUE(moved_styles == node_1.GetTextStyles());
+  AXTextAttributes node1_attributes = node_1.GetTextAttributes();
+  AXTextAttributes moved_attributes = std::move(node1_attributes);
+  EXPECT_TRUE(node1_attributes != moved_attributes);
+  EXPECT_TRUE(moved_attributes == node_1.GetTextAttributes());
 }
 
 TEST(AXNodeDataTest, IsButtonPressed) {

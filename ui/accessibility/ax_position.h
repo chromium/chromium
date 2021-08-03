@@ -28,8 +28,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_node_text_styles.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
@@ -4167,19 +4167,19 @@ class AXPosition {
 
   ax::mojom::Role GetRole(AXNode* node) const { return node->data().role; }
 
-  AXNodeTextStyles GetTextStyles() const {
-    // Check either the current anchor or its parent for text styles.
-    AXNodeTextStyles current_anchor_text_styles =
-        !IsNullPosition() ? GetAnchor()->data().GetTextStyles()
-                          : AXNodeTextStyles();
-    if (current_anchor_text_styles.IsUnset()) {
+  AXTextAttributes GetTextAttributes() const {
+    // Check either the current anchor or its parent for text attributes.
+    AXTextAttributes current_anchor_text_attributes =
+        !IsNullPosition() ? GetAnchor()->data().GetTextAttributes()
+                          : AXTextAttributes();
+    if (current_anchor_text_attributes.IsUnset()) {
       AXPositionInstance parent_position =
           AsTreePosition()->CreateParentPosition(
               ax::mojom::MoveDirection::kBackward);
       if (!parent_position->IsNullPosition())
-        return parent_position->GetAnchor()->data().GetTextStyles();
+        return parent_position->GetAnchor()->data().GetTextAttributes();
     }
-    return current_anchor_text_styles;
+    return current_anchor_text_attributes;
   }
 
   std::vector<int32_t> GetWordStartOffsets() const {
@@ -4543,9 +4543,9 @@ class AXPosition {
         return true;
     }
 
-    // Stop moving when text styles differ.
-    return move_from.AsLeafTreePosition()->GetTextStyles() !=
-           move_to.AsLeafTreePosition()->GetTextStyles();
+    // Stop moving when text attributes differ.
+    return move_from.AsLeafTreePosition()->GetTextAttributes() !=
+           move_to.AsLeafTreePosition()->GetTextAttributes();
   }
 
   static bool MoveCrossesLineBreakingObject(const AXPosition& move_from,

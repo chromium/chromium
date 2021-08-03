@@ -16,8 +16,8 @@
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_node_text_styles.h"
 #include "ui/accessibility/ax_relative_bounds.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
@@ -144,9 +144,10 @@ struct AX_BASE_EXPORT AXNodeData {
   void RemoveStringListAttribute(ax::mojom::StringListAttribute attribute);
 
   //
-  // Text styles.
+  // Text attributes, such as spelling markers and style information.
   //
-  AXNodeTextStyles GetTextStyles() const;
+
+  AXTextAttributes GetTextAttributes() const;
 
   //
   // Convenience functions.
