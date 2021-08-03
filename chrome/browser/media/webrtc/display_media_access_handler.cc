@@ -292,6 +292,8 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   picker_params.request_audio =
       pending_request.request.audio_type ==
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  picker_params.restricted_by_policy =
+      (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 }

@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,6 +38,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -206,6 +208,41 @@ bool AreEquivalentTypesForAudioCheckbox(DesktopMediaList::Type lhs,
   } else {
     return lhs == rhs;
   }
+}
+
+// Helper to generate the view containing the enterprise icon and a message that
+// the picker choices may have been restricted.
+std::unique_ptr<views::View> CreatePolicyRestrictedView() {
+  auto icon = std::make_unique<views::ImageView>();
+  icon->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
+      vector_icons::kBusinessIcon, 18, gfx::kChromeIconGrey)));
+
+  auto policy_label = std::make_unique<views::Label>();
+  policy_label->SetMultiLine(true);
+  policy_label->SetText(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_MANAGED));
+
+  auto policy_view = std::make_unique<views::View>();
+  int text_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
+
+  views::GridLayout* layout =
+      policy_view->SetLayoutManager(std::make_unique<views::GridLayout>());
+
+  views::ColumnSet* columnset = layout->AddColumnSet(0);
+  columnset->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
+                       views::GridLayout::kFixedSize,
+                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  columnset->AddPaddingColumn(views::GridLayout::kFixedSize, text_padding);
+  columnset->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
+                       views::GridLayout::kFixedSize,
+                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+
+  layout->StartRow(views::GridLayout::kFixedSize, 0);
+  layout->AddView(std::move(icon));
+  layout->AddView(std::move(policy_label));
+
+  return policy_view;
 }
 
 }  // namespace
@@ -427,6 +464,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     description_label_->SetText(
         l10n_util::GetStringFUTF16(IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED,
                                    params.app_name, params.target_name));
+  }
+
+  if (params.restricted_by_policy) {
+    AddChildView(CreatePolicyRestrictedView());
   }
 
   DCHECK(!categories_.empty());

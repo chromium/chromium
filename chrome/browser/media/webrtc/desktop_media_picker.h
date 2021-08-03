@@ -67,6 +67,10 @@ class DesktopMediaPicker {
     // user select a desktop, the desktop picker also serves to prevent the
     // screen screen from being shared without the user's explicit consent.
     bool select_only_screen = false;
+    // Indicates that the caller of this picker is subject to enterprise
+    // policies that may restrict the available choices, and a suitable warning
+    // should be shown to the user.
+    bool restricted_by_policy = false;
   };
 
   // Creates a picker dialog/confirmation box depending on the value of

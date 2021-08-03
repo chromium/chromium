@@ -150,6 +150,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.request_audio = request_audio;
   picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(g_picker_factory);
+  picker_params.restricted_by_policy =
+      (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_controller_->Show(picker_params, std::move(media_types),
                            includable_web_contents_filter, std::move(callback));
   return RespondLater();

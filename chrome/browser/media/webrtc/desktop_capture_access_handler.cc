@@ -592,10 +592,11 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
   }
 
   const GURL& request_origin = pending_request.request.security_origin;
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(request_origin, web_contents);
   auto includable_web_contents_filter =
-      capture_policy::GetIncludableWebContentsFilter(
-          request_origin,
-          capture_policy::GetAllowedCaptureLevel(request_origin, web_contents));
+      capture_policy::GetIncludableWebContentsFilter(request_origin,
+                                                     capture_level);
 
   auto source_lists = picker_factory_->CreateMediaList(
       {DesktopMediaList::Type::kWebContents}, web_contents,
@@ -616,6 +617,8 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
                                  blink::mojom::MediaStreamType::NO_SERVICE)
                                     ? false
                                     : true;
+  picker_params.restricted_by_policy =
+      (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 
