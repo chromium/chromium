@@ -528,6 +528,32 @@ TEST_F(GuestOsSharePathTest, SuccessDriveFsComputersLevel3) {
   run_loop()->Run();
 }
 
+TEST_F(GuestOsSharePathTest, SuccessDriveFsFilesById) {
+  SetUpVolume();
+  guest_os_share_path_->SharePath(
+      "vm-running", drivefs_.Append(".files-by-id/1234/shared"), PERSIST_NO,
+      base::BindOnce(
+          &GuestOsSharePathTest::SharePathCallback, base::Unretained(this),
+          "vm-running", Persist::NO, SeneschalClientCalled::YES,
+          &vm_tools::seneschal::SharePathRequest::DRIVEFS_FILES_BY_ID,
+          "1234/shared", Success::YES, ""));
+  run_loop()->Run();
+}
+
+TEST_F(GuestOsSharePathTest, SuccessDriveFsShortcutTargetsById) {
+  SetUpVolume();
+  guest_os_share_path_->SharePath(
+      "vm-running",
+      drivefs_.Append(".shortcut-targets-by-id/1-abc-xyz/shortcut"), PERSIST_NO,
+      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
+                     base::Unretained(this), "vm-running", Persist::NO,
+                     SeneschalClientCalled::YES,
+                     &vm_tools::seneschal::SharePathRequest::
+                         DRIVEFS_SHORTCUT_TARGETS_BY_ID,
+                     "1-abc-xyz/shortcut", Success::YES, ""));
+  run_loop()->Run();
+}
+
 TEST_F(GuestOsSharePathTest, FailDriveFsTrash) {
   SetUpVolume();
   guest_os_share_path_->SharePath(

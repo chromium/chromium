@@ -269,6 +269,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     base::FilePath root("root");
     base::FilePath team_drives("team_drives");
     base::FilePath computers("Computers");
+    base::FilePath files_by_id(".files-by-id");
+    base::FilePath shortcut_targets_by_id(".shortcut-targets-by-id");
     base::FilePath trash(".Trash");  // Not to be shared!
     if (AppendRelativePath(root, drivefs_path, &relative_path)) {
       // My Drive and subdirs.
@@ -293,6 +295,17 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       if (components.size() < 2) {
         allowed_path = false;
       }
+    } else if (AppendRelativePath(files_by_id, drivefs_path, &relative_path)) {
+      // Shared (.files-by-id) and subdirs.
+      allowed_path = true;
+      request.set_storage_location(
+          vm_tools::seneschal::SharePathRequest::DRIVEFS_FILES_BY_ID);
+    } else if (AppendRelativePath(shortcut_targets_by_id, drivefs_path,
+                                  &relative_path)) {
+      // Shared (.shortcut-targets-by-id) and subdirs.
+      allowed_path = true;
+      request.set_storage_location(vm_tools::seneschal::SharePathRequest::
+                                       DRIVEFS_SHORTCUT_TARGETS_BY_ID);
     } else if (trash == drivefs_path || trash.IsParent(drivefs_path)) {
       // Note: Do not expose .Trash which would allow linux apps to make
       // permanent deletes from Drive.  This branch is not especially required,

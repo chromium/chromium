@@ -61,10 +61,14 @@ constexpr char kCrostiniMapMyDrive[] = "MyDrive";
 constexpr char kCrostiniMapPlayFiles[] = "PlayFiles";
 constexpr char kCrostiniMapSmbFs[] = "SMB";
 constexpr char kCrostiniMapTeamDrives[] = "SharedDrives";
+constexpr char kCrostiniMapSharedWithMe[] = "SharedWithMe";
+constexpr char kCrostiniMapShortcutsSharedWithMe[] = "ShortcutsSharedWithMe";
 constexpr char kFolderNameDownloads[] = "Downloads";
 constexpr char kFolderNameMyFiles[] = "MyFiles";
 constexpr char kDisplayNameGoogleDrive[] = "Google Drive";
 constexpr char kDriveFsDirComputers[] = "Computers";
+constexpr char kDriveFsDirSharedWithMe[] = ".files-by-id";
+constexpr char kDriveFsDirShortcutsSharedWithMe[] = ".shortcut-targets-by-id";
 constexpr char kDriveFsDirRoot[] = "root";
 constexpr char kDriveFsDirTeamDrives[] = "team_drives";
 
@@ -414,6 +418,17 @@ bool ConvertFileSystemURLToPathInsideVM(
       // team_drives -> SharedDrives.
       base_to_exclude = base_to_exclude.Append(kDriveFsDirTeamDrives);
       *inside = inside->Append(kCrostiniMapTeamDrives);
+    } else if (components.size() >= 2 &&
+               components[1] == kDriveFsDirSharedWithMe) {
+      // .files-by-id -> SharedWithMe.
+      base_to_exclude = base_to_exclude.Append(kDriveFsDirSharedWithMe);
+      *inside = inside->Append(kCrostiniMapSharedWithMe);
+    } else if (components.size() >= 2 &&
+               components[1] == kDriveFsDirShortcutsSharedWithMe) {
+      // .shortcut-targets-by-id -> ShortcutsSharedWithMe.
+      base_to_exclude =
+          base_to_exclude.Append(kDriveFsDirShortcutsSharedWithMe);
+      *inside = inside->Append(kCrostiniMapShortcutsSharedWithMe);
     }
     // Computers -> Computers
   } else if (id == chromeos::kSystemMountNameRemovable) {
@@ -517,12 +532,22 @@ bool ConvertPathInsideVMToFileSystemURL(
     // GoogleDrive
     if (AppendRelativePath(base::FilePath(kCrostiniMapMyDrive), path,
                            &relative_path)) {
-      // Special mapping for /GoogleDrive/MyDrive -> root
+      // /GoogleDrive/MyDrive -> root
       path = base::FilePath(kDriveFsDirRoot).Append(relative_path);
     } else if (AppendRelativePath(base::FilePath(kCrostiniMapTeamDrives), path,
                                   &relative_path)) {
-      // Special mapping for /GoogleDrive/SharedDrive -> team_drives
+      // /GoogleDrive/SharedDrive -> team_drives
       path = base::FilePath(kDriveFsDirTeamDrives).Append(relative_path);
+    } else if (AppendRelativePath(base::FilePath(kCrostiniMapSharedWithMe),
+                                  path, &relative_path)) {
+      // /GoogleDrive/SharedWithMe -> .files-by-id
+      path = base::FilePath(kDriveFsDirSharedWithMe).Append(relative_path);
+    } else if (AppendRelativePath(
+                   base::FilePath(kCrostiniMapShortcutsSharedWithMe), path,
+                   &relative_path)) {
+      // /GoogleDrive/ShortcutsSharedWithMe -> .shortcut-targets-by-id
+      path = base::FilePath(kDriveFsDirShortcutsSharedWithMe)
+                 .Append(relative_path);
     }
     // Computers -> Computers
   } else if (base::FilePath(chromeos::kSystemMountNameRemovable)
@@ -810,6 +835,28 @@ std::string GetPathDisplayTextForSettings(Profile* profile,
                                .Append(l10n_util::GetStringUTF8(
                                    IDS_FILE_BROWSER_DRIVE_COMPUTERS_LABEL))
                                .value())) {
+  } else if (
+      drive_integration_service &&
+      ReplacePrefix(
+          &result,
+          drive_integration_service->GetMountPointPath()
+              .Append(kDriveFsDirSharedWithMe)
+              .value(),
+          base::FilePath(kDisplayNameGoogleDrive)
+              .Append(l10n_util::GetStringUTF8(
+                  IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
+              .value())) {
+  } else if (
+      drive_integration_service &&
+      ReplacePrefix(
+          &result,
+          drive_integration_service->GetMountPointPath()
+              .Append(kDriveFsDirShortcutsSharedWithMe)
+              .value(),
+          base::FilePath(kDisplayNameGoogleDrive)
+              .Append(l10n_util::GetStringUTF8(
+                  IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
+              .value())) {
   } else if (ReplacePrefix(&result, kAndroidFilesPath,
                            l10n_util::GetStringUTF8(
                                IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL))) {

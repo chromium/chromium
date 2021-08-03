@@ -175,6 +175,17 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 "Computers/My Other Computer/bar"));
+  EXPECT_EQ("Google Drive \u203a Shared with me \u203a 1234 \u203a shared",
+            GetPathDisplayTextForSettings(
+                &profile2,
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+                ".files-by-id/1234/shared"));
+  EXPECT_EQ(
+      "Google Drive \u203a Shared with me \u203a 1-abc-xyz \u203a shortcut",
+      GetPathDisplayTextForSettings(
+          &profile2,
+          "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+          ".shortcut-targets-by-id/1-abc-xyz/shortcut"));
 
   EXPECT_EQ("Google Drive \u203a My Drive \u203a foo",
             GetPathDisplayTextForSettings(&profile2, "${google_drive}/foo"));
@@ -409,6 +420,11 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
           "drivefs-84675c855b63e12f384d45f033826980",
           "Computers/path/in/computers",
           "/mnt/chromeos/GoogleDrive/Computers/path/in/computers",
+      },
+      {
+          "drivefs-84675c855b63e12f384d45f033826980",
+          ".files-by-id/1234/shared",
+          "/mnt/chromeos/GoogleDrive/SharedWithMe/1234/shared",
       },
       {
           "removable",
