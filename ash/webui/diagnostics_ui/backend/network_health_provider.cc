@@ -217,10 +217,19 @@ void UpdateNetwork(
   mojom::Network* network = network_info->network.get();
 
   const bool has_ip_config =
-      managed_properties && managed_properties->saved_ip_config;
+      managed_properties && managed_properties->ip_configs.has_value();
   if (has_ip_config) {
-    network->ip_config =
-        CreateIPConfigProperties(managed_properties->saved_ip_config);
+    const int ip_configs_len = managed_properties->ip_configs.value().size();
+    DCHECK(ip_configs_len >= 1);
+    if (ip_configs_len > 1) {
+      LOG(WARNING) << "More than one entry in ManagedProperties' ip_configs "
+                      "array, selecting the first, IP config count is: "
+                   << ip_configs_len;
+    }
+
+    // TODO(zentaro): Investigate IPV6.
+    auto ip_config = managed_properties->ip_configs.value()[0].Clone();
+    network->ip_config = CreateIPConfigProperties(ip_config);
   }
 }
 
