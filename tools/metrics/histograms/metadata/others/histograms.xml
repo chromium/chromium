@@ -19461,7 +19461,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.Action"
-    enum="WebsiteSettingsDiscoverabilityAction" expires_after="M94">
+    enum="WebsiteSettingsDiscoverabilityAction" expires_after="M96">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
@@ -19470,7 +19470,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.TimeToClickHighlight"
-    units="ms" expires_after="M94">
+    units="ms" expires_after="M96">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
@@ -19480,7 +19480,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
-    expires_after="2022-01-02">
+    expires_after="M96">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
