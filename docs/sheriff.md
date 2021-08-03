@@ -1,9 +1,5 @@
 # Chromium Sheriffing
 
-Author: ellyjones@
-
-## Sheriffing Philosophy
-
 Sheriffs have one overarching role: to ensure that the Chromium build
 infrastructure is doing its job of helping developers deliver good software.
 Every other sheriff responsibility flows from that one. In priority order,
@@ -28,6 +24,9 @@ necessary authority to fulfill them. In particular, you have the authority to:
   changes require a +1 from another committer.
 
 TBRs were removed in Q1 2021.
+
+For more information on Chromium Trunk Sheriffs, including How Tos, Swapping
+Shifts and rotation updates, please see [Chromium Trunk Sheriffing](http://goto.google.com/chrome-trunk-sheriffing)
 
 ## How to be a Sheriff
 

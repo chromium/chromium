@@ -1,5 +1,7 @@
 # How to follow up on an alert
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 [TOC]
 
 Skim the bug to understand where the last sheriff left things and where you should pick up.
