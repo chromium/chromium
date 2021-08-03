@@ -26,7 +26,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
+import org.chromium.chrome.browser.ntp.LegacyIncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -46,7 +46,7 @@ class TasksView extends CoordinatorLayoutForPointer {
     private AppBarLayout mHeaderView;
     private AppBarLayout.OnOffsetChangedListener mFakeSearchBoxShrinkAnimation;
     private SearchBoxCoordinator mSearchBoxCoordinator;
-    private IncognitoDescriptionView mIncognitoDescriptionView;
+    private LegacyIncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
     private boolean mIncognitoCookieControlsCardIsVisible;
     private boolean mIncognitoCookieControlsToggleIsChecked;
@@ -184,7 +184,7 @@ class TasksView extends CoordinatorLayoutForPointer {
             containerView.setFocusable(true);
             containerView.setFocusableInTouchMode(true);
         }
-        mIncognitoDescriptionView = (IncognitoDescriptionView) containerView.findViewById(
+        mIncognitoDescriptionView = (LegacyIncognitoDescriptionView) containerView.findViewById(
                 R.id.new_tab_incognito_container);
         if (mIncognitoDescriptionLearnMoreListener != null) {
             setIncognitoDescriptionLearnMoreClickListener(mIncognitoDescriptionLearnMoreListener);

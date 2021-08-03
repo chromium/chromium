@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.ntp.IncognitoDescriptionView
+<org.chromium.chrome.browser.ntp.LegacyIncognitoDescriptionView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -122,4 +122,4 @@
 
     </RelativeLayout>
 
-</org.chromium.chrome.browser.ntp.IncognitoDescriptionView>
+</org.chromium.chrome.browser.ntp.LegacyIncognitoDescriptionView>

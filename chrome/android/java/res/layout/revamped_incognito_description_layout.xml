@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.ntp.RevampedIncognitoDescriptionView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/revamped_new_tab_incognito_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/md_incognito_ntp_padding_left" >
+
+    <ImageView
+        android:id="@+id/revamped_new_tab_incognito_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:ignore="ContentDescription"
+        android:src="@drawable/incognito_splash"
+        app:tint="@color/ntp_incognito_icon_color" />
+
+    <TextView
+        android:id="@+id/revamped_new_tab_incognito_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_tab_otr_title"
+        android:textAppearance="@style/TextAppearance.Headline.Primary.Light" />
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/revamped_new_tab_incognito_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+        android:lineSpacingExtra="@dimen/md_incognito_ntp_line_spacing" />
+
+    <LinearLayout
+        android:id="@+id/revamped_new_tab_incognito_bulletpoints_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start"
+        android:layout_marginBottom="12dp">
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/revamped_new_tab_incognito_features"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+            app:leading="@dimen/text_size_medium_leading" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/revamped_new_tab_incognito_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+            app:leading="@dimen/text_size_medium_leading" />
+
+    </LinearLayout>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/revamped_learn_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:gravity="center_vertical"
+        android:text="@string/learn_more"
+        android:textAppearance="@style/TextAppearance.IncognitoNewTabLearnMoreLinkModern"
+        app:leading="@dimen/text_size_medium_leading" />
+
+</org.chromium.chrome.browser.ntp.RevampedIncognitoDescriptionView>
