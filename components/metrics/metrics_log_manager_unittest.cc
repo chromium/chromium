@@ -8,7 +8,6 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "components/metrics/metrics_log.h"

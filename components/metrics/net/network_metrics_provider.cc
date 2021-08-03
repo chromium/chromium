@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

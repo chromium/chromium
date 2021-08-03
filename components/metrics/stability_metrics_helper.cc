@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
