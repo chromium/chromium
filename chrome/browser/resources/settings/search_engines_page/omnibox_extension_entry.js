@@ -17,7 +17,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
+import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
@@ -52,7 +52,7 @@ class SettingsOmniboxExtensionEntryElement extends
   constructor() {
     super();
 
-    /** @private {!ExtensionControlBrowserProxy} */
+    /** @private {!ExtensionControlBrowserProxyImpl} */
     this.browserProxy_ = ExtensionControlBrowserProxyImpl.getInstance();
   }
 

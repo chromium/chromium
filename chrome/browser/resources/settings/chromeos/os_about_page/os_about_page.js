@@ -193,16 +193,10 @@ Polymer({
   /** @private {?settings.AboutPageBrowserProxy} */
   aboutBrowserProxy_: null,
 
-  /** @private {?settings.LifetimeBrowserProxy} */
-  lifetimeBrowserProxy_: null,
-
   /** @override */
   attached() {
     this.aboutBrowserProxy_ = settings.AboutPageBrowserProxyImpl.getInstance();
     this.aboutBrowserProxy_.pageReady();
-
-    this.lifetimeBrowserProxy_ =
-        settings.LifetimeBrowserProxyImpl.getInstance();
 
     this.addEventListener('target-channel-changed', e => {
       this.targetChannel_ = e.detail;
@@ -319,7 +313,7 @@ Polymer({
   /** @private */
   onRelaunchClick_() {
     settings.recordSettingChange();
-    this.lifetimeBrowserProxy_.relaunch();
+    settings.LifetimeBrowserProxyImpl.getInstance().relaunch();
   },
 
   /** @private */

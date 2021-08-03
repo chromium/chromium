@@ -122,13 +122,13 @@ preprocess_if_expr("preprocess") {
     "controls/settings_idle_load.js",
     "downloads_page/downloads_browser_proxy.js",
     "ensure_lazy_loaded.js",
-    "extension_control_browser_proxy.js",
+    "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.js",
     "hats_browser_proxy.js",
     "i18n_setup.ts",
     "incompatible_applications_page/incompatible_applications_browser_proxy.js",
     "lazy_load.ts",
-    "lifetime_browser_proxy.js",
+    "lifetime_browser_proxy.ts",
     "metrics_browser_proxy.js",
     "on_startup_page/on_startup_browser_proxy.js",
     "on_startup_page/startup_urls_page_browser_proxy.js",
@@ -468,8 +468,10 @@ js_library("base_mixin") {
 }
 
 js_library("extension_control_browser_proxy") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/extension_control_browser_proxy.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":build_ts" ]
 }
 
 js_library("i18n_setup") {
@@ -522,7 +524,9 @@ js_library("lazy_load") {
 }
 
 js_library("lifetime_browser_proxy") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lifetime_browser_proxy.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
+  extra_deps = [ ":build_ts" ]
 }
 
 js_library("metrics_browser_proxy") {
@@ -716,13 +720,13 @@ ts_library("build_ts") {
     "downloads_page/downloads_browser_proxy.js",
     "downloads_page/downloads_page.js",
     "ensure_lazy_loaded.js",
-    "extension_control_browser_proxy.js",
+    "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.js",
     "hats_browser_proxy.js",
     "i18n_setup.ts",
     "icons.ts",
     "lazy_load.ts",
-    "lifetime_browser_proxy.js",
+    "lifetime_browser_proxy.ts",
     "metrics_browser_proxy.js",
     "on_startup_page/on_startup_browser_proxy.js",
     "on_startup_page/on_startup_page.js",

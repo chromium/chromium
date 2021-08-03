@@ -12,7 +12,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckUpdatesStatus} from './safety_check_browser_proxy.js';
@@ -70,9 +70,6 @@ export class SettingsSafetyCheckUpdatesChildElement extends
 
   constructor() {
     super();
-
-    /** @private {!LifetimeBrowserProxy} */
-    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
 
     /** @private {!MetricsBrowserProxy} */
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
@@ -141,7 +138,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.RelaunchAfterUpdates');
 
-    this.lifetimeBrowserProxy_.relaunch();
+    LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
   /**

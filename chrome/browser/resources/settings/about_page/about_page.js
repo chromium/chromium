@@ -27,7 +27,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {Router} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
@@ -127,9 +127,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
     /** @private {!AboutPageBrowserProxy} */
     this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
-
-    /** @private {!LifetimeBrowserProxy} */
-    this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
   }
 
   /** @override */
@@ -229,7 +226,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   /** @private */
   onRelaunchTap_() {
-    this.lifetimeBrowserProxy_.relaunch();
+    LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
   // <if expr="not chromeos">

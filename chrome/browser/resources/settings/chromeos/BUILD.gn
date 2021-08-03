@@ -244,10 +244,8 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.js",
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
-    "extension_control_browser_proxy.js",
     "languages_page/languages.js",
     "languages_page/languages_browser_proxy.js",
-    "lifetime_browser_proxy.js",
     "page_visibility.js",
     "people_page/account_manager_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
@@ -274,8 +272,10 @@ preprocess_if_expr("copy_browser_settings_tsc") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$browser_settings_tsc_manifest"
   in_files = [
+    "extension_control_browser_proxy.js",
     "i18n_setup.js",
     "icons.js",
+    "lifetime_browser_proxy.js",
     "setting_id_param_util.js",
     "settings_page_css.js",
     "settings_shared_css.js",
