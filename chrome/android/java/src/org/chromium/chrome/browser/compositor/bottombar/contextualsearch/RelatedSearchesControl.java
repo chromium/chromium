@@ -139,7 +139,21 @@ public class RelatedSearchesControl {
      * @return The View height in pixels.
      */
     public float getHeightPx() {
-        return mIsVisible ? mHeightPx : 0f;
+        return !mIsVisible || mControlView == null ? 0f : mHeightPx;
+    }
+
+    /**
+     * Returns the amount of padding that is redundant between the Related Searches carousel that is
+     * shown in the Bar with the content above it. The content above has its own padding that
+     * provides a space between it and the bottom of the Bar. So when the Bar grows to include the
+     * Related Searches (which has its own padding above and below) there is redundant padding.
+     * @return The amount of overlap of padding values that can be removed (in pixels).
+     */
+    public float getRedundantPadding() {
+        return !mIsVisible || mControlView == null
+                ? 0f
+                : mContext.getResources().getDimension(
+                        R.dimen.related_searches_in_bar_redundant_padding);
     }
 
     /** Returns the ID of the view, or {@code INVALID_VIEW_ID} if there's no view. */

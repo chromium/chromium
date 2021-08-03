@@ -1284,8 +1284,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @return The amount of overlap of padding values that can be removed (in pixels).
      */
     public float getInBarRelatedSearchesRedundantPadding() {
-        return mContext.getResources().getDimension(
-                R.dimen.related_searches_in_bar_redundant_padding);
+        return getRelatedSearchesInBarControl().getRedundantPadding();
     }
 
     /**
