@@ -312,6 +312,11 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // resize the visual/layout viewports in response to keyboard visibility
   // changes.
   virtual bool ShouldVirtualKeyboardOverlayContent() = 0;
+
+  // Create a geometrychange event and forward it to the JS with the
+  // keyboard coordinates.
+  virtual void NotifyVirtualKeyboardOverlayRect(
+      const gfx::Rect& keyboard_rect) = 0;
 };
 
 }  // namespace content

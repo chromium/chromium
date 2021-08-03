@@ -2247,7 +2247,9 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
   RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)
     return;
-  frame->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
+  if (ShouldVirtualKeyboardOverlayContent()) {
+    frame->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
+  }
 }
 
 bool RenderWidgetHostViewAura::FocusedFrameHasStickyActivation() const {

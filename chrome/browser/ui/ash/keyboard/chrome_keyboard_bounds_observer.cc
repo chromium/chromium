@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
@@ -59,6 +60,19 @@ ChromeKeyboardBoundsObserver::~ChromeKeyboardBoundsObserver() {
 
   ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   CHECK(!views::WidgetObserver::IsInObserverList());
+}
+
+void ChromeKeyboardBoundsObserver::OnKeyboardVisibleBoundsChanged(
+    const gfx::Rect& screen_bounds) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kVirtualKeyboardApi)) {
+    std::unique_ptr<content::RenderWidgetHostIterator> hosts(
+        content::RenderWidgetHost::GetRenderWidgetHosts());
+
+    while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
+      content::RenderWidgetHostView* view = host->GetView();
+      view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
+    }
+  }
 }
 
 void ChromeKeyboardBoundsObserver::OnKeyboardOccludedBoundsChanged(

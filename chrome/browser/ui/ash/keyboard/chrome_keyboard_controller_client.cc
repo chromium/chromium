@@ -324,6 +324,10 @@ void ChromeKeyboardControllerClient::OnKeyboardVisibleBoundsChanged(
   if (keyboard_contents_)
     keyboard_contents_->SetInitialContentsSize(screen_bounds.size());
 
+  for (auto& observer : observers_) {
+    observer.OnKeyboardVisibleBoundsChanged(screen_bounds);
+  }
+
   if (!GetKeyboardWindow())
     return;
 

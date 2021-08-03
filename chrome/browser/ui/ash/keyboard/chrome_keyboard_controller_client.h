@@ -46,6 +46,9 @@ class ChromeKeyboardControllerClient
     // This is used by oobe and login to adjust the UI.
     virtual void OnKeyboardVisibilityChanged(bool visible) {}
 
+    virtual void OnKeyboardVisibleBoundsChanged(
+        const gfx::Rect& screen_bounds) {}
+
     // Forwards the 'OnKeyboardOccludedBoundsChanged' observer method.
     // This is used to update the insets of browser and app windows when the
     // keyboard is shown.
