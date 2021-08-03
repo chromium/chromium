@@ -5,6 +5,7 @@
 module chromeos_camera.mojom;
 
 import "components/arc/mojom/camera_intent.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Interface for monitoring tablet mode state of device. The state is detected
 // from Chrome browser process and is notified to Chrome Camera App in renderer
@@ -95,6 +96,11 @@ interface WindowStateController {
   Focus() => ();
 };
 
+enum DocumentOutputFormat {
+  JPEG = 0,
+  PDF = 1,
+};
+
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -165,4 +171,29 @@ interface CameraAppHelper {
   // request is raised, or when the error occurs. We can determine the cases
   // by result.
   MonitorFileDeletion(string name) => (FileMonitorResult result);
+
+  // Returns true if document mode is supported on the device.
+  IsDocumentModeSupported() => (bool is_supported);
+
+  // Returns the detected document corners from given |jpeg_data|.
+  // The amount of corners will be either 0, indicating there are no corners
+  // detected, or 4, which are in top-left => bottom-left => bottom-right =>
+  // top-right order. The value of the coordinate of a corner will be in [0, 1).
+  // If there is non-zero orientation info in EXIF of |jpeg_data|, the output
+  // |corners| will be detected on image with orientation corrected.
+  ScanDocumentCorners(array<uint8> jpeg_data)
+      => (array<gfx.mojom.PointF> corners);
+
+  // Does the post processing for document given by its |jpeg_data|, document
+  // |corners|, and convert the result to the desired |output_format|. The input
+  // |corners| should be the ones based on the image with corrected orientation.
+  // And it is guaranteed that the output |doc_data| will have none or corrected
+  // orientation.
+  ConvertToDocument(array<uint8> jpeg_data,
+                    array<gfx.mojom.PointF, 4> corners,
+                    DocumentOutputFormat output_format)
+      => (array<uint8> doc_data);
+
+  // Converts the given |jpeg_data| to PDF format.
+  ConvertToPdf(array<uint8> jpeg_data) => (array<uint8> pdf_data);
 };

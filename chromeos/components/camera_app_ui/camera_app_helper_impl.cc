@@ -9,14 +9,18 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/utils/pdf_conversion.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/aura/window.h"
 
 namespace chromeos_camera {
 namespace {
+
+using chromeos_camera::mojom::DocumentOutputFormat;
 
 mojom::ScreenState ToMojoScreenState(ash::ScreenBacklightState s) {
   switch (s) {
@@ -67,6 +71,19 @@ absl::optional<uint32_t> ParseIntentIdFromUrl(const GURL& url) {
   return intent_id;
 }
 
+bool IsValidCorners(const std::vector<gfx::PointF>& corners) {
+  if (corners.size() != 4) {
+    return false;
+  }
+  for (auto& corner : corners) {
+    if (corner.x() < 0.f || corner.x() > 1.f || corner.y() < 0.f ||
+        corner.y() > 1.f) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 CameraAppHelperImpl::CameraAppHelperImpl(
@@ -79,7 +96,9 @@ CameraAppHelperImpl::CameraAppHelperImpl(
       send_broadcast_callback_(std::move(send_broadcast_callback)),
       has_external_screen_(HasExternalScreen()),
       pending_intent_id_(absl::nullopt),
-      window_(window) {
+      window_(window),
+      document_scanner_service_(
+          chromeos::DocumentScannerServiceClient::Create()) {
   DCHECK(camera_app_ui);
   DCHECK(window);
   window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
@@ -169,6 +188,48 @@ void CameraAppHelperImpl::CheckExternalScreenState() {
     external_screen_monitor_->Update(has_external_screen_);
 }
 
+void CameraAppHelperImpl::OnScannedDocumentCorners(
+    ScanDocumentCornersCallback callback,
+    bool success,
+    const std::vector<gfx::PointF>& corners) {
+  if (success) {
+    std::move(callback).Run(corners);
+  } else {
+    LOG(ERROR) << "Failed to scan document corners";
+    std::move(callback).Run({});
+  }
+}
+
+void CameraAppHelperImpl::OnConvertedToDocument(
+    DocumentOutputFormat output_format,
+    ConvertToDocumentCallback callback,
+    bool success,
+    const std::vector<uint8_t>& processed_jpeg_image) {
+  if (!success) {
+    LOG(ERROR) << "Failed to convert to document";
+    std::move(callback).Run({});
+    return;
+  }
+
+  switch (output_format) {
+    case DocumentOutputFormat::JPEG:
+      std::move(callback).Run(processed_jpeg_image);
+      return;
+    case DocumentOutputFormat::PDF: {
+      std::vector<uint8_t> pdf_data;
+      if (!chromeos::ConvertJpgImageToPdf(processed_jpeg_image, &pdf_data)) {
+        LOG(ERROR) << "Failed to convert jpeg image to PDF format";
+        std::move(callback).Run({});
+        return;
+      }
+      std::move(callback).Run(std::move(pdf_data));
+      return;
+    }
+    default:
+      NOTREACHED() << "Unsupported output format: " << output_format;
+  }
+}
+
 void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
   camera_app_ui_->delegate()->OpenFileInGallery(name);
 }
@@ -220,6 +281,73 @@ void CameraAppHelperImpl::MonitorFileDeletion(
                   std::move(callback).Run(ToMojoFileMonitorResult(result));
                 },
                 std::move(callback)));
+}
+
+void CameraAppHelperImpl::IsDocumentModeSupported(
+    IsDocumentModeSupportedCallback callback) {
+  bool supported = document_scanner_service_ != nullptr;
+  std::move(callback).Run(supported);
+}
+
+void CameraAppHelperImpl::ScanDocumentCorners(
+    const std::vector<uint8_t>& jpeg_data,
+    ScanDocumentCornersCallback callback) {
+  DCHECK(document_scanner_service_);
+  base::MappedReadOnlyRegion memory =
+      base::ReadOnlySharedMemoryRegion::Create(jpeg_data.size());
+  if (!memory.IsValid()) {
+    LOG(ERROR) << "Failed to map memory";
+    std::move(callback).Run({});
+  }
+  memcpy(memory.mapping.memory(), jpeg_data.data(), jpeg_data.size());
+
+  // Since |this| owns |document_scanner_service|, and the callback will be
+  // posted to other sequence with weak pointer of |document_scanner_service|.
+  // Therefore, it is safe to use |base::Unretained(this)| here.
+  document_scanner_service_->DetectCornersFromJPEGImage(
+      std::move(memory.region),
+      base::BindOnce(&CameraAppHelperImpl::OnScannedDocumentCorners,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void CameraAppHelperImpl::ConvertToDocument(
+    const std::vector<uint8_t>& jpeg_data,
+    const std::vector<gfx::PointF>& corners,
+    DocumentOutputFormat output_format,
+    ConvertToDocumentCallback callback) {
+  DCHECK(document_scanner_service_);
+  if (!IsValidCorners(corners)) {
+    LOG(ERROR) << "Failed to convert to document due to invalid corners";
+    std::move(callback).Run({});
+  }
+
+  base::MappedReadOnlyRegion memory =
+      base::ReadOnlySharedMemoryRegion::Create(jpeg_data.size());
+  if (!memory.IsValid()) {
+    LOG(ERROR) << "Failed to map memory";
+    std::move(callback).Run({});
+  }
+  memcpy(memory.mapping.memory(), jpeg_data.data(), jpeg_data.size());
+
+  // Since |this| owns |document_scanner_service|, and the callback will be
+  // posted to other sequence with weak pointer of |document_scanner_service|.
+  // Therefore, it is safe to use |base::Unretained(this)| here.
+  document_scanner_service_->DoPostProcessing(
+      std::move(memory.region), corners,
+      base::BindOnce(&CameraAppHelperImpl::OnConvertedToDocument,
+                     base::Unretained(this), output_format,
+                     std::move(callback)));
+}
+
+void CameraAppHelperImpl::ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
+                                       ConvertToPdfCallback callback) {
+  std::vector<uint8_t> pdf_data;
+  if (!chromeos::ConvertJpgImageToPdf(jpeg_data, &pdf_data)) {
+    LOG(ERROR) << "Failed to convert jpeg image to PDF format";
+    std::move(callback).Run({});
+    return;
+  }
+  std::move(callback).Run(std::move(pdf_data));
 }
 
 void CameraAppHelperImpl::OnTabletModeStarted() {

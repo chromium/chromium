@@ -96,7 +96,8 @@ void CameraAppDeviceBridgeImpl::InvalidateDevicePtrsOnDeviceIpcThread(
     base::OnceClosure callback) {
   auto device = GetWeakCameraAppDevice(device_id);
   if (device) {
-    device->InvalidatePtrs(std::move(callback), should_disable_new_ptrs);
+    device->ResetOnDeviceIpcThread(std::move(callback),
+                                   should_disable_new_ptrs);
   } else {
     std::move(callback).Run();
   }

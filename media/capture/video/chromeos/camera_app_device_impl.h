@@ -10,11 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "chromeos/components/camera_app_ui/document_scanner_service_client.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
@@ -23,6 +25,12 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
+
+namespace gpu {
+
+class GpuMemoryBufferImpl;
+
+}  // namespace gpu
 
 namespace media {
 
@@ -73,10 +81,12 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // the camera device ipc thread.
   base::WeakPtr<CameraAppDeviceImpl> GetWeakPtr();
 
-  // Invalidates all the existing weak pointers and then triggers |callback|.
+  // Resets things which need to be handled on device IPC thread, including
+  // invalidating all the existing weak pointers, and then triggers |callback|.
   // When |should_disable_new_ptrs| is set to true, no more weak pointers can be
   // created. It is used when tearing down the CameraAppDeviceImpl instance.
-  void InvalidatePtrs(base::OnceClosure callback, bool should_disable_new_ptrs);
+  void ResetOnDeviceIpcThread(base::OnceClosure callback,
+                              bool should_disable_new_ptrs);
 
   // Consumes all the pending reprocess tasks if there is any and eventually
   // generates a ReprocessTaskQueue which contains:
@@ -109,6 +119,12 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // opened camera.  Used to configure and query camera frame rotation.
   void SetCameraDeviceContext(CameraDeviceContext* device_context);
 
+  // Returns true if we should perform a document corners detection.
+  bool ShouldDetectDocumentCorners();
+
+  // Detect document corners on the frame given by its gpu memory buffer.
+  void DetectDocumentCorners(std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb);
+
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
   void SetReprocessOption(cros::mojom::Effect effect,
@@ -137,9 +153,18 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       bool is_enabled,
       SetCameraFrameRotationEnabledAtSourceCallback callback) override;
   void GetCameraFrameRotation(GetCameraFrameRotationCallback callback) override;
+  void RegisterDocumentCornersObserver(
+      mojo::PendingRemote<cros::mojom::DocumentCornersObserver> observer,
+      RegisterDocumentCornersObserverCallback callback) override;
+  void UnregisterDocumentCornersObserver(
+      uint32_t id,
+      UnregisterDocumentCornersObserverCallback callback) override;
 
  private:
   static void DisableEeNr(ReprocessTask* task);
+
+  void OnDetectedDocumentCorners(bool success,
+                                 const std::vector<gfx::PointF>& corners);
 
   void OnMojoConnectionError();
 
@@ -196,6 +221,18 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   base::Lock camera_device_context_lock_;
   CameraDeviceContext* camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
+
+  base::Lock document_corners_observer_lock_;
+  uint32_t next_document_corners_observer_id_
+      GUARDED_BY(document_corners_observer_lock_) = 0;
+  base::flat_map<uint32_t, mojo::Remote<cros::mojom::DocumentCornersObserver>>
+      document_corners_observers_ GUARDED_BY(document_corners_observer_lock_);
+  bool has_ongoing_document_detection_task_ = false;
+
+  // Client to connect to document detection service. It should only be
+  // used/destructed on the device IPC thread.
+  std::unique_ptr<chromeos::DocumentScannerServiceClient>
+      document_scanner_service_;
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.

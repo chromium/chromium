@@ -18,6 +18,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
@@ -961,12 +962,24 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
     StreamType stream_type) {
   const CaptureResult& pending_result = pending_results_[frame_number];
   auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
+
   if (video_capture_use_gmb_) {
     VideoCaptureFormat format;
     absl::optional<VideoCaptureDevice::Client::Buffer> buffer =
         stream_buffer_manager_->AcquireBufferForClientById(
             stream_type, buffer_ipc_id, &format);
     CHECK(buffer);
+
+    auto camera_app_device =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_id_);
+    if (camera_app_device && stream_type == StreamType::kPreviewOutput &&
+        camera_app_device->ShouldDetectDocumentCorners()) {
+      camera_app_device->DetectDocumentCorners(
+          stream_buffer_manager_->CreateGpuMemoryBuffer(
+              buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
+              gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE));
+    }
 
     // TODO: Figure out the right color space for the camera frame.  We may need
     // to populate the camera metadata with the color space reported by the V4L2

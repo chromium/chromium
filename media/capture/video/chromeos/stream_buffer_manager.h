@@ -32,6 +32,7 @@ class GpuMemoryBuffer;
 
 namespace gpu {
 
+class GpuMemoryBufferImpl;
 class GpuMemoryBufferSupport;
 
 }  // namespace gpu
@@ -106,6 +107,11 @@ class CAPTURE_EXPORT StreamBufferManager final {
   bool IsReprocessSupported();
 
   bool IsRecordingSupported();
+
+  std::unique_ptr<gpu::GpuMemoryBufferImpl> CreateGpuMemoryBuffer(
+      gfx::GpuMemoryBufferHandle handle,
+      const VideoCaptureFormat& format,
+      gfx::BufferUsage buffer_usage);
 
  private:
   friend class RequestManagerTest;

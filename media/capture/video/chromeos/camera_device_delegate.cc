@@ -841,6 +841,8 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
         return true;
       case cros::mojom::CaptureIntent::VIDEO_RECORD:
         return false;
+      case cros::mojom::CaptureIntent::DOCUMENT:
+        return true;
       default:
         NOTREACHED() << "Unknown capture intent: " << capture_intent;
         return false;

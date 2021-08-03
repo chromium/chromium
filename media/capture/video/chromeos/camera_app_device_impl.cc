@@ -4,14 +4,20 @@
 
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 
+#include "base/bind_post_task.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
 
 namespace {
+
+constexpr int kDetectionWidth = 256;
+constexpr int kDetectionHeight = 256;
 
 void OnStillCaptureDone(media::mojom::ImageCapture::TakePhotoCallback callback,
                         int status,
@@ -78,6 +84,10 @@ CameraAppDeviceImpl::~CameraAppDeviceImpl() {
   // All the weak pointers of |weak_ptr_factory_| should be invalidated on
   // camera device IPC thread before destroying CameraAppDeviceImpl.
   DCHECK(!weak_ptr_factory_.HasWeakPtrs());
+
+  // Document scanner service must be reset on the device IPC thread, where its
+  // mojo channels are bound.
+  DCHECK(!document_scanner_service_);
 }
 
 void CameraAppDeviceImpl::BindReceiver(
@@ -93,12 +103,13 @@ base::WeakPtr<CameraAppDeviceImpl> CameraAppDeviceImpl::GetWeakPtr() {
   return allow_new_ipc_weak_ptrs_ ? weak_ptr_factory_.GetWeakPtr() : nullptr;
 }
 
-void CameraAppDeviceImpl::InvalidatePtrs(base::OnceClosure callback,
-                                         bool should_disable_new_ptrs) {
+void CameraAppDeviceImpl::ResetOnDeviceIpcThread(base::OnceClosure callback,
+                                                 bool should_disable_new_ptrs) {
   if (should_disable_new_ptrs) {
     allow_new_ipc_weak_ptrs_ = false;
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
+  document_scanner_service_.reset();
   std::move(callback).Run();
 }
 
@@ -163,6 +174,72 @@ void CameraAppDeviceImpl::SetCameraDeviceContext(
     CameraDeviceContext* camera_device_context) {
   base::AutoLock lock(camera_device_context_lock_);
   camera_device_context_ = camera_device_context;
+}
+
+bool CameraAppDeviceImpl::ShouldDetectDocumentCorners() {
+  {
+    base::AutoLock lock(capture_intent_lock_);
+    if (capture_intent_ != cros::mojom::CaptureIntent::DOCUMENT) {
+      return false;
+    }
+  }
+
+  if (!chromeos::DocumentScannerServiceClient::IsSupported()) {
+    return false;
+  }
+
+  if (!document_scanner_service_) {
+    document_scanner_service_ =
+        chromeos::DocumentScannerServiceClient::Create();
+    DCHECK(document_scanner_service_);
+  }
+
+  base::AutoLock lock(document_corners_observer_lock_);
+  return !document_corners_observers_.empty() &&
+         !has_ongoing_document_detection_task_ &&
+         document_scanner_service_->IsLoaded();
+}
+
+void CameraAppDeviceImpl::DetectDocumentCorners(
+    std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb) {
+  DCHECK(gmb);
+  if (!gmb->Map()) {
+    LOG(ERROR) << "Failed to map frame buffer";
+    return;
+  }
+  auto frame_size = gmb->GetSize();
+  int width = frame_size.width();
+  int height = frame_size.height();
+
+  base::MappedReadOnlyRegion memory = base::ReadOnlySharedMemoryRegion::Create(
+      kDetectionWidth * kDetectionHeight * 3 / 2);
+
+  auto* y_data = memory.mapping.GetMemoryAs<uint8_t>();
+  auto* uv_data = y_data + kDetectionWidth * kDetectionHeight;
+
+  int status = libyuv::NV12Scale(
+      static_cast<uint8_t*>(gmb->memory(0)), gmb->stride(0),
+      static_cast<uint8_t*>(gmb->memory(1)), gmb->stride(1), width, height,
+      y_data, kDetectionWidth, uv_data, kDetectionWidth, kDetectionWidth,
+      kDetectionHeight, libyuv::FilterMode::kFilterNone);
+  gmb->Unmap();
+  if (status != 0) {
+    LOG(ERROR) << "Failed to scale buffer";
+    return;
+  }
+
+  {
+    base::AutoLock lock(document_corners_observer_lock_);
+    has_ongoing_document_detection_task_ = true;
+
+    DCHECK(document_scanner_service_);
+    document_scanner_service_->DetectCornersFromNV12Image(
+        std::move(memory.region),
+        base::BindPostTask(
+            mojo_task_runner_,
+            base::BindOnce(&CameraAppDeviceImpl::OnDetectedDocumentCorners,
+                           weak_ptr_factory_for_mojo_.GetWeakPtr())));
+  }
 }
 
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
@@ -341,6 +418,30 @@ void CameraAppDeviceImpl::GetCameraFrameRotation(
   std::move(callback).Run(rotation);
 }
 
+void CameraAppDeviceImpl::RegisterDocumentCornersObserver(
+    mojo::PendingRemote<cros::mojom::DocumentCornersObserver> observer,
+    RegisterDocumentCornersObserverCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(document_corners_observer_lock_);
+
+  uint32_t id = next_document_corners_observer_id_++;
+  document_corners_observers_[id] =
+      mojo::Remote<cros::mojom::DocumentCornersObserver>(std::move(observer));
+  std::move(callback).Run(id);
+}
+
+void CameraAppDeviceImpl::UnregisterDocumentCornersObserver(
+    uint32_t id,
+    UnregisterDocumentCornersObserverCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(document_corners_observer_lock_);
+
+  bool is_success = document_corners_observers_.erase(id) == 1;
+  std::move(callback).Run(is_success);
+}
+
 // static
 void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
   auto ee_entry =
@@ -351,6 +452,21 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
       cros::mojom::AndroidNoiseReductionMode::ANDROID_NOISE_REDUCTION_MODE_OFF);
   task->extra_metadata.push_back(std::move(ee_entry));
   task->extra_metadata.push_back(std::move(nr_entry));
+}
+
+void CameraAppDeviceImpl::OnDetectedDocumentCorners(
+    bool success,
+    const std::vector<gfx::PointF>& corners) {
+  base::AutoLock lock(document_corners_observer_lock_);
+  has_ongoing_document_detection_task_ = false;
+  if (!success) {
+    LOG(ERROR) << "Failed to detect document corners";
+    return;
+  }
+
+  for (auto& observer : document_corners_observers_) {
+    observer.second->OnDocumentCornersUpdated(corners);
+  }
 }
 
 void CameraAppDeviceImpl::OnMojoConnectionError() {

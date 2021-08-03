@@ -13,6 +13,7 @@
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/camera_app_ui/camera_app_window_state_controller.h"
+#include "chromeos/components/camera_app_ui/document_scanner_service_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -72,9 +73,29 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
   void MonitorFileDeletion(const std::string& name,
                            MonitorFileDeletionCallback callback) override;
+  void IsDocumentModeSupported(
+      IsDocumentModeSupportedCallback callback) override;
+  void ScanDocumentCorners(const std::vector<uint8_t>& jpeg_data,
+                           ScanDocumentCornersCallback callback) override;
+  void ConvertToDocument(
+      const std::vector<uint8_t>& jpeg_data,
+      const std::vector<gfx::PointF>& corners,
+      chromeos_camera::mojom::DocumentOutputFormat output_format,
+      ConvertToDocumentCallback callback) override;
+  void ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
+                    ConvertToPdfCallback callback) override;
 
  private:
   void CheckExternalScreenState();
+
+  void OnScannedDocumentCorners(ScanDocumentCornersCallback callback,
+                                bool success,
+                                const std::vector<gfx::PointF>& corners);
+  void OnConvertedToDocument(
+      chromeos_camera::mojom::DocumentOutputFormat output_format,
+      ConvertToDocumentCallback callback,
+      bool success,
+      const std::vector<uint8_t>& processed_jpeg_data);
 
   // ash::TabletModeObserver overrides;
   void OnTabletModeStarted() override;
@@ -114,6 +135,10 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
       window_state_controller_;
 
   display::ScopedDisplayObserver display_observer_{this};
+
+  // Client to connect to document detection service.
+  std::unique_ptr<chromeos::DocumentScannerServiceClient>
+      document_scanner_service_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraAppHelperImpl);
 };

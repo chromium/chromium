@@ -11,7 +11,6 @@ import {
 } from '../type.js';
 import {windowController} from '../window_controller.js';
 
-import {MockDocumentScanner} from './mock_document_scanner.js';
 import {wrapEndpoint} from './util.js';
 
 /**
@@ -266,9 +265,7 @@ export class ChromeHelper {
    * @return {!Promise<boolean>}
    */
   async isDocumentModeSupported() {
-    // TODO(b/180564352): Switch to the actual implementation once it is ready.
-    const {isSupported} =
-        await MockDocumentScanner.getInstance().isDocumentModeSupported();
+    const {isSupported} = await this.remote_.isDocumentModeSupported();
     return isSupported;
   }
 
@@ -280,10 +277,8 @@ export class ChromeHelper {
   async scanDocumentCorners(blob) {
     const buffer = new Uint8Array(await blob.arrayBuffer());
 
-    // TODO(b/180564352): Switch to the actual implementation once it is ready.
     const {corners} =
-        await MockDocumentScanner.getInstance().scanDocumentCorners(
-            castToNumberArray(buffer));
+        await this.remote_.scanDocumentCorners(castToNumberArray(buffer));
     return corners;
   }
 
@@ -299,12 +294,18 @@ export class ChromeHelper {
   async convertToDocument(blob, corners, mimeType) {
     assert(corners.length === 4, 'Unexpected amount of corners');
     const buffer = new Uint8Array(await blob.arrayBuffer());
+    let outputFormat;
+    if (mimeType === MimeType.JPEG) {
+      outputFormat = chromeosCamera.mojom.DocumentOutputFormat.JPEG;
+    } else if (mimeType === MimeType.PDF) {
+      outputFormat = chromeosCamera.mojom.DocumentOutputFormat.PDF;
+    } else {
+      throw new Error(`Output mimetype unsupported: ${mimeType}`);
+    }
 
-    // TODO(b/180564352): Switch to the actual implementation once it is ready.
-    const {processedData} =
-        await MockDocumentScanner.getInstance().convertToDocument(
-            castToNumberArray(buffer), corners, mimeType);
-    return new Blob([new Uint8Array(processedData)], {type: mimeType});
+    const {docData} = await this.remote_.convertToDocument(
+        castToNumberArray(buffer), corners, outputFormat);
+    return new Blob([new Uint8Array(docData)], {type: mimeType});
   }
 
   /**
@@ -314,8 +315,8 @@ export class ChromeHelper {
    */
   async convertToPdf(jpegBlob) {
     const buffer = new Uint8Array(await jpegBlob.arrayBuffer());
-    const {pdfData} = await MockDocumentScanner.getInstance().convertToPdf(
-        castToNumberArray(buffer));
+    const {pdfData} =
+        await this.remote_.convertToPdf(castToNumberArray(buffer));
     return new Blob([new Uint8Array(pdfData)], {type: MimeType.PDF});
   }
 

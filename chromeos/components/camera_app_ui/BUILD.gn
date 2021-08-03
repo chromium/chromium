@@ -37,6 +37,7 @@ static_library("camera_app_ui") {
     ":window_managemet",
     "//ash/public/cpp",
     "//chromeos/components/web_applications",
+    "//chromeos/utils",
     "//components/arc",
     "//content/public/browser",
     "//content/public/common",

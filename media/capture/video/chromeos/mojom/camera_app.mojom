@@ -38,6 +38,7 @@ enum CaptureIntent {
   DEFAULT = 0,
   VIDEO_RECORD = 1,
   STILL_CAPTURE = 2,
+  DOCUMENT = 3,
 };
 
 // Interface to let Chrome Camera App (Remote) get specific CameraAppDevice from
@@ -143,6 +144,15 @@ interface CameraAppDevice {
   // display the camera preview upright in the UI. The only valid values for
   // |rotation| are 0, 90, 180, and 270.
   GetCameraFrameRotation() => (uint32 rotation);
+
+  // Registers the document corners observer for preview and returns the
+  // observer |id|.
+  RegisterDocumentCornersObserver(
+      pending_remote<DocumentCornersObserver> observer)
+      => (uint32 id);
+
+  // Unregister the document corners observer by given |id|.
+  UnregisterDocumentCornersObserver(uint32 id) => (bool is_success);
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.
@@ -156,4 +166,13 @@ interface ResultMetadataObserver {
 interface CameraEventObserver {
   // Triggered when the shutter is done for a still capture image.
   OnShutterDone();
+};
+
+// Interface for document corners detection.
+interface DocumentCornersObserver {
+  // Triggered when the detected document |corners| should be updated.
+  // The amount of corners will be either 0, indicating there are no corners
+  // detected, or 4, which are in top-left => bottom-left => bottom-right =>
+  // top-right order. The value of the coordinate of a corner will be in [0, 1).
+  OnDocumentCornersUpdated(array<gfx.mojom.PointF> corners);
 };

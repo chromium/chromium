@@ -389,6 +389,18 @@ bool StreamBufferManager::IsRecordingSupported() {
          stream_context_.end();
 }
 
+std::unique_ptr<gpu::GpuMemoryBufferImpl>
+StreamBufferManager::CreateGpuMemoryBuffer(gfx::GpuMemoryBufferHandle handle,
+                                           const VideoCaptureFormat& format,
+                                           gfx::BufferUsage buffer_usage) {
+  absl::optional<gfx::BufferFormat> gfx_format =
+      PixFormatVideoToGfx(format.pixel_format);
+  DCHECK(gfx_format);
+  return gmb_support_->CreateGpuMemoryBufferImplFromHandle(
+      std::move(handle), format.frame_size, *gfx_format, buffer_usage,
+      base::NullCallback());
+}
+
 // static
 uint64_t StreamBufferManager::GetBufferIpcId(StreamType stream_type, int key) {
   uint64_t id = 0;

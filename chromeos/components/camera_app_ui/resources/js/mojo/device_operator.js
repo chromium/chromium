@@ -16,7 +16,6 @@ import {
 } from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
-import {MockDocumentScanner} from './mock_document_scanner.js';
 import {wrapEndpoint} from './util.js';
 
 /**
@@ -614,33 +613,36 @@ export class DeviceOperator {
   }
 
   /**
-   * Registers a document corners detector and triggers |callback| if the
+   * Registers a document corners observer and triggers |callback| if the
    * detected corners are updated.
    * @param {string} deviceId The id of target camera device.
    * @param {function(!Array<Point>): void} callback Callback to
    *     trigger when the detected corners are updated.
-   * @return {!Promise<number>} Id for the added detector.
+   * @return {!Promise<number>} Id for the added observer.
    */
-  async registerDocumentCornersDetector(deviceId, callback) {
-    // TODO(b/180564352): Switch to the actual implementation once it is ready.
-    const {id} =
-        await MockDocumentScanner.getInstance().registerDocumentCornersDetector(
-            (corners) => {
-              callback(corners.map((c) => new Point(c.x, c.y)));
-            });
+  async registerDocumentCornersObserver(deviceId, callback) {
+    const observerCallbackRouter =
+        wrapEndpoint(new cros.mojom.DocumentCornersObserverCallbackRouter());
+    observerCallbackRouter.onDocumentCornersUpdated.addListener((corners) => {
+      callback(corners.map((c) => new Point(c.x, c.y)));
+    });
+
+    const device = await this.getDevice_(deviceId);
+    const {id} = await device.registerDocumentCornersObserver(
+        observerCallbackRouter.$.bindNewPipeAndPassRemote());
     return id;
   }
 
   /**
-   * Unregisters the document corners detector given by its id.
+   * Unregisters the document corners observer given by its id.
    * @param {string} deviceId The id of target camera device.
-   * @param {number} detectorId The id of the detector.
+   * @param {number} observerId The id of the observer.
    * @return {!Promise<boolean>} True if it succeed.
    */
-  async unregisterDocumentCornersDetector(deviceId, detectorId) {
-    // TODO(b/180564352): Switch to the actual implementation once it is ready.
-    const {isSuccess} = await MockDocumentScanner.getInstance()
-                            .unregisterDocumentCornersDetector(detectorId);
+  async unregisterDocumentCornersObserver(deviceId, observerId) {
+    const device = await this.getDevice_(deviceId);
+    const {isSuccess} =
+        await device.unregisterDocumentCornersObserver(observerId);
     return isSuccess;
   }
 

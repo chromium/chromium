@@ -154,7 +154,7 @@ export class DocumentCornerOverlay {
      * @type {?number}
      * @private
      */
-    this.detectorId_ = null;
+    this.observerId_ = null;
 
     /**
      * @type {!Array<!Line>}
@@ -215,7 +215,7 @@ export class DocumentCornerOverlay {
    * @return {!Promise}
    */
   async start() {
-    if (this.detectorId_ !== null) {
+    if (this.observerId_ !== null) {
       return;
     }
     const deviceOperator = await DeviceOperator.getInstance();
@@ -223,7 +223,7 @@ export class DocumentCornerOverlay {
       // Skip showing indicator on fake camera.
       return;
     }
-    this.detectorId_ = await deviceOperator.registerDocumentCornersDetector(
+    this.observerId_ = await deviceOperator.registerDocumentCornersObserver(
         assertString(this.deviceId_), (corners) => {
           if (corners.length === 0) {
             this.clear_();
@@ -240,16 +240,16 @@ export class DocumentCornerOverlay {
    * @return {!Promise}
    */
   async stop() {
-    if (this.detectorId_ === null) {
+    if (this.observerId_ === null) {
       return;
     }
-    const nonNullDetectorId = this.detectorId_;
+    const nonNullObserverId = this.observerId_;
     const deviceOperator =
         assertInstanceof(await DeviceOperator.getInstance(), DeviceOperator);
-    const isSuccess = deviceOperator.unregisterDocumentCornersDetector(
-        assertString(this.deviceId_), nonNullDetectorId);
+    const isSuccess = deviceOperator.unregisterDocumentCornersObserver(
+        assertString(this.deviceId_), nonNullObserverId);
     assert(isSuccess);
-    this.detectorId_ = null;
+    this.observerId_ = null;
     this.clear_();
   }
 
@@ -257,7 +257,7 @@ export class DocumentCornerOverlay {
    * @return {boolean}
    */
   isEnabled() {
-    return this.detectorId_ !== null;
+    return this.observerId_ !== null;
   }
 
   /**

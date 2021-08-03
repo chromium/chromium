@@ -158,4 +158,12 @@ export class ScannerFactory extends PhotoBaseFactory {
         this.handler_,
     );
   }
+
+  /**
+   * @override
+   */
+  async prepareDevice(constraints, resolution) {
+    return super.prepareDeviceWithCaptureIntent_(
+        constraints, resolution, cros.mojom.CaptureIntent.DOCUMENT);
+  }
 }

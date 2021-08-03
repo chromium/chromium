@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from '../../../chrome_util.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {reportError} from '../../../error.js';
 import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
@@ -252,12 +254,23 @@ export class PhotoBaseFactory extends ModeFactory {
    * @override
    */
   async prepareDevice(constraints, resolution) {
+    return this.prepareDeviceWithCaptureIntent_(
+        constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE);
+  }
+
+  /**
+   * @param {!StreamConstraints} constraints
+   * @param {?Resolution} resolution
+   * @param {cros.mojom.CaptureIntent} captureIntent
+   * @return {!Promise}
+   */
+  async prepareDeviceWithCaptureIntent_(
+      constraints, resolution, captureIntent) {
     this.captureResolution_ = resolution;
     const deviceOperator = await DeviceOperator.getInstance();
     if (deviceOperator !== null) {
       const deviceId = constraints.deviceId;
-      await deviceOperator.setCaptureIntent(
-          deviceId, cros.mojom.CaptureIntent.STILL_CAPTURE);
+      await deviceOperator.setCaptureIntent(deviceId, captureIntent);
       await deviceOperator.setStillCaptureResolution(
           deviceId, assertInstanceof(this.captureResolution_, Resolution));
     }
