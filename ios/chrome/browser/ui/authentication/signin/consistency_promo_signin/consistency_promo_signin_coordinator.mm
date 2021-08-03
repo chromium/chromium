@@ -372,6 +372,10 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
 
 - (void)signinWithIdentity:(ChromeIdentity*)identity {
   DCHECK([self.selectedIdentity isEqual:identity]);
+  // Reset dismissal count if the user wants to sign-in.
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  PrefService* userPrefService = browserState->GetPrefs();
+  userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   [self.defaultAccountCoordinator startSigninSpinner];
   self.authenticationService->SignIn(self.selectedIdentity);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
