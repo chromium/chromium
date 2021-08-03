@@ -106,11 +106,13 @@ VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
     const auto& spatial_layer = config.spatial_layers[sid];
     const size_t num_temporal_layers = spatial_layer.num_of_temporal_layers;
     DCHECK_LE(num_temporal_layers, VP9SVCLayers::kMaxSupportedTemporalLayers);
+    // The same bitrate factors as the software encoder.
+    // https://source.chromium.org/chromium/chromium/src/+/main:media/video/vpx_video_encoder.cc;l=131;drc=d383d0b3e4f76789a6de2a221c61d3531f4c59da
     constexpr double kTemporalLayersBitrateScaleFactors
         [][VP9SVCLayers::kMaxSupportedTemporalLayers] = {
             {1.00, 0.00, 0.00},  // For one temporal layer.
-            {0.50, 0.50, 0.00},  // For two temporal layers.
-            {0.25, 0.25, 0.50},  // For three temporal layers.
+            {0.60, 0.40, 0.00},  // For two temporal layers.
+            {0.50, 0.20, 0.30},  // For three temporal layers.
         };
 
     const uint32_t bitrate_bps = spatial_layer.bitrate_bps;

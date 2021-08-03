@@ -46,8 +46,8 @@ constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
 };
 constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
     {1.00, 0.00, 0.00},  // For one temporal layer.
-    {0.50, 0.50, 0.00},  // For two temporal layers.
-    {0.25, 0.25, 0.50},  // For three temporal layers.
+    {0.60, 0.40, 0.00},  // For two temporal layers.
+    {0.50, 0.20, 0.30},  // For three temporal layers.
 };
 constexpr uint8_t kTemporalLayerPattern[][4] = {
     {0, 0, 0, 0},
