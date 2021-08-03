@@ -12,6 +12,8 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -37,11 +39,34 @@ WebApkManager::WebApkManager(Profile* profile)
   DCHECK(app_list_prefs_);
   install_queue_ = std::make_unique<WebApkInstallQueue>(profile);
 
+  // Always observe AppListPrefs, even when the rest of WebAPKs is not enabled,
+  // so that we can detect WebAPK uninstalls that happen when the feature is
+  // disabled.
   arc_app_list_prefs_observer_.Observe(app_list_prefs_);
-  Observe(&proxy_->AppRegistryCache());
+  arc::ArcSessionManager::Get()->AddObserver(this);
+  StartOrStopObserving();
 }
 
-WebApkManager::~WebApkManager() = default;
+WebApkManager::~WebApkManager() {
+  auto* arc_session_manager = arc::ArcSessionManager::Get();
+  // ArcSessionManager can be destroyed early in unit tests.
+  if (arc_session_manager) {
+    arc_session_manager->RemoveObserver(this);
+  }
+}
+
+void WebApkManager::StartOrStopObserving() {
+  // WebApkManager is only created when arc::IsArcAllowedForProfile() is true.
+  // We additionally check whether Play Store is enabled through Settings before
+  // enabling anything.
+  bool arc_enabled = arc::IsArcPlayStoreEnabledForProfile(profile_);
+
+  if (arc_enabled) {
+    Observe(&proxy_->AppRegistryCache());
+  } else {
+    Observe(nullptr);
+  }
+}
 
 void WebApkManager::OnAppUpdate(const AppUpdate& update) {
   if (!initialized_) {
@@ -144,6 +169,10 @@ void WebApkManager::OnPackageRemoved(const std::string& package_name,
   webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
   // TODO(crbug.com/1200199): Remove the web app as well, if it is still
   // installed and eligible.
+}
+
+void WebApkManager::OnArcPlayStoreEnabledChanged(bool enabled) {
+  StartOrStopObserving();
 }
 
 WebApkInstallQueue* WebApkManager::GetInstallQueueForTest() {

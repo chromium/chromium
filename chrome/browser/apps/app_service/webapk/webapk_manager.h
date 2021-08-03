@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
@@ -26,7 +28,8 @@ class AppServiceProxyBase;
 class WebApkInstallQueue;
 
 class WebApkManager : public AppRegistryCache::Observer,
-                      public ArcAppListPrefs::Observer {
+                      public ArcAppListPrefs::Observer,
+                      public arc::ArcSessionManagerObserver {
  public:
   explicit WebApkManager(Profile* profile);
   ~WebApkManager() override;
@@ -37,21 +40,28 @@ class WebApkManager : public AppRegistryCache::Observer,
   WebApkInstallQueue* GetInstallQueueForTest();
 
  private:
+  // Checks whether WebAPKs should be enabled for the current profile and
+  // starts/stops observing app changes as appropriate.
+  void StartOrStopObserving();
+
   bool IsAppEligibleForWebApk(const AppUpdate& app);
   void QueueInstall(const std::string& app_id);
   void QueueUpdate(const std::string& app_id);
   void QueueUninstall(const std::string& app_id);
   void UninstallInternal(const std::string& app_id);
 
-  // AppRegistryCache::Observer overrides:
+  // AppRegistryCache::Observer:
   void OnAppUpdate(const AppUpdate& update) override;
   void OnAppTypeInitialized(apps::mojom::AppType type) override;
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
-  // ArcAppListPrefs::Observer overrides:
+  // ArcAppListPrefs::Observer:
   void OnPackageListInitialRefreshed() override;
-  void OnPackageRemoved(const std::string& package_namei,
+  void OnPackageRemoved(const std::string& package_name,
                         bool uninstalled) override;
+
+  // ArcSessionManagerObserver:
+  void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
   Profile* profile_;
   AppServiceProxyBase* proxy_;

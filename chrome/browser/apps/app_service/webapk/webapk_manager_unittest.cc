@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -266,5 +267,17 @@ TEST_F(WebApkManagerTest, QueuesPendingUpdateOnStartup) {
       webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
   ASSERT_TRUE(install_task);
   ASSERT_EQ(install_task->app_id(), app_id_1);
+  AssertNoPendingInstalls();
+}
+
+TEST_F(WebApkManagerTest, IgnoresInstallsWhilePlayStoreDisabled) {
+  StartWebApkManager();
+
+  arc::SetArcPlayStoreEnabledForProfile(profile(), /*enabled=*/false);
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  app_service_test()->FlushMojoCalls();
+
   AssertNoPendingInstalls();
 }
