@@ -260,22 +260,12 @@ bool IsHotwordDspAvailable() {
   return chromeos::CrasAudioHandler::Get()->HasHotwordDevice();
 }
 
-bool IsVoiceMatchEnforcedOff(const PrefService* prefs,
-                             bool is_oobe_in_progress) {
-  // If the hotword preference is managed to always disabled Voice Match flow is
-  // hidden.
-  if (prefs->IsManagedPreference(assistant::prefs::kAssistantHotwordEnabled) &&
-      !prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled)) {
-    return true;
-  }
-  // If Voice Match is disabled by policy during OOBE, then Voice Match flow is
-  // hidden.
-  if (is_oobe_in_progress &&
-      !prefs->GetBoolean(
-          assistant::prefs::kAssistantVoiceMatchEnabledDuringOobe)) {
-    return true;
-  }
-  return false;
+bool IsVoiceMatchEnforcedOff(const PrefService* prefs) {
+  // If the hotword preference is managed to always disabled, then we should not
+  // show Voice Match flow.
+  return prefs->IsManagedPreference(
+             assistant::prefs::kAssistantHotwordEnabled) &&
+         !prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled);
 }
 
 AssistantActivityControlConsent::SettingType

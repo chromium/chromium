@@ -25928,7 +25928,6 @@ Called by update_document_policy_enum.py.-->
   <int value="882" label="WindowCaptureAllowedByOrigins"/>
   <int value="883" label="TabCaptureAllowedByOrigins"/>
   <int value="884" label="SameOriginTabCaptureAllowedByOrigins"/>
-  <int value="885" label="AssistantVoiceMatchEnabledDuringOobe"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
