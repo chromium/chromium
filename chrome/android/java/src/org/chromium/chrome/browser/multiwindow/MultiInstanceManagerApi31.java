@@ -17,9 +17,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -86,8 +88,38 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
 
     @Override
     protected void moveTabToOtherWindow(Tab tab) {
-        // TODO: Implement the target instance selection UI. Make it possible to move tabs
-        //       to uninstantiated activity too.
+        // TODO: Invoke target selector dialog.
+        // TargetSelectorCoordinator.showDialog(
+        //       mActivity, (instanceInfo) -> moveTabAction(instanceInfo, tab), getInstanceInfo());
+    }
+
+    private void moveTabAction(InstanceInfo info, Tab tab) {
+        Activity targetActivity = getActivityById(info.instanceId);
+        if (targetActivity != null) {
+            reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab);
+        } else {
+            onMultiInstanceModeStarted();
+            Intent intent = MultiWindowUtils.createNewWindowIntent(
+                    mActivity, info.instanceId, /*openAdjacently=*/true);
+            ReparentingTask.from(tab).begin(mActivity, intent,
+                    mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+        }
+    }
+
+    private void reparentTabToRunningActivity(ChromeTabbedActivity targetActivity, Tab tab) {
+        assert targetActivity != null;
+        Intent intent = new Intent();
+        Context appContext = ContextUtils.getApplicationContext();
+        intent.setClassName(appContext, ChromeTabbedActivity.class.getName());
+        MultiWindowUtils.setOpenInOtherWindowIntentExtras(
+                intent, mActivity, targetActivity.getClass());
+        onMultiInstanceModeStarted();
+        RecordUserAction.record("MobileMenuMoveToOtherWindow");
+
+        ReparentingTask.from(tab).setupIntent(mActivity, intent, null);
+
+        targetActivity.onNewIntent(intent);
+        bringTaskForeground(targetActivity.getTaskId());
     }
 
     @Override
