@@ -134,6 +134,14 @@ namespace {{variant}} {
 {%-   endfor %}
 {%- endif %}
 
+{#--- Constants that need headers (enum types) (basic types go in forward.h) #}
+{%- for constant in module.constants %}
+{%-  if constant.kind|is_enum_kind %}
+{{ kythe_annotation("%s.%s"|format(module_prefix, constant.name)) }}
+{{constant|format_enum_constant_declaration}};
+{%- endif %}
+{%- endfor %}
+
 {{namespace_begin()}}
 
 {%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}

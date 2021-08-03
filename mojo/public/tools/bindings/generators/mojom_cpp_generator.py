@@ -389,6 +389,7 @@ class Generator(generator.Generator):
         "default_value": self._DefaultValue,
         "expression_to_text": self._ExpressionToText,
         "format_constant_declaration": self._FormatConstantDeclaration,
+        "format_enum_constant_declaration": self._FormatEnumConstantDeclaration,
         "get_container_validate_params_ctor_args":
         self._GetContainerValidateParamsCtorArgs,
         "get_full_mojom_name_for_kind": self._GetFullMojomNameForKind,
@@ -625,6 +626,7 @@ class Generator(generator.Generator):
     return self.typemap[self._GetFullMojomNameForKind(typemapped_kind)][
         "typename"]
 
+  # Constants that go in module-forward.h.
   def _FormatConstantDeclaration(self, constant, nested=False):
     if mojom.IsStringKind(constant.kind):
       if nested:
@@ -635,6 +637,12 @@ class Generator(generator.Generator):
     return "constexpr %s %s = %s" % (
         GetCppPodType(constant.kind), constant.name,
         self._ConstantValue(constant))
+
+  # Constants that go in module.h.
+  def _FormatEnumConstantDeclaration(self, constant):
+    if mojom.IsEnumKind(constant.kind):
+      return "constexpr %s %s = %s" % (self._GetNameForKind(
+          constant.kind), constant.name, self._ConstantValue(constant))
 
   def _GetCppWrapperType(self,
                          kind,
@@ -773,6 +781,12 @@ class Generator(generator.Generator):
         if self.for_blink and kind.value_kind.module == imported_module:
           # For Blink, map values need the full definition for tracing.
           return True
+
+    for constant in self.module.constants:
+      # Constants referencing enums need the full definition.
+      if mojom.IsEnumKind(
+          constant.kind) and constant.value.module == imported_module:
+        return True
 
     return False
 

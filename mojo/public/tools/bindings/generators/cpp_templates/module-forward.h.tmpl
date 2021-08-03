@@ -140,10 +140,12 @@ using {{interface.name}}InterfaceBase = {{interface.name}}InterfaceBase;
 {%-   endfor %}
 {%- endif %}
 
-{#--- Constants #}
+{#--- Constants that do not rely on other headers (basic types) #}
 {%- for constant in module.constants %}
+{%-  if not constant.kind|is_enum_kind %}
 {{ kythe_annotation("%s.%s"|format(module_prefix, constant.name)) }}
 {{constant|format_constant_declaration}};
+{%- endif %}
 {%- endfor %}
 
 {#--- Struct Forward Declarations -#}
