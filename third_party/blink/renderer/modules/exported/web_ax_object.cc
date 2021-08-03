@@ -1273,6 +1273,9 @@ bool WebAXObject::CanCallAOMEventListenersForTesting() const {
 }
 
 WebString WebAXObject::ToString(bool verbose) const {
+  if (private_.IsNull())
+    return WebString("[Null]");
+
   return private_->ToString(verbose);
 }
 
