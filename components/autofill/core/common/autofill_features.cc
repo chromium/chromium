@@ -460,5 +460,14 @@ const base::Feature kWalletRequiresFirstSyncSetupComplete{
     "WalletRequiresFirstSyncSetupComplete", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID)
+bool IsAutofillManualFallbackEnabled() {
+  return base::FeatureList::IsEnabled(
+             autofill::features::kAutofillKeyboardAccessory) &&
+         base::FeatureList::IsEnabled(
+             autofill::features::kAutofillManualFallbackAndroid);
+}
+#endif  // OS_ANDROID
+
 }  // namespace features
 }  // namespace autofill

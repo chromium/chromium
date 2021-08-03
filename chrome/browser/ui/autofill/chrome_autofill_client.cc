@@ -722,8 +722,7 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
   // Show the virtual card snackbar only if the keyboard accessory feature is
   // enabled. This is because the ManualFillingComponent for credit cards is
   // only enabled when keyboard accessory is enabled.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillKeyboardAccessory)) {
+  if (features::IsAutofillManualFallbackEnabled()) {
     (new AutofillSnackbarControllerImpl(web_contents()))->Show();
   }
 #else

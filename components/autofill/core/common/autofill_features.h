@@ -203,6 +203,11 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kWalletRequiresFirstSyncSetupComplete;
 #endif
 
+#if defined(OS_ANDROID)
+COMPONENT_EXPORT(AUTOFILL)
+bool IsAutofillManualFallbackEnabled();
+#endif  // OS_ANDROID
+
 }  // namespace features
 }  // namespace autofill
 

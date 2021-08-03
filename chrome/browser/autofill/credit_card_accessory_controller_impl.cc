@@ -221,10 +221,7 @@ bool CreditCardAccessoryController::AllowedForWebContents(
   if (vr::VrTabHelper::IsInVr(web_contents)) {
     return false;  // TODO(crbug.com/902305): Re-enable if possible.
   }
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillKeyboardAccessory) &&
-         base::FeatureList::IsEnabled(
-             autofill::features::kAutofillManualFallbackAndroid);
+  return features::IsAutofillManualFallbackEnabled();
 }
 
 // static
