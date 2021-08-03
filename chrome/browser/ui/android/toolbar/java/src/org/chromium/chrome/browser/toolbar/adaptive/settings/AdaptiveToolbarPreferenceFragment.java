@@ -85,6 +85,6 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
 
     @VisibleForTesting
     /*package*/ void setCanUseVoiceSearchForTesting(boolean canUseVoiceSearch) {
-        mRadioButtonGroup.setCanUseVoiceSearch(canUseVoiceSearch);
+        mRadioButtonGroup.setCanUseVoiceSearch(false);
     }
 }
