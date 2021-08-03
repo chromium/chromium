@@ -88,7 +88,6 @@ InputRouterImpl::InputRouterImpl(
     const Config& config)
     : client_(client),
       disposition_handler_(disposition_handler),
-      frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       touch_scroll_started_sent_(false),
       wheel_event_queue_(this),
       touch_event_queue_(this, config.touch_config),
@@ -238,10 +237,6 @@ bool InputRouterImpl::HasPendingEvents() const {
 
 void InputRouterImpl::SetDeviceScaleFactor(float device_scale_factor) {
   device_scale_factor_ = device_scale_factor;
-}
-
-void InputRouterImpl::SetFrameTreeNodeId(int frame_tree_node_id) {
-  frame_tree_node_id_ = frame_tree_node_id;
 }
 
 void InputRouterImpl::SetForceEnableZoom(bool enabled) {
@@ -512,12 +507,11 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
   TRACE_EVENT1("input", "InputRouterImpl::FilterAndSendWebInputEvent", "type",
                WebInputEvent::GetName(input_event.GetType()));
   TRACE_EVENT("input,benchmark,devtools.timeline", "LatencyInfo.Flow",
-              [&latency_info, this](perfetto::EventContext ctx) {
+              [&latency_info](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* info =
                     ctx.event()->set_chrome_latency_info();
                 info->set_trace_id(latency_info.trace_id());
                 info->set_step(ChromeLatencyInfo::STEP_SEND_INPUT_EVENT_UI);
-                info->set_frame_tree_node_id(frame_tree_node_id_);
 
                 tracing::FillFlowEvent(
                     ctx,

@@ -77,7 +77,6 @@ class CONTENT_EXPORT InputRouterImpl
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override;
   bool HasPendingEvents() const override;
   void SetDeviceScaleFactor(float device_scale_factor) override;
-  void SetFrameTreeNodeId(int frame_tree_node_id) override;
   void SetForceEnableZoom(bool enabled) override;
   absl::optional<cc::TouchAction> AllowedTouchAction() override;
   absl::optional<cc::TouchAction> ActiveTouchAction() override;
@@ -233,7 +232,6 @@ class CONTENT_EXPORT InputRouterImpl
 
   InputRouterImplClient* client_;
   InputDispositionHandler* disposition_handler_;
-  int frame_tree_node_id_;
 
   // Whether the TouchScrollStarted event has been sent for the current
   // gesture scroll yet.

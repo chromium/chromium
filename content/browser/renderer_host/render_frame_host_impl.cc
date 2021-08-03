@@ -1518,8 +1518,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     if (is_main_frame())
       GetLocalRenderWidgetHost()->SetIntersectsViewport(true);
     GetLocalRenderWidgetHost()->SetFrameDepth(frame_tree_node_->depth());
-    GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
-        frame_tree_node_->frame_tree_node_id());
   }
   // Verify is_local_root() now indicates whether this frame is a local root or
   // not. It is safe to use this method anywhere beyond this point.
@@ -3158,8 +3156,6 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
   if (GetLocalRenderWidgetHost()) {
-    GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
-        frame_tree_node_->frame_tree_node_id());
 #if defined(OS_ANDROID)
     GetLocalRenderWidgetHost()->SetForceEnableZoom(
         delegate_->GetOrCreateWebPreferences().force_enable_zoom);
