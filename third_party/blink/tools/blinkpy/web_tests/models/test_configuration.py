@@ -43,10 +43,10 @@ class TestConfiguration(object):
         return ['version', 'architecture', 'build_type']
 
     def items(self):
-        return self.__dict__.items()
+        return list(self.__dict__.items())
 
     def keys(self):
-        return self.__dict__.keys()
+        return list(self.__dict__.keys())
 
     def __str__(self):
         return (
@@ -63,7 +63,7 @@ class TestConfiguration(object):
 
     def values(self):
         """Returns the configuration values of this instance as a tuple."""
-        return self.__dict__.values()
+        return list(self.__dict__.values())
 
 
 class SpecifierSorter(object):
@@ -100,7 +100,7 @@ class SpecifierSorter(object):
         return self._specifier_to_category.get(specifier)
 
     def sort_specifiers(self, specifiers):
-        category_slots = map(lambda x: [], TestConfiguration.category_order())
+        category_slots = [[] for x in TestConfiguration.category_order()]
         for specifier in specifiers:
             category_slots[self.specifier_priority(specifier)].append(
                 specifier)
@@ -177,7 +177,7 @@ class TestConfigurationConverter(object):
                 matching_sets.setdefault(category,
                                          set()).update(configurations)
 
-        return reduce(set.intersection, matching_sets.values())
+        return reduce(set.intersection, list(matching_sets.values()))
 
     @classmethod
     def collapse_macros(cls, macros_dict, specifiers_list):
@@ -276,7 +276,7 @@ class TestConfigurationConverter(object):
 
         # 3) Abbreviate specifier sets by combining specifiers across categories.
         #   (win7, release), (win10, release) --> (win7, win10, release)
-        while try_abbreviating(self._collapsing_sets_by_size.values()):
+        while try_abbreviating(list(self._collapsing_sets_by_size.values())):
             pass
 
         # 4) Substitute specifier subsets that match macros within each set:

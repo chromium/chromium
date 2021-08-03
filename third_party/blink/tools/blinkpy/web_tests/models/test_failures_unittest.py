@@ -102,7 +102,7 @@ class TestFailuresTest(unittest.TestCase):
             test_failure.result_directory = '/dir'
 
         pass_with_stderr = PassWithStderr(
-            DriverOutput(None, None, None, None, error='pass with stderr'))
+            DriverOutput(None, None, None, None, error=b'pass with stderr'))
         init_test_failure(pass_with_stderr)
         crash = FailureCrash(
             DriverOutput(None,
@@ -110,10 +110,10 @@ class TestFailuresTest(unittest.TestCase):
                          None,
                          None,
                          crash=True,
-                         error='crash stderr'))
+                         error=b'crash stderr'))
         init_test_failure(crash)
         timeout = FailureTimeout(
-            DriverOutput(None, None, None, None, error='timeout with stderr'))
+            DriverOutput(None, None, None, None, error=b'timeout with stderr'))
         init_test_failure(timeout)
 
         pass_with_stderr.create_artifacts(artifacts)

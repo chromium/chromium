@@ -37,6 +37,7 @@ from collections import OrderedDict
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models import typ_types
 from typ import expectations_parser
+from functools import reduce
 
 ResultType = typ_types.ResultType
 
@@ -233,9 +234,9 @@ class TestExpectations(object):
         if lineno_to_exps:
             lines.append(_NotExpectation('', len(content_lines) + 1))
 
-            for line in sorted(
-                    reduce(lambda x,y: x+y, lineno_to_exps.values()),
-                    key=lambda e: e.test):
+            for line in sorted(reduce(lambda x, y: x + y,
+                                      list(lineno_to_exps.values())),
+                               key=lambda e: e.test):
                 if line.lineno:
                     raise ValueError(
                         "Expectation '%s' was given a line number that "
@@ -345,7 +346,7 @@ class TestExpectations(object):
                                      trailing_comments=trailing_comments)
 
     def get_expectations_from_file(self, path, test_name):
-        idx = self._expectations_dict.keys().index(path)
+        idx = list(self._expectations_dict.keys()).index(path)
         return copy.deepcopy(
             self._expectations[idx].individual_exps.get(test_name) or [])
 
@@ -435,7 +436,7 @@ class TestExpectations(object):
             path: Absolute path of file where the Expectation instances
                   came from.
             exps: List of Expectation instances to be deleted."""
-        idx = self._expectations_dict.keys().index(path)
+        idx = list(self._expectations_dict.keys()).index(path)
         typ_expectations = self._expectations[idx]
 
         for exp in exps:
@@ -458,7 +459,7 @@ class TestExpectations(object):
             exps: List of Expectation instances to be added to the file.
             lineno: Line number in expectations file where the expectations will
                     be added."""
-        idx = self._expectations_dict.keys().index(path)
+        idx = list(self._expectations_dict.keys()).index(path)
         typ_expectations = self._expectations[idx]
         added_glob = False
 
@@ -483,7 +484,7 @@ class TestExpectations(object):
 
         if added_glob:
             glob_exps = reduce(lambda x, y: x + y,
-                               typ_expectations.glob_exps.values())
+                               list(typ_expectations.glob_exps.values()))
             glob_exps.sort(key=lambda e: len(e.test), reverse=True)
             typ_expectations.glob_exps = OrderedDict()
             for exp in glob_exps:
@@ -500,16 +501,17 @@ class SystemConfigurationRemover(object):
     def __init__(self, test_expectations):
         self._test_expectations = test_expectations
         self._configuration_specifiers_dict = {}
-        for os, os_versions in (self._test_expectations.port.
-                                configuration_specifier_macros().items()):
+        for os, os_versions in (list(
+                self._test_expectations.port.configuration_specifier_macros(
+                ).items())):
             self._configuration_specifiers_dict[os.lower()] = (frozenset(
                 version.lower() for version in os_versions))
         self._os_specifiers = frozenset(
             os for os in self._configuration_specifiers_dict.keys())
         self._version_specifiers = frozenset(
-            specifier.lower() for specifier in reduce(
-                lambda x, y: x | y, self._configuration_specifiers_dict.
-                values()))
+            specifier.lower() for specifier in
+            reduce(lambda x, y: x | y,
+                   list(self._configuration_specifiers_dict.values())))
         self._deleted_lines = set()
         self._generic_exp_file_path = \
             self._test_expectations.port.path_to_generic_test_expectations_file()

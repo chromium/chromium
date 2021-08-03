@@ -37,6 +37,8 @@ from blinkpy.web_tests.models.test_configuration import (
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectations, SystemConfigurationRemover, ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType, Expectation
+from six.moves import range
+from functools import reduce
 
 
 class Base(unittest.TestCase):
@@ -464,7 +466,7 @@ class SystemConfigurationRemoverTests(Base):
         self.set_up_using_raw_expectations(raw_expectations)
         all_versions = reduce(
             lambda x, y: x + y,
-            self._port.configuration_specifier_macros_dict.values())
+            list(self._port.configuration_specifier_macros_dict.values()))
         self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', all_versions)
         self._system_config_remover.update_expectations()
@@ -484,7 +486,7 @@ class SystemConfigurationRemoverTests(Base):
         self.set_up_using_raw_expectations(raw_expectations)
         all_versions = reduce(
             lambda x, y: x + y,
-            self._port.configuration_specifier_macros_dict.values())
+            list(self._port.configuration_specifier_macros_dict.values()))
         self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', all_versions)
         self._system_config_remover.update_expectations()
