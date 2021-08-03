@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/native_io/native_io_host.h"
@@ -165,7 +166,8 @@ void NativeIOManager::BindReceiver(
   it->second->BindReceiver(std::move(receiver));
 }
 
-void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host) {
+void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host,
+                                               base::PassKey<NativeIOHost>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeDeleteHost(host);
 }

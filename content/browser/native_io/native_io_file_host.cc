@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_manager.h"
@@ -42,13 +43,16 @@ void NativeIOFileHost::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::move(callback).Run();
-  origin_host_->OnFileClose(this);  // Deletes |this|.
+
+  // May delete `this`.
+  origin_host_->OnFileClose(this, base::PassKey<NativeIOFileHost>());
 }
 
 void NativeIOFileHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  origin_host_->OnFileClose(this);  // Deletes |this|.
+  // May delete `this`.
+  origin_host_->OnFileClose(this, base::PassKey<NativeIOFileHost>());
 }
 
 }  // namespace content

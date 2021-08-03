@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "content/browser/native_io/native_io_quota_client.h"
@@ -119,9 +120,9 @@ class CONTENT_EXPORT NativeIOManager {
 
   // Called when a receiver is disconnected from a NativeIOHost.
   //
-  // `host` must be owned by this manager. This method should only be called by
-  // NativeIOHost.
-  void OnHostReceiverDisconnect(NativeIOHost* host);
+  // `host` must be owned by this manager. `host` may be deleted.
+  void OnHostReceiverDisconnect(NativeIOHost* host,
+                                base::PassKey<NativeIOHost>);
 
   // Callback function when DeleteStorageKeyData has completed.
   //

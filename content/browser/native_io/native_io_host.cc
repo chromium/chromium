@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/native_io/native_io_file_host.h"
 #include "content/browser/native_io/native_io_manager.h"
@@ -495,7 +496,8 @@ void NativeIOHost::RequestCapacityChange(
   std::move(callback).Run(capacity_delta);
 }
 
-void NativeIOHost::OnFileClose(NativeIOFileHost* file_host) {
+void NativeIOHost::OnFileClose(NativeIOFileHost* file_host,
+                               base::PassKey<NativeIOFileHost>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(open_file_hosts_.count(file_host->file_name()) > 0);
   DCHECK_EQ(open_file_hosts_[file_host->file_name()].get(), file_host);
@@ -525,7 +527,8 @@ void NativeIOHost::DeleteAllData(DeleteAllDataCallback callback) {
 void NativeIOHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  manager_->OnHostReceiverDisconnect(this);
+  // May delete `this`.
+  manager_->OnHostReceiverDisconnect(this, base::PassKey<NativeIOHost>());
 }
 
 void NativeIOHost::DidOpenFile(

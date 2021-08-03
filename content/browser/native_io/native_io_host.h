@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -106,9 +107,10 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
 
   // Called when one of the open files for this storage key closes.
   //
-  // |file_host| must be owned by this storage key host. This method should only
-  // be called by NativeIOFileHost.
-  void OnFileClose(NativeIOFileHost* file_host);
+  // `file_host` must be owned by this storage key host. `file_host` may be
+  // deleted.
+  void OnFileClose(NativeIOFileHost* file_host,
+                   base::PassKey<NativeIOFileHost>);
 
  private:
   // Called when a receiver in the receiver set is disconnected.
