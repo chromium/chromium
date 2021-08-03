@@ -55,6 +55,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
@@ -1427,6 +1428,28 @@ class ParallelDownloadTest : public DownloadContentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ParallelDownloadTest);
+};
+
+class DownloadPrerenderTest : public DownloadContentTest {
+ public:
+  DownloadPrerenderTest()
+      : prerender_helper_(
+            base::BindRepeating(&DownloadPrerenderTest::GetWebContents,
+                                base::Unretained(this))) {}
+  ~DownloadPrerenderTest() override = default;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    DownloadContentTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Started());
+  }
+
+  test::PrerenderTestHelper* prerender_helper() { return &prerender_helper_; }
+
+ private:
+  WebContents* GetWebContents() { return shell()->web_contents(); }
+
+  test::PrerenderTestHelper prerender_helper_;
 };
 
 }  // namespace
@@ -4914,6 +4937,63 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, DisallowRenderMessageRfc822Iframe) {
   observer->WaitForFinished();
   EXPECT_EQ(
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
+}
+
+// Verify that downloads not triggered by navigation are discarded when
+// initiated from a non-active page.
+// Navigation downloads won't reach the DownloadManager. That is tested in
+// PrerenderBrowserTest.{DownloadInMainFrame,DownloadInSubframe}.
+IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/empty.html?prerendering");
+  const GURL kDownloadUrl =
+      embedded_test_server()->GetURL("/download/download-test.lib");
+
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Create a prerendered page.
+  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  auto* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  auto* web_contents = shell()->web_contents();
+  test::PrerenderHostObserver host_observer(*web_contents, host_id);
+
+  // Do a download without navigation from the prerendered RenderFrameHost. The
+  // download should not reach the download manager.
+  auto* download_manager = DownloadManagerForShell(shell());
+  MockDownloadManagerObserver dm_observer(download_manager);
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(0);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(0);
+
+  auto params = blink::mojom::DownloadURLParams::New();
+  params->url = kDownloadUrl;
+  static_cast<RenderFrameHostImpl*>(render_frame_host)
+      ->DownloadURL(std::move(params));
+
+  // Do a download without navigation, from the download manager. In this
+  // case, the download will be dropped.
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(0);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(1);
+
+  // Create download parameters with the renderer process information from the
+  // prerendered page and mark it as rendered-initiated, otherwise the download
+  // won't be checked.
+  auto download_parameters = std::make_unique<download::DownloadUrlParameters>(
+      kDownloadUrl, render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  download_parameters->set_content_initiated(true);
+  download_manager->DownloadUrl(std::move(download_parameters));
+
+  // No navigations were done, so the prerendered page wasn't activated.
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // Verify there were no downloads.
+  EXPECT_TRUE(EnsureNoPendingDownloads());
+
+  std::vector<download::DownloadItem*> downloads;
+  download_manager->GetAllDownloads(&downloads);
+  EXPECT_TRUE(downloads.empty());
 }
 
 }  // namespace content

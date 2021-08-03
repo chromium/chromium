@@ -1384,23 +1384,33 @@ void DownloadManagerImpl::BeginDownloadInternal(
   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),
                                       params->render_frame_host_routing_id());
   bool content_initiated = params->content_initiated();
-  // If it's from the web, we don't trust it, so we push the throttle on.
-  if (rfh && content_initiated && delegate_) {
-    WebContents::Getter web_contents_getter = base::BindRepeating(
-        WebContents::FromFrameTreeNodeId, rfh->GetFrameTreeNodeId());
-    const GURL& url = params->url();
-    const std::string& method = params->method();
-    absl::optional<url::Origin> initiator = params->initiator();
-    base::OnceCallback<void(bool /* download allowed */)>
-        on_can_download_checks_done = base::BindOnce(
-            &DownloadManagerImpl::BeginResourceDownloadOnChecksComplete,
-            weak_factory_.GetWeakPtr(), std::move(params),
-            std::move(blob_url_loader_factory), is_new_download, site_url);
-    delegate_->CheckDownloadAllowed(
-        std::move(web_contents_getter), url, method, std::move(initiator),
-        false /* from_download_cross_origin_redirect */, content_initiated,
-        std::move(on_can_download_checks_done));
-    return;
+
+  if (rfh && content_initiated) {
+    // Cancel downloads from non-active documents (e.g prerendered, bfcached).
+    if (rfh->IsInactiveAndDisallowActivation()) {
+      DropDownload();
+      return;
+    }
+
+    // Push the throttle on the web-initiated downloads before allowing them to
+    // proceed.
+    if (delegate_) {
+      WebContents::Getter web_contents_getter = base::BindRepeating(
+          WebContents::FromFrameTreeNodeId, rfh->GetFrameTreeNodeId());
+      const GURL& url = params->url();
+      const std::string& method = params->method();
+      absl::optional<url::Origin> initiator = params->initiator();
+      base::OnceCallback<void(bool /* download allowed */)>
+          on_can_download_checks_done = base::BindOnce(
+              &DownloadManagerImpl::BeginResourceDownloadOnChecksComplete,
+              weak_factory_.GetWeakPtr(), std::move(params),
+              std::move(blob_url_loader_factory), is_new_download, site_url);
+      delegate_->CheckDownloadAllowed(
+          std::move(web_contents_getter), url, method, std::move(initiator),
+          false /* from_download_cross_origin_redirect */, content_initiated,
+          std::move(on_can_download_checks_done));
+      return;
+    }
   }
 
   BeginResourceDownloadOnChecksComplete(
