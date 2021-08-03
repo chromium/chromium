@@ -25,7 +25,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace {
 
@@ -50,9 +49,7 @@ bool IsBrowserVisible(Browser* browser) {
 }
 
 bool IsBrowserActive(Browser* browser) {
-  aura::Window* window = browser->window()->GetNativeWindow();
-  auto* client = wm::GetActivationClient(window->GetRootWindow());
-  return client && window == client->GetActiveWindow();
+  return browser->window()->IsActive();
 }
 
 bool IsAppVisible(Browser* browser, content::WebContents* contents) {
@@ -95,17 +92,14 @@ const base::Feature BrowserAppsTracker::kEnabled{
     "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
 
 BrowserAppsTracker::BrowserAppsTracker(
-    apps::AppRegistryCache& app_registry_cache,
-    wm::ActivationClient* activation_client)
+    apps::AppRegistryCache& app_registry_cache)
     : apps::AppRegistryCache::Observer(&app_registry_cache),
-      browser_tab_strip_tracker_(this, nullptr),
-      activation_client_(activation_client) {
-  DCHECK(activation_client_);
-  activation_client_->AddObserver(this);
+      browser_tab_strip_tracker_(this, nullptr) {
+  BrowserList::GetInstance()->AddObserver(this);
 }
 
 BrowserAppsTracker::~BrowserAppsTracker() {
-  activation_client_->RemoveObserver(this);
+  BrowserList::GetInstance()->RemoveObserver(this);
 }
 
 void BrowserAppsTracker::Initialize() {
@@ -187,18 +181,22 @@ void BrowserAppsTracker::OnTabStripModelChanged(
 void BrowserAppsTracker::OnWindowVisibilityChanged(aura::Window* window,
                                                    bool visible) {
   DCHECK(window);
-  OnBrowserWindowUpdated(window);
+  // We only want to send window events for the browsers we track to avoid
+  // sending window events before a "browser added" event.
+  if (Browser* browser = FindTrackedBrowserByWindow(window)) {
+    OnBrowserWindowUpdated(browser);
+  }
 }
 
-void BrowserAppsTracker::OnWindowActivated(
-    wm::ActivationChangeObserver::ActivationReason reason,
-    aura::Window* gained_active,
-    aura::Window* lost_active) {
-  if (gained_active) {
-    OnBrowserWindowUpdated(gained_active);
+void BrowserAppsTracker::OnBrowserSetLastActive(Browser* browser) {
+  if (base::Contains(browser_to_tab_map_, browser)) {
+    OnBrowserWindowUpdated(browser);
   }
-  if (lost_active) {
-    OnBrowserWindowUpdated(lost_active);
+}
+
+void BrowserAppsTracker::OnBrowserNoLongerActive(Browser* browser) {
+  if (base::Contains(browser_to_tab_map_, browser)) {
+    OnBrowserWindowUpdated(browser);
   }
 }
 
@@ -230,7 +228,7 @@ void BrowserAppsTracker::OnTabStripModelChangeInsert(
   for (const auto& inserted_tab : insert.contents) {
     auto& known_tabs = browser_to_tab_map_[browser];
     if (known_tabs.size() == 0) {
-      OnBrowserAdded(browser);
+      OnBrowserFirstTabAttached(browser);
       BrowserWindow* window = browser->window();
       if (window && window->GetNativeWindow()) {
         browser_window_observations_.AddObservation(window->GetNativeWindow());
@@ -302,7 +300,7 @@ void BrowserAppsTracker::OnTabStripModelChangeRemove(
       BrowserWindow* window = browser->window();
       DCHECK(window && window->GetNativeWindow());
       browser_window_observations_.RemoveObservation(window->GetNativeWindow());
-      OnBrowserRemoved(browser);
+      OnBrowserLastTabDetached(browser);
       browser_to_tab_map_.erase(browser);
     }
   }
@@ -335,13 +333,13 @@ void BrowserAppsTracker::OnTabStripModelChangeSelection(
   }
 }
 
-void BrowserAppsTracker::OnBrowserAdded(Browser* browser) {
+void BrowserAppsTracker::OnBrowserFirstTabAttached(Browser* browser) {
   if (browser->is_type_normal()) {
     CreateChromeInstance(browser);
   }
 }
 
-void BrowserAppsTracker::OnBrowserRemoved(Browser* browser) {
+void BrowserAppsTracker::OnBrowserLastTabDetached(Browser* browser) {
   RemoveChromeInstanceIfExists(browser);
 }
 
@@ -400,14 +398,7 @@ void BrowserAppsTracker::OnTabNavigationFinished(
   }
 }
 
-void BrowserAppsTracker::OnBrowserWindowUpdated(aura::Window* window) {
-  // We only want to send window events for the browsers we track to avoid
-  // sending window events before a "browser added" event.
-  Browser* browser = FindTrackedBrowserByWindow(window);
-  if (!browser) {
-    return;
-  }
-
+void BrowserAppsTracker::OnBrowserWindowUpdated(Browser* browser) {
   auto it = chrome_instances_.find(browser);
   if (it != chrome_instances_.end()) {
     MaybeUpdateChromeInstance(*it->second);

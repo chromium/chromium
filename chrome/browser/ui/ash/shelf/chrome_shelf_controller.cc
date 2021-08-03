@@ -258,8 +258,8 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
     apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
-    browser_apps_tracker_ = std::make_unique<BrowserAppsTracker>(
-        proxy->AppRegistryCache(), ash::Shell::Get()->activation_client());
+    browser_apps_tracker_ =
+        std::make_unique<BrowserAppsTracker>(proxy->AppRegistryCache());
   }
 }
 

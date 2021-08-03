@@ -16,19 +16,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/wm/public/activation_change_observer.h"
 
 class Browser;
-
-namespace wm {
-class ActivationClient;
-}
 
 // BrowserAppsTracker monitors changes to Browsers, TabStripModels and browsers'
 // native windows to maintain a list of running apps and notify its registered
@@ -38,12 +34,11 @@ class ActivationClient;
 class BrowserAppsTracker : public TabStripModelObserver,
                            public aura::WindowObserver,
                            public apps::AppRegistryCache::Observer,
-                           public wm::ActivationChangeObserver {
+                           public BrowserListObserver {
  public:
   static const base::Feature kEnabled;
 
-  BrowserAppsTracker(apps::AppRegistryCache& app_registry_cache,
-                     wm::ActivationClient* activation_client);
+  explicit BrowserAppsTracker(apps::AppRegistryCache& app_registry_cache);
   ~BrowserAppsTracker() override;
   BrowserAppsTracker(const BrowserAppsTracker&) = delete;
   BrowserAppsTracker& operator=(const BrowserAppsTracker&) = delete;
@@ -82,10 +77,9 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // aura::WindowObserver overrides:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
-  // ActivationChangeObserver overrides:
-  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
+  // BrowserListObserver overrides:
+  void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserNoLongerActive(Browser* browser) override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -109,8 +103,8 @@ class BrowserAppsTracker : public TabStripModelObserver,
                                       const TabStripSelectionChange& selection);
 
   // Called by OnTabStripModelChange* functions.
-  void OnBrowserAdded(Browser* browser);
-  void OnBrowserRemoved(Browser* browser);
+  void OnBrowserFirstTabAttached(Browser* browser);
+  void OnBrowserLastTabDetached(Browser* browser);
   void OnTabCreated(Browser* browser, content::WebContents* contents);
   void OnTabAttached(Browser* browser, content::WebContents* contents);
   void OnTabUpdated(Browser* browser, content::WebContents* contents);
@@ -120,7 +114,7 @@ class BrowserAppsTracker : public TabStripModelObserver,
   void OnTabNavigationFinished(content::WebContents* contents);
 
   // Called on browser window changes. Sends update events for all open tabs.
-  void OnBrowserWindowUpdated(aura::Window* window);
+  void OnBrowserWindowUpdated(Browser* browser);
 
   Browser* FindTrackedBrowserByWindow(aura::Window* window);
 
@@ -177,7 +171,6 @@ class BrowserAppsTracker : public TabStripModelObserver,
       browser_window_observations_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-  wm::ActivationClient* activation_client_;
 
 #if DCHECK_IS_ON()
   // Tabs that are removed from one browser and are getting reinserted into

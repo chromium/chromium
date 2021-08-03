@@ -20,7 +20,6 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/constants.h"
-#include "ui/wm/public/activation_client.h"
 
 // default implementation of RunTestOnMainThread() and TestBody()
 #include "content/public/test/browser_test.h"
@@ -212,8 +211,7 @@ class BrowserAppsTrackerTest : public InProcessBrowserTest {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
-    tracker_ = std::make_unique<BrowserAppsTracker>(
-        proxy->AppRegistryCache(), ash::Shell::Get()->activation_client());
+    tracker_ = std::make_unique<BrowserAppsTracker>(proxy->AppRegistryCache());
     tracker_->Initialize();
 
     ASSERT_EQ(kAppAId, InstallWebApp("https://a.example.org"));
@@ -467,18 +465,15 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowVisibility) {
   auto* bg_tab = InsertForegroundTab(browser, "https://a.example.org");
   auto* fg_tab = InsertForegroundTab(browser, "https://b.example.org");
   InsertForegroundTab(browser, "https://c.example.org");
-  auto* window = browser->window()->GetNativeWindow();
-  auto* activation_client = ash::Shell::Get()->activation_client();
   // Prevent spurious deactivation events.
-  activation_client->DeactivateWindow(window);
-  ASSERT_EQ(activation_client->GetActiveWindow(), nullptr);
+  browser->window()->Deactivate();
 
   // Hide the window.
   {
     SCOPED_TRACE("hide window");
     Recorder recorder(tracker_.get());
 
-    window->Hide();
+    browser->window()->GetNativeWindow()->Hide();
     recorder.Verify({
         {"updated", kChromeAppId, browser, nullptr, kHidden, kInactive},
         {"updated", kAppAId, browser, bg_tab, kHidden, kInactive},
@@ -491,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowVisibility) {
     SCOPED_TRACE("show window");
     Recorder recorder(tracker_.get());
 
-    window->Show();
+    browser->window()->GetNativeWindow()->Show();
     recorder.Verify({
         {"updated", kChromeAppId, browser, nullptr, kVisible, kInactive},
         {"updated", kAppAId, browser, bg_tab, kVisible, kInactive},
@@ -506,30 +501,28 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowActivation) {
   InsertForegroundTab(browser1, "https://a.example.org");
   InsertForegroundTab(browser1, "https://c.example.org");
   auto* fg_tab1 = InsertForegroundTab(browser1, "https://b.example.org");
-  auto* window1 = browser1->window()->GetNativeWindow();
 
   auto* browser2 = CreateBrowser();
   InsertForegroundTab(browser2, "https://a.example.org");
   InsertForegroundTab(browser2, "https://c.example.org");
   auto* fg_tab2 = InsertForegroundTab(browser2, "https://b.example.org");
-  auto* window2 = browser2->window()->GetNativeWindow();
 
-  auto* activation_client = ash::Shell::Get()->activation_client();
-  ASSERT_EQ(activation_client->GetActiveWindow(), window2);
+  ASSERT_FALSE(browser1->window()->IsActive());
+  ASSERT_TRUE(browser2->window()->IsActive());
 
   // Activate window 1.
   {
     SCOPED_TRACE("activate window 1");
     Recorder recorder(tracker_.get());
 
-    activation_client->ActivateWindow(window1);
+    browser1->window()->Activate();
     recorder.Verify({
-        // activated first
-        {"updated", kChromeAppId, browser1, nullptr, kVisible, kActive},
-        {"updated", kAppBId, browser1, fg_tab1, kVisible, kActive},
-        // then deactivated
+        // deactivated first
         {"updated", kChromeAppId, browser2, nullptr, kVisible, kInactive},
         {"updated", kAppBId, browser2, fg_tab2, kVisible, kInactive},
+        // then activated
+        {"updated", kChromeAppId, browser1, nullptr, kVisible, kActive},
+        {"updated", kAppBId, browser1, fg_tab1, kVisible, kActive},
     });
   }
 
@@ -538,14 +531,14 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowActivation) {
     SCOPED_TRACE("activate window 2");
     Recorder recorder(tracker_.get());
 
-    activation_client->ActivateWindow(window2);
+    browser2->window()->Activate();
     recorder.Verify({
-        // activated first
-        {"updated", kChromeAppId, browser2, nullptr, kVisible, kActive},
-        {"updated", kAppBId, browser2, fg_tab2, kVisible, kActive},
-        // then deactivated
+        // deactivated first
         {"updated", kChromeAppId, browser1, nullptr, kVisible, kInactive},
         {"updated", kAppBId, browser1, fg_tab1, kVisible, kInactive},
+        // then activated
+        {"updated", kChromeAppId, browser2, nullptr, kVisible, kActive},
+        {"updated", kAppBId, browser2, fg_tab2, kVisible, kActive},
     });
   }
 }
@@ -555,16 +548,14 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, TabDrag) {
   auto* browser1 = CreateBrowser();
   InsertForegroundTab(browser1, "https://a.example.org");
   auto* fg_tab1 = InsertForegroundTab(browser1, "https://b.example.org");
-  auto* window1 = browser1->window()->GetNativeWindow();
 
   auto* browser2 = CreateBrowser();
   InsertForegroundTab(browser2, "https://a.example.org");
   auto* bg_tab2 = InsertForegroundTab(browser2, "https://a.example.org");
   auto* fg_tab2 = InsertForegroundTab(browser2, "https://b.example.org");
-  auto* window2 = browser2->window()->GetNativeWindow();
 
-  auto* activation_client = ash::Shell::Get()->activation_client();
-  ASSERT_EQ(activation_client->GetActiveWindow(), window2);
+  ASSERT_FALSE(browser1->window()->IsActive());
+  ASSERT_TRUE(browser2->window()->IsActive());
 
   // Drag the active tab of browser 2 and rop it into the last position in
   // browser 1.
@@ -580,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, TabDrag) {
       browser2->tab_strip_model()->DetachWebContentsAtForInsertion(src_index);
 
   // Target browser window goes into foreground right before drop.
-  activation_client->ActivateWindow(window1);
+  browser1->window()->Activate();
 
   // Attach.
   int dst_index = browser1->tab_strip_model()->count();
@@ -590,12 +581,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, TabDrag) {
       // background tab in the dragged-from browser gets activated when the
       // active tab is detached
       {"updated", kAppAId, browser2, bg_tab2, kVisible, kActive},
-      // dragged-into browser window goes into foreground
-      {"updated", kChromeAppId, browser1, nullptr, kVisible, kActive},
-      {"updated", kAppBId, browser1, fg_tab1, kVisible, kActive},
       // dragged-from browser goes into background
       {"updated", kChromeAppId, browser2, nullptr, kVisible, kInactive},
       {"updated", kAppAId, browser2, bg_tab2, kVisible, kInactive},
+      // dragged-into browser window goes into foreground
+      {"updated", kChromeAppId, browser1, nullptr, kVisible, kActive},
+      {"updated", kAppBId, browser1, fg_tab1, kVisible, kActive},
       // previously foreground tab in the dragged-into browser goes into
       // background when the dragged tab is attached to the new browser
       {"updated", kAppBId, browser1, fg_tab1, kVisible, kInactive},
@@ -618,8 +609,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, Accessors) {
   auto* browser3 = CreateAppBrowser(kAppBId);
   auto* b3_tab1 = InsertForegroundTab(browser3, "https://b.example.org");
 
-  ASSERT_EQ(ash::Shell::Get()->activation_client()->GetActiveWindow(),
-            browser3->window()->GetNativeWindow());
+  ASSERT_FALSE(browser1->window()->IsActive());
+  ASSERT_FALSE(browser2->window()->IsActive());
+  ASSERT_TRUE(browser3->window()->IsActive());
 
   auto* b1_app = tracker_->GetChromeInstance(browser1);
   auto* b1_tab1_app = tracker_->GetAppInstance(b1_tab1);
