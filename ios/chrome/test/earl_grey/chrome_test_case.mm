@@ -190,6 +190,30 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   return _testServer.get();
 }
 
+- (void)disableKeyboardTutorials {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // Set the preferences values directly on simulator for the keyboard
+    // modifiers. For persisting these values, CFPreferencesSynchronize must be
+    // called after.
+    CFStringRef app = CFSTR("com.apple.Preferences");
+    CFPreferencesSetValue(CFSTR("DidShowContinuousPathIntroduction"),
+                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
+                          kCFPreferencesAnyHost);
+    CFPreferencesSetValue(CFSTR("KeyboardDidShowProductivityTutorial"),
+                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
+                          kCFPreferencesAnyHost);
+    CFPreferencesSetValue(CFSTR("DidShowGestureKeyboardIntroduction"),
+                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
+                          kCFPreferencesAnyHost);
+    CFPreferencesSetValue(
+        CFSTR("UIKeyboardDidShowInternationalInfoIntroduction"), kCFBooleanTrue,
+        app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+    CFPreferencesSynchronize(kCFPreferencesAnyApplication,
+                             kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+  });
+}
+
 // Set up called once per test, to open a new tab.
 - (void)setUp {
   // Add this class as an AppLaunchManager observer before [super setUp],
@@ -199,6 +223,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [super setUp];
 
   // TODO(crbug.com/1218575): Remove once moved to EG.
+  [self disableKeyboardTutorials];
   [ChromeTestCaseAppInterface disableKeyboardTutorials];
 
   [self resetAppState];

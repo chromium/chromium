@@ -58,22 +58,20 @@ NSMutableSet* invokedCompletionUUID = nil;
     // modifiers. For persisting these values, CFPreferencesSynchronize must be
     // called after.
     CFStringRef app = CFSTR("com.apple.keyboard.preferences.plist");
-    if (@available(iOS 15, *)) {
-      CFPreferencesSetValue(CFSTR("DidShowContinuousPathIntroduction"),
-                            kCFBooleanTrue, app, kCFPreferencesAnyUser,
-                            kCFPreferencesAnyHost);
-      CFPreferencesSetValue(CFSTR("KeyboardDidShowProductivityTutorial"),
-                            kCFBooleanTrue, app, kCFPreferencesAnyUser,
-                            kCFPreferencesAnyHost);
-      CFPreferencesSetValue(CFSTR("DidShowGestureKeyboardIntroduction"),
-                            kCFBooleanTrue, app, kCFPreferencesAnyUser,
-                            kCFPreferencesAnyHost);
-      CFPreferencesSetValue(
-          CFSTR("UIKeyboardDidShowInternationalInfoIntroduction"),
-          kCFBooleanTrue, app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-      CFPreferencesSynchronize(kCFPreferencesAnyApplication,
-                               kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-    }
+    CFPreferencesSetValue(CFSTR("DidShowContinuousPathIntroduction"),
+                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
+                          kCFPreferencesAnyHost);
+    CFPreferencesSetValue(CFSTR("KeyboardDidShowProductivityTutorial"),
+                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
+                          kCFPreferencesAnyHost);
+    CFPreferencesSetValue(CFSTR("DidShowGestureKeyboardIntroduction"),
+                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
+                          kCFPreferencesAnyHost);
+    CFPreferencesSetValue(
+        CFSTR("UIKeyboardDidShowInternationalInfoIntroduction"), kCFBooleanTrue,
+        app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
+    CFPreferencesSynchronize(kCFPreferencesAnyApplication,
+                             kCFPreferencesAnyUser, kCFPreferencesAnyHost);
   });
 }
 
