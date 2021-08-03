@@ -31,6 +31,7 @@ using syncer::ModelType;
 using syncer::ModelTypeFromString;
 using syncer::ModelTypeSet;
 using syncer::ModelTypeToString;
+using syncer::ProxyTypes;
 using syncer::SyncUserSettings;
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
@@ -62,8 +63,8 @@ ModelTypeSet MultiGroupTypes(const ModelTypeSet& registered_types) {
   return multi;
 }
 
-// This test enables and disables types and verifies the type is active via
-// SyncService::GetActiveDataTypes().
+// This test enables and disables types and verifies the type is sufficiently
+// affected by checking for existence of a root node.
 class EnableDisableSingleClientTest : public SyncTest {
  public:
   EnableDisableSingleClientTest() : SyncTest(SINGLE_CLIENT) {}
@@ -72,8 +73,33 @@ class EnableDisableSingleClientTest : public SyncTest {
   // Don't use self-notifications as they can trigger additional sync cycles.
   bool TestUsesSelfNotifications() override { return false; }
 
-  bool IsModelTypeActive(ModelType type) {
-    return GetSyncService(0)->GetActiveDataTypes().Has(type);
+  bool ModelTypeExists(ModelType type) {
+    base::RunLoop loop;
+    std::unique_ptr<base::ListValue> all_nodes;
+    GetSyncService(0)->GetAllNodesForDebugging(
+        base::BindLambdaForTesting([&](std::unique_ptr<base::ListValue> nodes) {
+          all_nodes = std::move(nodes);
+          loop.Quit();
+        }));
+    loop.Run();
+    // Look for the root node corresponding to |type|.
+    for (const base::Value& value : all_nodes->GetList()) {
+      DCHECK(value.is_dict());
+      const base::Value* nodes = value.FindKey("nodes");
+      DCHECK(nodes);
+      DCHECK(nodes->is_list());
+      // Ignore types that are empty, because we expect the root node.
+      if (nodes->GetList().empty()) {
+        continue;
+      }
+      const base::Value* model_type = value.FindKey("type");
+      DCHECK(model_type);
+      DCHECK(model_type->is_string());
+      if (type == ModelTypeFromString(model_type->GetString())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void InjectSyncedBookmark() {
@@ -110,6 +136,7 @@ class EnableDisableSingleClientTest : public SyncTest {
     ModelTypeSet grouped_types =
         syncer::SyncUserSettingsImpl::ResolvePreferredTypesForTesting({type});
     grouped_types.RetainAll(registered_data_types_);
+    grouped_types.RemoveAll(ProxyTypes());
     return grouped_types;
   }
 
@@ -137,17 +164,10 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_EnableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
-  // Certain datatypes like SESSIONS can be configured by multiple
-  // user-selectable types. Hence, enabling a new user-selectable type doesn't
-  // necessarily mean that the datatype (SESSIONS) will be newly-configured. In
-  // this particular test, this influences whether the engine will issue UMA
-  // corresponding to the configuration cycle.
-  syncer::ModelTypeSet previously_active_types;
-
   for (UserSelectableType type : registered_selectable_types_) {
     const ModelTypeSet grouped_types = ResolveGroup(type);
     for (ModelType single_grouped_type : WithoutMultiTypes(grouped_types)) {
-      ASSERT_FALSE(IsModelTypeActive(single_grouped_type))
+      ASSERT_FALSE(ModelTypeExists(single_grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
 
@@ -155,12 +175,10 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_EnableOneAtATime) {
     EXPECT_TRUE(GetClient(0)->EnableSyncForType(type));
 
     for (ModelType grouped_type : grouped_types) {
-      EXPECT_TRUE(IsModelTypeActive(grouped_type))
+      EXPECT_TRUE(ModelTypeExists(grouped_type))
           << " for " << GetUserSelectableTypeName(type);
 
-      if (!syncer::ProtocolTypes().Has(grouped_type) ||
-          syncer::CommitOnlyTypes().Has(grouped_type) ||
-          previously_active_types.Has(grouped_type)) {
+      if (syncer::CommitOnlyTypes().Has(grouped_type)) {
         EXPECT_EQ(0,
                   histogram_tester.GetBucketCount(
                       "Sync.PostedDataTypeGetUpdatesRequest",
@@ -173,8 +191,6 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_EnableOneAtATime) {
                       static_cast<int>(ModelTypeHistogramValue(grouped_type))))
             << " for " << ModelTypeToString(grouped_type);
       }
-
-      previously_active_types.Put(grouped_type);
     }
   }
 }
@@ -186,14 +202,14 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, DisableOneAtATime) {
   for (UserSelectableType type : registered_selectable_types_) {
     const ModelTypeSet grouped_types = ResolveGroup(type);
     for (ModelType grouped_type : grouped_types) {
-      ASSERT_TRUE(IsModelTypeActive(grouped_type))
+      ASSERT_TRUE(ModelTypeExists(grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
 
     EXPECT_TRUE(GetClient(0)->DisableSyncForType(type));
 
     for (ModelType single_grouped_type : WithoutMultiTypes(grouped_types)) {
-      EXPECT_FALSE(IsModelTypeActive(single_grouped_type))
+      EXPECT_FALSE(ModelTypeExists(single_grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
   }
@@ -201,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, DisableOneAtATime) {
   // Lastly make sure that all the multi grouped times are all gone, since we
   // did not check these after disabling inside the above loop.
   for (ModelType multi_grouped_type : multi_grouped_types_) {
-    EXPECT_FALSE(IsModelTypeActive(multi_grouped_type))
+    EXPECT_FALSE(ModelTypeExists(multi_grouped_type))
         << " for " << ModelTypeToString(multi_grouped_type);
   }
 }
@@ -215,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
     const ModelTypeSet grouped_types = ResolveGroup(type);
     const ModelTypeSet single_grouped_types = WithoutMultiTypes(grouped_types);
     for (ModelType single_grouped_type : single_grouped_types) {
-      ASSERT_FALSE(IsModelTypeActive(single_grouped_type))
+      ASSERT_FALSE(ModelTypeExists(single_grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
 
@@ -225,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
     EXPECT_TRUE(GetClient(0)->DisableSyncForType(type));
 
     for (ModelType single_grouped_type : single_grouped_types) {
-      EXPECT_FALSE(IsModelTypeActive(single_grouped_type))
+      EXPECT_FALSE(ModelTypeExists(single_grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
   }
@@ -233,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   // Lastly make sure that all the multi grouped times are all gone, since we
   // did not check these after disabling inside the above loop.
   for (ModelType multi_grouped_type : multi_grouped_types_) {
-    EXPECT_FALSE(IsModelTypeActive(multi_grouped_type))
+    EXPECT_FALSE(ModelTypeExists(multi_grouped_type))
         << " for " << ModelTypeToString(multi_grouped_type);
   }
 }
@@ -246,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   for (UserSelectableType type : registered_selectable_types_) {
     const ModelTypeSet grouped_types = ResolveGroup(type);
     for (ModelType grouped_type : grouped_types) {
-      ASSERT_TRUE(IsModelTypeActive(grouped_type))
+      ASSERT_TRUE(ModelTypeExists(grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
 
@@ -256,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
     EXPECT_TRUE(GetClient(0)->EnableSyncForType(type));
 
     for (ModelType grouped_type : grouped_types) {
-      EXPECT_TRUE(IsModelTypeActive(grouped_type))
+      EXPECT_TRUE(ModelTypeExists(grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
   }
@@ -271,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
     const ModelTypeSet single_grouped_types =
         WithoutMultiTypes(ResolveGroup(type));
     for (ModelType single_grouped_type : single_grouped_types) {
-      ASSERT_FALSE(IsModelTypeActive(single_grouped_type))
+      ASSERT_FALSE(ModelTypeExists(single_grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
 
@@ -282,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
     EXPECT_TRUE(GetClient(0)->EnableSyncForType(type));
 
     for (ModelType single_grouped_type : single_grouped_types) {
-      EXPECT_TRUE(IsModelTypeActive(single_grouped_type))
+      EXPECT_TRUE(ModelTypeExists(single_grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
   }
@@ -299,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableDisable) {
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType grouped_type : ResolveGroup(type)) {
-      EXPECT_FALSE(IsModelTypeActive(grouped_type))
+      EXPECT_FALSE(ModelTypeExists(grouped_type))
           << " for " << GetUserSelectableTypeName(type);
     }
   }
@@ -316,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableAndRestart) {
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType model_type : ResolveGroup(type)) {
-      EXPECT_TRUE(IsModelTypeActive(model_type))
+      EXPECT_TRUE(ModelTypeExists(model_type))
           << " for " << ModelTypeToString(model_type);
     }
   }
@@ -334,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
 
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType model_type : ResolveGroup(type)) {
-      EXPECT_TRUE(IsModelTypeActive(model_type))
+      EXPECT_TRUE(ModelTypeExists(model_type))
           << " for " << ModelTypeToString(model_type);
     }
   }
