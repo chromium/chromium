@@ -84,6 +84,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1205346")
     public void signinWhenPrimaryAccountIsRenamedToAKnownAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
@@ -105,6 +106,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1205346")
     public void signoutWhenPrimaryAccountIsRenamedToAnUnknownAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mAccountManagerTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
