@@ -18,7 +18,7 @@ LOGGER = logging.getLogger(__name__)
 # Regex to parse all compiled EG tests, including disabled (prepended with
 # DISABLED_ or FLAKY_).
 TEST_NAMES_DEBUG_APP_PATTERN = re.compile(
-    'imp +(?:0[xX][0-9a-fA-F]+ )?-\[(?P<testSuite>[A-Za-z_][A-Za-z0-9_]'
+    'imp .*-\[(?P<testSuite>[A-Za-z_][A-Za-z0-9_]'
     '*Test[Case]*) (?P<testMethod>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]*)\]')
 TEST_CLASS_RELEASE_APP_PATTERN = re.compile(
     r'name +0[xX]\w+ '
@@ -26,7 +26,7 @@ TEST_CLASS_RELEASE_APP_PATTERN = re.compile(
 # Regex to parse all compiled EG tests, including disabled (prepended with
 # DISABLED_ or FLAKY_).
 TEST_NAME_RELEASE_APP_PATTERN = re.compile(
-    r'name +0[xX]\w+ (?P<testCase>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]+)\n')
+    r'name +0[xX].+ (?P<testCase>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]+)\n')
 # 'ChromeTestCase' and 'BaseEarlGreyTestCase' are parent classes
 # of all EarlGrey/EarlGrey2 test classes. 'appConfigurationForTestCase' is a
 # class method. They have no real tests.
