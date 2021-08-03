@@ -48,6 +48,14 @@ public final class ApiHelperForS {
     }
 
     /**
+     * Return true if {@link ClipDescription#getClassificationStatus()} returns
+     * ClipDescription.CLASSIFICATION_COMPLETE.
+     */
+    public static boolean isGetClassificationStatusIsComplete(ClipDescription clipDescription) {
+        return clipDescription.getClassificationStatus() == ClipDescription.CLASSIFICATION_COMPLETE;
+    }
+
+    /**
      * See {@link ClipData.Item#getTextLinks()}.
      */
     public static TextLinks getTextLinks(ClipData.Item item) {
