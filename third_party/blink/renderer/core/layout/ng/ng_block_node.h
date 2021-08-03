@@ -215,6 +215,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGPhysicalBoxFragment& container_fragment,
       const NGBlockBreakToken* previous_container_break_token = nullptr) const;
 
+  // If extra columns are added after a multicol has been written back to
+  // legacy, for example for an OOF positioned element, we need to update the
+  // legacy flow thread to encompass those extra columns.
+  void MakeRoomForExtraColumns(LayoutUnit block_size) const;
+
   String ToString() const;
 
  private:

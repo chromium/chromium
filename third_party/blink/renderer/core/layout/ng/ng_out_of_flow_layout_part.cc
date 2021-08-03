@@ -920,12 +920,22 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // had.
     algorithm.CloneOldChildren();
 
+    WritingModeConverter converter(constraint_space.GetWritingDirection(),
+                                   old_result->PhysicalFragment().Size());
+    LayoutUnit additional_column_block_size;
     // Then append the new fragmentainers.
     for (wtf_size_t i = old_fragment_count; i < new_fragment_count; i++) {
       NGContainerFragmentBuilder::ChildWithOffset child =
           limited_multicol_container_builder.Children()[i];
       algorithm.AppendNewChildFragment(*child.fragment, child.offset);
+      additional_column_block_size +=
+          converter.ToLogical(child.fragment->Size()).block_size;
     }
+
+    // We've already written back to legacy for |multicol|, but if we added
+    // new columns to hold any OOF descendants, we need to extend the final
+    // size of the legacy flow thread to encompass those new columns.
+    multicol.MakeRoomForExtraColumns(additional_column_block_size);
 
     // Create a new multicol container fragment and replace all references to
     // the old one with this new one.

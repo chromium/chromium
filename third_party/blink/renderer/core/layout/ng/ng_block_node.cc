@@ -1426,6 +1426,16 @@ void NGBlockNode::CopyChildFragmentPosition(
   layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(point);
 }
 
+void NGBlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutBox());
+  DCHECK(block_flow && block_flow->MultiColumnFlowThread());
+  MultiColumnFragmentainerGroup& last_group =
+      block_flow->MultiColumnFlowThread()
+          ->LastMultiColumnSet()
+          ->LastFragmentainerGroup();
+  last_group.ExtendLogicalBottomInFlowThread(block_size);
+}
+
 void NGBlockNode::CopyFragmentItemsToLayoutBox(
     const NGPhysicalBoxFragment& container,
     const NGFragmentItems& items,
