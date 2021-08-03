@@ -48,10 +48,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using testing::_;
 using testing::ByMove;
 using testing::Not;
@@ -1099,31 +1095,6 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   service()->Shutdown();
   EXPECT_FALSE(service()->GetDisableReasons().Empty());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SyncServiceImplTest, ShouldDisableAllDataTypesForMinorsOnFirstSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kMinorModeRestriction);
-  SignIn();
-
-  // All data types should be disabled for first sync.
-  CreateService(SyncServiceImpl::AUTO_START);
-  InitializeForFirstSync();
-  EXPECT_FALSE(service()->GetUserSettings()->IsSyncEverythingEnabled());
-  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Empty());
-}
-
-TEST_F(SyncServiceImplTest, ShouldNotDisableDataTypesForMinorsOnNthSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kMinorModeRestriction);
-  SignIn();
-
-  // Data types should not be disabled for Nth sync.
-  CreateService(SyncServiceImpl::AUTO_START);
-  InitializeForNthSync();
-  EXPECT_TRUE(service()->GetUserSettings()->IsSyncEverythingEnabled());
-}
-#endif
 
 #if defined(OS_ANDROID)
 TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
