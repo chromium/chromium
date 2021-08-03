@@ -63,7 +63,7 @@ def ci_builder(
         specifying additional parameters for exporting test results to BigQuery.
         Will always upload to the following tables in addition to any tables
         specified by the list's elements:
-          luci-resultdb.chromium.ci_test_results
+          chrome-luci-data.chromium.ci_test_results
           chrome-luci-data.chromium.gpu_ci_test_results
       experiments - a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
@@ -78,8 +78,13 @@ def ci_builder(
         notifies = (notifies or []) + ["chromium-tree-closer", "chromium-tree-closer-email"]
 
     merged_resultdb_bigquery_exports = [
+        # TODO(crbug.com/1230801): Remove when all usages of this table have
+        # been migrated to `chrome-luci-data.chromium.ci_test_results`.
         resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.ci_test_results",
+        ),
+        resultdb.export_test_results(
+            bq_table = "chrome-luci-data.chromium.ci_test_results",
         ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",

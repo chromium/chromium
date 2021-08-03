@@ -106,7 +106,7 @@ def try_builder(
         specifying additional parameters for exporting test results to BigQuery.
         Will always upload to the following tables in addition to any tables
         specified by the list's elements:
-          luci-resultdb.chromium.try_test_results
+          chrome-luci-data.chromium.try_test_results
           chrome-luci-data.gpu_try_test_results
     """
     if not branches.matches(branch_selector):
@@ -118,8 +118,13 @@ def try_builder(
     experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
     merged_resultdb_bigquery_exports = [
+        # TODO(crbug.com/1230801): Remove when all usages of this table have
+        # been migrated to `chrome-luci-data.chromium.try_test_results`.
         resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.try_test_results",
+        ),
+        resultdb.export_test_results(
+            bq_table = "chrome-luci-data.chromium.try_test_results",
         ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_try_test_results",
