@@ -6,6 +6,7 @@ import json
 import os
 import posixpath
 import stat
+import subprocess
 
 import py_utils
 from py_utils import cloud_storage
@@ -23,13 +24,49 @@ CONFIG_PATH = os.path.abspath(
   os.path.join(os.path.dirname(__file__), 'binary_deps.json'))
 
 
+def _GetHostArch():
+  uname_arch = subprocess.check_output(['uname', '-m']).strip()
+  if uname_arch == 'armv7l':
+    return 'arm'
+  elif uname_arch == 'aarch64':
+    return 'arm64'
+  return uname_arch
+
+
+def _GetBinaryArch(binary_name):
+  file_output = subprocess.check_output(['file', binary_name])
+  file_arch = file_output.split(',')[1].strip()
+  if file_arch == 'x86-64':
+    return 'x86_64'
+  elif file_arch == 'ARM':
+    return 'arm'
+  elif file_arch == 'ARM aarch64':
+    return 'arm64'
+  return file_arch
+
+
 def _GetHostPlatform():
   os_name = py_utils.GetHostOsName()
   # If we're running directly on a Chrome OS device, fetch the binaries for
   # linux instead, which should be compatible with CrOS.
-  if os_name == 'chromeos':
-    os_name = 'linux'
+  if os_name in ['chromeos', 'linux']:
+    arch = _GetHostArch()
+    if arch == 'x86_64':
+      return 'linux'
+    return 'linux_' + arch
   return os_name
+
+
+def _GetBinaryPlatform(binary_name):
+  host_platform = _GetHostPlatform()
+  # Binaries built on mac/windows are for mac/windows respectively. Binaries
+  # built on linux may be for linux or chromeos on different architectures.
+  if not host_platform.startswith('linux'):
+    return host_platform
+  arch = _GetBinaryArch(binary_name)
+  if arch == 'x86_64':
+    return 'linux'
+  return 'linux' + '_' + arch
 
 
 def _CalculateHash(remote_path):
@@ -60,7 +97,7 @@ def UploadHostBinary(binary_name, binary_path, version):
   affect which binaries will be downloaded by FetchHostBinary.
   """
   filename = os.path.basename(binary_path)
-  platform = _GetHostPlatform()
+  platform = _GetBinaryPlatform(binary_path)
   remote_path = posixpath.join(BINARY_CS_FOLDER, binary_name, platform, version,
                                filename)
   if not cloud_storage.Exists(BINARY_BUCKET, remote_path):
@@ -96,8 +133,11 @@ def SwitchBinaryToNewPath(binary_name, platform, new_path):
   """
   with open(CONFIG_PATH) as f:
     config = json.load(f)
-  config[binary_name][platform]['remote_path'] = new_path
-  config[binary_name][platform]['hash'] = _CalculateHash(new_path)
+  config.setdefault(binary_name, {}).setdefault(platform,
+                                                {})['remote_path'] = new_path
+  config.setdefault(binary_name,
+                    {}).setdefault(platform,
+                                   {})['hash'] = _CalculateHash(new_path)
   with open(CONFIG_PATH, 'w') as f:
     json.dump(config, f, indent=4, separators=(',', ': '))
 
