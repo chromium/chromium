@@ -10,7 +10,6 @@
 
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 
 class GURL;
 class Profile;

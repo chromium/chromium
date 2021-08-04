@@ -24,6 +24,8 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -183,13 +185,13 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 
   Observe(nullptr);
 
-  DCHECK(data.manifest_url.is_valid() || data.manifest.IsEmpty());
+  DCHECK(data.manifest_url.is_valid() || blink::IsEmptyManifest(data.manifest));
 
   const bool is_installable = data.NoBlockingErrors();
   DCHECK(!is_installable || data.valid_manifest);
-  absl::optional<blink::Manifest> opt_manifest;
-  if (!data.manifest.IsEmpty())
-    opt_manifest = data.manifest;
+  blink::mojom::ManifestPtr opt_manifest;
+  if (!blink::IsEmptyManifest(data.manifest))
+    opt_manifest = data.manifest.Clone();
 
   std::move(check_installability_callback_)
       .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,
@@ -216,7 +218,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
     std::move(get_web_app_info_callback_).Run(nullptr);
   } else if (check_installability_callback_) {
     std::move(check_installability_callback_)
-        .Run(/*manifest=*/absl::nullopt, /*manifest_url=*/GURL(),
+        .Run(/*manifest=*/nullptr, /*manifest_url=*/GURL(),
              /*valid_manifest_for_web_app=*/false,
              /*is_installable=*/false);
   } else if (get_icons_callback_) {

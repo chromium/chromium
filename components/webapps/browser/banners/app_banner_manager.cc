@@ -34,7 +34,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
@@ -223,6 +225,7 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
       has_maskable_primary_icon_(false),
       state_(State::INACTIVE),
       manager_(InstallableManager::FromWebContents(web_contents)),
+      manifest_(blink::mojom::Manifest::New()),
       has_sufficient_engagement_(false),
       load_finished_(false),
       status_reporter_(std::make_unique<NullStatusReporter>()),
@@ -274,8 +277,8 @@ bool AppBannerManager::CheckIfShouldShowBanner() {
 }
 
 bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
-  for (const auto& related_app : manifest_.related_applications) {
-    if (manifest_.prefer_related_applications &&
+  for (const auto& related_app : manifest().related_applications) {
+    if (manifest().prefer_related_applications &&
         IsSupportedNonWebAppPlatform(
             related_app.platform.value_or(std::u16string()))) {
       return true;
@@ -287,12 +290,17 @@ bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
 }
 
 std::string AppBannerManager::GetAppIdentifier() {
-  DCHECK(!manifest_.IsEmpty());
-  return manifest_.start_url.spec();
+  DCHECK(!blink::IsEmptyManifest(manifest()));
+  return manifest().start_url.spec();
 }
 
 std::u16string AppBannerManager::GetAppName() const {
-  return manifest_.name.value_or(std::u16string());
+  return manifest().name.value_or(std::u16string());
+}
+
+const blink::mojom::Manifest& AppBannerManager::manifest() const {
+  DCHECK(manifest_);
+  return *manifest_;
 }
 
 std::string AppBannerManager::GetBannerType() {
@@ -348,10 +356,10 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   }
 
   DCHECK(!data.manifest_url.is_empty());
-  DCHECK(!data.manifest.IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(data.manifest));
 
   manifest_url_ = data.manifest_url;
-  manifest_ = data.manifest;
+  manifest_ = data.manifest.Clone();
 
   PerformInstallableChecks();
 }
@@ -462,7 +470,7 @@ void AppBannerManager::ResetCurrentPageData() {
   load_finished_ = false;
   has_sufficient_engagement_ = false;
   active_media_players_.clear();
-  manifest_ = blink::Manifest();
+  manifest_ = blink::mojom::Manifest::New();
   manifest_url_ = GURL();
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
@@ -516,7 +524,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
     case InstallableWebAppCheckResult::kUnknown:
       break;
     case InstallableWebAppCheckResult::kYes_Promotable:
-      last_promotable_web_app_scope_ = manifest_.scope;
+      last_promotable_web_app_scope_ = manifest().scope;
       DCHECK(!last_promotable_web_app_scope_.is_empty());
       last_already_installed_web_app_scope_ = GURL();
       install_animation_pending_ =
@@ -524,7 +532,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
               web_contents(), last_promotable_web_app_scope_);
       break;
     case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
-      last_already_installed_web_app_scope_ = manifest_.scope;
+      last_already_installed_web_app_scope_ = manifest().scope;
       DCHECK(!last_already_installed_web_app_scope_.is_empty());
       last_promotable_web_app_scope_ = GURL();
       install_animation_pending_ = false;
@@ -811,11 +819,11 @@ bool AppBannerManager::IsPromotableWebApp() const {
 }
 
 const GURL& AppBannerManager::GetManifestStartUrl() const {
-  return manifest_.start_url;
+  return manifest().start_url;
 }
 
 blink::mojom::DisplayMode AppBannerManager::GetManifestDisplayMode() const {
-  return manifest_.display;
+  return manifest().display;
 }
 
 bool AppBannerManager::MaybeConsumeInstallAnimation() {
@@ -906,7 +914,7 @@ void AppBannerManager::ShowBanner() {
   }
 
   DCHECK(!manifest_url_.is_empty());
-  DCHECK(!manifest_.IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!primary_icon_url_.is_empty());
   DCHECK(!primary_icon_.drawsNothing());
 

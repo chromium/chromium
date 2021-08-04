@@ -11,8 +11,13 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 namespace blink {
+
+// Checks whether the manifest has no fields set.
+BLINK_COMMON_EXPORT bool IsEmptyManifest(const mojom::Manifest& manifest);
+BLINK_COMMON_EXPORT bool IsEmptyManifest(const mojom::ManifestPtr& manifest);
 
 // Converts a blink::mojom::DisplayMode to a string. Returns one of
 // https://www.w3.org/TR/appmanifest/#dfn-display-modes-values. Return values

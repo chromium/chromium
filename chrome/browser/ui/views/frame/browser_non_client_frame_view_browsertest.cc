@@ -27,8 +27,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/theme_change_waiter.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/theme_provider.h"
 
 class BrowserNonClientFrameViewBrowserTest
@@ -52,10 +52,13 @@ class BrowserNonClientFrameViewBrowserTest
   // longer be hosted apps when BMO ships.
   void InstallAndLaunchBookmarkApp(
       absl::optional<GURL> app_url = absl::nullopt) {
-    blink::Manifest manifest;
+    blink::mojom::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
-    manifest.theme_color = app_theme_color_;
+    if (app_theme_color_) {
+      manifest.has_theme_color = true;
+      manifest.theme_color = *app_theme_color_;
+    }
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     GURL manifest_url = embedded_test_server()->GetURL("/manifest");

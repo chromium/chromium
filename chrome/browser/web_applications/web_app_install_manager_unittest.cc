@@ -45,6 +45,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -88,13 +89,16 @@ std::vector<blink::Manifest::ImageResource> ConvertWebAppIconsToImageResources(
   return icons;
 }
 
-std::unique_ptr<blink::Manifest> ConvertWebAppToManifest(const WebApp& app) {
-  auto manifest = std::make_unique<blink::Manifest>();
+blink::mojom::ManifestPtr ConvertWebAppToManifest(const WebApp& app) {
+  auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = app.start_url();
   manifest->scope = app.start_url();
   manifest->short_name = u"Short Name to be overriden.";
   manifest->name = base::UTF8ToUTF16(app.name());
-  manifest->theme_color = app.theme_color();
+  if (app.theme_color()) {
+    manifest->has_theme_color = true;
+    manifest->theme_color = *app.theme_color();
+  }
   manifest->display = app.display_mode();
   manifest->icons = ConvertWebAppIconsToImageResources(app);
   return manifest;

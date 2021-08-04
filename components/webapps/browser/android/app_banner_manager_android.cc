@@ -39,6 +39,7 @@
 #include "net/base/url_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -160,7 +161,7 @@ void AppBannerManagerAndroid::PerformInstallableChecks() {
 }
 
 void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
-  if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest_)) {
+  if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest())) {
     Stop(URL_NOT_SUPPORTED_FOR_WEBAPK);
     return;
   }
@@ -181,7 +182,7 @@ AppBannerManagerAndroid::CreateAddToHomescreenParams(
   if (native_app_data_.is_null()) {
     a2hs_params->app_type = AddToHomescreenParams::AppType::WEBAPK;
     a2hs_params->shortcut_info = ShortcutInfo::CreateShortcutInfo(
-        manifest_url_, manifest_, primary_icon_url_);
+        manifest_url_, manifest(), primary_icon_url_);
     a2hs_params->install_source = install_source;
     a2hs_params->has_maskable_primary_icon = has_maskable_primary_icon_;
   } else {
@@ -352,12 +353,12 @@ std::string AppBannerManagerAndroid::ExtractQueryValueForName(
 }
 
 bool AppBannerManagerAndroid::ShouldPerformInstallableNativeAppCheck() {
-  if (!manifest_.prefer_related_applications || java_banner_manager_.is_null())
+  if (!manifest().prefer_related_applications || java_banner_manager_.is_null())
     return false;
 
   // Ensure there is at least one related app specified that is supported on
   // the current platform.
-  for (const auto& application : manifest_.related_applications) {
+  for (const auto& application : manifest().related_applications) {
     if (base::EqualsASCII(application.platform.value_or(std::u16string()),
                           kPlatformPlay))
       return true;
@@ -368,7 +369,7 @@ bool AppBannerManagerAndroid::ShouldPerformInstallableNativeAppCheck() {
 void AppBannerManagerAndroid::PerformInstallableNativeAppCheck() {
   DCHECK(ShouldPerformInstallableNativeAppCheck());
   InstallableStatusCode code = NO_ERROR_DETECTED;
-  for (const auto& application : manifest_.related_applications) {
+  for (const auto& application : manifest().related_applications) {
     std::string id =
         base::UTF16ToUTF8(application.id.value_or(std::u16string()));
     code = QueryNativeApp(application.platform.value_or(std::u16string()),
@@ -463,9 +464,8 @@ std::u16string AppBannerManagerAndroid::GetAppName() const {
   if (native_app_data_.is_null()) {
     // Prefer the short name if it's available. It's guaranteed that at least
     // one of these is non-empty.
-    std::u16string short_name = manifest_.short_name.value_or(std::u16string());
-    return short_name.empty() ? manifest_.name.value_or(std::u16string())
-                              : short_name;
+    std::u16string short_name = manifest().short_name.value_or(u"");
+    return short_name.empty() ? manifest().name.value_or(u"") : u"";
   }
 
   return native_app_title_;
@@ -537,7 +537,7 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   // some time, so ensure we don't accidentally allow a new installation whilst
   // one is in flight for the current site.
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
-                                         manifest_.start_url) ||
+                                         manifest().start_url) ||
          WebappsClient::Get()->IsInstallationInProgress(web_contents(),
                                                         manifest_url_);
 }
@@ -545,7 +545,7 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
 void AppBannerManagerAndroid::ShowAmbientBadge() {
   InstallableAmbientBadgeInfoBarDelegate::Create(
       web_contents(), weak_factory_.GetWeakPtr(), GetAppName(), primary_icon_,
-      has_maskable_primary_icon_, manifest_.start_url);
+      has_maskable_primary_icon_, manifest().start_url);
 }
 
 void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

@@ -34,6 +34,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
@@ -228,7 +230,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   is_waiting_for_manifest_ = false;
 
-  if (!data.manifest.IsEmpty()) {
+  if (!blink::IsEmptyManifest(data.manifest)) {
     base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
     shortcut_info_.UpdateFromManifest(data.manifest);
     shortcut_info_.manifest_url = data.manifest_url;
@@ -236,7 +238,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   // Do this after updating from the manifest for the case where a site has
   // a manifest with name and standalone specified, but no icons.
-  if (data.manifest.IsEmpty() || !data.primary_icon) {
+  if (blink::IsEmptyManifest(data.manifest) || !data.primary_icon) {
     observer_->OnUserTitleAvailable(shortcut_info_.user_title,
                                     shortcut_info_.url,
                                     /*is_webapk_compatible=*/false);

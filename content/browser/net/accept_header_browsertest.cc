@@ -23,6 +23,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/test/ppapi/ppapi_test.h"

@@ -55,6 +55,7 @@
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
@@ -537,7 +538,7 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
 
   static void ManifestCallbackAndRun(base::OnceClosure continuation,
                                      const GURL&,
-                                     const blink::Manifest&) {
+                                     blink::mojom::ManifestPtr) {
     std::move(continuation).Run();
   }
 

@@ -35,7 +35,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -443,7 +443,7 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
 }
 
 void WebAppInstallTask::OnWebAppInstallabilityChecked(
-    absl::optional<blink::Manifest> manifest,
+    blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     bool is_installable) {
@@ -451,8 +451,8 @@ void WebAppInstallTask::OnWebAppInstallabilityChecked(
     return;
 
   if (is_installable) {
-    DCHECK(manifest);
-    CallInstallCallback(GenerateAppIdFromManifest(manifest.value()),
+    DCHECK(opt_manifest);
+    CallInstallCallback(GenerateAppIdFromManifest(*opt_manifest),
                         InstallResultCode::kSuccessNewInstall);
   } else {
     CallInstallCallback(AppId(), InstallResultCode::kNotInstallable);
@@ -520,7 +520,7 @@ void WebAppInstallTask::ApplyParamsToWebApplicationInfo(
 void WebAppInstallTask::OnDidPerformInstallableCheck(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     bool force_shortcut_app,
-    absl::optional<blink::Manifest> manifest,
+    blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     bool is_installable) {
@@ -528,7 +528,6 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     return;
 
   DCHECK(web_app_info);
-  DCHECK(!manifest || !manifest->IsEmpty());
 
   if (install_params_ && install_params_->require_manifest &&
       !valid_manifest_for_web_app) {
@@ -542,8 +541,9 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
                                         ? ForInstallableSite::kYes
                                         : ForInstallableSite::kNo;
 
-  if (manifest)
-    UpdateWebAppInfoFromManifest(*manifest, manifest_url, web_app_info.get());
+  if (opt_manifest)
+    UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
+                                 web_app_info.get());
 
   AppId app_id =
       GenerateAppId(web_app_info->manifest_id, web_app_info->start_url);
@@ -559,20 +559,20 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
 
   // A system app should always have a manifest icon.
   if (install_source_ == webapps::WebappInstallSource::SYSTEM_DEFAULT) {
-    DCHECK(manifest);
-    DCHECK(!manifest->icons.empty());
+    DCHECK(opt_manifest);
+    DCHECK(!opt_manifest->icons.empty());
   }
 
   // If the manifest specified icons, don't use the page icons.
-  const bool skip_page_favicons = manifest && !manifest->icons.empty();
+  const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();
 
-  CheckForPlayStoreIntentOrGetIcons(manifest, std::move(web_app_info),
-                                    std::move(icon_urls), for_installable_site,
-                                    skip_page_favicons);
+  CheckForPlayStoreIntentOrGetIcons(
+      std::move(opt_manifest), std::move(web_app_info), std::move(icon_urls),
+      for_installable_site, skip_page_favicons);
 }
 
 void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
-    absl::optional<blink::Manifest> manifest,
+    blink::mojom::ManifestPtr opt_manifest,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     std::vector<GURL> icon_urls,
     ForInstallableSite for_installable_site,
@@ -582,8 +582,8 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
   // cannot be sent to the store.
   if (base::FeatureList::IsEnabled(features::kApkWebAppInstalls) &&
       for_installable_site == ForInstallableSite::kYes &&
-      !background_installation_ && manifest) {
-    for (const auto& application : manifest->related_applications) {
+      !background_installation_ && opt_manifest) {
+    for (const auto& application : opt_manifest->related_applications) {
       std::string id =
           base::UTF16ToUTF8(application.id.value_or(std::u16string()));
       if (!base::EqualsASCII(application.platform.value_or(std::u16string()),

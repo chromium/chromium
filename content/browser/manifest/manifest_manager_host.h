@@ -11,12 +11,9 @@
 #include "content/public/browser/render_document_host_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom.h"
-
-namespace blink {
-struct Manifest;
-}
 
 namespace content {
 
@@ -33,7 +30,7 @@ class ManifestManagerHost
   ~ManifestManagerHost() override;
 
   using GetManifestCallback =
-      base::OnceCallback<void(const GURL&, const blink::Manifest&)>;
+      base::OnceCallback<void(const GURL&, blink::mojom::ManifestPtr)>;
 
   // Calls the given callback with the manifest associated with the main frame.
   // If the main frame has no manifest or if getting it failed the callback will
@@ -61,7 +58,7 @@ class ManifestManagerHost
 
   void OnRequestManifestResponse(int request_id,
                                  const GURL& url,
-                                 const blink::Manifest& manifest);
+                                 blink::mojom::ManifestPtr manifest);
 
   // blink::mojom::ManifestUrlChangeObserver:
   void ManifestUrlChanged(const GURL& manifest_url) override;

@@ -32,6 +32,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/origin.h"
@@ -157,7 +158,7 @@ bool IsIconTypeSupported(const blink::Manifest::ImageResource& icon) {
 
 // Returns whether |manifest| specifies an SVG or PNG icon that has
 // IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any").
-bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
+bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
   for (const auto& icon : manifest.icons) {
     if (!IsIconTypeSupported(icon))
       continue;
@@ -334,6 +335,9 @@ void InstallableManager::GetPrimaryIcon(
   GetData(params,
           base::BindOnce(OnDidCompleteGetPrimaryIcon, std::move(callback)));
 }
+
+InstallableManager::ManifestProperty::ManifestProperty() = default;
+InstallableManager::ManifestProperty::~ManifestProperty() = default;
 
 bool InstallableManager::IsIconFetchComplete(const IconUsage usage) const {
   const auto it = icons_.find(usage);
@@ -635,20 +639,20 @@ void InstallableManager::FetchManifest() {
 }
 
 void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
-                                          const blink::Manifest& manifest) {
+                                          blink::mojom::ManifestPtr manifest) {
   if (!GetWebContents())
     return;
 
   if (manifest_url.is_empty()) {
     manifest_->error = NO_MANIFEST;
     SetManifestDependentTasksComplete();
-  } else if (manifest.IsEmpty()) {
+  } else if (blink::IsEmptyManifest(manifest)) {
     manifest_->error = MANIFEST_EMPTY;
     SetManifestDependentTasksComplete();
   }
 
   manifest_->url = manifest_url;
-  manifest_->manifest = manifest;
+  manifest_->manifest = std::move(manifest);
   manifest_->fetched = true;
   WorkOnTask();
 }
@@ -656,7 +660,7 @@ void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
 void InstallableManager::CheckManifestValid(
     bool check_webapp_manifest_display) {
   DCHECK(!valid_manifest_->fetched);
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
 
   valid_manifest_->is_valid =
       IsManifestValidForWebApp(manifest(), check_webapp_manifest_display);
@@ -665,10 +669,10 @@ void InstallableManager::CheckManifestValid(
 }
 
 bool InstallableManager::IsManifestValidForWebApp(
-    const blink::Manifest& manifest,
+    const blink::mojom::Manifest& manifest,
     bool check_webapp_manifest_display) {
   bool is_valid = true;
-  if (manifest.IsEmpty()) {
+  if (blink::IsEmptyManifest(manifest)) {
     valid_manifest_->errors.push_back(MANIFEST_EMPTY);
     return false;
   }
@@ -713,7 +717,7 @@ bool InstallableManager::IsManifestValidForWebApp(
 
 void InstallableManager::CheckServiceWorker() {
   DCHECK(!worker_->fetched);
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
   // Service workers need a StorageKey (storage partitioning key), since we only
   // install for top-level frames we can assume the StorageKey will always be in
   // a 1P context. DCHECK this just to be sure.
@@ -836,7 +840,7 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
                                                int minimum_icon_size_in_px,
                                                const IconPurpose purpose,
                                                const IconUsage usage) {
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
 
   IconProperty& icon = icons_[usage];
   icon.fetched = true;
@@ -881,7 +885,7 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
 }
 
 void InstallableManager::CheckAndFetchScreenshots() {
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!is_screenshots_fetch_complete_);
 
   screenshots_downloading_ = 0;
@@ -1007,8 +1011,9 @@ const GURL& InstallableManager::manifest_url() const {
   return manifest_->url;
 }
 
-const blink::Manifest& InstallableManager::manifest() const {
-  return manifest_->manifest;
+const blink::mojom::Manifest& InstallableManager::manifest() const {
+  DCHECK(manifest_->manifest);
+  return *manifest_->manifest;
 }
 
 bool InstallableManager::valid_manifest() {

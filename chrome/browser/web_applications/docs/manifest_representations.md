@@ -8,7 +8,7 @@ This is a list of all the places where we represent
    Output of the [Blink manifest parser](../../../../third_party/blink/renderer/modules/manifest/manifest_parser.cc).
 
  - [blink::Manifest](../../../../third_party/blink/public/common/manifest/manifest.h)\
-   Pre blink.mojom.Manifest representation that should be cleaned up.
+   Pre blink.mojom.Manifest representation that is getting cleaned up: https://crbug.com/1233362
 
  - [WebApplicationInfo](../components/web_application_info.h)\
    Used for installation and updates.

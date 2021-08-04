@@ -13,7 +13,7 @@
 
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -55,7 +55,7 @@ struct ShortcutInfo {
   // screen.
   static std::unique_ptr<ShortcutInfo> CreateShortcutInfo(
       const GURL& manifest_url,
-      const blink::Manifest& manifest,
+      const blink::mojom::Manifest& manifest,
       const GURL& primary_icon_url);
 
   // This enum is used to back a UMA histogram, and must be treated as
@@ -119,7 +119,7 @@ struct ShortcutInfo {
   ~ShortcutInfo();
 
   // Updates the info based on the given |manifest|.
-  void UpdateFromManifest(const blink::Manifest& manifest);
+  void UpdateFromManifest(const blink::mojom::Manifest& manifest);
 
   // Updates the source of the shortcut.
   void UpdateSource(const Source source);

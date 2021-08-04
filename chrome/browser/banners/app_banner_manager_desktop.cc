@@ -26,6 +26,7 @@
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -145,7 +146,7 @@ bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
 bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
   return web_app::FindInstalledAppWithUrlInScope(
              Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-             manifest_.start_url)
+             manifest().start_url)
       .has_value();
 }
 
@@ -158,7 +159,7 @@ web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
 
 bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   // Only allow replacement install if this specific app is already installed.
-  web_app::AppId app_id = web_app::GenerateAppIdFromManifest(manifest_);
+  web_app::AppId app_id = web_app::GenerateAppIdFromManifest(manifest());
   if (!registrar().IsLocallyInstalled(app_id))
     return false;
 

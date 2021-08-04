@@ -46,7 +46,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -366,7 +366,7 @@ class ExternallyManagedAppInstallTaskTest
 
     install_manager_->SetDataRetrieverFactoryForTesting(
         GetFactoryForRetriever(std::move(data_retriever)));
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = options.install_url;
     manifest->name = u"Manifest Name";
 

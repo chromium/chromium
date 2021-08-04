@@ -9,7 +9,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
 class Profile;
@@ -49,7 +49,7 @@ std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url);
 
-AppId GenerateAppIdFromManifest(const blink::Manifest& manifest);
+AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest);
 
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);

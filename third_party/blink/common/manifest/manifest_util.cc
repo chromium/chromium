@@ -4,11 +4,26 @@
 
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace blink {
+
+bool IsEmptyManifest(const mojom::Manifest& manifest) {
+  static base::NoDestructor<mojom::ManifestPtr> empty_manifest_ptr_storage;
+  mojom::ManifestPtr& empty_manifest = *empty_manifest_ptr_storage;
+  if (!empty_manifest)
+    empty_manifest = mojom::Manifest::New();
+  return manifest == *empty_manifest;
+}
+
+bool IsEmptyManifest(const mojom::ManifestPtr& manifest) {
+  return !manifest || IsEmptyManifest(*manifest);
+}
 
 std::string DisplayModeToString(blink::mojom::DisplayMode display) {
   switch (display) {

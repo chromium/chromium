@@ -23,6 +23,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
 #include "ui/android/color_helpers.h"
@@ -143,7 +144,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // observing too. It is based on our assumption that it is invalid for
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
-  if (!data.NoBlockingErrors() || data.manifest.IsEmpty() ||
+  if (!data.NoBlockingErrors() || blink::IsEmptyManifest(data.manifest) ||
       web_manifest_url_ != data.manifest_url ||
       !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
           data.manifest)) {

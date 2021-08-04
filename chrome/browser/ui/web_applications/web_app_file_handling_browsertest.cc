@@ -490,16 +490,14 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     web_app_info->scope = web_app_info->start_url;
     web_app_info->title = u"Many File Handlers";
 
-    std::vector<blink::Manifest::FileHandler> file_handlers;
+    std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
     for (unsigned i = 0; i < kNumHandlers; ++i) {
-      const std::u16string name =
-          base::UTF8ToUTF16(base::StringPrintf("n%u", i));
-      std::map<std::u16string, std::vector<std::u16string>> accept;
-      accept[base::UTF8ToUTF16(mime_type(i))] = {
+      auto handler = blink::mojom::ManifestFileHandler::New();
+      handler->action = action_url(i);
+      handler->name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
+      handler->accept[base::UTF8ToUTF16(mime_type(i))] = {
           base::UTF8ToUTF16(extension(i))};
-      file_handlers.push_back({action_url(i), name,
-                               std::vector<blink::Manifest::ImageResource>(),
-                               std::move(accept)});
+      file_handlers.push_back(std::move(handler));
     }
     web_app_info->file_handlers =
         CreateFileHandlersFromManifest(file_handlers, web_app_info->scope);

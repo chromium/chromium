@@ -16,6 +16,8 @@ import "url/mojom/origin.mojom";
 // The Manifest structure is an internal representation of the Manifest file
 // described in the "Manifest for Web Application" document:
 // http://w3c.github.io/manifest/
+// All fields will be their default constructed values (optional types nullopt)
+// if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
   mojo_base.mojom.String16? name;
@@ -24,6 +26,7 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
+  // Defaults to start_url with origin stripped when id field is not present.
   mojo_base.mojom.String16? id;
 
   url.mojom.Url start_url;
@@ -54,6 +57,9 @@ struct Manifest {
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
   array<ManifestProtocolHandler> protocol_handlers;
 
+  // TODO(crbug.com/1072058): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
   array<ManifestUrlHandler> url_handlers;
 
   // TODO(crbug.com/1185678): This field is non-standard and part of a manifest
@@ -78,6 +84,8 @@ struct Manifest {
 
   mojo_base.mojom.String16? gcm_sender_id;
 
+  // Defaults to the start URL (or document URL if start URL isn't present) with
+  // filename, query, and fragment removed if not present.
   url.mojom.Url scope;
 
   // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome

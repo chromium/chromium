@@ -13,6 +13,7 @@
 #include "components/crx_file/id_util.h"
 #include "crypto/sha2.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -67,7 +68,7 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
       crypto::SHA256HashString(GenerateAppIdUnhashed(manifest_id, start_url)));
 }
 
-AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {
+AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
   return GenerateAppId(
       manifest.id.has_value()
           ? absl::optional<std::string>(base::UTF16ToUTF8(manifest.id.value()))

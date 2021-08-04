@@ -22,7 +22,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {
@@ -193,24 +193,25 @@ absl::optional<apps::ShareTarget> ToWebAppShareTarget(
 }
 
 apps::UrlHandlers ToWebAppUrlHandlers(
-    const std::vector<blink::Manifest::UrlHandler>& url_handlers) {
+    const std::vector<blink::mojom::ManifestUrlHandlerPtr>& url_handlers) {
   apps::UrlHandlers apps_url_handlers;
   for (const auto& url_handler : url_handlers) {
-    apps_url_handlers.emplace_back(url_handler.origin,
-                                   url_handler.has_origin_wildcard);
+    DCHECK(url_handler);
+    apps_url_handlers.emplace_back(url_handler->origin,
+                                   url_handler->has_origin_wildcard);
   }
   return apps_url_handlers;
 }
 
 std::vector<apps::ProtocolHandlerInfo> ToWebAppProtocolHandlers(
-    const std::vector<blink::Manifest::ProtocolHandler>&
+    const std::vector<blink::mojom::ManifestProtocolHandlerPtr>&
         manifest_protocol_handlers) {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
   for (const auto& manifest_protocol_handler : manifest_protocol_handlers) {
     apps::ProtocolHandlerInfo protocol_handler;
     protocol_handler.protocol =
-        base::UTF16ToUTF8(manifest_protocol_handler.protocol);
-    protocol_handler.url = manifest_protocol_handler.url;
+        base::UTF16ToUTF8(manifest_protocol_handler->protocol);
+    protocol_handler.url = manifest_protocol_handler->url;
     protocol_handlers.push_back(std::move(protocol_handler));
   }
   return protocol_handlers;
@@ -219,15 +220,17 @@ std::vector<apps::ProtocolHandlerInfo> ToWebAppProtocolHandlers(
 }  // namespace
 
 apps::FileHandlers CreateFileHandlersFromManifest(
-    const std::vector<blink::Manifest::FileHandler>& manifest_file_handlers,
+    const std::vector<blink::mojom::ManifestFileHandlerPtr>&
+        manifest_file_handlers,
     const GURL& app_scope) {
   apps::FileHandlers web_app_file_handlers;
 
   for (const auto& manifest_file_handler : manifest_file_handlers) {
+    DCHECK(manifest_file_handler);
     apps::FileHandler web_app_file_handler;
-    web_app_file_handler.action = manifest_file_handler.action;
+    web_app_file_handler.action = manifest_file_handler->action;
 
-    for (const auto& it : manifest_file_handler.accept) {
+    for (const auto& it : manifest_file_handler->accept) {
       apps::FileHandler::AcceptEntry web_app_accept_entry;
       web_app_accept_entry.mime_type = base::UTF16ToUTF8(it.first);
       for (const auto& manifest_file_extension : it.second) {
@@ -251,7 +254,7 @@ apps::FileHandlers CreateFileHandlersFromManifest(
   return web_app_file_handlers;
 }
 
-void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
+void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
                                   const GURL& manifest_url,
                                   WebApplicationInfo* web_app_info) {
   // Give the full length name priority if it's not empty.
@@ -273,14 +276,14 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
   if (manifest.scope.is_valid())
     web_app_info->scope = manifest.scope;
 
-  if (manifest.theme_color) {
+  if (manifest.has_theme_color) {
     web_app_info->theme_color =
-        SkColorSetA(*manifest.theme_color, SK_AlphaOPAQUE);
+        SkColorSetA(SkColor(manifest.theme_color), SK_AlphaOPAQUE);
   }
 
-  if (manifest.background_color) {
+  if (manifest.has_background_color) {
     web_app_info->background_color =
-        SkColorSetA(*manifest.background_color, SK_AlphaOPAQUE);
+        SkColorSetA(SkColor(manifest.background_color), SK_AlphaOPAQUE);
   }
 
   if (manifest.display != DisplayMode::kUndefined)

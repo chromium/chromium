@@ -56,7 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -218,7 +218,7 @@ class WebAppInstallTaskTest : public WebAppTest {
     data_retriever_->SetRendererWebApplicationInfo(
         std::move(renderer_web_app_info));
 
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->short_name = u"Manifest Name";
     data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
@@ -409,7 +409,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
                         theme_color,
                         /*open_as_window*/ true);
   {
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->scope = scope;
     manifest->short_name = base::ASCIIToUTF16(manifest_name);
@@ -462,7 +462,7 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
   // Force reinstall:
   CreateRendererAppInfo(url, "Renderer Name2", "Renderer Description2");
   {
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->scope = url;
     manifest->short_name = u"Manifest Name2";
@@ -557,16 +557,17 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
       GenerateAppId(/*manifest_id=*/absl::nullopt, manifest_start_url);
   const std::string manifest_name = "Name from Manifest";
   const GURL manifest_scope = GURL("https://example.com/scope");
-  const absl::optional<SkColor> manifest_theme_color = 0xAABBCCDD;
+  const SkColor manifest_theme_color = 0xAABBCCDD;
   const absl::optional<SkColor> expected_theme_color = 0xFFBBCCDD;  // Opaque.
   const auto display_mode = DisplayMode::kMinimalUi;
 
   {
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->short_name = u"Short Name from Manifest";
     manifest->name = base::ASCIIToUTF16(manifest_name);
     manifest->start_url = manifest_start_url;
     manifest->scope = manifest_scope;
+    manifest->has_theme_color = true;
     manifest->theme_color = manifest_theme_color;
     manifest->display = display_mode;
 
@@ -696,7 +697,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDisk) {
 
   // Prepare all the data to be fetched or downloaded.
   {
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->short_name = u"Manifest Name";
 
@@ -893,7 +894,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_Success) {
   const GURL url = GURL("https://example.com/path");
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
-  auto manifest = std::make_unique<blink::Manifest>();
+  auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;
   manifest->short_name = u"Server Name";
 
@@ -1034,7 +1035,7 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
   CreateRendererAppInfo(url, name, description, /*scope*/ GURL{}, theme_color,
                         /*open_as_window*/ true);
   {
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->scope = scope;
     blink::Manifest::RelatedApplication related_app;
@@ -1270,7 +1271,7 @@ TEST_F(WebAppInstallTaskTest, StorageIsolationFlagSaved) {
   const AppId app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, manifest_start_url);
 
-  auto manifest = std::make_unique<blink::Manifest>();
+  auto manifest = blink::mojom::Manifest::New();
   manifest->short_name = u"Short Name from Manifest";
   manifest->name = u"Name from Manifest";
   manifest->start_url = GURL("https://example.com/start");
@@ -1420,8 +1421,9 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
       SquareSizePx icon_size,
       GURL icon_src) {
     InstallResult result;
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = start_url;
+    manifest->has_theme_color = true;
     manifest->theme_color = theme_color;
     manifest->name = u"Manifest Name";
 
@@ -1682,8 +1684,8 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
                                        ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
-  std::unique_ptr<blink::Manifest> CreateManifest(const GURL& url) {
-    auto manifest = std::make_unique<blink::Manifest>();
+  blink::mojom::ManifestPtr CreateManifest(const GURL& url) {
+    auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = url;
     manifest->name = u"Manifest Name";
     return manifest;
@@ -1699,17 +1701,16 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
   }
 
   void AddFileHandler(
-      std::vector<blink::Manifest::FileHandler>* file_handlers) {
-    blink::Manifest::FileHandler file_handler;
-    file_handler.action = GURL("https://example.com/action");
-    file_handler.name = u"Test handler";
-    file_handler.accept[u"application/pdf"].emplace_back(u".pdf");
-    file_handlers->emplace_back(file_handler);
+      std::vector<blink::mojom::ManifestFileHandlerPtr>* file_handlers) {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = GURL("https://example.com/action");
+    file_handler->name = u"Test handler";
+    file_handler->accept[u"application/pdf"].emplace_back(u".pdf");
+    file_handlers->push_back(std::move(file_handler));
   }
 
-  InstallResult InstallWebAppFromManifest(
-      std::unique_ptr<blink::Manifest> manifest,
-      webapps::WebappInstallSource source) {
+  InstallResult InstallWebAppFromManifest(blink::mojom::ManifestPtr manifest,
+                                          webapps::WebappInstallSource source) {
     data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
 
     base::RunLoop run_loop;
@@ -1812,7 +1813,7 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   // Update the app, adding a file handler.
   auto app_info = CreateWebApplicationInfo(url);
-  std::vector<blink::Manifest::FileHandler> file_handlers;
+  std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
   AddFileHandler(&file_handlers);
   app_info->file_handlers = CreateFileHandlersFromManifest(file_handlers, url);
 
@@ -1844,7 +1845,7 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   // Update the app, adding a file handler.
   auto app_info = CreateWebApplicationInfo(url);
-  std::vector<blink::Manifest::FileHandler> file_handlers;
+  std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
   AddFileHandler(&file_handlers);
   app_info->file_handlers = CreateFileHandlersFromManifest(file_handlers, url);
 

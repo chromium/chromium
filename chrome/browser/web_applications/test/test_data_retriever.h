@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
 struct WebApplicationInfo;
@@ -44,7 +45,7 @@ class TestDataRetriever : public WebAppDataRetriever {
       std::unique_ptr<WebApplicationInfo> web_app_info);
   void SetEmptyRendererWebApplicationInfo();
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
-  void SetManifest(std::unique_ptr<blink::Manifest> manifest,
+  void SetManifest(blink::mojom::ManifestPtr manifest,
                    bool is_installable,
                    GURL manifest_url = GURL());
   // Set icons to respond on |GetIcons|.
@@ -71,7 +72,7 @@ class TestDataRetriever : public WebAppDataRetriever {
   base::OnceClosure completion_callback_;
   std::unique_ptr<WebApplicationInfo> web_app_info_;
 
-  std::unique_ptr<blink::Manifest> manifest_;
+  blink::mojom::ManifestPtr manifest_;
   GURL manifest_url_;
   bool is_installable_;
 

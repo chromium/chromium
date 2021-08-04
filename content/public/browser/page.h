@@ -10,12 +10,9 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
-
-namespace blink {
-struct Manifest;
-}  // namespace blink
 
 namespace content {
 
@@ -68,7 +65,7 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // frame document's manifest. The url will be empty if the document specifies
   // no manifest, and the manifest will be empty if any other failures occurred.
   using GetManifestCallback =
-      base::OnceCallback<void(const GURL&, const blink::Manifest&)>;
+      base::OnceCallback<void(const GURL&, blink::mojom::ManifestPtr)>;
 
   // Requests the manifest URL and the Manifest of the main frame's document.
   virtual void GetManifest(GetManifestCallback callback) = 0;

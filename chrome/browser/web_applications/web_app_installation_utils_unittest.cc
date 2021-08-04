@@ -17,7 +17,6 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 using base::UTF8ToUTF16;

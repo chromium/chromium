@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -69,88 +70,6 @@ struct StructTraits<mojo_base::mojom::String16DataView, TruncatedString16> {
                         std::u16string>::Read(input, &output->string.value());
   }
 };
-
-bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
-    blink::mojom::ManifestDataView data,
-    ::blink::Manifest* out) {
-  TruncatedString16 string;
-  if (!data.ReadName(&string))
-    return false;
-  out->name = std::move(string.string);
-
-  if (!data.ReadShortName(&string))
-    return false;
-  out->short_name = std::move(string.string);
-
-  if (!data.ReadDescription(&string))
-    return false;
-  out->description = std::move(string.string);
-
-  if (!data.ReadId(&string))
-    return false;
-  out->id = std::move(string.string);
-
-  if (!data.ReadGcmSenderId(&string))
-    return false;
-  out->gcm_sender_id = std::move(string.string);
-
-  if (!data.ReadStartUrl(&out->start_url))
-    return false;
-
-  if (!data.ReadIcons(&out->icons))
-    return false;
-
-  if (!data.ReadScreenshots(&out->screenshots))
-    return false;
-
-  if (!data.ReadShortcuts(&out->shortcuts))
-    return false;
-
-  if (!data.ReadShareTarget(&out->share_target))
-    return false;
-
-  if (!data.ReadFileHandlers(&out->file_handlers))
-    return false;
-
-  if (!data.ReadProtocolHandlers(&out->protocol_handlers))
-    return false;
-
-  if (!data.ReadUrlHandlers(&out->url_handlers))
-    return false;
-
-  if (!data.ReadNoteTaking(&out->note_taking))
-    return false;
-
-  if (!data.ReadRelatedApplications(&out->related_applications))
-    return false;
-
-  out->prefer_related_applications = data.prefer_related_applications();
-
-  if (data.has_theme_color())
-    out->theme_color = data.theme_color();
-
-  if (data.has_background_color())
-    out->background_color = data.background_color();
-
-  if (!data.ReadDisplay(&out->display))
-    return false;
-
-  if (!data.ReadDisplayOverride(&out->display_override))
-    return false;
-
-  if (!data.ReadOrientation(&out->orientation))
-    return false;
-
-  if (!data.ReadScope(&out->scope))
-    return false;
-
-  if (!data.ReadCaptureLinks(&out->capture_links))
-    return false;
-
-  out->isolated_storage = data.isolated_storage();
-
-  return true;
-}
 
 bool StructTraits<blink::mojom::ManifestImageResourceDataView,
                   ::blink::Manifest::ImageResource>::

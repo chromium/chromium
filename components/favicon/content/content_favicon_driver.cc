@@ -16,7 +16,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon {
@@ -75,7 +75,7 @@ ContentFaviconDriver::NavigationManifestData::~NavigationManifestData() =
 void ContentFaviconDriver::OnDidDownloadManifest(
     ManifestDownloadCallback callback,
     const GURL& manifest_url,
-    const blink::Manifest& manifest) {
+    blink::mojom::ManifestPtr manifest) {
   // ~WebContentsImpl triggers running any pending callbacks for manifests.
   // As we're about to be destroyed ignore the request. To do otherwise may
   // result in calling back to this and attempting to use the WebContents, which
@@ -84,9 +84,11 @@ void ContentFaviconDriver::OnDidDownloadManifest(
     return;
 
   std::vector<FaviconURL> candidates;
-  for (const auto& icon : manifest.icons) {
-    candidates.emplace_back(icon.src, favicon_base::IconType::kWebManifestIcon,
-                            icon.sizes);
+  if (manifest) {
+    for (const auto& icon : manifest->icons) {
+      candidates.emplace_back(
+          icon.src, favicon_base::IconType::kWebManifestIcon, icon.sizes);
+    }
   }
   std::move(callback).Run(candidates);
 }

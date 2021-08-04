@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 
@@ -36,12 +36,8 @@ void TestDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
     CheckInstallabilityCallback callback) {
-  absl::optional<blink::Manifest> opt_manifest;
-  if (manifest_ && !manifest_->IsEmpty())
-    opt_manifest = *manifest_;
-
   completion_callback_ =
-      base::BindOnce(std::move(callback), opt_manifest, manifest_url_,
+      base::BindOnce(std::move(callback), manifest_.Clone(), manifest_url_,
                      /*valid_manifest_for_web_app=*/true, is_installable_);
   ScheduleCompletionCallback();
 }
@@ -72,7 +68,7 @@ void TestDataRetriever::SetEmptyRendererWebApplicationInfo() {
   SetRendererWebApplicationInfo(std::make_unique<WebApplicationInfo>());
 }
 
-void TestDataRetriever::SetManifest(std::unique_ptr<blink::Manifest> manifest,
+void TestDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
                                     bool is_installable,
                                     GURL manifest_url) {
   manifest_ = std::move(manifest);
@@ -99,7 +95,7 @@ void TestDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
                                                    const GURL& scope) {
   SetEmptyRendererWebApplicationInfo();
 
-  auto manifest = std::make_unique<blink::Manifest>();
+  auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;

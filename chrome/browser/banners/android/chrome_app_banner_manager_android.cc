@@ -24,6 +24,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -121,9 +122,8 @@ bool ChromeAppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
   auto a2hs_params = CreateAddToHomescreenParams(install_source);
   return PwaBottomSheetController::MaybeShow(
       web_contents(), GetAppName(), primary_icon_, has_maskable_primary_icon_,
-      manifest_.start_url, screenshots_,
-      manifest_.description.value_or(std::u16string()), expand_sheet,
-      std::move(a2hs_params),
+      manifest().start_url, screenshots_, manifest().description.value_or(u""),
+      expand_sheet, std::move(a2hs_params),
       base::BindRepeating(&ChromeAppBannerManagerAndroid::OnInstallEvent,
                           ChromeAppBannerManagerAndroid::GetAndroidWeakPtr()));
 }

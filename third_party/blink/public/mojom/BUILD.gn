@@ -576,12 +576,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.Manifest"
-          cpp = "::blink::Manifest"
-          nullable_is_same_type = true
-        },
-
-        {
           mojom = "blink.mojom.ManifestImageResource"
           cpp = "::blink::Manifest::ImageResource"
         },

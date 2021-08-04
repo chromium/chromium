@@ -54,6 +54,8 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -1207,7 +1209,7 @@ void PageHandler::ScreenshotCaptured(
 
 void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
                               const GURL& manifest_url,
-                              const ::blink::Manifest& parsed_manifest,
+                              ::blink::mojom::ManifestPtr parsed_manifest,
                               blink::mojom::ManifestDebugInfoPtr debug_info) {
   auto errors = std::make_unique<protocol::Array<Page::AppManifestError>>();
   bool failed = true;
@@ -1226,9 +1228,9 @@ void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
   }
 
   std::unique_ptr<Page::AppManifestParsedProperties> parsed;
-  if (!parsed_manifest.IsEmpty()) {
+  if (!blink::IsEmptyManifest(parsed_manifest)) {
     parsed = Page::AppManifestParsedProperties::Create()
-                 .SetScope(parsed_manifest.scope.possibly_invalid_spec())
+                 .SetScope(parsed_manifest->scope.possibly_invalid_spec())
                  .Build();
   }
 

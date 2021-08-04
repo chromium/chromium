@@ -217,9 +217,10 @@ using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
   {
     const SkColor theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
-    blink::Manifest manifest;
+    blink::mojom::Manifest manifest;
     manifest.start_url = GURL(kExampleURL);
     manifest.scope = GURL(kExampleURL);
+    manifest.has_theme_color = true;
     manifest.theme_color = theme_color;
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
@@ -246,9 +247,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
-  blink::Manifest manifest;
+  blink::mojom::Manifest manifest;
   manifest.start_url = GURL(kExampleURL);
   manifest.scope = GURL(kExampleURL);
+  manifest.has_background_color = true;
   manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),

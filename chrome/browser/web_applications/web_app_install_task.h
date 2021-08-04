@@ -21,14 +21,11 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
 class Profile;
 struct WebApplicationInfo;
-
-namespace blink {
-struct Manifest;
-}
 
 namespace content {
 class WebContents;
@@ -183,11 +180,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnWebAppUrlLoadedCheckAndRetrieveManifest(
       content::WebContents* web_contents,
       WebAppUrlLoader::Result result);
-  void OnWebAppInstallabilityChecked(
-      absl::optional<blink::Manifest> opt_manifest,
-      const GURL& manifest_url,
-      bool valid_manifest_for_web_app,
-      bool is_installable);
+  void OnWebAppInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
+                                     const GURL& manifest_url,
+                                     bool valid_manifest_for_web_app,
+                                     bool is_installable);
 
   void OnGetWebApplicationInfo(
       bool force_shortcut_app,
@@ -202,7 +198,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnDidPerformInstallableCheck(
       std::unique_ptr<WebApplicationInfo> web_app_info,
       bool force_shortcut_app,
-      absl::optional<blink::Manifest> opt_manifest,
+      blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
@@ -212,7 +208,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // synchronously calls OnDidCheckForIntentToPlayStore() implicitly failing the
   // check if it cannot be made.
   void CheckForPlayStoreIntentOrGetIcons(
-      absl::optional<blink::Manifest> opt_manifest,
+      blink::mojom::ManifestPtr opt_manifest,
       std::unique_ptr<WebApplicationInfo> web_app_info,
       std::vector<GURL> icon_urls,
       ForInstallableSite for_installable_site,

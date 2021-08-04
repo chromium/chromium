@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 
@@ -24,13 +24,16 @@ apps::FileHandlers GetDefaultAppsFileHandlers() {
 }
 
 // Note: Keep in sync with GetDefaultAppsFileHandlers() above.
-std::vector<blink::Manifest::FileHandler> GetDefaultManifestFileHandlers() {
-  blink::Manifest::FileHandler handler;
-  handler.action = GURL("http://foo.com/?plaintext");
-  handler.name = u"Text";
+std::vector<blink::mojom::ManifestFileHandlerPtr>
+GetDefaultManifestFileHandlers() {
+  std::vector<blink::mojom::ManifestFileHandlerPtr> handlers;
+  auto handler = blink::mojom::ManifestFileHandler::New();
+  handler->action = GURL("http://foo.com/?plaintext");
+  handler->name = u"Text";
   std::vector<std::u16string> extensions = {u".txt", u".md"};
-  handler.accept.emplace(u"text/plain", extensions);
-  return {handler};
+  handler->accept.emplace(u"text/plain", extensions);
+  handlers.push_back(std::move(handler));
+  return handlers;
 }
 
 }  // anonymous namespace
@@ -56,14 +59,14 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlersUnchanged) {
 
 TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> manifest_handlers =
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
-  blink::Manifest::FileHandler second_handler;
-  second_handler.action = GURL("http://foo.com/?csv");
-  second_handler.name = u"Comma-Separated Value";
+  auto second_handler = blink::mojom::ManifestFileHandler::New();
+  second_handler->action = GURL("http://foo.com/?csv");
+  second_handler->name = u"Comma-Separated Value";
   std::vector<std::u16string> extensions = {u".csv"};
-  second_handler.accept.emplace(u"text/csv", extensions);
-  manifest_handlers.push_back(second_handler);
+  second_handler->accept.emplace(u"text/csv", extensions);
+  manifest_handlers.push_back(std::move(second_handler));
 
   apps::FileHandlers new_handlers =
       CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
@@ -73,9 +76,9 @@ TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
 // Ignore name changes, because the registrar doesn't store the name.
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> manifest_handlers =
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
-  manifest_handlers[0].name = u"Comma-Separated Values";
+  manifest_handlers[0]->name = u"Comma-Separated Values";
 
   apps::FileHandlers new_handlers =
       CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
@@ -84,9 +87,9 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedAction) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> manifest_handlers =
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
-  manifest_handlers[0].action = GURL("/?csvtext");
+  manifest_handlers[0]->action = GURL("/?csvtext");
 
   apps::FileHandlers new_handlers =
       CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
@@ -95,10 +98,10 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedAction) {
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerExtraAccept) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> manifest_handlers =
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
       GetDefaultManifestFileHandlers();
   std::vector<std::u16string> csv_extensions = {u".csv"};
-  manifest_handlers[0].accept.emplace(u"text/csv", csv_extensions);
+  manifest_handlers[0]->accept.emplace(u"text/csv", csv_extensions);
 
   apps::FileHandlers new_handlers =
       CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));

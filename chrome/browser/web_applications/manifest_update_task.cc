@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/skia_util.h"
 
 namespace web_app {

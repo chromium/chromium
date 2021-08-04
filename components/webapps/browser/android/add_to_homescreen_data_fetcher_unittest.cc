@@ -29,8 +29,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
@@ -104,12 +104,12 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
 };
 
 // Builds WebAPK compatible blink::Manifest.
-blink::Manifest BuildDefaultManifest() {
-  blink::Manifest manifest;
-  manifest.name = base::ASCIIToUTF16(kDefaultManifestName);
-  manifest.short_name = base::ASCIIToUTF16(kDefaultManifestShortName);
-  manifest.start_url = GURL(kDefaultStartUrl);
-  manifest.display = kDefaultManifestDisplayMode;
+blink::mojom::ManifestPtr BuildDefaultManifest() {
+  auto manifest = blink::mojom::Manifest::New();
+  manifest->name = base::ASCIIToUTF16(kDefaultManifestName);
+  manifest->short_name = base::ASCIIToUTF16(kDefaultManifestShortName);
+  manifest->start_url = GURL(kDefaultStartUrl);
+  manifest->display = kDefaultManifestDisplayMode;
 
   blink::Manifest::ImageResource primary_icon;
   primary_icon.type = u"image/png";
@@ -117,7 +117,7 @@ blink::Manifest BuildDefaultManifest() {
   primary_icon.purpose.push_back(
       blink::mojom::ManifestImageResource_Purpose::ANY);
   primary_icon.src = GURL(kDefaultIconUrl);
-  manifest.icons.push_back(primary_icon);
+  manifest->icons.push_back(primary_icon);
 
   return manifest;
 }
@@ -139,7 +139,7 @@ class TestInstallableManager : public InstallableManager {
       code = NO_ACCEPTABLE_ICON;
       is_installable = false;
     } else if (params.valid_manifest && params.has_worker) {
-      if (!IsManifestValidForWebApp(manifest_,
+      if (!IsManifestValidForWebApp(*manifest_,
                                     true /* check_webapp_manifest_display */)) {
         code = valid_manifest_->errors.at(0);
         is_installable = false;
@@ -159,7 +159,7 @@ class TestInstallableManager : public InstallableManager {
     if (code != NO_ERROR_DETECTED)
       errors.push_back(code);
     std::move(callback).Run(
-        {std::move(errors), GURL(kDefaultManifestUrl), manifest_,
+        {std::move(errors), GURL(kDefaultManifestUrl), *manifest_,
          params.valid_primary_icon ? primary_icon_url_ : GURL(),
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon, GURL() /* splash_icon_url */,
@@ -171,11 +171,12 @@ class TestInstallableManager : public InstallableManager {
 
   void SetInstallable(bool is_installable) { is_installable_ = is_installable; }
 
-  void SetManifest(const blink::Manifest& manifest) {
-    manifest_ = manifest;
+  void SetManifest(blink::mojom::ManifestPtr manifest) {
+    DCHECK(manifest);
+    manifest_ = std::move(manifest);
 
-    if (!manifest.icons.empty()) {
-      primary_icon_url_ = manifest_.icons[0].src;
+    if (!manifest_->icons.empty()) {
+      primary_icon_url_ = manifest_->icons[0].src;
       primary_icon_ = std::make_unique<SkBitmap>(
           gfx::test::CreateBitmap(kIconSizePx, kIconSizePx));
     }
@@ -190,7 +191,7 @@ class TestInstallableManager : public InstallableManager {
   }
 
  private:
-  blink::Manifest manifest_;
+  blink::mojom::ManifestPtr manifest_ = blink::mojom::Manifest::New();
   GURL primary_icon_url_;
   std::unique_ptr<SkBitmap> primary_icon_;
 
@@ -276,8 +277,8 @@ class AddToHomescreenDataFetcherTest
     histograms.ExpectTotalCount("Webapp.AddToHomescreenDialog.Timeout", 1);
   }
 
-  void SetManifest(const blink::Manifest& manifest) {
-    installable_manager_->SetManifest(manifest);
+  void SetManifest(blink::mojom::ManifestPtr manifest) {
+    installable_manager_->SetManifest(std::move(manifest));
   }
 
   void SetInstallable(bool is_installable) {
@@ -330,9 +331,9 @@ TEST_F(AddToHomescreenDataFetcherTest, EmptyManifest) {
 TEST_F(AddToHomescreenDataFetcherTest, NoIconManifest) {
   // Test a manifest with no icons. This should use the short name and have
   // a generated icon (empty icon url).
-  blink::Manifest manifest = BuildDefaultManifest();
-  manifest.icons.clear();
-  SetManifest(manifest);
+  blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+  manifest->icons.clear();
+  SetManifest(std::move(manifest));
 
   base::HistogramTester histograms;
   ObserverWaiter waiter;
@@ -469,8 +470,7 @@ TEST_F(AddToHomescreenDataFetcherTest, ServiceWorkerCheckTimesOutUnknown) {
 
 TEST_F(AddToHomescreenDataFetcherTest, InstallableManifest) {
   // Test a site that has an offline-capable service worker.
-  blink::Manifest manifest(BuildDefaultManifest());
-  SetManifest(manifest);
+  SetManifest(BuildDefaultManifest());
 
   base::HistogramTester histograms;
   ObserverWaiter waiter;
@@ -494,10 +494,10 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNameClobbersWebApplicationName) {
   // Manifest::short_name that Manifest::name is used as the title.
   {
     // Check the case where we have no icons.
-    blink::Manifest manifest = BuildDefaultManifest();
-    manifest.icons.clear();
-    manifest.short_name = absl::nullopt;
-    SetManifest(manifest);
+    blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+    manifest->icons.clear();
+    manifest->short_name = absl::nullopt;
+    SetManifest(std::move(manifest));
 
     ObserverWaiter waiter;
     std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
@@ -509,9 +509,9 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNameClobbersWebApplicationName) {
                                   kDefaultManifestName));
   }
 
-  blink::Manifest manifest(BuildDefaultManifest());
-  manifest.short_name = absl::nullopt;
-  SetManifest(manifest);
+  blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+  manifest->short_name = absl::nullopt;
+  SetManifest(std::move(manifest));
 
   {
     // Check a site with no offline-capable service worker.
@@ -566,12 +566,12 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   //  - The page is not WebAPK compatible.
   //  - WebApplicationInfo::title is used as the "name".
   //  - We still use the icons from the manifest.
-  blink::Manifest manifest(BuildDefaultManifest());
-  manifest.name = absl::nullopt;
-  manifest.short_name = absl::nullopt;
+  blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+  manifest->name = absl::nullopt;
+  manifest->short_name = absl::nullopt;
 
   // Check the case where we don't time out waiting for the service worker.
-  SetManifest(manifest);
+  SetManifest(std::move(manifest));
   ObserverWaiter waiter;
   std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
   RunFetcher(fetcher.get(), waiter, kWebApplicationInfoTitle,

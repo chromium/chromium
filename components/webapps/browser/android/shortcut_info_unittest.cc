@@ -41,7 +41,7 @@ class ShortcutInfoTest : public testing::Test {
 
  protected:
   ShortcutInfo info_;
-  blink::Manifest manifest_;
+  blink::mojom::Manifest manifest_;
 
   DISALLOW_COPY_AND_ASSIGN(ShortcutInfoTest);
 };
@@ -63,9 +63,11 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   manifest_.display = blink::mojom::DisplayMode::kFullscreen;
 
   info_.theme_color = 0xffff0000;
+  manifest_.has_theme_color = true;
   manifest_.theme_color = 0xffcc0000;
 
   info_.background_color = 0xffaa0000;
+  manifest_.has_background_color = true;
   manifest_.background_color = 0xffbb0000;
 
   info_.icon_urls.push_back("https://old.com/icon.png");

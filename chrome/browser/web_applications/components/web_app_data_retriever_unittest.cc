@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
 
@@ -298,25 +298,24 @@ TEST_F(WebAppDataRetrieverTest,
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   {
-    auto manifest = std::make_unique<blink::Manifest>();
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), webapps::NO_MANIFEST, GURL(), std::move(manifest));
+        web_contents(), webapps::NO_MANIFEST, GURL(),
+        blink::mojom::Manifest::New());
   }
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
-      base::BindLambdaForTesting([&](absl::optional<blink::Manifest> manifest,
-                                     const GURL& manifest_url,
-                                     bool valid_manifest_for_web_app,
-                                     bool is_installable) {
-        EXPECT_FALSE(manifest);
-        EXPECT_EQ(manifest_url, GURL());
-        EXPECT_FALSE(valid_manifest_for_web_app);
-        EXPECT_FALSE(is_installable);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
+              bool valid_manifest_for_web_app, bool is_installable) {
+            EXPECT_FALSE(opt_manifest);
+            EXPECT_EQ(manifest_url, GURL());
+            EXPECT_FALSE(valid_manifest_for_web_app);
+            EXPECT_FALSE(is_installable);
+            run_loop.Quit();
+          }));
   DeleteContents();
   run_loop.Run();
 }
@@ -369,14 +368,15 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   const std::u16string manifest_short_name = u"Short Name from Manifest";
   const std::u16string manifest_name = u"Name from Manifest";
   const GURL manifest_scope = GURL("https://example.com/scope");
-  const absl::optional<SkColor> manifest_theme_color = 0xAABBCCDD;
+  const SkColor manifest_theme_color = 0xAABBCCDD;
 
   {
-    auto manifest = std::make_unique<blink::Manifest>();
+    auto manifest = blink::mojom::Manifest::New();
     manifest->short_name = manifest_short_name;
     manifest->name = manifest_name;
     manifest->start_url = manifest_start_url;
     manifest->scope = manifest_scope;
+    manifest->has_theme_color = true;
     manifest->theme_color = manifest_theme_color;
 
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
@@ -392,15 +392,15 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
-          [&](absl::optional<blink::Manifest> result, const GURL& manifest_url,
+          [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
               bool valid_manifest_for_web_app, bool is_installable) {
             EXPECT_TRUE(is_installable);
 
-            EXPECT_EQ(manifest_short_name, result->short_name);
-            EXPECT_EQ(manifest_name, result->name);
-            EXPECT_EQ(manifest_start_url, result->start_url);
-            EXPECT_EQ(manifest_scope, result->scope);
-            EXPECT_EQ(manifest_theme_color, result->theme_color);
+            EXPECT_EQ(manifest_short_name, opt_manifest->short_name);
+            EXPECT_EQ(manifest_name, opt_manifest->name);
+            EXPECT_EQ(manifest_start_url, opt_manifest->start_url);
+            EXPECT_EQ(manifest_scope, opt_manifest->scope);
+            EXPECT_EQ(manifest_theme_color, opt_manifest->theme_color);
 
             EXPECT_EQ(manifest_url, GURL("https://example.com/manifest"));
 
@@ -416,9 +416,9 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   SetFakeWebPageMetadataAgent();
 
   {
-    auto manifest = std::make_unique<blink::Manifest>();
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), webapps::NO_MANIFEST, GURL(), std::move(manifest));
+        web_contents(), webapps::NO_MANIFEST, GURL(),
+        blink::mojom::Manifest::New());
   }
 
   base::RunLoop run_loop;
@@ -429,7 +429,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
-          [&](absl::optional<blink::Manifest> result, const GURL& manifest_url,
+          [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
               bool valid_manifest_for_web_app, bool is_installable) {
             EXPECT_FALSE(is_installable);
             EXPECT_FALSE(valid_manifest_for_web_app);

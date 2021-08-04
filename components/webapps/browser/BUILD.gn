@@ -118,6 +118,8 @@ source_set("test_support") {
     ":browser",
     "//base",
     "//skia",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",
   ]
 }

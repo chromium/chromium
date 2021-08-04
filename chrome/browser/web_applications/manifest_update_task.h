@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_TASK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_TASK_H_
 
-#include <map>
-
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
@@ -18,7 +16,6 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 
 struct WebApplicationInfo;
 
