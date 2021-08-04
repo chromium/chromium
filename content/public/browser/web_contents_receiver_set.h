@@ -18,8 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
-class EmbeddedSearchClientFactoryImpl;
-
 namespace chrome_browser_net {
 class NetErrorTabHelper;
 }
@@ -95,7 +93,6 @@ class WebContentsFrameReceiverSetPassKey {
  private:
   WebContentsFrameReceiverSetPassKey() = default;
 
-  friend class ::EmbeddedSearchClientFactoryImpl;
   friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::printing::PrintManager;
   friend class ::subresource_redirect::SubresourceRedirectObserver;

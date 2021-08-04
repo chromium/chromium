@@ -161,6 +161,11 @@ class SearchIPCRouter : public content::WebContentsObserver,
     // The returned pointer is owned by the factory.
     virtual search::mojom::EmbeddedSearchClient* GetEmbeddedSearchClient() = 0;
 
+    virtual void BindFactoryReceiver(
+        mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+            receiver,
+        content::RenderFrameHost* rfh) = 0;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(EmbeddedSearchClientFactory);
   };
@@ -169,6 +174,11 @@ class SearchIPCRouter : public content::WebContentsObserver,
                   Delegate* delegate,
                   std::unique_ptr<Policy> policy);
   ~SearchIPCRouter() override;
+
+  void BindEmbeddedSearchConnecter(
+      mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   // Tells the SearchIPCRouter that a new page in an Instant process committed.
   void OnNavigationEntryCommitted();

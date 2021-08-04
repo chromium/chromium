@@ -122,6 +122,13 @@ class MockEmbeddedSearchClientFactory
  public:
   MOCK_METHOD0(GetEmbeddedSearchClient,
                search::mojom::EmbeddedSearchClient*(void));
+
+  MOCK_METHOD(void,
+              BindFactoryReceiver,
+              (mojo::PendingAssociatedReceiver<
+                   search::mojom::EmbeddedSearchConnector> receiver,
+               content::RenderFrameHost* rfh),
+              (override));
 };
 
 }  // namespace

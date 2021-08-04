@@ -59,6 +59,11 @@ class SearchTabHelper : public content::WebContentsObserver,
  public:
   ~SearchTabHelper() override;
 
+  static void BindEmbeddedSearchConnecter(
+      mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+          receiver,
+      content::RenderFrameHost* rfh);
+
   // Called when the tab corresponding to |this| instance is activated.
   void OnTabActivated();
 

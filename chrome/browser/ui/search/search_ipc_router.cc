@@ -13,9 +13,9 @@
 #include "components/search/search.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -44,10 +44,7 @@ class EmbeddedSearchClientFactoryImpl
   EmbeddedSearchClientFactoryImpl(
       content::WebContents* web_contents,
       mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* receiver)
-      : client_receiver_(receiver),
-        factory_receivers_(web_contents,
-                           this,
-                           content::WebContentsFrameReceiverSetPassKey()) {
+      : client_receiver_(receiver), factory_receivers_(web_contents, this) {
     DCHECK(web_contents);
     DCHECK(receiver);
     // Before we are connected to a frame we throw away all messages.
@@ -57,6 +54,12 @@ class EmbeddedSearchClientFactoryImpl
   search::mojom::EmbeddedSearchClient* GetEmbeddedSearchClient() override {
     return embedded_search_client_.is_bound() ? embedded_search_client_.get()
                                               : nullptr;
+  }
+
+  void BindFactoryReceiver(mojo::PendingAssociatedReceiver<
+                               search::mojom::EmbeddedSearchConnector> receiver,
+                           content::RenderFrameHost* rfh) override {
+    factory_receivers_.Bind(rfh, std::move(receiver));
   }
 
  private:
@@ -76,7 +79,7 @@ class EmbeddedSearchClientFactoryImpl
   mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* client_receiver_;
 
   // Receivers used to listen to connection requests.
-  content::WebContentsFrameReceiverSet<search::mojom::EmbeddedSearchConnector>
+  content::RenderFrameHostReceiverSet<search::mojom::EmbeddedSearchConnector>
       factory_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(EmbeddedSearchClientFactoryImpl);
@@ -112,6 +115,14 @@ SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
 }
 
 SearchIPCRouter::~SearchIPCRouter() = default;
+
+void SearchIPCRouter::BindEmbeddedSearchConnecter(
+    mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  embedded_search_client_factory_->BindFactoryReceiver(std::move(receiver),
+                                                       rfh);
+}
 
 void SearchIPCRouter::OnNavigationEntryCommitted() {
   ++commit_counter_;

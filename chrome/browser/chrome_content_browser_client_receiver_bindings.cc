@@ -88,6 +88,7 @@
 #if !defined(OS_ANDROID)
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/ui/search/search_tab_helper.h"
 #include "components/pdf/browser/pdf_web_contents_helper.h"  // nogncheck
 #endif
 
@@ -432,6 +433,13 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
   if (interface_name == pdf::mojom::PdfService::Name_) {
     pdf::PDFWebContentsHelper::BindPdfService(
         mojo::PendingAssociatedReceiver<pdf::mojom::PdfService>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == search::mojom::EmbeddedSearchConnector::Name_) {
+    SearchTabHelper::BindEmbeddedSearchConnecter(
+        mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>(
             std::move(*handle)),
         render_frame_host);
     return true;

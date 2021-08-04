@@ -144,6 +144,19 @@ SearchTabHelper::~SearchTabHelper() {
     select_file_dialog_->ListenerDestroyed();
 }
 
+void SearchTabHelper::BindEmbeddedSearchConnecter(
+    mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = SearchTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->ipc_router_.BindEmbeddedSearchConnecter(std::move(receiver), rfh);
+}
+
 void SearchTabHelper::OnTabActivated() {
   ipc_router_.OnTabActivated();
 
