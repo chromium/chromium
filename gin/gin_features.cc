@@ -96,4 +96,9 @@ const base::Feature kV8ArrayBufferCageReservationExperiment{
     "V8ArrayBufferCageReservationExperiment",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables slow histograms that provide detailed information at increased
+// runtime overheads.
+const base::Feature kV8SlowHistograms{"V8SlowHistograms",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features

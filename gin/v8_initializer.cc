@@ -382,6 +382,10 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     SetV8Flags("--no-short-builtin-calls");
   }
 
+  if (!base::FeatureList::IsEnabled(features::kV8SlowHistograms)) {
+    SetV8Flags("--slow-histograms");
+  }
+
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
   }
