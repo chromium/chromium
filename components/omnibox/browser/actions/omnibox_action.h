@@ -22,7 +22,6 @@ struct VectorIcon;
 class AutocompleteInput;
 class AutocompleteProviderClient;
 class OmniboxEditController;
-class OmniboxClient;
 
 // Omnibox Actions are additional actions associated with matches. They appear
 // in the suggestion button row and are not matches themselves.
@@ -50,6 +49,22 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
     std::u16string accessibility_hint;
   };
 
+  // Actions such as Pedals may require various capabilities from an embedding
+  // client context and this interface can be used to invert the dependency.
+  struct Client {
+    // Opens and shows a new incognito browser window.
+    virtual void NewIncognitoWindow() = 0;
+
+    // Opens an Incognito clear browsing data dialog.
+    virtual void OpenIncognitoClearBrowsingDataDialog() = 0;
+
+    // Closes incognito browser windows.
+    virtual void CloseIncognitoWindows() = 0;
+
+    // Presents translation prompt for current tab web contents.
+    virtual void PromptPageTranslation() = 0;
+  };
+
   // ExecutionContext provides the necessary structure for Action
   // execution implementations that potentially vary widely, and
   // references are preferred over pointers for members that are
@@ -61,13 +76,13 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // of boilerplate required is greatly reduced.
   class ExecutionContext {
    public:
-    ExecutionContext(OmniboxClient& client,
+    ExecutionContext(Client& client,
                      OmniboxEditController& controller,
                      base::TimeTicks match_selection_timestamp)
         : client_(client),
           controller_(controller),
           match_selection_timestamp_(match_selection_timestamp) {}
-    OmniboxClient& client_;
+    Client& client_;
     OmniboxEditController& controller_;
     base::TimeTicks match_selection_timestamp_;
   };

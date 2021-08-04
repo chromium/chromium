@@ -384,6 +384,24 @@ void ChromeOmniboxClient::DiscardNonCommittedNavigations() {
   controller_->GetWebContents()->GetController().DiscardNonCommittedEntries();
 }
 
+void ChromeOmniboxClient::OpenUpdateChromeDialog() {
+  const content::WebContents* contents = controller_->GetWebContents();
+  if (contents) {
+    Browser* browser = chrome::FindBrowserWithWebContents(contents);
+    if (browser) {
+      // Here we record and take action more directly than
+      // chrome::OpenUpdateChromeDialog because that call is intended for use
+      // by the delayed-update/auto-nag system, possibly presenting dialogs
+      // that don't apply when the goal is immediate relaunch & update.
+      // TODO(orinj): Ensure that this is the correct way to handle
+      // explicitly requested update regardless of the kind of update ready.
+      // See comments at https://crrev.com/c/1281162 for context.
+      base::RecordAction(base::UserMetricsAction("UpdateChrome"));
+      browser->window()->ShowUpdateChromeDialog();
+    }
+  }
+}
+
 void ChromeOmniboxClient::NewIncognitoWindow() {
   chrome::NewIncognitoWindow(profile_);
 }
@@ -418,24 +436,6 @@ void ChromeOmniboxClient::PromptPageTranslation() {
       DCHECK_NE(nullptr, translate_client->GetTranslateManager());
       translate_client->GetTranslateManager()->ShowTranslateUI(
           /*auto_translate=*/true, /*triggered_from_menu=*/true);
-    }
-  }
-}
-
-void ChromeOmniboxClient::OpenUpdateChromeDialog() {
-  const content::WebContents* contents = controller_->GetWebContents();
-  if (contents) {
-    Browser* browser = chrome::FindBrowserWithWebContents(contents);
-    if (browser) {
-      // Here we record and take action more directly than
-      // chrome::OpenUpdateChromeDialog because that call is intended for use
-      // by the delayed-update/auto-nag system, possibly presenting dialogs
-      // that don't apply when the goal is immediate relaunch & update.
-      // TODO(orinj): Ensure that this is the correct way to handle
-      // explicitly requested update regardless of the kind of update ready.
-      // See comments at https://crrev.com/c/1281162 for context.
-      base::RecordAction(base::UserMetricsAction("UpdateChrome"));
-      browser->window()->ShowUpdateChromeDialog();
     }
   }
 }

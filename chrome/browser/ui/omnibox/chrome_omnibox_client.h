@@ -82,11 +82,13 @@ class ChromeOmniboxClient : public OmniboxClient {
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
   void OnBookmarkLaunched() override;
   void DiscardNonCommittedNavigations() override;
+  void OpenUpdateChromeDialog() override;
+
+  // OmniboxAction::Client:
   void NewIncognitoWindow() override;
   void OpenIncognitoClearBrowsingDataDialog() override;
   void CloseIncognitoWindows() override;
   void PromptPageTranslation() override;
-  void OpenUpdateChromeDialog() override;
 
  private:
   // Performs prerendering for |match|.

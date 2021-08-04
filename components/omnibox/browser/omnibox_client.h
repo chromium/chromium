@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -39,7 +40,7 @@ using FaviconFetchedCallback =
 // (e.g., getting information about the current page, retrieving objects
 // associated with the current tab, or performing operations that rely on such
 // objects under the hood).
-class OmniboxClient {
+class OmniboxClient : public OmniboxAction::Client {
  public:
   virtual ~OmniboxClient() {}
 
@@ -167,20 +168,22 @@ class OmniboxClient {
   // Discards the state for all pending and transient navigations.
   virtual void DiscardNonCommittedNavigations() {}
 
-  // Opens and shows a new incognito browser window.
-  virtual void NewIncognitoWindow() {}
-
-  // Opens an Incognito clear browsing data dialog.
-  virtual void OpenIncognitoClearBrowsingDataDialog() {}
-
-  // Closes incognito browser windows.
-  virtual void CloseIncognitoWindows() {}
-
-  // Presents translation prompt for current tab web contents.
-  virtual void PromptPageTranslation() {}
-
   // Presents prompt to update Chrome.
   virtual void OpenUpdateChromeDialog() {}
+
+  // OmniboxAction::Client:
+
+  // Opens and shows a new incognito browser window.
+  void NewIncognitoWindow() override {}
+
+  // Opens an Incognito clear browsing data dialog.
+  void OpenIncognitoClearBrowsingDataDialog() override {}
+
+  // Closes incognito browser windows.
+  void CloseIncognitoWindows() override {}
+
+  // Presents translation prompt for current tab web contents.
+  void PromptPageTranslation() override {}
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_
