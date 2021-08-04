@@ -728,10 +728,6 @@ public class ImeAdapterImpl
         hideKeyboard();
     }
 
-    public void reset() {
-        resetAndHideKeyboard();
-    }
-
     @CalledByNative
     private void onNativeDestroyed() {
         resetAndHideKeyboard();
