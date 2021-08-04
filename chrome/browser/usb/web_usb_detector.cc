@@ -184,6 +184,14 @@ WebUsbDetector::WebUsbDetector() = default;
 WebUsbDetector::~WebUsbDetector() = default;
 
 void WebUsbDetector::Initialize() {
+#if defined(OS_WIN)
+  // The WebUSB device detector is disabled on Windows due to jank and hangs
+  // caused by enumerating devices. The new USB backend is designed to resolve
+  // these issues so enable it for testing. https://crbug.com/656702
+  if (!base::FeatureList::IsEnabled(device::kNewUsbBackend))
+    return;
+#endif  // defined(OS_WIN)
+
   // Tests may set a fake manager.
   if (!device_manager_) {
     // Receive mojo::Remote<UsbDeviceManager> from DeviceService.
