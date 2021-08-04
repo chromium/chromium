@@ -13,9 +13,9 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
@@ -38,17 +38,6 @@
 #include "components/prefs/pref_service.h"
 
 namespace policy {
-class ActiveDirectoryJoinDelegate;
-
-namespace {
-
-// Format MAC address from AA:AA:AA:AA:AA:AA into AAAAAAAAAAAA (12 digit string)
-void FormatMacAddress(std::string* mac_address) {
-  base::ReplaceChars(*mac_address, ":", "", mac_address);
-  DCHECK(mac_address->empty() || mac_address->size() == 12);
-}
-
-}  // namespace
 
 DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     PrefService* local_state,
@@ -318,34 +307,10 @@ void DeviceCloudPolicyInitializer::EnrollmentCompleted(
 
 std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
     DeviceManagementService* device_management_service) {
-  std::string machine_model;
-  statistics_provider_->GetMachineStatistic(chromeos::system::kHardwareClassKey,
-                                            &machine_model);
-  std::string brand_code;
-  statistics_provider_->GetMachineStatistic(chromeos::system::kRlzBrandCodeKey,
-                                            &brand_code);
-  std::string attested_device_id;
-  statistics_provider_->GetMachineStatistic(
-      chromeos::system::kAttestedDeviceIdKey, &attested_device_id);
-  // The :'s should be removed from MAC addresses to match the format of
-  // reporting MAC addresses and corresponding VPD fields.
-  std::string ethernet_mac_address;
-  statistics_provider_->GetMachineStatistic(
-      chromeos::system::kEthernetMacAddressKey, &ethernet_mac_address);
-  FormatMacAddress(&ethernet_mac_address);
-  std::string dock_mac_address;
-  statistics_provider_->GetMachineStatistic(
-      chromeos::system::kDockMacAddressKey, &dock_mac_address);
-  FormatMacAddress(&dock_mac_address);
-  std::string manufacture_date;
-  statistics_provider_->GetMachineStatistic(
-      chromeos::system::kManufactureDateKey, &manufacture_date);
   // DeviceDMToken callback is empty here because for device policies this
   // DMToken is already provided in the policy fetch requests.
-  return std::make_unique<CloudPolicyClient>(
-      statistics_provider_->GetEnterpriseMachineID(), machine_model, brand_code,
-      attested_device_id, ethernet_mac_address, dock_mac_address,
-      manufacture_date, signing_service_.get(), device_management_service,
+  return CreateDeviceCloudPolicyClientAsh(
+      statistics_provider_, signing_service_.get(), device_management_service,
       system_url_loader_factory_for_testing_
           ? system_url_loader_factory_for_testing_
           : g_browser_process->shared_url_loader_factory(),

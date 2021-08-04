@@ -2083,6 +2083,8 @@ source_set("chromeos") {
     "../ash/policy/core/browser_policy_connector_ash.h",
     "../ash/policy/core/cached_policy_key_loader.cc",
     "../ash/policy/core/cached_policy_key_loader.h",
+    "../ash/policy/core/device_cloud_policy_client_factory_ash.cc",
+    "../ash/policy/core/device_cloud_policy_client_factory_ash.h",
     "../ash/policy/core/device_cloud_policy_manager_ash.cc",
     "../ash/policy/core/device_cloud_policy_manager_ash.h",
     "../ash/policy/core/device_cloud_policy_store_ash.cc",
