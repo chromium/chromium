@@ -28,11 +28,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The time between a change in content and when the new capture is sent to the
     browser process.
-
+  </summary>
+  <details>
     A specific content change is hard to track. This is roughly calculated as
     the interval from the first content change after a prior capturing content
     to the first content being sent after the next capture of content.
-  </summary>
+  </details>
 </histogram>
 
 <histogram name="ContentCapture.CaptureContentTime" units="microseconds"

@@ -1037,7 +1037,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Autofill form events for address forms. These are recorded when the user
     interacts with a form requesting an address. {AutofillDataAvailability}
-
+  </summary>
+  <details>
     Important caveat about submission metrics: - Submission using autofill data
     is determined by simply evaluating if there was a fill operation in this
     page. So, if the user filled with local data, completed erased or modified
@@ -1047,7 +1048,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the page load. So, if a user initially filled with local data and after that
     filled with server, we will only emit &quot;Submitted with server suggestion
     filled (once)&quot;.
-  </summary>
+  </details>
   <token key="AutofillDataAvailability" variants="AutofillDataAvailability">
     <variant name=""/>
   </token>
@@ -1059,7 +1060,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Autofill form events for credit card forms on nonsecure pages. These are
     recorded when the user interacts with a form requesting a credit card.
-
+  </summary>
+  <details>
     Important caveat about submission metrics: - Submission using autofill data
     is determined by simply evaluating if there was a fill operation in this
     page. So, if the user filled with local data, completed erased or modified
@@ -1069,7 +1071,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the page load. So, if a user initially filled with local data and after that
     filled with server, we will only emit &quot;Submitted with server suggestion
     filled (once)&quot;.
-  </summary>
+  </details>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
@@ -1094,14 +1096,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Autofill form events for credit card forms. These are recorded when the user
     interacts with a form requesting a credit card, a dropdown of suggestions is
     shown and at least one of the suggestions has a server nickname available.
-
+  </summary>
+  <details>
     These metrics are used to measure the impact of the server card nickname
     experiment. They are used to calculate the suggestion selection rate with
     server nickname available. We will run the experiment on the same group of
     user who has server cards with nicknames to compare the selection rate. For
     enabled user, we will show nickname and log. For the other, we won't show
     nickname in suggestion but we still log to this histogram.
-  </summary>
+  </details>
 </histogram>
 
 <histogram
@@ -1130,7 +1133,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Autofill form events for credit card forms. These are recorded when the user
     interacts with a form requesting a credit card. {AutofillDataAvailability}
-
+  </summary>
+  <details>
     Important caveat about submission metrics: - Submission using autofill data
     is determined by simply evaluating if there was a fill operation in this
     page. So, if the user filled with local data, completed erased or modified
@@ -1140,7 +1144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the page load. So, if a user initially filled with local data and after that
     filled with server, we will only emit &quot;Submitted with server suggestion
     filled (once)&quot;.
-  </summary>
+  </details>
   <token key="AutofillDataAvailability" variants="AutofillDataAvailability">
     <variant name=""/>
   </token>

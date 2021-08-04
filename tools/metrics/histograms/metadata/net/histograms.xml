@@ -2389,9 +2389,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Number of bytes read from the network on behalf of prefetch requests. This
     is prefilter, so before any decompression.
-
-    This applies to requests with RESOURCE_TYPE_PREFETCH.
   </summary>
+  <details>
+    This applies to requests with RESOURCE_TYPE_PREFETCH.
+  </details>
 </histogram>
 
 <histogram name="Net.ProxyScriptFetcher.FirstByteDuration" units="ms"

@@ -21,6 +21,7 @@ XML below will generate the following five histograms:
   <owner>person@chromium.org</owner>
   <owner>some-team@chromium.org</owner>
   <summary>A brief description.</summary>
+  <details>This is a more thorough description of this histogram.</details>
 </histogram>
 
 <histogram name="HistogramEnum" enum="MyEnumType">
@@ -628,6 +629,11 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
     # Handle units.
     if histogram.hasAttribute('units'):
       histogram_entry['units'] = histogram.getAttribute('units')
+
+    # Find <details> tag.
+    for node in IterElementsWithTag(histogram, 'details'):
+      histogram_entry['details'] = _GetTextFromChildNodes(node)
+      break
 
     # Handle enum types.
     if histogram.hasAttribute('enum'):

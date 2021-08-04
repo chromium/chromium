@@ -1172,10 +1172,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The hash of the phone model used to successfully sign in or unlock using
     Smart Lock.
-
+  </summary>
+  <details>
     This hash is calculated by taking the first 4 bytes of the MD5 hash of the
     device model.
-  </summary>
+  </details>
 </histogram>
 
 <histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
@@ -1186,7 +1187,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Measures the exponentially weighted rolling average of the received signal
     strength indicator (RSSI) of the phone when the user successfully unlocks or
     signs in using Smart Lock.
-
+  </summary>
+  <details>
     The exponentially weighted averaging formula is:
 
     rollingRssi = (1 - weight) * rollingRssi + weight * currentRssi;
@@ -1195,7 +1197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     value to work with as a heuristic for proximity.
 
     If no RSSI was read, then a sentinel value of 127 will be recorded.
-  </summary>
+  </details>
 </histogram>
 
 <histogram name="EasyUnlock.RemoteLockScreenState"
