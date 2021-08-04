@@ -119,6 +119,9 @@ std::string GetProblemsString(
     case RoutineProblems::Tag::VIDEO_CONFERENCING_PROBLEMS:
       problemsStr = ProblemsToStr(problems->get_video_conferencing_problems());
       break;
+    case RoutineProblems::Tag::ARC_HTTP_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_arc_http_problems());
+      break;
   }
   return problemsStr;
 }

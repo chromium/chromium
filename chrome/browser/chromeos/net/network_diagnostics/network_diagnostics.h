@@ -60,6 +60,7 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void RunHttpsLatency(RunHttpsLatencyCallback callback) override;
   void RunVideoConferencing(const absl::optional<std::string>& stun_server_name,
                             RunVideoConferencingCallback callback) override;
+  void RunArcHttp(RunArcHttpCallback callback) override;
   void GetResult(const mojom::RoutineType type,
                  GetResultCallback callback) override;
   void GetAllResults(GetAllResultsCallback callback) override;

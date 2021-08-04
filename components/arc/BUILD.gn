@@ -410,6 +410,8 @@ static_library("arc_test_support") {
     "test/fake_memory_instance.h",
     "test/fake_nearby_share_instance.cc",
     "test/fake_nearby_share_instance.h",
+    "test/fake_net_instance.cc",
+    "test/fake_net_instance.h",
     "test/fake_pip_instance.cc",
     "test/fake_pip_instance.h",
     "test/fake_policy_instance.cc",

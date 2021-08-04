@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/arc_http_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/captive_portal_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_latency_routine.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_resolution_routine.h"
@@ -251,6 +252,11 @@ void NetworkDiagnostics::RunVideoConferencing(
   } else {
     routine = std::make_unique<VideoConferencingRoutine>();
   }
+  RunRoutine(std::move(routine), std::move(callback));
+}
+
+void NetworkDiagnostics::RunArcHttp(RunArcHttpCallback callback) {
+  auto routine = std::make_unique<ArcHttpRoutine>();
   RunRoutine(std::move(routine), std::move(callback));
 }
 

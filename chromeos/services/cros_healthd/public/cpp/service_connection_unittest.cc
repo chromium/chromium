@@ -326,6 +326,9 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
                NetworkDiagnosticsRoutines::RunVideoConferencingCallback),
               (override));
   MOCK_METHOD(void,
+              RunArcHttp,
+              (NetworkDiagnosticsRoutines::RunArcHttpCallback));
+  MOCK_METHOD(void,
               GetResult,
               (const network_diagnostics::mojom::RoutineType type,
                NetworkDiagnosticsRoutines::GetResultCallback),

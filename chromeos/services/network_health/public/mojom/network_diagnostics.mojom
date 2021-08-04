@@ -25,6 +25,7 @@ enum RoutineType {
   kHttpsFirewall,
   kHttpsLatency,
   kVideoConferencing,
+  kArcHttp,
 };
 
 // Each routine can result in one of the possible verdicts.
@@ -164,6 +165,21 @@ enum VideoConferencingProblem {
   kMediaFailure,
 };
 
+// Problems related to the ArcHttp routine.
+[Extensible]
+enum ArcHttpProblem {
+  // Failed to get the ARC Service Manager.
+  kFailedToGetArcServiceManager,
+  // Failed to get instance of the NetInstance service.
+  kFailedToGetNetInstanceForHttpTest,
+  // HTTPS request latency is high.
+  kHighLatency,
+  // HTTPS request latency is very high.
+  kVeryHighLatency,
+  // One or more HTTP requests resulted in a failure.
+  kFailedHttpRequests,
+};
+
 // Union of all possible routine problems. See each problem enum definition for
 // more details.
 union RoutineProblems {
@@ -179,6 +195,7 @@ union RoutineProblems {
   array<HttpsFirewallProblem> https_firewall_problems;
   array<HttpsLatencyProblem> https_latency_problems;
   array<VideoConferencingProblem> video_conferencing_problems;
+  array<ArcHttpProblem> arc_http_problems;
 };
 
 // A single routine's result.
@@ -292,6 +309,10 @@ interface NetworkDiagnosticsRoutines {
   // (2) Contact either a default or specified STUN server via TCP.
   // (3) Reach common media endpoints.
   RunVideoConferencing(string? stun_server_hostname) => (RoutineResult result);
+
+  // Tests whether ARC can make successful HTTP GET requests to the resources
+  // needed during the ARC Provisioning step.
+  RunArcHttp() => (RoutineResult result);
 
   // Returns the most recent result for the specified routine type, if it has
   // been run.
