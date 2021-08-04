@@ -117,7 +117,7 @@ export class BannerController extends EventTarget {
         this.warningBanners_.concat(this.educationalBanners_);
     for (const banner of orderedBanners) {
       if (!this.shouldShowBanner_(banner)) {
-        this.maybeHideBanner_(banner);
+        this.hideBannerIfShown_(banner);
         continue;
       }
 
@@ -180,7 +180,7 @@ export class BannerController extends EventTarget {
    * @param {!Banner} banner The banner to hide.
    * @private
    */
-  maybeHideBanner_(banner) {
+  hideBannerIfShown_(banner) {
     if (banner.parentElement !== this.container_) {
       return;
     }
