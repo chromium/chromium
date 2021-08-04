@@ -6154,6 +6154,9 @@ crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Failure Pass
 crbug.com/1142877 [ Mac ] external/wpt/mediacapture-fromelement/capture.html [ Crash Failure Pass ]
 crbug.com/1142877 [ Debug Linux ] external/wpt/mediacapture-fromelement/capture.html [ Crash Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/3069289
+crbug.com/578269 inspector-protocol/debugger/message-channel-async-stack.js [ Failure Pass ]
+
 #Sheriff 2020-10-29
 crbug.com/1143720 [ Win7 ] external/wpt/media-source/mediasource-detach.html [ Failure Pass ]
 
