@@ -70,7 +70,7 @@ BackgroundFetchTestDataManager::BackgroundFetchTestDataManager(
       browser_context_(browser_context),
       storage_partition_(storage_partition) {}
 
-void BackgroundFetchTestDataManager::InitializeOnCoreThread() {
+void BackgroundFetchTestDataManager::Initialize() {
   // CacheStorage uses the default QuotaManager and not the mock one in this
   // class.  Set QuotaSettings appropriately so that all platforms have quota.
   // The mock one is still used for testing quota exceeded scenarios in

@@ -78,7 +78,7 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
     data_manager_ = std::make_unique<BackgroundFetchTestDataManager>(
         browser_context(), storage_partition(),
         embedded_worker_test_helper()->context_wrapper());
-    data_manager_->InitializeOnCoreThread();
+    data_manager_->Initialize();
 
     delegate_proxy_ =
         std::make_unique<BackgroundFetchDelegateProxy>(storage_partition());

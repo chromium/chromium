@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_delegate_proxy.h"
 #include "content/browser/background_fetch/background_fetch_event_dispatcher.h"
 #include "content/browser/background_fetch/storage/get_initialization_data_task.h"
@@ -42,11 +43,9 @@ class StoragePartitionImpl;
 // Background Fetch requests function similarly to normal fetches except that
 // they are persistent across Chromium or service worker shutdown.
 //
-// Deleted on the service worker core thread.
-// TODO(crbug.com/824858): Make this single-threaded after the service worker
-// core thread moves to the UI thread.
+// Lives on the UI thread.
 class CONTENT_EXPORT BackgroundFetchContext
-    : public base::RefCountedDeleteOnSequence<BackgroundFetchContext> {
+    : public base::RefCounted<BackgroundFetchContext> {
  public:
   // The BackgroundFetchContext will watch the ServiceWorkerContextWrapper so
   // that it can respond to service worker events such as unregister.
@@ -56,7 +55,7 @@ class CONTENT_EXPORT BackgroundFetchContext
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
 
-  void InitializeOnCoreThread();
+  void Initialize();
 
   // Called by the StoragePartitionImpl destructor.
   void Shutdown();
@@ -142,12 +141,9 @@ class CONTENT_EXPORT BackgroundFetchContext
                            JobsInitializedOnBrowserRestart);
   friend class BackgroundFetchServiceTest;
   friend class BackgroundFetchJobControllerTest;
-  friend class base::DeleteHelper<BackgroundFetchContext>;
-  friend class base::RefCountedDeleteOnSequence<BackgroundFetchContext>;
+  friend class base::RefCounted<BackgroundFetchContext>;
 
   ~BackgroundFetchContext();
-
-  void ShutdownOnCoreThread();
 
   // Called when an existing registration has been retrieved from the data
   // manager. If the registration does not exist then |registration| is nullptr.
@@ -208,6 +204,8 @@ class CONTENT_EXPORT BackgroundFetchContext
   std::map<BackgroundFetchRegistrationId,
            blink::mojom::BackgroundFetchService::FetchCallback>
       fetch_callbacks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundFetchContext> weak_factory_{
       this};  // Must be last.

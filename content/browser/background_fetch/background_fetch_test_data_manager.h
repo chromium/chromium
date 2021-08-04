@@ -37,7 +37,7 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
 
   ~BackgroundFetchTestDataManager() override;
 
-  void InitializeOnCoreThread() override;
+  void Initialize() override;
 
  private:
   friend class BackgroundFetchDataManagerTest;

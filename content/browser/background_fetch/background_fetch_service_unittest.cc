@@ -304,7 +304,7 @@ class BackgroundFetchServiceTest
     browser_context()->SetPermissionControllerDelegate(
         std::move(mock_permission_manager));
 
-    context_->InitializeOnCoreThread();
+    context_->Initialize();
     service_ = std::make_unique<BackgroundFetchServiceImpl>(
         context_, storage_key(),
         /* render_frame_tree_node_id= */ 0,

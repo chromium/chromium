@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
@@ -47,11 +48,10 @@ class StoragePartitionImpl;
 // for Background Fetch.
 //
 // There must only be a single instance of this class per StoragePartition, and
-// it must only be used on the service worker core thread, since it relies on
-// there being no other code concurrently reading/writing the Background Fetch
-// keys of the same Service Worker database (except for deletions, e.g. it's
-// safe for the Service Worker code to remove a ServiceWorkerRegistration and
-// all its keys).
+// it must only be used on the UI thread, since it relies on there being no
+// other code concurrently reading/writing the Background Fetch keys of the same
+// Service Worker database (except for deletions, e.g. it's safe for the Service
+// Worker code to remove a ServiceWorkerRegistration and all its keys).
 //
 // Storage schema is documented in storage/README.md
 class CONTENT_EXPORT BackgroundFetchDataManager
@@ -90,7 +90,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   ~BackgroundFetchDataManager() override;
 
   // Grabs a reference to CacheStorageManager.
-  virtual void InitializeOnCoreThread();
+  virtual void Initialize();
 
   // Adds or removes the given |observer| to this data manager instance.
   void AddObserver(BackgroundFetchDataManagerObserver* observer);
@@ -182,7 +182,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
     return observers_;
   }
 
-  void ShutdownOnCoreThread();
+  void Shutdown();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BackgroundFetchDataManagerTest, Cleanup);
@@ -269,6 +269,8 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   std::map<std::string, mojo::Remote<blink::mojom::CacheStorage>>
       cache_storage_remote_map_;
   mojo::Remote<blink::mojom::CacheStorage> null_remote_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundFetchDataManager> weak_ptr_factory_{this};
 

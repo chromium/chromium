@@ -44,7 +44,7 @@ BackgroundFetchDataManager::BackgroundFetchDataManager(
     : service_worker_context_(std::move(service_worker_context)),
       storage_partition_(std::move(storage_partition)),
       quota_manager_proxy_(std::move(quota_manager_proxy)) {
-  // Constructed on the UI thread, then used on the service worker core thread.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(storage_partition_);
 
@@ -54,8 +54,8 @@ BackgroundFetchDataManager::BackgroundFetchDataManager(
   DCHECK(blob_storage_context_);
 }
 
-void BackgroundFetchDataManager::InitializeOnCoreThread() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+void BackgroundFetchDataManager::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Delete inactive registrations still in the DB.
   Cleanup();
@@ -63,17 +63,18 @@ void BackgroundFetchDataManager::InitializeOnCoreThread() {
 
 void BackgroundFetchDataManager::AddObserver(
     BackgroundFetchDataManagerObserver* observer) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void BackgroundFetchDataManager::RemoveObserver(
     BackgroundFetchDataManagerObserver* observer) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
 void BackgroundFetchDataManager::Cleanup() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddDatabaseTask(std::make_unique<background_fetch::CleanupTask>(this));
 }
 
@@ -81,6 +82,8 @@ mojo::Remote<blink::mojom::CacheStorage>&
 BackgroundFetchDataManager::GetOrOpenCacheStorage(
     const blink::StorageKey& storage_key,
     const std::string& unique_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto it = cache_storage_remote_map_.find(unique_id);
   if (it != cache_storage_remote_map_.end()) {
     // TODO(enne): should we store `storage_key` so we can DCHECK it matches
@@ -110,6 +113,8 @@ void BackgroundFetchDataManager::OpenCache(
     const std::string& unique_id,
     int64_t trace_id,
     blink::mojom::CacheStorage::OpenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto& cache_storage = GetOrOpenCacheStorage(storage_key, unique_id);
   if (!cache_storage)
     return;
@@ -123,6 +128,8 @@ void BackgroundFetchDataManager::DeleteCache(
     const std::string& unique_id,
     int64_t trace_id,
     blink::mojom::CacheStorage::DeleteCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto& cache_storage = GetOrOpenCacheStorage(storage_key, unique_id);
   if (!cache_storage)
     return;
@@ -137,6 +144,8 @@ void BackgroundFetchDataManager::DidDeleteCache(
     const std::string& unique_id,
     blink::mojom::CacheStorage::DeleteCallback callback,
     blink::mojom::CacheStorageError result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Preserve the lifetime of the cache storage remote until here so that this
   // DidDeleteCache callback will not be dropped.
   cache_storage_remote_map_.erase(unique_id);
@@ -148,6 +157,8 @@ void BackgroundFetchDataManager::HasCache(
     const std::string& unique_id,
     int64_t trace_id,
     blink::mojom::CacheStorage::HasCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto& cache_storage = GetOrOpenCacheStorage(storage_key, unique_id);
   if (!cache_storage)
     return;
@@ -156,12 +167,12 @@ void BackgroundFetchDataManager::HasCache(
 }
 
 BackgroundFetchDataManager::~BackgroundFetchDataManager() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void BackgroundFetchDataManager::GetInitializationData(
     GetInitializationDataCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::GetInitializationDataTask>(
       this, std::move(callback)));
@@ -174,7 +185,7 @@ void BackgroundFetchDataManager::CreateRegistration(
     const SkBitmap& icon,
     bool start_paused,
     CreateRegistrationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::CreateMetadataTask>(
       this, registration_id, std::move(requests), std::move(options), icon,
@@ -186,7 +197,7 @@ void BackgroundFetchDataManager::GetRegistration(
     const blink::StorageKey& storage_key,
     const std::string& developer_id,
     GetRegistrationCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::GetRegistrationTask>(
       this, service_worker_registration_id, storage_key, developer_id,
@@ -196,7 +207,7 @@ void BackgroundFetchDataManager::GetRegistration(
 void BackgroundFetchDataManager::PopNextRequest(
     const BackgroundFetchRegistrationId& registration_id,
     NextRequestCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(
       std::make_unique<background_fetch::StartNextPendingRequestTask>(
@@ -207,7 +218,7 @@ void BackgroundFetchDataManager::GetRequestBlob(
     const BackgroundFetchRegistrationId& registration_id,
     const scoped_refptr<BackgroundFetchRequestInfo>& request_info,
     GetRequestBlobCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::GetRequestBlobTask>(
       this, registration_id, request_info, std::move(callback)));
@@ -217,7 +228,7 @@ void BackgroundFetchDataManager::MarkRequestAsComplete(
     const BackgroundFetchRegistrationId& registration_id,
     scoped_refptr<BackgroundFetchRequestInfo> request_info,
     MarkRequestCompleteCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::MarkRequestCompleteTask>(
       this, registration_id, std::move(request_info), std::move(callback)));
@@ -227,7 +238,7 @@ void BackgroundFetchDataManager::MatchRequests(
     const BackgroundFetchRegistrationId& registration_id,
     std::unique_ptr<BackgroundFetchRequestMatchParams> match_params,
     SettledFetchesCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::MatchRequestsTask>(
       this, registration_id, std::move(match_params), std::move(callback)));
@@ -237,7 +248,7 @@ void BackgroundFetchDataManager::MarkRegistrationForDeletion(
     const BackgroundFetchRegistrationId& registration_id,
     bool check_for_failure,
     MarkRegistrationForDeletionCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(
       std::make_unique<background_fetch::MarkRegistrationForDeletionTask>(
@@ -247,7 +258,7 @@ void BackgroundFetchDataManager::MarkRegistrationForDeletion(
 void BackgroundFetchDataManager::DeleteRegistration(
     const BackgroundFetchRegistrationId& registration_id,
     HandleBackgroundFetchErrorCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::DeleteRegistrationTask>(
       this, registration_id.service_worker_registration_id(),
@@ -259,20 +270,22 @@ void BackgroundFetchDataManager::GetDeveloperIdsForServiceWorker(
     int64_t service_worker_registration_id,
     const blink::StorageKey& storage_key,
     blink::mojom::BackgroundFetchService::GetDeveloperIdsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddDatabaseTask(std::make_unique<background_fetch::GetDeveloperIdsTask>(
       this, service_worker_registration_id, storage_key, std::move(callback)));
 }
 
-void BackgroundFetchDataManager::ShutdownOnCoreThread() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+void BackgroundFetchDataManager::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   shutting_down_ = true;
 }
 
 void BackgroundFetchDataManager::AddDatabaseTask(
     std::unique_ptr<background_fetch::DatabaseTask> task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // If Shutdown was called don't add any new tasks.
   if (shutting_down_)
     return;
@@ -284,7 +297,7 @@ void BackgroundFetchDataManager::AddDatabaseTask(
 
 void BackgroundFetchDataManager::OnTaskFinished(
     background_fetch::DatabaseTask* task) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!database_tasks_.empty());
   DCHECK_EQ(database_tasks_.front().get(), task);
@@ -295,11 +308,13 @@ void BackgroundFetchDataManager::OnTaskFinished(
 }
 
 BackgroundFetchDataManager* BackgroundFetchDataManager::data_manager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return this;
 }
 
 base::WeakPtr<background_fetch::DatabaseTaskHost>
 BackgroundFetchDataManager::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
