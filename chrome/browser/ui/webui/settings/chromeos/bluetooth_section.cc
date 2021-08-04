@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -201,6 +202,10 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD_MOUSE_COMBO},
       {"bluetoothDeviceType_unknown",
        IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_UNKNOWN},
+      {"bluetoothDeviceListCurrentlyConnected",
+       IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED},
+      {"bluetoothDeviceListPreviouslyConnected",
+       IDS_BLUETOOTH_DEVICE_LIST_PREVIOUSLY_CONNECTED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   chromeos::bluetooth::AddLoadTimeData(html_source);

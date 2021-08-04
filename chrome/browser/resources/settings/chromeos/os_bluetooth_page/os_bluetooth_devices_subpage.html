@@ -1,5 +1,20 @@
 <style include="settings-shared">
 </style>
 <div id="container">
-   <!-- TODO(crbug.com/1010321): Add bluetooth devices list -->
+   <!-- TODO(crbug.com/1010321): Add toggle and pair new device button. -->
+   <!-- TODO(crbug.com/1010321): Add UI styling, populate with real data. -->
+  <div class="settings-box-text">
+    $i18n{bluetoothDeviceListCurrentlyConnected}
+  </div>
+  <div>
+   <os-settings-paired-bluetooth-list>
+   </os-settings-paired-bluetooth-list>
+  </div>
+  <div class="settings-box-text">
+    $i18n{bluetoothDeviceListPreviouslyConnected}
+  </div>
+  <div>
+    <os-settings-paired-bluetooth-list>
+    </os-settings-paired-bluetooth-list>
+  </div>
 </div>

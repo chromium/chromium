@@ -8,11 +8,22 @@
  */
 
 import '../../settings_shared_css.js';
+import './os_paired_bluetooth_list.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsBluetoothDevicesSubpageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-class SettingsBluetoothDevicesSubpageElement extends PolymerElement {
+class SettingsBluetoothDevicesSubpageElement extends
+    SettingsBluetoothDevicesSubpageElementBase {
   static get is() {
     return 'os-settings-bluetooth-devices-subpage';
   }

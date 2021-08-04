@@ -1656,6 +1656,14 @@ Try tapping the mic to ask me anything.
       <message name="IDS_TRAFFIC_COUNTERS_TRAFFIC_COUNTERS" desc="Label for showing traffic counters">
         Traffic Counters
       </message>
+
+      <!-- Bluetooth -->
+      <message name="IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that are currently connected.">
+        Currently connected
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_LIST_PREVIOUSLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that have previously been connected.">
+        Previously connected
+      </message>
     </messages>
   </release>
 </grit>
