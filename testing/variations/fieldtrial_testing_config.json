@@ -1625,21 +1625,6 @@
             ]
         }
     ],
-    "CalculateNativeWinOcclusionCheckVirtualDesktopUsed": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CalculateNativeWinOcclusionCheckVirtualDesktopUsed"
-                    ]
-                }
-            ]
-        }
-    ],
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [
@@ -1890,51 +1875,6 @@
                     },
                     "enable_features": [
                         "KstaledSwap"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ChromeOSLowMemoryNotificationPSI": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "PSIThreshold_10_Percent_20210201",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "10"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
-                    ]
-                },
-                {
-                    "name": "PSIThreshold_20_Percent_20210201",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "20"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
-                    ]
-                },
-                {
-                    "name": "PSIThreshold_30_Percent_20210201",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "30"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
-                    ]
-                },
-                {
-                    "name": "PSIThreshold_40_Percent_20210201",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "40"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
                     ]
                 }
             ]
@@ -2934,25 +2874,6 @@
             ]
         }
     ],
-    "DesktopTabGroupsCollapse": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupsCollapse"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopTabGroupsCollapseFreezing": [
         {
             "platforms": [
@@ -3130,23 +3051,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DexFixer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DiceMultilogin": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseMultiloginEndpoint"
                     ]
                 }
             ]
@@ -4371,21 +4275,6 @@
             ]
         }
     ],
-    "IOSRestoreGaiaCookies": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RestoreGAIACookiesIfDeleted"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSRestoreGaiaCookiesOnUserAction": [
         {
             "platforms": [
@@ -4697,28 +4586,6 @@
             ]
         }
     ],
-    "InvalidateBookmarkSyncMetadataIfClientTagMissing": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InvalidateBookmarkSyncMetadataIfClientTagMissing"
-                    ]
-                }
-            ]
-        }
-    ],
     "IsolatePasswordSites": [
         {
             "platforms": [
@@ -4846,21 +4713,6 @@
             ]
         }
     ],
-    "LauncherScoreNormalizer": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableLauncherScoreNormalizer"
-                    ]
-                }
-            ]
-        }
-    ],
     "LauncherSettingsSearch": [
         {
             "platforms": [
@@ -4969,22 +4821,6 @@
             ]
         }
     ],
-    "LowerJavaScriptPriorityWhenForceDeferred": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20190905",
-                    "enable_features": [
-                        "LowerJavaScriptPriorityWhenForceDeferred"
-                    ]
-                }
-            ]
-        }
-    ],
     "MICEWebSignIn": [
         {
             "platforms": [
@@ -4995,21 +4831,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MICEWebSignIn"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MacSystemMediaPermissionsInfoUI": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacSystemMediaPermissionsInfoUI"
                     ]
                 }
             ]
@@ -5027,21 +4848,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SyncConfirmationUpdatedText"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MediaApp": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaApp"
                     ]
                 }
             ]
@@ -6851,25 +6657,6 @@
             ]
         }
     ],
-    "QRCodeGenerator": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharingQRCodeGenerator"
-                    ]
-                }
-            ]
-        }
-    ],
     "QUIC": [
         {
             "platforms": [
@@ -7557,25 +7344,6 @@
             ]
         }
     ],
-    "SafeBrowsingRealTimeUrlLookupEnabledWithToken": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupEnabledWithToken"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingRealTimeUrlLookupReferrerChain": [
         {
             "platforms": [
@@ -8170,28 +7938,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabHoverCardImages"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabHoverCards": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "setting": "1"
-                    },
-                    "enable_features": [
-                        "TabHoverCards"
                     ]
                 }
             ]
@@ -8920,6 +8666,29 @@
             ]
         }
     ],
+    "V8ScriptAblation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DelayOnce50ms",
+                    "params": {
+                        "V8ScriptDelayOnceMs": "50"
+                    },
+                    "enable_features": [
+                        "V8ScriptAblation"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8Sparkplug": [
         {
             "platforms": [
@@ -9348,25 +9117,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebOtpCrossDeviceSimpleString"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebProtectRealTimeURLCheckGA": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint"
                     ]
                 }
             ]
@@ -9860,21 +9610,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WifiSyncAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WindowsSensorAPIs": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinrtSensorsImplementation"
                     ]
                 }
             ]
