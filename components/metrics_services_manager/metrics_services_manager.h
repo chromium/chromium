@@ -62,6 +62,9 @@ class MetricsServicesManager {
   // Returns the VariationsService, creating it if it hasn't been created yet.
   variations::VariationsService* GetVariationsService();
 
+  // Called when loading state changed.
+  void LoadingStateChanged(bool is_loading);
+
   // Should be called when a plugin loading error occurs.
   void OnPluginLoadingError(const base::FilePath& plugin_path);
 

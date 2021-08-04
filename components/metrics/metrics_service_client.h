@@ -116,6 +116,9 @@ class MetricsServiceClient {
   // data.
   virtual bool ShouldStartUpFastForTesting() const;
 
+  // Called when loading state changed, e.g. start/stop loading.
+  virtual void LoadingStateChanged(bool is_loading) {}
+
   // Called on plugin loading errors.
   virtual void OnPluginLoadingError(const base::FilePath& plugin_path) {}
 

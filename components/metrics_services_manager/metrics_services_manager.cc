@@ -54,6 +54,11 @@ variations::VariationsService* MetricsServicesManager::GetVariationsService() {
   return variations_service_.get();
 }
 
+void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  GetMetricsServiceClient()->LoadingStateChanged(is_loading);
+}
+
 void MetricsServicesManager::OnPluginLoadingError(
     const base::FilePath& plugin_path) {
   GetMetricsServiceClient()->OnPluginLoadingError(plugin_path);

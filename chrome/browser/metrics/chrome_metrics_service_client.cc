@@ -929,10 +929,6 @@ void ChromeMetricsServiceClient::RecordCommandLineMetrics() {
 }
 
 bool ChromeMetricsServiceClient::RegisterForNotifications() {
-  registrar_.Add(this, content::NOTIFICATION_LOAD_START,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
-                 content::NotificationService::AllSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                  content::NotificationService::AllSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
@@ -1021,8 +1017,6 @@ void ChromeMetricsServiceClient::Observe(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (type) {
-    case content::NOTIFICATION_LOAD_STOP:
-    case content::NOTIFICATION_LOAD_START:
     case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
     case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
       metrics_service_->OnApplicationNotIdle();
@@ -1043,6 +1037,10 @@ void ChromeMetricsServiceClient::Observe(
     default:
       NOTREACHED();
   }
+}
+
+void ChromeMetricsServiceClient::LoadingStateChanged(bool /*is_loading*/) {
+  metrics_service_->OnApplicationNotIdle();
 }
 
 void ChromeMetricsServiceClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {

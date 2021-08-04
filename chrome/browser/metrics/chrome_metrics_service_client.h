@@ -78,6 +78,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
+  void LoadingStateChanged(bool is_loading) override;
   void OnPluginLoadingError(const base::FilePath& plugin_path) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
