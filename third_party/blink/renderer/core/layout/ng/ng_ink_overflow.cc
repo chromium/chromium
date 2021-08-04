@@ -462,7 +462,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   }
 
   FloatRect accumulated_bound;
-  for (size_t applied_decoration_index = 0;
+  for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =

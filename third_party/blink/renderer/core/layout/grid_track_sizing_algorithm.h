@@ -98,7 +98,7 @@ class GridTrackSizingAlgorithm final {
   // Setup() must be run before calling Run() as it configures the behaviour of
   // the algorithm.
   void Setup(GridTrackSizingDirection,
-             size_t num_tracks,
+             wtf_size_t num_tracks,
              absl::optional<LayoutUnit> available_space);
   void Run();
   void Reset();
@@ -145,9 +145,9 @@ class GridTrackSizingAlgorithm final {
   bool IsRelativeSizedTrackAsAuto(const GridTrackSize&,
                                   GridTrackSizingDirection) const;
   GridTrackSize CalculateGridTrackSize(GridTrackSizingDirection,
-                                       size_t translated_index) const;
+                                       wtf_size_t translated_index) const;
   const GridTrackSize& RawGridTrackSize(GridTrackSizingDirection,
-                                        size_t translated_index) const;
+                                        wtf_size_t translated_index) const;
 
   // Helper methods for step 1. initializeTrackSizes().
   LayoutUnit InitialBaseSize(const GridTrackSize&) const;
@@ -192,7 +192,7 @@ class GridTrackSizingAlgorithm final {
       const Vector<GridTrack>& tracks,
       double flex_factor_sum,
       LayoutUnit& left_over_space,
-      const Vector<size_t, 8>& flexible_tracks_indexes,
+      const Vector<wtf_size_t, 8>& flexible_tracks_indexes,
       std::unique_ptr<TrackIndexSet> tracks_to_treat_as_inflexible =
           nullptr) const;
   void ComputeFlexSizedTracksGrowth(double flex_fraction,
@@ -227,9 +227,9 @@ class GridTrackSizingAlgorithm final {
   // writing modes.
   Vector<GridTrack> columns_;
   Vector<GridTrack> rows_;
-  Vector<size_t> content_sized_tracks_index_;
-  Vector<size_t> flexible_sized_tracks_index_;
-  Vector<size_t> auto_sized_tracks_for_stretch_index_;
+  Vector<wtf_size_t> content_sized_tracks_index_;
+  Vector<wtf_size_t> flexible_sized_tracks_index_;
+  Vector<wtf_size_t> auto_sized_tracks_for_stretch_index_;
 
   GridTrackSizingDirection direction_;
 
@@ -290,11 +290,10 @@ class GridTrackSizingAlgorithmStrategy {
   virtual void MaximizeTracks(Vector<GridTrack>&,
                               absl::optional<LayoutUnit>& free_space) = 0;
   virtual double FindUsedFlexFraction(
-      Vector<size_t>& flexible_sized_tracks_index,
+      Vector<wtf_size_t>& flexible_sized_tracks_index,
       GridTrackSizingDirection,
       absl::optional<LayoutUnit> initial_free_space) const = 0;
   virtual bool RecomputeUsedFlexFractionIfNeeded(
-      Vector<size_t>& flexible_sized_tracks_index,
       double& flex_fraction,
       Vector<LayoutUnit>& increments,
       LayoutUnit& total_growth) const = 0;

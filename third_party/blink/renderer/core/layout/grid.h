@@ -17,19 +17,21 @@
 
 namespace blink {
 
-struct OrderedTrackIndexSetHashTraits : public HashTraits<size_t> {
+struct OrderedTrackIndexSetHashTraits : public HashTraits<wtf_size_t> {
   static const bool kEmptyValueIsZero = false;
-  static size_t EmptyValue() { return UINT_MAX; }
+  static wtf_size_t EmptyValue() { return UINT_MAX; }
 
-  static void ConstructDeletedValue(size_t& slot, bool) { slot = UINT_MAX - 1; }
-  static bool IsDeletedValue(const size_t& value) {
+  static void ConstructDeletedValue(wtf_size_t& slot, bool) {
+    slot = UINT_MAX - 1;
+  }
+  static bool IsDeletedValue(const wtf_size_t& value) {
     return value == UINT_MAX - 1;
   }
 };
 
 // TODO(svillar): Perhaps we should use references here.
 typedef Vector<LayoutBox*, 1> GridItemList;
-typedef LinkedHashSet<size_t, OrderedTrackIndexSetHashTraits>
+typedef LinkedHashSet<wtf_size_t, OrderedTrackIndexSetHashTraits>
     OrderedTrackIndexSet;
 
 class LayoutGrid;
@@ -46,13 +48,13 @@ class CORE_EXPORT Grid {
  public:
   static std::unique_ptr<Grid> Create(const LayoutGrid*);
 
-  virtual size_t NumTracks(GridTrackSizingDirection) const = 0;
+  virtual wtf_size_t NumTracks(GridTrackSizingDirection) const = 0;
 
-  virtual void EnsureGridSize(size_t maximum_row_size,
-                              size_t maximum_column_size) = 0;
+  virtual void EnsureGridSize(wtf_size_t maximum_row_size,
+                              wtf_size_t maximum_column_size) = 0;
   virtual void Insert(LayoutBox&, const GridArea&) = 0;
 
-  virtual const GridItemList& Cell(size_t row, size_t column) const = 0;
+  virtual const GridItemList& Cell(wtf_size_t row, wtf_size_t column) const = 0;
 
   virtual ~Grid() {}
 
@@ -64,20 +66,21 @@ class CORE_EXPORT Grid {
 
   GridSpan GridItemSpan(const LayoutBox&, GridTrackSizingDirection) const;
 
-  size_t GridItemPaintOrder(const LayoutBox&) const;
-  void SetGridItemPaintOrder(const LayoutBox&, size_t order);
+  wtf_size_t GridItemPaintOrder(const LayoutBox&) const;
+  void SetGridItemPaintOrder(const LayoutBox&, wtf_size_t order);
 
-  size_t ExplicitGridStart(GridTrackSizingDirection) const;
-  void SetExplicitGridStart(size_t row_start, size_t column_start);
+  wtf_size_t ExplicitGridStart(GridTrackSizingDirection) const;
+  void SetExplicitGridStart(wtf_size_t row_start, wtf_size_t column_start);
 
-  size_t AutoRepeatTracks(GridTrackSizingDirection) const;
-  void SetAutoRepeatTracks(size_t auto_repeat_rows, size_t auto_repeat_columns);
+  wtf_size_t AutoRepeatTracks(GridTrackSizingDirection) const;
+  void SetAutoRepeatTracks(wtf_size_t auto_repeat_rows,
+                           wtf_size_t auto_repeat_columns);
 
   void SetAutoRepeatEmptyColumns(std::unique_ptr<OrderedTrackIndexSet>);
   void SetAutoRepeatEmptyRows(std::unique_ptr<OrderedTrackIndexSet>);
 
   bool HasAutoRepeatEmptyTracks(GridTrackSizingDirection) const;
-  bool IsEmptyAutoRepeatTrack(GridTrackSizingDirection, size_t) const;
+  bool IsEmptyAutoRepeatTrack(GridTrackSizingDirection, wtf_size_t) const;
 
   OrderedTrackIndexSet* AutoRepeatEmptyTracks(GridTrackSizingDirection) const;
 
@@ -97,8 +100,8 @@ class CORE_EXPORT Grid {
     virtual LayoutBox* NextGridItem() = 0;
 
     virtual std::unique_ptr<GridArea> NextEmptyGridArea(
-        size_t fixed_track_span,
-        size_t varying_track_span) = 0;
+        wtf_size_t fixed_track_span,
+        wtf_size_t varying_track_span) = 0;
 
     GridIterator(const GridIterator&) = delete;
     GridIterator& operator=(const GridIterator&) = delete;
@@ -109,19 +112,19 @@ class CORE_EXPORT Grid {
     // GridIterator(grid_, kForColumns, 1) will walk over the rows of the 2nd
     // column.
     GridIterator(GridTrackSizingDirection,
-                 size_t fixed_track_index,
-                 size_t varying_track_index);
+                 wtf_size_t fixed_track_index,
+                 wtf_size_t varying_track_index);
 
     GridTrackSizingDirection direction_;
-    size_t row_index_;
-    size_t column_index_;
-    size_t child_index_;
+    wtf_size_t row_index_;
+    wtf_size_t column_index_;
+    wtf_size_t child_index_;
   };
 
   virtual std::unique_ptr<GridIterator> CreateIterator(
       GridTrackSizingDirection,
-      size_t fixed_track_index,
-      size_t varying_track_index = 0) const = 0;
+      wtf_size_t fixed_track_index,
+      wtf_size_t varying_track_index = 0) const = 0;
 
  protected:
   Grid(const LayoutGrid*);
@@ -134,16 +137,16 @@ class CORE_EXPORT Grid {
 
   OrderIterator order_iterator_;
 
-  size_t explicit_column_start_{0};
-  size_t explicit_row_start_{0};
+  wtf_size_t explicit_column_start_{0};
+  wtf_size_t explicit_row_start_{0};
 
-  size_t auto_repeat_columns_{0};
-  size_t auto_repeat_rows_{0};
+  wtf_size_t auto_repeat_columns_{0};
+  wtf_size_t auto_repeat_rows_{0};
 
   bool needs_items_placement_{true};
 
   HashMap<const LayoutBox*, GridArea> grid_item_area_;
-  HashMap<const LayoutBox*, size_t> grid_items_indexes_map_;
+  HashMap<const LayoutBox*, wtf_size_t> grid_items_indexes_map_;
 
   std::unique_ptr<OrderedTrackIndexSet> auto_repeat_empty_columns_{nullptr};
   std::unique_ptr<OrderedTrackIndexSet> auto_repeat_empty_rows_{nullptr};
@@ -158,13 +161,13 @@ class CORE_EXPORT ListGrid final : public Grid {
  public:
   explicit ListGrid(const LayoutGrid* grid) : Grid(grid) {}
 
-  size_t NumTracks(GridTrackSizingDirection direction) const override {
+  wtf_size_t NumTracks(GridTrackSizingDirection direction) const override {
     return direction == kForRows ? num_rows_ : num_columns_;
   }
-  const GridItemList& Cell(size_t row, size_t column) const override;
+  const GridItemList& Cell(wtf_size_t row, wtf_size_t column) const override;
   void Insert(LayoutBox&, const GridArea&) override;
-  void EnsureGridSize(size_t maximum_row_size,
-                      size_t maximum_column_size) override;
+  void EnsureGridSize(wtf_size_t maximum_row_size,
+                      wtf_size_t maximum_column_size) override;
 
   ~ListGrid() final;
 
@@ -177,9 +180,9 @@ class CORE_EXPORT ListGrid final : public Grid {
     friend class WTF::DoublyLinkedListNode<GridCell>;
 
    public:
-    GridCell(size_t row, size_t column) : row_(row), column_(column) {}
+    GridCell(wtf_size_t row, wtf_size_t column) : row_(row), column_(column) {}
 
-    size_t Index(GridTrackSizingDirection direction) const {
+    wtf_size_t Index(GridTrackSizingDirection direction) const {
       return direction == kForRows ? row_ : column_;
     }
 
@@ -217,8 +220,8 @@ class CORE_EXPORT ListGrid final : public Grid {
 
     GridTrackSizingDirection direction_{kForColumns};
     GridItemList items_;
-    size_t row_;
-    size_t column_;
+    wtf_size_t row_;
+    wtf_size_t column_;
   };
 
   // This class represents a track (column or row) of the grid. Each
@@ -235,16 +238,16 @@ class CORE_EXPORT ListGrid final : public Grid {
     friend class WTF::DoublyLinkedListNode<GridTrack>;
 
    public:
-    GridTrack(size_t index, GridTrackSizingDirection direction)
+    GridTrack(wtf_size_t index, GridTrackSizingDirection direction)
         : index_(index), direction_(direction) {}
 
-    size_t Index() const { return index_; }
+    wtf_size_t Index() const { return index_; }
     DoublyLinkedList<GridCell>::AddResult Insert(GridCell*);
     DoublyLinkedList<GridCell>::AddResult InsertAfter(
         GridCell* cell,
         GridCell* insertion_point);
     DoublyLinkedList<GridCell>::AddResult Insert(LayoutBox&, const GridSpan&);
-    GridCell* Find(size_t cell_index) const;
+    GridCell* Find(wtf_size_t cell_index) const;
 
     const DoublyLinkedList<GridCell>& Cells() const { return cells_; }
 
@@ -252,7 +255,7 @@ class CORE_EXPORT ListGrid final : public Grid {
 
    private:
     DoublyLinkedList<GridCell> cells_;
-    size_t index_;
+    wtf_size_t index_;
     GridTrackSizingDirection direction_;
 
     GridTrack* prev_;
@@ -277,11 +280,11 @@ class CORE_EXPORT ListGrid final : public Grid {
 
   std::unique_ptr<GridIterator> CreateIterator(
       GridTrackSizingDirection,
-      size_t fixed_track_index,
-      size_t varying_track_index = 0) const override;
+      wtf_size_t fixed_track_index,
+      wtf_size_t varying_track_index = 0) const override;
 
-  size_t num_rows_{0};
-  size_t num_columns_{0};
+  wtf_size_t num_rows_{0};
+  wtf_size_t num_columns_{0};
 
   DoublyLinkedList<GridTrack> columns_;
   DoublyLinkedList<GridTrack> rows_;
@@ -293,15 +296,15 @@ class ListGridIterator final : public Grid::GridIterator {
  public:
   ListGridIterator(const ListGrid& grid,
                    GridTrackSizingDirection,
-                   size_t fixed_track_index,
-                   size_t varying_track_index = 0);
+                   wtf_size_t fixed_track_index,
+                   wtf_size_t varying_track_index = 0);
   ListGridIterator(const ListGridIterator&) = delete;
   ListGridIterator& operator=(const ListGridIterator&) = delete;
 
   LayoutBox* NextGridItem() override;
   std::unique_ptr<GridArea> NextEmptyGridArea(
-      size_t fixed_track_span,
-      size_t varying_track_span) override;
+      wtf_size_t fixed_track_span,
+      wtf_size_t varying_track_span) override;
 
  private:
   const ListGrid& grid_;

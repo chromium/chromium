@@ -1588,7 +1588,9 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
         DCHECK_GT(parent_break_token->ChildBreakTokens().size(), 0u);
         parent_break_token->GetMutableForOutOfFlow().ReplaceChildBreakToken(
             new_fragment->BreakToken(),
-            parent_break_token->ChildBreakTokens().size() - 1);
+            base::checked_cast<wtf_size_t>(
+                parent_break_token->ChildBreakTokens().size()) -
+                1);
       }
       column_info.mutable_link->fragment->Release();
       new (&column_info.mutable_link->fragment)

@@ -419,8 +419,10 @@ LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
 
 LayoutUnit NGLineBreaker::AddHyphen(NGInlineItemResults* item_results,
                                     NGInlineItemResult* item_result) {
-  return AddHyphen(item_results, item_result - item_results->begin(),
-                   item_result);
+  return AddHyphen(
+      item_results,
+      base::checked_cast<wtf_size_t>(item_result - item_results->begin()),
+      item_result);
 }
 
 // Remove the hyphen string from the |NGInlineItemResult|.
@@ -920,7 +922,8 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
       state_ = LineBreakState::kTrailing;
       if (item_result->item->Style()->WhiteSpace() == EWhiteSpace::kPreWrap &&
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
-        unsigned end_index = item_result - line_info->Results().begin();
+        unsigned end_index = base::checked_cast<unsigned>(
+            item_result - line_info->Results().begin());
         Rewind(end_index, line_info);
       }
       return;
@@ -1403,7 +1406,7 @@ scoped_refptr<ShapeResult> NGLineBreaker::ShapeText(const NGInlineItem& item,
   } else {
     shape_result = items_data_.segments->ShapeText(
         &shaper_, &item.Style()->GetFont(), item.Direction(), start, end,
-        &item - items_data_.items.begin());
+        base::checked_cast<unsigned>(&item - items_data_.items.begin()));
   }
   if (UNLIKELY(spacing_.HasSpacing()))
     shape_result->ApplySpacing(spacing_);
@@ -1573,7 +1576,8 @@ void NGLineBreaker::RewindTrailingOpenTags(NGLineInfo* line_info) {
   for (const NGInlineItemResult& item_result : base::Reversed(item_results)) {
     DCHECK(item_result.item);
     if (item_result.item->Type() != NGInlineItem::kOpenTag) {
-      unsigned end_index = &item_result - item_results.begin() + 1;
+      unsigned end_index =
+          base::checked_cast<unsigned>(&item_result - item_results.begin() + 1);
       if (end_index < item_results.size()) {
         const NGInlineItemResult& end_item_result = item_results[end_index];
         unsigned end_item_index = end_item_result.item_index;
@@ -1935,7 +1939,8 @@ void NGLineBreaker::ComputeMinMaxContentSizeForBlockChild(
   DCHECK(mode_ == NGLineBreakerMode::kMaxContent ||
          mode_ == NGLineBreakerMode::kMinContent);
   if (mode_ == NGLineBreakerMode::kMaxContent && max_size_cache_) {
-    const unsigned item_index = &item - Items().begin();
+    const unsigned item_index =
+        base::checked_cast<unsigned>(&item - Items().begin());
     item_result->inline_size = (*max_size_cache_)[item_index];
     return;
   }
@@ -1962,7 +1967,8 @@ void NGLineBreaker::ComputeMinMaxContentSizeForBlockChild(
     if (max_size_cache_) {
       if (max_size_cache_->IsEmpty())
         max_size_cache_->resize(Items().size());
-      const unsigned item_index = &item - Items().begin();
+      const unsigned item_index =
+          base::checked_cast<unsigned>(&item - Items().begin());
       (*max_size_cache_)[item_index] = result.sizes.max_size + inline_margins;
     }
     return;

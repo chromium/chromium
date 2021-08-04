@@ -70,7 +70,8 @@ class LayoutTextTest : public RenderingTest {
 
   std::string GetSnapCode(const LayoutText& layout_text,
                           const std::string& caret_text) {
-    return GetSnapCode(layout_text, caret_text.find('|'));
+    return GetSnapCode(layout_text,
+                       static_cast<unsigned>(caret_text.find('|')));
   }
 
   std::string GetSnapCode(const char* id, const std::string& caret_text) {

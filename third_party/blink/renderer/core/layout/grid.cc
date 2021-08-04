@@ -28,12 +28,12 @@ std::unique_ptr<Grid> Grid::Create(const LayoutGrid* layout_grid) {
 
 Grid::Grid(const LayoutGrid* grid) : order_iterator_(grid) {}
 
-void Grid::SetExplicitGridStart(size_t row_start, size_t column_start) {
+void Grid::SetExplicitGridStart(wtf_size_t row_start, wtf_size_t column_start) {
   explicit_row_start_ = row_start;
   explicit_column_start_ = column_start;
 }
 
-size_t Grid::ExplicitGridStart(GridTrackSizingDirection direction) const {
+wtf_size_t Grid::ExplicitGridStart(GridTrackSizingDirection direction) const {
   return direction == kForRows ? explicit_row_start_ : explicit_column_start_;
 }
 
@@ -46,11 +46,11 @@ void Grid::SetGridItemArea(const LayoutBox& item, GridArea area) {
   grid_item_area_.Set(&item, area);
 }
 
-size_t Grid::GridItemPaintOrder(const LayoutBox& item) const {
+wtf_size_t Grid::GridItemPaintOrder(const LayoutBox& item) const {
   return grid_items_indexes_map_.at(&item);
 }
 
-void Grid::SetGridItemPaintOrder(const LayoutBox& item, size_t order) {
+void Grid::SetGridItemPaintOrder(const LayoutBox& item, wtf_size_t order) {
   grid_items_indexes_map_.Set(&item, order);
 }
 
@@ -60,17 +60,17 @@ bool Grid::HasAnyGridItemPaintOrder() const {
 }
 #endif
 
-void Grid::SetAutoRepeatTracks(size_t auto_repeat_rows,
-                               size_t auto_repeat_columns) {
-  DCHECK_GE(static_cast<unsigned>(kGridMaxTracks),
+void Grid::SetAutoRepeatTracks(wtf_size_t auto_repeat_rows,
+                               wtf_size_t auto_repeat_columns) {
+  DCHECK_GE(static_cast<wtf_size_t>(kGridMaxTracks),
             NumTracks(kForRows) + auto_repeat_rows);
-  DCHECK_GE(static_cast<unsigned>(kGridMaxTracks),
+  DCHECK_GE(static_cast<wtf_size_t>(kGridMaxTracks),
             NumTracks(kForColumns) + auto_repeat_columns);
   auto_repeat_rows_ = auto_repeat_rows;
   auto_repeat_columns_ = auto_repeat_columns;
 }
 
-size_t Grid::AutoRepeatTracks(GridTrackSizingDirection direction) const {
+wtf_size_t Grid::AutoRepeatTracks(GridTrackSizingDirection direction) const {
   return direction == kForRows ? auto_repeat_rows_ : auto_repeat_columns_;
 }
 
@@ -90,7 +90,7 @@ bool Grid::HasAutoRepeatEmptyTracks(GridTrackSizingDirection direction) const {
 }
 
 bool Grid::IsEmptyAutoRepeatTrack(GridTrackSizingDirection direction,
-                                  size_t line) const {
+                                  wtf_size_t line) const {
   DCHECK(HasAutoRepeatEmptyTracks(direction));
   return AutoRepeatEmptyTracks(direction)->Contains(line);
 }
@@ -128,8 +128,8 @@ void Grid::SetNeedsItemsPlacement(bool needs_items_placement) {
 }
 
 Grid::GridIterator::GridIterator(GridTrackSizingDirection direction,
-                                 size_t fixed_track_index,
-                                 size_t varying_track_index)
+                                 wtf_size_t fixed_track_index,
+                                 wtf_size_t varying_track_index)
     : direction_(direction),
       row_index_((direction == kForColumns) ? varying_track_index
                                             : fixed_track_index),
@@ -137,11 +137,11 @@ Grid::GridIterator::GridIterator(GridTrackSizingDirection direction,
                                                : varying_track_index),
       child_index_(0) {}
 
-ListGrid::GridCell* ListGrid::GridTrack::Find(size_t index) const {
+ListGrid::GridCell* ListGrid::GridTrack::Find(wtf_size_t index) const {
   auto orthogonal_axis = OrthogonalDirection(direction_);
   for (auto* cell = cells_.Head(); cell;
        cell = cell->NextInDirection(direction_)) {
-    size_t cell_index = cell->Index(orthogonal_axis);
+    wtf_size_t cell_index = cell->Index(orthogonal_axis);
     if (cell_index == index)
       return cell;
     if (cell_index > index)
@@ -150,7 +150,7 @@ ListGrid::GridCell* ListGrid::GridTrack::Find(size_t index) const {
   return nullptr;
 }
 
-static int ComparePositions(size_t first, size_t second) {
+static int ComparePositions(wtf_size_t first, wtf_size_t second) {
   return first < second ? -1 : (first != second);
 }
 
@@ -183,8 +183,8 @@ DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
                             second->Index(ortho_direction));
   };
 
-  size_t col_index = direction_ == kForColumns ? Index() : span.StartLine();
-  size_t row_index = direction_ == kForColumns ? span.StartLine() : Index();
+  wtf_size_t col_index = direction_ == kForColumns ? Index() : span.StartLine();
+  wtf_size_t row_index = direction_ == kForColumns ? span.StartLine() : Index();
 
   auto result = cells_.Insert(
       base::WrapUnique(new GridCell(row_index, col_index)), compare_cells);
@@ -199,8 +199,10 @@ DoublyLinkedList<ListGrid::GridCell>::AddResult ListGrid::GridTrack::Insert(
     auto ortho_direction = OrthogonalDirection(direction_);
     if (!cell->Next() ||
         (cell->Next()->Index(ortho_direction) != (index + 1))) {
-      size_t next_col_index = direction_ == kForColumns ? Index() : index + 1;
-      size_t next_row_index = direction_ == kForColumns ? index + 1 : Index();
+      wtf_size_t next_col_index =
+          direction_ == kForColumns ? Index() : index + 1;
+      wtf_size_t next_row_index =
+          direction_ == kForColumns ? index + 1 : Index();
       auto next_cell =
           base::WrapUnique(new GridCell(next_row_index, next_col_index));
       if (InsertAfter(next_cell.get(), cell).is_new_entry)
@@ -244,8 +246,8 @@ ListGrid::GridTrack::~GridTrack() {
   }
 }
 
-const GridItemList& ListGrid::Cell(size_t row_index,
-                                   size_t column_index) const {
+const GridItemList& ListGrid::Cell(wtf_size_t row_index,
+                                   wtf_size_t column_index) const {
   DEFINE_STATIC_LOCAL(const GridItemList, empty_vector, ());
   for (auto* row = rows_.Head(); row; row = row->Next()) {
     if (row->Index() == row_index) {
@@ -267,8 +269,8 @@ ListGrid::GridTrack* ListGrid::InsertTracks(
     return ComparePositions(first->Index(), second->Index());
   };
 
-  size_t start_line = span.StartLine();
-  size_t end_line = span.EndLine();
+  wtf_size_t start_line = span.StartLine();
+  wtf_size_t end_line = span.EndLine();
 
   DoublyLinkedList<ListGrid::GridTrack>::AddResult result = tracks.Insert(
       base::WrapUnique(new GridTrack(start_line, direction)), compare_tracks);
@@ -276,7 +278,7 @@ ListGrid::GridTrack* ListGrid::InsertTracks(
   DCHECK(track);
 
   auto* iter = track;
-  for (size_t track_index = start_line + 1; iter && track_index < end_line;
+  for (wtf_size_t track_index = start_line + 1; iter && track_index < end_line;
        ++track_index) {
     if (!iter->Next() || track_index < iter->Next()->Index()) {
       tracks.InsertAfter(
@@ -327,8 +329,8 @@ void ListGrid::Insert(LayoutBox& item, const GridArea& area) {
   SetGridItemArea(item, area);
 }
 
-void ListGrid::EnsureGridSize(size_t maximum_row_size,
-                              size_t maximum_column_size) {
+void ListGrid::EnsureGridSize(wtf_size_t maximum_row_size,
+                              wtf_size_t maximum_column_size) {
   num_rows_ = std::max(num_rows_, maximum_row_size);
   num_columns_ = std::max(num_columns_, maximum_column_size);
 }
@@ -362,16 +364,16 @@ ListGrid::GridCell* ListGrid::GridCell::NextInDirection(
 
 std::unique_ptr<Grid::GridIterator> ListGrid::CreateIterator(
     GridTrackSizingDirection direction,
-    size_t fixed_track_index,
-    size_t varying_track_index) const {
+    wtf_size_t fixed_track_index,
+    wtf_size_t varying_track_index) const {
   return base::WrapUnique(new ListGridIterator(
       *this, direction, fixed_track_index, varying_track_index));
 }
 
 ListGridIterator::ListGridIterator(const ListGrid& grid,
                                    GridTrackSizingDirection direction,
-                                   size_t fixed_track_index,
-                                   size_t varying_track_index)
+                                   wtf_size_t fixed_track_index,
+                                   wtf_size_t varying_track_index)
     : GridIterator(direction, fixed_track_index, varying_track_index),
       grid_(grid) {}
 
@@ -383,7 +385,7 @@ LayoutBox* ListGridIterator::NextGridItem() {
   if (!cell_node_) {
     auto* track = is_row_axis ? grid_.columns_.Head() : grid_.rows_.Head();
     DCHECK(track);
-    const size_t fixed_index = is_row_axis ? column_index_ : row_index_;
+    const wtf_size_t fixed_index = is_row_axis ? column_index_ : row_index_;
     while (track && track->Index() != fixed_index)
       track = track->Next();
 
@@ -420,11 +422,11 @@ LayoutBox* ListGridIterator::NextGridItem() {
 }
 
 std::unique_ptr<GridArea> ListGridIterator::NextEmptyGridArea(
-    size_t fixed_track_span,
-    size_t varying_track_span) {
+    wtf_size_t fixed_track_span,
+    wtf_size_t varying_track_span) {
   auto FindCellOrClosest = [](ListGrid::GridCell* cell_node,
                               GridTrackSizingDirection direction,
-                              size_t index) {
+                              wtf_size_t index) {
     auto ortho_direction = OrthogonalDirection(direction);
     while (cell_node && cell_node->Index(direction) < index)
       cell_node = cell_node->NextInDirection(ortho_direction);
@@ -434,8 +436,9 @@ std::unique_ptr<GridArea> ListGridIterator::NextEmptyGridArea(
 
   auto CreateUniqueGridArea = [this, fixed_track_span, varying_track_span]() {
     bool is_row_axis = direction_ == kForColumns;
-    size_t row_span = is_row_axis ? varying_track_span : fixed_track_span;
-    size_t column_span = is_row_axis ? fixed_track_span : varying_track_span;
+    wtf_size_t row_span = is_row_axis ? varying_track_span : fixed_track_span;
+    wtf_size_t column_span =
+        is_row_axis ? fixed_track_span : varying_track_span;
     return std::make_unique<GridArea>(
         GridSpan::TranslatedDefiniteGridSpan(row_index_, row_index_ + row_span),
         GridSpan::TranslatedDefiniteGridSpan(column_index_,
@@ -443,10 +446,10 @@ std::unique_ptr<GridArea> ListGridIterator::NextEmptyGridArea(
   };
 
   auto CellIsInsideSpan = [](ListGrid::GridCell* cell_node,
-                             GridTrackSizingDirection direction, size_t start,
-                             size_t end) {
+                             GridTrackSizingDirection direction,
+                             wtf_size_t start, wtf_size_t end) {
     DCHECK(cell_node);
-    size_t cell_index = cell_node->Index(direction);
+    wtf_size_t cell_index = cell_node->Index(direction);
     return cell_index >= start && cell_index <= end;
   };
 
@@ -455,8 +458,8 @@ std::unique_ptr<GridArea> ListGridIterator::NextEmptyGridArea(
 
   bool is_row_axis = direction_ == kForColumns;
   auto& varying_index = is_row_axis ? row_index_ : column_index_;
-  const size_t fixed_index = is_row_axis ? column_index_ : row_index_;
-  const size_t end_fixed_span = fixed_index + fixed_track_span - 1;
+  const wtf_size_t fixed_index = is_row_axis ? column_index_ : row_index_;
+  const wtf_size_t end_fixed_span = fixed_index + fixed_track_span - 1;
   auto* track_node = tracks.Head();
   while (track_node && track_node->Index() < varying_index)
     track_node = track_node->Next();

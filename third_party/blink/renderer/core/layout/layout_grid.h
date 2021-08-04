@@ -115,8 +115,8 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   // it out how to remove this dependency.
   LayoutUnit GuttersSize(const Grid&,
                          GridTrackSizingDirection,
-                         size_t start_line,
-                         size_t span,
+                         wtf_size_t start_line,
+                         wtf_size_t span,
                          absl::optional<LayoutUnit> available_size) const;
   bool CachedHasDefiniteLogicalHeight() const;
   bool IsBaselineAlignmentForChild(const LayoutBox& child) const;
@@ -174,11 +174,11 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   bool ExplicitGridDidResize(const ComputedStyle&) const;
   bool NamedGridLinesDefinitionDidChange(const ComputedStyle&) const;
 
-  size_t ComputeAutoRepeatTracksCount(
+  wtf_size_t ComputeAutoRepeatTracksCount(
       GridTrackSizingDirection,
       absl::optional<LayoutUnit> available_size) const;
-  size_t ClampAutoRepeatTracks(GridTrackSizingDirection,
-                               size_t auto_repeat_tracks) const;
+  wtf_size_t ClampAutoRepeatTracks(GridTrackSizingDirection,
+                                   wtf_size_t auto_repeat_tracks) const;
 
   std::unique_ptr<OrderedTrackIndexSet> ComputeEmptyTracksForAutoRepeat(
       Grid&,
@@ -201,7 +201,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   void PlaceAutoMajorAxisItemOnGrid(
       Grid&,
       LayoutBox&,
-      std::pair<size_t, size_t>& auto_placement_cursor) const;
+      std::pair<wtf_size_t, wtf_size_t>& auto_placement_cursor) const;
   GridTrackSizingDirection AutoPlacementMajorAxisDirection() const;
   GridTrackSizingDirection AutoPlacementMinorAxisDirection() const;
 
@@ -311,8 +311,8 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
 
   size_t GridItemSpan(const LayoutBox&, GridTrackSizingDirection);
 
-  size_t NonCollapsedTracks(GridTrackSizingDirection) const;
-  size_t NumTracks(GridTrackSizingDirection, const Grid&) const;
+  wtf_size_t NonCollapsedTracks(GridTrackSizingDirection) const;
+  wtf_size_t NumTracks(GridTrackSizingDirection, const Grid&) const;
 
   static LayoutUnit OverrideContainingBlockContentSizeForChild(
       const LayoutBox& child,
@@ -332,7 +332,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   ContentAlignmentData offset_between_columns_;
   ContentAlignmentData offset_between_rows_;
 
-  typedef HashMap<const LayoutBox*, absl::optional<size_t>>
+  typedef HashMap<const LayoutBox*, absl::optional<wtf_size_t>>
       OutOfFlowPositionsMap;
   OutOfFlowPositionsMap column_of_positioned_item_;
   OutOfFlowPositionsMap row_of_positioned_item_;

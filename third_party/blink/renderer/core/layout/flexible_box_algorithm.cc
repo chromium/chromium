@@ -336,7 +336,7 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
 }
 void FlexLine::FreezeViolations(ViolationsVector& violations) {
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (size_t i = 0; i < violations.size(); ++i) {
+  for (wtf_size_t i = 0; i < violations.size(); ++i) {
     DCHECK(!violations[i]->frozen_) << i;
     const ComputedStyle& child_style = violations[i]->style_;
     LayoutUnit child_size = violations[i]->flexed_content_size_;
@@ -366,7 +366,7 @@ void FlexLine::FreezeInflexibleItems() {
 
   ViolationsVector new_inflexible_items;
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     FlexItem& flex_item = line_items_[i];
     DCHECK(!flex_item.frozen_) << i;
     float flex_factor =
@@ -406,7 +406,7 @@ bool FlexLine::ResolveFlexibleLengths() {
   }
 
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     FlexItem& flex_item = line_items_[i];
 
     // This check also covers out-of-flow children.
@@ -460,7 +460,7 @@ LayoutUnit FlexLine::ApplyMainAxisAutoMarginAdjustment() {
 
   int number_of_auto_margins = 0;
   bool is_horizontal = algorithm_->IsHorizontalFlow();
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     const ComputedStyle& style = line_items_[i].style_;
     if (is_horizontal) {
       if (style.MarginLeft().IsAuto())
@@ -493,7 +493,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
   // Recalculate the remaining free space. The adjustment for flex factors
   // between 0..1 means we can't just use remainingFreeSpace here.
   LayoutUnit total_item_size;
-  for (size_t i = 0; i < line_items_.size(); ++i)
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i)
     total_item_size += line_items_[i].FlexedMarginBoxSize();
   remaining_free_space_ =
       container_main_inner_size_ - total_item_size -
@@ -534,7 +534,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
 
   LayoutUnit max_descent;  // Used when align-items: baseline.
   LayoutUnit max_child_cross_axis_extent;
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     FlexItem& flex_item = line_items_[i];
 
     flex_item.UpdateAutoMarginsInMainAxis(auto_margin_offset);

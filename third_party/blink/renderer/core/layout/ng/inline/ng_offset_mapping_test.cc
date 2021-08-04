@@ -140,7 +140,7 @@ class NGOffsetMappingTest : public NGLayoutTest {
   }
 
   Vector<NGOffsetMappingUnit> GetFirstLast(const std::string& caret_text) {
-    const auto offset = caret_text.find('|');
+    const unsigned offset = static_cast<unsigned>(caret_text.find('|'));
     return {*GetOffsetMapping().GetFirstMappingUnit(offset),
             *GetOffsetMapping().GetLastMappingUnit(offset)};
   }

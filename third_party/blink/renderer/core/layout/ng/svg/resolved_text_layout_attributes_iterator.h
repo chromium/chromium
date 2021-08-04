@@ -50,14 +50,14 @@ class ResolvedTextLayoutAttributesIterator final {
                             [addressable_index](const auto& pair) {
                               return addressable_index <= pair.first;
                             });
-    index_ = std::distance(resolved_.begin(), it);
+    index_ = static_cast<wtf_size_t>(std::distance(resolved_.begin(), it));
     return AdvanceTo(addressable_index);
   }
 
  private:
   const NGSvgCharacterData default_data_;
   const Vector<std::pair<unsigned, NGSvgCharacterData>>& resolved_;
-  unsigned index_ = 0u;
+  wtf_size_t index_ = 0u;
 };
 
 }  // namespace blink

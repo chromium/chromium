@@ -160,10 +160,11 @@ void NGOffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   }
 
   // TODO(xiaochengh): Optimize if this becomes performance bottleneck.
-  unsigned position = std::distance(mapping_units_.begin(), container_unit);
+  wtf_size_t position = base::checked_cast<wtf_size_t>(
+      std::distance(mapping_units_.begin(), container_unit));
   mapping_units_.EraseAt(position);
   mapping_units_.InsertVector(position, new_units);
-  unsigned new_unit_end = position + new_units.size();
+  wtf_size_t new_unit_end = position + new_units.size();
   while (new_unit_end && new_unit_end < mapping_units_.size() &&
          mapping_units_[new_unit_end - 1].Concatenate(
              mapping_units_[new_unit_end])) {
@@ -201,7 +202,8 @@ void NGOffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
       return;
     // When we collapsed multiple spaces, e.g. <b>   </b>.
     mapping_units_.insert(
-        std::distance(mapping_units_.begin(), &unit) + 1,
+        base::checked_cast<wtf_size_t>(
+            std::distance(mapping_units_.begin(), &unit) + 1),
         NGOffsetMappingUnit(NGOffsetMappingUnitType::kCollapsed, layout_text,
                             unit.dom_end_, original_dom_end,
                             unit.text_content_end_, unit.text_content_end_));

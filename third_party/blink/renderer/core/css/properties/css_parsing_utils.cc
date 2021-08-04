@@ -3985,7 +3985,7 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
   CSSParserTokenRange args = ConsumeFunction(range);
   // The number of repetitions for <auto-repeat> is not important at parsing
   // level because it will be computed later, let's set it to 1.
-  size_t repetitions = 1;
+  wtf_size_t repetitions = 1;
   is_auto_repeat = IdentMatches<CSSValueID::kAutoFill, CSSValueID::kAutoFit>(
       args.Peek().Id());
   CSSValueList* repeated_values;
@@ -3998,7 +3998,7 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
     if (!repetition)
       return false;
     repetitions =
-        clampTo<size_t>(repetition->GetDoubleValue(), 0, kGridMaxTracks);
+        clampTo<wtf_size_t>(repetition->GetDoubleValue(), 0, kGridMaxTracks);
     repeated_values = CSSValueList::CreateSpaceSeparated();
   }
   if (!ConsumeCommaIncludingWhitespace(args))
@@ -4007,7 +4007,7 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
   if (line_names)
     repeated_values->Append(*line_names);
 
-  size_t number_of_tracks = 0;
+  wtf_size_t number_of_tracks = 0;
   while (!args.AtEnd()) {
     CSSValue* track_size = ConsumeGridTrackSize(args, context);
     if (!track_size)

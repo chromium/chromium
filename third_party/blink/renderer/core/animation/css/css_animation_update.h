@@ -28,7 +28,7 @@ class NewCSSAnimation {
  public:
   NewCSSAnimation(AtomicString name,
                   size_t name_index,
-                  size_t position_index,
+                  wtf_size_t position_index,
                   const InertEffect& effect,
                   Timing timing,
                   StyleRuleKeyframes* style_rule,
@@ -52,7 +52,7 @@ class NewCSSAnimation {
 
   AtomicString name;
   size_t name_index;
-  size_t position_index;
+  wtf_size_t position_index;
   Member<const InertEffect> effect;
   Timing timing;
   Member<StyleRuleKeyframes> style_rule;

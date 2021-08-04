@@ -507,7 +507,8 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
     auto* next_anchor =
         std::find_if(result_.begin() + i + 1, result_.end(),
                      [](const auto& info) { return info.anchored_chunk; });
-    wtf_size_t j = std::distance(result_.begin(), next_anchor) - 1;
+    wtf_size_t j = static_cast<wtf_size_t>(
+        std::distance(result_.begin(), next_anchor) - 1);
 
     const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
     const auto* text_path_iter =

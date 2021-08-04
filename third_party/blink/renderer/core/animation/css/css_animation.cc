@@ -13,7 +13,7 @@ namespace blink {
 CSSAnimation::CSSAnimation(ExecutionContext* execution_context,
                            AnimationTimeline* timeline,
                            AnimationEffect* content,
-                           int animation_index,
+                           wtf_size_t animation_index,
                            const String& animation_name)
     : Animation(execution_context, timeline, content),
       animation_index_(animation_index),

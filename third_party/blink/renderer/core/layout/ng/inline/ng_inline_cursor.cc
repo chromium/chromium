@@ -253,9 +253,11 @@ NGInlineCursor NGInlineCursor::CursorForMovingAcrossFragmentainer() const {
 
 void NGInlineCursor::ExpandRootToContainingBlock() {
   if (fragment_items_) {
-    const unsigned index_diff = items_.data() - fragment_items_->Items().data();
+    const unsigned index_diff = base::checked_cast<unsigned>(
+        items_.data() - fragment_items_->Items().data());
     DCHECK_LT(index_diff, fragment_items_->Items().size());
-    const unsigned item_index = current_.item_iter_ - items_.begin();
+    const unsigned item_index =
+        base::checked_cast<unsigned>(current_.item_iter_ - items_.begin());
     items_ = fragment_items_->Items();
     // Update the iterator to the one for the new span.
     MoveToItem(items_.begin() + item_index + index_diff);
@@ -881,7 +883,8 @@ inline wtf_size_t NGInlineCursor::SpanBeginItemIndex() const {
   DCHECK(HasRoot());
   DCHECK(!items_.empty());
   DCHECK(fragment_items_->IsSubSpan(items_));
-  const wtf_size_t delta = items_.data() - fragment_items_->Items().data();
+  const wtf_size_t delta = base::checked_cast<wtf_size_t>(
+      items_.data() - fragment_items_->Items().data());
   DCHECK_LT(delta, fragment_items_->Items().size());
   return delta;
 }
@@ -892,8 +895,8 @@ inline wtf_size_t NGInlineCursor::SpanIndexFromItemIndex(unsigned index) const {
   DCHECK(fragment_items_->IsSubSpan(items_));
   if (items_.data() == fragment_items_->Items().data())
     return index;
-  const wtf_size_t span_index =
-      fragment_items_->Items().data() - items_.data() + index;
+  const wtf_size_t span_index = base::checked_cast<wtf_size_t>(
+      fragment_items_->Items().data() - items_.data() + index);
   DCHECK_LT(span_index, items_.size());
   return span_index;
 }
@@ -1370,8 +1373,8 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
           return;
         }
         if (cursor.fragment_items_ == fragment_items_) {
-          item_index =
-              cursor.Current().Item() - fragment_items_->Items().data();
+          item_index = base::checked_cast<wtf_size_t>(
+              cursor.Current().Item() - fragment_items_->Items().data());
           break;
         }
       }
@@ -1416,7 +1419,8 @@ void NGInlineCursor::MoveToNextForSameLayoutObjectExceptCulledInline() {
   if (wtf_size_t delta = current_.item_->DeltaToNextForSameLayoutObject()) {
     while (true) {
       // Return if the next index is in the current range.
-      const wtf_size_t delta_to_end = items_.end() - current_.item_iter_;
+      const wtf_size_t delta_to_end =
+          base::checked_cast<wtf_size_t>(items_.end() - current_.item_iter_);
       if (delta < delta_to_end) {
         MoveToItem(current_.item_iter_ + delta);
         return;
@@ -1673,7 +1677,8 @@ void NGInlineCursor::CheckValid(const NGInlineCursorPosition& position) const {
   if (position.Item()) {
     DCHECK(HasRoot());
     DCHECK_EQ(position.item_, &*position.item_iter_);
-    const unsigned index = position.item_iter_ - items_.begin();
+    const unsigned index =
+        base::checked_cast<unsigned>(position.item_iter_ - items_.begin());
     DCHECK_LT(index, items_.size());
   }
 }

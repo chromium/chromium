@@ -332,10 +332,10 @@ void LayoutFrameSet::ComputeEdgeInfo() {
   if (!child)
     return;
 
-  size_t rows = rows_.sizes_.size();
-  size_t cols = cols_.sizes_.size();
-  for (size_t r = 0; r < rows; ++r) {
-    for (size_t c = 0; c < cols; ++c) {
+  wtf_size_t rows = rows_.sizes_.size();
+  wtf_size_t cols = cols_.sizes_.size();
+  for (wtf_size_t r = 0; r < rows; ++r) {
+    for (wtf_size_t c = 0; c < cols; ++c) {
       FrameEdgeInfo edge_info;
       if (child->IsFrameSet())
         edge_info = To<LayoutFrameSet>(child)->EdgeInfo();
@@ -569,15 +569,15 @@ int LayoutFrameSet::HitTestSplit(const GridAxis& axis, int position) const {
   if (border_thickness <= 0)
     return kNoSplit;
 
-  size_t size = axis.sizes_.size();
+  wtf_size_t size = axis.sizes_.size();
   if (!size)
     return kNoSplit;
 
   int split_position = axis.sizes_[0];
-  for (size_t i = 1; i < size; ++i) {
+  for (wtf_size_t i = 1; i < size; ++i) {
     if (position >= split_position &&
         position < split_position + border_thickness)
-      return i;
+      return static_cast<int>(i);
     split_position += border_thickness + axis.sizes_[i];
   }
   return kNoSplit;

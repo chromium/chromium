@@ -270,9 +270,9 @@ class ReusingTextShaper final {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
     if (data_.segments) {
-      return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
-                                       end_offset,
-                                       &start_item - data_.items.begin());
+      return data_.segments->ShapeText(
+          &shaper_, &font, direction, start_offset, end_offset,
+          base::checked_cast<unsigned>(&start_item - data_.items.begin()));
     }
     RunSegmenter::RunSegmenterRange range =
         start_item.CreateRunSegmenterRange();
@@ -1734,7 +1734,8 @@ static LayoutUnit ComputeContentSize(
         if (item.Type() == NGInlineItem::kAtomicInline ||
             item.Type() == NGInlineItem::kBlockInInline) {
           // The max-size for atomic inlines are cached in |max_size_cache|.
-          unsigned item_index = &item - items_data.items.begin();
+          unsigned item_index =
+              base::checked_cast<unsigned>(&item - items_data.items.begin());
           position += max_size_cache[item_index];
           continue;
         }

@@ -459,7 +459,7 @@ class FlexLayoutAlgorithm {
   const LayoutUnit line_break_length_;
   FlexItemVector all_items_;
   Vector<FlexLine> flex_lines_;
-  size_t next_item_index_;
+  wtf_size_t next_item_index_;
 };
 
 inline const FlexLine* FlexItem::Line() const {
