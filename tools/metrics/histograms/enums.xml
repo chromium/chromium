@@ -68847,6 +68847,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="202" label="QUIC_TLS_CERTIFICATE_REQUIRED"/>
   <int value="203" label="QUIC_CONNECTION_ID_LIMIT_ERROR"/>
   <int value="204" label="QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE"/>
+  <int value="205" label="QUIC_HTTP_RECEIVE_SERVER_PUSH"/>
 </enum>
 
 <enum name="QuicFailToSerializePacketLocation">
