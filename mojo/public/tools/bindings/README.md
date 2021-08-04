@@ -448,7 +448,15 @@ interesting attributes supported today.
   matching `value` in the list of `enabled_features`, the definition will be
   disabled. This is useful for mojom definitions that only make sense on one
   platform. Note that the `EnableIf` attribute can only be set once per
-  definition.
+  definition and cannot be set at the same time as `EnableIfNot`.
+
+* **`[EnableIfNot=value]`**:
+  The `EnableIfNot` attribute is used to conditionally enable definitions when
+  the mojom is parsed. If the `mojom` target in the GN file includes the
+  matching `value` in the list of `enabled_features`, the definition will be
+  disabled. This is useful for mojom definitions that only make sense on all but
+  one platform. Note that the `EnableIfNot` attribute can only be set once per
+  definition and cannot be set at the same time as `EnableIf`.
 
 * **`[ServiceSandbox=value]`**:
   The `ServiceSandbox` attribute is used in Chromium to tag which sandbox a
