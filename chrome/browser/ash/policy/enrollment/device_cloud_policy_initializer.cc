@@ -15,13 +15,13 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ash/policy/enrollment/tpm_enrollment_key_signing_service.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/browser_process.h"
@@ -30,11 +30,7 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -393,47 +389,6 @@ bool DeviceCloudPolicyInitializer::GetMachineFlag(const std::string& key,
     return default_value;
 
   return value;
-}
-
-DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::
-    TpmEnrollmentKeySigningService() = default;
-
-DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::
-    ~TpmEnrollmentKeySigningService() = default;
-
-void DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::SignData(
-    const std::string& data,
-    SigningCallback callback) {
-  const chromeos::attestation::AttestationCertificateProfile cert_profile =
-      chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
-  ::attestation::SignSimpleChallengeRequest request;
-  request.set_username("");
-  request.set_key_label(
-      chromeos::attestation::GetKeyNameForProfile(cert_profile, ""));
-  request.set_challenge(data);
-  chromeos::AttestationClient::Get()->SignSimpleChallenge(
-      request, base::BindOnce(&DeviceCloudPolicyInitializer::
-                                  TpmEnrollmentKeySigningService::OnDataSigned,
-                              weak_ptr_factory_.GetWeakPtr(), data,
-                              std::move(callback)));
-}
-
-void DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService::OnDataSigned(
-    const std::string& data,
-    SigningCallback callback,
-    const ::attestation::SignSimpleChallengeReply& reply) {
-  enterprise_management::SignedData em_signed_data;
-  chromeos::attestation::SignedData att_signed_data;
-  const bool success =
-      reply.status() == ::attestation::STATUS_SUCCESS &&
-      att_signed_data.ParseFromString(reply.challenge_response());
-  if (success) {
-    em_signed_data.set_data(att_signed_data.data());
-    em_signed_data.set_signature(att_signed_data.signature());
-    em_signed_data.set_extra_data_bytes(att_signed_data.data().size() -
-                                        data.size());
-  }
-  std::move(callback).Run(success, em_signed_data);
 }
 
 }  // namespace policy

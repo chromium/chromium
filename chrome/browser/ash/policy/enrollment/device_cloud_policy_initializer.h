@@ -5,22 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_DEVICE_CLOUD_POLICY_INITIALIZER_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_DEVICE_CLOUD_POLICY_INITIALIZER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
-#include "components/policy/core/common/cloud/signing_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
@@ -49,6 +45,7 @@ class DeviceManagementService;
 struct EnrollmentConfig;
 class EnrollmentHandler;
 class EnrollmentStatus;
+class SigningService;
 
 // The |DeviceCloudPolicyInitializer| is a helper class which calls
 // `DeviceCloudPolicyManager::StartConnection` with a new `CloudPolicyClient`
@@ -129,24 +126,6 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow);
 
  private:
-  // Signing class implementing the policy::SigningService interface to
-  // sign data using the enrollment certificate's TPM-bound key.
-  class TpmEnrollmentKeySigningService : public policy::SigningService {
-   public:
-    TpmEnrollmentKeySigningService();
-    ~TpmEnrollmentKeySigningService() override;
-
-    void SignData(const std::string& data, SigningCallback callback) override;
-
-   private:
-    void OnDataSigned(const std::string& data,
-                      SigningCallback callback,
-                      const ::attestation::SignSimpleChallengeReply& reply);
-
-    // Used to create tasks which run delayed on the UI thread.
-    base::WeakPtrFactory<TpmEnrollmentKeySigningService> weak_ptr_factory_{
-        this};
-  };
 
   // TODO(crbug.com/705758) When DeviceCloudPolicyInitializer starts connection,
   // that means it will be deleted soon by
@@ -165,13 +144,6 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
     // |StartConnection| succeeds after call from |StartEnrollment|.
     kEnrollmentCompleted = 3,
   };
-
-  FRIEND_TEST_ALL_PREFIXES(
-      DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest,
-      SigningSuccess);
-  FRIEND_TEST_ALL_PREFIXES(
-      DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest,
-      SigningFailure);
 
   // Handles completion signaled by |enrollment_handler_|.
   void EnrollmentCompleted(EnrollmentCallback enrollment_callback,
