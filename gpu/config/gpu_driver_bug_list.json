@@ -2824,7 +2824,7 @@
       "driver_version": {
         "schema": "intel_driver",
         "op": "<",
-        "value": "0.0.0.9999"
+        "value": "0.0.100.0"
       },
       "features": [
         "disable_nv12_dynamic_textures"

@@ -1132,27 +1132,10 @@ TEST_F(GpuControlListEntryTest, IntelDriverVersionEntry) {
   gpu_info.gpu.driver_version = "25.20.100.6000";
   EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
   gpu_info.gpu.driver_version = "24.20.99.6000";
-  EXPECT_FALSE(entry.Contains(kOsWin, "", gpu_info));
+  EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
   gpu_info.gpu.driver_version = "24.20.101.6000";
   EXPECT_FALSE(entry.Contains(kOsWin, "", gpu_info));
   gpu_info.gpu.driver_version = "25.20.100.7000";
-  EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
-}
-
-TEST_F(GpuControlListEntryTest, IntelOldDriverVersionEntry) {
-  const Entry& entry =
-      GetEntry(kGpuControlListEntryTest_IntelOldDriverVersionEntry);
-  GPUInfo gpu_info;
-  gpu_info.gpu.vendor_id = 0x8086;
-  gpu_info.gpu.driver_version = "23.20.10.8000";
-  EXPECT_FALSE(entry.Contains(kOsWin, "", gpu_info));
-  gpu_info.gpu.driver_version = "25.20.10.6000";
-  EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
-  gpu_info.gpu.driver_version = "24.20.100.6000";
-  EXPECT_FALSE(entry.Contains(kOsWin, "", gpu_info));
-  gpu_info.gpu.driver_version = "24.20.11.6000";
-  EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
-  gpu_info.gpu.driver_version = "25.20.9.7000";
   EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
 }
 

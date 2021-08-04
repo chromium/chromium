@@ -37,23 +37,16 @@ _OS_TYPE_MAP = {
   }
 
 INTEL_DRIVER_VERSION_SCHEMA = '''
-The version format of Intel graphics driver is AA.BB.CCC.DDDD.
-DDDD(old schema) or CCC.DDDD(new schema) is the build number. That is,
-indicates the actual driver number. The comparison between old schema
-and new schema is NOT valid. In such a condition the only comparison
-operator that returns true is "not equal".
+The version format of Intel graphics driver is AA.BB.CC.DDDD (legacy schema)
+and AA.BB.CCC.DDDD (new schema).
 
 AA.BB: You are free to specify the real number here, but they are meaningless
 when comparing two version numbers. Usually it's okay to leave it to "0.0".
 
-CCC: It's necessary for new schema. Regarding to old schema, you can speicy
-the real number or any number less than 100 in order to differentiate from
-new schema.
+CC or CCC: It's meaningful to indicate different branches. Different CC means
+different branch, while all CCCs share the same branch.
 
-DDDD: It's always meaningful. It must not be "0" under old schema.
-
-Legal: "24.20.100.7000", "0.0.100.7000", "0.0.0.7000", "0.0.100.0"
-Illegal: "24.0.0.0", "24.20.0.0", "0.0.99.0"
+DDDD: It's always meaningful.
 '''
 
 NVIDIA_DRIVER_VERSION_SCHEMA = '''
@@ -74,8 +67,6 @@ def check_intel_driver_version(version):
   for ver in ver_list:
     if not ver.isdigit():
       return False
-  if int(ver_list[2]) < 100 and ver_list[3] == '0':
-    return False
   return True
 
 def check_nvidia_driver_version(version):

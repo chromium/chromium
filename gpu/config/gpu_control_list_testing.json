@@ -935,22 +935,6 @@
     },
     {
       "id": 77,
-      "description": "GpuControlListEntryTest.IntelOldDriverVersionEntry",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "driver_version": {
-        "schema": "intel_driver",
-        "op": "<=",
-        "value": "24.20.10.7000"
-      },
-      "features": [
-        "test_feature_0"
-      ]
-    },
-    {
-      "id": 78,
       "description": "GpuControlListEntryTest.DeviceRevisionEntry",
       "os": {
         "type": "win"
@@ -979,7 +963,7 @@
       ]
     },
     {
-      "id": 79,
+      "id": 78,
       "description": "GpuControlListEntryTest.DeviceRevisionUnspecifiedEntry",
       "os": {
         "type": "win"

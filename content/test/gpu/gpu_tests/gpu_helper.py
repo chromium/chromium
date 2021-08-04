@@ -247,19 +247,10 @@ def EvaluateVersionComparison(version,
       if not ver[i].isdigit():
         return int(ver[:i]) if i > 0 else 0, ver[i:]
 
-  def is_old_intel_driver(ver_list):
-    assert len(ver_list) == 4
-    num, suffix = parse_version(ver_list[2])
-    assert not suffix
-    return num < 100
-
   def versions_can_be_compared(ver_list1, ver_list2):
     # If either of the two versions doesn't match the Intel driver version
-    # schema, or they belong to different generation of version schema, they
-    # should not be compared.
+    # schema, they should not be compared.
     if len(ver_list1) != 4 or len(ver_list2) != 4:
-      return False
-    if is_old_intel_driver(ver_list1) != is_old_intel_driver(ver_list2):
       return False
     return True
 
@@ -271,12 +262,9 @@ def EvaluateVersionComparison(version,
   if os_name == 'win' and driver_vendor == 'intel':
     if not versions_can_be_compared(ver_list1, ver_list2):
       return operation == 'ne'
-    if is_old_intel_driver(ver_list1):
-      ver_list1 = ver_list1[3:]
-      ver_list2 = ver_list2[3:]
-    else:
-      ver_list1 = ver_list1[2:]
-      ver_list2 = ver_list2[2:]
+
+    ver_list1 = ver_list1[2:]
+    ver_list2 = ver_list2[2:]
 
   for i in range(0, max(len(ver_list1), len(ver_list2))):
     ver1 = ver_list1[i] if i < len(ver_list1) else '0'
