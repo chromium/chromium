@@ -150,8 +150,8 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
   }
 
   // Compute size of the side of the window bound that should be proportional
-  // |WindowState::snapped_width_ratio_| to that of the work area, i.e. width
-  // for horizontal layout and height for vertical layout.
+  // |WindowState::snap_ratio_| to that of the work area, i.e. width for
+  // horizontal layout and height for vertical layout.
   gfx::Rect snap_bounds = gfx::Rect(work_area);
   const int work_area_axis_length =
       is_horizontal ? work_area.width() : work_area.height();

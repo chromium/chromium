@@ -213,11 +213,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // by this object and the returned object will be owned by the caller.
   std::unique_ptr<State> SetStateObject(std::unique_ptr<State> new_state);
 
-  // Updates |snapped_width_ratio_| based on |event|.
-  void UpdateSnappedWidthRatio(const WMEvent* event);
-  absl::optional<float> snapped_width_ratio() const {
-    return snapped_width_ratio_;
-  }
+  // Updates |snap_ratio_| based on |event|.
+  void UpdateSnapRatio(const WMEvent* event);
+  absl::optional<float> snap_ratio() const { return snap_ratio_; }
 
   // True if the window should be unminimized to the restore bounds, as
   // opposed to the window's current bounds. |unminimized_to_restore_bounds_| is
@@ -410,8 +408,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void SetBoundsInScreen(const gfx::Rect& bounds_in_screen);
 
   // Adjusts the |bounds| so that they are flush with the edge of the
-  // workspace if the window represented by |window_state| is side snapped. It
-  // is called for workspace events.
+  // workspace in clamshell mode if the window represented by |window_state|
+  // is side snapped. It is called for workspace events.
   void AdjustSnappedBounds(gfx::Rect* bounds);
 
   // Updates the window properties(show state, pin type) according to the
@@ -485,10 +483,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   ui::ZOrderLevel cached_z_order_;
   bool allow_set_bounds_direct_ = false;
 
-  // A property to save the ratio between snapped window width and display
-  // workarea width. It is used to update snapped window width on
-  // AdjustSnappedBounds() when handling workspace events.
-  absl::optional<float> snapped_width_ratio_;
+  // A property to save the ratio between snapped window width (or height
+  // for vertical layout) and display workarea width (or height). It is used
+  // to update snapped window width (or height) on AdjustSnappedBounds() when
+  // handling workspace events.
+  absl::optional<float> snap_ratio_;
 
   // A property to remember the window position which was set before the
   // auto window position manager changed the window bounds, so that it can

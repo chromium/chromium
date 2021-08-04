@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -149,9 +150,14 @@ WMEventType WMEventTypeFromWindowPinType(chromeos::WindowPinType type) {
   return WM_EVENT_NORMAL;
 }
 
-float GetCurrentSnappedWidthRatio(aura::Window* window) {
+float GetCurrentSnapRatio(aura::Window* window) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
+  if (features::IsVerticalSplitScreenEnabled() &&
+      !SplitViewController::IsLayoutHorizontal()) {
+    return static_cast<float>(window->GetTargetBounds().height()) /
+           static_cast<float>(maximized_bounds.height());
+  }
   return static_cast<float>(window->GetTargetBounds().width()) /
          static_cast<float>(maximized_bounds.width());
 }
@@ -407,7 +413,7 @@ void WindowState::RestoreZOrdering() {
 void WindowState::OnWMEvent(const WMEvent* event) {
   current_state_->OnWMEvent(this, event);
 
-  UpdateSnappedWidthRatio(event);
+  UpdateSnapRatio(event);
 
   PersistentDesksBarController* bar_controller =
       Shell::Get()->persistent_desks_bar_controller();
@@ -514,28 +520,26 @@ std::unique_ptr<WindowState::State> WindowState::SetStateObject(
   return old_object;
 }
 
-void WindowState::UpdateSnappedWidthRatio(const WMEvent* event) {
+void WindowState::UpdateSnapRatio(const WMEvent* event) {
   if (!IsSnapped()) {
-    snapped_width_ratio_.reset();
+    snap_ratio_.reset();
     return;
   }
 
   const WMEventType type = event->type();
-  // Initializes |snapped_width_ratio_| whenever |event| is snapping event.
+  // Initializes |snap_ratio_| whenever |event| is snapping event.
   if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY ||
       type == WM_EVENT_CYCLE_SNAP_PRIMARY ||
       type == WM_EVENT_CYCLE_SNAP_SECONDARY) {
-    // Since |UpdateSnappedWidthRatio()| is called post WMEvent taking effect,
+    // Since |UpdateSnapRatio()| is called post WMEvent taking effect,
     // |window_|'s bounds is in a correct state for ratio update.
-    snapped_width_ratio_ =
-        absl::make_optional(GetCurrentSnappedWidthRatio(window_));
+    snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
     return;
   }
 
-  // |snapped_width_ratio_| under snapped state may change due to bounds event.
+  // |snap_ratio_| under snapped state may change due to bounds event.
   if (event->IsBoundsEvent()) {
-    snapped_width_ratio_ =
-        absl::make_optional(GetCurrentSnappedWidthRatio(window_));
+    snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
   }
 }
 
@@ -685,22 +689,44 @@ void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
 }
 
 void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
-  if (is_dragged() || !IsSnapped())
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  const bool in_tablet =
+      tablet_mode_controller && tablet_mode_controller->InTabletMode();
+
+  // Tablet mode should use bounds calculation in SplitViewController.
+  // However, transient state from transitioning clamshell to tablet mode
+  // might end up calling this function during work area changes, so we avoid
+  // unnecessary task in that case when it will be overwritten by tablet mode
+  // work.
+  if (is_dragged() || !IsSnapped() || in_tablet)
     return;
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window_);
-  // TODO(crbug.com/1233342): Update snap width ratio to snap ratio to support
-  // vertical split.
-  if (snapped_width_ratio_) {
-    bounds->set_width(
-        static_cast<int>(*snapped_width_ratio_ * maximized_bounds.width()));
-  }
-  if (GetStateType() == WindowStateType::kPrimarySnapped)
-    bounds->set_x(maximized_bounds.x());
-  else if (GetStateType() == WindowStateType::kSecondarySnapped)
-    bounds->set_x(maximized_bounds.right() - bounds->width());
-  bounds->set_y(maximized_bounds.y());
-  bounds->set_height(maximized_bounds.height());
+
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+
+  // For snapped window, `GetSnappedWindowBounds` computes bounds position
+  // from snap type and size from |snap_ratio|.
+  gfx::Rect snapped_bounds =
+      snap_ratio_ ? GetSnappedWindowBounds(
+                        maximized_bounds, window_,
+                        GetStateType() == WindowStateType::kPrimarySnapped
+                            ? ash::SnapViewType::kPrimary
+                            : ash::SnapViewType::kSecondary,
+                        *snap_ratio_)
+                  : maximized_bounds;
+  bounds->set_origin(snapped_bounds.origin());
+
+  // If |snap_ratio_| exists adjust the size of the window. Otherwise only
+  // maximize it vertically for horizontal screen and maximize horizontally for
+  // vertical screen.
+  if (snap_ratio_)
+    bounds->set_size(snapped_bounds.size());
+  else if (display.size().width() > display.size().height())
+    bounds->set_height(snapped_bounds.height());
+  else
+    bounds->set_width(snapped_bounds.width());
 }
 
 void WindowState::UpdateWindowPropertiesFromStateType() {

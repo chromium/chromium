@@ -352,7 +352,7 @@ TEST_F(WindowStateTest, TestIgnoreTooBigMinimumSize) {
   EXPECT_EQ(work_area_size.ToString(), window->bounds().size().ToString());
 }
 
-// Tests UpdateSnappedWidthRatio. (1) It should have ratio reset when window
+// Tests UpdateSnapRatio. (1) It should have ratio reset when window
 // enters snapped state; (2) it should update ratio on bounds event when
 // snapped.
 TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
@@ -371,7 +371,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
       gfx::Rect(kWorkAreaBounds.x(), kWorkAreaBounds.y(),
                 kWorkAreaBounds.width() / 2, kWorkAreaBounds.height());
   EXPECT_EQ(expected, window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 
   // Drag to change snapped window width.
   const int kIncreasedWidth = 225;
@@ -384,18 +384,18 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   expected.set_width(expected.width() + kIncreasedWidth);
   EXPECT_EQ(expected, window->GetBoundsInScreen());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
-  EXPECT_EQ(0.75f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.75f, *window_state->snap_ratio());
 
   // Another cycle snap left event will restore window state to normal.
   window_state->OnWMEvent(&cycle_snap_left);
   EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
-  EXPECT_FALSE(window_state->snapped_width_ratio());
+  EXPECT_FALSE(window_state->snap_ratio());
 
   // Another cycle snap left event will snap window and reset snapped width
   // ratio.
   window_state->OnWMEvent(&cycle_snap_left);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 }
 
 // Tests that dragging and snapping the snapped window update the width ratio
@@ -429,7 +429,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
                                        base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(expected, window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 
   // Drag the window to unsnap but do not release.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -438,7 +438,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   generator->MoveMouseBy(5, 0);
   // While dragged, the window size should restore to its normal bound.
   EXPECT_EQ(window_normal_size, window->bounds().size());
-  EXPECT_EQ(1.0f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(1.0f, *window_state->snap_ratio());
 
   // Continue dragging the window and snap it back to the same position.
   generator->MoveMouseBy(-405, 0);
@@ -446,7 +446,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
 
   // The snapped ratio should be correct regardless of whether the animation
   // is finished or not.
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 }
 
 // Test that snapping left/right preserves the restore bounds.

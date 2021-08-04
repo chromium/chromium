@@ -609,8 +609,8 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
   const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
   w2_state->OnWMEvent(&snap_right);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
-  EXPECT_EQ(0.5f, *w1_state->snapped_width_ratio());
-  EXPECT_EQ(0.5f, *w2_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *w1_state->snap_ratio());
+  EXPECT_EQ(0.5f, *w2_state->snap_ratio());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
@@ -644,8 +644,8 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
   EXPECT_EQ(gfx::Rect(0, 0, 300, bottom_inset), w1->bounds());
   EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
   EXPECT_EQ(gfx::Rect(300, 0, 100, bottom_inset), w2->bounds());
-  EXPECT_EQ(0.75f, *w1_state->snapped_width_ratio());
-  EXPECT_EQ(0.25f, *w2_state->snapped_width_ratio());
+  EXPECT_EQ(0.75f, *w1_state->snap_ratio());
+  EXPECT_EQ(0.25f, *w2_state->snap_ratio());
 
   // Dragging should call the WindowStateDelegate.
   EXPECT_EQ(HTRIGHT, window_state_delegate1->GetComponentAndReset());
