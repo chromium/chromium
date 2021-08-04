@@ -13,7 +13,7 @@ export let GAHelperInterface;
 
 /**
  * @typedef {{
- *   connectToWorker: function(!Port): !Promise,
+ *   connectToWorker: function(!MessagePort): !Promise,
  * }}
  */
 export let VideoProcessorHelperInterface;

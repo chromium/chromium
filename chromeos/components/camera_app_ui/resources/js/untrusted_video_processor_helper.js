@@ -21,7 +21,7 @@ const mp4VideoProcessorURL = (() => {
 
 /**
  * Connects the |port| to worker which exposes the video processor.
- * @param {!Port} port
+ * @param {!MessagePort} port
  * @return {!Promise}
  */
 async function connectToWorker(port) {

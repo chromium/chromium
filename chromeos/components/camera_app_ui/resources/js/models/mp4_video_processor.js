@@ -402,7 +402,7 @@ class Mp4VideoProcessor {
 
   /**
    * Expose the VideoProcessor constructor to given end point.
-   * @param {!Port} endPoint
+   * @param {!MessagePort} endPoint
    */
   static exposeVideoProcessor(endPoint) {
     Comlink.expose(Mp4VideoProcessor, endPoint);
