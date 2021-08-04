@@ -2910,14 +2910,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     or dynamically, from the time the page is initialised to when it is closed
     or navigated away from. Each property is counted at most once per page per
     view via PageLoadMetricsObserver.
-  </summary>
-  <details>
+
     This histogram counts CSS properties only when they are animated by a CSS
     Animation. Refer to Blink.UseCounter.CSSProperties for more details.
 
     As of M69, Blink.UseCounter.AnimatedCSSProperties is moved from the blink
     side to the browser side.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.CSSProperties" enum="MappedCSSProperties"
@@ -2933,8 +2932,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     dynamically, from the time the page is initialised to when it is closed or
     navigated away from. Each property is counted at most once per page per view
     via PageLoadMetricsObserver.
-  </summary>
-  <details>
+
     The first time a CSS property is parsed on a page, the histogram is updated
     to increment the counter. Each histogram bucket corresponds to a CSS
     property (eg. width, border-radius). The exception is the 'Total pages
@@ -2956,7 +2954,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     As of M69, Blink.UseCounter.AnimatedCSSProperties is moved from the blink
     side to the browser side.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.Enforced"
@@ -3006,11 +3004,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     chrome-extension:// URL only. The PageVisits bucket is incremented for each
     page load, and the other buckets incremented at most once per PageVisit via
     the WebCore::UserCounter class.
-  </summary>
-  <details>
+
     Warning: This histogram represents pre-renderer metrics and so is flawed
     under OOPIF.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.FeaturePolicy.Allow"
@@ -3101,13 +3098,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     page. The PageVisits bucket is incremented for each page load, and the other
     buckets incremented at most once per PageVisit via blink::UseCounter and
     UseCounterPageLoadMetricsObserver.
-  </summary>
-  <details>
+
     Note that this histogram only counts page with HTTP/HTTPS URL scheme.
     Feature used in pages with other URL schemes might be counted in other
     histograms: &quot;extension://&quot; : Blink.UseCounter.Extensions.Features
     &quot;file://&quot; : Blink.UseCounter.File.Features
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.File.Features" enum="FeatureObserver"
@@ -3119,10 +3115,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     frames in the page. This histogram has the same semantics as
     &quot;Blink.UseCounter.Features&quot;, but applies only to `file:` URLs
     (which that histogram does not include).
-  </summary>
-  <details>
+
     Refer to &quot;Blink.UseCounter.Features&quot; for more details.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.MainFrame.Features" enum="FeatureObserver"
@@ -3137,11 +3132,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     page load and the other buckets incremented at most once per PageVisit via
     blink::UseCounter and UseCounterPageLoadMetricsObserver throughout the
     lifetime of a page load metrics observer.
-  </summary>
-  <details>
+
     This histogram counts usage of web features in main frame only. Refer to
     Blink.UseCounter.Features for more details.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Allow"

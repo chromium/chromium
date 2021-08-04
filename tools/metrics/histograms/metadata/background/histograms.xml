@@ -319,11 +319,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records whether a `sync` event succeeded or failed and whether the sync
     event finished in the foreground or background.
-  </summary>
-  <details>
+
     A `sync` event finished in the foreground if the associated Service Worker
     Registration has a client at the time that the event finished.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="BackgroundSync.Event.OneShotStartedInForeground"
@@ -344,11 +343,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records whether a periodic sync event succeeded or failed and whether the
     sync event finished in the foreground or background.
-  </summary>
-  <details>
+
     A sync event finished in the foreground if the associated Service Worker
     Registration has a client at the time that the event finished.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="BackgroundSync.Event.PeriodicStartedInForeground"

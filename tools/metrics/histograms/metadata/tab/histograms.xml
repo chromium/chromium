@@ -341,14 +341,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Record the action executed when the user performs a pull down gesture. This
     feature is currently iOS only.
-  </summary>
-  <details>
+
     A pull down gesture is an action completed when the user scrolls past the
     edge of the web page and continues scrolling in the same direction revealing
     a specific UI on the header with multiple actions icons. The user can then
     choose an action by scrolling left or right and lift the finger or cancel by
     scrolling back up. This is currently an iOS specific feature.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tab.RendererCrashStatus" enum="TabRendererCrashStatus"
@@ -1478,13 +1477,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The offset between the tab currently selected tab and the newly selected
     tab.
-  </summary>
-  <details>
+
     If the user switches to a tab to the left of their currently selected tab,
     we log a positive offset value indicating how many tabs to the left they
     moved. If the user switches to a tab to the right of their currently
     selected tab, we log a negative offset value.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.FirstSwitchedToForegroundCreationRank" units="units"
@@ -1534,11 +1532,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2020-07-31">
   <owner>mattsimmons@chromium.org</owner>
   <owner>memex-team@google.com</owner>
-  <summary>The number of entries/cards shown in the grid tab switcher.</summary>
-  <details>
+  <summary>
+    The number of entries/cards shown in the grid tab switcher.
+
     When the user is shown the grid tab switcher, logs the number of entries
     (tabs or tab groups) open in the grid tab switcher.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.MaxTabsInADay{BatteryState}" units="tabs"
@@ -1977,12 +1976,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Recorded once per tab activation. The number of tabs that were activated
     while the tab was inactive.
-  </summary>
-  <details>
+
     This metric is to be removed after M46 hits stable. We don't expect this
     metric to change over release, so we will remove this once we have the
     numbers from stable.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.StateTransfer.TabDistanceInactiveToActive" units="tabs"
@@ -1991,12 +1989,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tzik@chromium.org</owner>
   <summary>
     Number of tabs between the previously active tab and the new active tab.
-  </summary>
-  <details>
+
     This metric is to be removed after M46 hits stable. We don't expect this
     metric to change over release, so we will remove this once we have the
     numbers from stable.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.StateTransfer.Target" enum="TabStripState"
@@ -2006,10 +2003,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The state to which a tab transitioned. Recorded when a tab transitions from
     the state in the histogram name to a new state.
-  </summary>
-  <details>
+
     kouhei@ and tzik@ will remove some variation of these once M46 hits stable.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.Suggestions.NumSuggestionsChanged{TabSuggestionType}"
@@ -2124,11 +2120,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>memex-team@google.com</owner>
   <summary>
     The number of tabs open when the grid tab switcher is shown.
-  </summary>
-  <details>
+
     When the user is shown the tab switcher, logs the total number of individual
     open tabs. Android only.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.TabCountOnStartScreenShown" units="tabs"
@@ -2138,11 +2133,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of tabs open when the user is returned to the tab switcher on
     start.
-  </summary>
-  <details>
+
     When the user is returned to the tab switcher on starting Chrome due to
     inactivity, logs the overall number of tabs open. Android only.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.TabCountPerDomainPerLoad.{TotalTabCountBucket}"
@@ -2181,13 +2175,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of tabs open in all browsers (counting app-mode windows) when a
     load completes.
-  </summary>
-  <details>
+
     This is basically the average number of tabs over time.
 
     See also MPArch.RPHCountPerLoad for the number of processes used by these
     tabs.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.TabCountPerWindow" units="tabs"
@@ -2197,11 +2190,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of tabs open per window (counting app-mode windows) when a load
     completes.
-  </summary>
-  <details>
+
     This value will be recorded multiple times per load if more than one window
     is open.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Tabs.TabCount{BatteryState}" units="tabs"
@@ -2223,8 +2215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     How many tabs a user moved forward or backward in the Android tab switcher.
     {TabOffsetOfSwitchComponentList}
-  </summary>
-  <details>
+
     Logged by the Android tab switcher when a user switches tabs (other than by
     opening a new tab). If the user switches to an earlier tab in the stack, we
     log a positive offset value indicating how many tabs back they moved. If the
@@ -2232,7 +2223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     stays on the same tab, we log 0. If the user switches to a tab in a
     different stack (i.e. they switch from normal to incognito or vice-versa),
     we don't log a value.
-  </details>
+  </summary>
   <token key="TabOffsetOfSwitchComponentList">
     <variant name="">
       <obsolete>
@@ -2906,13 +2897,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The amount of time from cursor entering the tabstrip to first click on a tab
     to switch.
-  </summary>
-  <details>
+
     This will exclude some kinds of switching (hotkeys, between windows) where
     it would be difficult to define a start time. Entering the tabstrip is an
     approximation which will vary between users, but should still be useful for
     A/B comparison.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="TabStrip.UserStatus" enum="TabStripUserStatus"
