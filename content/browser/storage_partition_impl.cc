@@ -53,7 +53,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
-#include "content/browser/cookie_store/cookie_store_context.h"
+#include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
@@ -1330,12 +1330,13 @@ void StoragePartitionImpl::Initialize(
   prefetch_url_loader_service_ =
       base::MakeRefCounted<PrefetchURLLoaderService>(browser_context_);
 
-  cookie_store_context_ = base::MakeRefCounted<CookieStoreContext>();
-  // Unit tests use the Initialize() callback to crash early if restoring the
-  // CookieManagerStore's state from ServiceWorkerStorage fails. Production and
-  // browser tests rely on CookieStoreManager's well-defined behavior when
-  // restoring the state fails.
-  cookie_store_context_->Initialize(service_worker_context_, base::DoNothing());
+  cookie_store_manager_ =
+      std::make_unique<CookieStoreManager>(service_worker_context_);
+  // Unit tests use the LoadAllSubscriptions() callback to crash early if
+  // restoring the CookieManagerStore's state from ServiceWorkerStorage fails.
+  // Production and browser tests rely on CookieStoreManager's well-defined
+  // behavior when restoring the state fails.
+  cookie_store_manager_->LoadAllSubscriptions(base::DoNothing());
 
   bucket_context_ = base::MakeRefCounted<BucketContext>();
   bucket_context_->Initialize();
@@ -1619,9 +1620,9 @@ PrefetchURLLoaderService* StoragePartitionImpl::GetPrefetchURLLoaderService() {
   return prefetch_url_loader_service_.get();
 }
 
-CookieStoreContext* StoragePartitionImpl::GetCookieStoreContext() {
+CookieStoreManager* StoragePartitionImpl::GetCookieStoreManager() {
   DCHECK(initialized_);
-  return cookie_store_context_.get();
+  return cookie_store_manager_.get();
 }
 
 BucketContext* StoragePartitionImpl::GetBucketContext() {

@@ -710,8 +710,6 @@ source_set("browser") {
     "conversions/storable_impression.h",
     "cookie_store/cookie_change_subscription.cc",
     "cookie_store/cookie_change_subscription.h",
-    "cookie_store/cookie_store_context.cc",
-    "cookie_store/cookie_store_context.h",
     "cookie_store/cookie_store_host.cc",
     "cookie_store/cookie_store_host.h",
     "cookie_store/cookie_store_manager.cc",

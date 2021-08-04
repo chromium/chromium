@@ -16,9 +16,13 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -74,14 +78,18 @@ void CookieStoreManager::LoadAllSubscriptions(
 }
 
 void CookieStoreManager::ListenToCookieChanges(
-    mojo::PendingRemote<::network::mojom::CookieManager> cookie_manager,
+    network::mojom::NetworkContext* network_context,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK(!cookie_manager_) << __func__ << " already called";
-  cookie_manager_.Bind(std::move(cookie_manager));
+  DCHECK(!cookie_change_listener_receiver_.is_bound())
+      << __func__ << " already called";
 
-  DCHECK(!cookie_change_listener_receiver_.is_bound());
+  mojo::PendingRemote<::network::mojom::CookieManager> cookie_manager_remote;
+  network_context->GetCookieManager(
+      cookie_manager_remote.InitWithNewPipeAndPassReceiver());
+  cookie_manager_.Bind(std::move(cookie_manager_remote));
+
   // TODO(pwnall): Switch to an API with subscription confirmation.
   cookie_manager_->AddGlobalChangeListener(
       cookie_change_listener_receiver_.BindNewPipeAndPassRemote());
@@ -610,6 +618,37 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
             },
             weak_factory_.GetWeakPtr(), change));
   }
+}
+
+// static
+void CookieStoreManager::BindReceiverForFrame(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(render_frame_host);
+  RenderProcessHost* render_process_host = render_frame_host->GetProcess();
+  DCHECK(render_process_host);
+
+  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
+      render_process_host->GetStoragePartition());
+  storage_partition->GetCookieStoreManager()->BindReceiver(
+      std::move(receiver), render_frame_host->GetLastCommittedOrigin());
+}
+
+// static
+void CookieStoreManager::BindReceiverForWorker(
+    const ServiceWorkerVersionBaseInfo& info,
+    mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderProcessHost* render_process_host =
+      RenderProcessHost::FromID(info.process_id);
+  if (render_process_host == nullptr)
+    return;
+
+  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
+      render_process_host->GetStoragePartition());
+  storage_partition->GetCookieStoreManager()->BindReceiver(
+      std::move(receiver), info.storage_key.origin());
 }
 
 void CookieStoreManager::DispatchChangeEvent(

@@ -19,7 +19,7 @@
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/conversions/conversion_internals.mojom.h"
 #include "content/browser/conversions/conversion_internals_ui.h"
-#include "content/browser/cookie_store/cookie_store_context.h"
+#include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/eye_dropper_chooser_impl.h"
 #include "content/browser/federated_learning/floc_service_impl.h"
 #include "content/browser/handwriting/handwriting_recognition_service_factory.h"
@@ -972,7 +972,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::EyeDropperChooser>(
       base::BindRepeating(&EyeDropperChooserImpl::Create));
   map->Add<blink::mojom::CookieStore>(
-      base::BindRepeating(&CookieStoreContext::CreateServiceForFrame));
+      base::BindRepeating(&CookieStoreManager::BindReceiverForFrame));
   map->Add<blink::mojom::ContentIndexService>(
       base::BindRepeating(&ContentIndexServiceImpl::CreateForFrame));
   map->Add<blink::mojom::KeyboardLockService>(
@@ -1297,7 +1297,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::ContentIndexService>(
       base::BindRepeating(&ContentIndexServiceImpl::CreateForWorker));
   map->Add<blink::mojom::CookieStore>(
-      base::BindRepeating(&CookieStoreContext::CreateServiceForWorker));
+      base::BindRepeating(&CookieStoreManager::BindReceiverForWorker));
 
   // render process host binders taking an origin
   map->Add<payments::mojom::PaymentManager>(BindServiceWorkerReceiverForOrigin(

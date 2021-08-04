@@ -26,7 +26,7 @@
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/cookie_store/cookie_store_context.h"
+#include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/resource_context_impl.h"
@@ -353,8 +353,8 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
   partition->Initialize(fallback_for_blob_urls);
 
   // Arm the serviceworker cookie change observation API.
-  partition->GetCookieStoreContext()->ListenToCookieChanges(
-      partition->GetNetworkContext(), /*success_callback=*/base::DoNothing());
+  partition->GetCookieStoreManager()->ListenToCookieChanges(
+      partition->GetNetworkContext(), base::DoNothing());
 
   PostCreateInitialization(partition, partition_config.in_memory());
 
