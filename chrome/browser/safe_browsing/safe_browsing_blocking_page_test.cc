@@ -3086,9 +3086,9 @@ class SafeBrowsingPrerenderBrowserTest
   SafeBrowsingPrerenderBrowserTest& operator=(
       const SafeBrowsingPrerenderBrowserTest&) = delete;
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    SafeBrowsingBlockingPageBrowserTest::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    SafeBrowsingBlockingPageBrowserTest::SetUp();
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {

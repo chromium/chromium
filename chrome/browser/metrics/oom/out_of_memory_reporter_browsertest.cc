@@ -224,9 +224,12 @@ class MAYBE_OutOfMemoryReporterPrerenderBrowserTest
             &MAYBE_OutOfMemoryReporterPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    MAYBE_OutOfMemoryReporterBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    // embedded_test_server is started on MainThread for the prerender helper.
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     MAYBE_OutOfMemoryReporterBrowserTest::SetUpOnMainThread();
   }

@@ -155,7 +155,11 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
 
 class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
  public:
-  LoginDetectionPrerenderBrowserTest() = default;
+  LoginDetectionPrerenderBrowserTest() {
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(&LoginDetectionPrerenderBrowserTest::GetWebContents,
+                            base::Unretained(this)));
+  }
   ~LoginDetectionPrerenderBrowserTest() override = default;
   LoginDetectionPrerenderBrowserTest(
       const LoginDetectionPrerenderBrowserTest&) = delete;
@@ -163,14 +167,12 @@ class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
   LoginDetectionPrerenderBrowserTest& operator=(
       const LoginDetectionPrerenderBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
-        base::BindRepeating(&LoginDetectionPrerenderBrowserTest::GetWebContents,
-                            base::Unretained(this)));
+  void SetUp() override {
+    prerender_helper_->SetUp(embedded_test_server());
+    LoginDetectionBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

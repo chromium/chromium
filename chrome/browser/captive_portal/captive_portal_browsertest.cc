@@ -3039,9 +3039,13 @@ class CaptivePortalForPrerenderingTest : public CaptivePortalBrowserTest {
             base::Unretained(this))) {}
   ~CaptivePortalForPrerenderingTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    CaptivePortalBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     CaptivePortalBrowserTest::SetUpOnMainThread();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

@@ -27,9 +27,9 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   }
   ~PrerenderPageLoadMetricsObserverBrowserTest() override = default;
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    MetricIntegrationTest::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    MetricIntegrationTest::SetUp();
   }
 
   int GetUkmMetricEntryCount(const std::string& entry_name,

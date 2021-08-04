@@ -825,9 +825,12 @@ class HistoryPrerenderBrowserTest : public HistoryBrowserTest {
             base::BindRepeating(&HistoryPrerenderBrowserTest::web_contents,
                                 base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    HistoryBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    HistoryBrowserTest::SetUpOnMainThread();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

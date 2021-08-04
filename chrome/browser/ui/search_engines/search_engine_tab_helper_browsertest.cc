@@ -160,8 +160,12 @@ class SearchEngineTabHelperPrerenderingBrowserTest
             base::Unretained(this))) {}
   ~SearchEngineTabHelperPrerenderingBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
   }

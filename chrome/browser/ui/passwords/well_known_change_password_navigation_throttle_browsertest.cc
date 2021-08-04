@@ -493,8 +493,12 @@ class PrerenderingChangePasswordNavigationThrottleBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  void SetUp() override {
+    prerender_helper_.SetUp(test_server_.get());
+    WellKnownChangePasswordNavigationThrottleBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(test_server_.get());
     Initialize();
   }
 

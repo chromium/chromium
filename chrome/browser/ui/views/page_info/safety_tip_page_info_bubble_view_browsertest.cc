@@ -1633,12 +1633,12 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
     reputation::InitializeSafetyTipConfig();
+    prerender_helper_.SetUp(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

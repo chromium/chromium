@@ -226,7 +226,7 @@ class SubresourceFilterPrerenderingBrowserTest
   SubresourceFilterPrerenderingBrowserTest();
   ~SubresourceFilterPrerenderingBrowserTest() override;
 
-  void SetUpOnMainThread() override;
+  void SetUp() override;
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;

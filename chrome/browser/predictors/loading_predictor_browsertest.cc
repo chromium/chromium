@@ -2342,8 +2342,11 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
                                 base::Unretained(this))) {}
 
  protected:
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
   void SetUpOnMainThread() override {
-    prerender_test_helper_.SetUpOnMainThread(embedded_test_server());
     test_server_handle_ = embedded_test_server()->StartAndReturnHandle();
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
   }

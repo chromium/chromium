@@ -878,6 +878,10 @@ class LiteVideoKeyedServicePrerenderBrowserTest
       const LiteVideoKeyedServicePrerenderBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(crbug.com/846380): move ScopedFeatureList init to the constructor.
+    // Due to LiteVideoKeyedServiceBrowserTest's use of ScopedFeatureList, we
+    // construct the prerender helper here to ensure the correct relative order
+    // of construction and destriction of the lists.
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(
             &LiteVideoKeyedServicePrerenderBrowserTest::GetWebContents,
@@ -886,7 +890,9 @@ class LiteVideoKeyedServicePrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUpOnMainThread(embedded_test_server());
+    // We set up here rather than in the earlier SetUp due to the creation
+    // timing of prerender_helper_ (SetUp happens prior to SetUpCommandLine).
+    prerender_helper_->SetUp(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

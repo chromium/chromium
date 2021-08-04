@@ -1329,8 +1329,12 @@ class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
             &ContentSettingsWithPrerenderingBrowserTest::GetWebContents,
             base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_test_helper().SetUp(embedded_test_server());
+    ContentSettingsTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_test_helper().SetUpOnMainThread(embedded_test_server());
     ContentSettingsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }

@@ -3682,9 +3682,9 @@ class PrerenderPageLoadMetricsBrowserTest : public PageLoadMetricsBrowserTest {
     feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    PageLoadMetricsBrowserTest::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PageLoadMetricsBrowserTest::SetUp();
   }
 
  protected:

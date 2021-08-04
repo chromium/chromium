@@ -27,12 +27,15 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
             base::Unretained(this))) {}
   ~MixedContentSettingsTabHelperBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(&ssl_server_);
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ssl_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ssl_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-
-    prerender_helper_.SetUpOnMainThread(&ssl_server_);
     ASSERT_TRUE(ssl_server_.Start());
   }
 

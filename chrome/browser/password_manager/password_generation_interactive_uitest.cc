@@ -397,9 +397,9 @@ class PasswordGenerationPopupViewPrerenderingTest
             base::Unretained(this))) {}
   ~PasswordGenerationPopupViewPrerenderingTest() override = default;
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    PasswordGenerationInteractiveTest::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PasswordGenerationInteractiveTest::SetUp();
   }
 
   content::test::PrerenderTestHelper* prerender_helper() {

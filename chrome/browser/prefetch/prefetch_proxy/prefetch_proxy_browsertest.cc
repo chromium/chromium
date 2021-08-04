@@ -4448,12 +4448,14 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
   PrefetchProxyPrerenderBrowserTest& operator=(
       const PrefetchProxyPrerenderBrowserTest&) = delete;
 
-  void SetUp() override { PrefetchProxyBrowserTest::SetUp(); }
-
   void TearDown() override { PrefetchProxyBrowserTest::ResetFeatureList(); }
 
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    PrefetchProxyBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_test_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     PrefetchProxyBrowserTest::SetUpOnMainThread();

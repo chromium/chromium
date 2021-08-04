@@ -4431,9 +4431,12 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
             base::Unretained(this))) {}
   ~PasswordManagerPrerenderBrowserTest() override = default;
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PasswordManagerBrowserTest::SetUp();
+  }
 
+  void SetUpOnMainThread() override {
     // Register requests handler before the server is started.
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleTestAuthRequest));

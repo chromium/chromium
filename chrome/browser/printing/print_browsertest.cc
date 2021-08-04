@@ -1158,8 +1158,12 @@ class PrintPrerenderBrowserTest : public PrintBrowserTest {
     PrintBrowserTest::SetUpCommandLine(cmd_line);
   }
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PrintBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

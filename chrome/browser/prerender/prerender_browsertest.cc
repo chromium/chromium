@@ -34,8 +34,12 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
             base::BindRepeating(&PrerenderBrowserTest::GetActiveWebContents,
                                 base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PlatformBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));

@@ -386,9 +386,14 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
                                 base::Unretained(this))) {
     feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    JavaScriptDialogTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     JavaScriptDialogTest::SetUpOnMainThread();
   }
 

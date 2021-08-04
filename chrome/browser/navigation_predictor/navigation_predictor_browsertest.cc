@@ -619,13 +619,17 @@ class NavigationPredictorPrerenderBrowserTest
   NavigationPredictorPrerenderBrowserTest& operator=(
       const NavigationPredictorPrerenderBrowserTest&) = delete;
 
+  void SetUp() override {
+    prerender_test_helper_.SetUp(&test_server_);
+    NavigationPredictorBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     test_server_.AddDefaultHandlers(GetChromeTestDataDir());
     test_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/navigation_predictor");
     test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    prerender_test_helper_.SetUpOnMainThread(&test_server_);
     ASSERT_TRUE(test_server_.Start());
   }
 

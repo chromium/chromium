@@ -854,8 +854,12 @@ class PrerenderAutofillTest : public InProcessBrowserTest {
             base::BindRepeating(&PrerenderAutofillTest::web_contents,
                                 base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

@@ -146,13 +146,17 @@ class PrerenderBrowserTest : public ContentBrowserTest {
   }
   ~PrerenderBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_->SetUp(&ssl_server_);
+    ContentBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     host_resolver()->AddRule("*", "127.0.0.1");
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-    prerender_helper_->SetUpOnMainThread(&ssl_server_);
     ASSERT_TRUE(ssl_server_.Start());
   }
 

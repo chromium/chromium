@@ -375,7 +375,12 @@ class BlinkOptimizationGuidePrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUpOnMainThread(embedded_test_server());
+    // TODO(crbug.com/846380): move BlinkOptimizationGuideBrowserTest
+    // ScopedFeatureList init to the constructor.  We set up here rather than in
+    // SetUp since the prerender_helper_ is created in SetUpCommandLine to
+    // ensure correct construction/destruction order of the ScopedFeatureList in
+    // the PrerenderTestHelper and the BlinkOptimizationGuideBrowserTest.
+    prerender_helper_->SetUp(embedded_test_server());
     BlinkOptimizationGuideBrowserTest::SetUpOnMainThread();
   }
 

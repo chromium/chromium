@@ -237,9 +237,13 @@ class PermissionRequestManagerWithPrerenderingTest
             &PermissionRequestManagerWithPrerenderingTest::GetWebContents,
             base::Unretained(this))) {}
 
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    PermissionRequestManagerBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     PermissionRequestManagerBrowserTest::SetUpOnMainThread();
-    prerender_test_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

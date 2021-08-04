@@ -25,6 +25,11 @@ class NetErrorTabHelperWithPrerenderingTest : public InProcessBrowserTest {
   NetErrorTabHelperWithPrerenderingTest& operator=(
       const NetErrorTabHelperWithPrerenderingTest&) = delete;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     chrome_browser_net::NetErrorTabHelper::set_state_for_testing(
         chrome_browser_net::NetErrorTabHelper::TESTING_DEFAULT);
@@ -35,7 +40,6 @@ class NetErrorTabHelperWithPrerenderingTest : public InProcessBrowserTest {
               return false;
             }));
 
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("mock.http", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 

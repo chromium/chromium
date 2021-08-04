@@ -176,8 +176,12 @@ class ClientSideDetectionHostPrerenderBrowserTest
   ClientSideDetectionHostPrerenderBrowserTest& operator=(
       const ClientSideDetectionHostPrerenderBrowserTest&) = delete;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ClientSideDetectionHostBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ClientSideDetectionHostBrowserTest::SetUpOnMainThread();

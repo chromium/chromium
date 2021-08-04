@@ -1287,9 +1287,13 @@ class PrerenderDownloadTest : public DownloadTest {
                                 base::Unretained(this))) {}
   ~PrerenderDownloadTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    DownloadTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     DownloadTest::SetUpOnMainThread();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
   }

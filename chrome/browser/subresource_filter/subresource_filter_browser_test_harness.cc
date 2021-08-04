@@ -331,9 +331,9 @@ SubresourceFilterPrerenderingBrowserTest::
 SubresourceFilterPrerenderingBrowserTest::
     ~SubresourceFilterPrerenderingBrowserTest() = default;
 
-void SubresourceFilterPrerenderingBrowserTest::SetUpOnMainThread() {
-  prerender_helper_.SetUpOnMainThread(embedded_test_server());
-  SubresourceFilterListInsertingBrowserTest::SetUpOnMainThread();
+void SubresourceFilterPrerenderingBrowserTest::SetUp() {
+  prerender_helper_.SetUp(embedded_test_server());
+  SubresourceFilterListInsertingBrowserTest::SetUp();
 }
 
 }  // namespace subresource_filter

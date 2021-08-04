@@ -236,9 +236,13 @@ class ContentFaviconDriverTest : public InProcessBrowserTest {
                                 base::Unretained(this))) {}
   ~ContentFaviconDriverTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

@@ -112,9 +112,9 @@ class PageImplPrerenderBrowserTest : public PageImplTest {
             base::BindRepeating(&PageImplPrerenderBrowserTest::GetWebContents,
                                 base::Unretained(this))) {}
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    PageImplTest::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    PageImplTest::SetUp();
   }
 
   content::test::PrerenderTestHelper& prerender_test_helper() {

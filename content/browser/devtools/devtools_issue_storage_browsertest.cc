@@ -222,9 +222,9 @@ class DevToolsIssueStorageWithPrerenderBrowserTest
             &DevToolsIssueStorageWithPrerenderBrowserTest::GetWebContents,
             base::Unretained(this))) {}
 
-  void SetUpOnMainThread() override {
-    DevToolsIssueStorageBrowserTest::SetUpOnMainThread();
-    prerender_test_helper().SetUpOnMainThread(embedded_test_server());
+  void SetUp() override {
+    prerender_test_helper().SetUp(embedded_test_server());
+    DevToolsIssueStorageBrowserTest::SetUp();
   }
 
   test::PrerenderTestHelper& prerender_test_helper() {

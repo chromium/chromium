@@ -227,14 +227,6 @@ void PrerenderTestHelper::SetUp(
   EXPECT_FALSE(http_server->Started());
   http_server->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderTestHelper::MonitorResourceRequest, base::Unretained(this)));
-  has_set_up_ = true;
-}
-
-void PrerenderTestHelper::SetUpOnMainThread(
-    net::test_server::EmbeddedTestServer* http_server) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  if (!has_set_up_)
-    SetUp(http_server);
 }
 
 int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {

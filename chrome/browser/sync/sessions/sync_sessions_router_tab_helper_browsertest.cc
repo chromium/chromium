@@ -81,9 +81,13 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
             base::Unretained(this))) {}
   ~SyncSessionsRouterTabHelperBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

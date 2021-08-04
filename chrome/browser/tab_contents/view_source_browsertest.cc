@@ -776,9 +776,9 @@ class ViewSourcePrerenderTest : public ViewSourceTest {
   content::WebContents* target() const { return target_; }
   void set_target(content::WebContents* target) { target_ = target; }
 
-  void SetUpOnMainThread() override {
-    ViewSourceTest::SetUpOnMainThread();
-    prerender_test_helper().SetUpOnMainThread(embedded_test_server());
+  void SetUp() override {
+    prerender_test_helper().SetUp(embedded_test_server());
+    ViewSourceTest::SetUp();
   }
 
  private:

@@ -2074,9 +2074,13 @@ class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
   SecurityStateTabHelperPrerenderTest& operator=(
       const SecurityStateTabHelperPrerenderTest&) = delete;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(&https_server_);
+    SecurityStateTabHelperTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(&https_server_);
     SecurityStateTabHelperTest::SetUpOnMainThread();
   }
 

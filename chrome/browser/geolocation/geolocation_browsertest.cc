@@ -615,12 +615,14 @@ class GeolocationPrerenderBrowserTest : public GeolocationBrowserTest {
                                 base::Unretained(this))) {}
   ~GeolocationPrerenderBrowserTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    GeolocationBrowserTest::SetUp();
+  }
+
   // GeolocationBrowserTest:
   void SetUpOnMainThread() override {
     current_browser_ = browser();
-
-    // embedded_test_server is started on MainThread for the prerender helper.
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     GeolocationBrowserTest::SetUpOnMainThread();
   }

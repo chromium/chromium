@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/history/media_history_playback_table.h"
 #include "chrome/browser/media/history/media_history_store.h"
 
 #include "base/callback_helpers.h"
@@ -1176,9 +1177,14 @@ class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
             base::Unretained(this))) {
     feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    MediaHistoryBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     MediaHistoryBrowserTest::SetUpOnMainThread();
   }
 

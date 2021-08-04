@@ -436,9 +436,9 @@ class ScreenOrientationLockForPrerenderBrowserTest
   }
 
   // ScreenOrientationBrowserTest:
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    ScreenOrientationBrowserTest::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ScreenOrientationBrowserTest::SetUp();
   }
 
   content::WebContents* web_contents() { return shell()->web_contents(); }

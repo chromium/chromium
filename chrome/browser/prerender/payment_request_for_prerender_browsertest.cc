@@ -23,9 +23,9 @@ class PaymentRequestForPrerenderBrowserTest
             &PaymentRequestForPrerenderBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {}
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(https_server());
-    PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
+  void SetUp() override {
+    prerender_helper_.SetUp(https_server());
+    PaymentRequestPlatformBrowserTestBase::SetUp();
   }
 
   // PaymentRequestTestObserver

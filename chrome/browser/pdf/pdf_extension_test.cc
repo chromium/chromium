@@ -3406,7 +3406,7 @@ class PDFExtensionPrerenderTest : public PDFExtensionTest {
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUpOnMainThread(embedded_test_server());
+    prerender_helper_->SetUp(embedded_test_server());
     PDFExtensionTest::SetUpOnMainThread();
   }
 
