@@ -956,7 +956,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
 }
 
 #if defined(OS_MAC) || defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
+// Flaky on Windows, see crbug.com/1236524.
+#if defined(OS_WIN)
+#define MAYBE_ShortcutIconCorrectColor DISABLED_ShortcutIconCorrectColor
+#else
+#define MAYBE_ShortcutIconCorrectColor ShortcutIconCorrectColor
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_ShortcutIconCorrectColor) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
