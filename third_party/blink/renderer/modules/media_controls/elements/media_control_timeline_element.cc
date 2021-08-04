@@ -36,6 +36,7 @@
 namespace {
 
 const int kThumbRadius = 6;
+const base::TimeDelta kRenderTimelineInterval = base::TimeDelta::FromSeconds(1);
 
 // Only respond to main button of primary pointer(s).
 bool IsValidPointerEvent(const blink::Event& event) {
@@ -82,6 +83,13 @@ void MediaControlTimelineElement::UpdateAria() {
 
 void MediaControlTimelineElement::SetPosition(double current_time,
                                               bool suppress_aria) {
+  if (is_live_ && !live_anchor_time_ && current_time != 0) {
+    live_anchor_time_.emplace();
+    live_anchor_time_->clock_time_ = base::TimeTicks::Now();
+    live_anchor_time_->media_time_ = MediaElement().currentTime();
+  }
+
+  MaybeUpdateTimelineInterval();
   setValue(String::Number(current_time));
 
   if (!suppress_aria)
@@ -91,8 +99,11 @@ void MediaControlTimelineElement::SetPosition(double current_time,
 }
 
 void MediaControlTimelineElement::SetDuration(double duration) {
-  double duration_value = std::isfinite(duration) ? duration : 0;
-  SetFloatingPointAttribute(html_names::kMaxAttr, duration_value);
+  is_live_ = std::isinf(duration);
+  double duration_value = duration;
+  SetFloatingPointAttribute(html_names::kMaxAttr,
+                            is_live_ ? 0.0 : duration_value);
+  SetFloatingPointAttribute(html_names::kMinAttr, 0.0);
   RenderBarSegments();
 }
 
@@ -109,10 +120,12 @@ void MediaControlTimelineElement::DefaultEventHandler(Event& event) {
   if (BeginScrubbingEvent(event)) {
     Platform::Current()->RecordAction(
         UserMetricsAction("Media.Controls.ScrubbingBegin"));
+    is_scrubbing_ = true;
     GetMediaControls().BeginScrubbing(MediaControlsImpl::IsTouchEvent(&event));
   } else if (EndScrubbingEvent(event)) {
     Platform::Current()->RecordAction(
         UserMetricsAction("Media.Controls.ScrubbingEnd"));
+    is_scrubbing_ = false;
     GetMediaControls().EndScrubbing();
   }
 
@@ -163,6 +176,58 @@ bool MediaControlTimelineElement::KeepEventInNode(const Event& event) const {
       event, GetLayoutObject());
 }
 
+void MediaControlTimelineElement::OnMediaPlaying() {
+  if (!is_live_)
+    return;
+
+  if (render_timeline_timer_.IsRunning())
+    render_timeline_timer_.Stop();
+}
+
+void MediaControlTimelineElement::OnMediaStoppedPlaying() {
+  if (!is_live_ || is_scrubbing_ || !live_anchor_time_)
+    return;
+
+  render_timeline_timer_.Start(
+      FROM_HERE, kRenderTimelineInterval,
+      WTF::BindRepeating(&MediaControlTimelineElement::UpdateLiveTimeline,
+                         WrapWeakPersistent(this)));
+}
+
+void MediaControlTimelineElement::OnProgress() {
+  MaybeUpdateTimelineInterval();
+  RenderBarSegments();
+}
+
+void MediaControlTimelineElement::UpdateLiveTimeline() {
+  MaybeUpdateTimelineInterval();
+  RenderBarSegments();
+}
+
+void MediaControlTimelineElement::MaybeUpdateTimelineInterval() {
+  if (!is_live_ || !MediaElement().seekable()->length() || !live_anchor_time_)
+    return;
+
+  int last_seekable = MediaElement().seekable()->length() - 1;
+  double seekable_start =
+      MediaElement().seekable()->start(last_seekable, ASSERT_NO_EXCEPTION);
+  double seekable_end =
+      MediaElement().seekable()->end(last_seekable, ASSERT_NO_EXCEPTION);
+  double expected_media_time_now =
+      live_anchor_time_->media_time_ +
+      (base::TimeTicks::Now() - live_anchor_time_->clock_time_).InSecondsF();
+
+  // Cap the current live time in seekable range.
+  if (expected_media_time_now > seekable_end) {
+    live_anchor_time_->media_time_ = seekable_end;
+    live_anchor_time_->clock_time_ = base::TimeTicks::Now();
+    expected_media_time_now = seekable_end;
+  }
+
+  SetFloatingPointAttribute(html_names::kMinAttr, seekable_start);
+  SetFloatingPointAttribute(html_names::kMaxAttr, expected_media_time_now);
+}
+
 void MediaControlTimelineElement::RenderBarSegments() {
   SetupBarSegments();
 
@@ -174,6 +239,16 @@ void MediaControlTimelineElement::RenderBarSegments() {
   // buffered range containing the current play head.
   TimeRanges* buffered_time_ranges = MediaElement().buffered();
   DCHECK(buffered_time_ranges);
+
+  // Calculate |current_time| and |duration| for live media base on the timeline
+  // value since timeline's minimum value is not necessarily zero.
+  if (is_live_) {
+    current_time =
+        value().ToDouble() - GetFloatingPointAttribute(html_names::kMinAttr);
+    duration = GetFloatingPointAttribute(html_names::kMaxAttr) -
+               GetFloatingPointAttribute(html_names::kMinAttr);
+  }
+
   if (std::isnan(duration) || std::isinf(duration) || !duration ||
       std::isnan(current_time)) {
     SetBeforeSegmentPosition(MediaControlSliderElement::Position(0, 0));
