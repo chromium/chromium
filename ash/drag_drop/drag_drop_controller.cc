@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/capture_client.h"
@@ -179,6 +180,11 @@ DragOperation DragDropController::StartDragAndDrop(
       !toplevel_window_drag_delegate_) {
     return DragOperation::kNone;
   }
+
+  // Never consider the current scope as hung. The hang watching deadline (if
+  // any) is not valid since the user can take unbounded time to complete the
+  // drag.
+  base::HangWatcher::InvalidateActiveExpectations();
 
   operation_ = DragOperation::kNone;
   current_drag_event_source_ = source;
