@@ -5,11 +5,11 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {TabElement} from 'chrome://tab-strip/tab.js';
-import {TabGroupElement} from 'chrome://tab-strip/tab_group.js';
-import {setScrollAnimationEnabledForTesting, TabListElement} from 'chrome://tab-strip/tab_list.js';
-import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
-import {TabData, TabsApiProxyImpl} from 'chrome://tab-strip/tabs_api_proxy.js';
+import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
+import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
+import {setScrollAnimationEnabledForTesting, TabListElement} from 'chrome://tab-strip.top-chrome/tab_list.js';
+import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
+import {TabData, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';

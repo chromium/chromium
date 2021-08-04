@@ -317,7 +317,7 @@
       "chrome://sync-confirmation/*",
       "chrome://read-later.top-chrome/*",
       "chrome://tab-search.top-chrome/*",
-      "chrome://tab-strip/*",
+      "chrome://tab-strip.top-chrome/*",
       "chrome://welcome/*",
       "chrome://profile-picker/*",
       "chrome://file-manager/*",

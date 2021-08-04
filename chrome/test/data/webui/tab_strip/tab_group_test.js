@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://tab-strip/tab.js';
-import {TabGroupElement} from 'chrome://tab-strip/tab_group.js';
+import 'chrome://tab-strip.top-chrome/tab.js';
+import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
 
-import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
+import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
 
 import {assertEquals} from '../chai_assert.js';
 

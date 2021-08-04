@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -55,6 +56,8 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/drop_data.h"
 #include "ui/accessibility/ax_mode.h"
@@ -500,6 +503,10 @@ WebUITabStripContainerView::WebUITabStripContainerView(
   SetVisible(false);
   animation_.Reset(0.0);
 
+  DCHECK(tab_contents_container);
+  view_observations_.AddObservation(tab_contents_container_);
+  view_observations_.AddObservation(top_container_);
+
   // TODO(crbug.com/1010589) WebContents are initially assumed to be visible by
   // default unless explicitly hidden. The WebContents need to be set to hidden
   // so that the visibility state of the document in JavaScript is correctly
@@ -519,22 +526,11 @@ WebUITabStripContainerView::WebUITabStripContainerView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(base::BindRepeating(
           &WebUITabStripContainerView::FlexRule, base::Unretained(this))));
-
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUITabStripURL));
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_view_->web_contents());
-  task_manager::WebContentsTags::CreateForTabContents(
-      web_view_->web_contents());
-
-  DCHECK(tab_contents_container);
-  view_observations_.AddObservation(tab_contents_container_);
-  view_observations_.AddObservation(top_container_);
-
-  if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
-    tab_strip_ui->Initialize(browser_view_->browser(), this);
+  InitializeWebView();
 }
 
 WebUITabStripContainerView::~WebUITabStripContainerView() {
+  content::WebContentsObserver::Observe(nullptr);
   // The TabCounter button uses |this| as a listener. We need to make
   // sure we outlive it.
   delete new_tab_button_;
@@ -756,6 +752,9 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     bool target_visible,
     WebUITabStripOpenCloseReason reason) {
   if (target_visible) {
+    if (web_view_->GetWebContents()->IsCrashed())
+      InitializeWebView();
+
     immersive_revealed_lock_.reset(
         browser_view_->immersive_mode_controller()->GetRevealedLock(
             ImmersiveModeController::ANIMATE_REVEAL_YES));
@@ -967,4 +966,27 @@ bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {
   if (received_focus && tab_strip_ui)
     tab_strip_ui->ReceivedKeyboardFocus();
   return received_focus;
+}
+
+void WebUITabStripContainerView::RenderProcessGone(
+    base::TerminationStatus status) {
+  // Since all WebUI tab strips are sharing the same render process, if the
+  // render process has crashed, we close the container. When users click on
+  // the tab counter button WebUI tab strip should be able to recover.
+  CloseContainer();
+  content::WebContentsObserver::Observe(nullptr);
+}
+
+void WebUITabStripContainerView::InitializeWebView() {
+  DCHECK(web_view_);
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUITabStripURL));
+  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+      web_view_->web_contents());
+  task_manager::WebContentsTags::CreateForTabContents(
+      web_view_->web_contents());
+
+  if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
+    tab_strip_ui->Initialize(browser_view_->browser(), this);
+
+  content::WebContentsObserver::Observe(web_view_->GetWebContents());
 }

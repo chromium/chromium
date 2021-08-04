@@ -426,8 +426,8 @@ const char kChromeUIPrintHost[] = "print";
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-const char kChromeUITabStripHost[] = "tab-strip";
-const char kChromeUITabStripURL[] = "chrome://tab-strip";
+const char kChromeUITabStripHost[] = "tab-strip.top-chrome";
+const char kChromeUITabStripURL[] = "chrome://tab-strip.top-chrome";
 #endif
 
 #if !defined(OS_ANDROID)

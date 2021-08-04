@@ -47,7 +47,8 @@ class ImmersiveRevealedLock;
 class WebUITabStripContainerView : public TabStripUIEmbedder,
                                    public gfx::AnimationDelegate,
                                    public views::AccessiblePaneView,
-                                   public views::ViewObserver {
+                                   public views::ViewObserver,
+                                   public content::WebContentsObserver {
  public:
   WebUITabStripContainerView(BrowserView* browser_view,
                              views::View* tab_contents_container,
@@ -85,6 +86,9 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // Finish the open or close animation if it's active.
   void FinishAnimationForTesting();
 
+  // content::WebContentsObserver:
+  void RenderProcessGone(base::TerminationStatus status) override;
+
  private:
   class AutoCloser;
   class DragToOpenHandler;
@@ -108,6 +112,8 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
 
   // Passed to the AutoCloser to handle closing.
   void CloseForEventOutsideTabStrip(TabStripUICloseAction reason);
+
+  void InitializeWebView();
 
   // TabStripUIEmbedder:
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;

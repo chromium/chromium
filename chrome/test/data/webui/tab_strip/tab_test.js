@@ -4,9 +4,9 @@
 
 import {getFavicon} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {TabElement} from 'chrome://tab-strip/tab.js';
-import {TabStripEmbedderProxy, TabStripEmbedderProxyImpl} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
-import {CloseTabAction, TabData, TabNetworkState, TabsApiProxyImpl} from 'chrome://tab-strip/tabs_api_proxy.js';
+import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
+import {TabStripEmbedderProxy, TabStripEmbedderProxyImpl} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
+import {CloseTabAction, TabData, TabNetworkState, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 

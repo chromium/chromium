@@ -798,7 +798,7 @@
     "matches": [
       "chrome://bookmarks/*",
       "chrome://read-later.top-chrome/*",
-      "chrome://tab-strip/*"
+      "chrome://tab-strip.top-chrome/*"
     ]
   }, {
     "channel": "stable",
@@ -953,7 +953,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
-      "chrome://tab-strip/*"
+      "chrome://tab-strip.top-chrome/*"
     ]
   }, {
     "channel": "stable",

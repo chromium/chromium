@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {DragManager, DragManagerDelegate, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip/drag_manager.js';
-import {TabElement} from 'chrome://tab-strip/tab.js';
-import {TabGroupElement} from 'chrome://tab-strip/tab_group.js';
-import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
-import {TabData, TabsApiProxyImpl} from 'chrome://tab-strip/tabs_api_proxy.js';
+import {DragManager, DragManagerDelegate, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip.top-chrome/drag_manager.js';
+import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
+import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
+import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
+import {TabData, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
