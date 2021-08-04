@@ -11,9 +11,9 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/common/channel_info.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/escape.h"
 #include "rlz/buildflags/buildflags.h"
@@ -24,6 +24,18 @@
 #endif
 
 namespace ios {
+#if BUILDFLAG(ENABLE_RLZ)
+namespace {
+
+// True if a build is strictly organic, according to its brand code.
+bool IsOrganic(const std::string& brand) {
+  // An empty brand string on iOS is used for organic installation. All other
+  // iOS brand string are non-organic.
+  return brand.empty();
+}
+
+}  // anonymous namespace
+#endif
 
 UIThreadSearchTermsData::UIThreadSearchTermsData() {
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
@@ -53,9 +65,7 @@ std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
   std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcode do not use rlz at all.
-  std::string brand;
-  if (ios::google_brand::GetBrand(&brand) &&
-      !ios::google_brand::IsOrganic(brand)) {
+  if (!IsOrganic(ios::provider::GetBrandCode())) {
     // This call will may return false until the value has been cached. This
     // normally would mean that a few omnibox searches might not send the RLZ
     // data but this is not really a problem (as the value will eventually be

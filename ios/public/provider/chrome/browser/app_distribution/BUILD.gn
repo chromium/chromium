@@ -10,6 +10,9 @@ source_set("app_distribution_api") {
 
 source_set("test_app_distribution") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_app_distribution.cc" ]
+  sources = [
+    "test_app_distribution.cc",
+    "test_app_distribution.h",
+  ]
   deps = [ ":app_distribution_api" ]
 }

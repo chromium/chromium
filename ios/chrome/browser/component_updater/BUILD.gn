@@ -17,8 +17,8 @@ source_set("component_updater") {
     "//components/update_client",
     "//components/update_client:common_impl",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/google",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web",
   ]
 }
