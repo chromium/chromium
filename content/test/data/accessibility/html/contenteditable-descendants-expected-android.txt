@@ -1,19 +1,20 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View focusable
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='A contenteditable with a link and an  and a .<newline><newline>Always expose editable tables as tables.<newline>Editable list item.' text_change_added_count=107
 ++++android.view.View
-++++++android.view.View clickable name='Contentditable with'
-++++++android.view.View clickable name='link'
-++++++android.view.View clickable name='and'
-++++++android.widget.Image clickable name='image'
-++++++android.view.View clickable name='and'
-++++++android.widget.Button clickable focusable name='button'
-++++android.widget.GridView collection row_count=1 column_count=1
+++++++android.widget.TextView name='A contenteditable with a '
+++++++android.view.View role_description='link' clickable link name='link'
+++++++++android.widget.TextView name='link'
+++++++android.widget.TextView name=' and an '
+++++++android.widget.Image role_description='graphic' name='Image'
+++++++android.widget.TextView name=' and a '
+++++++android.widget.Button role_description='button' clickable focusable name='Button'
+++++++android.widget.TextView name='.'
+++++android.widget.GridView role_description='table' collection row_count=1 column_count=1
 ++++++android.view.View
-++++++++android.view.View clickable collection_item name='Always expose editable tables as tables' row_span=1 column_span=1
-++++++android.view.View
-++++++android.view.View
-++++android.widget.ListView collection hierarchical item_count=1 row_count=1
-++++++android.view.View collection_item name='Editable list item'
-++++++++android.view.View clickable name='1'
-++++++++android.view.View clickable name='Editable list item'
-++android.view.View clickable focusable name='Keep the role, just change the state'
+++++++++android.view.View collection_item name='Always expose editable tables as tables.' row_span=1 column_span=1
+++++android.widget.ListView collection item_count=1 row_count=1
+++++++android.view.View collection_item
+++++++++android.view.View name='1. '
+++++++++android.widget.TextView name='Editable list item.'
+++android.view.View name='Non-editable paragraph.'
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Should keep the role but change the state.' text_change_added_count=42

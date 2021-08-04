@@ -573,15 +573,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-columnheader.html"));
 }
 
-#if defined(OS_ANDROID)
-// TODO(crbug.com/986673): test is flaky on android.
-#define MAYBE_AccessibilityAriaCombobox DISABLED_AccessibilityAriaCombobox
-#else
-#define MAYBE_AccessibilityAriaCombobox AccessibilityAriaCombobox
-#endif
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaCombobox) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaCombobox) {
   RunAriaTest(FILE_PATH_LITERAL("aria-combobox.html"));
 }
 
@@ -1651,8 +1643,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-font-size.html"));
 }
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
-// Flaky failures: http://crbug.com/445929.
+#if defined(OS_MAC)
 // Mac failures: http://crbug.com/571712.
 #define MAYBE_AccessibilityContenteditableDescendants \
   DISABLED_AccessibilityContenteditableDescendants
@@ -1719,17 +1710,9 @@ IN_PROC_BROWSER_TEST_P(
       FILE_PATH_LITERAL("contenteditable-descendants-with-selection.html"));
 }
 
-#if defined(OS_ANDROID)
-// Flaky failures: http://crbug.com/445929.
-#define MAYBE_AccessibilityContenteditableWithEmbeddedContenteditables \
-  DISABLED_AccessibilityContenteditableWithEmbeddedContenteditables
-#else
-#define MAYBE_AccessibilityContenteditableWithEmbeddedContenteditables \
-  AccessibilityContenteditableWithEmbeddedContenteditables
-#endif
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    MAYBE_AccessibilityContenteditableWithEmbeddedContenteditables) {
+    AccessibilityContenteditableWithEmbeddedContenteditables) {
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-with-embedded-contenteditables.html"));
 }
@@ -2102,14 +2085,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputEmail) {
   RunHtmlTest(FILE_PATH_LITERAL("input-email.html"));
 }
 
-// http://crbug.com/1114193
-#if defined(OS_ANDROID)
-#define MAYBE_AccessibilityInputFile DISABLED_AccessibilityInputFile
-#else
-#define MAYBE_AccessibilityInputFile AccessibilityInputFile
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputFile) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputFile) {
   RunHtmlTest(FILE_PATH_LITERAL("input-file.html"));
 }
 
@@ -2215,16 +2191,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputText) {
   RunHtmlTest(FILE_PATH_LITERAL("input-text.html"));
 }
 
-#if defined(OS_ANDROID)
-// TODO(crbug.com/986673): test is flaky on android.
-#define MAYBE_AccessibilityInputTextReadOnly \
-  DISABLED_AccessibilityInputTextReadOnly
-#else
-#define MAYBE_AccessibilityInputTextReadOnly AccessibilityInputTextReadOnly
-#endif
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputTextReadOnly) {
+                       AccessibilityInputTextReadOnly) {
   RunHtmlTest(FILE_PATH_LITERAL("input-text-read-only.html"));
 }
 
