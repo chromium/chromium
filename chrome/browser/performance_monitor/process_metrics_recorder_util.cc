@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -117,6 +118,41 @@ void RecordCoalitionData(const ProcessMonitor::Metrics& metrics) {
   base::UmaHistogramCounts100000(
       "PerformanceMonitor.ResourceCoalition.Power",
       metrics.coalition_data->power_nw / kNanoWattToMilliWatt + 0.5);
+
+  for (int i = 0;
+       i < static_cast<int>(ResourceCoalition::QoSLevels::kMaxValue) + 1; ++i) {
+    const char* suffix = nullptr;
+    switch (static_cast<ResourceCoalition::QoSLevels>(i)) {
+      case ResourceCoalition::QoSLevels::kDefault:
+        suffix = "Default";
+        break;
+      case ResourceCoalition::QoSLevels::kMaintenance:
+        suffix = "Maintenance";
+        break;
+      case ResourceCoalition::QoSLevels::kBackground:
+        suffix = "Background";
+        break;
+      case ResourceCoalition::QoSLevels::kUtility:
+        suffix = "Utility";
+        break;
+      case ResourceCoalition::QoSLevels::kLegacy:
+        suffix = "Legacy";
+        break;
+      case ResourceCoalition::QoSLevels::kUserInitiated:
+        suffix = "UserInitiated";
+        break;
+      case ResourceCoalition::QoSLevels::kUserInteractive:
+        suffix = "UserInteractive";
+        break;
+    }
+    base::UmaHistogramCustomCounts(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.QoSLevel.", suffix}),
+        metrics.coalition_data->qos_time_per_second[i] * kPercentScaleFactor *
+            kCPUUsageFactor,
+        kCPUUsageHistogramMin, 100 * kCPUUsageFactor * 1000,
+        kCPUUsageHistogramBucketCount);
+  }
 }
 #endif
 

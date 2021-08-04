@@ -123,6 +123,15 @@ absl::optional<ResourceCoalition::DataRate> GetCoalitionDataDiff(
       std::tie(old_sample.cpu_time, old_sample.interrupt_wakeups,
                old_sample.platform_idle_wakeups, old_sample.bytesread,
                old_sample.byteswritten, old_sample.gpu_time, old_sample.energy);
+  DCHECK_EQ(new_sample.cpu_time_eqos_len,
+            static_cast<uint64_t>(COALITION_NUM_THREAD_QOS_TYPES));
+  // Check for an overflow in the QoS data.
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
+    if (new_sample.cpu_time_eqos[i] < old_sample.cpu_time_eqos[i]) {
+      new_samples_exceeds_or_equals_old_ones = false;
+      break;
+    }
+  }
   if (!new_samples_exceeds_or_equals_old_ones)
     return absl::nullopt;
 
@@ -156,6 +165,11 @@ absl::optional<ResourceCoalition::DataRate> GetCoalitionDataDiff(
   ret.gpu_time_per_second =
       get_timedelta_rate_per_second(new_sample.gpu_time, old_sample.gpu_time);
   ret.power_nw = get_rate_per_second(new_sample.energy, old_sample.energy);
+
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
+    ret.qos_time_per_second[i] = get_timedelta_rate_per_second(
+        new_sample.cpu_time_eqos[i], old_sample.cpu_time_eqos[i]);
+  }
 
   return ret;
 }

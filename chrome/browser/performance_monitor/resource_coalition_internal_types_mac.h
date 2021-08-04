@@ -21,6 +21,56 @@
 
 #define COALITION_NUM_THREAD_QOS_TYPES 7
 
+// Comes from osfmk/mach/thread_policy.h
+#define THREAD_QOS_UNSPECIFIED 0
+#define THREAD_QOS_DEFAULT THREAD_QOS_UNSPECIFIED /* Temporary rename */
+#define THREAD_QOS_MAINTENANCE 1
+#define THREAD_QOS_BACKGROUND 2
+#define THREAD_QOS_UTILITY 3
+#define THREAD_QOS_LEGACY 4 /* i.e. default workq threads */
+#define THREAD_QOS_USER_INITIATED 5
+#define THREAD_QOS_USER_INTERACTIVE 6
+
+#define THREAD_QOS_LAST 7
+
+static_assert(COALITION_NUM_THREAD_QOS_TYPES == THREAD_QOS_LAST,
+              "Unexpected number of QoS levels.");
+
+static_assert(
+    THREAD_QOS_DEFAULT ==
+        static_cast<int>(
+            performance_monitor::ResourceCoalition::QoSLevels::kDefault),
+    "QoSLevels indexes should match the OS defined ones.");
+static_assert(
+    THREAD_QOS_MAINTENANCE ==
+        static_cast<int>(
+            performance_monitor::ResourceCoalition::QoSLevels::kMaintenance),
+    "QoSLevels indexes should match the OS defined ones.");
+static_assert(
+    THREAD_QOS_BACKGROUND ==
+        static_cast<int>(
+            performance_monitor::ResourceCoalition::QoSLevels::kBackground),
+    "QoSLevels indexes should match the OS defined ones.");
+static_assert(
+    THREAD_QOS_UTILITY ==
+        static_cast<int>(
+            performance_monitor::ResourceCoalition::QoSLevels::kUtility),
+    "QoSLevels indexes should match the OS defined ones.");
+static_assert(
+    THREAD_QOS_LEGACY ==
+        static_cast<int>(
+            performance_monitor::ResourceCoalition::QoSLevels::kLegacy),
+    "QoSLevels indexes should match the OS defined ones.");
+static_assert(
+    THREAD_QOS_USER_INITIATED ==
+        static_cast<int>(
+            performance_monitor::ResourceCoalition::QoSLevels::kUserInitiated),
+    "QoSLevels indexes should match the OS defined ones.");
+static_assert(THREAD_QOS_USER_INTERACTIVE ==
+                  static_cast<int>(performance_monitor::ResourceCoalition::
+                                       QoSLevels::kUserInteractive),
+              "QoSLevels indexes should match the OS defined ones.");
+
 // Comes from bsd/sys/coalition.h
 //
 // TODO(crbug.com/1229686): Report some data derived from the tasks_started and

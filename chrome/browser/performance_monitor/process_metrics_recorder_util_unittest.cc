@@ -25,6 +25,11 @@ TEST(ProcessMetricsRecorderUtilTest, RecordCoalitionData) {
   coalition_data.gpu_time_per_second = 0.8;
   coalition_data.power_nw = 1000;
 
+  for (int i = 0;
+       i < static_cast<int>(ResourceCoalition::QoSLevels::kMaxValue) + 1; ++i) {
+    coalition_data.qos_time_per_second[i] = i * 0.1;
+  }
+
   metrics.coalition_data = coalition_data;
   RecordCoalitionData(metrics);
 
@@ -55,6 +60,30 @@ TEST(ProcessMetricsRecorderUtilTest, RecordCoalitionData) {
   histogram_tester.ExpectUniqueSample(
       "PerformanceMonitor.ResourceCoalition.Power",
       coalition_data.power_nw / 1000000, 1);
+
+  // The QoS histograms also reports the CPU times as a percentage of time with
+  // a permyriad granularity.
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.Default",
+      coalition_data.qos_time_per_second[0] * 10000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.Maintenance",
+      coalition_data.qos_time_per_second[1] * 10000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.Background",
+      coalition_data.qos_time_per_second[2] * 10000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.Utility",
+      coalition_data.qos_time_per_second[3] * 10000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.Legacy",
+      coalition_data.qos_time_per_second[4] * 10000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated",
+      coalition_data.qos_time_per_second[5] * 10000, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
+      coalition_data.qos_time_per_second[6] * 10000, 1);
 }
 #endif
 
