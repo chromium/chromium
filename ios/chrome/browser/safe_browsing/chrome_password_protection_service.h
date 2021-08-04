@@ -255,16 +255,16 @@ class ChromePasswordProtectionService
   // Removes all warning requests for |web_state|.
   void RemoveWarningRequestsByWebState(web::WebState* web_state);
 
-  password_manager::PasswordStore* GetStoreForReusedCredential(
+  password_manager::PasswordStoreInterface* GetStoreForReusedCredential(
       const password_manager::MatchingReusedCredential& reused_credential);
 
   // Returns the profile PasswordStore associated with this instance.
-  password_manager::PasswordStore* GetProfilePasswordStore() const;
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore() const;
 
   // Returns the GAIA-account-scoped PasswordStore associated with this
   // instance. The account password store contains passwords stored in the
   // account and is accessible only when the user is signed in and non syncing.
-  password_manager::PasswordStore* GetAccountPasswordStore() const;
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
   // Gets prefs associated with |browser_state_|.
   PrefService* GetPrefs() const;

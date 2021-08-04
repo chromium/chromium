@@ -16,7 +16,6 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -262,7 +261,7 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     return;
 
   for (const auto& credential : matching_reused_credentials) {
-    password_manager::PasswordStore* password_store =
+    password_manager::PasswordStoreInterface* password_store =
         GetStoreForReusedCredential(credential);
     // Password store can be null in tests.
     if (!password_store) {
@@ -281,7 +280,7 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     return;
 
   for (const auto& credential : matching_reused_credentials) {
-    password_manager::PasswordStore* password_store =
+    password_manager::PasswordStoreInterface* password_store =
         GetStoreForReusedCredential(credential);
     // Password store can be null in tests.
     if (!password_store) {
@@ -769,7 +768,7 @@ void ChromePasswordProtectionService::FillUserPopulation(
   *request_proto->mutable_population() = GetUserPopulation(browser_state_);
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetStoreForReusedCredential(
     const password_manager::MatchingReusedCredential& reused_credential) {
   if (!browser_state_)
@@ -780,16 +779,16 @@ ChromePasswordProtectionService::GetStoreForReusedCredential(
              : GetProfilePasswordStore();
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetProfilePasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
   // itself when it shouldn't access the PasswordStore.
-  return IOSChromePasswordStoreFactory::GetForBrowserState(
+  return IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
              browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetAccountPasswordStore() const {
   // AccountPasswordStore is currenly not supported on iOS.
   return nullptr;

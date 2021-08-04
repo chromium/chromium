@@ -15,6 +15,7 @@ enum class ServiceAccessType;
 
 namespace password_manager {
 class PasswordStore;
+class PasswordStoreInterface;
 }
 
 // Singleton that owns all PasswordStores and associates them with
@@ -25,6 +26,10 @@ class IOSChromePasswordStoreFactory
   static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
+
+  static scoped_refptr<password_manager::PasswordStoreInterface>
+  GetInterfaceForBrowserState(ChromeBrowserState* browser_state,
+                              ServiceAccessType access_type);
 
   static IOSChromePasswordStoreFactory* GetInstance();
 

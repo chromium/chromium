@@ -30,9 +30,21 @@
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+// TODO(crbug.com/1218413) Delete this method once the migration to
+// PasswordStoreInterface is complete and change the name of the
+// method below to GetForBrowserState.
 // static
 scoped_refptr<password_manager::PasswordStore>
 IOSChromePasswordStoreFactory::GetForBrowserState(
+    ChromeBrowserState* browser_state,
+    ServiceAccessType access_type) {
+  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
+      GetInterfaceForBrowserState(browser_state, access_type).get()));
+}
+
+// static
+scoped_refptr<password_manager::PasswordStoreInterface>
+IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
     ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
   // |profile| gets always redirected to a non-Incognito profile below, so
