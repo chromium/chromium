@@ -26,9 +26,9 @@ SharesheetActionCache::SharesheetActionCache(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile)) {
-    AddShareAction(std::make_unique<NearbyShareAction>());
+    AddShareAction(std::make_unique<NearbyShareAction>(profile));
   }
-  AddShareAction(std::make_unique<DriveShareAction>());
+  AddShareAction(std::make_unique<DriveShareAction>(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

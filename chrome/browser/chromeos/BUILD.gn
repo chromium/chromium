@@ -2547,8 +2547,6 @@ source_set("chromeos") {
     "../ash/settings/supervised_user_cros_settings_provider.h",
     "../ash/settings/token_encryptor.cc",
     "../ash/settings/token_encryptor.h",
-    "../ash/sharesheet/cros_sharesheet_service_delegate.cc",
-    "../ash/sharesheet/cros_sharesheet_service_delegate.h",
     "../ash/smb_client/discovery/host_locator.h",
     "../ash/smb_client/discovery/in_memory_host_locator.cc",
     "../ash/smb_client/discovery/in_memory_host_locator.h",

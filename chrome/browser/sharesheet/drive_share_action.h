@@ -7,11 +7,13 @@
 
 #include "chrome/browser/sharesheet/share_action.h"
 
+class Profile;
+
 namespace sharesheet {
 
 class DriveShareAction : public ShareAction {
  public:
-  DriveShareAction();
+  explicit DriveShareAction(Profile* profile);
   ~DriveShareAction() override;
   DriveShareAction(const DriveShareAction&) = delete;
   DriveShareAction& operator=(const DriveShareAction&) = delete;
@@ -27,6 +29,7 @@ class DriveShareAction : public ShareAction {
                         bool contains_hosted_document) override;
 
  private:
+  Profile* profile_;
   SharesheetController* controller_ = nullptr;
 };
 

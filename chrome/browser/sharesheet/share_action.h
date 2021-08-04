@@ -8,16 +8,17 @@
 #include <string>
 
 #include "base/callback.h"
-#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"
 
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace sharesheet {
+
+class SharesheetController;
 
 // An interface implemented by each ShareAction.
 class ShareAction {

@@ -4065,6 +4065,7 @@ static_library("browser") {
       "sharesheet/sharesheet_service_delegate.h",
       "sharesheet/sharesheet_service_factory.cc",
       "sharesheet/sharesheet_service_factory.h",
+      "sharesheet/sharesheet_ui_delegate.h",
       "sharing/click_to_call/click_to_call_context_menu_observer.cc",
       "sharing/click_to_call/click_to_call_context_menu_observer.h",
       "sharing/click_to_call/click_to_call_metrics.cc",

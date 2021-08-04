@@ -60,6 +60,7 @@ class SharesheetHeaderView : public views::View {
   std::vector<std::u16string> ExtractShareText();
   const gfx::VectorIcon& GetTextVectorIcon();
 
+  // TODO(crbug.com/1233830): Move business logic out of UI code.
   void ResolveImages();
   void ResolveImage(size_t index);
   void LoadImage(const base::FilePath& file_path,

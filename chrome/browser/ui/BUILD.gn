@@ -2083,6 +2083,8 @@ static_library("ui") {
       "ash/session_util.h",
       "ash/sharesheet/sharesheet_bubble_view.cc",
       "ash/sharesheet/sharesheet_bubble_view.h",
+      "ash/sharesheet/sharesheet_bubble_view_delegate.cc",
+      "ash/sharesheet/sharesheet_bubble_view_delegate.h",
       "ash/sharesheet/sharesheet_constants.h",
       "ash/sharesheet/sharesheet_expand_button.cc",
       "ash/sharesheet/sharesheet_expand_button.h",

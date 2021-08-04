@@ -4,7 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -21,7 +21,6 @@ namespace {
 class TestSharesheetController : public sharesheet::SharesheetController {
  public:
   // sharesheet::SharesheetController
-  Profile* GetProfile() override { return nullptr; }
   void SetBubbleSize(int width, int height) override {}
   void CloseBubble(::sharesheet::SharesheetResult result) override {
     // The NearbyShareDialogUI can only invoke this method with a cancellation

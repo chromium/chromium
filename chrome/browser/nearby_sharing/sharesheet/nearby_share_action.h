@@ -10,6 +10,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
+class Profile;
+
 namespace views {
 class WebView;
 }  // namespace views
@@ -17,7 +19,7 @@ class WebView;
 class NearbyShareAction : public sharesheet::ShareAction,
                           content::WebContentsDelegate {
  public:
-  NearbyShareAction();
+  explicit NearbyShareAction(Profile* profile);
   ~NearbyShareAction() override;
   NearbyShareAction(const NearbyShareAction&) = delete;
   NearbyShareAction& operator=(const NearbyShareAction&) = delete;
@@ -57,6 +59,7 @@ class NearbyShareAction : public sharesheet::ShareAction,
  private:
   bool IsNearbyShareDisabledByPolicy();
 
+  Profile* profile_;
   absl::optional<bool> nearby_share_disabled_by_policy_for_testing_ =
       absl::nullopt;
   views::WebView* web_view_;

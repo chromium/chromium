@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
-#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
@@ -19,6 +20,10 @@ class Profile;
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+namespace ui {
+class Accelerator;
+}  // namespace ui
 
 namespace views {
 class View;
@@ -30,34 +35,49 @@ class SharesheetService;
 
 // The SharesheetServiceDelegate is the interface through which the business
 // logic in SharesheetService communicates with the UI.
-class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
+class SharesheetServiceDelegate {
  public:
   SharesheetServiceDelegate(gfx::NativeWindow native_window,
                             SharesheetService* sharesheet_service);
-  ~SharesheetServiceDelegate() override = default;
+  ~SharesheetServiceDelegate();
   SharesheetServiceDelegate(const SharesheetServiceDelegate&) = delete;
   SharesheetServiceDelegate& operator=(const SharesheetServiceDelegate&) =
       delete;
 
   gfx::NativeWindow GetNativeWindow();
+  SharesheetController* GetSharesheetController();
+
+  // TODO(crbug.com/1233830) : Remove after business logic is moved
+  // out of SharesheetHeaderView.
+  Profile* GetProfile();
+
+  // ==========================================================================
+  // ======================== SHARESHEET SERVICE TO UI ========================
+  // ==========================================================================
 
   // The following are called by the ShareService to communicate with the UI.
-  virtual void ShowBubble(std::vector<TargetInfo> targets,
-                          apps::mojom::IntentPtr intent,
-                          sharesheet::DeliveredCallback delivered_callback,
-                          sharesheet::CloseCallback close_callback);
+  void ShowBubble(std::vector<TargetInfo> targets,
+                  apps::mojom::IntentPtr intent,
+                  DeliveredCallback delivered_callback,
+                  CloseCallback close_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  virtual void ShowNearbyShareBubbleForArc(
-      apps::mojom::IntentPtr intent,
-      sharesheet::DeliveredCallback delivered_callback,
-      sharesheet::CloseCallback close_callback) = 0;
+  // Skips the generic Sharesheet bubble and directly displays the
+  // NearbyShare bubble dialog.
+  void ShowNearbyShareBubbleForArc(apps::mojom::IntentPtr intent,
+                                   DeliveredCallback delivered_callback,
+                                   CloseCallback close_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.
-  virtual void OnActionLaunched();
+  void OnActionLaunched();
 
+  void CloseBubble(SharesheetResult result);
+
+  // ==========================================================================
+  // ======================== UI TO SHARESHEET SERVICE ========================
+  // ==========================================================================
   // The following are called by the UI to communicate with the ShareService.
   void OnBubbleClosed(const std::u16string& active_action);
   void OnTargetSelected(const std::u16string& target_name,
@@ -68,20 +88,14 @@ class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
                             const std::u16string& active_action);
   const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
-  // SharesheetController:
-  Profile* GetProfile() override;
-  // Default implementation does nothing. Override as needed.
-  void SetBubbleSize(int width, int height) override;
-  // Default implementation does nothing. Override as needed.
-  void CloseBubble(SharesheetResult result) override;
-
  private:
   // Only used for ID purposes. NativeWindow will always outlive the
   // SharesheetServiceDelegate.
   gfx::NativeWindow native_window_;
 
-  // Owned by views.
   SharesheetService* sharesheet_service_;
+
+  std::unique_ptr<SharesheetUiDelegate> sharesheet_controller_;
 };
 
 }  // namespace sharesheet

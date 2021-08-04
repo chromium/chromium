@@ -9,6 +9,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -21,7 +23,7 @@
 
 namespace sharesheet {
 
-DriveShareAction::DriveShareAction() = default;
+DriveShareAction::DriveShareAction(Profile* profile) : profile_(profile) {}
 
 DriveShareAction::~DriveShareAction() = default;
 
@@ -38,8 +40,7 @@ void DriveShareAction::LaunchAction(SharesheetController* controller,
                                     apps::mojom::IntentPtr intent) {
   controller_ = controller;
   DCHECK(intent->drive_share_url.has_value());
-  NavigateParams params(controller_->GetProfile(),
-                        intent->drive_share_url.value(),
+  NavigateParams params(profile_, intent->drive_share_url.value(),
                         ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
