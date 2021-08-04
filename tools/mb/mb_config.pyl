@@ -812,7 +812,7 @@
       # running on CQ.
       'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_google_native_coverage',
       'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_google_expectations_native_coverage',
-      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_google_expectations',
+      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_google_expectations_fastbuild',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_google',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
@@ -1491,9 +1491,9 @@
       'webview_google',
     ],
 
-    'android_release_trybot_arm64_webview_google_expectations': [
+    'android_release_trybot_arm64_webview_google_expectations_fastbuild': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'webview_google', 'fail_on_android_expectations',
+      'android_fastbuild', 'webview_google', 'fail_on_android_expectations',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after

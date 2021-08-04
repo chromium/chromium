@@ -396,6 +396,7 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
+      "disable_android_lint": true,
       "fail_on_android_expectations": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -406,6 +407,7 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_errorprone_java_compiler": false,
       "use_goma": true
     }
   },
