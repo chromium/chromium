@@ -510,6 +510,50 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.ShareTargetUpdate.DynamicUpdateResult"
+    enum="ShareTargetUpdateResult" expires_after="M98">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    The result of reading/parsing/accepting a new proto for the third party
+    Share Targets.
+
+    This is for the file types loaded from the component-update system. This
+    includes both those loaded from disk shortly after startup, and those
+    received over the network when the component version changes.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ShareTargetUpdate.ResourceBundleResult"
+    enum="ShareTargetUpdateResult" expires_after="M98">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    The result of reading/parsing/accepting a new proto for the third party
+    Share Targets.
+
+    This is for the file types loaded from the resource bundle packaged with
+    Chrome, which is always loaded at startup.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ShareTargetUpdate.Version"
+    units="FileTypePolicies Version" expires_after="M98">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    Integer version number citing which version of the proto data chrome just
+    loaded. Latest version is in share_targets.asciipb.
+
+    This is for the file types loaded from the component-update system. This
+    includes both those loaded from disk shortly after startup, and those
+    received over the network when the component version changes
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
     expires_after="M97">
   <owner>sophey@chromium.org</owner>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/sharing_hub/sharing_hub_sub_menu_model.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,7 +49,7 @@ void SharingHubSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
       error->ExecuteMenuItem(browser_);
       return;
     }
-    // TODO crbug.com/1186848  Log metrics per command_id;
+    base::RecordComputedAction(user_actions_by_id_[command_id]);
     chrome::ExecuteCommand(browser_, command_id);
   }
 }
@@ -74,12 +75,13 @@ void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
 
   for (auto action : first_party_actions) {
     AddItem(action.command_id, action.title);
+    user_actions_by_id_[action.command_id] = action.feature_name_for_metrics;
   }
   AddSeparator(ui::NORMAL_SEPARATOR);
   for (auto action : third_party_actions) {
     if (action.third_party_icon.isNull()) {
       AddItemWithIcon(action.command_id, action.title,
-                      ui::ImageModel::FromVectorIcon(action.icon));
+                      ui::ImageModel::FromVectorIcon(*action.icon));
     } else {
       AddItemWithIcon(action.command_id, action.title,
                       ui::ImageModel::FromImageSkia(action.third_party_icon));

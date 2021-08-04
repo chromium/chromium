@@ -94,7 +94,9 @@ void SharingHubBubbleViewImpl::OnActionSelected(
     return;
 
   controller_->OnActionSelected(button->action_command_id(),
-                                button->action_is_first_party());
+                                button->action_is_first_party(),
+                                button->action_name_for_metrics());
+
   Hide();
 }
 

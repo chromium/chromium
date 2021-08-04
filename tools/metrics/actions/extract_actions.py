@@ -96,26 +96,28 @@ QUOTED_STRING_RE = re.compile(r"""('[^']+'|"[^"]+")$""")
 # To add a new file, add it to this list and add the appropriate logic to
 # generate the known actions to AddComputedActions() below.
 KNOWN_COMPUTED_USERS = (
-  'back_forward_menu_model.cc',
-  'options_page_view.cc',
-  'render_view_host.cc',  # called using webkit identifiers
-  'user_metrics.cc',  # method definition
-  'new_tab_ui.cc',  # most visited clicks 1-9
-  'extension_metrics_module.cc', # extensions hook for user metrics
-  'language_options_handler_common.cc', # languages and input methods in CrOS
-  'cros_language_options_handler.cc', # languages and input methods in CrOS
-  'external_metrics.cc',  # see AddChromeOSActions()
-  'core_options_handler.cc',  # see AddWebUIActions()
-  'browser_render_process_host.cc',  # see AddRendererActions()
-  'render_thread_impl.cc',  # impl of RenderThread::RecordComputedAction()
-  'render_process_host_impl.cc',  # browser side impl for
-                                  # RenderThread::RecordComputedAction()
-  'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
-  'ppb_pdf_impl.cc',  # see AddClosedSourceActions()
-  'pepper_pdf_host.cc',  # see AddClosedSourceActions()
-  'record_user_action.cc', # see RecordUserAction.java
-  'blink_platform_impl.cc', # see WebKit/public/platform/Platform.h
-  'devtools_ui_bindings.cc', # see AddDevToolsActions()
+    'back_forward_menu_model.cc',
+    'options_page_view.cc',
+    'render_view_host.cc',  # called using webkit identifiers
+    'user_metrics.cc',  # method definition
+    'new_tab_ui.cc',  # most visited clicks 1-9
+    'extension_metrics_module.cc',  # extensions hook for user metrics
+    'language_options_handler_common.cc',  # languages and input methods in CrOS
+    'cros_language_options_handler.cc',  # languages and input methods in CrOS
+    'external_metrics.cc',  # see AddChromeOSActions()
+    'core_options_handler.cc',  # see AddWebUIActions()
+    'browser_render_process_host.cc',  # see AddRendererActions()
+    'render_thread_impl.cc',  # impl of RenderThread::RecordComputedAction()
+    'render_process_host_impl.cc',  # browser side impl for
+    # RenderThread::RecordComputedAction()
+    'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
+    'ppb_pdf_impl.cc',  # see AddClosedSourceActions()
+    'pepper_pdf_host.cc',  # see AddClosedSourceActions()
+    'record_user_action.cc',  # see RecordUserAction.java
+    'blink_platform_impl.cc',  # see WebKit/public/platform/Platform.h
+    'devtools_ui_bindings.cc',  # see AddDevToolsActions()
+    'sharing_hub_bubble_controller.cc',  # share targets
+    'sharing_hub_sub_menu_model.cc',  # share targets
 )
 
 # Language codes used in Chrome. The list should be updated when a new
@@ -181,6 +183,12 @@ TAGS = {'description': 'Please enter the description of the metric.',
         'owner': ('Please list the metric\'s owners. Add more owner tags as '
                   'needed.')}
 
+SHARE_TARGETS = {
+    'CopyURLSelected', 'QRCodeSelected', 'ScreenshotSelected',
+    'SendTabToSelfSelected', 'CastSelected', 'SavePageSelected',
+    'ThirdPartyAppSelected'
+}
+
 
 def AddComputedActions(actions):
   """Add computed actions to the actions list.
@@ -208,6 +216,11 @@ def AddComputedActions(actions):
   for language_code in LANGUAGE_CODES:
     actions.add('LanguageOptions_UiLanguageChange_%s' % language_code)
     actions.add('LanguageOptions_SpellCheckLanguageChange_%s' % language_code)
+
+  # Actions for sharing_hub_bubble_controller.cc and
+  # sharing_hub_sub_menu_model.cc.
+  for share_target in SHARE_TARGETS:
+    actions.add('SharingHubDesktop.%s' % share_target)
 
 
 def AddPDFPluginActions(actions):

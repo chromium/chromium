@@ -29,17 +29,28 @@ class WebContents;
 
 namespace gfx {
 struct VectorIcon;
-class ImageSkia;
 }  // namespace gfx
 
 namespace sharing_hub {
 
 struct SharingHubAction {
+  SharingHubAction(int command_id,
+                   std::u16string title,
+                   const gfx::VectorIcon* icon,
+                   bool is_first_party,
+                   gfx::ImageSkia third_party_icon,
+                   std::string feature_name_for_metrics);
+  SharingHubAction(const SharingHubAction&);
+  SharingHubAction& operator=(const SharingHubAction&);
+  SharingHubAction(SharingHubAction&&);
+  SharingHubAction& operator=(SharingHubAction&&);
+  ~SharingHubAction() = default;
   int command_id;
   std::u16string title;
-  const gfx::VectorIcon& icon;
+  const gfx::VectorIcon* icon;
   bool is_first_party;
   gfx::ImageSkia third_party_icon;
+  std::string feature_name_for_metrics;
 };
 
 // The Sharing Hub model contains a list of first and third party actions.

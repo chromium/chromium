@@ -58,7 +58,9 @@ class SharingHubBubbleController
   // Handles when the user clicks on a Sharing Hub action. If this is a first
   // party action, executes the appropriate browser command. If this is a third
   // party action, navigates to an external webpage.
-  virtual void OnActionSelected(int command_id, bool is_first_party);
+  virtual void OnActionSelected(int command_id,
+                                bool is_first_party,
+                                std::string feature_name_for_metrics);
   // Handler for when the bubble is closed.
   void OnBubbleClosed();
 

@@ -74301,6 +74301,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="DIRECT_SHARE"/>
 </enum>
 
+<enum name="ShareTargetUpdateResult">
+  <int value="1" label="SUCCESS"/>
+  <int value="2" label="FAILED_EMPTY"/>
+  <int value="3" label="FAILED_PROTO_PARSE"/>
+  <int value="4" label="FAILED_VERSION_CHECK"/>
+  <int value="5" label="SKIPPED_VERSION_CHECK_EQUAL"/>
+</enum>
+
 <enum name="SharingActionSource">
 <!--
   SharingActionSource must be kept in sync with ValidSharingActionSource defined

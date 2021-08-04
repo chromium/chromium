@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
@@ -46,16 +47,28 @@ ShareTargets::~ShareTargets() {
   AutoLock lock(lock_);  // DCHECK fail if the lock is held.
 }
 
-void ShareTargets::RecordUpdateMetrics(UpdateResult result,
-                                       const std::string& src_name) {
+void ShareTargets::RecordUpdateMetrics(UpdateResult result, UpdateOrigin src) {
   lock_.AssertAcquired();
-  // TODO record histograms
+
+  // src_name should be "ResourceBundle" or "DynamicUpdate".
+  if (src == UpdateOrigin::DYNAMIC_UPDATE) {
+    UMA_HISTOGRAM_ENUMERATION("Sharing.ShareTargetUpdate.DynamicUpdateResult",
+                              result);
+    if (result == UpdateResult::SUCCESS) {
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Sharing.ShareTargetUpdate.DynamicUpdateVersion",
+          targets_->version_id());
+    }
+  } else if (src == UpdateOrigin::RESOURCE_BUNDLE) {
+    UMA_HISTOGRAM_ENUMERATION("Sharing.ShareTargetUpdate.ResourceBundleResult",
+                              result);
+  }
 }
 
 void ShareTargets::PopulateFromDynamicUpdate(const std::string& binary_pb) {
   AutoLock lock(lock_);
   UpdateResult result = PopulateFromBinaryPb(binary_pb);
-  RecordUpdateMetrics(result, "DynamicUpdate");
+  RecordUpdateMetrics(result, UpdateOrigin::DYNAMIC_UPDATE);
 }
 
 void ShareTargets::PopulateFromResourceBundle() {
@@ -65,7 +78,7 @@ void ShareTargets::PopulateFromResourceBundle() {
   std::string binary_pb =
       bundle.LoadDataResourceString(IDR_DESKTOP_SHARING_HUB_PB);
   UpdateResult result = PopulateFromBinaryPb(binary_pb);
-  RecordUpdateMetrics(result, "ResourceBundle");
+  RecordUpdateMetrics(result, UpdateOrigin::RESOURCE_BUNDLE);
 }
 
 ShareTargets::UpdateResult ShareTargets::PopulateFromBinaryPb(
