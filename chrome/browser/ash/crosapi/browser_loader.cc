@@ -50,7 +50,6 @@ constexpr ComponentInfo kLacrosDogfoodStableInfo = {
 
 // The rootfs lacros-chrome binary related files.
 constexpr char kLacrosChromeBinary[] = "chrome";
-constexpr char kLacrosImage[] = "lacros.squash";
 constexpr char kLacrosMetadata[] = "metadata.json";
 
 // The rootfs lacros-chrome binary related paths.
@@ -194,15 +193,6 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     }
   }
 
-  // TODO(b/188473251): Remove this check once rootfs lacros-chrome is in.
-  if (!base::PathExists(
-          base::FilePath(kRootfsLacrosPath).Append(kLacrosImage))) {
-    LOG(ERROR) << "Rootfs lacros image is missing. Going to load lacros "
-                  "component instead.";
-    LoadStatefulLacros(std::move(callback));
-    return;
-  }
-
   OnLoadSelection(
       std::move(callback),
       !component_manager_->GetCompatiblePath(GetLacrosComponentName()).empty());
@@ -266,8 +256,7 @@ void BrowserLoader::LoadStatefulLacros(LoadCompletionCallback callback) {
   // Unmount the rootfs lacros-chrome if we want to use stateful lacros-chrome.
   // This will keep stateful lacros-chrome only mounted and not hold the rootfs
   // lacros-chrome mount until a `Unload`.
-  if (callback && base::PathExists(base::FilePath(kRootfsLacrosMountPoint)
-                                       .Append(kLacrosChromeBinary))) {
+  if (callback) {
     // Ignore the unmount result.
     upstart_client_->StartJob(kLacrosUnmounterUpstartJob, {},
                               base::BindOnce([](bool) {}));
