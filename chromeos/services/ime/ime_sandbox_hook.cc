@@ -10,10 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "build/buildflag.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/ime_decoder.h"
-#include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 
@@ -24,35 +22,11 @@ namespace chromeos {
 namespace ime {
 
 namespace {
-// Whether IME instance shares a same language data path with each other.
-inline constexpr bool CrosImeSharedDataEnabled() {
-#if BUILDFLAG(ENABLE_CROS_IME_SHARED_DATA)
-  return true;
-#else
-  return false;
-#endif
-}
-
 void AddBundleFolder(std::vector<BrokerFilePermission>* permissions) {
   base::FilePath bundle_dir =
       base::FilePath(kBundledInputMethodsDirPath).AsEndingWithSeparator();
   permissions->push_back(
       BrokerFilePermission::ReadOnlyRecursive(bundle_dir.value()));
-}
-
-void AddSharedDataFolderIfEnabled(
-    std::vector<BrokerFilePermission>* permissions) {
-  if (!CrosImeSharedDataEnabled())
-    return;
-
-  // Without access to shared home folder, IME servcie will download all
-  // missing dictionaries to `kUserInputMethodsDirPath` of the current user.
-  base::FilePath shared_path =
-      base::FilePath(kSharedInputMethodsDirPath).AsEndingWithSeparator();
-  if (base::CreateDirectory(shared_path)) {
-    permissions->push_back(
-        BrokerFilePermission::ReadWriteCreateRecursive(shared_path.value()));
-  }
 }
 
 void AddUserDataFolder(std::vector<BrokerFilePermission>* permissions) {
@@ -79,7 +53,6 @@ std::vector<BrokerFilePermission> GetImeFilePermissions() {
 
   AddBundleFolder(&permissions);
   AddUserDataFolder(&permissions);
-  AddSharedDataFolderIfEnabled(&permissions);
   return permissions;
 }
 

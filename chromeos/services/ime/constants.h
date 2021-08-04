@@ -21,17 +21,6 @@ extern const base::FilePath::CharType kBundledInputMethodsDirPath[];
 COMPONENT_EXPORT(CHROMEOS_IME_CONSTANTS)
 extern const base::FilePath::CharType kUserInputMethodsDirPath[];
 
-// The path of downloaded IME language dictionaries which shared by all users.
-// It aims to reduce storage and improve responsiveness by reusing static
-// dictionary for all users. This feature is disabled by default. When
-// `CrosImeSharedDataEnabled` is on and the IME attempt to load some language
-// dictionary which is missing on the device, the IME service will try to
-// download it to the shared path. Because the language dictionary will be
-// accessible by all users, it will prevent duplicate downloads of the same
-// language dictionary.
-COMPONENT_EXPORT(CHROMEOS_IME_CONSTANTS)
-extern const base::FilePath::CharType kSharedInputMethodsDirPath[];
-
 // The name of the directory inside the profile where IME data are stored in.
 COMPONENT_EXPORT(CHROMEOS_IME_CONSTANTS)
 extern const base::FilePath::CharType kInputMethodsDirName[];

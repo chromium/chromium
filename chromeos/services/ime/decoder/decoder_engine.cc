@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "chromeos/services/ime/constants.h"
-#include "chromeos/services/ime/public/cpp/buildflags.h"
 
 namespace chromeos {
 namespace ime {

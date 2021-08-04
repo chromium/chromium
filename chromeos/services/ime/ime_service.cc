@@ -16,11 +16,9 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
-#include "build/buildflag.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/decoder_engine.h"
 #include "chromeos/services/ime/decoder/system_engine.h"
-#include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "chromeos/services/ime/rule_based_engine.h"
 #include "mojo/public/c/system/thunks.h"
 
@@ -132,8 +130,6 @@ const char* ImeService::GetImeBundleDir() {
 }
 
 const char* ImeService::GetImeGlobalDir() {
-  // Global IME data is supported yet.
-  NOTIMPLEMENTED();
   return "";
 }
 

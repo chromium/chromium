@@ -23,8 +23,6 @@ const base::FilePath::CharType kBundledInputMethodsDirPath[] =
     FILE_PATH_LITERAL("/usr/share/chromeos-assets/input_methods/input_tools");
 const base::FilePath::CharType kUserInputMethodsDirPath[] =
     FILE_PATH_LITERAL("/home/chronos/user/" IME_DIR_STRING);
-const base::FilePath::CharType kSharedInputMethodsDirPath[] =
-    FILE_PATH_LITERAL("/home/chronos/" IME_DIR_STRING);
 const base::FilePath::CharType kLanguageDataDirName[] =
     FILE_PATH_LITERAL("google");
 #else
@@ -33,8 +31,6 @@ const base::FilePath::CharType kLanguageDataDirName[] =
 const base::FilePath::CharType kBundledInputMethodsDirPath[] =
     FILE_PATH_LITERAL("/tmp/" IME_DIR_STRING);
 const base::FilePath::CharType kUserInputMethodsDirPath[] =
-    FILE_PATH_LITERAL("/tmp/" IME_DIR_STRING);
-const base::FilePath::CharType kSharedInputMethodsDirPath[] =
     FILE_PATH_LITERAL("/tmp/" IME_DIR_STRING);
 const base::FilePath::CharType kLanguageDataDirName[] =
     FILE_PATH_LITERAL("data");

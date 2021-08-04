@@ -3,15 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//chromeos/services/ime/public/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-
-  flags = [ "ENABLE_CROS_IME_SHARED_DATA=$enable_cros_ime_shared_data" ]
-}
 
 source_set("structs") {
   sources = [ "suggestions.h" ]
