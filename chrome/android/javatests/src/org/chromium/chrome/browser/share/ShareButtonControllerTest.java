@@ -164,7 +164,7 @@ public final class ShareButtonControllerTest {
             {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void
     testShareButtonDisabledOnDataUrl() {
-        mActivityTestRule.loadUrl("data:,Hello%2C%20World!");
+        mActivityTestRule.loadUrl("data:,Hello%2C%20World!", /*secondsToWait=*/10);
 
         ViewUtils.waitForView(allOf(withId(R.id.optional_toolbar_button),
                 anyOf(not(isDisplayed()), not(withContentDescription(R.string.share)))));
