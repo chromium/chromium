@@ -51,8 +51,6 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
 
   void EditButtonPressed();
 
-  void ShareButtonPressed();
-
   const gfx::Image& image_;
 
   content::WebContents* web_contents_;
@@ -61,7 +59,6 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   views::ImageView* image_view_ = nullptr;
   views::MdTextButton* download_button_ = nullptr;
   views::LabelButton* edit_button_ = nullptr;
-  views::LabelButton* share_button_ = nullptr;
 };
 
 }  // namespace sharing_hub

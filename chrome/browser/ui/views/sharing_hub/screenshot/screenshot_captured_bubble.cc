@@ -128,14 +128,6 @@ void ScreenshotCapturedBubble::Init() {
           IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL));
   edit_button->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  // Share button.
-  auto share_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&ScreenshotCapturedBubble::ShareButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SHARE_BUTTON_LABEL));
-  share_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-
   // Download button.
   auto download_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&ScreenshotCapturedBubble::DownloadButtonPressed,
@@ -159,17 +151,10 @@ void ScreenshotCapturedBubble::Init() {
 
   int kPaddingEditShareButtonPx =
       kImageWidthPx - edit_button->CalculatePreferredSize().width() -
-      share_button->CalculatePreferredSize().width() -
       download_button->CalculatePreferredSize().width();
   // Spacing between the edit and share buttons.
   control_columns->AddPaddingColumn(views::GridLayout::kFixedSize,
                                     kPaddingEditShareButtonPx);
-
-  // Column for share button.
-  control_columns->AddColumn(
-      views::GridLayout::TRAILING, views::GridLayout::CENTER, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(views::GridLayout::kFixedSize, kDownloadRowColumnSetId);
 
   // Column for download button
   control_columns->AddColumn(
@@ -178,7 +163,6 @@ void ScreenshotCapturedBubble::Init() {
   layout->StartRow(views::GridLayout::kFixedSize, kDownloadRowColumnSetId);
 
   edit_button_ = layout->AddView(std::move(edit_button));
-  share_button_ = layout->AddView(std::move(share_button));
   download_button_ = layout->AddView(std::move(download_button));
   // End controls row
 }
@@ -234,10 +218,6 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   params->set_suggested_name(
       GetFilenameForURL(web_contents_->GetLastCommittedURL()));
   download_manager->DownloadUrl(std::move(params));
-}
-
-void ScreenshotCapturedBubble::ShareButtonPressed() {
-  NOTIMPLEMENTED();
 }
 
 void ScreenshotCapturedBubble::EditButtonPressed() {
