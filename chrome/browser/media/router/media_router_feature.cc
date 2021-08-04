@@ -29,21 +29,12 @@ namespace media_router {
 #if !defined(OS_ANDROID)
 const base::Feature kMediaRouter{"MediaRouter",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
-// Controls if browser side DialMediaRouteProvider is enabled.
-const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCastMediaRouteProvider{"CastMediaRouteProvider",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kGlobalMediaControlsCastStartStop{
     "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCastToMeetingFromCastDialog{
-    "CastToMeetingFromCastDialog", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCastFeedbackDialog{"CastFeedbackDialog",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 namespace {
@@ -129,14 +120,6 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
     pref_service->SetString(prefs::kMediaRouterReceiverIdHashToken, token);
   }
   return token;
-}
-
-bool DialMediaRouteProviderEnabled() {
-  return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
-}
-
-bool CastMediaRouteProviderEnabled() {
-  return base::FeatureList::IsEnabled(kCastMediaRouteProvider);
 }
 
 bool GlobalMediaControlsCastStartStopEnabled() {
