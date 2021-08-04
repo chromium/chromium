@@ -202,6 +202,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -403,6 +404,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   prerender::NoStatePrefetchLinkManagerFactory::GetInstance();
   prerender::NoStatePrefetchManagerFactory::GetInstance();
   PrivacySandboxSettingsFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ProfileAccountManagerFactory::GetInstance();
+#endif
   ProfileNetworkContextServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)
