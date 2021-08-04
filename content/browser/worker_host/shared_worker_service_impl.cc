@@ -304,7 +304,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     } else {
       site_instance = SiteInstanceImpl::CreateForUrlInfo(
           partition->browser_context(),
-          UrlInfo(instance.url(), UrlInfo::OriginIsolationRequest::kNone),
+          UrlInfo(instance.url(), UrlInfo::OriginIsolationRequest::kNone,
+                  partition->GetConfig()),
           WebExposedIsolationInfo::CreateNonIsolated());
     }
   }

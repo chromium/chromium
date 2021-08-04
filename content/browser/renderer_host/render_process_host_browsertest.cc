@@ -37,6 +37,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_content_browser_client.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
@@ -486,44 +487,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareRendererDuringClosing) {
   // tear down.
 }
 
-// Class that simulates the fact that some //content embedders (e.g. by
-// overriding ChromeContentBrowserClient::GetStoragePartitionConfigForSite) can
-// cause `browser_context->GetDefaultStoragePartition()` to differ from
-// `browser_context->GetStoragePartition(site_instance)` even if `site_instance`
-// is not for guests.
-class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
- public:
-  explicit CustomStoragePartitionForSomeSites(const GURL& site_to_isolate)
-      : site_to_isolate_(site_to_isolate) {}
-
-  StoragePartitionConfig GetStoragePartitionConfigForSite(
-      BrowserContext* browser_context,
-      const GURL& site) override {
-    // Override for |site_to_isolate_|.
-    if (site == site_to_isolate_) {
-      return StoragePartitionConfig::Create(
-          browser_context, "blah_isolated_storage", "blah_isolated_storage",
-          false /* in_memory */);
-    }
-
-    return StoragePartitionConfig::CreateDefault(browser_context);
-  }
-
-  StoragePartitionId GetStoragePartitionIdForSite(
-      BrowserContext* browser_context,
-      const GURL& site) override {
-    if (site == site_to_isolate_)
-      return StoragePartitionId(
-          site.spec(), GetStoragePartitionConfigForSite(browser_context, site));
-    return StoragePartitionId(browser_context);
-  }
-
- private:
-  GURL site_to_isolate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomStoragePartitionForSomeSites);
-};
-
 // This test verifies that SpareRenderProcessHostManager correctly accounts
 // for StoragePartition differences when handing out the spare process.
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
@@ -539,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   BrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   scoped_refptr<SiteInstance> test_site_instance =
-      SiteInstance::Create(browser_context)->GetRelatedSiteInstance(test_url);
+      SiteInstance::CreateForURL(browser_context, test_url);
   StoragePartition* default_storage =
       browser_context->GetDefaultStoragePartition();
   StoragePartition* custom_storage =

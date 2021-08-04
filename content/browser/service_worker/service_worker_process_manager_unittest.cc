@@ -66,6 +66,8 @@ class ServiceWorkerProcessManagerTest : public testing::Test {
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_manager_ =
         std::make_unique<ServiceWorkerProcessManager>(browser_context_.get());
+    process_manager_->set_storage_partition(static_cast<StoragePartitionImpl*>(
+        browser_context_->GetDefaultStoragePartition()));
     script_url_ = GURL("http://www.example.com/sw.js");
     render_process_host_factory_ =
         std::make_unique<SiteInstanceRenderProcessHostFactory>();

@@ -47,6 +47,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/navigation_params_utils.h"
@@ -133,6 +134,20 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
       SiteInfo::Create(future_isolation_context, destination_effective_url_info,
                        web_exposed_isolation_info);
   return future_site_info.RequiresDedicatedProcess(future_isolation_context);
+}
+
+// Helper function to determine whether |dest_url_info| should be loaded in the
+// same StoragePartition that |current_instance| is currently using.
+bool DoesNavigationChangeStoragePartition(SiteInstanceImpl* current_instance,
+                                          const UrlInfo& dest_url_info) {
+  // Derive a new SiteInfo from |current_instance|, but don't treat the
+  // navigation as related to avoid StoragePartition propagation logic.
+  StoragePartitionConfig dest_partition_config =
+      current_instance->DeriveSiteInfo(dest_url_info, /*is_related=*/false)
+          .storage_partition_config();
+  StoragePartitionConfig current_partition_config =
+      current_instance->GetSiteInfo().storage_partition_config();
+  return current_partition_config != dest_partition_config;
 }
 
 bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
@@ -1515,7 +1530,8 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     bool is_speculative) {
   const GURL& destination_url = destination_url_info.url;
   // A subframe must stay in the same BrowsingInstance as its parent.
-  if (!frame_tree_node_->IsMainFrame())
+  bool is_main_frame = frame_tree_node_->IsMainFrame();
+  if (!is_main_frame)
     return ShouldSwapBrowsingInstance::kNo_NotMainFrame;
 
   if (is_same_document)
@@ -1530,8 +1546,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // when we are changing RenderFrames. Remove this when autoreload logic is
   // updated to handle different RenderFrames correctly.
   if (is_failure && is_reload &&
-      SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-          frame_tree_node_->IsMainFrame())) {
+      SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame)) {
     return ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage;
   }
 
@@ -1650,8 +1665,9 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // relationship for it (for isolated error pages).
   // See https://crbug.com/803367.
   bool is_for_isolated_error_page =
-      is_failure && SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-                        frame_tree_node_->IsMainFrame());
+      is_failure &&
+      SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame);
+
   if (current_instance->HasSite() &&
       !render_frame_host_->IsNavigationSameSite(destination_url_info,
                                                 web_exposed_isolation_info) &&
@@ -1662,6 +1678,22 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       IsBrowsingInstanceSwapAllowedForPageTransition(transition,
                                                      destination_url) &&
       render_frame_host_->has_committed_any_navigation()) {
+    return ShouldSwapBrowsingInstance::kYes_ForceSwap;
+  }
+
+  // If the navigation should end up in a different StoragePartition, create a
+  // new BrowsingInstance, as we can only have one StoragePartition per
+  // BrowsingInstance.
+  //
+  // Skip this check if effective URLs are involved. This ensures same-site
+  // navigations to non-app sites from an isolated hosted app stay in the same
+  // StoragePartition and process. This behavior is covered in
+  // IsolatedAppTest.IsolatedAppProcessModel.
+  if (DoesNavigationChangeStoragePartition(current_instance,
+                                           destination_url_info) &&
+      !current_instance
+           ->IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
+               browser_context, is_main_frame, destination_url_info.url)) {
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
   }
 
@@ -2086,7 +2118,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
   if (dest_instance) {
-    // Note: The later call to IsSuitableForURL does not have context about
+    // Note: The later call to IsSuitableForUrlInfo does not have context about
     // error page navigations, so we cannot rely on it to return correct value
     // when error pages are involved.
     if (IsSiteInstanceCompatibleWithErrorIsolation(
@@ -2095,10 +2127,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
               dest_instance, frame_tree_node_->IsMainFrame(), dest_url_info.url,
               web_exposed_isolation_info, is_speculative)) {
         // TODO(nasko,creis): The check whether data: or about: URLs are allowed
-        // to commit in the current process should be in IsSuitableForURL.
+        // to commit in the current process should be in IsSuitableForUrlInfo.
         // However, making this change has further implications and needs more
         // investigation of what behavior changes. For now, use a conservative
-        // approach and explicitly check before calling IsSuitableForURL.
+        // approach and explicitly check before calling IsSuitableForUrlInfo.
         SiteInstanceImpl* dest_instance_impl =
             static_cast<SiteInstanceImpl*>(dest_instance);
         if (IsDataOrAbout(dest_url_info.url) ||

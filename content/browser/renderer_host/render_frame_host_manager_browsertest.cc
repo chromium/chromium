@@ -74,6 +74,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/render_document_feature.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -4366,6 +4367,96 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     EXPECT_NE(prev_instance, curr_instance);
     EXPECT_FALSE(prev_instance->IsRelatedSiteInstance(curr_instance.get()));
   }
+}
+
+// Verifies that a renderer-initiated navigation from a site in the default
+// StoragePartition to one that ContentBrowserClient places in a non-default
+// StoragePartition will swap to a new BrowsingInstance.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       NavigationToDifferentPartitionSwapsBrowsingInstance) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Set up a ContentBrowserClient that maps b.com to a non-default partition.
+  CustomStoragePartitionForSomeSites modified_client(GURL("http://b.com/"));
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  // Load a page on a.com and verify that it uses the default partition.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+  RenderFrameHostImpl* rfh =
+      static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame();
+  SiteInstanceImpl* a_site_instance = rfh->GetSiteInstance();
+  EXPECT_TRUE(
+      a_site_instance->GetSiteInfo().storage_partition_config().is_default());
+
+  // Make sure proactive BrowserInstance swapping doesn't interfere.
+  rfh->DisableProactiveBrowsingInstanceSwapForTesting();
+
+  // Do a renderer-initiated navigation to a page on b.com and verify that we
+  // swapped BrowsingInstances.
+  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), b_url));
+  rfh = static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame();
+  SiteInstanceImpl* b_site_instance = rfh->GetSiteInstance();
+  EXPECT_FALSE(
+      b_site_instance->GetSiteInfo().storage_partition_config().is_default());
+  EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance));
+
+  // Restore the original ContentBrowserClient.
+  SetBrowserClientForTesting(old_client);
+}
+
+// Verifies that iframes inherit their StoragePartition, even if
+// ContentBrowserClient would normally place the iframe's URL in a dedicated
+// StoragePartition.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       SubframeInheritsStoragePartition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Set up a ContentBrowserClient that maps b.com to a non-default partition.
+  CustomStoragePartitionForSomeSites modified_client(GURL("http://b.com/"));
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  // Load a page on b.com to verify that it uses the correct partition.
+  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), b_url));
+  RenderFrameHostImpl* rfh =
+      static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame();
+  EXPECT_FALSE(rfh->GetSiteInstance()
+                   ->GetSiteInfo()
+                   .storage_partition_config()
+                   .is_default());
+
+  // Load a page on a.com that iframes a b.com page.
+  GURL a_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+  rfh = static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame();
+  SiteInstanceImpl* a_site_instance = rfh->GetSiteInstance();
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
+  } else {
+    EXPECT_EQ("http://a.com/", a_site_instance->GetSiteURL());
+  }
+  EXPECT_TRUE(
+      a_site_instance->GetSiteInfo().storage_partition_config().is_default());
+
+  // Verify that the iframe uses the default StoragePartition.
+  EXPECT_EQ(2UL, rfh->GetFramesInSubtree().size());
+  SiteInstanceImpl* b_site_instance = static_cast<SiteInstanceImpl*>(
+      rfh->GetFramesInSubtree()[1]->GetSiteInstance());
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
+  } else {
+    EXPECT_EQ("http://b.com/", b_site_instance->GetSiteURL());
+  }
+  EXPECT_TRUE(
+      b_site_instance->GetSiteInfo().storage_partition_config().is_default());
+
+  // Restore the original ContentBrowserClient.
+  SetBrowserClientForTesting(old_client);
 }
 
 // Ensure that these two browser-initiated navigations:

@@ -1964,4 +1964,35 @@ TEST_F(SiteInstanceTest, ErrorPage) {
                 ->GetSiteInfo());
 }
 
+TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
+  const GURL test_url("https://example.com");
+  const auto isolation_info = WebExposedIsolationInfo::CreateNonIsolated();
+
+  // Create a UrlInfo for test_url loaded in a special StoragePartition.
+  const auto non_default_partition_config =
+      CreateStoragePartitionConfigForTesting(
+          /*in_memory=*/false, /*partition_domain=*/"test_partition");
+  const UrlInfo partitioned_url_info(test_url,
+                                     UrlInfo::OriginIsolationRequest::kNone,
+                                     non_default_partition_config);
+
+  // Create a SiteInstance for test_url in the special StoragePartition, and
+  // verify that the StoragePartition is correct.
+  const auto partitioned_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), partitioned_url_info, isolation_info);
+  EXPECT_EQ(non_default_partition_config,
+            static_cast<SiteInstanceImpl*>(partitioned_instance.get())
+                ->GetSiteInfo()
+                .storage_partition_config());
+
+  // Create a related SiteInstance that doesn't specify a
+  // StoragePartitionConfig and make sure the StoragePartition gets propagated.
+  const auto related_instance =
+      partitioned_instance->GetRelatedSiteInstance(test_url);
+  EXPECT_EQ(non_default_partition_config,
+            static_cast<SiteInstanceImpl*>(related_instance.get())
+                ->GetSiteInfo()
+                .storage_partition_config());
+}
+
 }  // namespace content

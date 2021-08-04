@@ -92,6 +92,21 @@ GURL GetErrorPageSiteAndLockURL() {
   return GURL(kUnreachableWebDataURL);
 }
 
+// Asks the embedder whether effective URLs should be used when determining if
+// |dest_url| should end up in |site_instance|.
+// This is used to keep same-site scripting working for hosted apps.
+bool ShouldCompareEffectiveURLs(BrowserContext* browser_context,
+                                SiteInstanceImpl* site_instance,
+                                bool for_main_frame,
+                                const GURL& dest_url) {
+  return site_instance->IsDefaultSiteInstance() ||
+         GetContentClient()
+             ->browser()
+             ->ShouldCompareEffectiveURLsForSiteInstanceSelection(
+                 browser_context, site_instance, for_main_frame,
+                 site_instance->original_url(), dest_url);
+}
+
 SiteInstanceId::Generator g_site_instance_id_generator;
 
 }  // namespace
@@ -124,6 +139,13 @@ UrlInfo::UrlInfo(
       origin(origin_in),
       storage_partition_config(storage_partition_config_in) {}
 UrlInfo::~UrlInfo() = default;
+
+UrlInfo UrlInfo::CreateCopyWithStoragePartitionConfig(
+    absl::optional<StoragePartitionConfig> storage_partition_config_in) const {
+  UrlInfo copy = *this;
+  copy.storage_partition_config = storage_partition_config_in;
+  return copy;
+}
 
 // static
 const GURL& SiteInstanceImpl::GetDefaultSiteURL() {
@@ -772,15 +794,16 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
 // static
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
     BrowserContext* browser_context,
-    const GURL& url,
+    const UrlInfo& url_info,
     const WebExposedIsolationInfo& web_exposed_isolation_info,
     bool can_reuse_process,
     bool is_guest) {
-  DCHECK(!url.SchemeIs(kChromeErrorScheme));
+  DCHECK(!url_info.url.SchemeIs(kChromeErrorScheme));
+  DCHECK(url_info.storage_partition_config.has_value());
   scoped_refptr<SiteInstanceImpl> site_instance;
 
   if (is_guest) {
-    site_instance = CreateForGuest(browser_context, url);
+    site_instance = CreateForGuest(browser_context, url_info.url);
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
     scoped_refptr<BrowsingInstance> instance(
@@ -789,8 +812,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
     // We do NOT want to allow the default site instance here because workers
     // need to be kept separate from other sites.
     site_instance = instance->GetSiteInstanceForURL(
-        UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-        /* allow_default_instance */ false);
+        url_info, /* allow_default_instance */ false);
   }
   DCHECK(!site_instance->GetSiteInfo().is_error_page());
   site_instance->is_for_service_worker_ = true;
@@ -1483,31 +1505,20 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   const GURL& dest_url = dest_url_info.url;
   BrowserContext* browser_context = GetBrowserContext();
 
-  // Ask embedder whether effective URLs should be used when determining if
-  // |dest_url| should end up in this SiteInstance.
-  // This is used to keep same-site scripting working for hosted apps.
-  bool should_compare_effective_urls =
-      IsDefaultSiteInstance() ||
-      GetContentClient()
-          ->browser()
-          ->ShouldCompareEffectiveURLsForSiteInstanceSelection(
-              browser_context, this, for_main_frame, original_url(), dest_url);
+  bool should_compare_effective_urls = ShouldCompareEffectiveURLs(
+      browser_context, this, for_main_frame, dest_url);
 
-  bool src_has_effective_url = !IsDefaultSiteInstance() &&
-                               HasEffectiveURL(browser_context, original_url());
-  bool dest_has_effective_url = HasEffectiveURL(browser_context, dest_url);
-
-  // If IsSuitableForURL finds a process type mismatch, return false
+  // If IsSuitableForUrlInfo finds a process type mismatch, return false
   // even if |dest_url| is same-site.  (The URL may have been installed as an
   // app since the last time we visited it.)
   //
-  // This check must be skipped to keep same-site subframe navigations from a
-  // hosted app to non-hosted app, and vice versa, in the same process.
-  // Otherwise, this would return false due to a process privilege level
-  // mismatch.
+  // This check must be skipped for certain same-site navigations from a hosted
+  // app to non-hosted app, and vice versa, to keep them in the same process
+  // due to scripting requirements. Otherwise, this would return false due to
+  // a process privilege level mismatch.
   bool should_check_for_wrong_process =
-      should_compare_effective_urls ||
-      (!src_has_effective_url && !dest_has_effective_url);
+      !IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
+          browser_context, for_main_frame, dest_url);
   if (should_check_for_wrong_process && !IsSuitableForUrlInfo(dest_url_info))
     return false;
 
@@ -1558,6 +1569,22 @@ bool SiteInstanceImpl::IsNavigationSameSite(
 
   // Not same-site.
   return false;
+}
+
+bool SiteInstanceImpl::IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
+    BrowserContext* browser_context,
+    bool for_main_frame,
+    const GURL& dest_url) {
+  if (ShouldCompareEffectiveURLs(browser_context, this, for_main_frame,
+                                 dest_url)) {
+    return false;
+  }
+
+  bool src_has_effective_url = !IsDefaultSiteInstance() &&
+                               HasEffectiveURL(browser_context, original_url());
+  if (src_has_effective_url)
+    return true;
+  return HasEffectiveURL(browser_context, dest_url);
 }
 
 // static

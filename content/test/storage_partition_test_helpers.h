@@ -6,6 +6,7 @@
 #define CONTENT_TEST_STORAGE_PARTITION_TEST_HELPERS_H_
 
 #include "base/callback.h"
+#include "content/test/test_content_browser_client.h"
 
 namespace content {
 class StoragePartition;
@@ -25,6 +26,24 @@ StoragePartitionConfig CreateStoragePartitionConfigForTesting(
     bool in_memory = false,
     const std::string& partition_domain = "",
     const std::string& partition_name = "");
+
+// Class that requests that all pages belonging to the provided site get loaded
+// in a non-default StoragePartition.
+class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
+ public:
+  explicit CustomStoragePartitionForSomeSites(const GURL& site_to_isolate);
+
+  StoragePartitionConfig GetStoragePartitionConfigForSite(
+      BrowserContext* browser_context,
+      const GURL& site) override;
+
+  StoragePartitionId GetStoragePartitionIdForSite(
+      BrowserContext* browser_context,
+      const GURL& site) override;
+
+ private:
+  GURL site_to_isolate_;
+};
 
 }  // namespace content
 

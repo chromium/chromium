@@ -18,6 +18,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -229,6 +231,15 @@ class CONTENT_EXPORT BrowsingInstance final
   // whether this BrowsingInstance is hosting only cross-origin isolated pages
   // and if so, from which top level origin.
   const WebExposedIsolationInfo web_exposed_isolation_info_;
+
+  // The StoragePartitionConfig that must be used by all SiteInstances in this
+  // BrowsingInstance. This will be set to the StoragePartitionConfig of the
+  // first SiteInstance that has its SiteInfo assigned in this
+  // BrowsingInstance, and cannot be changed afterwards.
+  //
+  // See crbug.com/1212266 for more context on why we track the
+  // StoragePartitionConfig here.
+  absl::optional<StoragePartitionConfig> storage_partition_config_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingInstance);
 };

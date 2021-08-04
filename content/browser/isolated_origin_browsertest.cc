@@ -2918,9 +2918,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // A SiteInstance created for an isolated origin ServiceWorker should
   // not reuse the unsuitable first process.
+  BrowserContext* browser_context = web_contents()->GetBrowserContext();
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
-          web_contents()->GetBrowserContext(), hung_isolated_url,
+          browser_context,
+          UrlInfo::CreateForTesting(
+              hung_isolated_url,
+              StoragePartitionConfig::CreateDefault(browser_context)),
           WebExposedIsolationInfo::CreateNonIsolated(),
           /* can_reuse_process= */ true);
   RenderProcessHost* sw_host = sw_site_instance->GetProcess();

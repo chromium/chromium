@@ -108,6 +108,19 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   DCHECK(site_instance->browsing_instance_.get() == this);
   DCHECK(site_instance->HasSite());
 
+  // Verify that the SiteInstance's StoragePartitionConfig matches this
+  // BrowsingInstance's StoragePartitionConfig if it already has one.
+  const StoragePartitionConfig& storage_partition_config =
+      site_instance->GetSiteInfo().storage_partition_config();
+  if (storage_partition_config_.has_value()) {
+    // We should only use a single StoragePartition within a BrowsingInstance.
+    // If we're attempting to use multiple, something has gone wrong with the
+    // logic at upper layers.
+    CHECK_EQ(storage_partition_config_.value(), storage_partition_config);
+  } else {
+    storage_partition_config_ = storage_partition_config;
+  }
+
   // Explicitly prevent the default SiteInstance from being added since
   // the map is only supposed to contain instances that map to a single site.
   if (site_instance->IsDefaultSiteInstance()) {
@@ -170,7 +183,21 @@ BrowsingInstance::~BrowsingInstance() {
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
     const UrlInfo& url_info) const {
-  return SiteInfo::Create(isolation_context_, url_info,
+  // If a StoragePartitionConfig is specified in both |url_info| and this
+  // BrowsingInstance, make sure they match.
+  if (url_info.storage_partition_config.has_value() &&
+      storage_partition_config_.has_value()) {
+    CHECK_EQ(storage_partition_config_.value(),
+             url_info.storage_partition_config.value());
+  }
+  // If no StoragePartitionConfig was set in |url_info|, create a new UrlInfo
+  // that inherit's this BrowsingInstance's StoragePartitionConfig.
+  UrlInfo url_info_with_partition =
+      url_info.storage_partition_config.has_value()
+          ? url_info
+          : url_info.CreateCopyWithStoragePartitionConfig(
+                storage_partition_config_);
+  return SiteInfo::Create(isolation_context_, url_info_with_partition,
                           web_exposed_isolation_info_);
 }
 

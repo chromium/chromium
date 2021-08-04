@@ -106,6 +106,11 @@ struct CONTENT_EXPORT UrlInfo {
     return (origin_isolation_request & OriginIsolationRequest::kCOOP);
   }
 
+  // Creates a copy of this UrlInfo that has its |storage_partition_config|
+  // field set to |storage_partition_config_in|.
+  UrlInfo CreateCopyWithStoragePartitionConfig(
+      absl::optional<StoragePartitionConfig> storage_partition_config_in) const;
+
   GURL url;
 
   // This field indicates whether the URL is requesting additional process
@@ -505,7 +510,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // guest.
   static scoped_refptr<SiteInstanceImpl> CreateForServiceWorker(
       BrowserContext* browser_context,
-      const GURL& url,
+      const UrlInfo& url_info,
       const WebExposedIsolationInfo& web_exposed_isolation_info,
       bool can_reuse_process = false,
       bool is_guest = false);
@@ -632,6 +637,18 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
                             const url::Origin last_committed_origin,
                             bool for_main_frame,
                             const UrlInfo& dest_url_info);
+
+  // Returns true if a navigation to |dest_url| should be allowed to stay in
+  // the current process due to effective URLs being involved in the
+  // navigation, even if the navigation would normally result in a new process.
+  //
+  // This is needed to avoid BrowsingInstance swaps in cases where same-site
+  // navigations transition from a hosted app to a non-hosted app URL and must
+  // be kept in the same process due to scripting requirements.
+  bool IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
+      BrowserContext* browser_context,
+      bool for_main_frame,
+      const GURL& dest_url);
 
   // SiteInfo related functions.
 

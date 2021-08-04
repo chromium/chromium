@@ -117,6 +117,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   // Create a SiteInstance to get the renderer process from. Use the site URL
   // from the StoragePartition in case this StoragePartition is for guests
   // (e.g., <webview>).
+  DCHECK(storage_partition_);
   const bool is_guest =
       storage_partition_ &&
       !storage_partition_->site_for_guest_service_worker_or_shared_worker()
@@ -129,9 +130,12 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
       !is_guest && cross_origin_embedder_policy.has_value() &&
       network::CompatibleWithCrossOriginIsolated(
           cross_origin_embedder_policy->value);
+  const UrlInfo url_info(service_worker_url,
+                         UrlInfo::OriginIsolationRequest::kNone,
+                         storage_partition_->GetConfig());
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
-          browser_context_, service_worker_url,
+          browser_context_, url_info,
           is_coop_coep_cross_origin_isolated
               ? WebExposedIsolationInfo::CreateIsolated(
                     url::Origin::Create(service_worker_url))

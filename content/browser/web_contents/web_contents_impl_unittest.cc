@@ -1333,9 +1333,9 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   webui_rfh = contents()->GetSpeculativePrimaryMainFrame();
 
   // DidNavigate from the second back.
-  // Note that the process in instance1 is gone at this point, but we will still
-  // use instance1 and entry1 because IsSuitableForURL will return true when
-  // there is no process and the site URL matches.
+  // Note that the process in instance1 is gone at this point, but we will
+  // still use instance1 and entry1 because IsSuitableForUrlInfo will return
+  // true when there is no process and the site URL matches.
   back_navigation2->Commit();
 
   // That should have landed us on the first entry.
