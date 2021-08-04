@@ -257,12 +257,6 @@ crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,r
 ### Linux (Vulkan) specific
 ###
 
-# Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
-crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
-
-# Nvidia only, worker only, very flaky
-[ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,render_pass,storeop2:* [ Failure ]
-
 # and possibly crbug.com/1231840
 crbug.com/1213657 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:* [ Slow Crash Failure Timeout ]
 
