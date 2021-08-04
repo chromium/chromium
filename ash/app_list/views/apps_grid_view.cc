@@ -291,17 +291,13 @@ void AppsGridView::Init() {
   items_container_->layer()->SetFillsBoundsOpaquely(false);
   bounds_animator_ = std::make_unique<views::BoundsAnimator>(
       items_container_, /*use_transforms=*/true);
+  bounds_animator_->AddObserver(this);
 
-  if (!folder_delegate_) {
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(GetAppListConfig().grid_fadeout_mask_height(), 0)));
-  }
+  UpdateBorder();
 
   pagination_model_.SetTransitionDurations(
       GetAppListConfig().page_transition_duration(),
       GetAppListConfig().overscroll_page_transition_duration());
-
-  bounds_animator_->AddObserver(this);
 }
 
 AppsGridView::~AppsGridView() {
@@ -928,10 +924,7 @@ bool AppsGridView::EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event) {
 
 void AppsGridView::Update() {
   DCHECK(!selected_view_ && !drag_view_);
-  if (!folder_delegate_) {
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(GetAppListConfig().grid_fadeout_mask_height(), 0)));
-  }
+  UpdateBorder();
 
   view_model_.Clear();
   if (!item_list_ || !item_list_->item_count())

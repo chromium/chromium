@@ -531,6 +531,14 @@ bool PagedAppsGridView::IsScrollAxisVertical() const {
          PaginationController::SCROLL_AXIS_VERTICAL;
 }
 
+void PagedAppsGridView::UpdateBorder() {
+  if (IsInFolder())
+    return;
+
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(GetAppListConfig().grid_fadeout_mask_height(), 0)));
+}
+
 void PagedAppsGridView::MaybeStartCardifiedView() {
   if (!cardified_state_)
     StartAppsGridCardifiedView();

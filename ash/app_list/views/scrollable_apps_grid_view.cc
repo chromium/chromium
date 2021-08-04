@@ -92,7 +92,8 @@ gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
 }
 
 gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
-  const int items = model()->top_level_item_list()->item_count();
+  // AppListItemList may contain page break items, so use the view_model().
+  const int items = view_model()->view_size();
   const bool is_last_row_full = (items % cols() == 0);
   const int rows = is_last_row_full ? items / cols() : items / cols() + 1;
   gfx::Size tile_size = GetTotalTileSize();

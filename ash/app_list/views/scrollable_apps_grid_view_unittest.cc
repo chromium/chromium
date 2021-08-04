@@ -87,6 +87,22 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   TestAppListClient app_list_client_;
 };
 
+TEST_F(ScrollableAppsGridViewTest, PageBreaksDoNotCauseExtraRowsInLayout) {
+  AddAppListItem("1");
+  AddAppListItem("2");
+  AddAppListItem("3");
+  AddAppListItem("4");
+  AddPageBreakItem();
+  AddAppListItem("5");
+  ShowAppList();
+
+  ScrollableAppsGridView* view = GetScrollableAppsGridView();
+  const gfx::Size tile_size = view->GetTotalTileSize();
+  const gfx::Size grid_size = view->GetTileGridSize();
+  // The layout is one tile tall because it has only one row.
+  EXPECT_EQ(grid_size.height(), tile_size.height());
+}
+
 TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
   AddAppListItem("id");
 

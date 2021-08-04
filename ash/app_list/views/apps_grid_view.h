@@ -349,6 +349,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // histograms.
   virtual void RecordAppMovingTypeMetrics(AppListAppMovingType type) = 0;
 
+  // Updates or creates a border for this view.
+  virtual void UpdateBorder() {}
+
   // Starts the "cardified" state if the subclass supports it.
   virtual void MaybeStartCardifiedView() {}
 

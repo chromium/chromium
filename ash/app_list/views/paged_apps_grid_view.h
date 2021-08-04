@@ -75,6 +75,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   gfx::Size GetTileGridSize() const override;
   int GetPaddingBetweenPages() const override;
   bool IsScrollAxisVertical() const override;
+  void UpdateBorder() override;
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
   void MaybeStartPageFlip() override;
