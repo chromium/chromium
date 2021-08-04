@@ -256,7 +256,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   AddSettingsPageUIHandler(std::make_unique<UrlHandlersHandler>(
       g_browser_process->local_state(), profile,
-      GetRegistrarForProfile(profile).AsWebAppRegistrar()));
+      &GetRegistrarForProfile(profile)));
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
