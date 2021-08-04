@@ -239,7 +239,6 @@ void FileAnalyzer::StartExtractDmgFeatures() {
                           weakptr_factory_.GetWeakPtr()),
       LaunchFileUtilService());
   dmg_analyzer_->Start();
-  dmg_analysis_start_time_ = base::TimeTicks::Now();
 }
 
 void FileAnalyzer::ExtractFileOrDmgFeatures(
@@ -277,9 +276,6 @@ void FileAnalyzer::OnDmgAnalysisFinished(
   } else {
     results_.type = ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING;
   }
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("SBClientDownload.ExtractDmgFeaturesTimeMedium",
-                             base::TimeTicks::Now() - dmg_analysis_start_time_);
 
   std::move(callback_).Run(std::move(results_));
 }

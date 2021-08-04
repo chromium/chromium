@@ -182,6 +182,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientDownload.ExtractDmgFeaturesTimeMedium" units="ms"
     expires_after="2021-07-21">
+  <obsolete>
+    Removed 08-2021 due to lack of use.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>rsesek@chromium.org</owner>

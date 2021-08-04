@@ -117,7 +117,6 @@ class FileAnalyzer {
 
 #if defined(OS_MAC)
   scoped_refptr<SandboxedDMGAnalyzer> dmg_analyzer_;
-  base::TimeTicks dmg_analysis_start_time_;
 #endif
 
   base::WeakPtrFactory<FileAnalyzer> weakptr_factory_{this};
