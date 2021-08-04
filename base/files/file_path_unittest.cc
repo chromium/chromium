@@ -771,6 +771,8 @@ TEST_F(FilePathTest, Extension2) {
     { FPL("C:\\foo.bar\\.."),        FPL("") },
     { FPL("C:\\foo.bar\\..\\\\"),    FPL("") },
 #endif
+    { FPL("/foo/bar/baz.EXT"),       FPL(".EXT") },
+    { FPL("/foo/bar/baz.Ext"),       FPL(".Ext") },
     { FPL("/foo/bar/baz.ext"),       FPL(".ext") },
     { FPL("/foo/bar/baz."),          FPL(".") },
     { FPL("/foo/bar/baz.."),         FPL(".") },
@@ -795,6 +797,7 @@ TEST_F(FilePathTest, Extension2) {
   const struct UnaryTestData double_extension_cases[] = {
     // `kCommonDoubleExtensionSuffixes` cases. Blah is not on that allow-list.
     // Membership is (ASCII) case-insensitive: both ".Z" and ".z" match.
+    { FPL("/foo.TAR.bz2"),           FPL(".TAR.bz2") },
     { FPL("/foo.tar.Z"),             FPL(".tar.Z") },
     { FPL("/foo.tar.blah"),          FPL(".blah") },
     { FPL("/foo.tar.bz"),            FPL(".tar.bz") },

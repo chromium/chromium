@@ -272,6 +272,11 @@ class BASE_EXPORT FilePath {
   //   - calling this function with "foo.tar.blah" will return just ".blah"
   //     until ".*.blah" is added to the hard-coded allow-list.
   //
+  // That hard-coded allow-list is case-insensitive: ".GZ" and ".gz" are
+  // equivalent. However, the StringType returned is not canonicalized for
+  // case: "foo.TAR.bz2" input will produce ".TAR.bz2", not ".tar.bz2", and
+  // "bar.EXT", which is not a double-extension, will produce ".EXT".
+  //
   // The following code should always work regardless of the value of path.
   //   new_path = path.RemoveExtension().value().append(path.Extension());
   //   ASSERT(new_path == path.value());
