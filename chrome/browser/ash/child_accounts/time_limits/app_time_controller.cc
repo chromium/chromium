@@ -223,11 +223,25 @@ AppTimeController::AppTimeController(
           app_service_wrapper_.get())),
       on_policy_updated_callback_(on_policy_updated_callback) {
   DCHECK(profile);
+}
 
+AppTimeController::~AppTimeController() {
+  app_registry_->RemoveAppStateObserver(this);
+
+  auto* time_zone_settings = system::TimezoneSettings::GetInstance();
+  if (time_zone_settings)
+    time_zone_settings->RemoveObserver(this);
+
+  auto* system_clock_client = SystemClockClient::Get();
+  if (system_clock_client)
+    system_clock_client->RemoveObserver(this);
+}
+
+void AppTimeController::Init() {
   if (WebTimeLimitEnforcer::IsEnabled())
     web_time_enforcer_ = std::make_unique<WebTimeLimitEnforcer>(this);
 
-  PrefService* pref_service = profile->GetPrefs();
+  PrefService* pref_service = profile_->GetPrefs();
   RegisterProfilePrefObservers(pref_service);
   TimeLimitsAllowlistPolicyUpdated(prefs::kPerAppTimeLimitsAllowlistPolicy);
   TimeLimitsPolicyUpdated(prefs::kPerAppTimeLimitsPolicy);
@@ -269,18 +283,6 @@ AppTimeController::AppTimeController(
     web_time_enforcer_->OnWebTimeLimitReached(
         web_time_limit->daily_limit().value());
   }
-}
-
-AppTimeController::~AppTimeController() {
-  app_registry_->RemoveAppStateObserver(this);
-
-  auto* time_zone_settings = system::TimezoneSettings::GetInstance();
-  if (time_zone_settings)
-    time_zone_settings->RemoveObserver(this);
-
-  auto* system_clock_client = SystemClockClient::Get();
-  if (system_clock_client)
-    system_clock_client->RemoveObserver(this);
 }
 
 bool AppTimeController::IsExtensionAllowlisted(

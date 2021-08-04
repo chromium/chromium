@@ -77,6 +77,9 @@ class AppTimeController : public SystemClockClient::Observer,
   AppTimeController& operator=(const AppTimeController&) = delete;
   ~AppTimeController() override;
 
+  // Initializes AppTimeController. It should be called after the constructor.
+  void Init();
+
   bool IsExtensionAllowlisted(const std::string& extension_id) const;
 
   // Returns current time limit for the app identified by |app_service_id| and
