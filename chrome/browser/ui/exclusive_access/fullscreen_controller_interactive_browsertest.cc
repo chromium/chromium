@@ -246,9 +246,10 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
 }
 
+// Test is flaky on all platforms: https://crbug.com/1234337
 // Tests fullscreen is exited when navigating back.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       TestTabExitsFullscreenOnGoBack) {
+                       DISABLED_TestTabExitsFullscreenOnGoBack) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
@@ -276,18 +277,11 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 }
 
-#if (defined(OS_WIN) && !defined(NDEBUG))
-// Test is flaky on Windows 7 (dbg): https://crbug.com/1234337
-#define MAYBE_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks \
-  DISABLED_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks
-#else
-#define MAYBE_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks \
-  TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks
-#endif
+// Test is flaky on all platforms: https://crbug.com/1234337
 // Tests tab fullscreen exits, but browser fullscreen remains, on navigation.
 IN_PROC_BROWSER_TEST_F(
     FullscreenControllerInteractiveTest,
-    MAYBE_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks) {
+    DISABLED_TestFullscreenFromTabWhenAlreadyInBrowserFullscreenWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
