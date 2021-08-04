@@ -79,7 +79,8 @@ public class TabObserverRegistrarTest {
         TabObserverRegistrar tabObserverRegistrar =
                 customTabActivity.getComponent().resolveTabObserverRegistrar();
         LoadUrlTabObserver loadUrlTabObserver = new LoadUrlTabObserver();
-        tabObserverRegistrar.registerActivityTabObserver(loadUrlTabObserver);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tabObserverRegistrar.registerActivityTabObserver(loadUrlTabObserver));
 
         final TabModelSelector tabSelector = customTabActivity.getTabModelSelector();
         final Tab initialActiveTab = tabSelector.getCurrentTab();
