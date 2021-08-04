@@ -328,7 +328,7 @@ See Also:
 
 The following link describes a tool that can be used on Linux, Windows and Mac under GDB.
 
-[graphical_debugging_aid_chromium_views](graphical_debugging_aid_chromium_views.md)
+[graphical_debugging_aid_chromium_views](../graphical_debugging_aid_chromium_views.md)
 
 ### Faster startup
 
@@ -376,8 +376,7 @@ See [minidump_to_core.md](minidump_to_core.md)
 Many of our tests bring up windows on screen. This can be annoying (they steal
 your focus) and hard to debug (they receive extra events as you mouse over them).
 Instead, use `Xvfb` or `Xephyr` to run a nested X session to debug them, as
-outlined on [testing/web_tests_linux.md](testing/web_tests_linux.md).
-
+outlined on [testing/web_tests_linux.md](../testing/web_tests_linux.md).
 ### Browser tests
 
 By default the `browser_tests` forks a new browser for each test. To debug the
@@ -395,7 +394,7 @@ To debug a renderer process in this case, use the tips above about renderers.
 
 ### Web tests
 
-See [testing/web_tests_linux.md](testing/web_tests_linux.md) for some tips. In particular,
+See [testing/web_tests_linux.md](../testing/web_tests_linux.md) for some tips. In particular,
 note that it's possible to debug a web test via `ssh`ing to a Linux box; you
 don't need anything on screen if you use `Xvfb`.
 
@@ -534,7 +533,7 @@ See the last section of [Linux Crash Dumping](crash_dumping.md).
 If you break in a debugger during a drag, Chrome will have grabbed your mouse
 and keyboard so you won't be able to interact with the debugger!  To work around
 this, run via `Xephyr`. Instructions for how to use `Xephyr` are on the
-[Running web tests on Linux](testing/web_tests_linux.md) page.
+[Running web tests on Linux](../testing/web_tests_linux.md) page.
 
 ## Tracking Down Bugs
 
@@ -590,7 +589,7 @@ Some strategies are:
 
 To test on various window managers, you can use a nested X server like `Xephyr`.
 Instructions for how to use `Xephyr` are on the
-[Running web tests on Linux](web_tests_linux.md) page.
+[Running web tests on Linux](../testing/web_tests_linux.md) page.
 
 If you need to test something with hardware accelerated compositing
 (e.g., compiz), you can use `Xgl` (`sudo apt-get install xserver-xgl`). E.g.:
