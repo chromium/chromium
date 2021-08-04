@@ -98,6 +98,7 @@ source_set("java_script_feature_util") {
     "//ios/web/js_features/window_error",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ios/web/text_fragments",
   ]
 
   sources = [

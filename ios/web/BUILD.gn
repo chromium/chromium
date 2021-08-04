@@ -620,15 +620,9 @@ js_compile_bundle("main_frame_web_bundle") {
   visibility = [ ":js_resources" ]
   closure_entry_point = "__crWeb.mainFrameWebBundle"
 
-  # Silence warning when compiling text-fragment-utils.js until the code
-  # has been rolled (see https://crbug.com/1129390).
-  suppressed_warnings = [ "uselessCode" ]
-
   sources = [
-    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "web_state/js/resources/main_frame_web_bundle.js",
     "web_state/js/resources/navigation.js",
-    "web_state/js/resources/text_fragments.js",
   ]
 }
 

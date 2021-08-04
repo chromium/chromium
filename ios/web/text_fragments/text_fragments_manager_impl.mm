@@ -14,6 +14,7 @@
 #import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -25,13 +26,6 @@
 #endif
 
 namespace {
-
-const char kScriptCommandPrefix[] = "textFragments";
-const char kScriptResponseCommand[] = "textFragments.response";
-
-const double kMinSelectorCount = 0.0;
-const double kMaxSelectorCount = 200.0;
-
 // Returns a rgb hexadecimal color, suitable for processing in JavaScript
 std::string ToHexStringRGB(int color) {
   std::stringstream sstream;
@@ -48,12 +42,6 @@ TextFragmentsManagerImpl::TextFragmentsManagerImpl(WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
-
-  subscription_ = web_state_->AddScriptCommandCallback(
-      base::BindRepeating(
-          &TextFragmentsManagerImpl::DidReceiveJavaScriptResponse,
-          base::Unretained(this)),
-      kScriptCommandPrefix);
 }
 
 TextFragmentsManagerImpl::~TextFragmentsManagerImpl() {
@@ -79,6 +67,17 @@ TextFragmentsManagerImpl* TextFragmentsManagerImpl::FromWebState(
       TextFragmentsManager::FromWebState(web_state));
 }
 
+void TextFragmentsManagerImpl::OnProcessingComplete(int success_count,
+                                                    int fragment_count) {
+  shared_highlighting::LogTextFragmentMatchRate(success_count, fragment_count);
+  shared_highlighting::LogTextFragmentAmbiguousMatch(
+      /*ambiguous_match=*/success_count != fragment_count);
+
+  shared_highlighting::LogLinkOpenedUkmEvent(
+      latest_source_id_, latest_referrer_url_,
+      /*success=*/success_count == fragment_count);
+}
+
 void TextFragmentsManagerImpl::DidFinishNavigation(
     WebState* web_state,
     NavigationContext* navigation_context) {
@@ -87,7 +86,24 @@ void TextFragmentsManagerImpl::DidFinishNavigation(
       web_state->GetNavigationManager()->GetLastCommittedItem();
   if (!item)
     return;
-  ProcessTextFragments(navigation_context, item->GetReferrer());
+  auto params = ProcessTextFragments(navigation_context, item->GetReferrer());
+  if (!params) {
+    // null params indicate that no further processing should happen on this
+    // navigation
+    deferred_processing_params_ = {};
+    return;
+  }
+  deferred_processing_params_ = std::move(params);
+  if (web::GetMainFrame(web_state_)) {
+    DoHighlight();
+  }
+}
+
+void TextFragmentsManagerImpl::WebFrameDidBecomeAvailable(WebState* web_state,
+                                                          WebFrame* web_frame) {
+  if (web_frame->IsMainFrame() && deferred_processing_params_) {
+    DoHighlight();
+  }
 }
 
 void TextFragmentsManagerImpl::WebStateDestroyed(WebState* web_state) {
@@ -95,19 +111,22 @@ void TextFragmentsManagerImpl::WebStateDestroyed(WebState* web_state) {
   web_state_ = nullptr;
 }
 
-void TextFragmentsManagerImpl::ProcessTextFragments(
+#pragma mark - Private Methods
+
+absl::optional<TextFragmentsManagerImpl::TextFragmentProcessingParams>
+TextFragmentsManagerImpl::ProcessTextFragments(
     const web::NavigationContext* context,
     const web::Referrer& referrer) {
   DCHECK(web_state_);
   if (!context || !AreTextFragmentsAllowed(context)) {
-    return;
+    return {};
   }
 
   base::Value parsed_fragments = shared_highlighting::ParseTextFragments(
       web_state_->GetLastCommittedURL());
 
   if (parsed_fragments.type() == base::Value::Type::NONE) {
-    return;
+    return {};
   }
 
   // Log metrics and cache Referrer for UKM logging.
@@ -118,32 +137,28 @@ void TextFragmentsManagerImpl::ProcessTextFragments(
                                              ukm::SourceIdType::NAVIGATION_ID);
   latest_referrer_url_ = referrer.url;
 
-  std::string fragment_param;
-  base::JSONWriter::Write(parsed_fragments, &fragment_param);
+  std::string bg_color;
+  std::string fg_color;
 
-  std::string script;
   if (base::FeatureList::IsEnabled(
           web::features::kIOSSharedHighlightingColorChange)) {
-    script = base::ReplaceStringPlaceholders(
-        "__gCrWeb.textFragments.handleTextFragments($1, $2, $3, $4)",
-        {fragment_param,
-         /* scroll = */ "true",
-         /* backgroundColor = */
-         ToHexStringRGB(shared_highlighting::kFragmentTextBackgroundColorARGB),
-         /* foregroundColor = */
-         ToHexStringRGB(shared_highlighting::kFragmentTextForegroundColorARGB)},
-        /* offsets= */ nil);
-  } else {
-    script = base::ReplaceStringPlaceholders(
-        "__gCrWeb.textFragments.handleTextFragments($1, $2, $3, $4)",
-        {fragment_param, /* scroll = */ "true", "null", "null"},
-        /* offsets= */ nil);
+    bg_color =
+        ToHexStringRGB(shared_highlighting::kFragmentTextBackgroundColorARGB);
+    fg_color =
+        ToHexStringRGB(shared_highlighting::kFragmentTextForegroundColorARGB);
   }
 
-  web_state_->ExecuteJavaScript(base::UTF8ToUTF16(script));
+  return absl::optional<TextFragmentProcessingParams>(
+      {std::move(parsed_fragments), bg_color, fg_color});
 }
 
-#pragma mark - Private Methods
+void TextFragmentsManagerImpl::DoHighlight() {
+  GetJSFeature()->ProcessTextFragments(
+      web_state_, std::move(deferred_processing_params_->parsed_fragments),
+      deferred_processing_params_->bg_color,
+      deferred_processing_params_->fg_color);
+  deferred_processing_params_ = {};
+}
 
 // Returns false if fragments highlighting is not allowed in the current
 // |context|.
@@ -158,51 +173,15 @@ bool TextFragmentsManagerImpl::AreTextFragmentsAllowed(
   return context->HasUserGesture() && !context->IsSameDocument();
 }
 
-void TextFragmentsManagerImpl::DidReceiveJavaScriptResponse(
-    const base::Value& response,
-    const GURL& page_url,
-    bool interacted,
-    web::WebFrame* sender_frame) {
-  if (!web_state_ || !sender_frame || !sender_frame->IsMainFrame())
-    return;
+TextFragmentsJavaScriptFeature* TextFragmentsManagerImpl::GetJSFeature() {
+  return js_feature_for_testing_
+             ? js_feature_for_testing_
+             : TextFragmentsJavaScriptFeature::GetInstance();
+}
 
-  const std::string* command = response.FindStringKey("command");
-  if (!command || *command != kScriptResponseCommand) {
-    return;
-  }
-
-  // Log success metrics.
-  absl::optional<double> optional_fragment_count =
-      response.FindDoublePath("result.fragmentsCount");
-  absl::optional<double> optional_success_count =
-      response.FindDoublePath("result.successCount");
-
-  // Since the response can't be trusted, don't log metrics if the results look
-  // invalid.
-  if (!optional_fragment_count ||
-      optional_fragment_count.value() > kMaxSelectorCount ||
-      optional_fragment_count.value() <= kMinSelectorCount) {
-    return;
-  }
-  if (!optional_success_count ||
-      optional_success_count.value() > kMaxSelectorCount ||
-      optional_success_count.value() < kMinSelectorCount) {
-    return;
-  }
-  if (optional_success_count.value() > optional_fragment_count.value()) {
-    return;
-  }
-
-  int fragment_count = static_cast<int>(optional_fragment_count.value());
-  int success_count = static_cast<int>(optional_success_count.value());
-
-  shared_highlighting::LogTextFragmentMatchRate(success_count, fragment_count);
-  shared_highlighting::LogTextFragmentAmbiguousMatch(
-      /*ambiguous_match=*/success_count != fragment_count);
-
-  shared_highlighting::LogLinkOpenedUkmEvent(
-      latest_source_id_, latest_referrer_url_,
-      /*success=*/success_count == fragment_count);
+void TextFragmentsManagerImpl::SetJSFeatureForTesting(
+    TextFragmentsJavaScriptFeature* feature) {
+  js_feature_for_testing_ = feature;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(TextFragmentsManager)

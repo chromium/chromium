@@ -17,6 +17,7 @@
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -104,8 +105,11 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   std::vector<JavaScriptFeature*> features = {
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
-      FindInPageJavaScriptFeature::GetInstance(), GetFaviconJavaScriptFeature(),
-      GetScrollHelperJavaScriptFeature(), GetWindowErrorJavaScriptFeature()};
+      FindInPageJavaScriptFeature::GetInstance(),
+      GetFaviconJavaScriptFeature(),
+      GetScrollHelperJavaScriptFeature(),
+      GetWindowErrorJavaScriptFeature(),
+      TextFragmentsJavaScriptFeature::GetInstance()};
 
   // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
   // completely removed.

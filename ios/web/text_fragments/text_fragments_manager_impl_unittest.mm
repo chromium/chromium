@@ -4,6 +4,8 @@
 
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 
+#import <functional>
+
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -16,6 +18,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -30,19 +33,13 @@
 
 using web::Referrer;
 using ::testing::_;
-using ::testing::ReturnRefOfCopy;
+using ::testing::Eq;
 using shared_highlighting::TextFragmentLinkOpenSource;
 
 namespace {
 
 const char kValidFragmentsURL[] =
     "https://chromium.org#idFrag:~:text=text%201&text=text%202";
-const char16_t kScriptForValidFragmentsURL[] =
-    u"__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
-    u"1\"},{\"textStart\":\"text 2\"}], true, null, null)";
-const char16_t kScriptForValidFragmentsColorChangeURL[] =
-    u"__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
-    u"1\"},{\"textStart\":\"text 2\"}], true, 'e9d2fd', '000000')";
 
 const char kSingleFragmentURL[] = "https://chromium.org#:~:text=text";
 const char kTwoFragmentsURL[] =
@@ -53,6 +50,31 @@ const char kNonSearchEngineURL[] = "https://notasearchengine.com";
 
 const char kSuccessUkmMetric[] = "Success";
 const char kSourceUkmMetric[] = "Source";
+
+class MockJSFeature : public web::TextFragmentsJavaScriptFeature {
+ public:
+  MOCK_METHOD(void,
+              ProcessTextFragments,
+              (web::WebState * web_state,
+               base::Value parsed_fragments,
+               std::string background_color_hex_rgb,
+               std::string foreground_color_hex_rgb),
+              (override));
+};
+
+base::Value ValueForTestURL() {
+  base::Value val(base::Value::Type::LIST);
+
+  base::Value text1(base::Value::Type::DICTIONARY);
+  text1.SetStringKey("textStart", "text 1");
+  base::Value text2(base::Value::Type::DICTIONARY);
+  text2.SetStringKey("textStart", "text 2");
+
+  val.Append(std::move(text1));
+  val.Append(std::move(text2));
+
+  return val;
+}
 
 }  // namespace
 
@@ -70,19 +92,23 @@ class TextFragmentsManagerImplTest : public WebTest {
     auto fake_navigation_manager = std::make_unique<FakeNavigationManager>();
     fake_navigation_manager->SetLastCommittedItem(&last_committed_item_);
     web_state_->SetNavigationManager(std::move(fake_navigation_manager));
+    auto fake_web_frames_manager = std::make_unique<FakeWebFramesManager>();
+    web_state_->SetWebFramesManager(std::move(fake_web_frames_manager));
   }
 
   TextFragmentsManagerImpl* CreateDefaultManager() {
     return CreateManager(/*has_opener=*/false,
                          /*has_user_gesture=*/true,
                          /*is_same_document=*/false,
-                         /*feature_color_change=*/false);
+                         /*feature_color_change=*/false,
+                         /*add_web_frame=*/true);
   }
 
   TextFragmentsManagerImpl* CreateManager(bool has_opener,
                                           bool has_user_gesture,
                                           bool is_same_document,
-                                          bool feature_color_change) {
+                                          bool feature_color_change,
+                                          bool add_web_frame) {
     if (feature_color_change) {
       feature_list_.InitWithFeatures(
           {features::kIOSSharedHighlightingColorChange}, {});
@@ -92,7 +118,12 @@ class TextFragmentsManagerImplTest : public WebTest {
     context_.SetIsSameDocument(is_same_document);
 
     TextFragmentsManagerImpl::CreateForWebState(web_state_);
-    return TextFragmentsManagerImpl::FromWebState(web_state_);
+    auto* manager = TextFragmentsManagerImpl::FromWebState(web_state_);
+    manager->SetJSFeatureForTesting(&feature_);
+    if (add_web_frame) {
+      AddMainWebFrame(manager);
+    }
+    return manager;
   }
 
   void SetLastURL(const GURL& last_url) { web_state_->SetCurrentURL(last_url); }
@@ -124,6 +155,16 @@ class TextFragmentsManagerImplTest : public WebTest {
     EXPECT_EQ(0u, entries.size());
   }
 
+  void AddMainWebFrame(TextFragmentsManagerImpl* fragments_mgr) {
+    FakeWebFramesManager* frames_mgr =
+        static_cast<FakeWebFramesManager*>(web_state_->GetWebFramesManager());
+    frames_mgr->AddWebFrame(
+        FakeWebFrame::CreateMainWebFrame(GURL("https://chromium.org")));
+    fragments_mgr->WebFrameDidBecomeAvailable(web_state_,
+                                              frames_mgr->GetMainWebFrame());
+  }
+
+  MockJSFeature feature_;
   web::FakeNavigationContext context_;
   FakeWebState* web_state_;
   base::test::ScopedFeatureList feature_list_;
@@ -136,16 +177,32 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptSuccess) {
   base::HistogramTester histogram_tester;
   SetLastURL(GURL(kValidFragmentsURL));
 
+  base::Value expected = ValueForTestURL();
+  EXPECT_CALL(feature_,
+              ProcessTextFragments(web_state_, Eq(std::ref(expected)), "", ""));
+
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
-
   manager->DidFinishNavigation(web_state_, &context_);
+}
 
-  std::u16string expected_javascript = kScriptForValidFragmentsURL;
-  EXPECT_EQ(expected_javascript, web_state_->GetLastExecutedJavascript());
+// Tests that JS still executes even if the main WebFrame isn't yet available
+// when the navigation finishes.
+TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptDelayedWebFrame) {
+  base::HistogramTester histogram_tester;
+  SetLastURL(GURL(kValidFragmentsURL));
 
-  // Verify that a command callback was added with the right prefix.
-  EXPECT_TRUE(web_state_->GetLastAddedCallback());
-  EXPECT_EQ("textFragments", web_state_->GetLastCommandPrefix());
+  base::Value expected = ValueForTestURL();
+  EXPECT_CALL(feature_,
+              ProcessTextFragments(web_state_, Eq(std::ref(expected)), "", ""));
+
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/false,
+                    /*feature_color_change=*/false,
+                    /*add_web_frame=*/false);
+  manager->DidFinishNavigation(web_state_, &context_);
+  AddMainWebFrame(manager);
 }
 
 // Tests that the manager will execute JavaScript with the default colors
@@ -155,22 +212,17 @@ TEST_F(TextFragmentsManagerImplTest, ExecuteJavaScriptWithColorChange) {
   base::HistogramTester histogram_tester;
   SetLastURL(GURL(kValidFragmentsURL));
 
+  base::Value expected = ValueForTestURL();
+  EXPECT_CALL(feature_, ProcessTextFragments(web_state_, Eq(std::ref(expected)),
+                                             "'e9d2fd'", "'000000'"));
+
   TextFragmentsManagerImpl* manager =
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
-                    /*feature_color_change=*/true);
-
-  // Set up expectation.
-
+                    /*feature_color_change=*/true,
+                    /*add_web_frame=*/true);
   manager->DidFinishNavigation(web_state_, &context_);
-
-  std::u16string expected_javascript = kScriptForValidFragmentsColorChangeURL;
-  EXPECT_EQ(expected_javascript, web_state_->GetLastExecutedJavascript());
-
-  // Verify that a command callback was added with the right prefix.
-  EXPECT_TRUE(web_state_->GetLastAddedCallback());
-  EXPECT_EQ("textFragments", web_state_->GetLastCommandPrefix());
 }
 
 // Tests that the manager will not execute JavaScript if the WebState has an
@@ -180,11 +232,11 @@ TEST_F(TextFragmentsManagerImplTest, HasOpenerFragmentsDisallowed) {
       CreateManager(/*has_opener=*/true,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
-                    /*feature_color_change=*/false);
+                    /*feature_color_change=*/false,
+                    /*add_web_frame=*/true);
 
+  EXPECT_CALL(feature_, ProcessTextFragments(_, _, _, _)).Times(0);
   manager->DidFinishNavigation(web_state_, &context_);
-
-  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
 // Tests that the manager will not execute JavaScript if the WebState has no
@@ -194,11 +246,11 @@ TEST_F(TextFragmentsManagerImplTest, NoGestureFragmentsDisallowed) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/false,
                     /*is_same_document=*/false,
-                    /*feature_color_change=*/false);
+                    /*feature_color_change=*/false,
+                    /*add_web_frame=*/true);
 
+  EXPECT_CALL(feature_, ProcessTextFragments(_, _, _, _)).Times(0);
   manager->DidFinishNavigation(web_state_, &context_);
-
-  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
 // Tests that the manager will not execute JavaScript if we navigated on the
@@ -208,11 +260,11 @@ TEST_F(TextFragmentsManagerImplTest, SameDocumentFragmentsDisallowed) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/true,
-                    /*feature_color_change=*/false);
+                    /*feature_color_change=*/false,
+                    /*add_web_frame=*/true);
 
+  EXPECT_CALL(feature_, ProcessTextFragments(_, _, _, _)).Times(0);
   manager->DidFinishNavigation(web_state_, &context_);
-
-  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
 // Tests that the manager will not execute JavaScript if there are no
@@ -224,51 +276,27 @@ TEST_F(TextFragmentsManagerImplTest, NoFragmentsNoJavaScript) {
       CreateManager(/*has_opener=*/false,
                     /*has_user_gesture=*/true,
                     /*is_same_document=*/false,
-                    /*feature_color_change=*/false);
+                    /*feature_color_change=*/false,
+                    /*add_web_frame=*/true);
 
+  EXPECT_CALL(feature_, ProcessTextFragments(_, _, _, _)).Times(0);
   manager->DidFinishNavigation(web_state_, &context_);
-
-  EXPECT_EQ(std::u16string(), web_state_->GetLastExecutedJavascript());
 }
 
-// Tests that no metrics are recoded for an URL that doesn't contain text
-// fragments.
-TEST_F(TextFragmentsManagerImplTest, NoMetricsRecordedIfNoFragmentPresent) {
-  base::HistogramTester histogram_tester;
+// Tests that the manager will not execute JavaScript if there are no
+// text fragments on the current URL, even if it contains a fragment id.
+TEST_F(TextFragmentsManagerImplTest, IdFragmentNoJavaScript) {
+  SetLastURL(GURL("https://www.chromium.org/#fragmentId"));
 
-  // Set a URL without text fragments.
-  SetLastURL(GURL("https://www.chromium.org/"));
+  TextFragmentsManagerImpl* manager =
+      CreateManager(/*has_opener=*/false,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/false,
+                    /*feature_color_change=*/false,
+                    /*add_web_frame=*/true);
 
-  TextFragmentsManagerImpl* manager = CreateDefaultManager();
-
+  EXPECT_CALL(feature_, ProcessTextFragments(_, _, _, _)).Times(0);
   manager->DidFinishNavigation(web_state_, &context_);
-
-  // Make sure no metrics were logged.
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 0);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 0);
-}
-
-// Tests that no metrics are recoded for an URL that doesn't contain text
-// fragments, even if it contains a fragment id
-TEST_F(TextFragmentsManagerImplTest,
-       NoMetricsRecordedIfNoFragmentPresentWithFragmentId) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  // Set a URL without text fragments, but with an id fragment.
-  SetLastURL(GURL("https://www.chromium.org/#FragmentID"));
-
-  TextFragmentsManagerImpl* manager = CreateDefaultManager();
-
-  manager->DidFinishNavigation(web_state_, &context_);
-
-  // Make sure no metrics were logged.
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 0);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
-  histogram_tester.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 0);
 }
 
 // Tests that the LinkSource metric is recorded properly when the link comes
@@ -330,31 +358,17 @@ TEST_F(TextFragmentsManagerImplTest, SelectorCountMetricTwoSelectors) {
 
 // Tests that the AmbiguousMatch and MatchRate success metrics are recorded
 // properly in a variety of cases.
-TEST_F(TextFragmentsManagerImplTest,
-       DidReceiveJavaScriptResponseSuccessMetrics) {
+TEST_F(TextFragmentsManagerImplTest, OnProcessingCompleteSuccessMetrics) {
   SetLastURL(GURL(kTwoFragmentsURL));
   TextFragmentsManagerImpl* manager = CreateDefaultManager();
-
   manager->DidFinishNavigation(web_state_, &context_);
-
-  auto maybe_callback = web_state_->GetLastAddedCallback();
-  ASSERT_TRUE(maybe_callback);
-  web::WebState::ScriptCommandCallback parse_function = maybe_callback.value();
-  auto fake_main_frame = web::FakeWebFrame::Create(
-      /*frame_id=*/"", /*is_main_frame=*/true, GURL());
 
   // 100% rate case.
   {
     base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-    base::DictionaryValue js_response = base::DictionaryValue();
-    js_response.SetKey("command", base::Value("textFragments.response"));
-    js_response.SetDoublePath("result.fragmentsCount", 2);
-    js_response.SetDoublePath("result.successCount", 2);
-
-    parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, fake_main_frame.get());
+    manager->OnProcessingComplete(2, 2);
 
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 0,
                                         1);
@@ -369,13 +383,7 @@ TEST_F(TextFragmentsManagerImplTest,
     base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-    base::DictionaryValue js_response = base::DictionaryValue();
-    js_response.SetKey("command", base::Value("textFragments.response"));
-    js_response.SetDoublePath("result.fragmentsCount", 6);
-    js_response.SetDoublePath("result.successCount", 3);
-
-    parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, fake_main_frame.get());
+    manager->OnProcessingComplete(3, 6);
 
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
                                         1);
@@ -390,13 +398,7 @@ TEST_F(TextFragmentsManagerImplTest,
     base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-    base::DictionaryValue js_response = base::DictionaryValue();
-    js_response.SetKey("command", base::Value("textFragments.response"));
-    js_response.SetDoublePath("result.fragmentsCount", 2);
-    js_response.SetDoublePath("result.successCount", 0);
-
-    parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, fake_main_frame.get());
+    manager->OnProcessingComplete(0, 2);
 
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
                                         1);
@@ -404,44 +406,6 @@ TEST_F(TextFragmentsManagerImplTest,
 
     ValidateLinkOpenedUkm(ukm_recorder, /*success=*/false,
                           TextFragmentLinkOpenSource::kSearchEngine);
-  }
-
-  // Invalid values case - negative numbers.
-  {
-    base::HistogramTester histogram_tester;
-    ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-    base::DictionaryValue js_response = base::DictionaryValue();
-    js_response.SetKey("command", base::Value("textFragments.response"));
-    js_response.SetDoublePath("result.fragmentsCount", -3);
-    js_response.SetDoublePath("result.successCount", 4);
-
-    parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, fake_main_frame.get());
-
-    histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
-    histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
-
-    ValidateNoLinkOpenedUkm(ukm_recorder);
-  }
-
-  // Invalid values case - not numbers.
-  {
-    base::HistogramTester histogram_tester;
-    ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-    base::DictionaryValue js_response = base::DictionaryValue();
-    js_response.SetKey("command", base::Value("textFragments.response"));
-    js_response.SetStringPath("result.fragmentsCount", "a weird value");
-    js_response.SetDoublePath("result.successCount", 4);
-
-    parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, fake_main_frame.get());
-
-    histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
-    histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
-
-    ValidateNoLinkOpenedUkm(ukm_recorder);
   }
 }
 
