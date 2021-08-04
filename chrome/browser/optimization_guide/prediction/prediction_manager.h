@@ -66,13 +66,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   ~PredictionManager() override;
 
-  // Register the optimization targets that may have ShouldTargetNavigation
-  // requested by consumers of the Optimization Guide.
-  void RegisterOptimizationTargets(
-      const std::vector<
-          std::pair<proto::OptimizationTarget, absl::optional<proto::Any>>>&
-          optimization_targets_and_metadata);
-
   // Adds an observer for updates to the model for |optimization_target|.
   //
   // It is assumed that any model retrieved this way will be passed to the
@@ -102,6 +95,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // |override_client_model_feature_values| and inject any host model features
   // it received from the server and send that complete feature map for
   // evaluation.
+  // TODO(crbug/1183507): Remove ShouldTargetNavigation, host model features,
+  // the relevant unittests, and the histograms.
   OptimizationTargetDecision ShouldTargetNavigation(
       content::NavigationHandle* navigation_handle,
       proto::OptimizationTarget optimization_target);
@@ -185,9 +180,18 @@ class PredictionManager : public PredictionModelDownloadObserver {
           prediction_models);
 
  private:
+  friend class PredictionManagerTestBase;
+
   // Called on construction to initialize the prediction model and host model
   // features store, and register as an observer to the network quality tracker.
   void Initialize();
+
+  // Register the optimization targets for which the prediction models should be
+  // fetched and updated to the consumers of the Optimization Guide.
+  void RegisterOptimizationTargets(
+      const std::vector<
+          std::pair<proto::OptimizationTarget, absl::optional<proto::Any>>>&
+          optimization_targets_and_metadata);
 
   // Construct and return a map containing the current feature values for the
   // requested set of model features. The host model features cache is updated
@@ -342,6 +346,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   std::unique_ptr<PredictionModelDownloadManager>
       prediction_model_download_manager_;
 
+  // TODO(crbug/1183507): Remove host model features store and all relevant
+  // code, and deprecate the proto field too.
   // The optimization guide store that contains prediction models and host
   // model features from the remote Optimization Guide Service. Not owned and
   // guaranteed to outlive |this|.

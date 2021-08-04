@@ -31,10 +31,6 @@ using OptimizationGuideDecisionCallback =
     base::OnceCallback<void(optimization_guide::OptimizationGuideDecision,
                             const optimization_guide::OptimizationMetadata&)>;
 
-// TODO(crbug/1183507): Remove this callback.
-using OptimizationGuideTargetDecisionCallback =
-    base::OnceCallback<void(optimization_guide::OptimizationGuideDecision)>;
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_DECISION_H_

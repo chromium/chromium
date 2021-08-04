@@ -522,6 +522,14 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
         std::move(db), task_environment_.GetMainThreadTaskRunner());
   }
 
+  void RegisterOptimizationTargets(
+      const std::vector<
+          std::pair<proto::OptimizationTarget, absl::optional<proto::Any>>>&
+          optimization_targets_and_metadata) {
+    prediction_manager_->RegisterOptimizationTargets(
+        optimization_targets_and_metadata);
+  }
+
   TestPredictionManager* prediction_manager() const {
     return prediction_manager_.get();
   }
@@ -635,7 +643,7 @@ TEST_F(PredictionManagerRemoteFetchingDisabledTest, RemoteFetchingDisabled) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
 
@@ -668,7 +676,7 @@ TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
 
@@ -928,7 +936,7 @@ TEST_F(PredictionManagerTest,
           GURL("https://foo.com"));
 
   CreatePredictionManager();
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
@@ -955,7 +963,7 @@ TEST_F(PredictionManagerTest, EvaluatePredictionModel) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
@@ -1002,7 +1010,7 @@ TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   std::unique_ptr<proto::GetModelsResponse> get_models_response =
@@ -1034,7 +1042,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   // Seed the PredictionManager with a prediction model with a higher version
@@ -1125,7 +1133,7 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
           task_environment()->GetMainThreadTaskRunner()));
   prediction_model_download_manager()->SetAvailableForDownloads(false);
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
@@ -1151,7 +1159,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
       std::make_unique<FakePredictionModelDownloadManager>(
           task_environment()->GetMainThreadTaskRunner()));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
@@ -1185,7 +1193,7 @@ TEST_F(PredictionManagerTest, ShouldTargetNavigationStoreAvailableNoModel) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized(/* load_models= */ false,
@@ -1219,7 +1227,7 @@ TEST_F(PredictionManagerTest,
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized(/* load_models= */ false,
@@ -1256,7 +1264,7 @@ TEST_F(PredictionManagerTest,
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
@@ -1282,7 +1290,7 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
-  prediction_manager()->RegisterOptimizationTargets({});
+  RegisterOptimizationTargets({});
   SetStoreInitialized();
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
@@ -1311,7 +1319,7 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
 
-  prediction_manager()->RegisterOptimizationTargets({});
+  RegisterOptimizationTargets({});
   SetStoreInitialized();
 
   proto::PredictionModel model;
@@ -1338,7 +1346,7 @@ TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
   histogram_tester.ExpectUniqueSample(
@@ -1385,7 +1393,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithUnsupportedOptimizationTarget) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
@@ -1420,7 +1428,7 @@ TEST_F(PredictionManagerTest,
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   EXPECT_FALSE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
@@ -1449,7 +1457,7 @@ TEST_F(PredictionManagerTest,
   EXPECT_FALSE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
   EXPECT_FALSE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   RunUntilIdle();
 
@@ -1471,7 +1479,7 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
@@ -1499,7 +1507,7 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
 
   g_browser_process->SetApplicationLocale("en-US");
 
-  prediction_manager()->RegisterOptimizationTargets(
+  RegisterOptimizationTargets(
       {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();

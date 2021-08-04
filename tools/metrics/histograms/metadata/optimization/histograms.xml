@@ -893,6 +893,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="OptimizationGuide.TargetDecision"
     enum="OptimizationGuideOptimizationTargetDecision" expires_after="M106">
+  <obsolete>
+    Obsolete as of 07/2021.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

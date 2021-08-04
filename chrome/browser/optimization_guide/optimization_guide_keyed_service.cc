@@ -47,46 +47,6 @@
 
 namespace {
 
-// Returns the OptimizationGuideDecision from |optimization_target_decision|.
-optimization_guide::OptimizationGuideDecision
-GetOptimizationGuideDecisionFromOptimizationTargetDecision(
-    optimization_guide::OptimizationTargetDecision
-        optimization_target_decision) {
-  switch (optimization_target_decision) {
-    case optimization_guide::OptimizationTargetDecision::kPageLoadDoesNotMatch:
-    case optimization_guide::OptimizationTargetDecision::
-        kModelPredictionHoldback:
-      return optimization_guide::OptimizationGuideDecision::kFalse;
-    case optimization_guide::OptimizationTargetDecision::kPageLoadMatches:
-      return optimization_guide::OptimizationGuideDecision::kTrue;
-    case optimization_guide::OptimizationTargetDecision::
-        kModelNotAvailableOnClient:
-    case optimization_guide::OptimizationTargetDecision::kUnknown:
-    case optimization_guide::OptimizationTargetDecision::kDeciderNotInitialized:
-      return optimization_guide::OptimizationGuideDecision::kUnknown;
-  }
-}
-
-// Logs |optimization_target_decision| for |optimization_target| in a histogram
-// and passes the corresponding OptimizationGuideDecision to |callback|.
-void LogOptimizationTargetDecisionAndPassOptimizationGuideDecision(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::OptimizationGuideTargetDecisionCallback callback,
-    optimization_guide::OptimizationTargetDecision
-        optimization_target_decision) {
-  base::UmaHistogramExactLinear(
-      "OptimizationGuide.TargetDecision." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
-      static_cast<int>(optimization_target_decision),
-      static_cast<int>(
-          optimization_guide::OptimizationTargetDecision::kMaxValue));
-
-  std::move(callback).Run(
-      GetOptimizationGuideDecisionFromOptimizationTargetDecision(
-          optimization_target_decision));
-}
-
 const char kOldOptimizationGuideHintStore[] = "previews_hint_cache_store";
 
 // Deletes old store paths that were written in incorrect locations.
@@ -239,35 +199,6 @@ void OptimizationGuideKeyedService::OnNavigationFinish(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   hints_manager_->OnNavigationFinish(navigation_redirect_chain);
-}
-
-void OptimizationGuideKeyedService::RegisterOptimizationTargets(
-    const std::vector<optimization_guide::proto::OptimizationTarget>&
-        optimization_targets) {
-  std::vector<std::pair<optimization_guide::proto::OptimizationTarget,
-                        absl::optional<optimization_guide::proto::Any>>>
-      optimization_targets_and_metadata;
-  for (optimization_guide::proto::OptimizationTarget optimization_target :
-       optimization_targets) {
-    optimization_targets_and_metadata.emplace_back(
-        std::make_pair(optimization_target, absl::nullopt));
-  }
-  prediction_manager_->RegisterOptimizationTargets(
-      optimization_targets_and_metadata);
-}
-
-void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
-    content::NavigationHandle* navigation_handle,
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::OptimizationGuideTargetDecisionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(navigation_handle->IsInMainFrame());
-
-  optimization_guide::OptimizationTargetDecision target_decision =
-      prediction_manager_->ShouldTargetNavigation(navigation_handle,
-                                                  optimization_target);
-  LogOptimizationTargetDecisionAndPassOptimizationGuideDecision(
-      optimization_target, std::move(callback), target_decision);
 }
 
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(

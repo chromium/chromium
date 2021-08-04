@@ -55,14 +55,6 @@ class OptimizationGuideKeyedService
   ~OptimizationGuideKeyedService() override;
 
   // optimization_guide::OptimizationGuideDecider implementation:
-  void RegisterOptimizationTargets(
-      const std::vector<optimization_guide::proto::OptimizationTarget>&
-          optimization_targets) override;
-  void ShouldTargetNavigationAsync(
-      content::NavigationHandle* navigation_handle,
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      optimization_guide::OptimizationGuideTargetDecisionCallback callback)
-      override;
   void RegisterOptimizationTypes(
       const std::vector<optimization_guide::proto::OptimizationType>&
           optimization_types) override;

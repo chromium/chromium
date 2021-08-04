@@ -11,7 +11,6 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/optimization_guide/proto/models.pb.h"
 
 namespace content {
 class NavigationHandle;
@@ -23,24 +22,6 @@ namespace optimization_guide {
 
 class OptimizationGuideDecider {
  public:
-  // Registers the optimization targets that intend to be queried during the
-  // session. It is expected for this to be called after the browser has been
-  // initialized.
-  virtual void RegisterOptimizationTargets(
-      const std::vector<proto::OptimizationTarget>& optimization_targets) = 0;
-
-  // Invokes |callback| with the decision for whether the current browser
-  // conditions, as expressed by |client_model_feature_values| and the
-  // |navigation_handle|, match |optimization_target|.
-  //
-  // Values provided in |client_model_feature_values| will be used over any
-  // values for features required by the model that may be calculated by the
-  // Optimization Guide.
-  virtual void ShouldTargetNavigationAsync(
-      content::NavigationHandle* navigation_handle,
-      proto::OptimizationTarget optimization_target,
-      OptimizationGuideTargetDecisionCallback callback) = 0;
-
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called after the browser has been
   // initialized.
