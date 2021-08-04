@@ -44,6 +44,10 @@ class BlinkOptimizationGuideInquirer {
     return optimization_guide_hints_.Clone();
   }
 
+  base::WeakPtr<BlinkOptimizationGuideInquirer> GetWeakPtrForTesting() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   BlinkOptimizationGuideInquirer();
 

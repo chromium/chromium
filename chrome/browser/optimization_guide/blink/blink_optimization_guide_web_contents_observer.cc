@@ -27,10 +27,8 @@ void BlinkOptimizationGuideWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Currently the optimization guide supports only the main frame navigation.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+  // Currently the optimization guide supports only the primary main frame
+  // navigation.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;

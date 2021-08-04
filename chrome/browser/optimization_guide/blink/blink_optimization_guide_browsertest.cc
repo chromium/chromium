@@ -16,6 +16,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -353,6 +354,75 @@ IN_PROC_BROWSER_TEST_F(BlinkOptimizationGuideDisabledBrowserTest,
   // Navigation started, but the web contents observer for the Blink
   // optimization guide shouldn't be created.
   EXPECT_FALSE(GetObserverForActiveWebContents());
+}
+
+class BlinkOptimizationGuidePrerenderBrowserTest
+    : public BlinkOptimizationGuideBrowserTest {
+ public:
+  BlinkOptimizationGuidePrerenderBrowserTest() = default;
+  ~BlinkOptimizationGuidePrerenderBrowserTest() override = default;
+  BlinkOptimizationGuidePrerenderBrowserTest(
+      const BlinkOptimizationGuidePrerenderBrowserTest&) = delete;
+
+  BlinkOptimizationGuidePrerenderBrowserTest& operator=(
+      const BlinkOptimizationGuidePrerenderBrowserTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &BlinkOptimizationGuidePrerenderBrowserTest::GetWebContents,
+            base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_->SetUpOnMainThread(embedded_test_server());
+    BlinkOptimizationGuideBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return *prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+};
+
+// Instantiates test cases for each optimization type.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BlinkOptimizationGuidePrerenderBrowserTest,
+    testing::Combine(
+        // The optimization type.
+        testing::Values(
+            proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION,
+            proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS),
+        // Whether the feature flag for the optimization type is enabled.
+        testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(BlinkOptimizationGuidePrerenderBrowserTest,
+                       PrerenderingDontCreateBlinkOptimizationGuideInquirer) {
+  GURL initial_url = GetURLWithMockHost("/empty.html");
+  GURL prerender_url = GetURLWithMockHost("/simple.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  auto weak_prev_inquirer = GetCurrentInquirer()->GetWeakPtrForTesting();
+  EXPECT_TRUE(weak_prev_inquirer);
+
+  // Load a page in the prerender. This shouldn't create a new inquirer yet.
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_TRUE(weak_prev_inquirer);
+
+  // Activate the prerendered page. This should create a new inquirer.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_FALSE(weak_prev_inquirer);
+  EXPECT_TRUE(GetCurrentInquirer()->GetWeakPtrForTesting());
 }
 
 }  // namespace optimization_guide
