@@ -381,6 +381,7 @@ module.exports = {
     'BarcodeDetector': 'readable',
     'FileSystemFileHandle': 'readable',
     'FileSystemDirectoryHandle': 'readable',
+    'IdleDetector': 'readable',
 
     // TODO(b/172879638): Remove this once we have
     // https://github.com/sindresorhus/globals/pull/171 merged in ESLint and

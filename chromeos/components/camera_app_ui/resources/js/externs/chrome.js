@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-unused-vars, no-var */
+
 /**
  * It is available since we enabled and filled data in it while creating
  * content::WebUIDataSource for CCA.
@@ -20,7 +22,7 @@ window.loadTimeData;
  *   start: function(): !Promise<void>,
  * }}
  */
-window.IdleDetector;
+let IdleDetector;
 
 /**
  * @typedef {{

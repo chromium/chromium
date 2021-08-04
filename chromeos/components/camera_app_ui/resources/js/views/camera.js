@@ -351,7 +351,7 @@ export class Camera extends View {
     this.initOpenPTZPanel_();
 
     // Monitor the states to stop camera when locked/minimized.
-    const idleDetector = new window.IdleDetector();
+    const idleDetector = new IdleDetector();
     idleDetector.addEventListener('change', () => {
       this.locked_ = idleDetector.screenState === 'locked';
       if (this.locked_) {
