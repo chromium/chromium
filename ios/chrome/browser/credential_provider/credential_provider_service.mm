@@ -238,17 +238,20 @@ void CredentialProviderService::RemoveCredentials(
 }
 
 void CredentialProviderService::UpdateAccountId() {
+  ChromeIdentity* identity = authentication_service_->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
   if (authentication_service_->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin)) {
-    account_id_ = authentication_service_
-                      ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-                      .gaiaID;
+    account_id_ = identity.gaiaID;
   } else {
     account_id_ = nil;
   }
   [app_group::GetGroupUserDefaults()
       setObject:account_id_
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  [app_group::GetGroupUserDefaults()
+      setObject:identity.userEmail
+         forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResults(

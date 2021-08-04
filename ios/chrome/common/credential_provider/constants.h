@@ -14,6 +14,9 @@ NSURL* CredentialProviderSharedArchivableStoreURL();
 // validated in the extension.
 NSString* AppGroupUserDefaultsCredentialProviderUserID();
 
+// Key for the app group user defaults containing the current user email.
+NSString* AppGroupUserDefaultsCredentialProviderUserEmail();
+
 // Key for the app group user defaults containing the metadata for credentials
 // created in the extension.
 NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();

@@ -30,6 +30,11 @@ NSString* const kUserDefaultsCredentialProviderManagedUserID =
     @"kUserDefaultsCredentialProviderManagedUserID";
 
 // Used to generate the key for the app group user defaults containing the
+// managed user email.
+NSString* const kUserDefaultsCredentialProviderManagedUserEmail =
+    @"kUserDefaultsCredentialProviderManagedUserEmail";
+
+// Used to generate the key for the app group user defaults containing the
 // the metadata for credentials created in the extension.
 NSString* const kUserDefaultsCredentialProviderNewCredentials =
     @"kUserDefaultsCredentialProviderNewCredentials";
@@ -68,6 +73,11 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
 NSString* AppGroupUserDefaultsCredentialProviderUserID() {
   return [AppGroupPrefix()
       stringByAppendingString:kUserDefaultsCredentialProviderManagedUserID];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderUserEmail() {
+  return [AppGroupPrefix()
+      stringByAppendingString:kUserDefaultsCredentialProviderManagedUserEmail];
 }
 
 NSString* AppGroupUserDefaultsCredentialProviderNewCredentials() {

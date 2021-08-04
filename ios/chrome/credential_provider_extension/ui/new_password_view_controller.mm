@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
@@ -89,10 +90,8 @@
 
 - (NSString*)tableView:(UITableView*)tableView
     titleForFooterInSection:(NSInteger)section {
-  // TODO (crbug.com/1232064): Replace with actual email once that is passed to
-  // extension.
-  NSString* userEmail = @"example@google.com";
-
+  NSString* userEmail = [app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
   if (userEmail) {
     NSString* baseLocalizedString = NSLocalizedString(
         @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER",
