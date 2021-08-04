@@ -61,7 +61,8 @@ constexpr const char* help_msg =
     "                        \"h264main, \"h264high\", \"vp8\" and \"vp9\".\n"
     "                        H264 Baseline is selected if unspecified.\n"
     "  --num_temporal_layers the number of temporal layers of the encoded\n"
-    "                        bitstream. Only used in --codec=vp9 currently.\n"
+    "                        bitstream. Only used in --codec=vp9 and\n"
+    "                        h264(baseline)|h264main|h264high currently.\n"
     "  --num_spatial_layers  the number of spatial layers of the encoded\n"
     "                        bitstream. Only used in --codec=vp9 currently.\n"
     "                        Spatial SVC encoding is applied only in\n"
@@ -248,8 +249,8 @@ class VideoEncoderTest : public ::testing::Test {
 
     switch (codec) {
       case kCodecH264:
-        bitstream_processors.emplace_back(
-            new H264Validator(config.output_profile, visible_rect));
+        bitstream_processors.emplace_back(new H264Validator(
+            config.output_profile, visible_rect, config.num_temporal_layers));
         break;
       case kCodecVP8:
         bitstream_processors.emplace_back(new VP8Validator(visible_rect));

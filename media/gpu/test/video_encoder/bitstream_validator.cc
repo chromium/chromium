@@ -206,7 +206,7 @@ void BitstreamValidator::ProcessBitstreamTask(
   if (!spatial_layer_index_to_decode_ && !temporal_layer_index_to_decode_) {
     should_decode = true;
     should_flush = frame_index == last_frame_index_;
-  } else {
+  } else if (bitstream->metadata.vp9) {
     const Vp9Metadata& metadata = *bitstream->metadata.vp9;
     if (bitstream->metadata.key_frame)
       ConstructSpatialIndices(metadata.spatial_layer_resolutions);
@@ -224,6 +224,10 @@ void BitstreamValidator::ProcessBitstreamTask(
     // the frame is decoded.
     should_flush = frame_index == last_frame_index_ &&
                    spatial_idx == original_spatial_indices_.size() - 1;
+  } else if (bitstream->metadata.h264) {
+    const H264Metadata& metadata = *bitstream->metadata.h264;
+    should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
+    should_flush = frame_index == last_frame_index_;
   }
 
   if (should_flush) {

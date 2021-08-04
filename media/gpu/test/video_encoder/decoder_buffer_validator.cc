@@ -60,17 +60,31 @@ bool DecoderBufferValidator::WaitUntilDone() {
 
 H264Validator::H264Validator(VideoCodecProfile profile,
                              const gfx::Rect& visible_rect,
+                             size_t num_temporal_layers,
                              absl::optional<uint8_t> level)
     : DecoderBufferValidator(visible_rect),
       cur_pic_(new H264Picture),
       profile_(VideoCodecProfileToH264ProfileIDC(profile)),
-      level_(level) {}
+      level_(level),
+      num_temporal_layers_(num_temporal_layers) {}
 
 H264Validator::~H264Validator() = default;
 
 bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
                              const BitstreamBufferMetadata& metadata) {
   parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size());
+
+  if (num_temporal_layers_ > 1) {
+    if (!metadata.h264) {
+      LOG(ERROR) << "H264Metadata must be filled in temporal layer encoding";
+      return false;
+    }
+    if (metadata.h264->temporal_idx >= num_temporal_layers_) {
+      LOG(ERROR) << "Invalid temporal_idx: "
+                 << base::strict_cast<int32_t>(metadata.h264->temporal_idx);
+      return false;
+    }
+  }
 
   size_t num_frames = 0;
   H264NALU nalu;
@@ -88,6 +102,22 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           return false;
         }
         seen_idr_ = true;
+
+        if (!metadata.key_frame) {
+          LOG(ERROR) << "metadata.key_frame is false on IDR frame";
+          return false;
+        }
+
+        if (metadata.h264 &&
+            (metadata.h264->temporal_idx != 0 || metadata.h264->layer_sync)) {
+          LOG(ERROR) << "temporal_idx="
+                     << base::strict_cast<int>(metadata.h264->temporal_idx)
+                     << " or layer_sync="
+                     << base::strict_cast<int>(metadata.h264->layer_sync)
+                     << " is unexpected";
+          return false;
+        }
+
         FALLTHROUGH;
       case H264NALU::kNonIDRSlice: {
         if (!seen_idr_) {

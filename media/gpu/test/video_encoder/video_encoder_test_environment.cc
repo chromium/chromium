@@ -197,9 +197,10 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 
   const VideoCodecProfile profile = it->profile;
   if ((num_temporal_layers > 1u || num_spatial_layers > 1u) &&
-      profile != VP9PROFILE_PROFILE0) {
+      profile != VP9PROFILE_PROFILE0 &&
+      !(profile >= H264PROFILE_MIN && profile <= H264PROFILE_HIGH)) {
     LOG(ERROR) << "SVC encoding supported "
-               << "only if output profile is vp9";
+               << "only if output profile is h264 or vp9";
     return nullptr;
   }
 

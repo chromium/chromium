@@ -127,7 +127,7 @@ void BitstreamFileWriter::ConstructSpatialIndices(
 void BitstreamFileWriter::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
-  if (spatial_layer_index_to_write_) {
+  if (spatial_layer_index_to_write_ && bitstream->metadata.vp9) {
     const Vp9Metadata& metadata = *bitstream->metadata.vp9;
     if (bitstream->metadata.key_frame)
       ConstructSpatialIndices(metadata.spatial_layer_resolutions);
@@ -142,11 +142,19 @@ void BitstreamFileWriter::ProcessBitstream(
     }
   }
 
-  if (temporal_layer_index_to_write_ &&
-      bitstream->metadata.vp9->temporal_idx > *temporal_layer_index_to_write_) {
-    // Skip |bitstream| because it contains a frame in upper layers than layers
-    // to be saved.
-    return;
+  if (temporal_layer_index_to_write_) {
+    uint8_t temporal_idx = 255;
+    if (bitstream->metadata.vp9)
+      temporal_idx = bitstream->metadata.vp9->temporal_idx;
+    else if (bitstream->metadata.h264)
+      temporal_idx = bitstream->metadata.h264->temporal_idx;
+    CHECK_NE(temporal_idx, 255) << "No metadata about temporal idx";
+
+    if (temporal_idx > *temporal_layer_index_to_write_) {
+      // Skip |bitstream| because it contains a frame in upper layers than
+      // layers to be saved.
+      return;
+    }
   }
 
   base::AutoLock auto_lock(writer_lock_);
