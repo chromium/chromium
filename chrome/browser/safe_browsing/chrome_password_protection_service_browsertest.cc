@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   EXPECT_TRUE(fake_backend->stored_passwords()
                   .at(kSignonRealm)
                   .at(0)
-                  .password_issues->empty());
+                  .password_issues.empty());
 }
 #endif
 

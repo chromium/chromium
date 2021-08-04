@@ -71,9 +71,6 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
-  // TODO(crbug.com/1223022): Remove this when it becomes part of the default
-  // constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 

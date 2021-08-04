@@ -67,16 +67,12 @@ base::Time ConvertToBaseTime(uint64_t time) {
 }
 
 // Converts a map of `form_password_issues` into the format required by the
-// proto. If `form_password_issues` is nullopt, this method returns
-// empty PasswordIssues.
+// proto.
 sync_pb::PasswordSpecificsData::PasswordIssues PasswordIssuesMapToProto(
-    const absl::optional<base::flat_map<InsecureType, InsecurityMetadata>>&
+    const base::flat_map<InsecureType, InsecurityMetadata>&
         form_password_issues) {
-  if (!form_password_issues.has_value())
-    return sync_pb::PasswordSpecificsData::PasswordIssues();
-
   sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
-  for (const auto& form_issue : form_password_issues.value()) {
+  for (const auto& form_issue : form_password_issues) {
     sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
     issue.set_date_first_detection_microseconds(
         form_issue.second.create_time.ToDeltaSinceWindowsEpoch()
@@ -393,10 +389,6 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     switch (change.type()) {
       case PasswordStoreChange::ADD:
       case PasswordStoreChange::UPDATE: {
-        // TODO(crbug.com/1223022): Either make sure that AddLogin replaces
-        // nullopt with empty issues or remove nullopt altogether.
-        DCHECK(change.type() == PasswordStoreChange::ADD ||
-               change.form().password_issues.has_value());
         change_processor()->Put(storage_key, CreateEntityData(change.form()),
                                 &metadata_change_list);
         break;
@@ -492,7 +484,6 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       const FormPrimaryKey primary_key = pair.first;
       const PasswordForm& local_password_form = *pair.second;
 
-      DCHECK(local_password_form.password_issues.has_value());
       std::unique_ptr<syncer::EntityData> local_form_entity_data =
           CreateEntityData(local_password_form);
       const std::string client_tag_of_local_password =
@@ -855,7 +846,6 @@ void PasswordSyncBridge::GetData(StorageKeyList storage_keys,
   for (const std::string& storage_key : storage_keys) {
     FormPrimaryKey primary_key = ParsePrimaryKey(storage_key);
     if (key_to_form_map.count(primary_key) != 0) {
-      DCHECK(key_to_form_map[primary_key]->password_issues.has_value());
       batch->Put(storage_key, CreateEntityData(*key_to_form_map[primary_key]));
     }
   }
@@ -877,7 +867,6 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   for (const auto& pair : key_to_form_map) {
     PasswordForm form = *pair.second;
     form.password_value = u"<redacted>";
-    DCHECK(form.password_issues.has_value());
     batch->Put(base::NumberToString(pair.first.value()),
                CreateEntityData(form));
   }

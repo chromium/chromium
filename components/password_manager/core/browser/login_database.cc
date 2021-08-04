@@ -1186,9 +1186,9 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     // If success, the row never existed so password was not changed.
     FillFormInStore(&form_with_encrypted_password);
     FormPrimaryKey primary_key = FormPrimaryKey(db_.GetLastInsertRowId());
-    if (form_with_encrypted_password.password_issues.has_value()) {
-      UpdateInsecureCredentials(
-          primary_key, form_with_encrypted_password.password_issues.value());
+    if (!form_with_encrypted_password.password_issues.empty()) {
+      UpdateInsecureCredentials(primary_key,
+                                form_with_encrypted_password.password_issues);
     }
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password), primary_key,
@@ -1215,9 +1215,9 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
 
     FormPrimaryKey primary_key = FormPrimaryKey(db_.GetLastInsertRowId());
     InsecureCredentialsChanged insecure_changed(false);
-    if (form_with_encrypted_password.password_issues.has_value()) {
+    if (!form_with_encrypted_password.password_issues.empty()) {
       insecure_changed = UpdateInsecureCredentials(
-          primary_key, form_with_encrypted_password.password_issues.value());
+          primary_key, form_with_encrypted_password.password_issues);
     }
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password),
@@ -1237,8 +1237,6 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
 PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
                                                    UpdateLoginError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::UpdateLogin");
-  base::UmaHistogramBoolean("PasswordManager.UpdateLoginPasswordIssuesHasValue",
-                            form.password_issues.has_value());
   if (error) {
     *error = UpdateLoginError::kNone;
   }
@@ -1326,31 +1324,17 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   PasswordForm form_with_encrypted_password = form;
   form_with_encrypted_password.encrypted_password = encrypted_password;
 
-  InsecureCredentialsChanged insecure_changed(false);
   // TODO(crbug.com/1223022): It should be the responsibility of the caller to
-  // set `password_issues` to empty instead of leaving it nullopt in this case.
+  // set `password_issues` to empty.
   // Remove this once all `UpdateLogin` calls have been checked.
   if (password_changed) {
-    insecure_changed = UpdateInsecureCredentials(
-        FormPrimaryKey(old_primary_key_password.primary_key),
-        base::flat_map<InsecureType, InsecurityMetadata>());
     form_with_encrypted_password.password_issues =
         base::flat_map<InsecureType, InsecurityMetadata>();
-  } else if (form.password_issues.has_value()) {
-    insecure_changed = UpdateInsecureCredentials(
-        FormPrimaryKey(old_primary_key_password.primary_key),
-        form.password_issues.value());
   }
 
-  // Make sure that the form included in the `PasswordStoreChangeList` contains
-  // password issues info.
-  if (!form_with_encrypted_password.password_issues.has_value()) {
-    // TODO(crbug.com/1223022): Re-evaluate this once all places that call
-    // UpdateLogin have been changed to populate the |password_issues| field.
-    PopulateFormWithPasswordIssues(
-        FormPrimaryKey(old_primary_key_password.primary_key),
-        &form_with_encrypted_password);
-  }
+  InsecureCredentialsChanged insecure_changed = UpdateInsecureCredentials(
+      FormPrimaryKey(old_primary_key_password.primary_key),
+      form_with_encrypted_password.password_issues);
 
   PasswordStoreChangeList list;
   FillFormInStore(&form_with_encrypted_password);

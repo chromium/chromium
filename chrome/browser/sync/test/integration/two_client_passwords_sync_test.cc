@@ -386,10 +386,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   PasswordForm form0 = CreateTestPasswordForm(0);
   PasswordForm form1 = CreateTestPasswordForm(1);
 
-  form0.password_issues->insert(
+  form0.password_issues.insert(
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time(), IsMuted(false))});
-  form1.password_issues->insert(
+  form1.password_issues.insert(
       {InsecureType::kPhished,
        InsecurityMetadata(base::Time(), IsMuted(false))});
 
@@ -422,10 +422,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  form.password_issues->insert(
+  form.password_issues.insert(
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time(), IsMuted(false))});
-  form.password_issues->insert(
+  form.password_issues.insert(
       {InsecureType::kPhished,
        InsecurityMetadata(base::Time(), IsMuted(false))});
 
@@ -446,10 +446,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   PasswordForm form0 = CreateTestPasswordForm(0);
   PasswordForm form1 = CreateTestPasswordForm(1);
 
-  form0.password_issues->insert(
+  form0.password_issues.insert(
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time(), IsMuted(false))});
-  form1.password_issues->insert(
+  form1.password_issues.insert(
       {InsecureType::kPhished,
        InsecurityMetadata(base::Time(), IsMuted(false))});
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
               UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 
   // Remove security issues on Client 1.
-  form0.password_issues->clear();
+  form0.password_issues.clear();
   GetProfilePasswordStoreInterface(1)->UpdateLogin(form0);
 
   // Wait until Client 0 picks up changes.
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  form.password_issues->insert(
+  form.password_issues.insert(
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time(), IsMuted(false))});
 
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
   // Update is_muted field on Client 0.
-  form.password_issues->at(InsecureType::kLeaked).is_muted = IsMuted(true);
+  form.password_issues.at(InsecureType::kLeaked).is_muted = IsMuted(true);
   GetProfilePasswordStoreInterface(0)->UpdateLogin(form);
 
   // Wait until Client 1 picks up changes.

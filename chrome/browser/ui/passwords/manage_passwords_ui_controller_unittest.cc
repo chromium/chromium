@@ -1610,9 +1610,9 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   std::vector<PasswordForm> expected_forms = {test_local_form(),
                                               submitted_form()};
   expected_forms.at(0).username_value = u"another username";
-  expected_forms.at(0).password_issues->insert(
+  expected_forms.at(0).password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata()});
-  expected_forms.at(1).password_issues->clear();
+  expected_forms.at(1).password_issues.clear();
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (const auto& form : expected_forms) {
     results.push_back(std::make_unique<PasswordForm>(form));

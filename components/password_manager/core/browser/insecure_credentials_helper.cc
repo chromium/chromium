@@ -85,10 +85,9 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
     LoginsResult results) {
   for (auto& form : results) {
     if (form->username_value == credential.username) {
-      DCHECK(form->password_issues.has_value());
-      if (form->password_issues->find(InsecureType::kPhished) ==
-          form->password_issues->end()) {
-        form->password_issues->insert(
+      if (form->password_issues.find(InsecureType::kPhished) ==
+          form->password_issues.end()) {
+        form->password_issues.insert(
             {InsecureType::kPhished,
              InsecurityMetadata(base::Time::Now(), IsMuted(false))});
         store_->UpdateLogin(*form);
@@ -102,10 +101,9 @@ void InsecureCredentialsHelper::RemovePhishedCredentialsInternal(
     LoginsResult results) {
   for (auto& form : results) {
     if (form->username_value == credential.username) {
-      DCHECK(form->password_issues.has_value());
-      if (form->password_issues->find(InsecureType::kPhished) !=
-          form->password_issues->end()) {
-        form->password_issues->erase(InsecureType::kPhished);
+      if (form->password_issues.find(InsecureType::kPhished) !=
+          form->password_issues.end()) {
+        form->password_issues.erase(InsecureType::kPhished);
         store_->UpdateLogin(*form);
       }
     }

@@ -166,11 +166,6 @@ password_manager::PasswordForm CreateSampleForm() {
   form.url = GURL("http://abc1.com");
   form.username_value = u"test@gmail.com";
   form.password_value = u"test";
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<password_manager::InsecureType,
-                                        password_manager::InsecurityMetadata>();
   return form;
 }
 

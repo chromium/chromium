@@ -145,7 +145,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   PasswordForm updated = form;
   updated.password_value = new_password;
   updated.date_password_modified = base::Time::Now();
-  updated.password_issues->clear();
+  updated.password_issues.clear();
 
   // Verify that editing a password triggers the right notifications.
   EXPECT_CALL(observer, OnEdited(updated));
@@ -193,7 +193,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   // issues.
   PasswordForm updated_username = form;
   updated_username.username_value = new_username;
-  updated_username.password_issues->clear();
+  updated_username.password_issues.clear();
 
   // Verify that editing a username triggers the right notifications.
   base::HistogramTester histogram_tester;
@@ -242,7 +242,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   // issues.
   updated_password.password_value = new_password;
   updated_password.date_password_modified = base::Time::Now();
-  updated_password.password_issues->clear();
+  updated_password.password_issues.clear();
 
   base::HistogramTester histogram_tester;
   // Verify that editing a password triggers the right notifications.
@@ -292,7 +292,7 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   updated_both.username_value = new_username;
   updated_both.password_value = new_password;
   updated_both.date_password_modified = base::Time::Now();
-  updated_both.password_issues->clear();
+  updated_both.password_issues.clear();
 
   base::HistogramTester histogram_tester;
   // Verify that editing username and password triggers the right notifications.
@@ -409,12 +409,12 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   // The same is valid for the duplicate form.
   updated_form.password_value = new_password;
   updated_form.date_password_modified = base::Time::Now();
-  updated_form.password_issues->clear();
+  updated_form.password_issues.clear();
 
   PasswordForm updated_duplicate_form = duplicate_form;
   updated_duplicate_form.password_value = new_password;
   updated_duplicate_form.date_password_modified = base::Time::Now();
-  updated_duplicate_form.password_issues->clear();
+  updated_duplicate_form.password_issues.clear();
 
   EXPECT_CALL(observer, OnEdited(updated_form));
   EXPECT_CALL(observer, OnEdited(updated_duplicate_form));
@@ -585,7 +585,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
       forms_to_edit, new_username, profile_store_form.password_value));
   RunUntilIdle();
   profile_store_form.username_value = new_username;
-  profile_store_form.password_issues->clear();
+  profile_store_form.password_issues.clear();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,
                                ElementsAre(profile_store_form))));
@@ -853,7 +853,9 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   expected_profile_store_form.password_value = new_password;
   expected_profile_store_form.in_store = PasswordForm::Store::kProfileStore;
   expected_profile_store_form.date_password_modified = base::Time::Now();
-  expected_profile_store_form.password_issues->clear();
+  // The result of the update should not contain password issues, because
+  // the username and password have changed.
+  expected_profile_store_form.password_issues.clear();
   PasswordForm expected_account_store_form = expected_profile_store_form;
   expected_account_store_form.in_store = PasswordForm::Store::kAccountStore;
 

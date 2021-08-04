@@ -81,13 +81,13 @@ InsecureCredentialTypeFlags ConvertInsecureType(InsecureType type) {
 }
 
 bool IsPasswordFormLeaked(const PasswordForm& form) {
-  return form.password_issues->find(InsecureType::kLeaked) !=
-         form.password_issues->end();
+  return form.password_issues.find(InsecureType::kLeaked) !=
+         form.password_issues.end();
 }
 
 bool IsPasswordFormPhished(const PasswordForm& form) {
-  return form.password_issues->find(InsecureType::kPhished) !=
-         form.password_issues->end();
+  return form.password_issues.find(InsecureType::kPhished) !=
+         form.password_issues.end();
 }
 
 // This function takes two lists: weak passwords and saved passwords and joins
@@ -116,11 +116,10 @@ CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
   }
 
   for (const auto& form : saved_passwords) {
-    DCHECK(form.password_issues.has_value());
     if (IsPasswordFormLeaked(form) || IsPasswordFormPhished(form)) {
       CredentialView insecure_credential(form);
       auto& credential_to_form = credentials_to_forms[insecure_credential];
-      for (const auto& pair : form.password_issues.value()) {
+      for (const auto& pair : form.password_issues) {
         credential_to_form.type |= ConvertInsecureType(pair.first);
         credential_to_form.latest_time =
             std::max(credential_to_form.latest_time, pair.second.create_time);
@@ -259,9 +258,8 @@ void InsecureCredentialsManager::SaveInsecureCredential(
     if (saved_password.password_value == credential.password() &&
         CanonicalizeUsername(saved_password.username_value) ==
             canonicalized_username) {
-      DCHECK(saved_password.password_issues.has_value());
       PasswordForm form_to_update = saved_password;
-      form_to_update.password_issues->insert_or_assign(
+      form_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
           InsecurityMetadata(base::Time::Now(), IsMuted(false)));
       GetStoreFor(saved_password).UpdateLogin(form_to_update);

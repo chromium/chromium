@@ -163,8 +163,8 @@ void ManagePasswordsTest::SetupMoreToFixState() {
   // This is an unrelated insecure credential that should still be fixed.
   password_manager::PasswordForm to_be_fixed = password_form_;
   to_be_fixed.signon_realm = "https://somesite.com/";
-  to_be_fixed.password_issues->insert({password_manager::InsecureType::kLeaked,
-                                       password_manager::InsecurityMetadata()});
+  to_be_fixed.password_issues.insert({password_manager::InsecureType::kLeaked,
+                                      password_manager::InsecurityMetadata()});
   password_store->AddLogin(to_be_fixed);
   password_store->AddLogin(password_form_);
   SetupPendingPassword();

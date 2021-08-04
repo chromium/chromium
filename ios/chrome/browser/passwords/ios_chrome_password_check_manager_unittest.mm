@@ -128,7 +128,7 @@ PasswordForm MakeSavedPassword(
 void AddIssueToForm(PasswordForm* form,
                     InsecureType type = InsecureType::kLeaked,
                     base::TimeDelta time_since_creation = base::TimeDelta()) {
-  form->password_issues->insert_or_assign(
+  form->password_issues.insert_or_assign(
       type, password_manager::InsecurityMetadata(
                 base::Time::Now() - time_since_creation,
                 password_manager::IsMuted(false)));

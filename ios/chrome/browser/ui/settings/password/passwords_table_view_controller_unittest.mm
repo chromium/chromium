@@ -154,7 +154,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     for (const auto& signon_realm_forms : GetTestStore().stored_passwords()) {
       count += base::ranges::count_if(signon_realm_forms.second,
                                       [](const PasswordForm& form) {
-                                        return !form.password_issues->empty();
+                                        return !form.password_issues.empty();
                                       });
     }
 

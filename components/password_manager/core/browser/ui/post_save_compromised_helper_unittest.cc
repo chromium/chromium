@@ -50,10 +50,6 @@ PasswordForm CreateForm(
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
   form.in_store = store;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -140,9 +136,9 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
       kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
   PasswordForm form1 = CreateForm(kSignonRealm, kUsername);
-  form1.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+  form1.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
   PasswordForm form2 = CreateForm(kSignonRealm, kUsername2);
-  form2.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+  form2.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
 
   PostSaveCompromisedHelper helper({{CreateInsecureCredential(kUsername)}},
                                    kUsername);
@@ -165,7 +161,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
 
   PasswordForm form1 = CreateForm(kSignonRealm, kUsername);
   PasswordForm form2 = CreateForm(kSignonRealm, kUsername2);
-  form2.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+  form2.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
 
   PostSaveCompromisedHelper helper({saved}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
@@ -258,9 +254,9 @@ TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
   PasswordForm form1 = CreateForm(kSignonRealm, kUsername);
   PasswordForm form2 = CreateForm(kSignonRealm, kUsername2);
-  form2.password_issues->insert({InsecureType::kLeaked, InsecurityMetadata()});
+  form2.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
   PasswordForm form3 = CreateForm(kSignonRealm, kUsername3);
-  form3.password_issues->insert(
+  form3.password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
 
   ExpectGetLoginsCall({form1, form2, form3});
@@ -311,7 +307,7 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
         std::vector<std::unique_ptr<PasswordForm>> results;
         results.push_back(std::make_unique<PasswordForm>(
             CreateForm(kSignonRealm, kUsername)));
-        results.back()->password_issues->insert(
+        results.back()->password_issues.insert(
             {InsecureType::kLeaked, InsecurityMetadata()});
         consumer->OnGetPasswordStoreResults(std::move(results));
       }));
@@ -320,7 +316,7 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
         std::vector<std::unique_ptr<PasswordForm>> results;
         results.push_back(std::make_unique<PasswordForm>(CreateForm(
             kSignonRealm, kUsername, PasswordForm::Store::kAccountStore)));
-        results.back()->password_issues->insert(
+        results.back()->password_issues.insert(
             {InsecureType::kLeaked, InsecurityMetadata()});
         consumer->OnGetPasswordStoreResults(std::move(results));
       }));

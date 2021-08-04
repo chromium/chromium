@@ -2493,6 +2493,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.UpdateLoginPasswordIssuesHasValue"
     enum="BooleanSet" expires_after="2021-09-30">
+  <obsolete>
+    Obsolete since Aug 2021.
+  </obsolete>
   <owner>ioanap@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>

@@ -607,7 +607,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
 
   // Expect a notification after removing a credential.
   EXPECT_CALL(mock_observer, OnLoginsChanged);
-  test_form->password_issues->clear();
+  test_form->password_issues.clear();
   store->UpdateLogin(*test_form);
 
   WaitForPasswordStore();

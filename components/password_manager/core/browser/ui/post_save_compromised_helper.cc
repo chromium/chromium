@@ -77,17 +77,16 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal() {
   bool compromised_password_changed = false;
 
   for (const auto& form : passwords_) {
-    DCHECK(form->password_issues.has_value());
     if (current_leak_ && form->username_value == current_leak_->username &&
         form->signon_realm == current_leak_->signon_realm) {
-      if (form->password_issues->empty())
+      if (form->password_issues.empty())
         compromised_password_changed = true;
     }
-    if (!form->password_issues->empty()) {
+    if (!form->password_issues.empty()) {
       if (base::FeatureList::IsEnabled(
               features::kMutingCompromisedCredentials)) {
         if (std::any_of(
-                form->password_issues->begin(), form->password_issues->end(),
+                form->password_issues.begin(), form->password_issues.end(),
                 [](const auto& issue) { return !issue.second.is_muted; })) {
           compromised_count_++;
         }

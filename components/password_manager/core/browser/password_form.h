@@ -369,10 +369,7 @@ struct PasswordForm {
 
   // A mapping from the credential insecurity type (e.g. leaked, phished),
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
-  // Forms retrieved for the store always have a `password_issues` value.
-  // NOTE: If it is known that there are no issues, this should be an empty map.
-  absl::optional<base::flat_map<InsecureType, InsecurityMetadata>>
-      password_issues;
+  base::flat_map<InsecureType, InsecurityMetadata> password_issues;
 
   // Return true if we consider this form to be a change password form and not
   // a signup form. It's based on local heuristics and may be inaccurate.

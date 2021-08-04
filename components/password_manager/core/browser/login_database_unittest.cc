@@ -106,10 +106,6 @@ PasswordForm GenerateExamplePasswordForm() {
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
 
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -568,13 +564,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   form.in_store = PasswordForm::Store::kProfileStore;
   form2.in_store = PasswordForm::Store::kProfileStore;
 
-  // |password_issues| is also expected to be set to empty.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-  form2.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-
   // Match against desktop.
   PasswordFormDigest form_request = {PasswordForm::Scheme::kHtml,
                                      "https://foo.com/",
@@ -615,14 +604,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
   // When we retrieve the forms from the store, |in_store| should be set.
   form.in_store = PasswordForm::Store::kProfileStore;
   form_with_port.in_store = PasswordForm::Store::kProfileStore;
-
-  // |password_issues| should also be set to empty.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-  form_with_port.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   // Match localhost with and without port.
   PasswordFormDigest form_request(PasswordForm::Scheme::kHtml,
@@ -738,13 +719,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   form.in_store = PasswordForm::Store::kProfileStore;
   form2.in_store = PasswordForm::Store::kProfileStore;
 
-  // |password_issues| should also be set to empty.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-  form2.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-
   // Match against the first one.
   PasswordFormDigest form_request = {PasswordForm::Scheme::kHtml,
                                      form.signon_realm, form.url};
@@ -774,12 +748,6 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
-
-  // |password_issues| should also be set to empty.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
 
   // Match against.
   PasswordFormDigest form_request = {PasswordForm::Scheme::kHtml,
@@ -1155,10 +1123,6 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
       url::Origin::Create(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
 
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   // Get all non-blocklisted logins (should be none).
@@ -1419,10 +1383,6 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
 
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
   ASSERT_EQ(1U, changes.size());
@@ -1458,11 +1418,6 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
-
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
@@ -2439,13 +2394,6 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
   EXPECT_TRUE(db.GetAutofillableLogins(&result));
 
-  // Autofillable logins will come back with insecure data so add that to the
-  // expected forms.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form1.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-  form3.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form1), Pointee(form3)));
 
   RunUntilIdle();
@@ -2681,29 +2629,6 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
               ElementsAre(insecure_credential));
 }
 
-TEST_F(LoginDatabaseTest, UpdateLoginWithNoInsecureCredentialInformation) {
-  PasswordForm form = GenerateExamplePasswordForm();
-  InsecureCredential insecure_credential{form.signon_realm, form.username_value,
-                                         base::Time(), InsecureType::kLeaked,
-                                         IsMuted(false)};
-  base::flat_map<InsecureType, InsecurityMetadata> issues;
-  issues[InsecureType::kLeaked] = InsecurityMetadata(
-      insecure_credential.create_time, insecure_credential.is_muted);
-  form.password_issues = std::move(issues);
-
-  ignore_result(db().AddLogin(form));
-  ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
-              ElementsAre(insecure_credential));
-
-  PasswordForm no_info_form = form;
-  no_info_form.password_issues.reset();
-  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
-                                /*insecure_changed=*/false),
-            db().UpdateLogin(no_info_form, nullptr));
-  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
-              ElementsAre(insecure_credential));
-}
-
 TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
   PasswordForm form = GenerateExamplePasswordForm();
   ignore_result(db().AddLogin(form));
@@ -2721,7 +2646,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
   ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
               ElementsAre(insecure_credential));
 
-  (*form.password_issues)[InsecureType::kLeaked].is_muted = IsMuted(true);
+  form.password_issues[InsecureType::kLeaked].is_muted = IsMuted(true);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
@@ -2756,7 +2681,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
   // Complete password_issues removal can usually only happen when the password
   // is changed.
   form.password_value = u"new_password";
-  form.password_issues->clear();
+  form.password_issues.clear();
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true,
                                 /*insecure_changed=*/true),
             db().UpdateLogin(form, nullptr));
@@ -2797,11 +2722,10 @@ TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
   phished.insecure_type = InsecureType::kPhished;
 
   form.password_value = u"new_password";
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
-  form.password_issues->insert_or_assign(
+  form.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(leaked.create_time, leaked.is_muted));
-  form.password_issues->insert_or_assign(
+  form.password_issues.insert_or_assign(
       InsecureType::kPhished,
       InsecurityMetadata(phished.create_time, phished.is_muted));
 

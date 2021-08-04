@@ -172,11 +172,9 @@ void PasswordFormToJSON(const PasswordForm& form,
 
   target->SetString("moving_blocked_for_list", base::JoinString(hashes, ", "));
 
-  if (!form.password_issues.has_value())
-    return;
   std::vector<base::Value> password_issues;
-  password_issues.reserve(form.password_issues->size());
-  for (const auto& issue : form.password_issues.value()) {
+  password_issues.reserve(form.password_issues.size());
+  for (const auto& issue : form.password_issues) {
     base::Value issue_value(base::Value::Type::DICTIONARY);
     issue_value.SetStringPath("insecurity_type", ToString(issue.first));
     issue_value.SetPath("create_time",
@@ -252,9 +250,7 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
 }
 
 bool PasswordForm::IsInsecureCredential(InsecureType type) {
-  if (!password_issues.has_value())
-    return false;
-  return password_issues->find(type) != password_issues->end();
+  return password_issues.find(type) != password_issues.end();
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,

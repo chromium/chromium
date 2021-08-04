@@ -46,10 +46,6 @@ PasswordForm CreateTestForm() {
   form.username_value = u"Adam";
   form.password_value = u"p4ssword";
   form.signon_realm = "http://www.example.com/";
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -364,7 +360,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 
   // The expected form should have a leaked entry.
-  form.password_issues->insert_or_assign(
+  form.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_CALL(*store(), UpdateLogin(form));

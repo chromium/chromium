@@ -57,7 +57,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
       PasswordStore& store =
           form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
       PasswordForm form_to_update = *form.get();
-      form_to_update.password_issues->insert_or_assign(
+      form_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
           InsecurityMetadata(base::Time::Now(), IsMuted(false)));
       store.UpdateLogin(form_to_update);

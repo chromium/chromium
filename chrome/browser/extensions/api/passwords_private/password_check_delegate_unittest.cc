@@ -158,7 +158,7 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
 void AddIssueToForm(PasswordForm* form,
                     InsecureType type,
                     base::TimeDelta time_since_creation = base::TimeDelta()) {
-  form->password_issues->insert_or_assign(
+  form->password_issues.insert_or_assign(
       type, InsecurityMetadata(base::Time::Now() - time_since_creation,
                                IsMuted(false)));
 }
@@ -824,7 +824,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
-  form.password_issues->insert_or_assign(
+  form.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_THAT(store().stored_passwords(),
@@ -863,16 +863,16 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
       LeakCheckCredential(kUsername2Email, kPassword2), IsLeaked(true));
   RunUntilIdle();
 
-  form_com_username1.password_issues->insert_or_assign(
+  form_com_username1.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-  form_org_username1.password_issues->insert_or_assign(
+  form_org_username1.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-  form_com_username2.password_issues->insert_or_assign(
+  form_com_username2.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-  form_org_username2.password_issues->insert_or_assign(
+  form_org_username2.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_THAT(store().stored_passwords(),

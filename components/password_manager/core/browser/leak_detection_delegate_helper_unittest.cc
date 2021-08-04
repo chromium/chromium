@@ -47,10 +47,6 @@ PasswordForm CreateForm(base::StringPiece origin,
   form.password_value = std::u16string(password);
   form.signon_realm = form.url.GetOrigin().spec();
   form.in_store = PasswordForm::Store::kProfileStore;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -206,10 +202,10 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
 
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
   // The expected updated forms should have leaked entries.
-  leaked_origin.password_issues->insert_or_assign(
+  leaked_origin.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-  other_origin_same_credential.password_issues->insert_or_assign(
+  other_origin_same_credential.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_CALL(*store_, UpdateLogin(leaked_origin));
@@ -225,7 +221,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(false), IsReused(true));
 
   // The expected updated form should have leaked entries.
-  non_canonicalized_username.password_issues->insert_or_assign(
+  non_canonicalized_username.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username));
@@ -243,7 +239,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
 
   SetGetLoginByPasswordConsumerInvocation(password_forms);
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true));
-  password_forms.at(0).password_issues->insert_or_assign(
+  password_forms.at(0).password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   EXPECT_CALL(*store_, UpdateLogin(password_forms[0]));
@@ -290,11 +286,11 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
   EXPECT_FALSE(profile_store_->stored_passwords()
                    .at(profile_store_form.signon_realm)
                    .at(0)
-                   .password_issues->empty());
+                   .password_issues.empty());
   EXPECT_FALSE(account_store_->stored_passwords()
                    .at(account_store_form.signon_realm)
                    .at(0)
-                   .password_issues->empty());
+                   .password_issues.empty());
 }
 
 }  // namespace password_manager

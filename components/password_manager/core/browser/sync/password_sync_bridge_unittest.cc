@@ -179,9 +179,8 @@ PasswordForm MakePasswordFormWithIssues(
   form.username_value = u"username_value";
   form.password_element = u"password_element";
   form.signon_realm = signon_realm;
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   for (const auto& issue_type : issue_types) {
-    form.password_issues->insert_or_assign(
+    form.password_issues.insert_or_assign(
         issue_type,
         InsecurityMetadata(base::Time::FromTimeT(kIssuesCreationTime),
                            IsMuted(false)));
@@ -252,9 +251,8 @@ class FakeDatabase {
     // Insecure credentials don't change if neither the form nor the db
     // contain any password_issues.
     bool insecure_changed =
-        password_changed || (form.password_issues.has_value() &&
-                             !(form.password_issues->empty() &&
-                               data_[key]->password_issues->empty()));
+        password_changed ||
+        !(form.password_issues.empty() && data_[key]->password_issues.empty());
     data_[key] = std::make_unique<PasswordForm>(form);
 
     return {PasswordStoreChange(PasswordStoreChange::UPDATE, form, key,
