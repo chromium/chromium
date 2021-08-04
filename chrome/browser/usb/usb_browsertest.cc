@@ -379,7 +379,9 @@ class WebUsbPrerenderinBrowserTest : public WebUsbTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUsbPrerenderinBrowserTest, ShowChooserInPrerenderin) {
+// Flaky, see https://crbug.com/1236542.
+IN_PROC_BROWSER_TEST_F(WebUsbPrerenderinBrowserTest,
+                       DISABLED_ShowChooserInPrerenderin) {
   // Loads a page in the prerendering.
   GURL prerender_url = embedded_test_server()->GetURL(
       "localhost", "/simple_page.html?prerendering");
