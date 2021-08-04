@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_query.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_query.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
@@ -313,8 +315,12 @@ void SVGTextContentElement::SvgAttributeChanged(
       attr_name == xml_names::kSpaceAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
-    if (LayoutObject* layout_object = GetLayoutObject())
+    if (LayoutObject* layout_object = GetLayoutObject()) {
+      if (auto* ng_text = DynamicTo<LayoutNGSVGText>(
+              LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)))
+        ng_text->SetNeedsPositioningValuesUpdate();
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
+    }
 
     return;
   }
