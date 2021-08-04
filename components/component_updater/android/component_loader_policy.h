@@ -93,7 +93,7 @@ class ComponentLoaderPolicy {
   // Returns a Human readable string that can be used as a suffix for recorded
   // UMA metrics. New suffixes should be added to
   // "ComponentUpdater.AndroidComponentLoader.ComponentName" in
-  // tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml.
+  // tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
   virtual std::string GetMetricsSuffix() const = 0;
 };
 
