@@ -53,6 +53,12 @@ export class PhotoHandler {
    * Plays UI effect when taking photo.
    */
   playShutterEffect() {}
+
+  /**
+   * @return {!Promise}
+   * @abstract
+   */
+  waitPreviewReady() {}
 }
 
 /**
@@ -167,6 +173,7 @@ export class Photo extends ModeBase {
         imageHeight: caps.imageHeight.max,
       });
     }
+    await this.handler_.waitPreviewReady();
     const results = await this.crosImageCapture_.takePhoto(photoSettings);
     return results[0];
   }

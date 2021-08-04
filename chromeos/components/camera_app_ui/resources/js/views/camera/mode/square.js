@@ -67,6 +67,13 @@ class SquarePhotoHandler {
   playShutterEffect() {
     this.handler_.playShutterEffect();
   }
+
+  /**
+   * @override
+   */
+  waitPreviewReady() {
+    return this.handler_.waitPreviewReady();
+  }
 }
 
 /**

@@ -61,6 +61,12 @@ export class ScannerHandler {
    * @abstract
    */
   handleResultDocument(result, name) {}
+
+  /**
+   * @return {!Promise}
+   * @abstract
+   */
+  waitPreviewReady() {}
 }
 
 /**
@@ -106,6 +112,13 @@ class DocumentPhotoHandler {
    */
   playShutterEffect() {
     this.handler_.playBlockingShutterEffect();
+  }
+
+  /**
+   * @override
+   */
+  waitPreviewReady() {
+    return this.handler_.waitPreviewReady();
   }
 }
 

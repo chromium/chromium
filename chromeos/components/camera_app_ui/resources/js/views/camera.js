@@ -779,6 +779,13 @@ export class Camera extends View {
   /**
    * @override
    */
+  waitPreviewReady() {
+    return this.preview_.waitReadyForTakePhoto();
+  }
+
+  /**
+   * @override
+   */
   async handleResultVideo({resolution, duration, videoSaver, everPaused}) {
     metrics.sendCaptureEvent({
       facing: this.facingMode_,
