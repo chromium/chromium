@@ -252,6 +252,8 @@
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // A modal may be presented on top of the Recent Tabs or tab grid.
   [self.baseViewController dismissModals];
+  self.baseViewController.tabGridMode = TabGridModeNormal;
+
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
   [self.sharingCoordinator stop];

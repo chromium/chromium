@@ -599,6 +599,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - TabGridMode
 
 - (void)setTabGridMode:(TabGridMode)mode {
+  if (_tabGridMode == mode) {
+    return;
+  }
+
   _tabGridMode = mode;
 
   self.bottomToolbar.mode = self.tabGridMode;
