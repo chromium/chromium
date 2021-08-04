@@ -110,7 +110,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
 
   // Helper function for synchronously invoking the callback with the given
   // result and status.
-  void RunModelExecutionCallback(ModelExecutionCallback callback,
+  void RunModelExecutionCallback(std::unique_ptr<ExecutionState> state,
                                  float result,
                                  ModelExecutionStatus status);
 

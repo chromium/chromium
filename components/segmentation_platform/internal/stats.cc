@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/stats.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
@@ -12,9 +13,10 @@
 namespace segmentation_platform {
 namespace stats {
 namespace {
-// Converts OptimizationTarget to histogram suffix.
-// Should maps to suffix string in histograms.xml.
-std::string OptimizationTargetToHistogramSuffix(OptimizationTarget segment_id) {
+// Should map to SegmentationModel variant in
+// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+std::string OptimizationTargetToHistogramVariant(
+    OptimizationTarget segment_id) {
   switch (segment_id) {
     case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
       return "NewTab";
@@ -35,6 +37,20 @@ enum class AdaptiveToolbarButtonVariant {
   kNewTab = 2,
   kShare = 3,
   kVoice = 4,
+  kMaxValue = kVoice,
+};
+
+// This is the segmentation subset of
+// optimization_guide::proto::OptimizationTarget.
+// Keep in sync with SegmentationPlatformSegmenationModel in
+// //tools/metrics/histograms/enums.xml.
+// See also SegmentationModel variant in
+// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+enum class SegmentationModel {
+  kUnknown = 0,
+  kNewTab = 4,
+  kShare = 5,
+  kVoice = 6,
   kMaxValue = kVoice,
 };
 
@@ -116,6 +132,37 @@ AdaptiveToolbarSegmentSwitch GetSegmentSwitch(
   }
 }
 
+SegmentationModel OptimizationTargetToSegmentationModel(
+    OptimizationTarget segment_id) {
+  switch (segment_id) {
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+      return SegmentationModel::kNewTab;
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+      return SegmentationModel::kShare;
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+      return SegmentationModel::kVoice;
+    default:
+      return SegmentationModel::kUnknown;
+  }
+}
+
+// Should map to ModelExecutionStatus variant string in
+// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+std::string ModelExecutionStatusToHistogramVariant(
+    ModelExecutionStatus status) {
+  switch (status) {
+    case ModelExecutionStatus::kSuccess:
+      return "Success";
+    case ModelExecutionStatus::kExecutionError:
+      return "ExecutionError";
+    case ModelExecutionStatus::kInvalidMetadata:
+      return "InvalidMetadata";
+    default:
+      NOTREACHED();
+      return "Unknown";
+  }
+}
+
 // Should map to SignalType variant string in
 // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
 std::string SignalTypeToHistogramVariant(proto::SignalType signal_type) {
@@ -132,12 +179,24 @@ std::string SignalTypeToHistogramVariant(proto::SignalType signal_type) {
   }
 }
 
+float ZeroValueFraction(const std::vector<float>& tensor) {
+  if (tensor.size() == 0)
+    return 0;
+
+  size_t zero_values = 0;
+  for (float feature : tensor) {
+    if (feature == 0)
+      ++zero_values;
+  }
+  return static_cast<float>(zero_values) / static_cast<float>(tensor.size());
+}
+
 }  // namespace
 
 void RecordModelScore(OptimizationTarget segment_id, float score) {
   base::UmaHistogramPercentage(
       "SegmentationPlatform.AdaptiveToolbar.ModelScore." +
-          OptimizationTargetToHistogramSuffix(segment_id),
+          OptimizationTargetToHistogramVariant(segment_id),
       score * 100);
 }
 
@@ -159,6 +218,153 @@ void RecordSegmentSelectionComputed(
   base::UmaHistogramEnumeration(
       "SegmentationPlatform.AdaptiveToolbar.SegmentSwitched",
       GetSegmentSwitch(new_selection, prev_segment));
+}
+
+void RecordMaintenanceCleanupSignalSuccessCount(size_t count) {
+  UMA_HISTOGRAM_COUNTS_1000(
+      "SegmentationPlatform.Maintenance.CleanupSignalSuccessCount", count);
+}
+
+void RecordMaintenanceCompactionResult(proto::SignalType signal_type,
+                                       bool success) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform.Maintenance.CompactionResult." +
+          SignalTypeToHistogramVariant(signal_type),
+      success);
+}
+
+void RecordMaintenanceSignalIdentifierCount(size_t count) {
+  UMA_HISTOGRAM_COUNTS_1000(
+      "SegmentationPlatform.Maintenance.SignalIdentifierCount", count);
+}
+
+void RecordModelDeliveryHasMetadata(OptimizationTarget segment_id,
+                                    bool has_metadata) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform.ModelDelivery.HasMetadata." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      has_metadata);
+}
+
+void RecordModelDeliveryMetadataFeatureCount(OptimizationTarget segment_id,
+                                             size_t count) {
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.ModelDelivery.Metadata.FeatureCount." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      count);
+}
+
+void RecordModelDeliveryMetadataValidation(
+    OptimizationTarget segment_id,
+    bool processed,
+    metadata_utils::ValidationResult validation_result) {
+  // Should map to ValidationPhase variant string in
+  // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+  std::string validation_phase = processed ? "Processed" : "Incoming";
+  base::UmaHistogramEnumeration(
+      "SegmentationPlatform.ModelDelivery.Metadata.Validation." +
+          validation_phase + "." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      validation_result);
+}
+
+void RecordModelDeliveryReceived(OptimizationTarget segment_id) {
+  UMA_HISTOGRAM_ENUMERATION("SegmentationPlatform.ModelDelivery.Received",
+                            OptimizationTargetToSegmentationModel(segment_id));
+}
+
+void RecordModelDeliverySaveResult(OptimizationTarget segment_id,
+                                   bool success) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform.ModelDelivery.SaveResult." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      success);
+}
+
+void RecordModelDeliverySegmentIdMatches(OptimizationTarget segment_id,
+                                         bool matches) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform.ModelDelivery.SegmentIdMatches." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      matches);
+}
+
+void RecordModelExecutionDurationFeatureProcessing(
+    OptimizationTarget segment_id,
+    base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "SegmentationPlatform.ModelExecution.Duration.FeatureProcessing." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      duration);
+}
+
+void RecordModelExecutionDurationModel(OptimizationTarget segment_id,
+                                       bool success,
+                                       base::TimeDelta duration) {
+  ModelExecutionStatus status = success ? ModelExecutionStatus::kSuccess
+                                        : ModelExecutionStatus::kExecutionError;
+  base::UmaHistogramTimes(
+      "SegmentationPlatform.ModelExecution.Duration.Model." +
+          OptimizationTargetToHistogramVariant(segment_id) + "." +
+          ModelExecutionStatusToHistogramVariant(status),
+      duration);
+}
+
+void RecordModelExecutionDurationTotal(OptimizationTarget segment_id,
+                                       ModelExecutionStatus status,
+                                       base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "SegmentationPlatform.ModelExecution.Duration.Total." +
+          OptimizationTargetToHistogramVariant(segment_id) + "." +
+          ModelExecutionStatusToHistogramVariant(status),
+      duration);
+}
+
+void RecordModelExecutionResult(OptimizationTarget segment_id, float result) {
+  base::UmaHistogramPercentage(
+      "SegmentationPlatform.ModelExecution.Result." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      result * 100);
+}
+
+void RecordModelExecutionSaveResult(OptimizationTarget segment_id,
+                                    bool success) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform.ModelExecution.SaveResult." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      success);
+}
+
+void RecordModelExecutionStatus(OptimizationTarget segment_id,
+                                ModelExecutionStatus status) {
+  base::UmaHistogramEnumeration(
+      "SegmentationPlatform.ModelExecution.Status." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      status);
+}
+
+void RecordModelExecutionZeroValuePercent(OptimizationTarget segment_id,
+                                          const std::vector<float>& tensor) {
+  base::UmaHistogramPercentage(
+      "SegmentationPlatform.ModelExecution.ZeroValuePercent." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      ZeroValueFraction(tensor) * 100);
+}
+
+void RecordSignalDatabaseGetSamplesDatabaseEntryCount(size_t count) {
+  UMA_HISTOGRAM_COUNTS_1000(
+      "SegmentationPlatform.SignalDatabase.GetSamples.DatabaseEntryCount",
+      count);
+}
+
+void RecordSignalDatabaseGetSamplesResult(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("SegmentationPlatform.SignalDatabase.GetSamples.Result",
+                        success);
+}
+
+void RecordSignalDatabaseGetSamplesSampleCount(size_t count) {
+  UMA_HISTOGRAM_COUNTS_10000(
+      "SegmentationPlatform.SignalDatabase.GetSamples.SampleCount", count);
 }
 
 void RecordSignalsListeningCount(

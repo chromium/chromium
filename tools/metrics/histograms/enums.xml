@@ -73553,6 +73553,31 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Warning"/>
 </enum>
 
+<enum name="SegmentationPlatformModelExecutionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="ExecutionError"/>
+  <int value="2" label="InvalidMetadata"/>
+</enum>
+
+<enum name="SegmentationPlatformSegmentationModel">
+  <int value="0" label="Unknown"/>
+  <int value="4" label="NewTab"/>
+  <int value="5" label="Share"/>
+  <int value="6" label="Voice"/>
+</enum>
+
+<enum name="SegmentationPlatformValidationResult">
+  <int value="0" label="ValidationSuccess"/>
+  <int value="1" label="SegmentIDNotFound"/>
+  <int value="2" label="MetadataNotFound"/>
+  <int value="3" label="TimeUnitInvald"/>
+  <int value="4" label="SignalTypeInvalid"/>
+  <int value="5" label="FeatureNameNotFound"/>
+  <int value="6" label="FeatureNameHashNotFound"/>
+  <int value="7" label="FeatureAggregationNotFound"/>
+  <int value="8" label="FeatureTensorLengthInvalid"/>
+</enum>
+
 <enum name="SelectedNewTabCreationOption">
   <int value="0" label="Open in new tab is first, selected open in new tab"/>
   <int value="1"

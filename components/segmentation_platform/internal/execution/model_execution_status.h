@@ -8,10 +8,13 @@
 namespace segmentation_platform {
 
 // Success or failure states resulting from the model execution.
-enum ModelExecutionStatus {
-  SUCCESS = 0,
-  EXECUTION_ERROR = 1,
-  INVALID_METADATA = 2,
+// Keep up to date with SegmentationPlatformModelExecutionStatus in
+// //tools/metrics/histograms/enums.xml.
+enum class ModelExecutionStatus {
+  kSuccess = 0,
+  kExecutionError = 1,
+  kInvalidMetadata = 2,
+  kMaxValue = kInvalidMetadata,
 };
 
 }  // namespace segmentation_platform

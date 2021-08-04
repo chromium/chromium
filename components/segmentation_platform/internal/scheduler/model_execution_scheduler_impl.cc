@@ -30,7 +30,7 @@ ModelExecutionSchedulerImpl::~ModelExecutionSchedulerImpl() = default;
 void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
     const proto::SegmentInfo& segment_info) {
   DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
-         metadata_utils::VALIDATION_SUCCESS);
+         metadata_utils::ValidationResult::kValidationSuccess);
 
   if (!ShouldExecuteSegment(/*expired_only=*/true, segment_info)) {
     // We usually cancel any outstanding requests right before executing the
@@ -68,7 +68,7 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   // TODO(shaktisahu): Check ModelExecutionStatus and handle failure cases.
   // Should we save it to DB?
   proto::PredictionResult segment_result;
-  bool success = result.second == ModelExecutionStatus::SUCCESS;
+  bool success = result.second == ModelExecutionStatus::kSuccess;
   if (success) {
     segment_result.set_result(result.first);
     segment_result.set_timestamp_us(
@@ -133,6 +133,7 @@ void ModelExecutionSchedulerImpl::CancelOutstandingExecutionRequests(
 
 void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
                                                 bool success) {
+  stats::RecordModelExecutionSaveResult(segment_id, success);
   if (!success)
     return;
 

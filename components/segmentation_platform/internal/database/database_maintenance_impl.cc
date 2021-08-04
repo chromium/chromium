@@ -23,6 +23,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 
 namespace {
@@ -110,6 +111,7 @@ void DatabaseMaintenanceImpl::OnSegmentInfoCallback(
         segment_infos) {
   std::set<SignalIdentifier> signal_ids =
       CollectAllSignalIdentifiers(segment_infos);
+  stats::RecordMaintenanceSignalIdentifierCount(signal_ids.size());
 
   auto all_tasks = GetAllTasks(signal_ids);
   auto first_task = LinkTasks(std::move(all_tasks));
@@ -184,6 +186,7 @@ void DatabaseMaintenanceImpl::CleanupSignalStorageProcessNext(
 void DatabaseMaintenanceImpl::CleanupSignalStorageDone(
     base::OnceClosure next_action,
     std::vector<CleanupItem> cleaned_up_signals) {
+  stats::RecordMaintenanceCleanupSignalSuccessCount(cleaned_up_signals.size());
   signal_storage_config_->UpdateSignalsForCleanup(cleaned_up_signals);
   std::move(next_action).Run();
 }
@@ -213,7 +216,7 @@ void DatabaseMaintenanceImpl::RecordCompactionResult(
     proto::SignalType signal_type,
     uint64_t name_hash,
     bool success) {
-  // TODO(nyquist): Add metrics for this.
+  stats::RecordMaintenanceCompactionResult(signal_type, success);
 }
 
 void DatabaseMaintenanceImpl::CompactSamplesDone(
