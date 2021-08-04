@@ -8,6 +8,8 @@ import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Mod
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
+import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
+
 export function acceleratorEditViewTest() {
   /** @type {?AcceleratorEditViewElement} */
   let editViewElement = null;
@@ -25,15 +27,10 @@ export function acceleratorEditViewTest() {
 
   test('LoadsBasicEditView', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = {
-      accelerator: /** @type {!AcceleratorKeys} */ ({
-        modifiers: Modifier.CONTROL | Modifier.SHIFT,
-        key: 71,
-        key_display: 'g',
-      }),
-      type: AcceleratorType.kDefault,
-      state: AcceleratorState.kEnabled,
-    };
+    const acceleratorInfo = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
 
     editViewElement.acceleratorInfo = acceleratorInfo;
     await flush();

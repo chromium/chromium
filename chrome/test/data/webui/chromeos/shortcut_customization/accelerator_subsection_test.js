@@ -6,8 +6,9 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/accelerator_subsection.js';
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
-
 import {assertEquals} from '../../chai_assert.js';
+
+import {CreateDefaultAccelerator} from './shortcut_customization_test_util.js';
 
 export function acceleratorSubsectionTest() {
   /** @type {?AcceleratorSubsectionElement} */
@@ -27,29 +28,17 @@ export function acceleratorSubsectionTest() {
   // TODO(jimmyxgong): Update this test after retrieving accelerators is
   // implemented for a subsection.
   test('LoadsBasicSection', async () => {
-    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
-    // version.
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo1 = {
-      accelerator: /** @type {!AcceleratorKeys} */ ({
-        modifiers: Modifier.CONTROL | Modifier.SHIFT,
-        key: 71,
-        key_display: 'g',
-      }),
-      type: AcceleratorType.kDefault,
-      state: AcceleratorState.kEnabled,
-    };
+    const acceleratorInfo1 = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
 
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo2 = {
-      accelerator: /** @type {!AcceleratorKeys} */ ({
-        modifiers: Modifier.CONTROL,
-        key: 67,
-        key_display: 'c',
-      }),
-      type: AcceleratorType.kDefault,
-      state: AcceleratorState.kEnabled,
-    };
+    const acceleratorInfo2 = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 67,
+        /*key_display=*/ 'c');
 
     const accelerators = [acceleratorInfo1, acceleratorInfo2];
     const description = 'test shortcut';
