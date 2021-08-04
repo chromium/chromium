@@ -23,7 +23,6 @@ blink_modules_sources("csspaint") {
     "document_paint_definition.cc",
     "document_paint_definition.h",
     "native_paint_definition.h",
-    "native_paint_worklet_proxy_client.h",
     "paint_definition.h",
     "paint_rendering_context_2d.cc",
     "paint_rendering_context_2d.h",

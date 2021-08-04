@@ -12,15 +12,17 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
+#include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
+#include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
-#include "third_party/blink/renderer/modules/csspaint/native_paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
@@ -66,88 +68,6 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
   Vector<Color> animated_colors_;
   Vector<double> offsets_;
   absl::optional<double> progress_;
-};
-
-class BackgroundColorPaintWorkletProxyClient
-    : public NativePaintWorkletProxyClient {
- public:
-  static BackgroundColorPaintWorkletProxyClient* Create(int worklet_id) {
-    return MakeGarbageCollected<BackgroundColorPaintWorkletProxyClient>(
-        worklet_id);
-  }
-
-  explicit BackgroundColorPaintWorkletProxyClient(int worklet_id)
-      : NativePaintWorkletProxyClient(worklet_id) {}
-  ~BackgroundColorPaintWorkletProxyClient() override = default;
-  BackgroundColorPaintWorkletProxyClient(
-      const BackgroundColorPaintWorkletProxyClient&) = delete;
-  BackgroundColorPaintWorkletProxyClient& operator=(
-      const BackgroundColorPaintWorkletProxyClient&) = delete;
-
-  // PaintWorkletPainter implementation.
-  sk_sp<PaintRecord> Paint(
-      const CompositorPaintWorkletInput* compositor_input,
-      const CompositorPaintWorkletJob::AnimatedPropertyValues&
-          animated_property_values) override {
-    const BackgroundColorPaintWorkletInput* input =
-        To<BackgroundColorPaintWorkletInput>(compositor_input);
-    FloatSize container_size = input->ContainerSize();
-    Vector<Color> animated_colors = input->AnimatedColors();
-    Vector<double> offsets = input->Offsets();
-    DCHECK_GT(animated_colors.size(), 1u);
-    DCHECK_EQ(animated_colors.size(), offsets.size());
-
-    // TODO(crbug.com/1188760): We should handle the case when it is null, and
-    // paint the original background-color retrieved from its style.
-    float progress = input->MainThreadProgress().has_value()
-                         ? input->MainThreadProgress().value()
-                         : 0;
-    // This would mean that the animation started on compositor, so we override
-    // the progress that we obtained from the main thread.
-    if (!animated_property_values.empty()) {
-      DCHECK_EQ(animated_property_values.size(), 1u);
-      const auto& entry = animated_property_values.begin();
-      progress = entry->second.float_value.value();
-    }
-
-    // Get the start and end color based on the progress and offsets.
-    unsigned result_index = offsets.size() - 1;
-    if (progress <= 0) {
-      result_index = 0;
-    } else if (progress > 0 && progress < 1) {
-      for (unsigned i = 0; i < offsets.size() - 1; i++) {
-        if (progress <= offsets[i + 1]) {
-          result_index = i;
-          break;
-        }
-      }
-    }
-    if (result_index == offsets.size() - 1)
-      result_index = offsets.size() - 2;
-    // Because the progress is a global one, we need to adjust it with offsets.
-    float adjusted_progress =
-        (progress - offsets[result_index]) /
-        (offsets[result_index + 1] - offsets[result_index]);
-    std::unique_ptr<InterpolableValue> from =
-        CSSColorInterpolationType::CreateInterpolableColor(
-            animated_colors[result_index]);
-    std::unique_ptr<InterpolableValue> to =
-        CSSColorInterpolationType::CreateInterpolableColor(
-            animated_colors[result_index + 1]);
-    std::unique_ptr<InterpolableValue> result =
-        CSSColorInterpolationType::CreateInterpolableColor(
-            animated_colors[result_index + 1]);
-    from->Interpolate(*to, adjusted_progress, *result);
-    Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
-    SkColor current_color = static_cast<SkColor>(rgba);
-
-    PaintRenderingContext2DSettings* context_settings =
-        PaintRenderingContext2DSettings::Create();
-    auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-        RoundedIntSize(container_size), context_settings, 1, 1);
-    rendering_context->GetPaintCanvas()->drawColor(current_color);
-    return rendering_context->GetRecord();
-  }
 };
 
 // TODO(crbug.com/1163949): Support animation keyframes without 0% or 100%.
@@ -294,10 +214,6 @@ BackgroundColorPaintDefinition::BackgroundColorPaintDefinition(
     LocalFrame& local_root)
     : worklet_id_(PaintWorkletIdGenerator::NextId()) {
   DCHECK(local_root.IsLocalRoot());
-  paint_dispatcher_ =
-      WebLocalFrameImpl::FromFrame(local_root)
-          ->FrameWidgetImpl()
-          ->EnsureCompositorPaintDispatcher(&compositor_host_queue_);
   DCHECK(IsMainThread());
   ExecutionContext* context = local_root.DomWindow();
   FrameOrWorkerScheduler* scheduler =
@@ -313,47 +229,84 @@ BackgroundColorPaintDefinition::BackgroundColorPaintDefinition(
       CrossThreadBindOnce(&WorkerBackingThread::InitializeOnBackingThread,
                           CrossThreadUnretained(worker_backing_thread_.get()),
                           startup_data));
-  // This is called only once per document.
-  BackgroundColorPaintWorkletProxyClient* client =
-      BackgroundColorPaintWorkletProxyClient::Create(worklet_id_);
-  RegisterProxyClient(client);
+  RegisterProxyClient(local_root);
 }
 
 void BackgroundColorPaintDefinition::RegisterProxyClient(
-    NativePaintWorkletProxyClient* client) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      worker_backing_thread_->BackingThread().GetTaskRunner();
-  // At this moment, we are in the paint phase which is before commit, we queue
-  // a task to the compositor thread to register the |paint_dispatcher_|. When
-  // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
-  // which is after commit, the |paint_dispatcher_| should have been registerted
-  // and ready to use.
-  PostCrossThreadTask(
-      *compositor_host_queue_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
-          paint_dispatcher_, WrapCrossThreadPersistent(client), task_runner));
+    LocalFrame& local_root) {
+  proxy_client_ =
+      PaintWorkletProxyClient::Create(local_root.DomWindow(), worklet_id_);
+  proxy_client_->RegisterForNativePaintWorklet(
+      worker_backing_thread_.get(), this,
+      PaintWorkletInput::PaintWorkletInputType::kBackgroundColor);
 }
 
 void BackgroundColorPaintDefinition::UnregisterProxyClient() {
-  PostCrossThreadTask(
-      *compositor_host_queue_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
-          paint_dispatcher_, worklet_id_));
-  base::WaitableEvent waitable_event;
-  PostCrossThreadTask(*worker_backing_thread_->BackingThread().GetTaskRunner(),
-                      FROM_HERE,
-                      CrossThreadBindOnce(
-                          [](WorkerBackingThread* worker_backing_thread,
-                             base::WaitableEvent* waitable_event) {
-                            worker_backing_thread->ShutdownOnBackingThread();
-                            waitable_event->Signal();
-                          },
-                          CrossThreadUnretained(worker_backing_thread_.get()),
-                          CrossThreadUnretained(&waitable_event)));
-  waitable_event.Wait();
-  worker_backing_thread_.reset();
+  proxy_client_->UnregisterForNativePaintWorklet();
+}
+
+sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
+    const CompositorPaintWorkletInput* compositor_input,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  const BackgroundColorPaintWorkletInput* input =
+      static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
+  FloatSize container_size = input->ContainerSize();
+  Vector<Color> animated_colors = input->AnimatedColors();
+  Vector<double> offsets = input->Offsets();
+  DCHECK_GT(animated_colors.size(), 1u);
+  DCHECK_EQ(animated_colors.size(), offsets.size());
+
+  // TODO(crbug.com/1188760): We should handle the case when it is null, and
+  // paint the original background-color retrieved from its style.
+  float progress = input->MainThreadProgress().has_value()
+                       ? input->MainThreadProgress().value()
+                       : 0;
+  // This would mean that the animation started on compositor, so we override
+  // the progress that we obtained from the main thread.
+  if (!animated_property_values.empty()) {
+    DCHECK_EQ(animated_property_values.size(), 1u);
+    const auto& entry = animated_property_values.begin();
+    progress = entry->second.float_value.value();
+  }
+
+  // Get the start and end color based on the progress and offsets.
+  unsigned result_index = offsets.size() - 1;
+  if (progress <= 0) {
+    result_index = 0;
+  } else if (progress > 0 && progress < 1) {
+    for (unsigned i = 0; i < offsets.size() - 1; i++) {
+      if (progress <= offsets[i + 1]) {
+        result_index = i;
+        break;
+      }
+    }
+  }
+  if (result_index == offsets.size() - 1) {
+    result_index = offsets.size() - 2;
+  }
+  // Because the progress is a global one, we need to adjust it with offsets.
+  float adjusted_progress = (progress - offsets[result_index]) /
+                            (offsets[result_index + 1] - offsets[result_index]);
+  std::unique_ptr<InterpolableValue> from =
+      CSSColorInterpolationType::CreateInterpolableColor(
+          animated_colors[result_index]);
+  std::unique_ptr<InterpolableValue> to =
+      CSSColorInterpolationType::CreateInterpolableColor(
+          animated_colors[result_index + 1]);
+  std::unique_ptr<InterpolableValue> result =
+      CSSColorInterpolationType::CreateInterpolableColor(
+          animated_colors[result_index + 1]);
+  from->Interpolate(*to, adjusted_progress, *result);
+  Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
+  SkColor current_color = static_cast<SkColor>(rgba);
+
+  PaintRenderingContext2DSettings* context_settings =
+      PaintRenderingContext2DSettings::Create();
+  auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
+      RoundedIntSize(container_size), context_settings, 1, 1);
+  rendering_context->GetPaintCanvas()->drawColor(current_color);
+  return rendering_context->GetRecord();
 }
 
 scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
@@ -391,7 +344,7 @@ bool BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
                                               progress, compositable_animation);
 }
 
-sk_sp<PaintRecord> BackgroundColorPaintDefinition::ProxyClientPaintForTest(
+sk_sp<PaintRecord> BackgroundColorPaintDefinition::PaintForTest(
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
@@ -403,12 +356,11 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::ProxyClientPaintForTest(
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
           container_size, 1u, animated_colors, offsets, progress,
           property_keys);
-  BackgroundColorPaintWorkletProxyClient* client =
-      BackgroundColorPaintWorkletProxyClient::Create(1u);
-  return client->Paint(input.get(), animated_property_values);
+  return Paint(input.get(), animated_property_values);
 }
 
 void BackgroundColorPaintDefinition::Trace(Visitor* visitor) const {
+  visitor->Trace(proxy_client_);
   NativePaintDefinition::Trace(visitor);
 }
 

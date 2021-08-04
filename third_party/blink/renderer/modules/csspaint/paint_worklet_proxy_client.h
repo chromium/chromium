@@ -7,8 +7,9 @@
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
+#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
+#include "third_party/blink/renderer/modules/csspaint/native_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
@@ -20,6 +21,7 @@ namespace blink {
 class DocumentPaintDefinition;
 class PaintWorklet;
 class WorkletGlobalScope;
+class WorkerBackingThread;
 
 // Mediates between the (multiple) PaintWorkletGlobalScopes on the worklet
 // thread and the (single) PaintWorkletPaintDispatcher on the non-worklet
@@ -95,6 +97,12 @@ class MODULES_EXPORT PaintWorkletProxyClient
 
   double DevicePixelRatio() const { return device_pixel_ratio_; }
 
+  void RegisterForNativePaintWorklet(
+      WorkerBackingThread* thread,
+      NativePaintDefinition* definition,
+      PaintWorkletInput::PaintWorkletInputType type);
+  void UnregisterForNativePaintWorklet();
+
  private:
   friend class PaintWorkletGlobalScopeTest;
   friend class PaintWorkletProxyClientTest;
@@ -145,6 +153,10 @@ class MODULES_EXPORT PaintWorkletProxyClient
   // handle to the PaintWorklet called via a stored task runner.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
   CrossThreadWeakPersistent<PaintWorklet> paint_worklet_;
+
+  HashMap<PaintWorkletInput::PaintWorkletInputType,
+          CrossThreadPersistent<NativePaintDefinition>>
+      native_definitions_;
 };
 
 void MODULES_EXPORT ProvidePaintWorkletProxyClientTo(WorkerClients*,

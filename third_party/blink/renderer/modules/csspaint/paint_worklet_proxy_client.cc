@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/modules/csspaint/background_color_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -170,6 +172,14 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
     const CompositorPaintWorkletInput* compositor_input,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
+  const PaintWorkletInput* worklet_input =
+      To<PaintWorkletInput>(compositor_input);
+  PaintDefinition* definition;
+  if (worklet_input->GetType() !=
+      PaintWorkletInput::PaintWorkletInputType::kCSS) {
+    definition = native_definitions_.at(worklet_input->GetType());
+    return definition->Paint(compositor_input, animated_property_values);
+  }
   // TODO: Can this happen? We don't register till all are here.
   if (global_scopes_.IsEmpty())
     return sk_make_sp<PaintRecord>();
@@ -189,10 +199,38 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
 
   const CSSPaintWorkletInput* input =
       To<CSSPaintWorkletInput>(compositor_input);
-  CSSPaintDefinition* definition =
-      global_scope->FindDefinition(input->NameCopy());
   device_pixel_ratio_ = input->DeviceScaleFactor() * input->EffectiveZoom();
+  definition = global_scope->FindDefinition(input->NameCopy());
   return definition->Paint(compositor_input, animated_property_values);
+}
+
+void PaintWorkletProxyClient::RegisterForNativePaintWorklet(
+    WorkerBackingThread* thread,
+    NativePaintDefinition* definition,
+    PaintWorkletInput::PaintWorkletInputType type) {
+  DCHECK(!native_definitions_.Contains(type));
+  native_definitions_.insert(type, definition);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      thread->BackingThread().GetTaskRunner();
+  // At this moment, we are in the paint phase which is before commit, we queue
+  // a task to the compositor thread to register the |paint_dispatcher_|. When
+  // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
+  // which is after commit, the |paint_dispatcher_| should have been registerted
+  // and ready to use.
+  PostCrossThreadTask(
+      *compositor_host_queue_, FROM_HERE,
+      CrossThreadBindOnce(
+          &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
+          paint_dispatcher_, WrapCrossThreadPersistent(this), task_runner));
+}
+
+void PaintWorkletProxyClient::UnregisterForNativePaintWorklet() {
+  PostCrossThreadTask(
+      *compositor_host_queue_, FROM_HERE,
+      CrossThreadBindOnce(
+          &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
+          paint_dispatcher_, worklet_id_));
+  paint_dispatcher_ = nullptr;
 }
 
 void ProvidePaintWorkletProxyClientTo(WorkerClients* clients,

@@ -18,8 +18,7 @@ namespace blink {
 
 class Image;
 class LocalFrame;
-class NativePaintWorkletProxyClient;
-class Node;
+class PaintWorkletProxyClient;
 
 class MODULES_EXPORT BackgroundColorPaintDefinition final
     : public GarbageCollected<BackgroundColorPaintDefinition>,
@@ -34,12 +33,9 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
       const BackgroundColorPaintDefinition&) = delete;
 
   // PaintDefinition override
-  // TODO(crbug.com/1197081): fill in the implementation.
   sk_sp<PaintRecord> Paint(
       const CompositorPaintWorkletInput*,
-      const CompositorPaintWorkletJob::AnimatedPropertyValues&) override {
-    return nullptr;
-  }
+      const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
   // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const FloatSize& container_size,
@@ -69,25 +65,25 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
 
   void Trace(Visitor* visitor) const override;
 
-  // For testing purpose only.
-  static sk_sp<cc::PaintRecord> ProxyClientPaintForTest(
+  // Constructor for testing purpose only.
+  BackgroundColorPaintDefinition() = default;
+  sk_sp<PaintRecord> PaintForTest(
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&
           animated_property_values);
 
  private:
-  int worklet_id_;
-  base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher_;
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue_;
-  // The worker thread that does the paint work.
-  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
-
-  // Register the NativePaintWorkletProxyClient to the compositor thread that
+  // Register the PaintWorkletProxyClient to the compositor thread that
   // will hold a cross thread persistent pointer to it. This should be called
   // during the construction of native paint worklets, to ensure that the proxy
   // client is ready on the compositor thread when dispatching a paint job.
-  void RegisterProxyClient(NativePaintWorkletProxyClient*);
+  void RegisterProxyClient(LocalFrame&);
+
+  int worklet_id_;
+  // The worker thread that does the paint work.
+  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
+  Member<PaintWorkletProxyClient> proxy_client_;
 };
 
 }  // namespace blink

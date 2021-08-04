@@ -14,9 +14,9 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
-#include "third_party/blink/renderer/modules/csspaint/native_paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
@@ -46,41 +46,6 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
  private:
   Path path_;
 };
-
-class ClipPathPaintWorkletProxyClient : public NativePaintWorkletProxyClient {
- public:
-  static ClipPathPaintWorkletProxyClient* Create(int worklet_id) {
-    return MakeGarbageCollected<ClipPathPaintWorkletProxyClient>(worklet_id);
-  }
-
-  explicit ClipPathPaintWorkletProxyClient(int worklet_id)
-      : NativePaintWorkletProxyClient(worklet_id) {}
-  ~ClipPathPaintWorkletProxyClient() override = default;
-  ClipPathPaintWorkletProxyClient(const ClipPathPaintWorkletProxyClient&) =
-      delete;
-  ClipPathPaintWorkletProxyClient& operator=(
-      const ClipPathPaintWorkletProxyClient&) = delete;
-
-  // PaintWorkletPainter implementation.
-  sk_sp<PaintRecord> Paint(
-      const CompositorPaintWorkletInput* compositor_input,
-      const CompositorPaintWorkletJob::AnimatedPropertyValues&
-          animated_property_values) override {
-    const ClipPathPaintWorkletInput* input =
-        To<ClipPathPaintWorkletInput>(compositor_input);
-    FloatSize container_size = input->ContainerSize();
-    PaintRenderingContext2DSettings* context_settings =
-        PaintRenderingContext2DSettings::Create();
-    auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-        RoundedIntSize(container_size), context_settings, 1, 1);
-
-    PaintFlags flags;
-    flags.setAntiAlias(true);
-    rendering_context->GetPaintCanvas()->drawPath(input->ClipPath().GetSkPath(),
-                                                  flags);
-    return rendering_context->GetRecord();
-  }
-};
 }  // namespace
 
 template <>
@@ -106,10 +71,6 @@ ClipPathPaintDefinition::ClipPathPaintDefinition(PassKey pass_key,
                                                  LocalFrame& local_root)
     : worklet_id_(PaintWorkletIdGenerator::NextId()) {
   DCHECK(local_root.IsLocalRoot());
-  paint_dispatcher_ =
-      WebLocalFrameImpl::FromFrame(local_root)
-          ->FrameWidgetImpl()
-          ->EnsureCompositorPaintDispatcher(&compositor_host_queue_);
   DCHECK(IsMainThread());
   ExecutionContext* context = local_root.DomWindow();
   FrameOrWorkerScheduler* scheduler =
@@ -125,47 +86,38 @@ ClipPathPaintDefinition::ClipPathPaintDefinition(PassKey pass_key,
       CrossThreadBindOnce(&WorkerBackingThread::InitializeOnBackingThread,
                           CrossThreadUnretained(worker_backing_thread_.get()),
                           startup_data));
-  // This is called only once per document.
-  ClipPathPaintWorkletProxyClient* client =
-      ClipPathPaintWorkletProxyClient::Create(worklet_id_);
-  RegisterProxyClient(client);
+  RegisterProxyClient(local_root);
 }
 
-void ClipPathPaintDefinition::RegisterProxyClient(
-    NativePaintWorkletProxyClient* client) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      worker_backing_thread_->BackingThread().GetTaskRunner();
-  // At this moment, we are in the paint phase which is before commit, we queue
-  // a task to the compositor thread to register the |paint_dispatcher_|. When
-  // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
-  // which is after commit, the |paint_dispatcher_| should have been registerted
-  // and ready to use.
-  PostCrossThreadTask(
-      *compositor_host_queue_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
-          paint_dispatcher_, WrapCrossThreadPersistent(client), task_runner));
+void ClipPathPaintDefinition::RegisterProxyClient(LocalFrame& local_root) {
+  proxy_client_ =
+      PaintWorkletProxyClient::Create(local_root.DomWindow(), worklet_id_);
+  proxy_client_->RegisterForNativePaintWorklet(
+      worker_backing_thread_.get(), this,
+      PaintWorkletInput::PaintWorkletInputType::kClipPath);
 }
 
 void ClipPathPaintDefinition::UnregisterProxyClient() {
-  PostCrossThreadTask(
-      *compositor_host_queue_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
-          paint_dispatcher_, worklet_id_));
-  base::WaitableEvent waitable_event;
-  PostCrossThreadTask(*worker_backing_thread_->BackingThread().GetTaskRunner(),
-                      FROM_HERE,
-                      CrossThreadBindOnce(
-                          [](WorkerBackingThread* worker_backing_thread,
-                             base::WaitableEvent* waitable_event) {
-                            worker_backing_thread->ShutdownOnBackingThread();
-                            waitable_event->Signal();
-                          },
-                          CrossThreadUnretained(worker_backing_thread_.get()),
-                          CrossThreadUnretained(&waitable_event)));
-  waitable_event.Wait();
-  worker_backing_thread_.reset();
+  proxy_client_->UnregisterForNativePaintWorklet();
+}
+
+sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
+    const CompositorPaintWorkletInput* compositor_input,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  const ClipPathPaintWorkletInput* input =
+      To<ClipPathPaintWorkletInput>(compositor_input);
+  FloatSize container_size = input->ContainerSize();
+  PaintRenderingContext2DSettings* context_settings =
+      PaintRenderingContext2DSettings::Create();
+  auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
+      RoundedIntSize(container_size), context_settings, 1, 1);
+
+  PaintFlags flags;
+  flags.setAntiAlias(true);
+  rendering_context->GetPaintCanvas()->drawPath(input->ClipPath().GetSkPath(),
+                                                flags);
+  return rendering_context->GetRecord();
 }
 
 scoped_refptr<Image> ClipPathPaintDefinition::Paint(
@@ -188,6 +140,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {
+  visitor->Trace(proxy_client_);
   NativePaintDefinition::Trace(visitor);
 }
 

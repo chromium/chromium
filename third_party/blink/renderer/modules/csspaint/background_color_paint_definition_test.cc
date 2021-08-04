@@ -23,6 +23,18 @@
 
 namespace blink {
 
+namespace {
+
+void RunPaintForTest(
+    const Vector<Color>& animated_colors,
+    const Vector<double>& offsets,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues& property_values) {
+  BackgroundColorPaintDefinition* definition =
+      MakeGarbageCollected<BackgroundColorPaintDefinition>();
+  definition->PaintForTest(animated_colors, offsets, property_values);
+}
+}  // namespace
+
 using BackgroundColorPaintDefinitionTest = PageTestBase;
 
 // Test the case where there is a background-color animation with two simple
@@ -395,8 +407,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
   Vector<double> offsets = {0, 1};
   CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
-  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
-      animated_colors, offsets, property_values);
+  RunPaintForTest(animated_colors, offsets, property_values);
 }
 
 // Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash if the
@@ -412,8 +423,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
       CompositorElementId(1u));
   CompositorPaintWorkletInput::PropertyValue property_value(-0.0f);
   property_values.insert(std::make_pair(property_key, property_value));
-  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
-      animated_colors, offsets, property_values);
+  RunPaintForTest(animated_colors, offsets, property_values);
 }
 
 // Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash if the
@@ -430,8 +440,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   float progress = 1 + std::numeric_limits<float>::epsilon();
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
-      animated_colors, offsets, property_values);
+  RunPaintForTest(animated_colors, offsets, property_values);
 }
 
 // Test that BackgroundColorPaintWorkletProxyClient::Paint won't crash when the
@@ -449,8 +458,7 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   float progress = 1 - std::numeric_limits<float>::epsilon();
   CompositorPaintWorkletInput::PropertyValue property_value(progress);
   property_values.insert(std::make_pair(property_key, property_value));
-  BackgroundColorPaintDefinition::ProxyClientPaintForTest(
-      animated_colors, offsets, property_values);
+  RunPaintForTest(animated_colors, offsets, property_values);
 }
 
 }  // namespace blink
