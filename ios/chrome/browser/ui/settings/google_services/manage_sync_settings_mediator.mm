@@ -9,7 +9,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#import "components/signin/ios/browser/features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"

@@ -667,16 +667,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
         signinCompletionInfo.identity;
     self.addedAccount = YES;
   }
-  if (signinCompletionInfo.signinCompletionAction ==
-      SigninCompletionActionOpenCompletionURL) {
-    SigninCoordinatorInterruptAction interruptAction =
-        self.signinIntent == UserSigninIntentFirstRun
-            ? SigninCoordinatorInterruptActionNoDismiss
-            : SigninCoordinatorInterruptActionDismissWithAnimation;
-    [self interruptWithAction:interruptAction
-         signinCompletionInfo:signinCompletionInfo
-                   completion:nil];
-  }
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

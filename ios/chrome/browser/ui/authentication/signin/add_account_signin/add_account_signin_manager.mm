@@ -79,8 +79,6 @@
       break;
     }
   }
-  self.identityInteractionManager.openAccountCreationURLCallback =
-      self.openAccountCreationURLCallback;
   __weak AddAccountSigninManager* weakSelf = self;
   [self.identityInteractionManager
       addAccountWithPresentingViewController:self.baseViewController

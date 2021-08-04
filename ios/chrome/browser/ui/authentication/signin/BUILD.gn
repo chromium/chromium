@@ -101,7 +101,6 @@ source_set("constants") {
     "signin_constants.h",
     "signin_constants.mm",
   ]
-  deps = [ "//url" ]
   frameworks = [ "Foundation.framework" ]
 }
 

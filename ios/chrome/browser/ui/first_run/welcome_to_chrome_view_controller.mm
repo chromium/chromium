@@ -303,14 +303,6 @@ const BOOL kDefaultStatsCheckboxValue = YES;
       [self.dispatcher showAdvancedSigninSettingsFromViewController:
                            presentingViewController];
       break;
-    case SigninCompletionActionOpenCompletionURL: {
-      // The user asked to create a new account.
-      DCHECK(completionInfo.completionURL.is_valid());
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:completionInfo.completionURL];
-      [self.dispatcher closeSettingsUIAndOpenURL:command];
-      break;
-    }
     case SigninCompletionActionNone:
       if (self.interruptCompletion) {
         self.interruptCompletion();

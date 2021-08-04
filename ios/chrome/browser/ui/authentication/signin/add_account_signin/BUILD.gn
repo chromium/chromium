@@ -14,18 +14,14 @@ source_set("add_account_signin") {
     "add_account_signin_manager.mm",
   ]
   deps = [
-    "//components/google/core/common",
     "//components/prefs",
-    "//components/signin/ios/browser:features",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
-    "//ios/chrome/browser/ui/commands",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
   ]

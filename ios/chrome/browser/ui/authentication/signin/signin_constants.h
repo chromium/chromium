@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "url/gurl.h"
-
 @class ChromeIdentity;
 
 // Sign-in result returned Sign-in result.
@@ -65,8 +63,6 @@ typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
   // The advanced settings sign-in view is needed to finish the sign-in.
   // This case is only used for the first run sign-in.
   SigninCompletionActionShowAdvancedSettingsSignin,
-  // The completion URL needs to be opened.
-  SigninCompletionActionOpenCompletionURL,
 };
 
 // Intent for TrustedVaultReauthenticationCoordinator to display either
