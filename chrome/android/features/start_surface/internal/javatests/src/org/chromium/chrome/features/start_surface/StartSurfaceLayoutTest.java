@@ -1086,8 +1086,9 @@ public class StartSurfaceLayoutTest {
         @Override
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
-            int tabListPadding =
-                    (int) TabUiThemeProvider.getTabCardPaddingDimension(view.getContext());
+            float tabListPadding = TabUiThemeProvider.getTabCardPaddingDimension(view.getContext());
+            float messageCardMargin =
+                    TabUiThemeProvider.getMessageCardMarginDimension(view.getContext());
 
             assertTrue(view instanceof RecyclerView);
             RecyclerView recyclerView = (RecyclerView) view;
@@ -1100,8 +1101,10 @@ public class StartSurfaceLayoutTest {
             assertEquals(TabProperties.UiType.MESSAGE, messageItemViewHolder.getItemViewType());
             View messageItemView = messageItemViewHolder.itemView;
 
-            // The message card item width should always be recyclerView width minus padding.
-            assertEquals(recyclerView.getWidth() - 2 * tabListPadding, messageItemView.getWidth());
+            // The message card item width should always be recyclerView width minus padding and
+            // margin.
+            assertEquals(recyclerView.getWidth() - 2 * tabListPadding - 2 * messageCardMargin,
+                    (float) messageItemView.getWidth(), 1.0f);
         }
     }
 

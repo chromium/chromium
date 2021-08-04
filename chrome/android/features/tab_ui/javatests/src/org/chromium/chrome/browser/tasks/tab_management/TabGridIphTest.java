@@ -240,6 +240,8 @@ public class TabGridIphTest {
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+                .perform(RecyclerViewActions.scrollTo(withId(R.id.tab_grid_message_item)));
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         mRenderTestRule.render(
