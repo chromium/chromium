@@ -74,7 +74,7 @@ Animator* AnimationWorkletGlobalScope::CreateAnimatorFor(
     const Vector<absl::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings,
     const Vector<Timing::NormalizedTiming>& normalized_timings) {
-  DCHECK(!animators_.at(animation_id));
+  DCHECK(!animators_.DeprecatedAtOrEmptyValue(animation_id));
   Animator* animator = CreateInstance(name, options, serialized_state,
                                       local_times, timings, normalized_timings);
   if (!animator)
@@ -137,7 +137,7 @@ void AnimationWorkletGlobalScope::UpdateAnimators(
 
   for (const auto& animation : input.added_and_updated_animations) {
     int id = animation.worklet_animation_id.animation_id;
-    Animator* animator = animators_.at(id);
+    Animator* animator = animators_.DeprecatedAtOrEmptyValue(id);
     // We don't try to create an animator if there isn't any.
     // This can only happen if constructing an animator instance has failed
     // e.g., the constructor throws an exception.
@@ -150,7 +150,7 @@ void AnimationWorkletGlobalScope::UpdateAnimators(
 
   for (const auto& animation : input.updated_animations) {
     int id = animation.worklet_animation_id.animation_id;
-    Animator* animator = animators_.at(id);
+    Animator* animator = animators_.DeprecatedAtOrEmptyValue(id);
     // We don't try to create an animator if there isn't any.
     if (!animator || !predicate(animator))
       continue;
@@ -333,7 +333,7 @@ void AnimationWorkletGlobalScope::MigrateAnimatorsTo(
 
 AnimatorDefinition* AnimationWorkletGlobalScope::FindDefinitionForTest(
     const String& name) {
-  return animator_definitions_.at(name);
+  return animator_definitions_.DeprecatedAtOrEmptyValue(name);
 }
 
 }  // namespace blink
