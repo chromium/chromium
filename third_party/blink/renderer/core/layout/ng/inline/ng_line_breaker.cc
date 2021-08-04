@@ -1899,39 +1899,10 @@ void NGLineBreaker::HandleAtomicInline(
                    item_result->layout_result->PhysicalFragment())
             .InlineSize();
     item_result->inline_size += inline_margins;
-  } else if (mode_ == NGLineBreakerMode::kMaxContent && max_size_cache_) {
-    unsigned item_index = &item - Items().begin();
-    item_result->inline_size = (*max_size_cache_)[item_index];
   } else {
-    DCHECK(mode_ == NGLineBreakerMode::kMinContent || !max_size_cache_);
-    NGBlockNode child(To<LayoutBox>(item.GetLayoutObject()));
-
-    NGMinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(),
-                                           child, /* is_new_fc */ true);
-    builder.SetAvailableBlockSize(constraint_space_.AvailableSize().block_size);
-    builder.SetPercentageResolutionBlockSize(
-        constraint_space_.PercentageResolutionBlockSize());
-    builder.SetReplacedPercentageResolutionBlockSize(
-        constraint_space_.ReplacedPercentageResolutionBlockSize());
-    const auto space = builder.ToConstraintSpace();
-
-    MinMaxSizesResult result =
-        ComputeMinAndMaxContentContribution(node_.Style(), child, space);
-    if (mode_ == NGLineBreakerMode::kMinContent) {
-      item_result->inline_size = result.sizes.min_size + inline_margins;
-      if (depends_on_block_constraints_out_) {
-        *depends_on_block_constraints_out_ |=
-            result.depends_on_block_constraints;
-      }
-      if (max_size_cache_) {
-        if (max_size_cache_->IsEmpty())
-          max_size_cache_->resize(Items().size());
-        unsigned item_index = &item - Items().begin();
-        (*max_size_cache_)[item_index] = result.sizes.max_size + inline_margins;
-      }
-    } else {
-      item_result->inline_size = result.sizes.max_size + inline_margins;
-    }
+    DCHECK(mode_ == NGLineBreakerMode::kMaxContent ||
+           mode_ == NGLineBreakerMode::kMinContent);
+    ComputeMinMaxContentSizeForBlockChild(item, item_result);
   }
 
   item_result->should_create_line_box = true;
@@ -1956,6 +1927,49 @@ void NGLineBreaker::HandleAtomicInline(
 
   trailing_whitespace_ = WhitespaceState::kNone;
   MoveToNextOf(item);
+}
+
+void NGLineBreaker::ComputeMinMaxContentSizeForBlockChild(
+    const NGInlineItem& item,
+    NGInlineItemResult* item_result) {
+  DCHECK(mode_ == NGLineBreakerMode::kMaxContent ||
+         mode_ == NGLineBreakerMode::kMinContent);
+  if (mode_ == NGLineBreakerMode::kMaxContent && max_size_cache_) {
+    const unsigned item_index = &item - Items().begin();
+    item_result->inline_size = (*max_size_cache_)[item_index];
+    return;
+  }
+
+  DCHECK(mode_ == NGLineBreakerMode::kMinContent || !max_size_cache_);
+  NGBlockNode child(To<LayoutBox>(item.GetLayoutObject()));
+
+  NGMinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(),
+                                         child, /* is_new_fc */ true);
+  builder.SetAvailableBlockSize(constraint_space_.AvailableSize().block_size);
+  builder.SetPercentageResolutionBlockSize(
+      constraint_space_.PercentageResolutionBlockSize());
+  builder.SetReplacedPercentageResolutionBlockSize(
+      constraint_space_.ReplacedPercentageResolutionBlockSize());
+  const auto space = builder.ToConstraintSpace();
+
+  const MinMaxSizesResult result =
+      ComputeMinAndMaxContentContribution(node_.Style(), child, space);
+  const LayoutUnit inline_margins = item_result->margins.InlineSum();
+  if (mode_ == NGLineBreakerMode::kMinContent) {
+    item_result->inline_size = result.sizes.min_size + inline_margins;
+    if (depends_on_block_constraints_out_)
+      *depends_on_block_constraints_out_ |= result.depends_on_block_constraints;
+    if (max_size_cache_) {
+      if (max_size_cache_->IsEmpty())
+        max_size_cache_->resize(Items().size());
+      const unsigned item_index = &item - Items().begin();
+      (*max_size_cache_)[item_index] = result.sizes.max_size + inline_margins;
+    }
+    return;
+  }
+
+  DCHECK(mode_ == NGLineBreakerMode::kMaxContent && !max_size_cache_);
+  item_result->inline_size = result.sizes.max_size + inline_margins;
 }
 
 void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,

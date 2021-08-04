@@ -175,6 +175,8 @@ class CORE_EXPORT NGLineBreaker {
   void HandleBidiControlItem(const NGInlineItem&, NGLineInfo*);
   void HandleAtomicInline(const NGInlineItem&, NGLineInfo*);
   void HandleBlockInInline(const NGInlineItem&, NGLineInfo*);
+  void ComputeMinMaxContentSizeForBlockChild(const NGInlineItem&,
+                                             NGInlineItemResult*);
 
   bool CanBreakAfterAtomicInline(const NGInlineItem& item) const;
   bool CanBreakAfter(const NGInlineItem& item) const;
