@@ -252,6 +252,10 @@ ThreadDebugger::descriptionForValueSubtype(v8::Local<v8::Context> context,
   return nullptr;
 }
 
+bool ThreadDebugger::formatAccessorsAsProperties(v8::Local<v8::Value> value) {
+  return V8DOMWrapper::IsWrapper(isolate_, value);
+}
+
 double ThreadDebugger::currentTimeMS() {
   return base::Time::Now().ToDoubleT() * 1000.0;
 }
