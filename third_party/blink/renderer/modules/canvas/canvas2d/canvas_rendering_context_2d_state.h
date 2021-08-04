@@ -40,7 +40,7 @@ class CanvasRenderingContext2DState final
   enum ClipListCopyMode { kCopyClipList, kDontCopyClipList };
   // SaveType indicates whether the state was pushed to the state stack by Save
   // or by BeginLayer. The first state on the state stack, which is created in 
-  // the canvas constructor and not by Save or BeginLayer, has SaveType kIntiial.
+  // the canvas constructor and not by Save or BeginLayer, has SaveType kInitial.
   enum class SaveType { kSaveRestore, kBeginEndLayer, kInitial };
 
   CanvasRenderingContext2DState();
