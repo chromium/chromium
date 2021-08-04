@@ -431,6 +431,9 @@ void AssistantPageView::OnThemeChanged() {
 
   background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
+
+  // Changing color of a background object doesn't trigger a paint.
+  SchedulePaint();
 }
 
 void AssistantPageView::InitLayout() {

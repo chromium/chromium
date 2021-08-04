@@ -74,6 +74,9 @@ void AssistantQueryView::OnThemeChanged() {
   background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
 
+  // Changing color of a background object doesn't trigger a paint.
+  SchedulePaint();
+
   // TODO(crbug.com/1176919): We cannot use ScopedLightModeAsDefault from
   // ash/assistant/ui as it causes a circular dependency. Find a better way to
   // resolve cros_colors color.
