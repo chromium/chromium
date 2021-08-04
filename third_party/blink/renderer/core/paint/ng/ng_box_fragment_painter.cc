@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
+#include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
 #include "third_party/blink/renderer/core/paint/url_metadata_utils.h"
@@ -1655,7 +1656,14 @@ void NGBoxFragmentPainter::PaintBoxItem(
     return;
   }
 
+  const LayoutObject* layout_object = child_fragment.GetLayoutObject();
   if (child_fragment.IsInlineBox()) {
+    if (layout_object->IsSVGInline()) {
+      ScopedSVGPaintState paint_state(*layout_object, paint_info);
+      NGInlineBoxFragmentPainter(cursor, item, child_fragment)
+          .Paint(paint_info, paint_offset);
+      return;
+    }
     NGInlineBoxFragmentPainter(cursor, item, child_fragment)
         .Paint(paint_info, paint_offset);
     return;
@@ -1663,7 +1671,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
 
   // Block-in-inline
   DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
-  DCHECK(!child_fragment.GetLayoutObject()->IsInline());
+  DCHECK(!layout_object->IsInline());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   paint_info_for_descendants.SetIsInFragmentTraversal();
   PaintBlockChild({&child_fragment, item.OffsetInContainerFragment()},
