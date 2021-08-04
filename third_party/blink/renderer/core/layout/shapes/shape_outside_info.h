@@ -111,7 +111,7 @@ class ShapeOutsideInfo final {
 
   static ShapeOutsideInfo& EnsureInfo(const LayoutBox& key) {
     InfoMap& info_map = ShapeOutsideInfo::GetInfoMap();
-    if (ShapeOutsideInfo* info = info_map.at(&key))
+    if (ShapeOutsideInfo* info = info_map.DeprecatedAtOrEmptyValue(&key))
       return *info;
     InfoMap::AddResult result =
         info_map.insert(&key, base::WrapUnique(new ShapeOutsideInfo(key)));

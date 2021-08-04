@@ -2120,7 +2120,8 @@ void LayoutText::SecureText(UChar mask) {
 
   int last_typed_character_offset_to_reveal = -1;
   UChar revealed_text;
-  SecureTextTimer* secure_text_timer = GetSecureTextTimers().at(this);
+  SecureTextTimer* secure_text_timer =
+      GetSecureTextTimers().DeprecatedAtOrEmptyValue(this);
   if (secure_text_timer && secure_text_timer->IsActive()) {
     last_typed_character_offset_to_reveal =
         secure_text_timer->LastTypedCharacterOffset();
@@ -2806,7 +2807,8 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
     return text_combine;
   if (!IsSelected())
     return nullptr;
-  if (const auto* client = GetSelectionDisplayItemClientMap().at(this))
+  if (const auto* client =
+          GetSelectionDisplayItemClientMap().DeprecatedAtOrEmptyValue(this))
     return client;
   return GetSelectionDisplayItemClientMap()
       .insert(this, std::make_unique<SelectionDisplayItemClient>())

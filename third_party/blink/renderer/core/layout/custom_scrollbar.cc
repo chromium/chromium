@@ -172,7 +172,7 @@ void CustomScrollbar::UpdateScrollbarParts() {
   bool is_horizontal = Orientation() == kHorizontalScrollbar;
   int old_thickness = is_horizontal ? Height() : Width();
   int new_thickness = 0;
-  if (auto* part = parts_.at(kScrollbarBGPart))
+  if (auto* part = parts_.DeprecatedAtOrEmptyValue(kScrollbarBGPart))
     new_thickness = part->ComputeThickness();
 
   if (new_thickness != old_thickness) {
@@ -260,7 +260,8 @@ void CustomScrollbar::UpdateScrollbarPart(ScrollbarPart part_type) {
     }
   }
 
-  LayoutCustomScrollbarPart* part_layout_object = parts_.at(part_type);
+  LayoutCustomScrollbarPart* part_layout_object =
+      parts_.DeprecatedAtOrEmptyValue(part_type);
   if (!part_layout_object && need_layout_object && scrollable_area_) {
     part_layout_object = LayoutCustomScrollbarPart::CreateAnonymous(
         &StyleSource()->GetDocument(), scrollable_area_, this, part_type);
@@ -278,7 +279,8 @@ void CustomScrollbar::UpdateScrollbarPart(ScrollbarPart part_type) {
 }
 
 IntRect CustomScrollbar::ButtonRect(ScrollbarPart part_type) const {
-  LayoutCustomScrollbarPart* part_layout_object = parts_.at(part_type);
+  LayoutCustomScrollbarPart* part_layout_object =
+      parts_.DeprecatedAtOrEmptyValue(part_type);
   if (!part_layout_object)
     return IntRect();
 

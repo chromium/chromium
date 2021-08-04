@@ -65,10 +65,10 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
   void PositionScrollbarParts();
 
   LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) {
-    return parts_.at(part_type);
+    return parts_.DeprecatedAtOrEmptyValue(part_type);
   }
   const LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) const {
-    return parts_.at(part_type);
+    return parts_.DeprecatedAtOrEmptyValue(part_type);
   }
 
   void InvalidateDisplayItemClientsOfScrollbarParts();

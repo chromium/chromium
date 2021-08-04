@@ -512,8 +512,8 @@ bool GridTrackSizingAlgorithm::ParticipateInBaselineAlignment(
     const LayoutBox& child,
     GridAxis baseline_axis) const {
   return baseline_axis == kGridColumnAxis
-             ? column_baseline_items_map_.at(&child)
-             : row_baseline_items_map_.at(&child);
+             ? column_baseline_items_map_.DeprecatedAtOrEmptyValue(&child)
+             : row_baseline_items_map_.DeprecatedAtOrEmptyValue(&child);
 }
 
 void GridTrackSizingAlgorithm::UpdateBaselineAlignmentContext(

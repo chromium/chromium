@@ -2288,7 +2288,8 @@ void LayoutGrid::GridAreaPositionForOutOfFlowChild(
   auto& line_of_positioned_item =
       is_row_axis ? column_of_positioned_item_ : row_of_positioned_item_;
   start = is_row_axis ? BorderLogicalLeft() : BorderBefore();
-  if (absl::optional<size_t> line = line_of_positioned_item.at(&child)) {
+  if (absl::optional<size_t> line =
+          line_of_positioned_item.DeprecatedAtOrEmptyValue(&child)) {
     auto& positions = is_row_axis ? column_positions_ : row_positions_;
     start = positions[line.value()];
   }
@@ -2505,7 +2506,7 @@ LayoutUnit LayoutGrid::TranslateOutOfFlowRTLCoordinate(
   DCHECK(child.IsOutOfFlowPositioned());
   DCHECK(!StyleRef().IsLeftToRightDirection());
 
-  if (column_of_positioned_item_.at(&child))
+  if (column_of_positioned_item_.DeprecatedAtOrEmptyValue(&child))
     return TranslateRTLCoordinate(coordinate);
 
   return BorderLogicalLeft() + BorderLogicalRight() + ClientLogicalWidth() -

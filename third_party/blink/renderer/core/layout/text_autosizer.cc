@@ -1396,13 +1396,13 @@ bool TextAutosizer::FingerprintMapper::Remove(LayoutObject* layout_object) {
 
 TextAutosizer::Fingerprint TextAutosizer::FingerprintMapper::Get(
     const LayoutObject* layout_object) {
-  return fingerprints_.at(layout_object);
+  return fingerprints_.DeprecatedAtOrEmptyValue(layout_object);
 }
 
 TextAutosizer::BlockSet*
 TextAutosizer::FingerprintMapper::GetTentativeClusterRoots(
     Fingerprint fingerprint) {
-  return blocks_for_fingerprint_.at(fingerprint);
+  return blocks_for_fingerprint_.DeprecatedAtOrEmptyValue(fingerprint);
 }
 
 TextAutosizer::LayoutScope::LayoutScope(LayoutBlock* block,

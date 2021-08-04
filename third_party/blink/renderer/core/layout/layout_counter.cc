@@ -392,8 +392,9 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
                                      const AtomicString& identifier,
                                      bool always_create_counter) {
   if (object.HasCounterNodeMap()) {
-    if (CounterMap* node_map = GetCounterMaps().at(&object)) {
-      if (CounterNode* node = node_map->at(identifier))
+    if (CounterMap* node_map =
+            GetCounterMaps().DeprecatedAtOrEmptyValue(&object)) {
+      if (CounterNode* node = node_map->DeprecatedAtOrEmptyValue(identifier))
         return node;
     }
   }
@@ -466,7 +467,7 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
     if (!current_layout_object->HasCounterNodeMap())
       continue;
     CounterNode* current_counter =
-        maps.at(current_layout_object)->at(identifier);
+        maps.at(current_layout_object)->DeprecatedAtOrEmptyValue(identifier);
     if (!current_counter)
       continue;
     // At this point we found a counter to reparent. So we don't need to descend
