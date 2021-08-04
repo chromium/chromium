@@ -11,10 +11,20 @@ import '../../settings_shared_css.js';
 import './os_paired_bluetooth_list_item.js';
 
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrScrollableBehaviorInterface}
+ */
+const SettingsPairedBluetoothListElementBase =
+    mixinBehaviors([CrScrollableBehavior], PolymerElement);
 
 /** @polymer */
-class SettingsPairedBluetoothListElement extends PolymerElement {
+class SettingsPairedBluetoothListElement extends
+    SettingsPairedBluetoothListElementBase {
   static get is() {
     return 'os-settings-paired-bluetooth-list';
   }
@@ -29,13 +39,19 @@ class SettingsPairedBluetoothListElement extends PolymerElement {
        * TODO(crbug.com/1010321): Use actual Device objects.
        * @private {Array<Object>}
        */
-      devices_: {
+      devices: {
         type: Array,
-        value() {
-          return [{}, {}, {}];
-        }
+        observer: 'onDevicesChanged_',
+        value: [],
       }
     };
+  }
+
+  /** @private */
+  onDevicesChanged_() {
+    // CrScrollableBehaviorInterface method required for list items to be
+    // properly rendered when devices updates.
+    this.updateScrollableContents();
   }
 }
 
