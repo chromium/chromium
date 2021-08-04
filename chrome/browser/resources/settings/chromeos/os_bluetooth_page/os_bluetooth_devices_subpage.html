@@ -1,19 +1,28 @@
 <style include="settings-shared">
+  #container {
+    padding-inline-end: calc(var(--cr-section-padding) -
+        var(--cr-icon-ripple-padding));
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .device-list {
+    margin-inline-start: 32px;
+  }
 </style>
 <div id="container">
-   <!-- TODO(crbug.com/1010321): Add toggle and pair new device button. -->
-   <!-- TODO(crbug.com/1010321): Add UI styling, populate with real data. -->
+  <!-- TODO(crbug.com/1010321): Add toggle and pair new device button. -->
+  <!-- TODO(crbug.com/1010321): Populate with real data. -->
   <div class="settings-box-text">
     $i18n{bluetoothDeviceListCurrentlyConnected}
   </div>
-  <div>
-   <os-settings-paired-bluetooth-list>
-   </os-settings-paired-bluetooth-list>
+  <div class="device-list">
+    <os-settings-paired-bluetooth-list>
+    </os-settings-paired-bluetooth-list>
   </div>
   <div class="settings-box-text">
     $i18n{bluetoothDeviceListPreviouslyConnected}
   </div>
-  <div>
+  <div class="device-list">
     <os-settings-paired-bluetooth-list>
     </os-settings-paired-bluetooth-list>
   </div>

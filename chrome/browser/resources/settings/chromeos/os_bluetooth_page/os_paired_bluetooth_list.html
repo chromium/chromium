@@ -1,10 +1,15 @@
 <style include="settings-shared">
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
 </style>
-<!-- TODO(crbug.com/1010321): Add UI styling, populate with real data. -->
+<!-- TODO(crbug.com/1010321): Populate with real data. -->
 <div id="container" class="layout vertical flex" scrollable
     no-bottom-scroll-border>
   <iron-list items="[[devices_]]" scroll-target="container" preserve-focus>
     <template>
+      <!-- TODO(crbug.com/1010321): Add focus behavior,
+           fix not all elements rendering in large lists. -->
       <os-settings-paired-bluetooth-list-item>
       </os-settings-paired-bluetooth-list-item>
     </template>

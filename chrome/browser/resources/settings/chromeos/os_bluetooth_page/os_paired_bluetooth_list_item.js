@@ -9,6 +9,8 @@
  */
 
 import '../../settings_shared_css.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '../os_icons.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

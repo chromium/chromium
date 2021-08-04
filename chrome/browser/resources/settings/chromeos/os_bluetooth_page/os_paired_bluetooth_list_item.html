@@ -1,6 +1,34 @@
 <style include="settings-shared">
+  .battery {
+    color: var(--google-green-500);
+  }
 </style>
-<div id="container">
-   <!-- TODO(crbug.com/1010321): Add UI elements. -->
-   Device
+<div focus-row-container>
+  <!-- TODO(crbug.com/1010321): Populate with dynamic data. -->
+  <!-- TODO(crbug.com/1010321): Add a11y label. -->
+  <div class="list-item"
+      focus-row-control
+      focus-type="rowWrapper"
+      role="button"
+      selectable>
+    <!-- TODO(crbug.com/1010321): Add updated device type icon. -->
+    <iron-icon icon="os-settings:headset">
+    </iron-icon>
+    <div class="middle" aria-hidden="true">
+      <div>
+        Device Name
+      </div>
+      <!-- TODO(crbug.com/1010321): Add battery icon. -->
+      <div class="battery secondary">
+        96%
+      </div>
+    </div>
+    <div>
+      <!-- TODO(crbug.com/1010321): Add click listener. -->
+      <cr-icon-button class="subpage-arrow"
+          focus-row-control
+          focus-type="subpageButton">
+      </cr-icon-button>
+    </div>
+  </div>
 </div>
