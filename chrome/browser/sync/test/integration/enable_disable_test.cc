@@ -127,7 +127,9 @@ class EnableDisableSingleClientTest : public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(EnableDisableSingleClientTest);
 };
 
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableOneAtATime) {
+// Flaky. See crbug.com/1235856.
+IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
+                       DISABLED_EnableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
