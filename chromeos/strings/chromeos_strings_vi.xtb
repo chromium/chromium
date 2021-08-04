@@ -128,6 +128,7 @@
 <translation id="38114475217616659">Xóa toàn bộ lịch sử</translation>
 <translation id="3820172043799983114">Mã PIN không hợp lệ.</translation>
 <translation id="3838338534323494292">Mật khẩu mới</translation>
+<translation id="3858860766373142691">Tên</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
 <translation id="3941014780699102620">Không phân giải được máy chủ</translation>
@@ -223,7 +224,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318334351163689047">Không gửi được yêu cầu TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Tên</translation>
 <translation id="5332948983412042822">Chọn ngay một mật khẩu mới</translation>
 <translation id="5333530671332546086">Trạng thái cổng không xác định</translation>
 <translation id="5372659122375744710">Mạng Wi-Fi không bảo mật</translation>

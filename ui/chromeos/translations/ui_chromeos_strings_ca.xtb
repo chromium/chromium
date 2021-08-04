@@ -321,6 +321,7 @@
 <translation id="383652340667548381">Serbi</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3855472144336161447">Neo 2 alemany</translation>
+<translation id="3858860766373142691">Nom</translation>
 <translation id="386548886866354912">Crea un paquet amb l'extensió <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="3899991606604168269">Francès (Canadà) amb teclat multilingüe</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318819489018851358">Comparteix amb Linux</translation>
 <translation id="5323213332664049067">Espanyol d'Amèrica Llatina</translation>
-<translation id="5327248766486351172">Nom</translation>
 <translation id="5330145655348521461">Aquests fitxers s'han obert en un altre escriptori. Aneu a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per veure'l.</translation>
 <translation id="5330512191124428349">Mostra la informació</translation>
 <translation id="5335458522276292100">S'estan afegint <ph name="FILE_COUNT" /> a la còpia de seguretat de <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

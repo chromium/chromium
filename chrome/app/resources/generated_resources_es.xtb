@@ -311,6 +311,7 @@
 <translation id="1336902454946927954">Tu llave de seguridad está bloqueada porque no se ha podido reconocer tu huella digital. Para desbloquearla, escribe tu PIN.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quiere abrir esta aplicación.</translation>
 <translation id="1338950911836659113">Eliminando...</translation>
+<translation id="1339009753652684748">Accede al Asistente cuando digas "Hey Google". Para ahorrar batería, elige “Activado (recomendado)”. El Asistente responderá únicamente cuando tu dispositivo esté enchufado o cargando.</translation>
 <translation id="13392265090583506">Ajustes de accesibilidad</translation>
 <translation id="1340527397989195812">Realiza una copia de seguridad de los archivos multimedia desde el dispositivo con la aplicación Archivos.</translation>
 <translation id="1341988552785875222">'<ph name="APP_NAME" />' ha establecido el fondo de pantalla actual. Es posible que tengas que desinstalar '<ph name="APP_NAME" />' para seleccionar otro fondo de pantalla.</translation>
@@ -445,6 +446,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.</translation>
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instalación no está habilitada</translation>
+<translation id="1480571698637441426">Para recibir respuestas personalizadas cuando hagas preguntas, permite que el Asistente acceda a una captura que muestre lo que aparece en tu pantalla. Esto podría incluir también información sobre canciones o vídeos que se estén reproduciendo.</translation>
 <translation id="1481537595330271162">No se ha podido cambiar el tamaño del disco</translation>
 <translation id="1482626744466814421">Añadir esta pestaña a marcadores...</translation>
 <translation id="1483272013430662157">Las aplicaciones web pueden solicitar abrir ciertos tipos de archivo</translation>
@@ -1247,6 +1249,15 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> ha solicitado permisos adicionales.</translation>
 <translation id="23055578400314116">Selecciona un nombre de usuario</translation>
 <translation id="2307462900900812319">Configurar red</translation>
+<translation id="2307553512430195144">Si aceptas, el Asistente de Google permanecerá en modo de espera para detectar el comando "Hey Google" y podrá reconocer la voz de <ph name="SUPERVISED_USER_NAME" /> con Voice Match.
+    <ph name="BR" />
+    Voice Match ayuda al Asistente de Google a identificar la voz de <ph name="SUPERVISED_USER_NAME" /> en tu <ph name="DEVICE_TYPE" /> y a distinguirla de la de otras personas.
+    <ph name="BR" />
+    El Asistente utiliza un modelo de voz único que crea a partir de grabaciones de la voz de tu hijo/a. Este modelo solo se almacena en tus dispositivos. Puede que su modelo de voz se envíe temporalmente a Google para identificar mejor su voz.
+    <ph name="BR" />
+    Si en algún momento quieres que tu hijo/a deje de usar Voice Match, basta con que lo inhabilites en los ajustes del Asistente. Para ver o eliminar los audios que ha grabado tu hijo/a durante la configuración de Voice Match, accede a <ph name="VOICE_MATCH_SETTINGS_URL" /> con su cuenta.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Esta página quiere instalar un controlador de servicios</translation>
 <translation id="2309620859903500144">Esta página no tiene permiso para acceder a los sensores de luz y movimiento.</translation>
 <translation id="2312219318583366810">URL de la página</translation>
@@ -1376,6 +1387,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2450849356604136918">No hay vistas activas</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Los sitios se suelen conectar a puertos serie para usarlos en funciones relacionadas con la transferencia de datos, como la configuración de la red.</translation>
+<translation id="2453706416476934374">Para recibir respuestas personalizadas cuando <ph name="SUPERVISED_USER_NAME" /> haga preguntas, permite que el Asistente acceda a una captura que muestre lo que aparece en la pantalla de <ph name="SUPERVISED_USER_NAME" />. Esto podría incluir también información sobre canciones o vídeos que se estén reproduciendo.</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2454247629720664989">Palabra clave</translation>
 <translation id="2454264884354864965">La cámara está desactivada</translation>
@@ -2083,6 +2095,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="32101887417650595">No se puede establecer conexión con la impresora</translation>
 <translation id="321084946921799184">Amarillo y blanco</translation>
 <translation id="321356136776075234">UO del dispositivo (p. ej,. OU=Chromebooks,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que una persona con una voz parecida a la de <ph name="SUPERVISED_USER_NAME" />, o con una grabación de su voz, también pueda acceder a sus resultados personales.</translation>
 <translation id="3216825226035747725">Los administradores de G Suite para Centros Educativos determinan a qué servicios de Google pueden acceder sus usuarios después de haber iniciado sesión en una cuenta de G Suite para Centros Educativos. Es posible que esto incluya algunas funciones o servicios a los que tu hijo/a antes no podía acceder con esta cuenta supervisada. Los administradores de centros educativos deben proporcionar u obtener el consentimiento para que los usuarios menores de edad puedan usar los servicios.</translation>
 <translation id="3217843140356091325">¿Quieres crear un acceso directo?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2260,6 +2273,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3417836307470882032">Formato 24 horas</translation>
 <translation id="3420501302812554910">Es necesario restablecer la llave de seguridad interna</translation>
 <translation id="3421387094817716717">Clave pública de curva elíptica</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una voz similar a la tuya, o con una grabación de tu voz, pueda acceder a tus resultados personales o al Asistente.</translation>
 <translation id="3422291238483866753">Preguntar cuando un sitio web quiera crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara (recomendado)</translation>
 <translation id="3423463006624419153">En tu "<ph name="PHONE_NAME_1" />" y "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Se debe reiniciar <ph name="PRODUCT_NAME" /></translation>
@@ -2633,6 +2647,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3799128412641261490">Ajustes de accesibilidad con interruptores</translation>
 <translation id="3799903419983101749">Continúa donde lo dejaste. Para hacer que las aplicaciones se restauren automáticamente, ve a Configuración.</translation>
 <translation id="3800806661949714323">Mostrar todo (recomendado)</translation>
+<translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad de vídeo</translation>
 <translation id="380408572480438692">Habilitar la recogida de datos de rendimiento ayudará a Google a mejorar el sistema en el futuro. No se enviará ningún dato hasta que no envíes un informe de comentarios (Alt-Mayús-I) e incluyas datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recogida de datos en cualquier momento.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede utilizar en una pantalla de inicio de sesión.</translation>
@@ -2694,6 +2709,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="3856800405688283469">Seleccionar zona horaria</translation>
 <translation id="3857807444929313943">Levanta el dedo y toca de nuevo</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
 <translation id="3861977424605124250">Mostrar al iniciar</translation>
 <translation id="386239283124269513">&amp;Restaurar grupo</translation>
@@ -3998,7 +4014,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="532247166573571973">Es posible que no se pueda acceder al servidor. Vuelve a intentarlo más tarde.</translation>
 <translation id="5324300749339591280">Lista de aplicaciones</translation>
 <translation id="5324780743567488672">Establecer la zona horaria de forma automática según tu ubicación</translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="5327570636534774768">El dispositivo está marcado para que lo gestione un dominio diferente. Dalo de baja de ese dominio antes de configurar el modo de demostración.</translation>
 <translation id="5327912693242073631">Las funciones que requieran notificaciones no funcionarán</translation>
 <translation id="532943162177641444">Toca la notificación en el <ph name="PHONE_NAME" /> para configurar el punto de acceso móvil que este dispositivo puede usar.</translation>
@@ -4647,6 +4662,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6059652578941944813">Jerarquía de certificados</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6061882183774845124">Enviar el enlace a tus dispositivos</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que una persona con una voz parecida a la de <ph name="SUPERVISED_USER_NAME" />, o con una grabación de su voz, también pueda acceder a sus resultados personales. Para ahorrar batería, puedes modificar los ajustes del Asistente de <ph name="SUPERVISED_USER_NAME" /> para que se active "Hey Google" solo cuando este dispositivo esté conectado a una fuente de alimentación.</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
 <translation id="6065289257230303064">Atributos de directorio de la entidad receptora del certificado</translation>
 <translation id="6066794465984119824">El hash de la imagen no está establecido</translation>
@@ -4921,6 +4937,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6345878117466430440">Marcar como leído</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (también denominada ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Navegador en fase experimental con la calidad de una versión alfa. Es posible que algunas funciones no estén disponibles o estén incompletas. Para informar de cualquier problema, ve a Ayuda &gt; Notificar un problema.</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
 <translation id="63566973648609420">Solo alguien que tenga tu frase de contraseña puede leer tus datos cifrados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar estos ajustes, deberás <ph name="BEGIN_LINK" />restablecer la sincronización<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Dragón</translation>
@@ -4986,6 +5003,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">Para usar <ph name="APP_NAME" />, debes actualizar el dispositivo.</translation>
 <translation id="6436164536244065364">Ver en Web Store</translation>
+<translation id="6436610005579237680">Para obtener respuestas más personalizadas, permite que el Asistente de Google acceda a una captura que muestre lo que aparece en tu pantalla cuando hagas preguntas. El Asistente también podría usar información de canciones o vídeos que se estén reproduciendo.</translation>
 <translation id="6438234780621650381">Restablecer configuración</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: reproducción de audio</translation>
 <translation id="6442187272350399447">Impresionante</translation>
@@ -5122,6 +5140,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6582274660680936615">Estás navegando como invitado</translation>
 <translation id="6584878029876017575">Firma de vigencia de Microsoft</translation>
 <translation id="6586099239452884121">Navegación como invitado</translation>
+<translation id="6586213706115310390">Accede al Asistente cuando digas "Hey Google".</translation>
 <translation id="6586451623538375658">Cambiar botón principal del ratón</translation>
 <translation id="6586604979641883411">Se necesitan al menos <ph name="REQUIRED_SPACE" /> de espacio libre en el disco para actualizar Linux. Libera espacio en el dispositivo y vuelve a intentarlo.</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>
@@ -5141,6 +5160,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6602937173026466876">Acceder a tus impresoras</translation>
 <translation id="6602956230557165253">Utiliza las teclas de flecha hacia la izquierda y hacia la derecha para desplazarte.</translation>
 <translation id="6605847144724004692">Los usuarios aún no han valorado esta extensión.</translation>
+<translation id="6606671997164410857">Parece que ya has configurado el Asistente de Google en otro dispositivo. Sácale aún más partido al Asistente activando el contexto de la pantalla en este dispositivo.</translation>
 <translation id="6607831829715835317">Más herramientas</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> ya lo gestiona <ph name="DOMAIN" />. Para usar el control parental con otra cuenta de Google, cierra sesión después de completar la configuración y selecciona "Añadir perfil" en la pantalla de inicio de sesión.</translation>
 <translation id="6609478180749378879">Los datos de inicio de sesión se almacenarán en este dispositivo cuando salgas del modo de incógnito. Podrás volver a iniciar sesión en este sitio web con tu dispositivo más tarde.</translation>
@@ -5320,6 +5340,13 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6808039367995747522">Para seguir, inserta y toca tu llave de seguridad</translation>
 <translation id="6808193438228982088">Zorro</translation>
 <translation id="6809470175540814047">Abrir en una ventana de incógnito</translation>
+<translation id="6809656734323672573">Si aceptas, el Asistente de Google permanecerá en modo inactivo para detectar el comando "Hey Google" y podrá reconocer tu voz con Voice Match.
+    <ph name="BR" />
+    Con Voice Match, el Asistente puede reconocer tu voz y diferenciarla de otras. Lo consigue utilizando grabaciones de tu voz para crear un modelo de voz único que solo se almacena en tu dispositivo. Puede que tu modelo de voz se envíe temporalmente a Google para identificar mejor tu voz.
+    <ph name="BR" />
+    Si en algún momento decides que no quieres usar Voice Match, puedes inhabilitarlo en los ajustes del Asistente. Para ver o eliminar los audios que ha grabado tu hijo/a durante la configuración de Voice Match, accede a <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está inhabilitada, se solicitará la confirmación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="6810768462515084623">¡Vaya! Parece que la contraseña ha caducado. Renuévala en otro dispositivo e inténtalo de nuevo.</translation>
 <translation id="6811034713472274749">Ya se puede ver la página</translation>
@@ -6144,6 +6171,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7690853182226561458">Añadir &amp;carpeta...</translation>
 <translation id="7691073721729883399">No se ha podido activar el directorio principal cifrado de la aplicación de kiosco.</translation>
 <translation id="7691077781194517083">No se puede restablecer esta llave de seguridad. Error <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Hey Google"</translation>
 <translation id="7691698019618282776">Actualización de Crostini</translation>
 <translation id="7696063401938172191">En tu "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Los detalles se ocultan mientras compartes tu pantalla</translation>
@@ -6256,6 +6284,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
+<translation id="7807117920154132308">Parece que <ph name="SUPERVISED_USER_NAME" /> ya ha configurado el Asistente de Google en otro dispositivo. <ph name="SUPERVISED_USER_NAME" /> puede sacarle aún más partido al Asistente activando el contexto de la pantalla en este dispositivo.</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se han bloqueado los pop-ups en esta página.</translation>
 <translation id="781167124805380294">Enviar <ph name="FILE_NAME" /></translation>
@@ -6310,6 +6339,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7847212883280406910">Pulsa Ctrl + Alt + S para cambiar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7849264908733290972">Abrir &amp;imagen en una pestaña nueva</translation>
 <translation id="784934925303690534">Tiempo</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una voz similar a la tuya, o con una grabación de tu voz, pueda acceder a tus resultados personales o al Asistente. Para ahorrar batería, puedes modificar los ajustes del Asistente para que se active "Hey Google" solo cuando este dispositivo esté conectado a una fuente de alimentación.</translation>
 <translation id="7851457902707056880">El inicio de sesión se ha restringido únicamente a la cuenta del propietario. Reinicia el sistema e inicia sesión con la cuenta del propietario. El ordenador se reiniciará automáticamente en 30 segundos.</translation>
 <translation id="7851716364080026749">Bloquear siempre el acceso a la cámara y al micrófono</translation>
 <translation id="7851720427268294554">Analizador de IPP</translation>
@@ -7544,6 +7574,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
       <ph name="LIST_ITEM" />Ejecutar el Diagnóstico de conectividad de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Imagen en imagen</translation>
+<translation id="9166813363879986425">Cuando inicies sesión con tu cuenta de Google en cualquier dispositivo Chrome OS, encontrarás tus preferencias y tu actividad guardadas. Puedes elegir qué contenido quieres sincronizar en Configuración.</translation>
 <translation id="9167063903968449027">Mostrar lista de lectura</translation>
 <translation id="9167450455589251456">No se admite el perfil</translation>
 <translation id="9168436347345867845">En otro momento</translation>

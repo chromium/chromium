@@ -128,6 +128,7 @@
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
+<translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
@@ -223,7 +224,6 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318334351163689047">TCP 요청 실패</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">이름</translation>
 <translation id="5332948983412042822">지금 새 비밀번호를 선택하세요.</translation>
 <translation id="5333530671332546086">알 수 없는 포털 상태</translation>
 <translation id="5372659122375744710">Wi-Fi 네트워크가 안전하지 않습니다.</translation>

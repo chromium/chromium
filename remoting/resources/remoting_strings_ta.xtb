@@ -56,6 +56,7 @@
 <translation id="369442766917958684">ஆஃப்லைன்.</translation>
 <translation id="3695446226812920698">எப்படி என அறிக</translation>
 <translation id="3776024066357219166">உங்கள் Chrome தொலைநிலை டெஸ்க்டாப் அமர்வு முடிந்தது.</translation>
+<translation id="3858860766373142691">பெயர்</translation>
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3905196214175737742">தவறான ஹோஸ்ட் உரிமையாளர் டொமைன்.</translation>
 <translation id="3931191050278863510">ஹோஸ்ட் நிறுத்தப்பட்டது.</translation>
@@ -97,7 +98,6 @@
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
 <translation id="5308380583665731573">இணை</translation>
-<translation id="5327248766486351172">பெயர்</translation>
 <translation id="533625276787323658">இணைப்பதற்கு எதுவுமில்லை</translation>
 <translation id="5397086374758643919">Chrome தொலைநிலை டெஸ்க்டாப் ஹோஸ்ட் நிறுவல்நீக்கி</translation>
 <translation id="5419418238395129586">கடைசியாக ஆன்லைனில் இருந்தது: <ph name="DATE" /></translation>

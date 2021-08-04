@@ -321,6 +321,7 @@
 <translation id="383652340667548381">Serbio</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3855472144336161447">Alemán (Neo 2)</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="386548886866354912">Paquete con <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Descripción</translation>
 <translation id="3899991606604168269">Francés (Canadá) con teclado multilingüe</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
 <translation id="5323213332664049067">Latinoamericano</translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="5330145655348521461">Estos archivos están abiertos en otro escritorio. Ve a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para visualizarlos.</translation>
 <translation id="5330512191124428349">Obtener información</translation>
 <translation id="5335458522276292100">Realizando una copia de seguridad de <ph name="FILE_COUNT" /> en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

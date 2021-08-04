@@ -321,6 +321,7 @@
 <translation id="383652340667548381">Serbe</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3855472144336161447">Allemand (Neo 2)</translation>
+<translation id="3858860766373142691">Nom</translation>
 <translation id="386548886866354912">Archiver avec <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="3899991606604168269">Français (Canada) avec clavier multilingue</translation>
@@ -493,7 +494,6 @@
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318819489018851358">Partager avec Linux</translation>
 <translation id="5323213332664049067">Amérique latine</translation>
-<translation id="5327248766486351172">Nom</translation>
 <translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">En savoir plus</translation>
 <translation id="5335458522276292100">Sauvegarde de <ph name="FILE_COUNT" /> dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /> en cours…</translation>

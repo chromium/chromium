@@ -804,6 +804,7 @@
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
 <translation id="3797522431967816232">Prc3（封筒）</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
+<translation id="380329542618494757">名前</translation>
 <translation id="3807366285948165054">画像の X 軸移動</translation>
 <translation id="3807873520724684969">有害なコンテンツがブロックされました。</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -818,6 +819,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しい Google ドキュメントをすばやく作成します</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3858027520442213535">日時を更新</translation>
+<translation id="3858860766373142691">名前</translation>
 <translation id="3881478300875776315">表示する行数を減らす</translation>
 <translation id="3884278016824448484">競合するデバイス識別子です</translation>
 <translation id="3885155851504623709">教区</translation>
@@ -1245,7 +1247,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />、<ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">連絡作情報を選択</translation>
-<translation id="5327248766486351172">名前</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5332219387342487447">配送方法</translation>
 <translation id="5333022057423422993">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>

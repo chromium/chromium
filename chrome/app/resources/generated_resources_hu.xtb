@@ -2660,6 +2660,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3799128412641261490">A kapcsolóalapú hozzáférés beállításai</translation>
 <translation id="3799903419983101749">Ott folytathatja, ahol abbahagyta. A beállításokban kiválaszthatja azokat az alkalmazásokat, amelyeket automatikusan vissza szeretne állítani.</translation>
 <translation id="3800806661949714323">Összes megjelenítése (ajánlott)</translation>
+<translation id="380329542618494757">Név</translation>
 <translation id="3803345858388753269">Videóminőség</translation>
 <translation id="380408572480438692">A teljesítményadatok gyűjtésének engedélyezésével hozzásegíti a Google-t a rendszer továbbfejlesztéséhez. A rendszer nem küld adatokat, amíg Ön nem nyújt be visszajelzést (Alt-Shift-I), illetve nem mellékeli a teljesítményadatokat. Bármikor visszatérhet erre a képernyőre a gyűjtés letiltásához.</translation>
 <translation id="3807249107536149332">A(z) <ph name="EXTENSION_NAME" /> (bővítményazonosító: „<ph name="EXTENSION_ID" />”) használata nem engedélyezett a bejelentkezési képernyőn.</translation>
@@ -2721,6 +2722,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3856096718352044181">Ellenőrizze a szolgáltató érvényességét, vagy próbálkozzon újra.</translation>
 <translation id="3856800405688283469">Időzóna kiválasztása</translation>
 <translation id="3857807444929313943">Emelje fel, majd érintse újra</translation>
+<translation id="3858860766373142691">Név</translation>
 <translation id="3861638017150647085">A(z) „<ph name="USERNAME" />” felhasználónév nem áll rendelkezésre</translation>
 <translation id="3861977424605124250">Megjelenítés indításkor</translation>
 <translation id="386239283124269513">&amp;Csoport visszaállítása</translation>
@@ -4027,7 +4029,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="532247166573571973">Lehet, hogy nem áll rendelkezésre a szerver. Próbálja újra később.</translation>
 <translation id="5324300749339591280">Alkalmazások listája</translation>
 <translation id="5324780743567488672">Időzóna automatikus beállítása a tartózkodási hely alapján</translation>
-<translation id="5327248766486351172">Név</translation>
 <translation id="5327570636534774768">Megjelölése szerint ezt az eszközt egy másik domain kezeli. A demó mód beállítása előtt válassza le erről a domainről.</translation>
 <translation id="5327912693242073631">Az értesítéseket igénylő funkciók nem működnek majd</translation>
 <translation id="532943162177641444">Koppintson a(z) <ph name="PHONE_NAME" /> eszközére érkező értesítésre az eszköz által használható mobil hotspot beállításához.</translation>

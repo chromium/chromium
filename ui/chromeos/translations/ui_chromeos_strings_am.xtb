@@ -321,6 +321,7 @@
 <translation id="383652340667548381">ሰርቢኛ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3855472144336161447">ጀርመንኛ ኒዮ 2</translation>
+<translation id="3858860766373142691">ስም</translation>
 <translation id="386548886866354912">በ<ph name="EXTENSION_NAME" /> ጋር ጠቅልል</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
 <translation id="3899991606604168269">ፈረንሳይኛ (ካናዳ) በባለብዙ ቋንቋ ቁልፍ ሰሌዳ</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5318819489018851358">ለLinux አጋራ</translation>
 <translation id="5323213332664049067">የላቲን አሜሪካ</translation>
-<translation id="5327248766486351172">ስም</translation>
 <translation id="5330145655348521461">እነዚህ ፋይሎች በተለየ ዴስክቶፕ ላይ ተከፍተዋል። ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="5330512191124428349">መረጃ ያግኙ</translation>
 <translation id="5335458522276292100">የ<ph name="FILE_COUNT" />ን ምትኬ ወደ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> በማስቀመጥ ላይ</translation>

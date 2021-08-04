@@ -288,8 +288,10 @@
 <translation id="3779810277399252432">インターネットに接続されていません。</translation>
 <translation id="3783017676699494206">画像を保存</translation>
 <translation id="3789841737615482174">インストール</translation>
+<translation id="380329542618494757">名前</translation>
 <translation id="3803696231112616155">このサイトを翻訳するか尋ねる</translation>
 <translation id="385051799172605136">戻る</translation>
+<translation id="3858860766373142691">名前</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3913386780052199712">Chrome にログイン</translation>
@@ -427,7 +429,6 @@
 <translation id="5295239312320826323">アカウント（<ph name="USER_EMAIL" />）を削除しますか？</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5317780077021120954">保存</translation>
-<translation id="5327248766486351172">名前</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
 <translation id="5360976571138293719">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5388358297987318779">画像を開く</translation>

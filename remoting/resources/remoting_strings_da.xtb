@@ -56,6 +56,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Få flere oplysninger om, hvordan du gør</translation>
 <translation id="3776024066357219166">Din session med Chrome Fjernskrivebord er afsluttet.</translation>
+<translation id="3858860766373142691">Navn</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Ejerdomænet for hosten er ugyldigt.</translation>
 <translation id="3931191050278863510">Hosten er stoppet.</translation>
@@ -97,7 +98,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5308380583665731573">Få forbindelse</translation>
-<translation id="5327248766486351172">Navn</translation>
 <translation id="533625276787323658">Der er intet at oprette forbindelse til</translation>
 <translation id="5397086374758643919">Afinstallationsprogram til host for Chrome Fjernskrivebord</translation>
 <translation id="5419418238395129586">Sidst online: <ph name="DATE" /></translation>

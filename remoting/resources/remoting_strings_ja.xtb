@@ -56,6 +56,7 @@
 <translation id="369442766917958684">オフラインです。</translation>
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3776024066357219166">Chrome リモート デスクトップ セッションが終了しました。</translation>
+<translation id="3858860766373142691">名前</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3905196214175737742">ホストの所有者ドメインが無効です。</translation>
 <translation id="3931191050278863510">ホストが停止しました。</translation>
@@ -97,7 +98,6 @@
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5308380583665731573">接続</translation>
-<translation id="5327248766486351172">名前</translation>
 <translation id="533625276787323658">接続先がありません</translation>
 <translation id="5397086374758643919">Chrome リモート デスクトップ ホストのアンインストーラ</translation>
 <translation id="5419418238395129586">前回のインターネット接続日: <ph name="DATE" /></translation>

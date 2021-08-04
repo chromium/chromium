@@ -811,6 +811,7 @@
 <translation id="3793574014653384240">មូលហេតុ និងចំនួននៃការគាំង ដែលបានកើតឡើងកាលពីពេលថ្មីៗនេះ</translation>
 <translation id="3797522431967816232">Prc3 (ស្រោម​សំបុត្រ)</translation>
 <translation id="3799805948399000906">បានស្នើសុំ​ពុម្ពអក្សរ</translation>
+<translation id="380329542618494757">ឈ្មោះ</translation>
 <translation id="3807366285948165054">ការប្ដូរ​រូបភាព X</translation>
 <translation id="3807873520724684969">បាន​ទប់ស្កាត់ខ្លឹមសារ​ដែលបង្ក​គ្រោះថ្នាក់។</translation>
 <translation id="3810973564298564668">គ្រប់គ្រង</translation>
@@ -825,6 +826,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីបង្កើត​ឯកសារ Google ថ្មីបានរហ័ស</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="3858027520442213535">ធ្វើបច្ចុប្បន្នភាពកាលបរិច្ឆេទ និងម៉ោង</translation>
+<translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3881478300875776315">បង្ហាញបន្ទាត់តិចជាងនេះ</translation>
 <translation id="3884278016824448484">មានបញ្ហាជាមួយឧបករណ៍សម្គាល់ឧបករណ៍</translation>
 <translation id="3885155851504623709">តំបន់រដ្ឋបាល</translation>
@@ -1258,7 +1260,6 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> ក្នុង​ចំណោម <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">ជ្រើសរើស​ព័ត៌មាន​ទំនាក់ទំនង</translation>
-<translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5329858041417644019">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកមិនត្រូវ​បានគ្រប់គ្រងទេ</translation>
 <translation id="5332219387342487447">វិធីសាស្រ្ត​នៃការ​ដឹកជញ្ជូន</translation>
 <translation id="5333022057423422993">Chrome បានរកឃើញ​ពាក្យសម្ងាត់​ដែលអ្នកទើបតែប្រើ នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យ។ ដើម្បី​រក្សាសុវត្ថិភាព​គណនីរបស់អ្នក យើងសូមណែនាំឱ្យ​ពិនិត្យមើល​ពាក្យសម្ងាត់​ដែលអ្នកបានរក្សាទុក។</translation>

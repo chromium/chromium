@@ -128,6 +128,7 @@
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
 <translation id="3941014780699102620">no se pudo resolver el host</translation>
@@ -223,7 +224,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Fallos de solicitudes de TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="5332948983412042822">Elige una nueva ahora</translation>
 <translation id="5333530671332546086">Estado desconocido del portal</translation>
 <translation id="5372659122375744710">la red Wi-Fi no es segura</translation>

@@ -56,6 +56,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Postup</translation>
 <translation id="3776024066357219166">Relace Vzdálené plochy Chrome byla ukončena.</translation>
+<translation id="3858860766373142691">Název</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3905196214175737742">Neplatná doména vlastníka hostitele.</translation>
 <translation id="3931191050278863510">Hostitel byl zastaven.</translation>
@@ -97,7 +98,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5308380583665731573">Připojení</translation>
-<translation id="5327248766486351172">Jméno</translation>
 <translation id="533625276787323658">Není k dispozici žádné zařízení, ke kterému by bylo možné se připojit.</translation>
 <translation id="5397086374758643919">Nástroj k odinstalaci hostitele Vzdálené plochy Chrome</translation>
 <translation id="5419418238395129586">Naposledy online: <ph name="DATE" /></translation>

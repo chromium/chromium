@@ -288,8 +288,10 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3779810277399252432">Ingen internetforbindelse.</translation>
 <translation id="3783017676699494206">Gem billede</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilbyd at oversætte dette website</translation>
 <translation id="385051799172605136">Tilbage</translation>
+<translation id="3858860766373142691">Navn</translation>
 <translation id="3892144330757387737">Her kan du se din historik</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Logget ind på Chrome</translation>
@@ -427,7 +429,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Gem</translation>
-<translation id="5327248766486351172">Navn</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Åbn billede</translation>

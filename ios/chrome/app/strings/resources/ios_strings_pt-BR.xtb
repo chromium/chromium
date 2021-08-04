@@ -288,8 +288,10 @@ Siga estas etapas:</translation>
 <translation id="3779810277399252432">Sem conexão com a Internet.</translation>
 <translation id="3783017676699494206">Salvar imagem</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Oferecer a opção de traduzir esse site</translation>
 <translation id="385051799172605136">Voltar</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3892144330757387737">Você verá seu histórico aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Conta conectada ao Chrome</translation>
@@ -427,7 +429,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Salvar</translation>
-<translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Ativar a sincronização</translation>
 <translation id="5360976571138293719">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Abrir imagem</translation>

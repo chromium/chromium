@@ -808,6 +808,7 @@
 <translation id="3793574014653384240">Број недавних отказивања и разлози</translation>
 <translation id="3797522431967816232">Prc3 (коверат)</translation>
 <translation id="3799805948399000906">Фонт је затражен</translation>
+<translation id="380329542618494757">Име</translation>
 <translation id="3807366285948165054">Померање слике по X оси</translation>
 <translation id="3807873520724684969">Блокиран је штетан садржај.</translation>
 <translation id="3810973564298564668">Промени</translation>
@@ -822,6 +823,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов Google документ</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Ажурирајте датум и време</translation>
+<translation id="3858860766373142691">Назив</translation>
 <translation id="3881478300875776315">Прикажи мање редова</translation>
 <translation id="3884278016824448484">Неусаглашени идентификатор уређаја</translation>
 <translation id="3885155851504623709">Парохија</translation>
@@ -1254,7 +1256,6 @@
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />. од <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Одаберите контакт информације</translation>
-<translation id="5327248766486351172">Назив</translation>
 <translation id="5329858041417644019">Прегледачем нико не управља</translation>
 <translation id="5332219387342487447">Начин испоруке</translation>
 <translation id="5333022057423422993">Chrome је пронашао лозинку коју сте управо користили при повреди података. Да бисте заштитили налоге, препоручујемо вам да проверите сачуване лозинке.</translation>

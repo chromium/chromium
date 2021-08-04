@@ -321,6 +321,7 @@
 <translation id="383652340667548381">เซอร์เบีย</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3855472144336161447">Neo 2 แบบเยอรมัน</translation>
+<translation id="3858860766373142691">ชื่อ</translation>
 <translation id="386548886866354912">แพ็กด้วย <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="3899991606604168269">ฝรั่งเศส (แคนาดา) ด้วยแป้นพิมพ์หลายภาษา</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318819489018851358">แชร์กับ Linux</translation>
 <translation id="5323213332664049067">ละตินอเมริกา</translation>
-<translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5330145655348521461">ไฟล์เหล่านี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="5330512191124428349">รับข้อมูล</translation>
 <translation id="5335458522276292100">กำลังสำรอง <ph name="FILE_COUNT" />ไปยัง <ph name="BEGIN_LINK" />Google ไดรฟ์<ph name="END_LINK" /></translation>

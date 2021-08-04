@@ -321,6 +321,7 @@
 <translation id="383652340667548381">စာဘီယန်</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
+<translation id="3858860766373142691">အမည်</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> ဖြင့်ထုပ်ပိုးပါ</translation>
 <translation id="3866249974567520381">ဖေါ်ပြချက်</translation>
 <translation id="3899991606604168269">ဘာသာစကားအမျိုးမျိုး ကီးဘုတ်ဖြင့် ပြင်သစ် (ကနေဒါ)</translation>
@@ -491,7 +492,6 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5318819489018851358">Linux ဖြင့် မျှဝေရန်</translation>
 <translation id="5323213332664049067">လက်တင် အမေရိက</translation>
-<translation id="5327248766486351172">အမည်</translation>
 <translation id="5330145655348521461">ဤဖိုင်များကို အခြား ဒက်စ်တော့မှာ ဖွင့်ထားသည်။  ၎င်းကို ကြည့်ရန် <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)သို့ သွားပါ။</translation>
 <translation id="5330512191124428349">အချက်အလက်ရယူရန်</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> ကို <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> သို့ မိတ္ထူကူးနေသည်</translation>

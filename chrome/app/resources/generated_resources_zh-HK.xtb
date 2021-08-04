@@ -2661,6 +2661,7 @@
 <translation id="3799128412641261490">「按鈕控制」設定</translation>
 <translation id="3799903419983101749">繼續進行還原程序。您可在「設定」中將應用程式設定為自動還原。</translation>
 <translation id="3800806661949714323">顯示全部 (推薦)</translation>
+<translation id="380329542618494757">名稱</translation>
 <translation id="3803345858388753269">影片品質</translation>
 <translation id="380408572480438692">啟用效能數據收集功能可協助 Google 持續改善系統。除非您提交意見反映報告 (Alt-Shift-I) 並在其中包含效能數據，否則 Google 不會收到任何相關數據。您可以隨時返回這個螢幕停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充程式 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
@@ -2722,6 +2723,7 @@
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3856800405688283469">選取時區</translation>
 <translation id="3857807444929313943">提起手指，然後再次輕觸</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3861977424605124250">啟動時顯示</translation>
 <translation id="386239283124269513">還原群組</translation>
@@ -4028,7 +4030,6 @@
 <translation id="532247166573571973">可能無法連接伺服器，請稍後再試。</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置設定時區</translation>
-<translation id="5327248766486351172">名稱</translation>
 <translation id="5327570636534774768">此裝置已標記為由其他網域管理。請先從該網域取消裝置使用權限，再設定示範模式。</translation>
 <translation id="5327912693242073631">需要傳送通知的功能將無法運作</translation>
 <translation id="532943162177641444">輕按 <ph name="PHONE_NAME" /> 上的通知，即可設定可供此裝置使用的流動熱點。</translation>

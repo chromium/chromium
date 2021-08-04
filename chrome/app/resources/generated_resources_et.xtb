@@ -2653,6 +2653,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3799128412641261490">Lülitiga juurdepääsu seaded</translation>
 <translation id="3799903419983101749">Jätkake sealt, kus pooleli jäite. Seadetes saate seadistada rakenduste automaatse taastamise.</translation>
 <translation id="3800806661949714323">Kuva kõik (soovitatud)</translation>
+<translation id="380329542618494757">Nimi</translation>
 <translation id="3803345858388753269">Videokvaliteet</translation>
 <translation id="380408572480438692">Kui lubate toimivusandmete kogumise, siis aitab see Google'il aja jooksul süsteemi täiustada. Andmed saadetakse alles siis, kui saadate tagasiside aruande (Alt-tõstuklahv-I) ja lisate toimivusandmed. Võite igal ajal naasta sellele kuvale ja keelata andmete kogumise.</translation>
 <translation id="3807249107536149332">Laiendus <ph name="EXTENSION_NAME" /> (laienduse ID „<ph name="EXTENSION_ID" />”) pole sisselogimisekraanil lubatud.</translation>
@@ -2714,6 +2715,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
 <translation id="3856800405688283469">Ajavööndi valimine</translation>
 <translation id="3857807444929313943">Tõstke sõrm andurilt ja seejärel puudutage uuesti</translation>
+<translation id="3858860766373142691">Nimi</translation>
 <translation id="3861638017150647085">Kasutajanime „<ph name="USERNAME" />” pole saadaval</translation>
 <translation id="3861977424605124250">Kuva käivitamisel</translation>
 <translation id="386239283124269513">&amp;Taasta grupp</translation>
@@ -4019,7 +4021,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="532247166573571973">Serveriga ei pruugi ühendust saada. Proovige hiljem uuesti.</translation>
 <translation id="5324300749339591280">Rakenduste loend</translation>
 <translation id="5324780743567488672">Määra ajavöönd asukoha alusel automaatselt</translation>
-<translation id="5327248766486351172">Nimi</translation>
 <translation id="5327570636534774768">Seade on märgitud muu domeeni kaudu haldamiseks. Enne demorežiimi seadistamist eemaldage seade sellest domeenist.</translation>
 <translation id="5327912693242073631">Märguandeid vajavad funktsioonid ei tööta</translation>
 <translation id="532943162177641444">Puudutage seadmes <ph name="PHONE_NAME" /> märguannet, et seadistada mobiilne leviala, mida see seade saab kasutada.</translation>

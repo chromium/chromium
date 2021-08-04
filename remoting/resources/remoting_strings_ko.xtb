@@ -56,6 +56,7 @@
 <translation id="369442766917958684">오프라인.</translation>
 <translation id="3695446226812920698">자세히 알아보기</translation>
 <translation id="3776024066357219166">Chrome 원격 데스크톱 세션이 종료되었습니다.</translation>
+<translation id="3858860766373142691">이름</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3905196214175737742">잘못된 호스트 소유자 도메인입니다.</translation>
 <translation id="3931191050278863510">호스트가 중지되었습니다.</translation>
@@ -97,7 +98,6 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5308380583665731573">연결</translation>
-<translation id="5327248766486351172">이름</translation>
 <translation id="533625276787323658">연결 대상이 없습니다.</translation>
 <translation id="5397086374758643919">Chrome 원격 데스크톱 호스트 제거 프로그램</translation>
 <translation id="5419418238395129586">최근 온라인 접속일: <ph name="DATE" /></translation>

@@ -56,6 +56,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="369442766917958684">Naka-offline.</translation>
 <translation id="3695446226812920698">Alamin kung paano</translation>
 <translation id="3776024066357219166">Natapos na ang iyong session sa Remote na Desktop ng Chrome.</translation>
+<translation id="3858860766373142691">Pangalan</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Di-wastong domain ng may-ari ng host.</translation>
 <translation id="3931191050278863510">Huminto ang host.</translation>
@@ -97,7 +98,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
-<translation id="5327248766486351172">Pangalan</translation>
 <translation id="533625276787323658">Walang mapagkokonektahan</translation>
 <translation id="5397086374758643919">Uninstaller ng Host ng Remote na Desktop ng Chrome</translation>
 <translation id="5419418238395129586">Huling nag-online: <ph name="DATE" /></translation>

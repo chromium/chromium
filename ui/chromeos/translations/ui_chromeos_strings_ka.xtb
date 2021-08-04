@@ -321,6 +321,7 @@
 <translation id="383652340667548381">სერბული</translation>
 <translation id="385051799172605136">უკან</translation>
 <translation id="3855472144336161447">გერმანული Neo 2</translation>
+<translation id="3858860766373142691">სახელი</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" />-ით შეფუთვა</translation>
 <translation id="3866249974567520381">აღწერა</translation>
 <translation id="3899991606604168269">ფრანგული (კანადა) მრავალენოვანი კლავიატურით</translation>
@@ -491,7 +492,6 @@
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318819489018851358">Linux-თან გაზიარება</translation>
 <translation id="5323213332664049067">ლათინური ამერიკა</translation>
-<translation id="5327248766486351172">სახელი</translation>
 <translation id="5330145655348521461">ეს ფაილი გახსნილია სხვადასხვა სამუშაო მაგიდაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="5330512191124428349">ინფორმაციის მიღება</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> კოპირდება <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ის სარეზერვო საცავში</translation>

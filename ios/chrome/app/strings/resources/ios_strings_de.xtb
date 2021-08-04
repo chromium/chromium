@@ -288,8 +288,10 @@ Gehen Sie so vor:</translation>
 <translation id="3779810277399252432">Keine Internetverbindung</translation>
 <translation id="3783017676699494206">Bild speichern</translation>
 <translation id="3789841737615482174">Installieren</translation>
+<translation id="380329542618494757">Name</translation>
 <translation id="3803696231112616155">Übersetzung für diese Seite anbieten</translation>
 <translation id="385051799172605136">Zurück</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="3892144330757387737">Hier wird Ihr Verlauf angezeigt</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3913386780052199712">In Chrome angemeldet</translation>
@@ -427,7 +429,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5295239312320826323">Konto <ph name="USER_EMAIL" /> entfernen?</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5317780077021120954">Speichern</translation>
-<translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Synchronisierung aktivieren</translation>
 <translation id="5360976571138293719">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Bild öffnen</translation>

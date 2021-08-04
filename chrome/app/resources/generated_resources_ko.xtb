@@ -2662,6 +2662,7 @@
 <translation id="3799128412641261490">스위치 제어 설정</translation>
 <translation id="3799903419983101749">이전에 끝냈던 지점에서 다시 시작하세요. 설정에서 앱이 자동으로 복원되도록 설정할 수 있습니다.</translation>
 <translation id="3800806661949714323">모두 표시(권장)</translation>
+<translation id="380329542618494757">이름</translation>
 <translation id="3803345858388753269">동영상 품질</translation>
 <translation id="380408572480438692">성능 데이터를 수집하도록 설정하면 시간이 지남에 따라 Google에서 시스템을 개선하는 데 도움이 됩니다. 데이터는 사용자가 피드백 보고서를 제출하고(Alt-Shift-I) 성능 데이터를 포함할 때까지 전송되지 않습니다. 언제든지 이 화면으로 돌아와 데이터 수집을 중지할 수 있습니다.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" />(확장 프로그램 ID: '<ph name="EXTENSION_ID" />')은(는) 로그인 화면에서 허용되지 않습니다.</translation>
@@ -2723,6 +2724,7 @@
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3856800405688283469">시간대 선택</translation>
 <translation id="3857807444929313943">손가락을 뗀 후 다시 터치</translation>
+<translation id="3858860766373142691">이름</translation>
 <translation id="3861638017150647085">사용자 이름 ‘<ph name="USERNAME" />’은(는) 사용할 수 없습니다.</translation>
 <translation id="3861977424605124250">시작 시 표시</translation>
 <translation id="386239283124269513">그룹 복원(&amp;R)</translation>
@@ -4026,7 +4028,6 @@
 <translation id="532247166573571973">서버 접속이 불가능할 수 있습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5324300749339591280">앱 목록</translation>
 <translation id="5324780743567488672">사용자 위치를 사용하여 자동으로 시간대 설정</translation>
-<translation id="5327248766486351172">이름</translation>
 <translation id="5327570636534774768">이 기기는 다른 도메인에서 관리하는 것으로 표시되어 있습니다. 데모 모드를 설정하기 전에 관련 도메인에서 기기의 프로비저닝을 해제하세요.</translation>
 <translation id="5327912693242073631">알림이 필요한 기능이 작동하지 않음</translation>
 <translation id="532943162177641444">이 기기에서 사용할 수 있는 모바일 핫스팟을 설정하려면 <ph name="PHONE_NAME" />에서 알림을 탭하세요.</translation>

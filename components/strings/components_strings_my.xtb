@@ -807,6 +807,7 @@
 <translation id="3793574014653384240">မကြာသေးမီက ဖြစ်ပွားခဲ့သည့် ရပ်တန့်သွားခြင်း အရေအတွက်များနှင့် အကြောင်းရင်းများ</translation>
 <translation id="3797522431967816232">Prc3 (စာအိတ်)</translation>
 <translation id="3799805948399000906">ဖောင့်တောင်းဆိုထားသည်</translation>
+<translation id="380329542618494757">အမည်</translation>
 <translation id="3807366285948165054">ပုံအလျားလိုက် အရွှေ့</translation>
 <translation id="3807873520724684969">အန္တရာယ်ရှိသည့် အကြောင်းအရာများကို ပိတ်ထားပါသည်။</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
@@ -821,6 +822,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Doc အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3858027520442213535">ရက်စွဲ နှင့် အချိန်ကို မွမ်းမံပါ</translation>
+<translation id="3858860766373142691">အမည်</translation>
 <translation id="3881478300875776315">စာကြောင်းလျှော့၍ပြရန်</translation>
 <translation id="3884278016824448484">စက်ပစ္စည်း မည်သူမည်ဝါဖြစ်ကြောင်း အသိမှတ်ပြုသူ ရှုပ်ထွေးနေ</translation>
 <translation id="3885155851504623709">နယ်​မြေ</translation>
@@ -1254,7 +1256,6 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5323105697514565458"><ph name="NUM_MATCHES" /> အနက်မှ <ph name="FRIENDLY_MATCH_TEXT" />၊ <ph name="MATCH_POSITION" /></translation>
 <translation id="5324080437450482387">အဆက်အသွယ်အချက်အလက် ရွေးရန်</translation>
-<translation id="5327248766486351172">အမည်</translation>
 <translation id="5329858041417644019">သင်၏ ဘရောင်ဇာကို စီမံခန့်ခွဲမထားပါ</translation>
 <translation id="5332219387342487447">ပစ္စည်းပို့ရန် နည်းလမ်း</translation>
 <translation id="5333022057423422993">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် Chrome က တွေ့ရှိထားသည်။ သင့်အကောင့်များ လုံခြုံစေရန်အတွက် သိမ်းထားသောစကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>

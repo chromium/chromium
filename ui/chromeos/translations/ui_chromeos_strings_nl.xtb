@@ -321,6 +321,7 @@
 <translation id="383652340667548381">Servisch</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3855472144336161447">Duits Neo 2</translation>
+<translation id="3858860766373142691">Naam</translation>
 <translation id="386548886866354912">Inpakken met <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Beschrijving</translation>
 <translation id="3899991606604168269">Frans (Canada) met meertalig toetsenbord</translation>
@@ -493,7 +494,6 @@
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318819489018851358">Delen met Linux</translation>
 <translation id="5323213332664049067">Latijns-Amerikaans</translation>
-<translation id="5327248766486351172">Naam</translation>
 <translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze te bekijken.</translation>
 <translation id="5330512191124428349">Informatie ophalen</translation>
 <translation id="5335458522276292100">Back-up van <ph name="FILE_COUNT" /> maken op <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

@@ -321,6 +321,7 @@
 <translation id="383652340667548381">塞爾維亞文</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德文 Neo 2</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="386548886866354912">使用「<ph name="EXTENSION_NAME" />」封裝</translation>
 <translation id="3866249974567520381">說明</translation>
 <translation id="3899991606604168269">法文 (加拿大) 搭配多語鍵盤</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318819489018851358">與 Linux 共用</translation>
 <translation id="5323213332664049067">拉丁美洲</translation>
-<translation id="5327248766486351172">名稱</translation>
 <translation id="5330145655348521461">這些檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="5330512191124428349">取得資訊</translation>
 <translation id="5335458522276292100">正在將 <ph name="FILE_COUNT" />備份到 <ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" /></translation>

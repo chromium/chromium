@@ -56,6 +56,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="369442766917958684">離線。</translation>
 <translation id="3695446226812920698">瞭解詳情</translation>
 <translation id="3776024066357219166">您的 Chrome 遠端桌面工作階段已結束。</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3905196214175737742">主機擁有者網域無效。</translation>
 <translation id="3931191050278863510">主機已停止。</translation>
@@ -97,7 +98,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="5222676887888702881">登出</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5308380583665731573">連線</translation>
-<translation id="5327248766486351172">名稱</translation>
 <translation id="533625276787323658">沒有可供連線的電腦</translation>
 <translation id="5397086374758643919">Chrome 遠端桌面主機端解除安裝程式</translation>
 <translation id="5419418238395129586">上次上網日期：<ph name="DATE" /></translation>

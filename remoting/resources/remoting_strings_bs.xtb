@@ -56,6 +56,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="369442766917958684">Van mreže.</translation>
 <translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3776024066357219166">Završila je vaša sesija u aplikaciji Udaljena radna površina Chrome.</translation>
+<translation id="3858860766373142691">Naziv</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3905196214175737742">Nevažeća domena vlasnika host računara.</translation>
 <translation id="3931191050278863510">Host računar je zaustavljen.</translation>
@@ -97,7 +98,6 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5308380583665731573">Poveži</translation>
-<translation id="5327248766486351172">Ime</translation>
 <translation id="533625276787323658">Nema računara za povezivanje</translation>
 <translation id="5397086374758643919">Program za deinstaliranje hosta Chrome udaljenog računara</translation>
 <translation id="5419418238395129586">Posljednji put na mreži: <ph name="DATE" /></translation>

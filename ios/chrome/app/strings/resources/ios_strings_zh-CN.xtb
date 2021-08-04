@@ -288,8 +288,10 @@
 <translation id="3779810277399252432">无互联网连接。</translation>
 <translation id="3783017676699494206">保存图片</translation>
 <translation id="3789841737615482174">安装</translation>
+<translation id="380329542618494757">名称</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3858860766373142691">名称</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
@@ -427,7 +429,6 @@
 <translation id="5295239312320826323">移除帐号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5317780077021120954">保存</translation>
-<translation id="5327248766486351172">名称</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="5388358297987318779">打开图片</translation>

@@ -803,6 +803,7 @@
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
 <translation id="3797522431967816232">Prc3 (信封)</translation>
 <translation id="3799805948399000906">要求的字型</translation>
+<translation id="380329542618494757">名稱</translation>
 <translation id="3807366285948165054">圖片 X 軸移動</translation>
 <translation id="3807873520724684969">有害內容已被封鎖。</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -817,6 +818,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以快速建立新嘅 Google 文件</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858027520442213535">更新日期和時間</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
 <translation id="3884278016824448484">裝置識別碼發生衝突</translation>
 <translation id="3885155851504623709">管轄區</translation>
@@ -1244,7 +1246,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，<ph name="NUM_MATCHES" /> 個入面嘅第 <ph name="MATCH_POSITION" /> 個</translation>
 <translation id="5324080437450482387">選擇聯絡人資料</translation>
-<translation id="5327248766486351172">名稱</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5333022057423422993">Chrome 發現您剛才使用的密碼因資料外洩而被洩露。如要確保帳戶安全，建議您檢查已儲存的密碼。</translation>

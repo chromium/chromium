@@ -329,6 +329,7 @@
 </translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3855472144336161447">Γερμανικά Neo 2</translation>
+<translation id="3858860766373142691">Όνομα</translation>
 <translation id="386548886866354912">Συμπίεση με <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Περιγραφή</translation>
 <translation id="3899991606604168269">Γαλλικά (Καναδά) με πολύγλωσσο πληκτρολόγιο</translation>
@@ -504,7 +505,6 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318819489018851358">Κοινοποίηση σε Linux</translation>
 <translation id="5323213332664049067">Λατινικής Αμερικής</translation>
-<translation id="5327248766486351172">Όνομα</translation>
 <translation id="5330145655348521461">Αυτά τα αρχεία άνοιξαν σε διαφορετικό προφίλ. Μεταφερθείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να τα δείτε.</translation>
 <translation id="5330512191124428349">Λήψη πληροφοριών</translation>
 <translation id="5335458522276292100">Δημιουργία αντιγράφων ασφαλείας για <ph name="FILE_COUNT" /> αρχεία στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

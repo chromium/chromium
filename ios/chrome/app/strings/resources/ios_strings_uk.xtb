@@ -288,8 +288,10 @@
 <translation id="3779810277399252432">Немає з’єднання з Інтернетом</translation>
 <translation id="3783017676699494206">Зберегти зображення</translation>
 <translation id="3789841737615482174">Установити</translation>
+<translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803696231112616155">Пропонувати переклад для цього сайту</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3858860766373142691">Назва</translation>
 <translation id="3892144330757387737">Тут відображатиметься ваша історія</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3913386780052199712">Ви ввійшли в Chrome</translation>
@@ -427,7 +429,6 @@
 <translation id="5295239312320826323">Вилучити обліковий запис <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5317780077021120954">Зберегти</translation>
-<translation id="5327248766486351172">Ім’я</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Відкрити зображення</translation>

@@ -288,8 +288,10 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
 <translation id="3783017676699494206">Shrani sliko</translation>
 <translation id="3789841737615482174">Namesti</translation>
+<translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod tega spletnega mesta</translation>
 <translation id="385051799172605136">Nazaj</translation>
+<translation id="3858860766373142691">Ime</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3913386780052199712">Prijavljeni ste v Chrome</translation>
@@ -427,7 +429,6 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5295239312320826323">Želite odstraniti račun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5317780077021120954">Shrani</translation>
-<translation id="5327248766486351172">Ime</translation>
 <translation id="5339316356165661760">Vklopi sinhronizacijo</translation>
 <translation id="5360976571138293719">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelek <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Odpri sliko</translation>

@@ -288,8 +288,10 @@
 <translation id="3779810277399252432">Нема интернет-врска.</translation>
 <translation id="3783017676699494206">Зачувај слика</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
+<translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3858860766373142691">Име</translation>
 <translation id="3892144330757387737">Вашата историја ќе ја најдете тука</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3913386780052199712">Најавени сте на Chrome</translation>
@@ -427,7 +429,6 @@
 <translation id="5295239312320826323">Да се отстрани сметката <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5317780077021120954">Зачувај</translation>
-<translation id="5327248766486351172">Име</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
 <translation id="5360976571138293719">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Отвори слика</translation>

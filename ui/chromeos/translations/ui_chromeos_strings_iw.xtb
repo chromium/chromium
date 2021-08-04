@@ -321,6 +321,7 @@
 <translation id="383652340667548381">סרבית</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3855472144336161447">‏גרמנית - Neo 2</translation>
+<translation id="3858860766373142691">שם</translation>
 <translation id="386548886866354912">הוספה לחבילה יחד עם <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">תיאור</translation>
 <translation id="3899991606604168269">צרפתית (קנדה) עם מקלדת רב-לשונית</translation>
@@ -493,7 +494,6 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318819489018851358">‏שיתוף עם Linux</translation>
 <translation id="5323213332664049067">אמריקאית לטינית</translation>
-<translation id="5327248766486351172">שם</translation>
 <translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
 <translation id="5335458522276292100">‏גיבוי <ph name="FILE_COUNT" /> ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> מתבצע</translation>

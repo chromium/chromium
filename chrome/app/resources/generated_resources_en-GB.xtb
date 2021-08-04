@@ -2662,6 +2662,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3799128412641261490">Switch access settings</translation>
 <translation id="3799903419983101749">Continue from where you left off. You can set apps to restore automatically in Settings.</translation>
 <translation id="3800806661949714323">Show all (recommended)</translation>
+<translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Video quality</translation>
 <translation id="380408572480438692">Enabling collection of performance data will help Google improve the system over time. No data is sent until you file a feedback report (Alt-Shift-I) and include performance data. You can return to this screen to disable collection at any time.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed on a login screen.</translation>
@@ -2723,6 +2724,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3857807444929313943">Lift, then touch again</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
 <translation id="3861977424605124250">Show on startup</translation>
 <translation id="386239283124269513">&amp;Restore group</translation>
@@ -4029,7 +4031,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5324300749339591280">Apps list</translation>
 <translation id="5324780743567488672">Set time zone automatically using your location</translation>
-<translation id="5327248766486351172">Name</translation>
 <translation id="5327570636534774768">This device is marked for management by a different domain. Deprovision it from that domain before setting up demo mode.</translation>
 <translation id="5327912693242073631">Features that need notifications won't work</translation>
 <translation id="532943162177641444">Tap the notification on your <ph name="PHONE_NAME" /> to set up the mobile hotspot that can be used by this device.</translation>

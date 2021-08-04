@@ -56,6 +56,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="369442766917958684">Hors ligne</translation>
 <translation id="3695446226812920698">Découvrez comment</translation>
 <translation id="3776024066357219166">Votre session de Bureau à distance Chrome est terminée.</translation>
+<translation id="3858860766373142691">Nom</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Domaine du propriétaire de l'hôte non valide.</translation>
 <translation id="3931191050278863510">Hôte interrompu.</translation>
@@ -97,7 +98,6 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5308380583665731573">Connecter</translation>
-<translation id="5327248766486351172">Nom</translation>
 <translation id="533625276787323658">Il n'existe aucun ordinateur auquel se connecter</translation>
 <translation id="5397086374758643919">Programme de désinstallation de l'hôte de Bureau à distance Chrome</translation>
 <translation id="5419418238395129586">Dernière connexion : <ph name="DATE" /></translation>

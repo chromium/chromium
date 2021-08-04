@@ -2662,6 +2662,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3799128412641261490">Stillingar rofaaðgangs</translation>
 <translation id="3799903419983101749">Haltu áfram þar sem þú hættir síðast. Þú getur valið forrit sem á að endurheimta sjálfkrafa í stillingum.</translation>
 <translation id="3800806661949714323">Sýna allt (ráðlagt)</translation>
+<translation id="380329542618494757">Nafn</translation>
 <translation id="3803345858388753269">Myndgæði</translation>
 <translation id="380408572480438692">Ef söfnun afkastagagna er gerð virk hjálpar það Google að bæta kerfið með tímanum. Engin gögn eru send nema þú sendir inn skýrslu með ábendingum þínum (Alt-Shift-I) og látir gögn um afköst fylgja með. Þú getur komið aftur hingað hvenær sem er til að slökkva á gagnasöfnuninni.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er ekki leyfð á innskráningarskjá.</translation>
@@ -2723,6 +2724,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3856096718352044181">Gakktu úr skugga um að þetta sé staðfest veita eða reyndu aftur síðar</translation>
 <translation id="3856800405688283469">Veldu tímabelti</translation>
 <translation id="3857807444929313943">Lyftu upp og snertu aftur með fingrinum</translation>
+<translation id="3858860766373142691">Heiti</translation>
 <translation id="3861638017150647085">Notandanafnið „<ph name="USERNAME" />“ er ekki laust</translation>
 <translation id="3861977424605124250">Birta við ræsingu</translation>
 <translation id="386239283124269513">&amp;Endurheimta hóp</translation>
@@ -4029,7 +4031,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="532247166573571973">Hugsanlega er ekki hægt að ná í þjóninn. Reyndu aftur síðar.</translation>
 <translation id="5324300749339591280">Forritalisti</translation>
 <translation id="5324780743567488672">Stilla tímabelti sjálfkrafa eftir staðsetningunni þinni</translation>
-<translation id="5327248766486351172">Heiti</translation>
 <translation id="5327570636534774768">Þetta tæki lýtur stjórn á öðru léni. Afturkallaðu úthlutun þess á því léni áður en prufustillingin er sett upp.</translation>
 <translation id="5327912693242073631">Eiginleikar sem þarfnast tilkynninga munu ekki virka</translation>
 <translation id="532943162177641444">Pikkaðu á tilkynninguna í <ph name="PHONE_NAME" /> til að setja upp farsímaaðgangsstað fyrir þetta tæki.</translation>

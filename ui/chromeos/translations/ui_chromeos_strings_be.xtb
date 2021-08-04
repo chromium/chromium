@@ -321,6 +321,7 @@
 <translation id="383652340667548381">Сербская</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Нямецкая (Neo 2)</translation>
+<translation id="3858860766373142691">Назва</translation>
 <translation id="386548886866354912">Запакаваць з дапамогай <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Апісанне</translation>
 <translation id="3899991606604168269">Французская (Канада) з раскладкай для некалькіх моў</translation>
@@ -491,7 +492,6 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318819489018851358">Абагуліць з Linux</translation>
 <translation id="5323213332664049067">Лацінаамерыканская</translation>
-<translation id="5327248766486351172">Імя</translation>
 <translation id="5330145655348521461">Гэтыя файлы адкрыты на іншым працоўным стале. Каб бачыць яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Атрымаць інфармацыю</translation>
 <translation id="5335458522276292100">Ідзе рэзервовае капіраванне файлаў (<ph name="FILE_COUNT" />) на <ph name="BEGIN_LINK" />Google Дыск<ph name="END_LINK" /></translation>

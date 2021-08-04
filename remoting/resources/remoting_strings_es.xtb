@@ -56,6 +56,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="369442766917958684">No conectado</translation>
 <translation id="3695446226812920698">Descubre cómo hacerlo</translation>
 <translation id="3776024066357219166">Ha finalizado tu sesión en Escritorio Remoto de Chrome.</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3905196214175737742">Dominio del propietario del host no válido.</translation>
 <translation id="3931191050278863510">Host detenido.</translation>
@@ -97,7 +98,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5308380583665731573">Conectar</translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="533625276787323658">No hay ningún ordenador al que conectarse</translation>
 <translation id="5397086374758643919">Programa de desinstalación del host de Escritorio Remoto de Chrome</translation>
 <translation id="5419418238395129586">Última conexión: <ph name="DATE" /></translation>

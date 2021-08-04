@@ -2648,6 +2648,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3799128412641261490">Setările pentru accesul prin comutare</translation>
 <translation id="3799903419983101749">Continuă de unde ai rămas. Poți seta aplicațiile să se restabilească automat din Setări.</translation>
 <translation id="3800806661949714323">Afișează-le pe toate (recomandat)</translation>
+<translation id="380329542618494757">Nume</translation>
 <translation id="3803345858388753269">Calitatea video</translation>
 <translation id="380408572480438692">Activarea culegerii datelor privind performanța va permite Google să îmbunătățească sistemul în timp. Nu sunt trimise date decât după ce completați un raport de feedback (Alt-Shift-I) și includeți date privind performanța. Puteți să reveniți oricând la acest ecran pentru a dezactiva culegerea datelor.</translation>
 <translation id="3807249107536149332">Extensia <ph name="EXTENSION_NAME" /> (cu ID-ul „<ph name="EXTENSION_ID" />”) nu este permisă într-un ecran de conectare.</translation>
@@ -2709,6 +2710,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3856096718352044181">Confirmă dacă acesta este un furnizor valid sau încearcă din nou mai târziu</translation>
 <translation id="3856800405688283469">Selectează fusul orar</translation>
 <translation id="3857807444929313943">Ridică, apoi atinge din nou</translation>
+<translation id="3858860766373142691">Nume</translation>
 <translation id="3861638017150647085">Numele de utilizator „<ph name="USERNAME" />” nu este disponibil</translation>
 <translation id="3861977424605124250">Afișează la pornire</translation>
 <translation id="386239283124269513">&amp;Restabilește grupul</translation>
@@ -4014,7 +4016,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="532247166573571973">Este posibil ca serverul să nu poată fi accesat. Încearcă din nou mai târziu.</translation>
 <translation id="5324300749339591280">Lista de aplicații</translation>
 <translation id="5324780743567488672">Setează automat fusul orar folosind locația</translation>
-<translation id="5327248766486351172">Nume</translation>
 <translation id="5327570636534774768">Acest dispozitiv este marcat pentru administrare de un domeniu diferit. Anulează accesul de la domeniul respectiv înainte de a configura modul demo.</translation>
 <translation id="5327912693242073631">Funcțiile care au nevoie de notificări nu vor funcționa</translation>
 <translation id="532943162177641444">Atinge notificarea pe <ph name="PHONE_NAME" /> pentru a configura hotspotul mobil care poate fi folosit de acest dispozitiv.</translation>

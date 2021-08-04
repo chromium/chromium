@@ -56,6 +56,7 @@
 <translation id="369442766917958684">离线。</translation>
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3776024066357219166">您的 Chrome 远程桌面会话已结束。</translation>
+<translation id="3858860766373142691">名称</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3905196214175737742">主机所有者所在网域无效。</translation>
 <translation id="3931191050278863510">主机已停止运行。</translation>
@@ -97,7 +98,6 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5308380583665731573">连接</translation>
-<translation id="5327248766486351172">名称</translation>
 <translation id="533625276787323658">没有可连接到的计算机</translation>
 <translation id="5397086374758643919">Chrome 远程桌面主机卸载程序</translation>
 <translation id="5419418238395129586">上次在线日期：<ph name="DATE" /></translation>

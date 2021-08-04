@@ -321,6 +321,7 @@
 <translation id="383652340667548381">セルビア語</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3855472144336161447">ドイツ語（Neo 2）</translation>
+<translation id="3858860766373142691">名前</translation>
 <translation id="386548886866354912"><ph name="EXTENSION_NAME" /> を同梱</translation>
 <translation id="3866249974567520381">説明</translation>
 <translation id="3899991606604168269">フランス語（カナダ）（多言語）キーボード</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">Linux と共有</translation>
 <translation id="5323213332664049067">ラテン アメリカ</translation>
-<translation id="5327248766486351172">名前</translation>
 <translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="5330512191124428349">情報を見る</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" />を <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップしています</translation>

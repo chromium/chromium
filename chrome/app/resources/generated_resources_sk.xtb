@@ -2649,6 +2649,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3799128412641261490">Nastavenia ovládania prepínačmi</translation>
 <translation id="3799903419983101749">Pokračujte tam, kde ste prestali. V Nastaveniach môžete nastaviť, aby sa aplikácie automaticky obnovovali.</translation>
 <translation id="3800806661949714323">Zobraziť všetko (odporúčané)</translation>
+<translation id="380329542618494757">Meno</translation>
 <translation id="3803345858388753269">Kvalita videa</translation>
 <translation id="380408572480438692">Povolením zhromažďovania údajov o výkonnosti pomôžete spoločnosti Google postupom času zlepšovať systém. Kým neodošlete správu so spätnou väzbou (Alt-Shift-I) a nezahrniete údaje o výkonnosti, neodošlú sa žiadne údaje. Zhromažďovanie údajov môžete po prejdení späť na túto stránku kedykoľvek zakázať.</translation>
 <translation id="3807249107536149332">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia – <ph name="EXTENSION_ID" />) nie je povolené na prihlasovacej obrazovke.</translation>
@@ -2710,6 +2711,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3856096718352044181">Overte, že ide o platného poskytovateľa, alebo to skúste znova</translation>
 <translation id="3856800405688283469">Výber časového pásma</translation>
 <translation id="3857807444929313943">Zdvihnite a opäť priložte</translation>
+<translation id="3858860766373142691">Názov</translation>
 <translation id="3861638017150647085">Používateľské meno <ph name="USERNAME" /> nie je k dispozícii</translation>
 <translation id="3861977424605124250">Zobrazovať pri spustení</translation>
 <translation id="386239283124269513">&amp;Obnoviť skupinu</translation>
@@ -4015,7 +4017,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="532247166573571973">Server môže byť nedostupný. Skúste to neskôr.</translation>
 <translation id="5324300749339591280">Zoznam aplikácií</translation>
 <translation id="5324780743567488672">Nastaviť časové pásmo automaticky na základe polohy</translation>
-<translation id="5327248766486351172">Názov</translation>
 <translation id="5327570636534774768">Toto zariadenie bolo označené na správu inou doménou. Skôr ako nastavíte režim ukážky, zrušte jeho podporu v rámci danej domény.</translation>
 <translation id="5327912693242073631">Funkcie vyžadujúce upozornenia nebudú fungovať</translation>
 <translation id="532943162177641444">Klepnutím na upozornenie v telefóne <ph name="PHONE_NAME" /> nastavte mobilný hotspot, ktorý môže toto zariadenie použiť.</translation>

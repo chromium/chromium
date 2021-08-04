@@ -56,6 +56,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="369442766917958684">Offline</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3776024066357219166">Ihre Chrome Remote Desktop-Sitzung wurde beendet.</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3905196214175737742">Ungültige Hostinhaberdomain</translation>
 <translation id="3931191050278863510">Host angehalten</translation>
@@ -97,7 +98,6 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5308380583665731573">Verbinden</translation>
-<translation id="5327248766486351172">Name</translation>
 <translation id="533625276787323658">Es gibt keine Verbindungsziele</translation>
 <translation id="5397086374758643919">Deinstallationsprogramm für Chrome Remote Desktop Host</translation>
 <translation id="5419418238395129586">Zuletzt online: <ph name="DATE" /></translation>

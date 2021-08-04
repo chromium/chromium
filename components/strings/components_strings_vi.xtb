@@ -808,6 +808,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3793574014653384240">Số lượng lỗi và nguyên nhân gây ra các lỗi gần đây</translation>
 <translation id="3797522431967816232">Prc3 (Phong bì)</translation>
 <translation id="3799805948399000906">Phông chữ đã yêu cầu</translation>
+<translation id="380329542618494757">Tên</translation>
 <translation id="3807366285948165054">Trục X của hình ảnh</translation>
 <translation id="3807873520724684969">Đã chặn nội dung độc hại.</translation>
 <translation id="3810973564298564668">Quản lý</translation>
@@ -822,6 +823,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh một tài liệu mới trong Google Tài liệu</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3858027520442213535">Cập nhật ngày và giờ</translation>
+<translation id="3858860766373142691">Tên</translation>
 <translation id="3881478300875776315">Ẩn bớt dòng</translation>
 <translation id="3884278016824448484">Số nhận dạng thiết bị xung đột</translation>
 <translation id="3885155851504623709">Giáo xứ</translation>
@@ -1254,7 +1256,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> / <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Chọn thông tin liên hệ</translation>
-<translation id="5327248766486351172">Tên</translation>
 <translation id="5329858041417644019">Trình duyệt của bạn không được quản lý</translation>
 <translation id="5332219387342487447">Phương thức giao hàng</translation>
 <translation id="5333022057423422993">Chrome phát hiện thấy mật khẩu bạn vừa sử dụng bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản, bạn nên kiểm tra các mật khẩu mình đã lưu.</translation>

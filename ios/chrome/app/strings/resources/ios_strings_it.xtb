@@ -288,8 +288,10 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3779810277399252432">Nessuna connessione a Internet.</translation>
 <translation id="3783017676699494206">Salva immagine</translation>
 <translation id="3789841737615482174">Installa</translation>
+<translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Proponi di tradurre questo sito</translation>
 <translation id="385051799172605136">Indietro</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3892144330757387737">Qui troverai la tua cronologia</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Accesso a Chrome eseguito</translation>
@@ -427,7 +429,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5295239312320826323">Vuoi rimuovere l'account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5317780077021120954">Salva</translation>
-<translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Attiva la sincronizzazione</translation>
 <translation id="5360976571138293719">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Apri immagine</translation>

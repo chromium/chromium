@@ -56,6 +56,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="369442766917958684">Ngoại tuyến.</translation>
 <translation id="3695446226812920698">Tìm hiểu cách thức</translation>
 <translation id="3776024066357219166">Phiên Chrome Remote Desktop của bạn đã kết thúc.</translation>
+<translation id="3858860766373142691">Tên</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Miền của chủ sở hữu máy chủ không hợp lệ.</translation>
 <translation id="3931191050278863510">Máy chủ đã dừng lại.</translation>
@@ -97,7 +98,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5308380583665731573">Kết nối</translation>
-<translation id="5327248766486351172">Tên</translation>
 <translation id="533625276787323658">Không có máy tính nào để kết nối</translation>
 <translation id="5397086374758643919">Trình gỡ cài đặt máy chủ Chrome Remote Desktop</translation>
 <translation id="5419418238395129586">Lần trực tuyến gần đây nhất: <ph name="DATE" /></translation>

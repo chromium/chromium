@@ -321,6 +321,7 @@
 <translation id="383652340667548381">srpski</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3855472144336161447">nemačka Neo 2</translation>
+<translation id="3858860766373142691">Naziv</translation>
 <translation id="386548886866354912">Spakuj pomoću dodatka <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3899991606604168269">francuski (Kanada) sa višejezičnom tastaturom</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318819489018851358">Deli sa Linux-om</translation>
 <translation id="5323213332664049067">Latinska Amerika</translation>
-<translation id="5327248766486351172">Naziv</translation>
 <translation id="5330145655348521461">Ove datoteke su otvorene na drugom profilu. Pređite na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da biste ih pogledali.</translation>
 <translation id="5330512191124428349">Preuzmi podatke</translation>
 <translation id="5335458522276292100">Prave se rezervne kopije (<ph name="FILE_COUNT" />) na <ph name="BEGIN_LINK" />Google disku<ph name="END_LINK" /></translation>

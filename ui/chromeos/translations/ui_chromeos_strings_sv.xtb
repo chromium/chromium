@@ -321,6 +321,7 @@
 <translation id="383652340667548381">serbiska</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3855472144336161447">Tyska (neo 2)</translation>
+<translation id="3858860766373142691">Namn</translation>
 <translation id="386548886866354912">Packa med <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="3899991606604168269">franska (Kanada) med flerspråkigt tangentbord</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5318819489018851358">Dela med Linux</translation>
 <translation id="5323213332664049067">Latinamerikanskt</translation>
-<translation id="5327248766486351172">Namn</translation>
 <translation id="5330145655348521461">Filerna öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa dem.</translation>
 <translation id="5330512191124428349">Mer information</translation>
 <translation id="5335458522276292100">Säkerhetskopierar <ph name="FILE_COUNT" /> på <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>

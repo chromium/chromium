@@ -56,6 +56,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3776024066357219166">La sessione Chrome Remote Desktop è terminata.</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Dominio proprietario host non valido.</translation>
 <translation id="3931191050278863510">Host interrotto.</translation>
@@ -97,7 +98,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5308380583665731573">Connetti</translation>
-<translation id="5327248766486351172">Nome</translation>
 <translation id="533625276787323658">Non ci sono computer a cui connettersi</translation>
 <translation id="5397086374758643919">Programma di disinstallazione host Chrome Remote Desktop</translation>
 <translation id="5419418238395129586">Ultimo collegamento online: <ph name="DATE" /></translation>

@@ -321,6 +321,7 @@
 <translation id="383652340667548381">srbščina</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3855472144336161447">nemščina (Neo 2)</translation>
+<translation id="3858860766373142691">Ime</translation>
 <translation id="386548886866354912">Stiskanje z: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3899991606604168269">francoščina (Kanada) z večjezično tipkovnico</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5318819489018851358">Deljenje z Linuxom</translation>
 <translation id="5323213332664049067">Latinskoameriško</translation>
-<translation id="5327248766486351172">Ime</translation>
 <translation id="5330145655348521461">Te datoteke so odprte na drugem namizju. Če si jih želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Pridobi podatke</translation>
 <translation id="5335458522276292100">Varnostno kopiranje v <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>

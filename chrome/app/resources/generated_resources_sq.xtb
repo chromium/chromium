@@ -311,6 +311,7 @@
 <translation id="1336902454946927954">Çelësi yt i sigurisë është i kyçur sepse gjurma jote e gishtit nuk mund të njihej. Për ta shkyçur, fut kodin PIN.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="1338950911836659113">Po fshin...</translation>
+<translation id="1339009753652684748">Hap "Asistentin" kur thua "Ok Google". Për të kursyer baterinë, zgjidh "Aktive (rekomandohet)". "Asistenti" yt do të përgjigjet vetëm kur pajisja jote të jetë e lidhur ose në karikim.</translation>
 <translation id="13392265090583506">Qasshmëria</translation>
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="1341988552785875222">Imazhi aktual i sfondit është caktuar nga "<ph name="APP_NAME" />". Mund të duhet ta çinstalosh "<ph name="APP_NAME" />" para se të zgjedhësh një imazh tjetër të sfondit.</translation>
@@ -445,6 +446,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
 <translation id="1478340334823509079">Detajet: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalimi nuk është aktivizuar</translation>
+<translation id="1480571698637441426">Për të marrë përgjigje të personalizuara kur bën pyetje, lejo që "Asistenti" yt të ketë qasje te një pamje e gjërave që janë në ekran. Kjo mund të përfshijë informacione për këngët ose videot që janë duke u luajtur.</translation>
 <translation id="1481537595330271162">Gabim gjatë ndryshimit të madhësisë së diskut</translation>
 <translation id="1482626744466814421">Shtoje këtë skedë te faqeshënuesit...</translation>
 <translation id="1483272013430662157">Aplikacionet e uebit mund të kërkojnë të hapin llojet e skedarëve</translation>
@@ -1244,6 +1246,15 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
 <translation id="23055578400314116">Zgjidh një emër përdoruesi</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
+<translation id="2307553512430195144">Nëse je dakord, "Asistenti i Google" do të presë në modalitetin e gatishmërisë për të zbuluar “Ok Google” dhe mund të dallojë që është <ph name="SUPERVISED_USER_NAME" /> duke folur me Voice Match.
+    <ph name="BR" />
+    Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin e <ph name="SUPERVISED_USER_NAME" /> në pajisjen tënde <ph name="DEVICE_TYPE" /> dhe ta dallojë atë nga të tjerët.
+    <ph name="BR" />
+    "Asistenti" merr klipe të zërit të fëmijës tënd për të krijuar një model unik zëri, i cili ruhet vetëm në pajisjen ose pajisjet e tua. Modeli i zërit të fëmijës tënd mund të dërgohet përkohësisht te Google për të identifikuar më mirë zërin e fëmijës.
+    <ph name="BR" />
+    Nëse vendos më vonë se Voice Match nuk është i përshtatshëm për fëmijën tënd, thjesht hiqe atë nga "Cilësimet" e "Asistentit". Për të parë ose fshirë klipet e audios që regjistron fëmija yt gjatë konfigurimit të Voice Match, shko te <ph name="VOICE_MATCH_SETTINGS_URL" /> nga llogaria e fëmijës tënd.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">kjo faqe dëshiron të instalojë një përpunues të shërbimit.</translation>
 <translation id="2309620859903500144">Kësaj faqeje i është bllokuar qasja te sensorët e lëvizjes ose të dritës.</translation>
 <translation id="2312219318583366810">URL-ja e faqes</translation>
@@ -1373,6 +1384,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2450849356604136918">Nuk ka shikime aktive</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Sajtet lidhen zakonisht me portat seriale për veçoritë e transferimit të të dhënave, si p.sh. konfigurimin e rrjetit tënd</translation>
+<translation id="2453706416476934374">Për të marrë përgjigje të personalizuara kur <ph name="SUPERVISED_USER_NAME" /> bën pyetje, lejo që "Asistenti" të ketë qasje në një pamje të gjërave që janë në ekranin e <ph name="SUPERVISED_USER_NAME" />. Kjo mund të përfshijë informacione për këngët ose videot që janë duke u luajtur.</translation>
 <translation id="2453860139492968684">Përfundo</translation>
 <translation id="2454247629720664989">Fjala kyçe</translation>
 <translation id="2454264884354864965">Kamera është joaktive</translation>
@@ -2080,6 +2092,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="32101887417650595">Nuk mund të lidhet me printerin</translation>
 <translation id="321084946921799184">E verdhë dhe e bardhë</translation>
 <translation id="321356136776075234">Pajisja OU (p.sh. OU=Chromebook,DC=shembull,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Një zë i ngjashëm ose një regjistrim mund të jetë në gjendje që të ketë qasje te rezultatet personale të <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3216825226035747725">Administratorët e "G Suite për edukimin" përcaktojnë se te cilat shërbime të Google mund të qasen përdoruesit e tyre ndërkohë që janë identifikuar në një llogari të "G Suite për edukimin". Kjo mund të përfshijë disa veçori ose shërbime ku fëmija yt nuk mund të kishte qasje më parë me këtë llogari të mbikëqyrur. Administratorëve të shkollave u kërkohet të japin ose të marrin miratimin për përdorimin e shërbimeve nga përdoruesit e tyre të mitur.</translation>
 <translation id="3217843140356091325">Të krijohet një shkurtore?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2257,6 +2270,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3417836307470882032">Ora ushtarake</translation>
 <translation id="3420501302812554910">Çelësi i brendshëm i sigurisë kërkon rivendosje</translation>
 <translation id="3421387094817716717">Çelësi publik i kurbës eliptike</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale ose në "Asistentin" tënd.</translation>
 <translation id="3422291238483866753">Pyet kur një sajt kërkon të krijojë një hartë 3D të ambientit tënd rrethues ose të gjurmojë pozicionin e kamerës (rekomandohet)</translation>
 <translation id="3423463006624419153">Në telefonin tënd "<ph name="PHONE_NAME_1" />" dhe "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Hap përsëri <ph name="PRODUCT_NAME" /></translation>
@@ -2630,6 +2644,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3799128412641261490">Cilësimet e qasjes me çelës</translation>
 <translation id="3799903419983101749">Vazhdo nga ku e le. Mund të caktosh aplikacione për t'i rivendosur automatikisht te "Cilësimet".</translation>
 <translation id="3800806661949714323">Shfaq të gjitha (e rekomanduar)</translation>
+<translation id="380329542618494757">Emri</translation>
 <translation id="3803345858388753269">Cilësia e videos</translation>
 <translation id="380408572480438692">Aktivizimi i të dhënave të cilësisë së funksionimit do ta ndihmojë Google që të përmirësojë sistemin me kalimin e kohës. Nuk dërgohen të dhëna deri sa të paraqesësh një raport me komente (Alt-Shift-I) dhe të përfshish të dhënat e cilësisë së funksionimit. Mund të kthehesh te ky ekran në çdo kohë për ta çaktivizuar mbledhjen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") nuk lejohet në një ekran identifikimi.</translation>
@@ -2691,6 +2706,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3856800405688283469">Zgjidh zonën orare</translation>
 <translation id="3857807444929313943">Ngrije dhe më pas prek përsëri</translation>
+<translation id="3858860766373142691">Emri</translation>
 <translation id="3861638017150647085">Emri i përdoruesit "<ph name="USERNAME" />" nuk ofrohet</translation>
 <translation id="3861977424605124250">Shfaq në momentin e nisjes</translation>
 <translation id="386239283124269513">&amp;Restauro grupin</translation>
@@ -3996,7 +4012,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="532247166573571973">Serveri mund të jetë i paarritshëm. Provo përsëri më vonë.</translation>
 <translation id="5324300749339591280">Lista e aplikacioneve</translation>
 <translation id="5324780743567488672">Caktoje automatikisht brezin orar duke përdorur vendndodhjen tënde</translation>
-<translation id="5327248766486351172">Emri</translation>
 <translation id="5327570636534774768">Kjo pajisje është shënuar për menaxhim nga një domen tjetër. Hiqe atë nga përdorimi nga ai domen para konfigurimit të modalitetit të demonstrimit.</translation>
 <translation id="5327912693242073631">Veçoritë që kanë nevojë për njoftime nuk do të funksionojnë</translation>
 <translation id="532943162177641444">Trokit te njoftimi në telefonin tënd <ph name="PHONE_NAME" /> për të konfiguruar zonën e qasjes së internetit në celular që mund të përdoret nga kjo pajisje.</translation>
@@ -4645,6 +4660,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6059652578941944813">Hierarkia e certifikatave</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6061882183774845124">Dërgo lidhjen te pajisjet e tua</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Një zë i ngjashëm ose një regjistrim mund të jetë në gjendje që të ketë qasje te rezultatet personale të <ph name="SUPERVISED_USER_NAME" />. Për të kursyer baterinë, mund të zgjedhësh te cilësimet e "Asistentit" të <ph name="SUPERVISED_USER_NAME" /> që “Ok Google” të jetë aktiv vetëm kur kjo pajisje është e lidhur me një burim energjie.</translation>
 <translation id="6064217302520318294">Kyçja e ekranit</translation>
 <translation id="6065289257230303064">Atributet e direktorisë së subjektit të certifikatës</translation>
 <translation id="6066794465984119824">Hash-i i imazhit nuk është caktuar</translation>
@@ -4919,6 +4935,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6345878117466430440">Shëno si të lexuar</translation>
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Kurba eliptike SECG secp256r1 (e njohur edhe si ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Shfletuesi eksperimental (cilësia alfa)! Disa veçori mungojnë ose nuk janë të plota. Raporto problemet me: Ndihma &gt; "Raporto një problem...".</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
 <translation id="63566973648609420">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të koduara. Kjo frazë kalimi nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të <ph name="BEGIN_LINK" />rivendosësh sinkronizimin<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Dragua</translation>
@@ -4984,6 +5001,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6434309073475700221">Hidhe</translation>
 <translation id="6434325376267409267">Pajisja jote ka nevojë për përditësim përpara se të mund të përdorësh <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Shikoje në dyqanin e uebit</translation>
+<translation id="6436610005579237680">Për të marrë përgjigje që janë më të personalizuara për ty, lejo që "Asistenti i Google" të qaset te një pamje e gjërave që janë në ekranin tënd kur ti bën pyetje. "Asistenti" yt mund të përdorë gjithashtu informacionet për këngët ose videot që je duke luajtur.</translation>
 <translation id="6438234780621650381">Rivendosi cilësimet</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - po luhet audioja</translation>
 <translation id="6442187272350399447">I mrekullueshëm</translation>
@@ -5120,6 +5138,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6582274660680936615">Po shfleton si vizitor</translation>
 <translation id="6584878029876017575">Nënshkrimi i përhershëm nga Microsoft</translation>
 <translation id="6586099239452884121">Shfletimi si vizitor</translation>
+<translation id="6586213706115310390">Hap "Asistentin" kur thua "Ok Google".</translation>
 <translation id="6586451623538375658">Ndërro butonin kryesor të miut</translation>
 <translation id="6586604979641883411">Kërkohen të paktën <ph name="REQUIRED_SPACE" /> hapësirë e lirë disku për përmirësimin e Linux. Liro pak hapësirë në pajisjen tënde dhe provo përsëri.</translation>
 <translation id="6588043302623806746">Përdor DNS-në e sigurt</translation>
@@ -5139,6 +5158,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6602937173026466876">Qasja te printerët e tu</translation>
 <translation id="6602956230557165253">Përdor tastet e shigjetës majtas dhe djathtas për të lundruar.</translation>
 <translation id="6605847144724004692">Nuk është vlerësuar ende nga asnjë përdorues.</translation>
+<translation id="6606671997164410857">Me sa duket e ke konfiguruar tashmë "Asistentin e Google" në një pajisje tjetër. Përfito edhe më shumë nga "Asistenti" yt duke aktivizuar "Kontekstin e ekranit" në këtë pajisje.</translation>
 <translation id="6607831829715835317">Vegla të tj&amp;era</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> po menaxhohet tashmë nga <ph name="DOMAIN" />. Për t'i përdorur kontrollet prindërore me një "Llogari tjetër të Google", dil pas konfigurimit dhe më pas zgjidh "Shto një person" në ekranin e identifikimit.</translation>
 <translation id="6609478180749378879">Të dhënat e identifikimit do të ruhen në këtë pajisje pasi të dalësh nga modaliteti "I fshehtë". Do të mund të identifikohesh në këtë faqe interneti me pajisjen tënde përsëri.</translation>
@@ -5318,6 +5338,13 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6808039367995747522">Për të vazhduar, fut dhe prek çelësin tënd të sigurisë</translation>
 <translation id="6808193438228982088">Dhelpër</translation>
 <translation id="6809470175540814047">Hape në dritare "të fshehtë"</translation>
+<translation id="6809656734323672573">Nëse je dakord, "Asistenti i Google" do të presë në modalitetin e gatishmërisë për të zbuluar “Ok Google” dhe mund të dallojë që je ti duke folur me Voice Match.
+    <ph name="BR" />
+    Voice Match lejon që "Asistenti" yt të të identifikojë dhe të të dallojë nga të tjerët. "Asistenti" merr klipe të zërit tënd për të krijuar një model unik zëri, i cili ruhet vetëm në pajisjen ose pajisjet e tua. Modeli i zërit tënd do të dërgohet përkohësisht te Google për të identifikuar zërin tënd.
+    <ph name="BR" />
+    Nëse më vonë vendos se Voice Match nuk bën për ty, thjesht hiqe te cilësimet e "Asistentit". Për të parë ose për të fshirë klipet e audios që regjistron gjatë konfigurimit të Voice Match, shko tek <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë konfirmimi përpara se të identifikohesh në një sajt uebi.</translation>
 <translation id="6810768462515084623">Mos! Duket sikur fjalëkalimi ka skaduar. Përtërije në një pajisje tjetër dhe provo sërish.</translation>
 <translation id="6811034713472274749">Faqja është gati për ta shikuar</translation>
@@ -6142,6 +6169,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7690853182226561458">Shto një &amp;dosje...</translation>
 <translation id="7691073721729883399">Faqja bazë kriptografike për aplikacionin "kioskë" nuk mund të montohej.</translation>
 <translation id="7691077781194517083">Ky çelës sigurie nuk mund të rivendoset. Gabim <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Përmirësimi i Crostini</translation>
 <translation id="7696063401938172191">Në telefonin tënd "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Detajet janë të fshehura ndërkohë që ndan ekranin tënd</translation>
@@ -6253,6 +6281,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7804072833593604762">Skeda u mbyll</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7807067443225230855">Kërkimi dhe "Asistenti"</translation>
+<translation id="7807117920154132308">Me sa duket <ph name="SUPERVISED_USER_NAME" /> e ka konfiguruar tashmë "Asistentin e Google" në një pajisje tjetër. <ph name="SUPERVISED_USER_NAME" /> mund të përfitojë edhe më shumë nga "Asistenti" duke aktivizuar "Kontekstin e ekranit" në këtë pajisje.</translation>
 <translation id="7807711621188256451">Lejo gjithmonë që <ph name="HOST" /> të qaset në kamerën tënde</translation>
 <translation id="7810202088502699111">Dritaret kërcyese u bllokuan në këtë faqe.</translation>
 <translation id="781167124805380294">Transmeto <ph name="FILE_NAME" /></translation>
@@ -6307,6 +6336,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7847212883280406910">Shtyp Ctrl + Alt + S për të kaluar në <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Hape &amp;imazhin në një skedë të re</translation>
 <translation id="784934925303690534">Shtrirja kohore</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale ose në "Asistentin" tënd. Për të kursyer baterinë, mund të zgjedhësh te cilësimet e "Asistentit" që “Ok Google” të jetë aktiv vetëm kur kjo pajisje është e lidhur me një burim energjie.</translation>
 <translation id="7851457902707056880">Identifikimi është i kufizuar vetëm për llogarinë e zotëruesit. Rindize dhe identifikohu me llogarinë e zotëruesit. Kompjuteri do të rindizet për 30 sekonda.</translation>
 <translation id="7851716364080026749">Blloko gjithmonë qasjen te kamera dhe mikrofoni</translation>
 <translation id="7851720427268294554">Analizuesi i kërkesave IPP</translation>
@@ -7539,6 +7569,7 @@ Mund të caktosh disa çelësa te ky veprim</translation>
       <ph name="LIST_ITEM" />Të ekzekutosh "Diagnostikimin e lidhjes së Chrome"
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Figura brenda figurës</translation>
+<translation id="9166813363879986425">Aktiviteti dhe preferencat e tua të ruajtura do të jenë gati në çdo pajisje me Chrome OS kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh se çfarë do të sinkronizosh te "Cilësimet".</translation>
 <translation id="9167063903968449027">Shfaq "Listën e leximit"</translation>
 <translation id="9167450455589251456">Profili nuk mbështetet</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>

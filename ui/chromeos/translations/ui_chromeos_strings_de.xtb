@@ -321,6 +321,7 @@
 <translation id="383652340667548381">Serbisch</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="386548886866354912">Mit <ph name="EXTENSION_NAME" /> packen</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
 <translation id="3899991606604168269">Französisch (Kanada) mit mehrsprachiger Tastatur</translation>
@@ -492,7 +493,6 @@
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318819489018851358">Mit Linux teilen</translation>
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
-<translation id="5327248766486351172">Name</translation>
 <translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechseln Sie zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
 <translation id="5330512191124428349">Informationen ansehen</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> werden auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
