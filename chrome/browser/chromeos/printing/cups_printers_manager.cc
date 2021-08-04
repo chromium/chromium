@@ -683,6 +683,7 @@ class CupsPrintersManagerImpl
     if (code == PpdProvider::SUCCESS) {
       ppd_resolution_tracker_.MarkResolutionSuccessful(printer_id, ref);
     } else {
+      LOG(WARNING) << "Failed to resolve PPD reference for " << printer_id;
       ppd_resolution_tracker_.MarkResolutionFailed(printer_id);
       if (!usb_manufacturer.empty()) {
         ppd_resolution_tracker_.SetManufacturer(printer_id, usb_manufacturer);
