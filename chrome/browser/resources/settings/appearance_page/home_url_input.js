@@ -86,12 +86,6 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
       return;
     }
 
-    // Ignore updates while the input is focused so that user input is not
-    // overwritten.
-    if (this.$.input.focused) {
-      return;
-    }
-
     this.setInputValueFromPref_();
   }
 
