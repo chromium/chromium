@@ -9174,6 +9174,36 @@
             ]
         }
     ],
+    "WebRTC-Audio-AnalogAgcClippingControl": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_0",
+                    "params": {
+                        "clipped_level_step": "15",
+                        "clipped_ratio_threshold": "0.1",
+                        "clipped_wait_frames": "300",
+                        "clipping_threshold": "-1",
+                        "crest_factor_margin": "3",
+                        "mode": "0",
+                        "reference_window_delay": "5",
+                        "reference_window_length": "5",
+                        "window_length": "5"
+                    },
+                    "enable_features": [
+                        "WebRtcAnalogAgcClippingControl"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-Audio-NetEqDelayManagerConfig": [
         {
             "platforms": [
