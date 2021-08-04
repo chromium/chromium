@@ -20,11 +20,10 @@ AnimationBuilder::AnimationBuilder() = default;
 AnimationBuilder::~AnimationBuilder() {
   // Collect all animations of a view into one vector so we can start them
   // together.
-  std::map<View*, std::vector<ui::LayerAnimationSequence*>> all_animations;
+  base::flat_map<View*, std::vector<ui::LayerAnimationSequence*>>
+      all_animations;
   for (auto& animation : animation_sequences_) {
-    // TODO(elainechien): Change AnimationKey to a struct to avoid this
-    // confusing syntax.
-    View* view = animation.first.first;
+    View* view = animation.first.view;
     if (!view->layer())
       view->SetPaintToLayer();
     for (auto& s : animation.second)

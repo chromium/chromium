@@ -5,12 +5,13 @@
 #ifndef UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
 #define UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
 
-#include <map>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -58,9 +59,18 @@ class VIEWS_EXPORT AnimationBuilder {
   void OnScheduled(base::OnceClosure callback);
 
  private:
-  // We may want to change this to our own struct.
-  using AnimationKey =
-      std::pair<View*, ui::LayerAnimationElement::AnimatableProperty>;
+  struct AnimationKey {
+    View* view;
+    ui::LayerAnimationElement::AnimatableProperty property;
+
+    bool operator==(const AnimationKey& key) const {
+      return std::tie(view, property) == std::tie(key.view, key.property);
+    }
+
+    bool operator<(const AnimationKey& key) const {
+      return std::tie(view, property) < std::tie(key.view, key.property);
+    }
+  };
 
   class AnimationBuilderObserver : ui::LayerAnimationObserver {
    public:
@@ -91,8 +101,8 @@ class VIEWS_EXPORT AnimationBuilder {
   void AddAnimation(const AnimationKey& key,
                     std::unique_ptr<ui::LayerAnimationElement> element);
 
-  std::map<AnimationKey,
-           std::vector<std::unique_ptr<ui::LayerAnimationSequence>>>
+  base::flat_map<AnimationKey,
+                 std::vector<std::unique_ptr<ui::LayerAnimationSequence>>>
       animation_sequences_;
 
   base::TimeDelta duration_ = base::TimeDelta::FromSeconds(1);
