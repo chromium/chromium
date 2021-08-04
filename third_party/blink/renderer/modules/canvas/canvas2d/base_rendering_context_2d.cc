@@ -160,18 +160,41 @@ void BaseRenderingContext2D::beginLayer() {
   GetState().FillStyle()->ApplyToFlags(flags);
   flags.setColor(GetState().FillStyle()->PaintColor());
   flags.setBlendMode(GetState().GlobalComposite());
-  flags.setAlpha(globalAlpha() * 255);
-  // TODO(crbug.com/1231277): Add filter and shadows to flags.
+  flags.setImageFilter(StateGetFilter());
+  // TODO(crbug.com/1235854): Add shadows to flags.
 
-  if (canvas)
-    canvas->saveLayer(nullptr, &flags);
+  if (canvas) {
+    if (StateGetFilter() && globalAlpha() != 1) {
+      // We have to save the filter before alpha.
+      GetState().setRestoreToCount(canvas->getSaveCount());
+      canvas->saveLayer(nullptr, &flags);
+
+      // Push to state stack to keep stack size up to date.
+      state_stack_.push_back(
+          MakeGarbageCollected<CanvasRenderingContext2DState>(
+              GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
+              CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
+
+      PaintFlags second_layer_flags;
+      GetState().FillStyle()->ApplyToFlags(second_layer_flags);
+      second_layer_flags.setColor(GetState().FillStyle()->PaintColor());
+      second_layer_flags.setAlpha(globalAlpha() * 255);
+      canvas->saveLayer(nullptr, &second_layer_flags);
+    } else {
+      GetState().setRestoreToCount(absl::nullopt);
+      flags.setAlpha(globalAlpha() * 255);
+      canvas->saveLayer(nullptr, &flags);
+    }
+  }
 
   ValidateStateStack();
 
   // Reset compositing attributes.
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
-  // TODO(crbug.com/1231277): Reset filter.
+  V8UnionCanvasFilterOrString* filter =
+      MakeGarbageCollected<V8UnionCanvasFilterOrString>("none");
+  setFilter(GetCanvasRenderingContextHost()->GetTopExecutionContext(), filter);
 }
 
 void BaseRenderingContext2D::endLayer() {
@@ -212,8 +235,20 @@ void BaseRenderingContext2D::PopAndRestore() {
 
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
 
-  if (c)
-    c->restore();
+  if (c) {
+    const absl::optional<int> restore_to_count =
+        state_stack_.back()->getRestoreToCount();
+    if (restore_to_count.has_value()) {
+      c->restoreToCount(restore_to_count.value());
+      int pops = state_stack_.size() - restore_to_count.value() + 1;
+      for (int i = 0; i < pops; i++) {
+        state_stack_.pop_back();
+        state_stack_.back()->ClearResolvedFilter();
+      }
+    } else {
+      c->restore();
+    }
+  }
 
   ValidateStateStack();
 }

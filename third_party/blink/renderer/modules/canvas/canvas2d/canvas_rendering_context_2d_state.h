@@ -232,6 +232,12 @@ class CanvasRenderingContext2DState final
 
   SaveType GetSaveType() const { return save_type_; }
 
+  void setRestoreToCount(absl::optional<int> count) {
+    restore_to_count_ = count;
+  }
+
+  absl::optional<int> getRestoreToCount() { return restore_to_count_; }
+
  private:
   void UpdateLineDash() const;
   void UpdateStrokeStyle() const;
@@ -312,6 +318,10 @@ class CanvasRenderingContext2DState final
   const SaveType save_type_ = SaveType::kInitial;
 
   DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContext2DState);
+
+  // Some endlayer calls need to restore to a specific save count.
+  // If no such restore is needed, restore_to_count_ is set to nullopt.
+  absl::optional<int> restore_to_count_ = absl::nullopt;
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
