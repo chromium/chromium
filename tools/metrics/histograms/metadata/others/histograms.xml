@@ -13707,8 +13707,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ReportingAndNEL.BackingStoreUpdateOutcome"
     enum="NetReportingAndNelBackingStoreUpdateOutcome"
     expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     The outcome of updating the backing store. This is recorded whenever a batch
     of pending operations is committed to the backing store. Success occurs when
@@ -13753,8 +13753,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ReportingAndNEL.InitializeDBOutcome"
     enum="NetReportingAndNelInitializeDbOutcome" expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     The outcome of initializing the SQLite database. This is recorded upon the
     first load request after startup, which will typically occur upon the first
@@ -13764,8 +13764,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ReportingAndNEL.KillDatabaseResult" enum="BooleanSuccess"
     expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     Whether killing the database because it was corrupted beyond repair
     succeeded. This is recorded when a fatal SQLite error is detected.
@@ -13774,8 +13774,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies"
     units="policy count" expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     The number of NEL policies loaded from the store. This is recorded when the
     NetworkErrorLoggingService requests a load from the backing store, which
@@ -13785,8 +13785,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpointGroups"
     units="endpoint group count" expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     The number of Reporting endpoint groups loaded from the store. This is
     recorded when the ReportingCache requests a load from the backing store,
@@ -13797,8 +13797,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpoints"
     units="endpoint count" expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     The number of Reporting endpoints loaded from the store. This is recorded
     when the ReportingCache requests a load from the backing store, which
@@ -13809,8 +13809,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ReportingAndNEL.TimeInitializeDB" units="ms"
     expires_after="2020-09-09">
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
   <summary>
     The time (ms) taken to initialize the Reporting and NEL DB. This is recorded
     when the DB is initialized, which typically occurs upon the first network
