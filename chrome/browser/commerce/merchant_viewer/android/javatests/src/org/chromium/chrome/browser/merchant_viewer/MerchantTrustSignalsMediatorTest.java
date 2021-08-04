@@ -75,7 +75,8 @@ public class MerchantTrustSignalsMediatorTest {
         doReturn(false).when(mMockTab).isIncognito();
         doReturn(true).when(mMockNavigationHandle).hasCommitted();
         doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
-        doReturn(false).when(mMockNavigationHandle).isSameDocument();
+        doReturn(false).when(mMockNavigationHandle).isFragmentNavigation();
+        doReturn(false).when(mMockNavigationHandle).isErrorPage();
         doReturn(mMockUrl).when(mMockNavigationHandle).getUrl();
         doReturn("fake_host").when(mMockUrl).getHost();
 
@@ -131,8 +132,16 @@ public class MerchantTrustSignalsMediatorTest {
     }
 
     @Test
-    public void testTabObserverOnDidFinishNavigation_SameDoc() {
-        doReturn(true).when(mMockNavigationHandle).isSameDocument();
+    public void testTabObserverOnDidFinishNavigation_FragmentNavigation() {
+        doReturn(true).when(mMockNavigationHandle).isFragmentNavigation();
+
+        mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
+        verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
+    }
+
+    @Test
+    public void testTabObserverOnDidFinishNavigation_ErrorPage() {
+        doReturn(true).when(mMockNavigationHandle).isErrorPage();
 
         mTabObserverCaptor.getValue().onDidFinishNavigation(mMockTab, mMockNavigationHandle);
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));

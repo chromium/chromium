@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -23,11 +24,26 @@ class MerchantTrustMessageContext {
         mWebContents = webContents;
     }
 
-    /** Returns the host name for which the message is intended to be shown. */
+    /**
+     * Returns the host name for which the message is intended to be shown. Can return null if the
+     * navigationHandle or its GURL is null.
+     */
+    @Nullable
     String getHostName() {
         return (mNavigationHandle == null || mNavigationHandle.getUrl() == null)
-                ? ""
+                ? null
                 : mNavigationHandle.getUrl().getHost();
+    }
+
+    /**
+     * Returns the URL for which the message is intended to be shown. Can return null if the
+     * navigationHandle or its GURL is null.
+     */
+    @Nullable
+    String getUrl() {
+        return (mNavigationHandle == null || mNavigationHandle.getUrl() == null)
+                ? null
+                : mNavigationHandle.getUrl().getSpec();
     }
 
     /* Returns the {@link WebContentns} for which the message is intended to be shown. */

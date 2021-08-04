@@ -126,7 +126,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn("").when(mMockResources).getString(anyInt());
         doReturn("").when(mMockResources).getQuantityString(anyInt(), anyInt(), any());
         doReturn(FAKE_HOST).when(mMockGurl).getHost();
-        doReturn(DIFFERENT_HOST).when(mMockGurl2).getHost();
+        doReturn(FAKE_HOST).when(mMockGurl).getSpec();
         doReturn(mMockMerchantTrustStorage)
                 .when(mMockMerchantTrustStorageFactory)
                 .getForLastUsedProfile();
@@ -334,7 +334,9 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithScheduledMessage() {
-        doReturn(new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
+        doReturn(FAKE_HOST).when(mMockGurl2).getHost();
+        doReturn(DIFFERENT_HOST).when(mMockGurl2).getSpec();
+        doReturn(new MerchantTrustMessageContext(mMockNavigationHandle2, mMockWebContents))
                 .when(mMockMerchantMessageScheduler)
                 .getScheduledMessageContext();
 
@@ -346,7 +348,24 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    public void testMaybeDisplayMessage_WithScheduledMessage_ForSameUrl() {
+        doReturn(FAKE_HOST).when(mMockGurl2).getHost();
+        doReturn(FAKE_HOST).when(mMockGurl2).getSpec();
+        doReturn(new MerchantTrustMessageContext(mMockNavigationHandle2, mMockWebContents))
+                .when(mMockMerchantMessageScheduler)
+                .getScheduledMessageContext();
+
+        mCoordinator.maybeDisplayMessage(
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents));
+
+        verify(mMockMerchantMessageScheduler, times(0)).expedite(any(Callback.class));
+    }
+
+    @SmallTest
+    @Test
     public void testMaybeDisplayMessage_WithScheduledMessage_ForDifferentHost() {
+        doReturn(DIFFERENT_HOST).when(mMockGurl2).getHost();
+        doReturn(DIFFERENT_HOST).when(mMockGurl2).getSpec();
         doReturn(new MerchantTrustMessageContext(mMockNavigationHandle2, mMockWebContents))
                 .when(mMockMerchantMessageScheduler)
                 .getScheduledMessageContext();

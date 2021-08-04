@@ -83,7 +83,8 @@ public class MerchantTrustSignalsCoordinator {
         MerchantTrustMessageContext scheduledMessage =
                 mMessageScheduler.getScheduledMessageContext();
         if (scheduledMessage != null && scheduledMessage.getHostName() != null
-                && scheduledMessage.getHostName().equals(item.getHostName())) {
+                && scheduledMessage.getHostName().equals(item.getHostName())
+                && !scheduledMessage.getUrl().equals(item.getUrl())) {
             mMessageScheduler.expedite(this::onMessageEnqueued);
         } else {
             mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN);
