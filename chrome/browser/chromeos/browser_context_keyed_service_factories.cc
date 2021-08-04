@@ -45,6 +45,7 @@
 #include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/tether/tether_service_factory.h"
+#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 #if defined(USE_CUPS)
@@ -61,11 +62,13 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountManagerMigratorFactory::GetInstance();
   android_sms::AndroidSmsServiceFactory::GetInstance();
   arc::ArcAccessibilityHelperBridge::CreateFactory();
+  ash::CalendarKeyedServiceFactory::GetInstance();
+  ash::full_restore::FullRestoreServiceFactory::GetInstance();
+  ash::HoldingSpaceKeyedServiceFactory::GetInstance();
   AuthPolicyCredentialsManagerFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
-  ash::full_restore::FullRestoreServiceFactory::GetInstance();
   CroshLoaderFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
 #if defined(USE_CUPS)
@@ -87,7 +90,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   file_manager::VolumeManagerFactory::GetInstance();
   file_system_provider::ServiceFactory::GetInstance();
   guest_os::GuestOsRegistryServiceFactory::GetInstance();
-  ash::HoldingSpaceKeyedServiceFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
   nearby::NearbyConnectionsDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();

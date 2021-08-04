@@ -6232,6 +6232,7 @@ test("unit_tests") {
       "../browser/ui/ash/assistant/conversation_starters_parser_unittest.cc",
       "../browser/ui/ash/assistant/device_actions_unittest.cc",
       "../browser/ui/ash/assistant/search_and_assistant_enabled_checker_unittest.cc",
+      "../browser/ui/ash/calendar/calendar_keyed_service_unittest.cc",
       "../browser/ui/ash/holding_space/holding_space_keyed_service_unittest.cc",
       "../browser/ui/ash/ime_controller_client_impl_unittest.cc",
       "../browser/ui/ash/in_session_auth_dialog_client_unittest.cc",

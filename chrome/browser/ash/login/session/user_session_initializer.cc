@@ -37,6 +37,7 @@
 #include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
@@ -241,6 +242,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
   // Ensure that the `HoldingSpaceKeyedService` for `profile` is created.
   HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+
+  // Ensure that the `CalendarKeyedService` for `profile` is created. It is
+  // created one per user in a multiprofile session.
+  CalendarKeyedServiceFactory::GetInstance()->GetService(profile);
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);

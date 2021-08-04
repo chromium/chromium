@@ -27,6 +27,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -898,6 +899,10 @@ Shell::~Shell() {
   // destructed before it.
   holding_space_controller_.reset();
 
+  // `CalendarController` observes `SessionController` and must be destructed
+  // before it.
+  calendar_controller_.reset();
+
   ash_color_provider_.reset();
 
   shell_delegate_.reset();
@@ -1069,6 +1074,8 @@ void Shell::Init(
   // `HoldingSpaceController` must be instantiated before the shelf.
   holding_space_controller_ = std::make_unique<HoldingSpaceController>();
 
+  calendar_controller_ = std::make_unique<CalendarController>();
+
   shelf_config_ = std::make_unique<ShelfConfig>();
   shelf_controller_ = std::make_unique<ShelfController>();
 
@@ -1179,8 +1186,7 @@ void Shell::Init(
 
   high_contrast_controller_ = std::make_unique<HighContrastController>();
 
-  docked_magnifier_controller_ =
-      std::make_unique<DockedMagnifierController>();
+  docked_magnifier_controller_ = std::make_unique<DockedMagnifierController>();
 
   video_detector_ = std::make_unique<VideoDetector>();
 
