@@ -398,31 +398,69 @@ void BitstreamQualityMetrics::WriteToFile() const {
 }
 
 // Video encode test class. Performs setup and teardown for each single test.
+// It measures the performance in encoding NV12 GpuMemoryBuffer based
+// VideoFrame.
 class VideoEncoderTest : public ::testing::Test {
  public:
-  // Create a new video encoder instance.
+  // Creates VideoEncoder for encoding NV12 GpuMemoryBuffer based VideoFrames.
+  // The input VideoFrames are provided every 1 / |encoder_rate| seconds if it
+  // is specified. Or they are provided as soon as the previous input VideoFrame
+  // is consumed by VideoEncoder. |measure_quality| measures SSIM and PSNR
+  // values of encoded bitstream comparing the original input VideoFrames.
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
-      Video* video,
-      VideoCodecProfile profile,
-      const media::VideoBitrateAllocation& bitrate,
-      uint32_t encoder_rate = 0) {
-    auto performance_evaluator = std::make_unique<PerformanceEvaluator>();
-    performance_evaluator_ = performance_evaluator.get();
+      absl::optional<uint32_t> encode_rate,
+      bool measure_quality) {
+    Video* video = g_env->GenerateNV12Video();
+    VideoCodecProfile profile = g_env->Profile();
+    const media::VideoBitrateAllocation& bitrate = g_env->Bitrate();
+
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
-    bitstream_processors.push_back(std::move(performance_evaluator));
-    return CreateVideoEncoderWithProcessors(
-        video, profile, bitrate, encoder_rate, std::move(bitstream_processors));
+    if (measure_quality) {
+      bitstream_processors =
+          CreateBitstreamProcessorsForQualityPerformance(video, profile);
+    } else {
+      auto performance_evaluator = std::make_unique<PerformanceEvaluator>();
+      performance_evaluator_ = performance_evaluator.get();
+      bitstream_processors.push_back(std::move(performance_evaluator));
+    }
+    LOG_ASSERT(!bitstream_processors.empty())
+        << "Failed to create bitstream processors";
+
+    VideoEncoderClientConfig config(video, profile, g_env->SpatialLayers(),
+                                    bitrate);
+    config.input_storage_type =
+        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
+    config.num_frames_to_encode = kNumFramesToEncodeForPerformance;
+    if (encode_rate) {
+      config.encode_interval =
+          base::TimeDelta::FromSeconds(1u) / encode_rate.value();
+    }
+
+    auto video_encoder =
+        VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory(),
+                             std::move(bitstream_processors));
+    LOG_ASSERT(video_encoder);
+    LOG_ASSERT(video_encoder->Initialize(video));
+
+    return video_encoder;
   }
 
-  // Create a new video encoder instance for quality performance tests.
-  std::unique_ptr<VideoEncoder> CreateVideoEncoderForQualityPerformance(
-      Video* video,
-      VideoCodecProfile profile,
-      const media::VideoBitrateAllocation& bitrate) {
+ protected:
+  PerformanceEvaluator* performance_evaluator_;
+  SSIMVideoFrameValidator* ssim_validator_;
+  PSNRVideoFrameValidator* psnr_validator_;
+
+ private:
+  // Create bitstream processors for quality performance tests.
+  std::vector<std::unique_ptr<BitstreamProcessor>>
+  CreateBitstreamProcessorsForQualityPerformance(Video* video,
+                                                 VideoCodecProfile profile) {
+    std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
+
     raw_data_helper_ = RawDataHelper::Create(video);
     if (!raw_data_helper_) {
       LOG(ERROR) << "Failed to create raw data helper";
-      return nullptr;
+      return bitstream_processors;
     }
 
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
@@ -455,34 +493,9 @@ class VideoEncoderTest : public ::testing::Test {
         decoder_config, kNumFramesToEncodeForPerformance - 1,
         std::move(video_frame_processors));
     LOG_ASSERT(bitstream_validator);
-    std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     bitstream_processors.push_back(std::move(bitstream_validator));
-    return CreateVideoEncoderWithProcessors(video, profile, bitrate,
-                                            /*encoder_rate=*/0,
-                                            std::move(bitstream_processors));
-  }
 
-  std::unique_ptr<VideoEncoder> CreateVideoEncoderWithProcessors(
-      Video* video,
-      VideoCodecProfile profile,
-      const media::VideoBitrateAllocation& bitrate,
-      uint32_t encoder_rate,
-      std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors) {
-    LOG_ASSERT(video);
-    VideoEncoderClientConfig config(video, profile, g_env->SpatialLayers(),
-                                    bitrate);
-    config.num_frames_to_encode = kNumFramesToEncodeForPerformance;
-    if (encoder_rate != 0)
-      config.encode_interval =
-          base::TimeDelta::FromSeconds(/*secs=*/1u) / encoder_rate;
-
-    auto video_encoder =
-        VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory(),
-                             std::move(bitstream_processors));
-    LOG_ASSERT(video_encoder);
-    LOG_ASSERT(video_encoder->Initialize(video));
-
-    return video_encoder;
+    return bitstream_processors;
   }
 
   scoped_refptr<const VideoFrame> GetModelFrame(size_t frame_index) {
@@ -492,10 +505,6 @@ class VideoEncoderTest : public ::testing::Test {
   }
 
   std::unique_ptr<RawDataHelper> raw_data_helper_;
-
-  PerformanceEvaluator* performance_evaluator_;
-  SSIMVideoFrameValidator* ssim_validator_;
-  PSNRVideoFrameValidator* psnr_validator_;
 };
 
 }  // namespace
@@ -504,8 +513,8 @@ class VideoEncoderTest : public ::testing::Test {
 // performance. This test will encode a video as fast as possible, and gives an
 // idea about the maximum output of the encoder.
 TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
-  auto encoder =
-      CreateVideoEncoder(g_env->Video(), g_env->Profile(), g_env->Bitrate());
+  auto encoder = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
+                                    /*measure_quality=*/false);
   encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
   performance_evaluator_->StartMeasuring();
@@ -526,8 +535,8 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
 // This test can be used to measure the cpu metrics during encoding.
 TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
   const uint32_t kEncodeRate = 30;
-  auto encoder = CreateVideoEncoder(g_env->Video(), g_env->Profile(),
-                                    g_env->Bitrate(), kEncodeRate);
+  auto encoder = CreateVideoEncoder(/*encode_rate=*/kEncodeRate,
+                                    /*measure_quality=*/false);
   encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
   performance_evaluator_->StartMeasuring();
@@ -544,8 +553,8 @@ TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
 }
 
 TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
-  auto encoder = CreateVideoEncoderForQualityPerformance(
-      g_env->Video(), g_env->Profile(), g_env->Bitrate());
+  auto encoder = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
+                                    /*measure_quality=*/true);
   encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
   encoder->Encode();
