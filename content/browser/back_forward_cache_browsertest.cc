@@ -4419,9 +4419,10 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+// TODO(crbug.com/1236190) Disabled for flaky failures on various configs.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestWithUnfreezableLoading,
-    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
+    DISABLED_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
   ASSERT_TRUE(embedded_test_server()->Start());
