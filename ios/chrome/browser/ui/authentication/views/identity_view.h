@@ -40,6 +40,9 @@
 // Sets the title and subtitle. |subtitle| can be nil.
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle;
 
+// Sets the color of the title.
+- (void)setTitleColor:(UIColor*)color;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_VIEWS_IDENTITY_VIEW_H_

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,6 +24,7 @@
   if (self) {
     self.cellClass = [TableViewIdentityCell class];
     _identityViewStyle = IdentityViewStyleDefault;
+    self.useCustomSeparator = YES;
   }
   return self;
 }
@@ -41,7 +43,8 @@
                       subtitle:subtitle
                          image:self.avatar
                        checked:self.selected
-             identityViewStyle:self.identityViewStyle];
+             identityViewStyle:self.identityViewStyle
+                    titleColor:UIColor.cr_labelColor];
 }
 
 @end

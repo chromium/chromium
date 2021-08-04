@@ -206,6 +206,10 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
   }
 }
 
+- (void)setTitleColor:(UIColor*)color {
+  self.title.textColor = color;
+}
+
 #pragma mark - properties
 
 - (void)setTitleFont:(UIFont*)titleFont {
