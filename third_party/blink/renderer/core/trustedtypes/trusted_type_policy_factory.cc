@@ -104,7 +104,7 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
 }
 
 TrustedTypePolicy* TrustedTypePolicyFactory::defaultPolicy() const {
-  return policy_map_.at("default");
+  return policy_map_.DeprecatedAtOrEmptyValue("default");
 }
 
 TrustedTypePolicyFactory::TrustedTypePolicyFactory(ExecutionContext* context)
