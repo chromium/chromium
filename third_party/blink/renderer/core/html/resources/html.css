@@ -27,31 +27,6 @@ html {
     display: block;
 }
 
-/* children of the <head> element all have display:none */
-head {
-    display: none
-}
-
-meta {
-    display: none
-}
-
-title {
-    display: none
-}
-
-link {
-    display: none
-}
-
-style {
-    display: none
-}
-
-script {
-    display: none
-}
-
 /* generic block-level elements */
 
 body {
@@ -459,10 +434,6 @@ textarea {
   font-family: monospace;
 }
 
-input[type="hidden" i] {
-    display: none
-}
-
 input {
     appearance: auto;
     padding:1px 0;
@@ -801,20 +772,21 @@ option:-internal-spatial-navigation-focus {
     outline-offset: -1px;
 }
 
-datalist {
-    display: none
-}
-
+/* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */
+/* TODO(crbug.com/1231263): <area> should be display:none. */
 area {
-    display: inline;
+  display: inline;
+}
+base, basefont, datalist, head, link, meta, noembed,
+noframes, param, rp, script, style, template, title {
+  display: none;
+}
+input[type="hidden" i] {
+  display: none !important;
 }
 
 area:-webkit-any-link {
     cursor: pointer;
-}
-
-param {
-    display: none
 }
 
 input[type="checkbox" i] {
@@ -1348,15 +1320,7 @@ ruby > rt {
     text-align: start;
 }
 
-rp {
-    display: none;
-}
-
 /* other elements */
-
-noframes {
-    display: none
-}
 
 frameset, frame {
     display: block
@@ -1395,10 +1359,6 @@ details > summary:first-of-type {
 
 details[open] > summary:first-of-type {
     list-style-type: disclosure-open;
-}
-
-template {
-    display: none
 }
 
 bdi, output {
