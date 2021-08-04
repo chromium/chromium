@@ -480,7 +480,7 @@ void ManagedNetworkConfigurationHandlerImpl::
 void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     ::onc::ONCSource onc_source,
     const std::string& userhash,
-    const base::ListValue& network_configs_onc,
+    const base::Value& network_configs_onc,
     const base::DictionaryValue& global_network_config) {
   VLOG(1) << "Setting policies from: " << ToDebugString(onc_source, userhash);
 

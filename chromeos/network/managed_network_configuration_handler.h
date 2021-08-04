@@ -19,7 +19,6 @@
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 }  // namespace base
 
 namespace chromeos {
@@ -127,7 +126,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   virtual void SetPolicy(
       ::onc::ONCSource onc_source,
       const std::string& userhash,
-      const base::ListValue& network_configs_onc,
+      const base::Value& network_configs_onc,
       const base::DictionaryValue& global_network_config) = 0;
 
   // Returns true if any policy application is currently running or pending.
