@@ -278,9 +278,6 @@ component("gfx") {
       "shadow_util.h",
       "skia_paint_util.cc",
       "skia_paint_util.h",
-      "skia_vector_animation.cc",
-      "skia_vector_animation.h",
-      "skia_vector_animation_observer.h",
     ]
   }
 
@@ -821,7 +818,6 @@ test("gfx_unittests") {
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
       "skia_util_unittest.cc",
-      "skia_vector_animation_unittest.cc",
       "skrect_conversion_unittest.cc",
       "transform_util_unittest.cc",
       "utf16_indexing_unittest.cc",

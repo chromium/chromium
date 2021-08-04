@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/skia_vector_animation.h"
+#include "ui/lottie/animation.h"
 
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -13,16 +13,15 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/gfx/skia_vector_animation_observer.h"
+#include "ui/lottie/animation_observer.h"
 
-namespace gfx {
+namespace lottie {
 
-SkiaVectorAnimation::TimerControl::TimerControl(
-    const base::TimeDelta& offset,
-    const base::TimeDelta& cycle_duration,
-    const base::TimeDelta& total_duration,
-    const base::TimeTicks& start_timestamp,
-    bool should_reverse)
+Animation::TimerControl::TimerControl(const base::TimeDelta& offset,
+                                      const base::TimeDelta& cycle_duration,
+                                      const base::TimeDelta& total_duration,
+                                      const base::TimeTicks& start_timestamp,
+                                      bool should_reverse)
     : start_offset_(offset),
       end_offset_((offset + cycle_duration)),
       cycle_duration_(end_offset_ - start_offset_),
@@ -32,7 +31,7 @@ SkiaVectorAnimation::TimerControl::TimerControl(
       current_cycle_progress_(start_offset_),
       should_reverse_(should_reverse) {}
 
-void SkiaVectorAnimation::TimerControl::Step(const base::TimeTicks& timestamp) {
+void Animation::TimerControl::Step(const base::TimeTicks& timestamp) {
   progress_ += timestamp - previous_tick_;
   previous_tick_ = timestamp;
 
@@ -51,41 +50,37 @@ void SkiaVectorAnimation::TimerControl::Step(const base::TimeTicks& timestamp) {
   }
 }
 
-void SkiaVectorAnimation::TimerControl::Resume(
-    const base::TimeTicks& timestamp) {
+void Animation::TimerControl::Resume(const base::TimeTicks& timestamp) {
   previous_tick_ = timestamp;
 }
 
-double SkiaVectorAnimation::TimerControl::GetNormalizedCurrentCycleProgress()
-    const {
+double Animation::TimerControl::GetNormalizedCurrentCycleProgress() const {
   return current_cycle_progress_ / total_duration_;
 }
 
-double SkiaVectorAnimation::TimerControl::GetNormalizedStartOffset() const {
+double Animation::TimerControl::GetNormalizedStartOffset() const {
   return start_offset_ / total_duration_;
 }
 
-double SkiaVectorAnimation::TimerControl::GetNormalizedEndOffset() const {
+double Animation::TimerControl::GetNormalizedEndOffset() const {
   return end_offset_ / total_duration_;
 }
 
-SkiaVectorAnimation::SkiaVectorAnimation(
-    scoped_refptr<cc::SkottieWrapper> skottie)
+Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie)
     : skottie_(skottie) {}
 
-SkiaVectorAnimation::~SkiaVectorAnimation() {}
+Animation::~Animation() = default;
 
-void SkiaVectorAnimation::SetAnimationObserver(
-    SkiaVectorAnimationObserver* observer) {
+void Animation::SetAnimationObserver(AnimationObserver* observer) {
   DCHECK(!observer_ || !observer);
   observer_ = observer;
 }
 
-base::TimeDelta SkiaVectorAnimation::GetAnimationDuration() const {
+base::TimeDelta Animation::GetAnimationDuration() const {
   return base::TimeDelta::FromSecondsD(skottie_->duration());
 }
 
-gfx::Size SkiaVectorAnimation::GetOriginalSize() const {
+gfx::Size Animation::GetOriginalSize() const {
 #if DCHECK_IS_ON()
   // The size should have no fractional component.
   gfx::SizeF float_size = gfx::SkSizeToSizeF(skottie_->size());
@@ -100,15 +95,15 @@ gfx::Size SkiaVectorAnimation::GetOriginalSize() const {
   return gfx::ToRoundedSize(gfx::SkSizeToSizeF(skottie_->size()));
 }
 
-void SkiaVectorAnimation::Start(Style style) {
+void Animation::Start(Style style) {
   DCHECK_NE(state_, PlayState::kPaused);
   DCHECK_NE(state_, PlayState::kPlaying);
   StartSubsection(base::TimeDelta(), GetAnimationDuration(), style);
 }
 
-void SkiaVectorAnimation::StartSubsection(base::TimeDelta start_offset,
-                                          base::TimeDelta duration,
-                                          Style style) {
+void Animation::StartSubsection(base::TimeDelta start_offset,
+                                base::TimeDelta duration,
+                                Style style) {
   DCHECK(state_ == PlayState::kStopped || state_ == PlayState::kEnded);
   DCHECK_LE(start_offset + duration, GetAnimationDuration());
 
@@ -124,22 +119,22 @@ void SkiaVectorAnimation::StartSubsection(base::TimeDelta start_offset,
   scheduled_duration_ = duration;
 }
 
-void SkiaVectorAnimation::Pause() {
+void Animation::Pause() {
   DCHECK(state_ == PlayState::kPlaying || state_ == PlayState::kSchedulePlay);
   state_ = PlayState::kPaused;
 }
 
-void SkiaVectorAnimation::ResumePlaying() {
+void Animation::ResumePlaying() {
   DCHECK(state_ == PlayState::kPaused);
   state_ = PlayState::kScheduleResume;
 }
 
-void SkiaVectorAnimation::Stop() {
+void Animation::Stop() {
   state_ = PlayState::kStopped;
   timer_control_.reset(nullptr);
 }
 
-float SkiaVectorAnimation::GetCurrentProgress() const {
+float Animation::GetCurrentProgress() const {
   switch (state_) {
     case PlayState::kStopped:
       return 0;
@@ -163,9 +158,9 @@ float SkiaVectorAnimation::GetCurrentProgress() const {
   }
 }
 
-void SkiaVectorAnimation::Paint(gfx::Canvas* canvas,
-                                const base::TimeTicks& timestamp,
-                                const gfx::Size& size) {
+void Animation::Paint(gfx::Canvas* canvas,
+                      const base::TimeTicks& timestamp,
+                      const gfx::Size& size) {
   switch (state_) {
     case PlayState::kStopped:
       return;
@@ -198,22 +193,22 @@ void SkiaVectorAnimation::Paint(gfx::Canvas* canvas,
   PaintFrame(canvas, GetCurrentProgress(), size);
 }
 
-void SkiaVectorAnimation::PaintFrame(gfx::Canvas* canvas,
-                                     float t,
-                                     const gfx::Size& size) {
+void Animation::PaintFrame(gfx::Canvas* canvas,
+                           float t,
+                           const gfx::Size& size) {
   DCHECK_GE(t, 0.f);
   DCHECK_LE(t, 1.f);
   canvas->DrawSkottie(skottie(), gfx::Rect(size), t);
 }
 
-void SkiaVectorAnimation::InitTimer(const base::TimeTicks& timestamp) {
+void Animation::InitTimer(const base::TimeTicks& timestamp) {
   DCHECK(!timer_control_);
   timer_control_ = std::make_unique<TimerControl>(
       scheduled_start_offset_, scheduled_duration_, GetAnimationDuration(),
       timestamp, style_ == Style::kThrobbing);
 }
 
-void SkiaVectorAnimation::UpdateState(const base::TimeTicks& timestamp) {
+void Animation::UpdateState(const base::TimeTicks& timestamp) {
   DCHECK(timer_control_);
   int cycles = timer_control_->completed_cycles();
   timer_control_->Step(timestamp);
@@ -243,4 +238,4 @@ void SkiaVectorAnimation::UpdateState(const base::TimeTicks& timestamp) {
   }
 }
 
-}  // namespace gfx
+}  // namespace lottie

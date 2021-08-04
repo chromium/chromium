@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/skia_vector_animation.h"
+#include "ui/lottie/animation.h"
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -15,9 +14,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/skia_vector_animation_observer.h"
+#include "ui/lottie/animation_observer.h"
 
-namespace gfx {
+namespace lottie {
 namespace {
 
 // A skottie animation with solid green color for the first 2.5 seconds and then
@@ -55,20 +54,22 @@ constexpr float kAnimationWidth = 400.f;
 constexpr float kAnimationHeight = 200.f;
 constexpr auto kAnimationDuration = base::TimeDelta::FromSeconds(5);
 
-class TestAnimationObserver : public SkiaVectorAnimationObserver {
+class TestAnimationObserver : public AnimationObserver {
  public:
   TestAnimationObserver() = default;
+  ~TestAnimationObserver() override = default;
+  TestAnimationObserver(const TestAnimationObserver&) = delete;
+  TestAnimationObserver& operator=(const TestAnimationObserver&) = delete;
 
-  void AnimationWillStartPlaying(
-      const SkiaVectorAnimation* animation) override {
+  void AnimationWillStartPlaying(const Animation* animation) override {
     animation_will_start_playing_ = true;
   }
 
-  void AnimationCycleEnded(const SkiaVectorAnimation* animation) override {
+  void AnimationCycleEnded(const Animation* animation) override {
     animation_cycle_ended_ = true;
   }
 
-  void AnimationResuming(const SkiaVectorAnimation* animation) override {
+  void AnimationResuming(const Animation* animation) override {
     animation_resuming_ = true;
   }
 
@@ -88,58 +89,56 @@ class TestAnimationObserver : public SkiaVectorAnimationObserver {
   bool animation_cycle_ended_ = false;
   bool animation_will_start_playing_ = false;
   bool animation_resuming_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAnimationObserver);
 };
 
 }  // namespace
 
-class SkiaVectorAnimationTest : public testing::Test {
+class AnimationTest : public testing::Test {
  public:
-  SkiaVectorAnimationTest() = default;
-  ~SkiaVectorAnimationTest() override {}
+  AnimationTest() = default;
+  ~AnimationTest() override = default;
+  AnimationTest(const AnimationTest&) = delete;
+  AnimationTest& operator=(const AnimationTest&) = delete;
 
   void SetUp() override {
     canvas_ = std::make_unique<gfx::Canvas>(
         gfx::Size(kAnimationWidth, kAnimationHeight), 1.f, false);
     skottie_ = cc::SkottieWrapper::CreateNonSerializable(
         base::as_bytes(base::make_span(kData, std::strlen(kData))));
-    animation_ = std::make_unique<SkiaVectorAnimation>(skottie_);
+    animation_ = std::make_unique<Animation>(skottie_);
   }
 
   void TearDown() override { animation_.reset(nullptr); }
 
-  Canvas* canvas() { return canvas_.get(); }
+  gfx::Canvas* canvas() { return canvas_.get(); }
 
-  SkiaVectorAnimation::Style GetStyle() const { return animation_->style_; }
+  Animation::Style GetStyle() const { return animation_->style_; }
 
-  SkiaVectorAnimation::PlayState GetState() const { return animation_->state_; }
+  Animation::PlayState GetState() const { return animation_->state_; }
 
   bool IsStopped() const {
-    return GetState() == SkiaVectorAnimation::PlayState::kStopped;
+    return GetState() == Animation::PlayState::kStopped;
   }
 
   bool IsScheduledToPlay() const {
-    return GetState() == SkiaVectorAnimation::PlayState::kSchedulePlay;
+    return GetState() == Animation::PlayState::kSchedulePlay;
   }
 
   bool IsPlaying() const {
-    return GetState() == SkiaVectorAnimation::PlayState::kPlaying;
+    return GetState() == Animation::PlayState::kPlaying;
   }
 
   bool IsScheduledToResume() const {
-    return GetState() == SkiaVectorAnimation::PlayState::kScheduleResume;
+    return GetState() == Animation::PlayState::kScheduleResume;
   }
 
   bool HasAnimationEnded() const {
-    return GetState() == SkiaVectorAnimation::PlayState::kEnded;
+    return GetState() == Animation::PlayState::kEnded;
   }
 
-  bool IsPaused() const {
-    return GetState() == SkiaVectorAnimation::PlayState::kPaused;
-  }
+  bool IsPaused() const { return GetState() == Animation::PlayState::kPaused; }
 
-  const SkiaVectorAnimation::TimerControl* GetTimerControl() const {
+  const Animation::TimerControl* GetTimerControl() const {
     return animation_->timer_control_.get();
   }
 
@@ -187,20 +186,18 @@ class SkiaVectorAnimationTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<SkiaVectorAnimation> animation_;
+  std::unique_ptr<Animation> animation_;
   scoped_refptr<cc::SkottieWrapper> skottie_;
 
  private:
   std::unique_ptr<gfx::Canvas> canvas_;
   base::SimpleTestTickClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaVectorAnimationTest);
 };
 
-TEST_F(SkiaVectorAnimationTest, InitializationAndLoadingData) {
+TEST_F(AnimationTest, InitializationAndLoadingData) {
   skottie_ = cc::SkottieWrapper::CreateNonSerializable(
       base::as_bytes(base::make_span(kData, std::strlen(kData))));
-  animation_ = std::make_unique<SkiaVectorAnimation>(skottie_);
+  animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().height(), kAnimationHeight);
   EXPECT_EQ(animation_->GetAnimationDuration(), kAnimationDuration);
@@ -208,21 +205,21 @@ TEST_F(SkiaVectorAnimationTest, InitializationAndLoadingData) {
 
   skottie_ = cc::SkottieWrapper::CreateNonSerializable(
       base::as_bytes(base::make_span(kData, std::strlen(kData))));
-  animation_ = std::make_unique<SkiaVectorAnimation>(skottie_);
+  animation_ = std::make_unique<Animation>(skottie_);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().width(), kAnimationWidth);
   EXPECT_FLOAT_EQ(animation_->GetOriginalSize().height(), kAnimationHeight);
   EXPECT_EQ(animation_->GetAnimationDuration(), kAnimationDuration);
   EXPECT_TRUE(IsStopped());
 }
 
-TEST_F(SkiaVectorAnimationTest, PlayLinearAnimation) {
+TEST_F(AnimationTest, PlayLinearAnimation) {
   TestAnimationObserver observer;
   animation_->SetAnimationObserver(&observer);
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
   EXPECT_TRUE(IsStopped());
-  animation_->Start(SkiaVectorAnimation::Style::kLinear);
+  animation_->Start(Animation::Style::kLinear);
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -257,13 +254,13 @@ TEST_F(SkiaVectorAnimationTest, PlayLinearAnimation) {
   EXPECT_TRUE(observer.animation_cycle_ended());
 }
 
-TEST_F(SkiaVectorAnimationTest, StopLinearAnimation) {
+TEST_F(AnimationTest, StopLinearAnimation) {
   TestAnimationObserver observer;
   animation_->SetAnimationObserver(&observer);
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
-  animation_->Start(SkiaVectorAnimation::Style::kLinear);
+  animation_->Start(Animation::Style::kLinear);
 
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
   EXPECT_TRUE(IsPlaying());
@@ -280,7 +277,7 @@ TEST_F(SkiaVectorAnimationTest, StopLinearAnimation) {
   EXPECT_TRUE(IsStopped());
 }
 
-TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfLinearAnimation) {
+TEST_F(AnimationTest, PlaySubsectionOfLinearAnimation) {
   constexpr auto kStartTime = base::TimeDelta::FromMilliseconds(400);
   constexpr auto kDuration = base::TimeDelta::FromMilliseconds(1000);
 
@@ -291,8 +288,7 @@ TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfLinearAnimation) {
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
   EXPECT_FALSE(observer.animation_cycle_ended());
-  animation_->StartSubsection(kStartTime, kDuration,
-                              SkiaVectorAnimation::Style::kLinear);
+  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLinear);
 
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
@@ -341,7 +337,7 @@ TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfLinearAnimation) {
   EXPECT_TRUE(HasAnimationEnded());
 }
 
-TEST_F(SkiaVectorAnimationTest, PausingLinearAnimation) {
+TEST_F(AnimationTest, PausingLinearAnimation) {
   constexpr auto kStartTime = base::TimeDelta::FromMilliseconds(400);
   constexpr auto kDuration = base::TimeDelta::FromMilliseconds(1000);
 
@@ -350,8 +346,7 @@ TEST_F(SkiaVectorAnimationTest, PausingLinearAnimation) {
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(200));
 
-  animation_->StartSubsection(kStartTime, kDuration,
-                              SkiaVectorAnimation::Style::kLinear);
+  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLinear);
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   constexpr auto kAdvance = base::TimeDelta::FromMilliseconds(100);
@@ -391,14 +386,14 @@ TEST_F(SkiaVectorAnimationTest, PausingLinearAnimation) {
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 }
 
-TEST_F(SkiaVectorAnimationTest, PlayLoopAnimation) {
+TEST_F(AnimationTest, PlayLoopAnimation) {
   TestAnimationObserver observer;
   animation_->SetAnimationObserver(&observer);
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
   EXPECT_TRUE(IsStopped());
-  animation_->Start(SkiaVectorAnimation::Style::kLoop);
+  animation_->Start(Animation::Style::kLoop);
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -434,7 +429,7 @@ TEST_F(SkiaVectorAnimationTest, PlayLoopAnimation) {
   EXPECT_TRUE(IsPlaying());
 }
 
-TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfLoopAnimation) {
+TEST_F(AnimationTest, PlaySubsectionOfLoopAnimation) {
   constexpr auto kStartTime = base::TimeDelta::FromMilliseconds(400);
   constexpr auto kDuration = base::TimeDelta::FromMilliseconds(1000);
 
@@ -444,8 +439,7 @@ TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfLoopAnimation) {
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
   EXPECT_TRUE(IsStopped());
-  animation_->StartSubsection(kStartTime, kDuration,
-                              SkiaVectorAnimation::Style::kLoop);
+  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLoop);
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -494,7 +488,7 @@ TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfLoopAnimation) {
   EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), GetTimerStartOffset());
 }
 
-TEST_F(SkiaVectorAnimationTest, PausingLoopAnimation) {
+TEST_F(AnimationTest, PausingLoopAnimation) {
   constexpr auto kStartTime = base::TimeDelta::FromMilliseconds(400);
   constexpr auto kDuration = base::TimeDelta::FromMilliseconds(1000);
 
@@ -503,8 +497,7 @@ TEST_F(SkiaVectorAnimationTest, PausingLoopAnimation) {
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(200));
 
-  animation_->StartSubsection(kStartTime, kDuration,
-                              SkiaVectorAnimation::Style::kLoop);
+  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLoop);
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(),
@@ -551,13 +544,13 @@ TEST_F(SkiaVectorAnimationTest, PausingLoopAnimation) {
   EXPECT_TRUE(observer.animation_cycle_ended());
 }
 
-TEST_F(SkiaVectorAnimationTest, PlayThrobbingAnimation) {
+TEST_F(AnimationTest, PlayThrobbingAnimation) {
   TestAnimationObserver observer;
   animation_->SetAnimationObserver(&observer);
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
-  animation_->Start(SkiaVectorAnimation::Style::kThrobbing);
+  animation_->Start(Animation::Style::kThrobbing);
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -604,7 +597,7 @@ TEST_F(SkiaVectorAnimationTest, PlayThrobbingAnimation) {
   EXPECT_TRUE(observer.animation_cycle_ended());
 }
 
-TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfThrobbingAnimation) {
+TEST_F(AnimationTest, PlaySubsectionOfThrobbingAnimation) {
   constexpr auto kStartTime = base::TimeDelta::FromMilliseconds(400);
   constexpr auto kDuration = base::TimeDelta::FromMilliseconds(1000);
 
@@ -614,7 +607,7 @@ TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfThrobbingAnimation) {
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
   animation_->StartSubsection(kStartTime, kDuration,
-                              SkiaVectorAnimation::Style::kThrobbing);
+                              Animation::Style::kThrobbing);
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -684,14 +677,14 @@ TEST_F(SkiaVectorAnimationTest, PlaySubsectionOfThrobbingAnimation) {
   EXPECT_TRUE(IsPlaying());
 }
 
-TEST_F(SkiaVectorAnimationTest, PausingThrobbingAnimation) {
+TEST_F(AnimationTest, PausingThrobbingAnimation) {
   constexpr auto kStartTime = base::TimeDelta::FromMilliseconds(400);
   constexpr auto kDuration = base::TimeDelta::FromMilliseconds(1000);
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(200));
 
   animation_->StartSubsection(kStartTime, kDuration,
-                              SkiaVectorAnimation::Style::kThrobbing);
+                              Animation::Style::kThrobbing);
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   EXPECT_TRUE(IsPlaying());
@@ -778,7 +771,7 @@ TEST_F(SkiaVectorAnimationTest, PausingThrobbingAnimation) {
 
 // Test to see if the race condition is handled correctly. It may happen that we
 // pause the video before it even starts playing.
-TEST_F(SkiaVectorAnimationTest, PauseBeforePlay) {
+TEST_F(AnimationTest, PauseBeforePlay) {
   TestAnimationObserver observer;
   animation_->SetAnimationObserver(&observer);
 
@@ -807,12 +800,12 @@ TEST_F(SkiaVectorAnimationTest, PauseBeforePlay) {
                   kAdvance / kAnimationDuration);
 }
 
-TEST_F(SkiaVectorAnimationTest, PaintTest) {
+TEST_F(AnimationTest, PaintTest) {
   gfx::Canvas canvas(gfx::Size(kAnimationWidth, kAnimationHeight), 1.f, false);
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(300));
 
-  animation_->Start(SkiaVectorAnimation::Style::kLinear);
+  animation_->Start(Animation::Style::kLinear);
   animation_->Paint(&canvas, NowTicks(), animation_->GetOriginalSize());
 
   AdvanceClock(base::TimeDelta::FromMilliseconds(50));
@@ -836,4 +829,4 @@ TEST_F(SkiaVectorAnimationTest, PaintTest) {
   IsAllSameColor(SK_ColorBLUE, canvas.GetBitmap());
 }
 
-}  // namespace gfx
+}  // namespace lottie

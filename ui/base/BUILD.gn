@@ -1178,6 +1178,11 @@ test("ui_base_unittests") {
   if (is_mac) {
     data += [ "$root_out_dir/ui_unittests Framework.framework/" ]
   }
+
+  if (!is_ios) {
+    sources += [ "//ui/lottie/animation_unittest.cc" ]
+    deps += [ "//ui/lottie" ]
+  }
 }
 
 if (is_mac) {

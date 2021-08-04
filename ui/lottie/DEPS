@@ -1,0 +1,8 @@
+include_rules = [
+  "+cc/paint",
+  "+third_party/skia",
+  "+third_party/zlib/google/compression_utils.h",
+  "+ui/base",
+  "+ui/display",
+  "+ui/gfx",
+]

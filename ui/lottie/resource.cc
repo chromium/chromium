@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/aura_extra/skia_vector_resource.h"
+#include "ui/lottie/resource.h"
 
 #include <map>
 
@@ -14,13 +14,13 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/skia_vector_animation.h"
+#include "ui/lottie/animation.h"
 
 #if defined(OS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
-namespace aura_extra {
+namespace lottie {
 namespace {
 
 // Cached vector graphics. Each resource is loaded and unzipped only once.
@@ -34,11 +34,10 @@ VectorAssetCache& GetVectorAssetCache() {
 
 }  // namespace
 
-std::unique_ptr<gfx::SkiaVectorAnimation> GetVectorAnimationNamed(
-    int resource_id) {
+std::unique_ptr<Animation> GetVectorAnimationNamed(int resource_id) {
   auto found = GetVectorAssetCache().find(resource_id);
   if (found != GetVectorAssetCache().end())
-    return std::make_unique<gfx::SkiaVectorAnimation>(found->second);
+    return std::make_unique<Animation>(found->second);
 
   auto& rb = ui::ResourceBundle::GetSharedInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -79,7 +78,7 @@ std::unique_ptr<gfx::SkiaVectorAnimation> GetVectorAnimationNamed(
       base::TimeDelta::FromMilliseconds(50), 100);
   auto inserted = GetVectorAssetCache().emplace(resource_id, skottie);
   DCHECK(inserted.second);
-  return std::make_unique<gfx::SkiaVectorAnimation>(inserted.first->second);
+  return std::make_unique<Animation>(inserted.first->second);
 }
 
-}  // namespace aura_extra
+}  // namespace lottie

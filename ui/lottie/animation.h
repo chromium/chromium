@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_SKIA_VECTOR_ANIMATION_H_
-#define UI_GFX_SKIA_VECTOR_ANIMATION_H_
+#ifndef UI_LOTTIE_ANIMATION_H_
+#define UI_LOTTIE_ANIMATION_H_
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -15,12 +15,14 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 class Canvas;
-class SkiaVectorAnimationTest;
-class SkiaVectorAnimationObserver;
+}  // namespace gfx
+
+namespace lottie {
+class AnimationTest;
+class AnimationObserver;
 
 // This class is a wrapper over the Skia object for lottie vector graphic
 // animations. It has its own timeline manager for the animation controls. The
@@ -29,18 +31,16 @@ class SkiaVectorAnimationObserver;
 // frame per second.
 // This helps keep multiple animations be synchronized by having a common
 // external tick clock.
-// In general you want to use the view framework integrated class that we have
-// for SkiaVectorAnimation instead of this class.
 //
 // Usage example:
 //   1. Rendering a single frame on the canvas:
-//        SkiaVectorAnimation animation_ = SkiaVectorAnimation(data);
+//        Animation animation_ = Animation(data);
 //        animation_.Paint(canvas, t);
 //
 //   2. Playing the animation and rendering each frame:
 //      void SampleClient::Init() {
-//        SkiaVectorAnimation animation_ = SkiaVectorAnimation(data);
-//        animation_.Start(SkiaVectorAnimation::Style::LINEAR);
+//        Animation animation_ = Animation(data);
+//        animation_.Start(Animation::Style::LINEAR);
 //      }
 //
 //      // overrides cc::CompositorAnimationObserver
@@ -57,7 +57,7 @@ class SkiaVectorAnimationObserver;
 //      void SampleClient::Init() {
 //        // This will seek to the 1st second of the animation and from there
 //        // play it for 5 seconds.
-//        SkiaVectorAnimation animation_ = SkiaVectorAnimation(data);
+//        Animation animation_ = Animation(data);
 //        animation_.Start(TimeDelta::FromSeconds(1),
 //                         TimeDelta::FromSeconds(5));
 //      }
@@ -72,7 +72,7 @@ class SkiaVectorAnimationObserver;
 //        animation_.Paint(canvas, timestamp_, gfx::Size(10, 10));
 //      }
 //
-class GFX_EXPORT SkiaVectorAnimation {
+class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
  public:
   enum class Style {
     kLinear = 0,  // The animation plays from one time instant to another.
@@ -81,10 +81,12 @@ class GFX_EXPORT SkiaVectorAnimation {
     kLoop         // Same as LINEAR, except the animation repeats after it ends.
   };
 
-  explicit SkiaVectorAnimation(scoped_refptr<cc::SkottieWrapper> skottie);
-  ~SkiaVectorAnimation();
+  explicit Animation(scoped_refptr<cc::SkottieWrapper> skottie);
+  Animation(const Animation&) = delete;
+  Animation& operator=(const Animation&) = delete;
+  ~Animation();
 
-  void SetAnimationObserver(SkiaVectorAnimationObserver* Observer);
+  void SetAnimationObserver(AnimationObserver* Observer);
 
   // Animation properties ------------------------------------------------------
   // Returns the total duration of the animation as reported by |animation_|.
@@ -141,7 +143,7 @@ class GFX_EXPORT SkiaVectorAnimation {
   scoped_refptr<cc::SkottieWrapper> skottie() const { return skottie_; }
 
  private:
-  friend class SkiaVectorAnimationTest;
+  friend class AnimationTest;
 
   enum class PlayState {
     kStopped = 0,     // Animation is stopped.
@@ -156,7 +158,7 @@ class GFX_EXPORT SkiaVectorAnimation {
   // Class to manage the timeline when playing the animation. Manages the
   // normalized progress [0..1] between the given start and end offset. If the
   // reverse flag is set, the progress runs in reverse.
-  class GFX_EXPORT TimerControl {
+  class COMPONENT_EXPORT(UI_LOTTIE) TimerControl final {
    public:
     TimerControl(const base::TimeDelta& offset,
                  const base::TimeDelta& cycle_duration,
@@ -164,6 +166,8 @@ class GFX_EXPORT SkiaVectorAnimation {
                  const base::TimeTicks& start_timestamp,
                  bool should_reverse);
     ~TimerControl() = default;
+    TimerControl(const TimerControl&) = delete;
+    TimerControl& operator=(const TimerControl&) = delete;
 
     // Update timeline progress based on the new timetick |timestamp|.
     void Step(const base::TimeTicks& timestamp);
@@ -177,7 +181,7 @@ class GFX_EXPORT SkiaVectorAnimation {
     int completed_cycles() const { return completed_cycles_; }
 
    private:
-    friend class SkiaVectorAnimationTest;
+    friend class AnimationTest;
 
     // Time duration from 0 which marks the beginning of a cycle.
     const base::TimeDelta start_offset_;
@@ -207,8 +211,6 @@ class GFX_EXPORT SkiaVectorAnimation {
 
     // The number of times each |cycle_duration_| is covered by the timer.
     int completed_cycles_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(TimerControl);
   };
 
   void InitTimer(const base::TimeTicks& timestamp);
@@ -228,13 +230,11 @@ class GFX_EXPORT SkiaVectorAnimation {
   base::TimeDelta scheduled_start_offset_;
   base::TimeDelta scheduled_duration_;
 
-  SkiaVectorAnimationObserver* observer_ = nullptr;
+  AnimationObserver* observer_ = nullptr;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaVectorAnimation);
 };
 
-}  // namespace gfx
+}  // namespace lottie
 
-#endif  // UI_GFX_SKIA_VECTOR_ANIMATION_H_
+#endif  // UI_LOTTIE_ANIMATION_H_
