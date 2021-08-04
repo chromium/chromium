@@ -50,7 +50,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.7.2"
+  version: "version:5.8.0"
 >
 wheel: <
   name: "infra/python/wheels/requests-py2_py3"
