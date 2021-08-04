@@ -101,12 +101,14 @@ constexpr CGFloat kContentSpacing = 16.;
   self.navigationItem.leftBarButtonItem = leftItem;
 
   // Set the skip button in the right bar button item.
-  UIBarButtonItem* anotherButton = [[UIBarButtonItem alloc]
+  UIBarButtonItem* skipButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP)
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(skipButtonAction:)];
-  self.navigationItem.rightBarButtonItem = anotherButton;
+  skipButton.accessibilityIdentifier =
+      kWebSigninSkipButtonAccessibilityIdentifier;
+  self.navigationItem.rightBarButtonItem = skipButton;
   // Replace the controller view by the scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;

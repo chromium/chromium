@@ -25,6 +25,7 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
+#import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -95,12 +96,6 @@
               ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
-+ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email {
-  return grey_allOf(grey_accessibilityID(email),
-                    grey_kindOfClass([TableViewIdentityCell class]),
-                    grey_sufficientlyVisible(), nil);
-}
-
 + (BOOL)hasPrimaryIdentity {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
@@ -134,6 +129,23 @@
   SceneController* sceneController =
       chrome_test_util::GetForegroundActiveSceneController();
   [sceneController showSignin:command baseViewController:baseViewController];
+}
+
++ (void)triggerConsistencyPromoSigninDialog {
+  NSURL* url = [NSURL URLWithString:@"http://www.example.com"];
+  const GURL gURL = net::GURLWithNSURL(url);
+  UIViewController* baseViewController =
+      chrome_test_util::GetActiveViewController();
+  SceneController* sceneController =
+      chrome_test_util::GetForegroundActiveSceneController();
+  [sceneController showConsistencyPromoFromViewController:baseViewController
+                                                      URL:gURL];
+}
+
++ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email {
+  return grey_allOf(grey_accessibilityID(email),
+                    grey_kindOfClass([TableViewIdentityCell class]),
+                    grey_sufficientlyVisible(), nil);
 }
 
 @end

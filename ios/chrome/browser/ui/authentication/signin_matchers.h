@@ -17,6 +17,9 @@ id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email);
 // Returns a matcher for the link to Advanced Sync Settings options.
 id<GREYMatcher> SettingsLink();
 
+// Returns a matcher for the skip button in the web sign-in consistency dialog.
+id<GREYMatcher> WebSigninSkipButtonMatcher();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_MATCHERS_H_

@@ -8,15 +8,17 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kUserSigninAttemptedNotification = @"kUserSigninAttempted";
+NSString* const kUserSigninAttemptedNotification = @"UserSigninAttempted";
 NSString* const kSkipSigninAccessibilityIdentifier =
-    @"kSkipSigninAccessibilityIdentifier";
+    @"SkipSigninAccessibilityIdentifier";
 NSString* const kAddAccountAccessibilityIdentifier =
-    @"kAddAccountAccessibilityIdentifier";
+    @"AddAccountAccessibilityIdentifier";
 NSString* const kConfirmationAccessibilityIdentifier =
-    @"kConfirmationAccessibilityIdentifier";
-NSString* const kMoreAccessibilityIdentifier = @"kMoreAccessibilityIdentifier";
+    @"ConfirmationAccessibilityIdentifier";
+NSString* const kMoreAccessibilityIdentifier = @"MoreAccessibilityIdentifier";
 NSString* const kWebSigninAccessibilityIdentifier =
-    @"kWebSigninAccessibilityIdentifier";
+    @"WebSigninAccessibilityIdentifier";
 NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier =
-    @"kWebSigninContinueAsButtonAccessibilityIdentifier";
+    @"WebSigninContinueAsButtonAccessibilityIdentifier";
+NSString* const kWebSigninSkipButtonAccessibilityIdentifier =
+    @"WebSigninSkipButtonAccessibilityIdentifier";

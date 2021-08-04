@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -21,6 +22,12 @@ id<GREYMatcher> SettingsLink() {
   return grey_allOf(grey_accessibilityLabel(@"settings"),
                     grey_accessibilityTrait(UIAccessibilityTraitLink),
                     grey_interactable(), nil);
+}
+
+id<GREYMatcher> WebSigninSkipButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kWebSigninSkipButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 }  // namespace chrome_test_util

@@ -54,6 +54,9 @@ extern NSString* const kWebSigninAccessibilityIdentifier;
 // Name of accessiblity identifier for "Continue As..." button that signs in
 // the primary account user for the web sign-in consistency sheet.
 extern NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier;
+// Name of accessibility identifier for "Skip" button in the web sign-in
+// consistency sheet.
+extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
 
 // Action that is required to do to complete the sign-in. This action is in
 // charge of the SigninCoordinator's owner.

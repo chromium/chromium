@@ -57,6 +57,10 @@
 // SceneController, without any UI interaction to open the dialog.
 + (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity;
 
+// Triggers the web sign-in consistency dialog. This is done by calling
+// directly the current SceneController.
++ (void)triggerConsistencyPromoSigninDialog;
+
 // Sign-in matchers
 
 // Returns a matcher for an identity picker cell for |email|.
