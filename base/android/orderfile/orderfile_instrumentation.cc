@@ -10,6 +10,7 @@
 #include <atomic>
 #include <cstdio>
 #include <cstring>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -126,12 +127,18 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
       for_testing ? kEndOfTextForTesting : base::android::kEndOfText;
   if (UNLIKELY(address < start || address > end)) {
     Disable();
-    // If the start and end addresses are set incorrectly, this code path is
-    // likely happening during a static initializer. Logging at this time is
-    // prone to deadlock. By crashing immediately we at least have a chance to
-    // get a stack trace from the system to give some clue about the nature of
-    // the problem.
-    IMMEDIATE_CRASH();
+
+    if (!AreAnchorsSane()) {
+      // Something is really wrong with the anchors, and this is likely to be
+      // triggered from within a static constructor, where logging is likely to
+      // deadlock.  By crashing immediately we at least have a chance to get a
+      // stack trace from the system to give some clue about the nature of the
+      // problem.
+      IMMEDIATE_CRASH();
+    }
+
+    LOG(FATAL) << "Unexpected address! start = " << std::hex << start
+               << " end = " << end << " address = " << address;
   }
 
   size_t offset = address - start;
@@ -226,6 +233,8 @@ NO_INSTRUMENT_FUNCTION void StopAndDumpToFile(int pid,
 
 }  // namespace
 
+// After a call to Disable(), any function can be called, as reentrancy into the
+// instrumentation function will be mitigated.
 NO_INSTRUMENT_FUNCTION bool Disable() {
   auto old_phase = g_data_index.exchange(kPhases, std::memory_order_relaxed);
   std::atomic_thread_fence(std::memory_order_seq_cst);
