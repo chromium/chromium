@@ -82,12 +82,10 @@ export class Options {
      */
     this.audioTrack_ = null;
 
-    [['#switch-device', () => this.switchDevice(undefined)],
-     ['#open-settings', () => nav.open(ViewName.SETTINGS)],
-    ]
-        .forEach(
-            ([selector, fn]) => dom.get(selector, HTMLButtonElement)
-                                    .addEventListener('click', fn));
+    dom.get('#switch-device', HTMLButtonElement)
+        .addEventListener('click', () => this.switchDevice(undefined));
+    dom.get('#open-settings', HTMLButtonElement)
+        .addEventListener('click', () => nav.open(ViewName.SETTINGS));
 
     this.toggleMic_.addEventListener('click', () => this.updateAudioByMic_());
     this.toggleMirror_.addEventListener('click', () => this.saveMirroring_());
