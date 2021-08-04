@@ -90,6 +90,8 @@ Multiple command line arguments can be given to the command:
     --output_folder      overwrite the output folder used to store
                          performance metrics, if not specified results
                          will be stored in the current working directory.
+    --use-legacy         use the legacy VDA-based video decoders.
+                         (enabled by default)
     --use_vd             use the new VD-based video decoders, instead of
                          the default VDA-based video decoders.
     --use_vd_vda         use the new VD-based video decoders with a wrapper

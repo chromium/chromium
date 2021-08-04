@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "build/build_config.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
@@ -29,8 +30,8 @@ namespace {
 constexpr const char* usage_msg =
     "usage: video_decode_accelerator_perf_tests\n"
     "           [-v=<level>] [--vmodule=<config>] [--output_folder]\n"
-    "           ([--use_vd]|[--use_vd_vda]) [--gtest_help] [--help]\n"
-    "           [<video path>] [<video metadata path>]\n";
+    "           ([--use-legacy][--use_vd]|[--use_vd_vda]) [--gtest_help]\n"
+    "           [--help] [<video path>] [<video metadata path>]\n";
 
 // Video decoder perf tests help message.
 constexpr const char* help_msg =
@@ -47,6 +48,8 @@ constexpr const char* help_msg =
     "  --output_folder      overwrite the output folder used to store\n"
     "                       performance metrics, if not specified results\n"
     "                       will be stored in the current working directory.\n"
+    "  --use-legacy         use the legacy VDA-based video decoders.\n"
+    "                       (enabled by default)\n"
     "  --use_vd             use the new VD-based video decoders, instead of\n"
     "                       the default VDA-based video decoders.\n"
     "  --use_vd_vda         use the new VD-based video decoders with a\n"
@@ -434,6 +437,7 @@ int main(int argc, char** argv) {
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
+  bool use_legacy = false;
   bool use_vd = false;
   bool use_vd_vda = false;
   media::test::DecoderImplementation implementation =
@@ -448,6 +452,9 @@ int main(int argc, char** argv) {
 
     if (it->first == "output_folder") {
       output_folder = it->second;
+    } else if (it->first == "use-legacy") {
+      use_legacy = true;
+      implementation = media::test::DecoderImplementation::kVDA;
     } else if (it->first == "use_vd") {
       use_vd = true;
       implementation = media::test::DecoderImplementation::kVD;
@@ -461,6 +468,16 @@ int main(int argc, char** argv) {
     }
   }
 
+  if (use_legacy && use_vd) {
+    std::cout << "--use-legacy and --use_vd cannot be enabled together.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
+  if (use_legacy && use_vd_vda) {
+    std::cout << "--use-legacy and --use_vd_vda cannot be enabled together.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
   if (use_vd && use_vd_vda) {
     std::cout << "--use_vd and --use_vd_vda cannot be enabled together.\n"
               << media::test::usage_msg;
