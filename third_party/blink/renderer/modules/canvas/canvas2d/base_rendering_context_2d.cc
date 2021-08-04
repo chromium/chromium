@@ -194,14 +194,14 @@ void BaseRenderingContext2D::endLayer() {
     PopAndRestore();
   }
 
-  DCHECK_GE(state_stack_.back()->GetSaveType(),
-            CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
+  DCHECK(state_stack_.back()->GetSaveType() ==
+         CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
   PopAndRestore();
   layer_count_--;
 }
 
 void BaseRenderingContext2D::PopAndRestore() {
-  DCHECK_GE(state_stack_.size(), 1u);
+  DCHECK_GT(state_stack_.size(), 1u);
 
   state_stack_.pop_back();
   state_stack_.back()->ClearResolvedFilter();
