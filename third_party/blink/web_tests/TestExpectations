@@ -7252,4 +7252,4 @@ crbug.com/1235685 [ Mac10.14 ] virtual/scroll-unification/plugins/focus-change-4
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
 # Sheriff 2021-08-04
-crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Failure Pass Crash ]
+crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Failure Pass Crash Timeout ]
