@@ -964,6 +964,9 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX =
             new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownTimeMs.*");
 
+    public static final String LOCK_ICON_IN_ADDRESS_BAR_ENABLED =
+            "omnibox.lock_icon_in_address_bar_enabled";
+
     /** Cached Suggestions and Suggestion Headers. */
     public static final String KEY_ZERO_SUGGEST_LIST_SIZE = "zero_suggest_list_size";
     public static final KeyPrefix KEY_ZERO_SUGGEST_URL_PREFIX = new KeyPrefix("zero_suggest_url*");

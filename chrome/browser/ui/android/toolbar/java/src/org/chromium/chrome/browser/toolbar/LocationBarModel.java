@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -40,8 +41,10 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.SecurityStatusIcon;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -525,6 +528,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @VisibleForTesting
+    PrefService getPrefService() {
+        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
+    @VisibleForTesting
     @DrawableRes
     int getSecurityIconResource(int securityLevel, boolean isSmallDevice, boolean isOfflinePage,
             boolean isPaintPreview) {
@@ -549,11 +557,23 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
                 || mNtpDelegate.isCurrentlyVisible();
 
+        boolean useLockIconEnabled = false;
+        if (mNativeLocationBarModelAndroid != 0) {
+            PrefService prefService = getPrefService();
+            if (prefService.isManagedPreference(
+                        ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED)) {
+                useLockIconEnabled = prefService.getBoolean(
+                        ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED);
+            }
+        }
+
+        boolean useUpdatedConnectionSecurityIndicators = FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
+                && !useLockIconEnabled;
+
         return SecurityStatusIcon.getSecurityIconResource(securityLevel, isSmallDevice,
-                skipIconForNeutralState,
-                FeatureList.isInitialized()
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS));
+                skipIconForNeutralState, useUpdatedConnectionSecurityIndicators);
     }
 
     @Override
