@@ -336,7 +336,7 @@ public class SectionHeaderView extends LinearLayout {
         setBackgroundResource(R.drawable.card_with_corners_background);
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
         gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
     }
 
     private void setTextsEnabled(boolean enabled) {

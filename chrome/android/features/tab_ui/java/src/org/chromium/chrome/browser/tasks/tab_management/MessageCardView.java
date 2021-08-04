@@ -162,7 +162,7 @@ class MessageCardView extends LinearLayout {
         // Set dynamic color.
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
         gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
     }
 
     /**

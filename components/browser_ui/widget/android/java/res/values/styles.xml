@@ -11,7 +11,7 @@
 
     <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
         <item name="shapeAppearance">@style/MaterialCardShape</item>
-        <item name="cardElevation">@dimen/default_elevation_1</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
     </style>
 
     <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
