@@ -10,6 +10,7 @@
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_mediator.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,6 +60,9 @@
       [[NewPasswordViewController alloc] init];
   newPasswordViewController.delegate = self;
   newPasswordViewController.credentialHandler = self.mediator;
+  newPasswordViewController.navigationItem.prompt =
+      PromptForServiceIdentifiers(self.serviceIdentifiers);
+
   self.viewController = [[UINavigationController alloc]
       initWithRootViewController:newPasswordViewController];
   [self.baseViewController presentViewController:self.viewController

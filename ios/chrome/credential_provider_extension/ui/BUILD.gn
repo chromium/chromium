@@ -31,6 +31,8 @@ source_set("ui") {
     "new_password_view_controller.mm",
     "stale_credentials_view_controller.h",
     "stale_credentials_view_controller.mm",
+    "ui_util.h",
+    "ui_util.mm",
   ]
   deps = [
     ":feature_flags",

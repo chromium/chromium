@@ -10,6 +10,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_consumer.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,9 +63,14 @@
 }
 
 - (void)fetchCredentials {
-  NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
-  NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
-  [self.consumer setTopPrompt:promptURL.host];
+  if (IsPasswordCreationEnabled()) {
+    [self.consumer
+        setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
+  } else {
+    NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
+    NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
+    [self.consumer setTopPrompt:promptURL.host];
+  }
 
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
