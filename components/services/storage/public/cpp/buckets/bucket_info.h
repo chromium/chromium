@@ -36,6 +36,9 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs);
 
+  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+  friend bool operator<(const BucketInfo& lhs, const BucketInfo& rhs);
+
   bool is_default() const { return name == kDefaultBucketName; }
 
   BucketId id;

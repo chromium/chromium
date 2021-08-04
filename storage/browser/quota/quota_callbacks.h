@@ -42,9 +42,11 @@ using UsageWithBreakdownCallback =
 using AvailableSpaceCallback =
     base::OnceCallback<void(blink::mojom::QuotaStatusCode, int64_t)>;
 using StatusCallback = base::OnceCallback<void(blink::mojom::QuotaStatusCode)>;
-using GetStorageKeysCallback =
-    base::OnceCallback<void(const std::set<blink::StorageKey>& storage_keys,
+using GetBucketsCallback =
+    base::OnceCallback<void(const std::set<BucketInfo>& buckets,
                             blink::mojom::StorageType type)>;
+using GetStorageKeysCallback =
+    base::OnceCallback<void(const std::set<blink::StorageKey>& storage_keys)>;
 using GetUsageInfoCallback = base::OnceCallback<void(UsageInfoEntries)>;
 using GetBucketCallback =
     base::OnceCallback<void(const absl::optional<BucketInfo>& bucket_info)>;

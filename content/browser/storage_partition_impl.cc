@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
@@ -259,17 +260,17 @@ void CheckQuotaManagedDataDeletionStatus(size_t* deletion_task_count,
   }
 }
 
-void OnQuotaManagedStorageKeyDeleted(const blink::StorageKey& storage_key,
-                                     blink::mojom::StorageType type,
-                                     size_t* deletion_task_count,
-                                     base::OnceClosure callback,
-                                     blink::mojom::QuotaStatusCode status) {
+void OnQuotaManagedBucketDeleted(const storage::BucketInfo& bucket,
+                                 size_t* deletion_task_count,
+                                 base::OnceClosure callback,
+                                 blink::mojom::QuotaStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GT(*deletion_task_count, 0u);
   if (status != blink::mojom::QuotaStatusCode::kOk) {
-    DLOG(ERROR) << "Couldn't remove data of type " << static_cast<int>(type)
-                << " for storage key " << storage_key.GetDebugString()
-                << ". Status: " << static_cast<int>(status);
+    DLOG(ERROR) << "Couldn't remove data type " << static_cast<int>(bucket.type)
+                << " for bucket " << bucket.name << " with storage key "
+                << bucket.storage_key.GetDebugString() << " and bucket id "
+                << bucket.id << ". Status: " << static_cast<int>(status);
   }
 
   (*deletion_task_count)--;
@@ -912,14 +913,14 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
       StoragePartition::OriginMatcherFunction origin_matcher,
       bool perform_storage_cleanup);
 
-  void ClearStorageKeysOnIOThread(
+  void ClearBucketsOnIOThread(
       storage::QuotaManager* quota_manager,
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       StoragePartition::OriginMatcherFunction origin_matcher,
       bool perform_storage_cleanup,
       base::OnceClosure callback,
-      const std::set<blink::StorageKey>& storage_keys,
+      const std::set<storage::BucketInfo>& buckets,
       blink::mojom::StorageType quota_storage_type);
 
  private:
@@ -2205,60 +2206,57 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
 
   if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_PERSISTENT) {
     IncrementTaskCountOnIO();
-    // Ask the QuotaManager for all storage keys with persistent quota modified
+    // Ask the QuotaManager for all buckets with persistent quota modified
     // within the user-specified timeframe, and deal with the resulting set in
-    // ClearQuotaManagedOriginsOnIOThread().
-    quota_manager->GetStorageKeysModifiedBetween(
+    // ClearBucketsOnIOThread().
+    quota_manager->GetBucketsModifiedBetween(
         blink::mojom::StorageType::kPersistent, begin, end,
-        base::BindOnce(
-            &QuotaManagedDataDeletionHelper::ClearStorageKeysOnIOThread,
-            base::Unretained(this), base::RetainedRef(quota_manager),
-            special_storage_policy, origin_matcher, perform_storage_cleanup,
-            decrement_callback));
+        base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
+                       base::Unretained(this), base::RetainedRef(quota_manager),
+                       special_storage_policy, origin_matcher,
+                       perform_storage_cleanup, decrement_callback));
   }
 
   // Do the same for temporary quota.
   if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_TEMPORARY) {
     IncrementTaskCountOnIO();
-    quota_manager->GetStorageKeysModifiedBetween(
+    quota_manager->GetBucketsModifiedBetween(
         blink::mojom::StorageType::kTemporary, begin, end,
-        base::BindOnce(
-            &QuotaManagedDataDeletionHelper::ClearStorageKeysOnIOThread,
-            base::Unretained(this), base::RetainedRef(quota_manager),
-            special_storage_policy, origin_matcher, perform_storage_cleanup,
-            decrement_callback));
+        base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
+                       base::Unretained(this), base::RetainedRef(quota_manager),
+                       special_storage_policy, origin_matcher,
+                       perform_storage_cleanup, decrement_callback));
   }
 
   // Do the same for syncable quota.
   if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_SYNCABLE) {
     IncrementTaskCountOnIO();
-    quota_manager->GetStorageKeysModifiedBetween(
+    quota_manager->GetBucketsModifiedBetween(
         blink::mojom::StorageType::kSyncable, begin, end,
-        base::BindOnce(
-            &QuotaManagedDataDeletionHelper::ClearStorageKeysOnIOThread,
-            base::Unretained(this), base::RetainedRef(quota_manager),
-            special_storage_policy, std::move(origin_matcher),
-            perform_storage_cleanup, decrement_callback));
+        base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
+                       base::Unretained(this), base::RetainedRef(quota_manager),
+                       special_storage_policy, std::move(origin_matcher),
+                       perform_storage_cleanup, decrement_callback));
   }
 
   DecrementTaskCountOnIO();
 }
 
 void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
-    ClearStorageKeysOnIOThread(
+    ClearBucketsOnIOThread(
         storage::QuotaManager* quota_manager,
         const scoped_refptr<storage::SpecialStoragePolicy>&
             special_storage_policy,
         StoragePartition::OriginMatcherFunction origin_matcher,
         bool perform_storage_cleanup,
         base::OnceClosure callback,
-        const std::set<blink::StorageKey>& storage_keys,
+        const std::set<storage::BucketInfo>& buckets,
         blink::mojom::StorageType quota_storage_type) {
   // The QuotaManager manages all storage other than cookies, LocalStorage,
   // and SessionStorage. This loop wipes out most HTML5 storage for the given
   // storage keys.
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (storage_keys.empty()) {
+  if (buckets.empty()) {
     std::move(callback).Run();
     return;
   }
@@ -2278,12 +2276,13 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
 
   size_t* deletion_task_count = new size_t(0u);
   (*deletion_task_count)++;
-  for (const auto& storage_key : storage_keys) {
+  for (const auto& bucket : buckets) {
     // TODO(mkwst): Clean this up, it's slow. http://crbug.com/130746
-    if (storage_origin_.has_value() && storage_key.origin() != *storage_origin_)
+    if (storage_origin_.has_value() &&
+        bucket.storage_key.origin() != *storage_origin_)
       continue;
 
-    if (origin_matcher && !origin_matcher.Run(storage_key.origin(),
+    if (origin_matcher && !origin_matcher.Run(bucket.storage_key.origin(),
                                               special_storage_policy.get())) {
       continue;
     }
@@ -2292,11 +2291,10 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
     done_callback = std::move(split_callback.first);
 
     (*deletion_task_count)++;
-    quota_manager->DeleteStorageKeyData(
-        storage_key, quota_storage_type, quota_client_types,
-        base::BindOnce(&OnQuotaManagedStorageKeyDeleted, storage_key,
-                       quota_storage_type, deletion_task_count,
-                       std::move(split_callback.second)));
+    quota_manager->DeleteBucketData(
+        bucket, quota_client_types,
+        base::BindOnce(&OnQuotaManagedBucketDeleted, bucket,
+                       deletion_task_count, std::move(split_callback.second)));
   }
   (*deletion_task_count)--;
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -62,9 +63,9 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   if (quota_manager) {
     // Count storage keys with filesystem, websql, appcache, indexeddb,
     // serviceworkers and cachestorage using quota manager.
-    auto storage_keys_callback = base::BindRepeating(
-        &SiteDataCountingHelper::GetQuotaStorageKeysCallback,
-        base::Unretained(this));
+    auto buckets_callback =
+        base::BindRepeating(&SiteDataCountingHelper::GetQuotaBucketsCallback,
+                            base::Unretained(this));
     const blink::mojom::StorageType types[] = {
         blink::mojom::StorageType::kTemporary,
         blink::mojom::StorageType::kPersistent,
@@ -73,9 +74,8 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
       tasks_ += 1;
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(&storage::QuotaManager::GetStorageKeysModifiedBetween,
-                         quota_manager, type, begin_, end_,
-                         storage_keys_callback));
+          base::BindOnce(&storage::QuotaManager::GetBucketsModifiedBetween,
+                         quota_manager, type, begin_, end_, buckets_callback));
     }
   }
 
@@ -156,17 +156,17 @@ void SiteDataCountingHelper::GetCookiesCallback(
                                 base::Unretained(this), origins));
 }
 
-void SiteDataCountingHelper::GetQuotaStorageKeysCallback(
-    const std::set<blink::StorageKey>& storage_keys,
+void SiteDataCountingHelper::GetQuotaBucketsCallback(
+    const std::set<storage::BucketInfo>& buckets,
     blink::mojom::StorageType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  std::vector<GURL> urls;
-  urls.resize(storage_keys.size());
-  for (const blink::StorageKey& storage_key : storage_keys)
-    urls.push_back(storage_key.origin().GetURL());
+  std::set<GURL> urls;
+  for (const storage::BucketInfo& bucket : buckets)
+    urls.insert(bucket.storage_key.origin().GetURL());
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SiteDataCountingHelper::Done,
-                                base::Unretained(this), std::move(urls)));
+      FROM_HERE,
+      base::BindOnce(&SiteDataCountingHelper::Done, base::Unretained(this),
+                     std::vector<GURL>(urls.begin(), urls.end())));
 }
 
 void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(

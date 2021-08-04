@@ -187,6 +187,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                  blink::mojom::StorageType type,
                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
+  // Retrieves all storage keys for `type` that are in the bucket database.
+  // Used for listing storage keys when showing storage key quota usage.
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysCallback callback);
+
   // Called by clients or webapps. Returns usage per host.
   void GetUsageInfo(GetUsageInfoCallback callback);
 
@@ -265,14 +270,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // DeleteStorageKeyData and DeleteHostData (surprisingly enough) delete data
   // of a particular blink::mojom::StorageType associated with either a specific
-  // storage key or set of storage keys. Each method additionally requires a
-  // |quota_client_types| which specifies the types of QuotaClients to delete
-  // from the storage key. Pass in QuotaClientType::AllClients() to remove all
-  // clients from the storage key, regardless of type.
+  // storage key or set of storage keys. DeleteBucketData will delete only the
+  // specified bucket. Each method additionally requires a |quota_client_types|
+  // which specifies the types of QuotaClients to delete from the storage key.
+  // Pass in QuotaClientType::AllClients() to remove all clients from the
+  // storage key, regardless of type.
   virtual void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                                     blink::mojom::StorageType type,
                                     QuotaClientTypes quota_client_types,
                                     StatusCallback callback);
+  virtual void DeleteBucketData(const BucketInfo& bucket,
+                                QuotaClientTypes quota_client_types,
+                                StatusCallback callback);
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       QuotaClientTypes quota_client_types,
@@ -300,10 +309,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   bool IsStorageUnlimited(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type) const;
 
-  virtual void GetStorageKeysModifiedBetween(blink::mojom::StorageType type,
-                                             base::Time begin,
-                                             base::Time end,
-                                             GetStorageKeysCallback callback);
+  virtual void GetBucketsModifiedBetween(blink::mojom::StorageType type,
+                                         base::Time begin,
+                                         base::Time end,
+                                         GetBucketsCallback callback);
 
   bool ResetUsageTracker(blink::mojom::StorageType type);
 
@@ -374,7 +383,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   class BucketDataDeleter;
   class StorageKeyDataDeleter;
   class HostDataDeleter;
-  class GetModifiedSinceHelper;
   class DumpQuotaTableHelper;
   class DumpBucketTableHelper;
   class StorageCleanupHelper;
@@ -451,6 +459,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                 bool is_eviction,
                                 StatusCallback callback);
 
+  // Runs StorageKeyDataDeleter which calls QuotaClients to clear all data for
+  // the storage key. Once the task is complete, calls the QuotaDatabase to
+  // delete buckets for the storage key & storage type from the bucket table.
   void DeleteStorageKeyDataInternal(const blink::StorageKey& storage_key,
                                     blink::mojom::StorageType type,
                                     QuotaClientTypes quota_client_types,
@@ -512,6 +523,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);
+  void DidGetStorageKeys(GetStorageKeysCallback callback,
+                         QuotaErrorOr<std::set<blink::StorageKey>> result);
+  void DidGetModifiedBetween(GetBucketsCallback callback,
+                             blink::mojom::StorageType type,
+                             QuotaErrorOr<std::set<BucketInfo>> result);
 
   void DeleteOnCorrectThread() const;
 

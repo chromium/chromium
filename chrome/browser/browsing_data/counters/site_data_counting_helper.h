@@ -19,16 +19,13 @@
 class Profile;
 class HostContentSettingsMap;
 
-namespace blink {
-class StorageKey;
-}
-
 namespace content {
 struct StorageUsageInfo;
 }
 
 namespace storage {
 class SpecialStoragePolicy;
+struct BucketInfo;
 }
 
 // Helper class that counts the number of unique origins, that are affected by
@@ -52,9 +49,8 @@ class SiteDataCountingHelper {
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       const std::vector<content::StorageUsageInfo>& infos);
-  void GetQuotaStorageKeysCallback(
-      const std::set<blink::StorageKey>& storage_keys,
-      blink::mojom::StorageType type);
+  void GetQuotaBucketsCallback(const std::set<storage::BucketInfo>& buckets,
+                               blink::mojom::StorageType type);
   void SitesWithMediaLicensesCallback(
       const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
           media_license_info_list);

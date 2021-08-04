@@ -147,8 +147,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // origin bucket can be found.
   bool GetBucketInfo(BucketId bucket_id, BucketTableEntry* entry);
 
-  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // DeleteBucketInfo. Deletes the default bucket for `storage_key`.
+  // Removes all buckets for `storage_key` with `type`.
   bool DeleteStorageKeyInfo(const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type);
 
@@ -167,21 +166,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);
 
-  // TODO(crbug.com/1202167): Remove once all usages have been updated to use
-  // GetBucketsModifiedBetween. Populates `storage_keys` with the ones that have
-  // had their default bucket modified since the `begin` and until the `end`.
-  // Returns whether the operation succeeded.
-  bool GetStorageKeysModifiedBetween(blink::mojom::StorageType type,
-                                     std::set<blink::StorageKey>* storage_keys,
-                                     base::Time begin,
-                                     base::Time end);
+  // Returns all storage keys for `type` in the bucket database.
+  QuotaErrorOr<std::set<blink::StorageKey>> GetStorageKeysForType(
+      blink::mojom::StorageType type);
 
-  // Populates `bucket_ids` with the buckets that have been modified since the
-  // `begin` and until the `end`. Returns whether the operation succeeded.
-  bool GetBucketsModifiedBetween(blink::mojom::StorageType type,
-                                 std::set<BucketId>* bucket_ids,
-                                 base::Time begin,
-                                 base::Time end);
+  // Returns a set of buckets that have been modified since the `begin` and
+  // until the `end`. Returns a QuotaError if the operations has failed.
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsModifiedBetween(
+      blink::mojom::StorageType type,
+      base::Time begin,
+      base::Time end);
 
   // Returns false if SetStorageKeyDatabaseBootstrapped has never
   // been called before, which means existing storage keys may not have been

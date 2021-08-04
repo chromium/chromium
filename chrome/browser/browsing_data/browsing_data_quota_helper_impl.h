@@ -46,11 +46,11 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   // Calls QuotaManager::GetStorageKeysModifiedBetween for each storage type.
   void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
-  // Callback function for QuotaManager::GetStorageKeysModifiedBetween.
+  // Callback function for QuotaManager::GetStorageKeysForType.
   void GotStorageKeys(PendingHosts* pending_hosts,
                       base::OnceClosure completion,
-                      const std::set<blink::StorageKey>& storage_keys,
-                      blink::mojom::StorageType type);
+                      blink::mojom::StorageType type,
+                      const std::set<blink::StorageKey>& storage_keys);
 
   // Calls QuotaManager::GetHostUsage for each (origin, type) pair.
   void OnGetOriginsComplete(FetchResultCallback callback,

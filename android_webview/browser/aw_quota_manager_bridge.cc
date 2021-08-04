@@ -52,8 +52,8 @@ class GetStorageKeysTask
   friend class base::RefCountedThreadSafe<GetStorageKeysTask>;
   ~GetStorageKeysTask();
 
-  void OnStorageKeysObtained(const std::set<blink::StorageKey>& storage_keys,
-                             blink::mojom::StorageType type);
+  void OnStorageKeysObtained(blink::mojom::StorageType type,
+                             const std::set<blink::StorageKey>& storage_keys);
 
   void OnUsageAndQuotaObtained(const blink::StorageKey& storage_key,
                                blink::mojom::QuotaStatusCode status_code,
@@ -90,16 +90,15 @@ void GetStorageKeysTask::Run() {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &QuotaManager::GetStorageKeysModifiedBetween, quota_manager_,
+          &QuotaManager::GetStorageKeysForType, quota_manager_,
           blink::mojom::StorageType::kTemporary,
-          base::Time() /* Since beginning of time. */,
-          base::Time::Max() /* Until the end of time. */,
-          base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this)));
+          base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this,
+                         blink::mojom::StorageType::kTemporary)));
 }
 
 void GetStorageKeysTask::OnStorageKeysObtained(
-    const std::set<blink::StorageKey>& storage_keys,
-    blink::mojom::StorageType type) {
+    blink::mojom::StorageType type,
+    const std::set<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   num_callbacks_to_wait_ = storage_keys.size();
   num_callbacks_received_ = 0u;

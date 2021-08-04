@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -298,6 +299,40 @@ TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
 }
 #endif  // !defined(OS_FUCHSIA)
 
+TEST_P(QuotaDatabaseTest, DeleteStorageKeyInfo) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
+
+  const StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://example-a/");
+  QuotaErrorOr<BucketInfo> temp_bucket1 =
+      db.CreateBucketForTesting(storage_key, "temp1", kTemp);
+  QuotaErrorOr<BucketInfo> temp_bucket2 =
+      db.CreateBucketForTesting(storage_key, "temp2", kTemp);
+  QuotaErrorOr<BucketInfo> perm_bucket =
+      db.CreateBucketForTesting(storage_key, "perm", kPerm);
+
+  db.DeleteStorageKeyInfo(storage_key, kTemp);
+
+  QuotaErrorOr<BucketInfo> result =
+      db.GetBucket(storage_key, temp_bucket1->name, kTemp);
+  ASSERT_FALSE(result.ok());
+  ASSERT_EQ(result.error(), QuotaError::kNotFound);
+
+  result = db.GetBucket(storage_key, temp_bucket2->name, kTemp);
+  ASSERT_FALSE(result.ok());
+  ASSERT_EQ(result.error(), QuotaError::kNotFound);
+
+  result = db.GetBucket(storage_key, perm_bucket->name, kPerm);
+  ASSERT_TRUE(result.ok());
+
+  db.DeleteStorageKeyInfo(storage_key, kPerm);
+
+  result = db.GetBucket(storage_key, perm_bucket->name, kPerm);
+  ASSERT_FALSE(result.ok());
+  ASSERT_EQ(result.error(), QuotaError::kNotFound);
+}
+
 TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
@@ -408,193 +443,144 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
-TEST_P(QuotaDatabaseTest, StorageKeyLastModifiedBetween) {
+TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<StorageKey> storage_keys;
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kTemp, &storage_keys, base::Time(), base::Time::Max()));
-  EXPECT_TRUE(storage_keys.empty());
+  const StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://example-a/");
+  const StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://example-b/");
+  const StorageKey storage_key3 =
+      StorageKey::CreateFromStringForTesting("http://example-c/");
 
-  const StorageKey kStorageKey1 =
-      StorageKey::CreateFromStringForTesting("http://a/");
-  const StorageKey kStorageKey2 =
-      StorageKey::CreateFromStringForTesting("http://b/");
-  const StorageKey kStorageKey3 =
-      StorageKey::CreateFromStringForTesting("http://c/");
+  QuotaErrorOr<BucketInfo> temp_bucket1 =
+      db.CreateBucketForTesting(storage_key1, "bucket_a", kTemp);
+  QuotaErrorOr<BucketInfo> temp_bucket2 =
+      db.CreateBucketForTesting(storage_key2, "bucket_b", kTemp);
+  QuotaErrorOr<BucketInfo> perm_bucket1 =
+      db.CreateBucketForTesting(storage_key2, "bucket_b", kPerm);
+  QuotaErrorOr<BucketInfo> perm_bucket2 =
+      db.CreateBucketForTesting(storage_key3, "bucket_b", kPerm);
 
-  // Report last mod time for the test storage_keys.
-  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey1, kTemp,
-                                               base::Time::FromJavaTime(0)));
-  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey2, kTemp,
-                                               base::Time::FromJavaTime(10)));
-  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey3, kTemp,
-                                               base::Time::FromJavaTime(20)));
+  QuotaErrorOr<std::set<StorageKey>> result = db.GetStorageKeysForType(kTemp);
+  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(base::Contains(result.value(), storage_key1));
+  ASSERT_TRUE(base::Contains(result.value(), storage_key2));
+  ASSERT_FALSE(base::Contains(result.value(), storage_key3));
 
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kTemp, &storage_keys, base::Time(), base::Time::Max()));
-  EXPECT_EQ(3U, storage_keys.size());
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kTemp, &storage_keys, base::Time::FromJavaTime(5), base::Time::Max()));
-  EXPECT_EQ(2U, storage_keys.size());
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kTemp, &storage_keys, base::Time::FromJavaTime(15), base::Time::Max()));
-  EXPECT_EQ(1U, storage_keys.size());
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kTemp, &storage_keys, base::Time::FromJavaTime(25), base::Time::Max()));
-  EXPECT_TRUE(storage_keys.empty());
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(kTemp, &storage_keys,
-                                               base::Time::FromJavaTime(5),
-                                               base::Time::FromJavaTime(15)));
-  EXPECT_EQ(1U, storage_keys.size());
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(kTemp, &storage_keys,
-                                               base::Time::FromJavaTime(0),
-                                               base::Time::FromJavaTime(20)));
-  EXPECT_EQ(2U, storage_keys.size());
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
-
-  // Update storage key's mod time but for persistent storage.
-  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey1, kPerm,
-                                               base::Time::FromJavaTime(30)));
-
-  // Must have no effects on temporary storage_keys info.
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kTemp, &storage_keys, base::Time::FromJavaTime(5), base::Time::Max()));
-  EXPECT_EQ(2U, storage_keys.size());
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey3));
-
-  // One more update for persistent storage key.
-  EXPECT_TRUE(db.SetStorageKeyLastModifiedTime(kStorageKey2, kPerm,
-                                               base::Time::FromJavaTime(40)));
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kPerm, &storage_keys, base::Time::FromJavaTime(25), base::Time::Max()));
-  EXPECT_EQ(2U, storage_keys.size());
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
-
-  EXPECT_TRUE(db.GetStorageKeysModifiedBetween(
-      kPerm, &storage_keys, base::Time::FromJavaTime(35), base::Time::Max()));
-  EXPECT_EQ(1U, storage_keys.size());
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey1));
-  EXPECT_EQ(1U, storage_keys.count(kStorageKey2));
-  EXPECT_EQ(0U, storage_keys.count(kStorageKey3));
+  result = db.GetStorageKeysForType(kPerm);
+  ASSERT_TRUE(result.ok());
+  ASSERT_FALSE(base::Contains(result.value(), storage_key1));
+  ASSERT_TRUE(base::Contains(result.value(), storage_key2));
+  ASSERT_TRUE(base::Contains(result.value(), storage_key3));
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<BucketId> bucket_ids;
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(kTemp, &bucket_ids, base::Time(),
-                                           base::Time::Max()));
-  EXPECT_TRUE(bucket_ids.empty());
+  QuotaErrorOr<std::set<BucketInfo>> result =
+      db.GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
+  EXPECT_TRUE(result.ok());
+  std::set<BucketInfo> buckets = result.value();
+  EXPECT_TRUE(buckets.empty());
 
-  // Insert bucket entries into BucketTable.
-  base::Time now = base::Time::Now();
-  using Entry = QuotaDatabase::BucketTableEntry;
-  Entry bucket1 = Entry(
-      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
-      kTemp, "bucket_a", 0, now, now);
-  Entry bucket2 = Entry(
-      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
-      kTemp, "bucket_b", 0, now, now);
-  Entry bucket3 = Entry(
-      BucketId(3), StorageKey::CreateFromStringForTesting("http://example-c/"),
-      kTemp, "bucket_c", 0, now, now);
-  Entry bucket4 = Entry(
-      BucketId(4), StorageKey::CreateFromStringForTesting("http://example-d/"),
-      kPerm, "bucket_d", 0, now, now);
-  Entry kTableEntries[] = {bucket1, bucket2, bucket3, bucket4};
-  AssignBucketTable(&db, kTableEntries);
+  QuotaErrorOr<BucketInfo> result1 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://example-a/"), "bucket_a",
+      kTemp);
+  EXPECT_TRUE(result1.ok());
+  BucketInfo bucket1 = result1.value();
+  QuotaErrorOr<BucketInfo> result2 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://example-b/"), "bucket_b",
+      kTemp);
+  EXPECT_TRUE(result2.ok());
+  BucketInfo bucket2 = result2.value();
+  QuotaErrorOr<BucketInfo> result3 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://example-c/"), "bucket_c",
+      kTemp);
+  EXPECT_TRUE(result3.ok());
+  BucketInfo bucket3 = result3.value();
+  QuotaErrorOr<BucketInfo> result4 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://example-d/"), "bucket_d",
+      kPerm);
+  EXPECT_TRUE(result4.ok());
+  BucketInfo bucket4 = result4.value();
 
-  // Report last mod time for the buckets.
-  EXPECT_TRUE(db.SetBucketLastModifiedTime(bucket1.bucket_id,
-                                           base::Time::FromJavaTime(0)));
-  EXPECT_TRUE(db.SetBucketLastModifiedTime(bucket2.bucket_id,
-                                           base::Time::FromJavaTime(10)));
-  EXPECT_TRUE(db.SetBucketLastModifiedTime(bucket3.bucket_id,
-                                           base::Time::FromJavaTime(20)));
-  EXPECT_TRUE(db.SetBucketLastModifiedTime(bucket4.bucket_id,
-                                           base::Time::FromJavaTime(30)));
+  // Report last modified time for the buckets.
+  EXPECT_TRUE(
+      db.SetBucketLastModifiedTime(bucket1.id, base::Time::FromJavaTime(0)));
+  EXPECT_TRUE(
+      db.SetBucketLastModifiedTime(bucket2.id, base::Time::FromJavaTime(10)));
+  EXPECT_TRUE(
+      db.SetBucketLastModifiedTime(bucket3.id, base::Time::FromJavaTime(20)));
+  EXPECT_TRUE(
+      db.SetBucketLastModifiedTime(bucket4.id, base::Time::FromJavaTime(30)));
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(kTemp, &bucket_ids, base::Time(),
-                                           base::Time::Max()));
-  EXPECT_EQ(3U, bucket_ids.size());
-  EXPECT_EQ(1U, bucket_ids.count(bucket1.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket2.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket3.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket4.bucket_id));
+  result = db.GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_EQ(3U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(bucket1));
+  EXPECT_EQ(1U, buckets.count(bucket2));
+  EXPECT_EQ(1U, buckets.count(bucket3));
+  EXPECT_EQ(0U, buckets.count(bucket4));
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(
-      kTemp, &bucket_ids, base::Time::FromJavaTime(5), base::Time::Max()));
-  EXPECT_EQ(2U, bucket_ids.size());
-  EXPECT_EQ(0U, bucket_ids.count(bucket1.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket2.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket3.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket4.bucket_id));
+  result = db.GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(5),
+                                        base::Time::Max());
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_EQ(2U, buckets.size());
+  EXPECT_EQ(0U, buckets.count(bucket1));
+  EXPECT_EQ(1U, buckets.count(bucket2));
+  EXPECT_EQ(1U, buckets.count(bucket3));
+  EXPECT_EQ(0U, buckets.count(bucket4));
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(
-      kTemp, &bucket_ids, base::Time::FromJavaTime(15), base::Time::Max()));
-  EXPECT_EQ(1U, bucket_ids.size());
-  EXPECT_EQ(0U, bucket_ids.count(bucket1.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket2.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket3.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket4.bucket_id));
+  result = db.GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(15),
+                                        base::Time::Max());
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_EQ(1U, buckets.size());
+  EXPECT_EQ(0U, buckets.count(bucket1));
+  EXPECT_EQ(0U, buckets.count(bucket2));
+  EXPECT_EQ(1U, buckets.count(bucket3));
+  EXPECT_EQ(0U, buckets.count(bucket4));
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(
-      kTemp, &bucket_ids, base::Time::FromJavaTime(25), base::Time::Max()));
-  EXPECT_TRUE(bucket_ids.empty());
+  result = db.GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(25),
+                                        base::Time::Max());
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_TRUE(buckets.empty());
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(kTemp, &bucket_ids,
-                                           base::Time::FromJavaTime(5),
-                                           base::Time::FromJavaTime(15)));
-  EXPECT_EQ(1U, bucket_ids.size());
-  EXPECT_EQ(0U, bucket_ids.count(bucket1.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket2.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket3.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket4.bucket_id));
+  result = db.GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(5),
+                                        base::Time::FromJavaTime(15));
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_EQ(1U, buckets.size());
+  EXPECT_EQ(0U, buckets.count(bucket1));
+  EXPECT_EQ(1U, buckets.count(bucket2));
+  EXPECT_EQ(0U, buckets.count(bucket3));
+  EXPECT_EQ(0U, buckets.count(bucket4));
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(kTemp, &bucket_ids,
-                                           base::Time::FromJavaTime(0),
-                                           base::Time::FromJavaTime(20)));
-  EXPECT_EQ(2U, bucket_ids.size());
-  EXPECT_EQ(1U, bucket_ids.count(bucket1.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket2.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket3.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket4.bucket_id));
+  result = db.GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(0),
+                                        base::Time::FromJavaTime(20));
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(bucket1));
+  EXPECT_EQ(1U, buckets.count(bucket2));
+  EXPECT_EQ(0U, buckets.count(bucket3));
+  EXPECT_EQ(0U, buckets.count(bucket4));
 
-  EXPECT_TRUE(db.GetBucketsModifiedBetween(kPerm, &bucket_ids,
-                                           base::Time::FromJavaTime(0),
-                                           base::Time::FromJavaTime(35)));
-  EXPECT_EQ(1U, bucket_ids.size());
-  EXPECT_EQ(0U, bucket_ids.count(bucket1.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket2.bucket_id));
-  EXPECT_EQ(0U, bucket_ids.count(bucket3.bucket_id));
-  EXPECT_EQ(1U, bucket_ids.count(bucket4.bucket_id));
+  result = db.GetBucketsModifiedBetween(kPerm, base::Time::FromJavaTime(0),
+                                        base::Time::FromJavaTime(35));
+  EXPECT_TRUE(result.ok());
+  buckets = result.value();
+  EXPECT_EQ(1U, buckets.size());
+  EXPECT_EQ(0U, buckets.count(bucket1));
+  EXPECT_EQ(0U, buckets.count(bucket2));
+  EXPECT_EQ(0U, buckets.count(bucket3));
+  EXPECT_EQ(1U, buckets.count(bucket4));
 }
 
 TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
