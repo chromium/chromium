@@ -9449,6 +9449,10 @@ if (is_linux) {
       "//chrome/test/chromedriver",
       "//testing:test_scripts_shared",
     ]
-    data = [ "//testing/scripts/run_variations_smoke_tests.py" ]
+    data = [
+      "//testing/scripts/run_variations_smoke_tests.py",
+      "//testing/scripts/variations_smoke_test_data/",
+      "//third_party/webdriver/pylib/",
+    ]
   }
 }
