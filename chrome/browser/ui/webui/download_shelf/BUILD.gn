@@ -35,6 +35,8 @@ mojom("mojo_bindings") {
         },
       ]
       traits_headers = [ "download_mojom_traits.h" ]
+      traits_deps =
+          [ "//components/enterprise/common:download_item_reroute_info" ]
     },
   ]
 }
