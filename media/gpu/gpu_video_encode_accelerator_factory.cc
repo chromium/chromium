@@ -191,6 +191,13 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
     });
   }
 
+  if (gpu_workarounds.disable_accelerated_vp9_encode) {
+    base::EraseIf(profiles, [](const auto& vea_profile) {
+      return vea_profile.profile >= VP9PROFILE_PROFILE0 &&
+             vea_profile.profile <= VP9PROFILE_PROFILE3;
+    });
+  }
+
   if (gpu_workarounds.disable_accelerated_h264_encode) {
     base::EraseIf(profiles, [](const auto& vea_profile) {
       return vea_profile.profile >= H264PROFILE_MIN &&

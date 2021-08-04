@@ -3760,6 +3760,22 @@
       "features": [
         "disable_canvas_oop_rasterization"
       ]
+    },
+    {
+      "id": 379,
+      "cr_bugs": [1217298],
+      "description": "Disable VP9 HW encode on Intel Gen 9.5 SoCs using the i965 VA driver backend",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "kabylake",
+        "geminilake"
+      ],
+      "features": [
+        "disable_accelerated_vp9_encode"
+      ]
     }
   ]
 }

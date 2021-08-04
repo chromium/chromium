@@ -63,6 +63,14 @@ void MojoVideoEncodeAcceleratorService::Initialize(
     return;
   }
 
+  if (gpu_workarounds_.disable_accelerated_vp9_encode &&
+      config.output_profile >= VP9PROFILE_PROFILE0 &&
+      config.output_profile <= VP9PROFILE_PROFILE3) {
+    LOG(ERROR) << __func__ << " VP9 encoding disabled by GPU policy";
+    std::move(success_callback).Run(false);
+    return;
+  }
+
   if (encoder_) {
     DLOG(ERROR) << __func__ << " VEA is already initialized";
     std::move(success_callback).Run(false);
