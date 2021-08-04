@@ -442,3 +442,62 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   ProceedThroughInterstitial(contents);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
+
+// Regression test for crbug.com/1233207.
+// Tests the case where the HTTP version of a site redirects to HTTPS, but the
+// HTTPS version of the site has a cert error. If the user initially navigates
+// to the HTTP URL, then HTTPS-First Mode should upgrade the navigation to HTTPS
+// and trigger the HTTPS-First Mode interstitial when that fails, but if the
+// user clicks through the HTTPS-First Mode interstitial and falls back into the
+// HTTP->HTTPS redirect back to the cert error, then the SSL interstitial should
+// be shown and the user should be able to click through the SSL interstitial to
+// visit the HTTPS version of the site (but in a DANGEROUS security level
+// state).
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       HttpsUpgradeWithBrokenSSL_ShouldTriggerSSLInterstitial) {
+  // Set up a new test server instance so it can have a custom handler that
+  // redirects to the HTTPS server.
+  net::EmbeddedTestServer upgrading_server{net::EmbeddedTestServer::TYPE_HTTP};
+  upgrading_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+        response->AddCustomHeader(
+            "Location",
+            "https://bad-https.test:" +
+                base::NumberToString(
+                    HttpsOnlyModeUpgradeInterceptor::GetHttpsPortForTesting()) +
+                "/simple.html");
+        return response;
+      }));
+  HttpsOnlyModeUpgradeInterceptor::SetHttpPortForTesting(
+      upgrading_server.port());
+  ASSERT_TRUE(upgrading_server.Start());
+
+  GURL http_url = upgrading_server.GetURL("bad-https.test", "/simple.html");
+  // HTTPS server will have a cert error.
+  GURL https_url = https_server()->GetURL("bad-https.test", "/simple.html");
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // The HTTPS-First Mode interstitial should trigger first.
+  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+      contents->GetMainFrame(),
+      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+
+  // Proceeding through the HTTPS-First Mode interstitial will hit the upgrading
+  // server's HTTP->HTTPS redirect. This should result in an SSL interstitial
+  // (not an HTTPS-First Mode interstitial).
+  ProceedThroughInterstitial(contents);
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingSSLInterstitial(contents));
+
+  // Proceeding through the SSL interstitial should navigate to the HTTPS
+  // version of the site but with the DANGEROUS security level.
+  ProceedThroughInterstitial(contents);
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  auto* helper = SecurityStateTabHelper::FromWebContents(contents);
+  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+}

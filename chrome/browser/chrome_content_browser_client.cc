@@ -4026,7 +4026,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       std::make_unique<CertificateReportingServiceCertReporter>(web_contents),
       base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
       base::BindOnce(
-          &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)));
+          &ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps)));
 
   throttles.push_back(std::make_unique<LoginNavigationThrottle>(handle));
 
