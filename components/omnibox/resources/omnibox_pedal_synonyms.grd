@@ -113,11 +113,15 @@
     <output filename="omnibox_pedal_synonyms_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
 
+  <!-- Note, the list of languages here must match the omnibox_pedal_synonyms_grd languages
+       list in tools/gritsettings/translation_expectations.pyl or TC pipeline breaks. -->
   <translations>
     <file path="translations/omnibox_pedal_synonyms_ar.xtb" lang="ar" />
+    <file path="translations/omnibox_pedal_synonyms_de.xtb" lang="de" />
     <file path="translations/omnibox_pedal_synonyms_es-419.xtb" lang="es-419" />
     <file path="translations/omnibox_pedal_synonyms_fr.xtb" lang="fr" />
     <file path="translations/omnibox_pedal_synonyms_ja.xtb" lang="ja" />
+    <file path="translations/omnibox_pedal_synonyms_zh-CN.xtb" lang="zh-CN" />
     <file path="translations/omnibox_pedal_synonyms_zh-TW.xtb" lang="zh-TW" />
   </translations>
 

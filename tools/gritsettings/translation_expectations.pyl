@@ -89,9 +89,11 @@
     ],
   },
   # The omnibox_pedal_synonyms are translated only into a subset of the languages.
+  # Note, the list here must match the <translations> list in
+  # components/omnibox/resources/omnibox_pedal_synonyms.grd or TC pipeline breaks.
   "omnibox_pedal_synonyms_grd": {
     "languages": [
-      "ar", "es-419", "fr", "ja", "zh-TW",
+      "ar", "de", "es-419", "fr", "ja", "zh-CN", "zh-TW",
     ],
     "files": [
       "components/omnibox/resources/omnibox_pedal_synonyms.grd",
