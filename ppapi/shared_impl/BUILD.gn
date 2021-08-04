@@ -4,36 +4,135 @@
 
 import("//build/config/nacl/config.gni")
 
-component("shared_impl") {
-  output_name = "ppapi_shared"
+# //ppapi/shared_impl and //ppapi/thunk go into the same library.
+config("export_shared_impl_and_thunk") {
+  visibility = [
+    ":*",
+    "//ppapi/thunk:*",
+  ]
+  defines = [
+    "PPAPI_SHARED_IMPLEMENTATION",
+    "PPAPI_THUNK_IMPLEMENTATION",
+  ]
+}
+
+source_set("headers") {
+  visibility = [
+    ":*",
+    "//ppapi/thunk:*",
+  ]
+
+  sources = [
+    "host_resource.h",
+    "ppapi_globals.h",
+    "proxy_lock.h",
+    "resource.h",
+  ]
+
+  configs += [ ":export_shared_impl_and_thunk" ]
+
+  deps = [
+    "//base",
+    "//ppapi/c/",
+  ]
+}
+
+# This contains the things that //ppapi/thunk needs.
+source_set("common") {
+  visibility = [
+    ":*",
+    "//ppapi/thunk:*",
+  ]
 
   sources = [
     "array_var.cc",
     "array_var.h",
-    "array_writer.cc",
-    "array_writer.h",
     "callback_tracker.cc",
     "callback_tracker.h",
     "dictionary_var.cc",
     "dictionary_var.h",
+    "file_ref_create_info.cc",
+    "file_ref_create_info.h",
+    "host_resource.cc",
+    "id_assignment.cc",
+    "id_assignment.h",
+    "ppapi_globals.cc",
+    "ppb_audio_config_shared.cc",
+    "ppb_audio_config_shared.h",
+    "ppb_device_ref_shared.cc",
+    "ppb_device_ref_shared.h",
+    "ppb_flash_font_file_shared.h",
+    "ppb_image_data_shared.cc",
+    "ppb_image_data_shared.h",
+    "ppb_message_loop_shared.cc",
+    "ppb_message_loop_shared.h",
+    "proxy_lock.cc",
+    "resource.cc",
+    "resource_tracker.cc",
+    "resource_tracker.h",
+    "resource_var.cc",
+    "resource_var.h",
+    "scoped_pp_var.cc",
+    "scoped_pp_var.h",
+    "tracked_callback.cc",
+    "tracked_callback.h",
+    "url_response_info_data.cc",
+    "url_response_info_data.h",
+    "var.cc",
+    "var.h",
+    "var_tracker.cc",
+    "var_tracker.h",
+  ]
+
+  if (!is_nacl) {
+    sources += [
+      "ppb_url_util_shared.cc",
+      "ppb_url_util_shared.h",
+      "private/ppb_char_set_shared.cc",
+      "private/ppb_char_set_shared.h",
+    ]
+  }
+
+  configs += [ ":export_shared_impl_and_thunk" ]
+
+  public_deps = [ ":headers" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//ppapi/c:c",
+    "//ppapi/thunk:headers",
+    "//third_party/icu:icuuc",
+  ]
+
+  if (!is_nacl) {
+    deps += [ "//skia" ]
+  }
+
+  if (!is_nacl_nonsfi) {
+    deps += [ "//url" ]
+  }
+}
+
+component("shared_impl") {
+  output_name = "ppapi_shared"
+
+  sources = [
+    "array_writer.cc",
+    "array_writer.h",
     "file_growth.cc",
     "file_growth.h",
     "file_io_state_manager.cc",
     "file_io_state_manager.h",
     "file_path.cc",
     "file_path.h",
-    "file_ref_create_info.cc",
-    "file_ref_create_info.h",
     "file_ref_util.cc",
     "file_ref_util.h",
     "file_system_util.cc",
     "file_system_util.h",
     "file_type_conversion.cc",
     "file_type_conversion.h",
-    "host_resource.cc",
-    "host_resource.h",
-    "id_assignment.cc",
-    "id_assignment.h",
     "media_stream_audio_track_shared.cc",
     "media_stream_audio_track_shared.h",
     "media_stream_buffer.h",
@@ -46,8 +145,6 @@ component("shared_impl") {
     "platform_file.cc",
     "platform_file.h",
     "ppapi_constants.h",
-    "ppapi_globals.cc",
-    "ppapi_globals.h",
     "ppapi_nacl_plugin_args.cc",
     "ppapi_nacl_plugin_args.h",
     "ppapi_permissions.cc",
@@ -56,27 +153,18 @@ component("shared_impl") {
     "ppapi_preferences.h",
     "ppapi_switches.cc",
     "ppapi_switches.h",
-    "ppb_audio_config_shared.cc",
-    "ppb_audio_config_shared.h",
     "ppb_audio_shared.cc",
     "ppb_audio_shared.h",
     "ppb_crypto_shared.cc",
-    "ppb_device_ref_shared.cc",
-    "ppb_device_ref_shared.h",
-    "ppb_flash_font_file_shared.h",
     "ppb_gamepad_shared.cc",
     "ppb_gamepad_shared.h",
     "ppb_graphics_3d_shared.cc",
     "ppb_graphics_3d_shared.h",
-    "ppb_image_data_shared.cc",
-    "ppb_image_data_shared.h",
     "ppb_input_event_shared.cc",
     "ppb_input_event_shared.h",
     "ppb_instance_shared.cc",
     "ppb_instance_shared.h",
     "ppb_memory_shared.cc",
-    "ppb_message_loop_shared.cc",
-    "ppb_message_loop_shared.h",
     "ppb_opengles2_shared.cc",
     "ppb_opengles2_shared.h",
     "ppb_tcp_socket_shared.cc",
@@ -89,34 +177,16 @@ component("shared_impl") {
     "ppb_view_shared.h",
     "ppp_instance_combined.cc",
     "ppp_instance_combined.h",
-    "proxy_lock.cc",
-    "proxy_lock.h",
-    "resource.cc",
-    "resource.h",
-    "resource_tracker.cc",
-    "resource_tracker.h",
-    "resource_var.cc",
-    "resource_var.h",
     "scoped_pp_resource.cc",
     "scoped_pp_resource.h",
-    "scoped_pp_var.cc",
-    "scoped_pp_var.h",
     "socket_option_data.cc",
     "socket_option_data.h",
     "thread_aware_callback.cc",
     "thread_aware_callback.h",
     "time_conversion.cc",
     "time_conversion.h",
-    "tracked_callback.cc",
-    "tracked_callback.h",
     "url_request_info_data.cc",
     "url_request_info_data.h",
-    "url_response_info_data.cc",
-    "url_response_info_data.h",
-    "var.cc",
-    "var.h",
-    "var_tracker.cc",
-    "var_tracker.h",
     "vpn_provider_util.cc",
     "vpn_provider_util.h",
 
@@ -130,12 +200,8 @@ component("shared_impl") {
 
   if (!is_nacl) {
     sources += [
-      "ppb_url_util_shared.cc",
-      "ppb_url_util_shared.h",
       "ppb_video_decoder_shared.cc",
       "ppb_video_decoder_shared.h",
-      "private/ppb_char_set_shared.cc",
-      "private/ppb_char_set_shared.h",
       "private/ppb_x509_util_shared.cc",
       "private/ppb_x509_util_shared.h",
     ]
@@ -153,15 +219,13 @@ component("shared_impl") {
     ]
   }
 
-  configs += [ "//build/config:precompiled_headers" ]
-  defines = [
-    "PPAPI_SHARED_IMPLEMENTATION",
-
-    # This target goes in the same library as thunk (in GYP they are the same).
-    "PPAPI_THUNK_IMPLEMENTATION",
+  configs += [
+    ":export_shared_impl_and_thunk",
+    "//build/config:precompiled_headers",
   ]
 
   public_deps = [
+    ":common",
     "//base",
     "//ppapi/c",
     "//ppapi/thunk",
@@ -181,19 +245,13 @@ component("shared_impl") {
   if (!is_nacl) {
     deps += [
       "//net",
-      "//skia",
       "//ui/events:events_base",
       "//ui/surface",
     ]
   }
 
   if (!is_nacl_nonsfi) {
-    deps += [
-      "//base:i18n",
-      "//base/third_party/dynamic_annotations",
-      "//third_party/icu:icuuc",
-      "//url",
-    ]
+    deps += [ "//base/third_party/dynamic_annotations" ]
   }
 
   if (is_mac) {

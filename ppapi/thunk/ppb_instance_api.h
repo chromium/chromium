@@ -22,7 +22,6 @@
 #include "ppapi/c/ppb_text_input_controller.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/shared_impl/api_id.h"
-#include "ppapi/shared_impl/resource.h"
 #include "ppapi/shared_impl/singleton_resource_id.h"
 
 // Windows headers interfere with this file.

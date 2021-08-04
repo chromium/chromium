@@ -66,7 +66,6 @@ no_check_targets = [
   "//extensions:*",  # 28 errors
   "//headless:*",  # 107 errors
   "//ppapi/proxy:ipc_sources",  # 13 errors
-  "//ppapi/thunk:*",  # 1071 errors
   "//remoting/host/security_key:*",  # 10 errors
   "//remoting/host/win:*",  # 43 errors
   "//sandbox/win:*",  # 7 errors
