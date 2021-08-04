@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue.h"
@@ -46,7 +47,13 @@ class ReportQueueProviderTest : public ::testing::Test {
       base::BindRepeating([]() { return Status::StatusOK(); });
 };
 
-TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
+// Disable the test on Linux tsan due to flaky: crbug.com/1233804.
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_CreateAndGetQueue DISABLED_CreateAndGetQueue
+#else
+#define MAYBE_CreateAndGetQueue CreateAndGetQueue
+#endif
+TEST_F(ReportQueueProviderTest, MAYBE_CreateAndGetQueue) {
   std::unique_ptr<MockReportQueueProvider> provider =
       std::make_unique<NiceMock<MockReportQueueProvider>>();
   report_queue_provider_test_helper::SetForTesting(provider.get());
