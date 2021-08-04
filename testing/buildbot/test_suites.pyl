@@ -5182,6 +5182,7 @@
 
     'variations_smoke_tests': {
       'variations_smoke_tests': {
+        'isolate_name': 'variations_smoke_tests',
         'resultdb': {
           'enable': True,
           'result_format': 'single'

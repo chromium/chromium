@@ -566,8 +566,7 @@
   },
   "variations_smoke_tests": {
     "label": "//chrome/test:variations_smoke_tests",
-    "script": "//testing/scripts/run_variations_smoke_tests.py",
-    "type": "script",
+    "type": "generated_script",
   },
   "chromedriver_replay_unittests": {
     "label": "//chrome/test/chromedriver:chromedriver_replay_unittests",
