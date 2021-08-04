@@ -501,6 +501,8 @@ class SafeBrowsingBlockingPageBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  SBThreatType GetThreatType() const { return testing::get<0>(GetParam()); }
+
   void SetURLThreatType(const GURL& url, SBThreatType threat_type) {
     TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
     ASSERT_TRUE(service);
@@ -586,7 +588,7 @@ class SafeBrowsingBlockingPageBrowserTest
   GURL SetupThreatIframeWarningAndNavigate() {
     GURL url = embedded_test_server()->GetURL(kCrossSiteMaliciousPage);
     GURL iframe_url = embedded_test_server()->GetURL(kMaliciousIframe);
-    SetURLThreatType(iframe_url, testing::get<0>(GetParam()));
+    SetURLThreatType(iframe_url, GetThreatType());
 
     ui_test_utils::NavigateToURL(browser(), url);
     EXPECT_TRUE(WaitForReady(browser()));
@@ -604,7 +606,7 @@ class SafeBrowsingBlockingPageBrowserTest
     GURL::Replacements replace_host;
     replace_host.SetHostStr(kCrossOriginMaliciousIframeHost);
     *iframe_url = iframe_url->ReplaceComponents(replace_host);
-    SetURLThreatType(*iframe_url, testing::get<0>(GetParam()));
+    SetURLThreatType(*iframe_url, GetThreatType());
 
     ui_test_utils::NavigateToURL(browser(), url);
     EXPECT_TRUE(WaitForReady(browser()));
@@ -670,7 +672,7 @@ class SafeBrowsingBlockingPageBrowserTest
   }
 
   void TestReportingDisabledAndDontProceed(const GURL& url) {
-    SetURLThreatType(url, testing::get<0>(GetParam()));
+    SetURLThreatType(url, GetThreatType());
     ui_test_utils::NavigateToURL(browser(), url);
     ASSERT_TRUE(WaitForReady(browser()));
 
@@ -783,7 +785,7 @@ class SafeBrowsingBlockingPageBrowserTest
   // safebrowsing service, navigates to that page, and returns the url.
   // The various wrappers supply different URLs.
   GURL SetupWarningAndNavigateToURL(GURL url, Browser* browser) {
-    SetURLThreatType(url, testing::get<0>(GetParam()));
+    SetURLThreatType(url, GetThreatType());
     ui_test_utils::NavigateToURL(browser, url);
     EXPECT_TRUE(WaitForReady(browser));
     return url;
@@ -792,7 +794,7 @@ class SafeBrowsingBlockingPageBrowserTest
   // safebrowsing service, navigates to that page, and returns the url.
   // The various wrappers supply different URLs.
   GURL SetupWarningAndNavigateToURLInNewTab(GURL url, Browser* browser) {
-    SetURLThreatType(url, testing::get<0>(GetParam()));
+    SetURLThreatType(url, GetThreatType());
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
@@ -938,8 +940,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
       new content::MessageLoopRunner);
@@ -1022,8 +1023,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        MainFrameBlockedShouldHaveNoDOMDetailsWhenDontProceed) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
       new content::MessageLoopRunner);
@@ -1074,8 +1074,7 @@ IN_PROC_BROWSER_TEST_P(
     MainFrameBlockedShouldHaveNoDOMDetailsWhenProceeding) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
       new content::MessageLoopRunner);
@@ -1270,7 +1269,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_DontProceed) {
   base::HistogramTester histograms;
   std::string prefix;
-  SBThreatType threat_type = testing::get<0>(GetParam());
+  SBThreatType threat_type = GetThreatType();
   if (threat_type == SB_THREAT_TYPE_URL_MALWARE)
     prefix = "malware";
   else if (threat_type == SB_THREAT_TYPE_URL_PHISHING)
@@ -1322,7 +1321,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_Proceed) {
   base::HistogramTester histograms;
   std::string prefix;
-  SBThreatType threat_type = testing::get<0>(GetParam());
+  SBThreatType threat_type = GetThreatType();
   if (threat_type == SB_THREAT_TYPE_URL_MALWARE)
     prefix = "malware";
   else if (threat_type == SB_THREAT_TYPE_URL_PHISHING)
@@ -1429,8 +1428,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
       new content::MessageLoopRunner);
@@ -1448,8 +1446,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
       new content::MessageLoopRunner);
@@ -1472,8 +1469,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
       new content::MessageLoopRunner);
@@ -1716,7 +1712,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                         allowlist);
 
-  SetURLThreatType(url, testing::get<0>(GetParam()));
+  SetURLThreatType(url, GetThreatType());
   ui_test_utils::NavigateToURL(browser(), url);
   base::RunLoop().RunUntilIdle();
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1737,7 +1733,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                         allowlist);
 
-  SetURLThreatType(js_url, testing::get<0>(GetParam()));
+  SetURLThreatType(js_url, GetThreatType());
   // Open a new tab to rebind the allowlist to the renderer.
   chrome::NewTab(browser());
   ui_test_utils::NavigateToURL(browser(), url);
@@ -3120,8 +3116,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
                        DontContainPrerenderingInfoInThreatReport) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(
-          testing::get<0>(GetParam()));
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   if (expect_threat_details)
