@@ -840,7 +840,7 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
                                           bool fin_received) {
   DVLOG(1) << "WebTransport::OnIncomingStreamClosed(" << stream_id << ", "
            << fin_received << ") this=" << this;
-  WebTransportStream* stream = stream_map_.at(stream_id);
+  WebTransportStream* stream = stream_map_.DeprecatedAtOrEmptyValue(stream_id);
   // |stream| can be unset because of races between different ways of closing
   // |bidirectional streams.
   if (stream) {
