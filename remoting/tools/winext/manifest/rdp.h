@@ -13,6 +13,9 @@
 module MSTSCAX.DLL:
 category rdp:
 
+#ifndef REMOTING_TOOLS_WINEXT_MANIFEST_RDP_H_
+#define REMOTING_TOOLS_WINEXT_MANIFEST_RDP_H_
+
 //
 // GUIDs
 //
@@ -846,3 +849,5 @@ interface IMsRdpSessionManager : IUnknown {
 };
 
 HRESULT DllGetClassObject(REFCLSID rclsid, [iid] REFIID riid, [out] COM_INTERFACE_PTR* ppv);
+
+#endif  // REMOTING_TOOLS_WINEXT_MANIFEST_RDP_H_
