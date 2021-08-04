@@ -210,6 +210,43 @@ TEST_P(LayoutViewHitTestTest, EmptySpan) {
   EXPECT_EQ(after_ab, HitTest(55, 5));
 }
 
+// http://crbug.com/1233862
+TEST_P(LayoutViewHitTestTest, FlexBlockChildren) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#t { display: flex; }");
+  SetBodyInnerHTML("<div id=t><div id=ab>ab</div><div id=xy>XY</div></div>");
+
+  const auto& ab = *To<Text>(GetElementById("ab")->firstChild());
+  const auto& xy = *To<Text>(GetElementById("xy")->firstChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(10, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(45, 5));
+}
+
 // http://crbug.com/1171070
 // See also, FloatLeft*, DOM order of "float" should not affect hit testing.
 TEST_P(LayoutViewHitTestTest, FloatLeftLeft) {
