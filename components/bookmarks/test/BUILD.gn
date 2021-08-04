@@ -18,8 +18,10 @@ source_set("test") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/favicon_base",
     "//testing/gmock",
     "//ui/events/platform",
+    "//ui/gfx",
     "//url",
   ]
 

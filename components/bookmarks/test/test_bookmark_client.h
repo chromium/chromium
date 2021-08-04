@@ -7,10 +7,16 @@
 
 #include <stdint.h>
 
+#include <list>
+#include <map>
 #include <memory>
 
 #include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_client.h"
+
+namespace gfx {
+class Image;
+}  // namespace gfx
 
 namespace bookmarks {
 
@@ -39,7 +45,23 @@ class TestBookmarkClient : public BookmarkClient {
   // Returns true if |node| belongs to the tree of the |managed_node_|.
   bool IsAManagedNode(const BookmarkNode* node);
 
- private:
+  // Mimics the completion of a previously-triggered GetFaviconImageForPageURL()
+  // call for |page_url|, usually invoked by BookmarkModel. Returns false if no
+  // such a call is pending completion. The completion returns a favicon with
+  // URL |icon_url| and a single-color 16x16 image using |color|.
+  bool SimulateFaviconLoaded(const GURL& page_url,
+                             const GURL& icon_url,
+                             const gfx::Image& color);
+
+  // Mimics the completion of a previously-triggered GetFaviconImageForPageURL()
+  // call for |page_url|, usually invoked by BookmarkModel. Returns false if no
+  // such a call is pending completion. The completion returns an empty image
+  // for the favicon.
+  bool SimulateEmptyFaviconLoaded(const GURL& page_url);
+
+  // Returns true if there is at least one active favicon loading task.
+  bool HasFaviconLoadTasks() const;
+
   // BookmarkClient:
   bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) override;
   void RecordAction(const base::UserMetricsAction& action) override;
@@ -51,7 +73,12 @@ class TestBookmarkClient : public BookmarkClient {
   void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
+  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
+      const GURL& page_url,
+      favicon_base::FaviconImageCallback callback,
+      base::CancelableTaskTracker* tracker) override;
 
+ private:
   // Helpers for GetLoadManagedNodeCallback().
   static std::unique_ptr<BookmarkPermanentNode> LoadManagedNode(
       std::unique_ptr<BookmarkPermanentNode> managed_node,
@@ -61,6 +88,10 @@ class TestBookmarkClient : public BookmarkClient {
   // unowned_managed_node_ stays around after that.
   std::unique_ptr<BookmarkPermanentNode> managed_node_;
   BookmarkPermanentNode* unowned_managed_node_ = nullptr;
+
+  base::CancelableTaskTracker::TaskId next_task_id_ = 1;
+  std::map<GURL, std::list<favicon_base::FaviconImageCallback>>
+      requests_per_page_url_;
 
   DISALLOW_COPY_AND_ASSIGN(TestBookmarkClient);
 };

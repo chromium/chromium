@@ -64,64 +64,6 @@ gfx::Image CreateTestImage(SkColor color) {
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
-// Extension of TestBookmarkClient with basic functionality to test favicon
-// loading.
-class TestBookmarkClientWithFavicon : public bookmarks::TestBookmarkClient {
- public:
-  // Mimics the completion of a previously-triggered GetFaviconImageForPageURL()
-  // call for |page_url|, usually invoked by BookmarkModel. Returns false if no
-  // such a call is pending completion. The completion returns a favicon with
-  // URL |icon_url| and a single-color 16x16 image using |color|.
-  bool SimulateFaviconLoaded(const GURL& page_url,
-                             const GURL& icon_url,
-                             SkColor color) {
-    if (requests_per_page_url_[page_url].empty()) {
-      return false;
-    }
-
-    favicon_base::FaviconImageCallback callback =
-        std::move(requests_per_page_url_[page_url].front());
-    requests_per_page_url_[page_url].pop_front();
-
-    favicon_base::FaviconImageResult result;
-    result.image = CreateTestImage(color);
-    result.icon_url = icon_url;
-    std::move(callback).Run(result);
-    return true;
-  }
-
-  // Mimics the completion of a previously-triggered GetFaviconImageForPageURL()
-  // call for |page_url|, usually invoked by BookmarkModel. Returns false if no
-  // such a call is pending completion. The completion returns an empty image
-  // for the favicon.
-  bool SimulateEmptyFaviconLoaded(const GURL& page_url) {
-    if (requests_per_page_url_[page_url].empty()) {
-      return false;
-    }
-
-    favicon_base::FaviconImageCallback callback =
-        std::move(requests_per_page_url_[page_url].front());
-    requests_per_page_url_[page_url].pop_front();
-
-    std::move(callback).Run(favicon_base::FaviconImageResult());
-    return true;
-  }
-
-  // bookmarks::TestBookmarkClient implementation.
-  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
-      const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      base::CancelableTaskTracker* tracker) override {
-    requests_per_page_url_[page_url].push_back(std::move(callback));
-    return next_task_id_++;
-  }
-
- private:
-  base::CancelableTaskTracker::TaskId next_task_id_ = 1;
-  std::map<GURL, std::list<favicon_base::FaviconImageCallback>>
-      requests_per_page_url_;
-};
-
 class BookmarkModelObserverImplTest : public testing::Test {
  public:
   BookmarkModelObserverImplTest()
@@ -130,8 +72,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
         observer_(nudge_for_commit_closure_.Get(),
                   /*on_bookmark_model_being_deleted_closure=*/base::DoNothing(),
                   bookmark_tracker_.get()),
-        bookmark_model_(bookmarks::TestBookmarkClient::CreateModelWithClient(
-            std::make_unique<TestBookmarkClientWithFavicon>())) {
+        bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     bookmark_model_->AddObserver(&observer_);
     sync_pb::EntitySpecifics specifics;
     specifics.mutable_bookmark()->set_legacy_canonicalized_title(
@@ -157,7 +98,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
         specifics);
   }
 
-  ~BookmarkModelObserverImplTest() {
+  ~BookmarkModelObserverImplTest() override {
     bookmark_model_->RemoveObserver(&observer_);
   }
 
@@ -187,8 +128,8 @@ class BookmarkModelObserverImplTest : public testing::Test {
   base::MockCallback<base::RepeatingClosure>* nudge_for_commit_closure() {
     return &nudge_for_commit_closure_;
   }
-  TestBookmarkClientWithFavicon* bookmark_client() {
-    return static_cast<TestBookmarkClientWithFavicon*>(
+  bookmarks::TestBookmarkClient* bookmark_client() {
+    return static_cast<bookmarks::TestBookmarkClient*>(
         bookmark_model_->client());
   }
 
@@ -700,8 +641,8 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   const bookmarks::BookmarkNode* bookmark_node = bookmark_model()->AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"title", kBookmarkUrl);
 
-  ASSERT_TRUE(
-      bookmark_client()->SimulateFaviconLoaded(kBookmarkUrl, kIconUrl, kColor));
+  ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
+      kBookmarkUrl, kIconUrl, CreateTestImage(kColor)));
   SimulateCommitResponseForAllLocalChanges();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
               IsEmpty());
@@ -725,8 +666,8 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   bookmark_model()->OnFaviconsChanged(/*page_urls=*/{kBookmarkUrl},
                                       /*icon_url=*/GURL());
   ASSERT_TRUE(bookmark_node->is_favicon_loading());
-  ASSERT_TRUE(
-      bookmark_client()->SimulateFaviconLoaded(kBookmarkUrl, kIconUrl, kColor));
+  ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
+      kBookmarkUrl, kIconUrl, CreateTestImage(kColor)));
 
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
   EXPECT_THAT(entity->metadata()->bookmark_favicon_hash(),
@@ -747,7 +688,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
 
   ASSERT_TRUE(bookmark_node->is_favicon_loading());
   ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
-      kBookmarkUrl, kInitialIconUrl, SK_ColorRED));
+      kBookmarkUrl, kInitialIconUrl, CreateTestImage(SK_ColorRED)));
   SimulateCommitResponseForAllLocalChanges();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
               IsEmpty());
@@ -769,7 +710,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
 
   EXPECT_CALL(*nudge_for_commit_closure(), Run());
   ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
-      kBookmarkUrl, kFinalIconUrl, SK_ColorBLUE));
+      kBookmarkUrl, kFinalIconUrl, CreateTestImage(SK_ColorBLUE)));
 
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
   EXPECT_THAT(entity->metadata()->bookmark_favicon_hash(),
@@ -825,8 +766,8 @@ TEST_F(BookmarkModelObserverImplTest,
 
   EXPECT_CALL(*nudge_for_commit_closure(), Run());
   bookmark_model()->GetFavicon(bookmark_node);
-  ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(kBookmarkUrl, kIconUrl,
-                                                       SK_ColorRED));
+  ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
+      kBookmarkUrl, kIconUrl, CreateTestImage(SK_ColorRED)));
 }
 
 TEST_F(BookmarkModelObserverImplTest,
@@ -889,8 +830,8 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitOnDeleteFavicon) {
       /*parent=*/bookmark_bar_node, /*index=*/0, u"title", kBookmarkUrl);
 
   ASSERT_TRUE(bookmark_node->is_favicon_loading());
-  ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(kBookmarkUrl, kIconUrl,
-                                                       SK_ColorRED));
+  ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
+      kBookmarkUrl, kIconUrl, CreateTestImage(SK_ColorRED)));
 
   const SyncedBookmarkTracker::Entity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);

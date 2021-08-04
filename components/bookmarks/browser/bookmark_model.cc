@@ -770,7 +770,9 @@ void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
   if (node->is_url())
     titled_url_index_->Remove(node);
 
+  // Reset favicon state for the case when the |node| is restored.
   CancelPendingFaviconLoadRequests(node);
+  node->InvalidateFavicon();
 
   // Recurse through children.
   for (size_t i = node->children().size(); i > 0; --i)

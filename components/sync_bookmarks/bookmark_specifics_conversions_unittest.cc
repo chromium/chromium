@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using bookmarks::TestBookmarkClient;
 using testing::_;
 using testing::Eq;
 using testing::Ge;
@@ -59,28 +60,6 @@ sync_pb::UniquePosition RandomUniquePosition() {
              syncer::UniquePosition::RandomSuffix())
       .ToProto();
 }
-
-class TestBookmarkClientWithFaviconLoad : public bookmarks::TestBookmarkClient {
- public:
-  TestBookmarkClientWithFaviconLoad() = default;
-  ~TestBookmarkClientWithFaviconLoad() override = default;
-
-  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
-      const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      base::CancelableTaskTracker* tracker) override {
-    ++load_favicon_requests;
-    return TestBookmarkClient::GetFaviconImageForPageURL(
-        page_url, std::move(callback), tracker);
-  }
-
-  int GetLoadFaviconRequestsForTest() { return load_favicon_requests; }
-
- private:
-  int load_favicon_requests = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBookmarkClientWithFaviconLoad);
-};
 
 TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
   const GURL kUrl("http://www.url.com");
@@ -170,12 +149,11 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldLoadFaviconWhenCreatingSpecificsFromBookmarkNode) {
-  auto client = std::make_unique<TestBookmarkClientWithFaviconLoad>();
-  TestBookmarkClientWithFaviconLoad* client_ptr = client.get();
+  auto client = std::make_unique<TestBookmarkClient>();
+  TestBookmarkClient* client_ptr = client.get();
 
   std::unique_ptr<bookmarks::BookmarkModel> model =
-      TestBookmarkClientWithFaviconLoad::CreateModelWithClient(
-          std::move(client));
+      TestBookmarkClient::CreateModelWithClient(std::move(client));
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddURL(
@@ -183,21 +161,20 @@ TEST(BookmarkSpecificsConversionsTest,
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
-  ASSERT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
+  ASSERT_FALSE(client_ptr->HasFaviconLoadTasks());
   sync_pb::EntitySpecifics specifics =
       CreateSpecificsFromBookmarkNode(node, model.get(), RandomUniquePosition(),
                                       /*force_favicon_load=*/true);
-  EXPECT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(1));
+  EXPECT_TRUE(client_ptr->HasFaviconLoadTasks());
 }
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldNotLoadFaviconWhenCreatingSpecificsFromBookmarkNode) {
-  auto client = std::make_unique<TestBookmarkClientWithFaviconLoad>();
-  TestBookmarkClientWithFaviconLoad* client_ptr = client.get();
+  auto client = std::make_unique<TestBookmarkClient>();
+  TestBookmarkClient* client_ptr = client.get();
 
   std::unique_ptr<bookmarks::BookmarkModel> model =
-      TestBookmarkClientWithFaviconLoad::CreateModelWithClient(
-          std::move(client));
+      TestBookmarkClient::CreateModelWithClient(std::move(client));
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddURL(
@@ -205,10 +182,10 @@ TEST(BookmarkSpecificsConversionsTest,
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
-  ASSERT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
+  ASSERT_FALSE(client_ptr->HasFaviconLoadTasks());
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
       node, model.get(), RandomUniquePosition(), /*force_favicon_load=*/false);
-  EXPECT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
+  EXPECT_FALSE(client_ptr->HasFaviconLoadTasks());
 }
 
 TEST(BookmarkSpecificsConversionsTest,

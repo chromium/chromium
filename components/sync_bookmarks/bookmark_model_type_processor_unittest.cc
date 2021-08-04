@@ -240,55 +240,12 @@ class ProxyCommitQueue : public syncer::CommitQueue {
   CommitQueue* commit_queue_ = nullptr;
 };
 
-class TestBookmarkClientWithFavicon : public bookmarks::TestBookmarkClient {
- public:
-  // This method must be used to tell the bookmark_model about favicon.
-  void SimulateFaviconLoaded(GURL page_url, gfx::Image image, GURL icon_url) {
-    ASSERT_NE(0u, last_tasks_.count(page_url));
-    SimulateFaviconLoaded(last_tasks_[page_url], std::move(image),
-                          std::move(icon_url));
-  }
-
-  void SimulateFaviconLoaded(base::CancelableTaskTracker::TaskId task_id,
-                             gfx::Image image,
-                             GURL icon_url) {
-    favicon_base::FaviconImageResult result;
-    result.image = std::move(image);
-    result.icon_url = std::move(icon_url);
-    favicon_base::FaviconImageCallback cb =
-        std::move(favicon_image_callbacks_[task_id]);
-    favicon_image_callbacks_.erase(task_id);
-    std::move(cb).Run(result);
-  }
-
-  size_t GetTasksCount() const { return favicon_image_callbacks_.size(); }
-
-  // bookmarks::TestBookmarkClient implementation.
-  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
-      const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      base::CancelableTaskTracker* tracker) override {
-    favicon_image_callbacks_[next_task_id_] = std::move(callback);
-    last_tasks_[page_url] = next_task_id_;
-    return next_task_id_++;
-  }
-
- private:
-  base::CancelableTaskTracker::TaskId next_task_id_ = 1;
-  base::RepeatingCallback<void()> trigger_favicon_loaded_callback_;
-  std::map<base::CancelableTaskTracker::TaskId,
-           favicon_base::FaviconImageCallback>
-      favicon_image_callbacks_;
-  std::map<GURL, base::CancelableTaskTracker::TaskId> last_tasks_;
-};
-
 class BookmarkModelTypeProcessorTest : public testing::Test {
  public:
   BookmarkModelTypeProcessorTest()
       : processor_(std::make_unique<BookmarkModelTypeProcessor>(
             &bookmark_undo_service_)),
-        bookmark_model_(bookmarks::TestBookmarkClient::CreateModelWithClient(
-            std::make_unique<TestBookmarkClientWithFavicon>())) {
+        bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     // TODO(crbug.com/516866): This class assumes model is loaded and sync has
     // started before running tests. We should test other variations (i.e. model
     // isn't loaded yet and/or sync didn't start yet).
@@ -322,8 +279,8 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   void DestroyBookmarkModel() { bookmark_model_.reset(); }
 
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
-  TestBookmarkClientWithFavicon* bookmark_client() {
-    return static_cast<TestBookmarkClientWithFavicon*>(
+  bookmarks::TestBookmarkClient* bookmark_client() {
+    return static_cast<bookmarks::TestBookmarkClient*>(
         bookmark_model_->client());
   }
   BookmarkUndoService* bookmark_undo_service() {
@@ -780,12 +737,12 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 schedule_save_closure()->Get(),
                                 bookmark_model());
 
-  ASSERT_EQ(0u, bookmark_client()->GetTasksCount());
+  ASSERT_FALSE(bookmark_client()->HasFaviconLoadTasks());
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10), IsEmpty());
   EXPECT_TRUE(node->is_favicon_loading());
 
-  bookmark_client()->SimulateFaviconLoaded(GURL(kUrl), gfx::Image(),
-                                           GURL(kIconUrl));
+  bookmark_client()->SimulateFaviconLoaded(GURL(kUrl), GURL(kIconUrl),
+                                           gfx::Image());
   ASSERT_TRUE(node->is_favicon_loaded());
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10),
               ElementsAre(CommitRequestDataMatchesGuid(node->guid())));
@@ -844,8 +801,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // without loaded favicon.
   bookmark_model()->GetFavicon(unsynced_entities[1]->bookmark_node());
   bookmark_client()->SimulateFaviconLoaded(
-      unsynced_entities[1]->bookmark_node()->url(), gfx::Image(),
-      GURL(kIconUrl));
+      unsynced_entities[1]->bookmark_node()->url(), GURL(kIconUrl),
+      gfx::Image());
   ASSERT_TRUE(unsynced_entities[1]->bookmark_node()->is_favicon_loaded());
   ASSERT_FALSE(unsynced_entities[0]->bookmark_node()->is_favicon_loaded());
   ASSERT_FALSE(unsynced_entities[0]->bookmark_node()->is_favicon_loading());
