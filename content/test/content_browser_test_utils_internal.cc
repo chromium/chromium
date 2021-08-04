@@ -829,13 +829,13 @@ BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason() {
   return reason;
 }
 
-void DisableForRenderFrameHostForTesting(
+void DisableBFCacheForRFHForTesting(
     content::RenderFrameHost* render_frame_host) {
   content::BackForwardCache::DisableForRenderFrameHost(
       render_frame_host, RenderFrameHostDisabledForTestingReason());
 }
 
-void DisableForRenderFrameHostForTesting(content::GlobalRenderFrameHostId id) {
+void DisableBFCacheForRFHForTesting(content::GlobalRenderFrameHostId id) {
   content::BackForwardCache::DisableForRenderFrameHost(
       id, RenderFrameHostDisabledForTestingReason());
 }

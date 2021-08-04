@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
 
   // Make url1 ineligible for caching so that when we navigate back it doesn't
   // fetch the RenderFrameHost from the back/forward cache.
-  DisableForRenderFrameHostForTesting(rfh_url1);
+  DisableBFCacheForRFHForTesting(rfh_url1);
   EXPECT_TRUE(NavigateToURL(shell(), url3));
 
   // 6) Go back and reload.

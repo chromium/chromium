@@ -194,8 +194,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     // 1) Prevent the old page from entering the back-forward cache. Otherwise
     //    the old process will be kept alive, because it is still being used.
     // 2) Navigate to a WebUI URL, which uses a new process.
-    DisableForRenderFrameHostForTesting(
-        shell()->web_contents()->GetMainFrame());
+    DisableBFCacheForRFHForTesting(shell()->web_contents()->GetMainFrame());
     EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("blob-internals")));
 
     // In the case of a redirect, the observed URL will be different from

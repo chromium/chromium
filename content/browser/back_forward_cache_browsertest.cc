@@ -5848,7 +5848,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   RenderFrameHostImpl* rfh_b3 = current_frame_host();
   // Make B3 ineligible for caching, so that navigating doesn't evict A2
   // due to the cache size limit.
-  DisableForRenderFrameHostForTesting(rfh_b3);
+  DisableBFCacheForRFHForTesting(rfh_b3);
 
   // 4) Do a history navigation back to A1.  At this point, A1 is going to have
   // the same BrowsingInstance as A2. This should cause A2 to get
@@ -5929,7 +5929,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   RenderFrameHostImpl* rfh_a1 = current_frame_host();
   RenderFrameDeletedObserver deleted_observer_rfh_a1(rfh_a1);
   // Disable back-forward cache for A.
-  DisableForRenderFrameHostForTesting(rfh_a1);
+  DisableBFCacheForRFHForTesting(rfh_a1);
 
   // 2) Navigate to A2.
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
@@ -6375,7 +6375,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  DisableForRenderFrameHostForTesting(rfh_a);
+  DisableBFCacheForRFHForTesting(rfh_a);
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -6403,14 +6403,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   GlobalRenderFrameHostId rfh_a_id = rfh_a->GetGlobalId();
-  DisableForRenderFrameHostForTesting(rfh_a_id);
+  DisableBFCacheForRFHForTesting(rfh_a_id);
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // This should not die
-  DisableForRenderFrameHostForTesting(rfh_a_id);
+  DisableBFCacheForRFHForTesting(rfh_a_id);
 
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
@@ -6435,7 +6435,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
-  DisableForRenderFrameHostForTesting(rfh_b);
+  DisableBFCacheForRFHForTesting(rfh_b);
 
   // 2) Navigate to C. A and B are deleted.
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
@@ -6469,7 +6469,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_FALSE(rfh_a->is_evicted_from_back_forward_cache());
 
-  DisableForRenderFrameHostForTesting(rfh_a);
+  DisableBFCacheForRFHForTesting(rfh_a);
 
   delete_observer_rfh_a.WaitUntilDeleted();
 
@@ -9088,7 +9088,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DocumentServiceBase) {
   EXPECT_FALSE(echo_deleted);
 
   // 4) Prevent caching and navigate to B.
-  DisableForRenderFrameHostForTesting(rfh_a);
+  DisableBFCacheForRFHForTesting(rfh_a);
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
   delete_observer_rfh_a.WaitUntilDeleted();
   EXPECT_TRUE(echo_deleted);
@@ -9938,7 +9938,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
 
   // Disable the BackForwardCache for |rfh_2|.
-  DisableForRenderFrameHostForTesting(rfh_2->GetGlobalId());
+  DisableBFCacheForRFHForTesting(rfh_2->GetGlobalId());
 
   // 3) Navigate to |url_3|.
   EXPECT_TRUE(NavigateToURL(shell(), url_3));

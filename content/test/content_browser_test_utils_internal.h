@@ -589,8 +589,8 @@ class RenderFrameHostCreatedObserver : public WebContentsObserver {
 // reason and tests will need to assert that it appears.
 BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason();
 // Disable using the standard testing DisabledReason.
-void DisableForRenderFrameHostForTesting(RenderFrameHost* render_frame_host);
-void DisableForRenderFrameHostForTesting(GlobalRenderFrameHostId id);
+void DisableBFCacheForRFHForTesting(RenderFrameHost* render_frame_host);
+void DisableBFCacheForRFHForTesting(GlobalRenderFrameHostId id);
 
 // Changes the WebContents and active entry user agent override from
 // DidStartNavigation().
