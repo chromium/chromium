@@ -77,7 +77,7 @@ component("public") {
     "//base",
     "//components/download/network",
     "//components/download/public/background_service:public",
-    "//components/enterprise/common/proto:download_item_reroute_info_proto",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",

@@ -218,7 +218,12 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
             in_progress_info.download_schedule.value()));
     proto.set_allocated_download_schedule(download_schedule_proto.release());
   }
-
+  // Fill in the output proto's |reroute_info| iff |in_progress_info|'s
+  // |reroute_info| is initialized, because it has a required field and parsing
+  // an uninitialized one to and from serialized strings would fail.
+  if (in_progress_info.reroute_info.IsInitialized()) {
+    *proto.mutable_reroute_info() = in_progress_info.reroute_info;
+  }
   return proto;
 }
 
@@ -274,6 +279,9 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
     info.download_schedule = DownloadScheduleFromProto(
         proto.download_schedule(), !proto.metered() /*only_on_wifi*/);
     DCHECK_NE(info.download_schedule->only_on_wifi(), info.metered);
+  }
+  if (proto.has_reroute_info()) {
+    info.reroute_info = proto.reroute_info();
   }
 
   return info;

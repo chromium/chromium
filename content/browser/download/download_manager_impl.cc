@@ -190,8 +190,8 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override {
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override {
     // For history download only as history don't have auto resumption count
     // saved.
     int auto_resume_count = download::DownloadItemImpl::kMaxAutoResumeAttempts;
@@ -203,7 +203,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
         last_modified, received_bytes, total_bytes, auto_resume_count, hash,
         state, danger_type, interrupt_reason, false /* paused */,
         false /* allow_metered */, opened, last_access_time, transient,
-        received_slices, absl::nullopt /*download_schedule*/,
+        received_slices, reroute_info, absl::nullopt /*download_schedule*/,
         nullptr /* download_entry */);
   }
 
@@ -999,12 +999,14 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     return nullptr;
   }
 
+  download::DownloadItemRerouteInfo reroute_info;
+  // TODO(https://crbug.com/1203753) take |reroute_info| as an input arg.
   auto item = base::WrapUnique(item_factory_->CreatePersistedItem(
       this, guid, id, current_path, target_path, url_chain, referrer_url,
       site_url, tab_url, tab_refererr_url, request_initiator, mime_type,
       original_mime_type, start_time, end_time, etag, last_modified,
       received_bytes, total_bytes, hash, state, danger_type, interrupt_reason,
-      opened, last_access_time, transient, received_slices));
+      opened, last_access_time, transient, received_slices, reroute_info));
   if (in_progress_download) {
     // If a download is in both history DB and in-progress DB, we should
     // be able to remove the in-progress entry if the following 2 conditions
@@ -1029,10 +1031,10 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
   }
 #if defined(OS_ANDROID)
   if (target_path.IsContentUri()) {
-    base::FilePath display_name =
+    base::FilePath android_display_name =
         in_progress_manager_->GetDownloadDisplayName(target_path);
-    if (!display_name.empty())
-      item->SetDisplayName(display_name);
+    if (!android_display_name.empty())
+      item->SetDisplayName(android_display_name);
     else
       return nullptr;
   }

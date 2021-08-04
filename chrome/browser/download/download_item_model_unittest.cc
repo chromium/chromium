@@ -18,7 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
+#include "components/enterprise/common/download_item_reroute_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"

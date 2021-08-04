@@ -37,6 +37,10 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
     previous_info = previous->download_info->in_progress_info;
   base::FilePath previous_path =
       previous_info ? previous_info->current_path : base::FilePath();
+
+  download::DownloadItemRerouteInfo previous_reroute_info;
+  if (previous_info)
+    previous_reroute_info = previous_info->reroute_info;
   bool previous_paused = previous_info ? previous_info->paused : false;
 
   absl::optional<InProgressInfo> current_info;
@@ -44,12 +48,14 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
     current_info = current.download_info->in_progress_info;
 
   base::FilePath current_path;
+  download::DownloadItemRerouteInfo reroute_info;
   bool paused = false;
   GURL url;
   DownloadItem::DownloadState state = DownloadItem::DownloadState::IN_PROGRESS;
   DownloadInterruptReason interrupt_reason = DOWNLOAD_INTERRUPT_REASON_NONE;
   if (current_info) {
-    base::FilePath current_path = current_info->current_path;
+    current_path = current_info->current_path;
+    reroute_info = current_info->reroute_info;
     paused = current_info->paused;
     if (!current_info->url_chain.empty())
       url = current_info->url_chain.back();
@@ -60,8 +66,11 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
   // When download path is determined, Chrome should commit the history
   // immediately. Otherwise the file will be left permanently on the external
   // storage if Chrome crashes right away.
-  if (current_path != previous_path || paused != previous_paused)
+  if (current_path != previous_path ||
+      !RerouteInfosEqual(reroute_info, previous_reroute_info) ||
+      paused != previous_paused) {
     return ShouldUpdateDownloadDBResult::UPDATE_IMMEDIATELY;
+  }
 
   if (previous.value() == current)
     return ShouldUpdateDownloadDBResult::NO_UPDATE;

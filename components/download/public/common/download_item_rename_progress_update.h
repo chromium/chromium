@@ -6,7 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_ITEM_RENAME_PROGRESS_UPDATE_H_
 
 #include "base/files/file_path.h"
-#include "components/enterprise/common/proto/download_item_reroute_info.pb.h"
+#include "components/enterprise/common/download_item_reroute_info.h"
 
 namespace download {
 
