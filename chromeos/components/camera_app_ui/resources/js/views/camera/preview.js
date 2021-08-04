@@ -439,6 +439,7 @@ export class Preview {
         'ANDROID_CONTROL_AE_ANTIBANDING_MODE_');
 
     const tag = cros.mojom.CameraMetadataTag;
+    /** @type {!Object<string, function(!Array<number>): void>} */
     const metadataEntryHandlers = {
       [tag.ANDROID_LENS_FOCUS_DISTANCE]: ([value]) => {
         if (value === 0) {
