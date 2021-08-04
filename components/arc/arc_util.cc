@@ -4,19 +4,25 @@
 
 #include "components/arc/arc_util.h"
 
+#include <sys/prctl.h>
+
 #include <algorithm>
 #include <cstdio>
+#include <set>
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -28,6 +34,12 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/types/display_constants.h"
+
+// Downstream core scheduling interface for 4.19, 5.4 kernels.
+// TODO(b/152605392): Remove once those kernel versions are obsolete.
+#ifndef PR_SET_CORE_SCHED
+#define PR_SET_CORE_SCHED 0x200
+#endif
 
 namespace arc {
 
@@ -480,6 +492,58 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
       NOTREACHED();
       break;
   }
+}
+
+bool IsCoreSchedulingAvailable() {
+  static const bool has_vulns = []() {
+    // Check for support in the kernel by passing bad param `prctl(0x200, 2)`.
+    // If it is supported, we will get ERANGE rather than EINVAL.
+    // TODO(joelhockey): The public prctl(PR_SCHED_CORE, ...) API added in
+    // kernel 5.14 returns EINVAL rather than ERANGE for invalid params which
+    // doesn't give us any way to tell if core scheduling is supported. We
+    // should not remove PR_SET_CORE_SCHED 0x200 until all devices are at 5.14+.
+    if (prctl(PR_SET_CORE_SCHED, 2) == -1 && errno != ERANGE) {
+      VLOG(1) << "Core scheduling not supported in kernel";
+      return false;
+    }
+
+    base::FilePath sysfs_vulns("/sys/devices/system/cpu/vulnerabilities");
+    std::string buf;
+    for (const std::string& s : {"l1tf", "mds"}) {
+      base::FilePath vuln = sysfs_vulns.Append(s);
+      if (!base::ReadFileToString(vuln, &buf)) {
+        LOG(ERROR) << "Could not read " << vuln;
+        continue;
+      }
+      base::TrimWhitespaceASCII(buf, base::TRIM_ALL, &buf);
+      if (buf != "Not affected") {
+        VLOG(1) << "Core scheduling available: " << vuln << "=" << buf;
+        return true;
+      }
+    }
+    VLOG(1) << "Core scheduling not required";
+    return false;
+  }();
+  return has_vulns;
+}
+
+int NumberOfProcessorsForCoreScheduling() {
+  // cat /sys/devices/system/cpu/cpu[0-9]*/topology/thread_siblings_list |\
+  //   sort -u | wc -l
+  static const int num_physical_cores = []() {
+    std::set<std::string> lists;
+    std::string buf;
+    for (int i = 0; i < base::SysInfo::NumberOfProcessors(); ++i) {
+      base::FilePath list(base::StringPrintf(
+          "/sys/devices/system/cpu/cpu%d/topology/thread_siblings_list", i));
+      if (!base::ReadFileToString(list, &buf))
+        LOG(ERROR) << "Could not read " << list;
+      else
+        lists.insert(buf);
+    }
+    return lists.size() > 0 ? lists.size() : 1;
+  }();
+  return num_physical_cores;
 }
 
 }  // namespace arc

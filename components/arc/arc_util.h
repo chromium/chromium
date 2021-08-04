@@ -206,6 +206,18 @@ int GetSystemPropertyInt(const std::string& property);
 void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
                           chromeos::VoidDBusMethodCallback callback);
 
+// Returns true if core scheduling is supported in the kernel, and CPU has MDS
+// or L1TF vulnerabilities. Core scheduling does not run on CPUs that are not
+// vulnerable.
+// TODO(yusukes): Once https://crrev.com/c/3063740 is submitted, switch to the
+// function in the CL and delete this.
+bool IsCoreSchedulingAvailable();
+
+// Returns number of physical cores.
+// TODO(yusukes): Once https://crrev.com/c/3063740 is submitted, switch to the
+// function in the CL and delete this.
+int NumberOfProcessorsForCoreScheduling();
+
 }  // namespace arc
 
 #endif  // COMPONENTS_ARC_ARC_UTIL_H_
