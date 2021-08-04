@@ -205,6 +205,36 @@ std::u16string NodeTitleFromSpecifics(
   return base::UTF8ToUTF16(node_title);
 }
 
+void MoveAllChildren(bookmarks::BookmarkModel* model,
+                     const bookmarks::BookmarkNode* old_parent,
+                     const bookmarks::BookmarkNode* new_parent) {
+  DCHECK(old_parent && old_parent->is_folder());
+  DCHECK(new_parent && new_parent->is_folder());
+  DCHECK(old_parent != new_parent);
+  DCHECK(new_parent->children().empty());
+
+  if (old_parent->children().empty()) {
+    return;
+  }
+
+  // This code relies on the underlying type to store children in the
+  // BookmarkModel which is vector. It moves the last child from |old_parent| to
+  // the end of |new_parent| step by step (which reverses the order of
+  // children). After that all children must be reordered to keep the original
+  // order in |new_parent|.
+  // This algorithm is used because of performance reasons.
+  std::vector<const bookmarks::BookmarkNode*> children_order(
+      old_parent->children().size(), nullptr);
+  for (size_t i = old_parent->children().size(); i > 0; --i) {
+    const size_t old_index = i - 1;
+    const bookmarks::BookmarkNode* child_to_move =
+        old_parent->children()[old_index].get();
+    children_order[old_index] = child_to_move;
+    model->Move(child_to_move, new_parent, new_parent->children().size());
+  }
+  model->ReorderChildren(new_parent, children_order);
+}
+
 }  // namespace
 
 std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title) {
@@ -390,14 +420,13 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
     new_node = model->AddFolder(
         node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
         node->GetMetaInfoMap(), node->date_added(), guid);
+    MoveAllChildren(model, node, new_node);
   } else {
     new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
                              node->GetTitle(), node->url(),
                              node->GetMetaInfoMap(), node->date_added(), guid);
   }
-  for (size_t i = node->children().size(); i > 0; --i) {
-    model->Move(node->children()[i - 1].get(), new_node, 0);
-  }
+
   model->Remove(node);
 
   return new_node;
