@@ -17,7 +17,7 @@
       "use_goma": true
     }
   },
-  "android-11-x86-fyi-rel": {
+  "android-11-x86-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,

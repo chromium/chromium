@@ -289,7 +289,7 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
-    name = "android-11-x86-fyi-rel",
+    name = "android-11-x86-rel",
 )
 
 try_.chromium_android_builder(

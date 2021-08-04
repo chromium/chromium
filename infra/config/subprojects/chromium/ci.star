@@ -981,6 +981,15 @@ ci.android_builder(
 )
 
 ci.android_builder(
+    name = "android-11-x86-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|x86",
+        short_name = "11",
+    ),
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.android_builder(
     name = "android-weblayer-marshmallow-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
@@ -1143,7 +1152,8 @@ ci.android_fyi_builder(
     ),
 )
 
-# TODO(hypan): remove this once there is no associated disabled tests
+# TODO(crbug.com/1022533#c40): Remove this builder once there are no associated
+# disabled tests.
 ci.android_fyi_builder(
     name = "android-pie-x86-fyi-rel",
     console_view_entry = consoles.console_view_entry(
@@ -1151,9 +1161,14 @@ ci.android_fyi_builder(
         short_name = "rel",
     ),
     goma_jobs = goma.jobs.J150,
-    schedule = "triggered",  # triggered manually via Scheduler UI
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
 )
 
+# TODO(crbug.com/1137474): Remove this builder once there are no associated
+# disabled tests.
 ci.android_fyi_builder(
     name = "android-11-x86-fyi-rel",
     console_view_entry = consoles.console_view_entry(
@@ -1161,6 +1176,10 @@ ci.android_fyi_builder(
         short_name = "rel",
     ),
     os = os.LINUX_BIONIC_REMOVE,
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
 )
 
 ci.android_fyi_builder(

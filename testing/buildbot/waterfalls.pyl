@@ -576,6 +576,19 @@
           'has_native_resultdb_integration'
         ],
       },
+      'android-11-x86-rel': {
+        'mixins': [
+          '11-x86-emulator',
+          'emulator-4-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_11_emulator_gtests',
+        }
+      },
       'android-arm64-proguard-rel': {
         'additional_compile_targets': [
           'all',
@@ -976,19 +989,6 @@
         'additional_compile_targets': [
           'all',
         ],
-      },
-      'android-11-x86-fyi-rel': {
-        'mixins': [
-          '11-x86-emulator',
-          'emulator-4-cores',
-          'has_native_resultdb_integration',
-          'linux-xenial-or-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_11_emulator_gtests',
-        }
       },
       'android-12-x64-fyi-rel': {
         'mixins': [

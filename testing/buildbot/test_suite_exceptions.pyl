@@ -29,7 +29,7 @@
       'android-lollipop-arm-rel',
     ],
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'swarming': {
           'shards': 2,
         },
@@ -174,7 +174,7 @@
   },
   'base_unittests': {
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.base_unittests.filter',
         ],
@@ -764,7 +764,7 @@
           'shards': 3,
         },
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         # https://crbug.com/1039860
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.cc_unittests.filter',
@@ -880,7 +880,7 @@
         # either passing or there is more capacity.
         'experiment_percentage': 0,
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
@@ -957,7 +957,7 @@
       'android-marshmallow-x86-rel',
     ],
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--avd-config=../../tools/android/avd/proto/generic_playstore_android30.textpb',
         ],
@@ -1107,7 +1107,7 @@
       'fuchsia-fyi-x64-rel',  # https://crbug.com/961457
     ],
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'swarming': {
           'shards': 2,
         },
@@ -1147,7 +1147,7 @@
           'shards': 2,
         },
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',
         ],
@@ -1262,7 +1262,7 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         # TODO(crbug.com/1137474): Remove after the test suite is green.
         'experiment_percentage': 100,
         # TODO(crbug.com/1137474): Revisit the shard number once failed tests
@@ -1389,7 +1389,7 @@
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter',
           '--timeout-scale=2.0',
@@ -1464,7 +1464,7 @@
       'CFI Linux ToT',
     ],
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter',
         ],
@@ -1622,7 +1622,7 @@
       'Android FYI Release (Nexus 5X)',
     ],
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter',
         ],
@@ -1956,7 +1956,7 @@
   },
   'media_unittests': {
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.media_unittests.filter',
         ],
@@ -2189,7 +2189,7 @@
           'shards': 4,
         }
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.net_unittests.filter',
         ],
@@ -2313,7 +2313,7 @@
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
-      'android-11-x86-fyi-rel',
+      'android-11-x86-rel',
       'Lollipop Phone Tester',
       'Lollipop Tablet Tester',
       'Marshmallow 64 bit Tester',
@@ -2565,7 +2565,7 @@
       },
     },
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1234824): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
@@ -2663,7 +2663,7 @@
   },
   'system_webview_shell_layout_test_apk': {
     'remove_from': [
-      'android-11-x86-fyi-rel', # crbug.com/1165280
+      'android-11-x86-rel', # crbug.com/1165280
     ],
   },
   'system_webview_wpt': {
@@ -2974,7 +2974,7 @@
   },
   'viz_unittests': {
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.viz_unittests.filter',
         ],
@@ -3126,7 +3126,7 @@
           'hard_timeout': 1200,
         },
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.blink_unittests.filter',
         ],
@@ -3140,7 +3140,7 @@
   },
   'weblayer_browsertests': {
     'modifications': {
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1191784): Enable this test once the issue is fixed.
           '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
@@ -3162,13 +3162,13 @@
   'weblayer_bundle_test': {
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
-      'android-11-x86-fyi-rel', # crbug.com/1165280
+      'android-11-x86-rel', # crbug.com/1165280
     ],
   },
   'weblayer_instrumentation_test_apk': {
     'remove_from': [
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1088013
-      'android-11-x86-fyi-rel', # crbug.com/1165280
+      'android-11-x86-rel', # crbug.com/1165280
     ],
     'modifications': {
       'android-pie-arm64-rel': {
@@ -3201,7 +3201,7 @@
   'weblayer_private_instrumentation_test_apk': {
     'modifications': {
       # TODO(crbug.com/1189403): Remove the filter once the issue is fixed.
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           '--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*',
         ],
@@ -3231,7 +3231,7 @@
   },
   'webview_cts_tests': {
     'remove_from': [
-      'android-11-x86-fyi-rel', # crbug.com/1165280
+      'android-11-x86-rel', # crbug.com/1165280
       'android-pie-arm64-coverage-experimental-rel', # TODO(crbug.com/1190999):
                                                      # GLIBC_2.28 Not found.
     ],
@@ -3279,7 +3279,7 @@
         # either passing or there is more capacity.
         'experiment_percentage': 0,
       },
-      'android-11-x86-fyi-rel': {
+      'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1189746) Enable this test once the issue is fixed.
           '--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers',
@@ -3299,7 +3299,7 @@
   },
   'webview_ui_test_app_test_apk': {
     'remove_from': [
-      'android-11-x86-fyi-rel', # crbug.com/1165280
+      'android-11-x86-rel', # crbug.com/1165280
     ],
   },
   'xr_browser_tests': {
