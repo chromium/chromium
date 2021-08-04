@@ -30,7 +30,7 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 public class ObserverList<E> implements Iterable<E> {
-    private static final boolean ENABLE_THREAD_ASSERTS = false;
+    private static final boolean ENABLE_THREAD_ASSERTS = true;
 
     /**
      * Extended iterator interface that provides rewind functionality.
