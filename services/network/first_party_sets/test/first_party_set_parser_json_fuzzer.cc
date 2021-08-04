@@ -20,4 +20,11 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
     std::cout << native_input << std::endl;
 
   network::FirstPartySetParser::ParseSetsFromComponentUpdater(native_input);
+
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> deserialized =
+      network::FirstPartySetParser::DeserializeFirstPartySets(native_input);
+  std::string serialized_input =
+      network::FirstPartySetParser::SerializeFirstPartySets(deserialized);
+  CHECK(deserialized == network::FirstPartySetParser::DeserializeFirstPartySets(
+                            serialized_input));
 }

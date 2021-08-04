@@ -117,17 +117,17 @@ bool ParseSet(const base::Value& value,
   return !maybe_members_list->GetList().empty();
 }
 
-// Deserializes a JSON-encoded string obtained from `SerializeFirstPartySets()`
-// into a map. Returns empty map if the value is invalid.
+}  // namespace
+
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
-DeserializeFirstPartySets(const std::string& value) {
+FirstPartySetParser::DeserializeFirstPartySets(base::StringPiece value) {
   if (value.empty())
     return {};
 
   std::unique_ptr<base::Value> value_deserialized =
       JSONStringValueDeserializer(value).Deserialize(
           nullptr /* error_code */, nullptr /* error_message */);
-  if (!value_deserialized->is_dict())
+  if (!value_deserialized || !value_deserialized->is_dict())
     return {};
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
@@ -165,10 +165,7 @@ DeserializeFirstPartySets(const std::string& value) {
   return map;
 }
 
-// Returns a serialized JSON-encoded string representation of the input.
-// The owner -> owner entry is removed from the serialized representation
-// for brevity in the file.
-std::string SerializeFirstPartySets(
+std::string FirstPartySetParser::SerializeFirstPartySets(
     const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets) {
   base::DictionaryValue dict;
   for (const auto& it : sets) {
@@ -183,8 +180,6 @@ std::string SerializeFirstPartySets(
 
   return dict_serialized;
 }
-
-}  // namespace
 
 absl::optional<net::SchemefulSite>
 FirstPartySetParser::CanonicalizeRegisteredDomain(
@@ -210,29 +205,6 @@ FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
   }
 
   return map;
-}
-
-base::flat_map<net::SchemefulSite, net::SchemefulSite>
-FirstPartySetParser::LoadSetsFromDisk(const base::FilePath& path) {
-  std::string result;
-  if (!base::ReadFileToString(path, &result)) {
-    LOG(ERROR) << "Failed loading serialized First-Party Sets file from"
-               << path.MaybeAsASCII();
-    return {};
-  }
-  return DeserializeFirstPartySets(result);
-}
-
-bool FirstPartySetParser::MaybeWriteSetsToDisk(
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& map,
-    const base::FilePath& path) {
-  std::string serialized = SerializeFirstPartySets(map);
-  bool success = base::WriteFile(path, serialized);
-  if (!success) {
-    LOG(ERROR) << "Failed writing serialized First-Party Sets to file "
-               << path.MaybeAsASCII();
-  }
-  return success;
 }
 
 }  // namespace network

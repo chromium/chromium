@@ -105,3 +105,19 @@ fuzzer_test("first_party_set_parser_json_fuzzer") {
     "//third_party/libprotobuf-mutator",
   ]
 }
+
+fuzzer_test("first_party_set_parser_map_fuzzer") {
+  sources = [ "test/first_party_set_parser_map_fuzzer.cc" ]
+  deps = [
+    ":first_party_sets",
+    ":firstpartysets_proto",
+    "//base",
+    "//net:net",
+    "//net:net_fuzzer_test_support",
+    "//third_party/libprotobuf-mutator",
+  ]
+}
+
+proto_library("firstpartysets_proto") {
+  sources = [ "test/first_party_set_parser_map_fuzzer.proto" ]
+}
