@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -105,11 +106,11 @@ class CanvasRenderingContext2DState final
                                CanvasRenderingContext2D*);
   sk_sp<PaintFilter> GetFilterForOffscreenCanvas(IntSize canvas_size,
                                                  BaseRenderingContext2D*);
-  bool HasFilterForOffscreenCanvas(IntSize canvas_size,
-                                   BaseRenderingContext2D*);
-  bool HasFilter(Element*, IntSize canvas_size, CanvasRenderingContext2D*);
   ALWAYS_INLINE bool IsFilterUnresolved() const {
     return filter_state_ == FilterState::kUnresolved;
+  }
+  ALWAYS_INLINE bool IsFilterResolved() const {
+    return filter_state_ == FilterState::kResolved;
   }
 
   void ClearResolvedFilter();
@@ -312,6 +313,11 @@ class CanvasRenderingContext2DState final
 
   DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContext2DState);
 };
+
+ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
+  return AlphaChannel(shadow_color_) &&
+         (shadow_blur_ || !shadow_offset_.IsZero());
+}
 
 }  // namespace blink
 

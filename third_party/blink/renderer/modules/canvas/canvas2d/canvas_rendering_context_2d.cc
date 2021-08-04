@@ -328,7 +328,7 @@ void CanvasRenderingContext2D::scrollPathIntoView(Path2D* path2d) {
 }
 
 void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
-  if (!GetState().IsTransformInvertible() || path.IsEmpty())
+  if (!IsTransformInvertible() || path.IsEmpty())
     return;
 
   canvas()->GetDocument().UpdateStyleAndLayout(
@@ -404,16 +404,6 @@ void CanvasRenderingContext2D::clearRect(double x,
   }
 }
 
-void CanvasRenderingContext2D::DidDraw2D(
-    const SkIRect& dirty_rect,
-    CanvasPerformanceMonitor::DrawType draw_type) {
-  CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
-}
-
-bool CanvasRenderingContext2D::StateHasFilter() {
-  return GetState().HasFilter(canvas(), canvas()->Size(), this);
-}
-
 sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilter(canvas(), canvas()->Size(), this);
 }
@@ -428,19 +418,30 @@ void CanvasRenderingContext2D::SnapshotStateForFilter() {
 }
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
-  if (isContextLost())
+  if (UNLIKELY(isContextLost()))
     return nullptr;
-  if (canvas()->GetOrCreateCanvas2DLayerBridge())
+  if (LIKELY(canvas()->GetOrCreateCanvas2DLayerBridge()))
     return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
   return nullptr;
 }
 
 cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvas() const {
-  if (isContextLost() || !canvas()->GetCanvas2DLayerBridge())
+  if (UNLIKELY(isContextLost() || !canvas() ||
+               !canvas()->GetCanvas2DLayerBridge() ||
+               !canvas()->GetCanvas2DLayerBridge()->ResourceProvider()))
     return nullptr;
-  if (canvas() && canvas()->GetCanvas2DLayerBridge()->ResourceProvider())
-    return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
-  return nullptr;
+  return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
+}
+
+cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvasForDraw(
+    const SkIRect& dirty_rect,
+    CanvasPerformanceMonitor::DrawType draw_type) {
+  if (UNLIKELY(isContextLost() || !canvas() ||
+               !canvas()->GetCanvas2DLayerBridge() ||
+               !canvas()->GetCanvas2DLayerBridge()->ResourceProvider()))
+    return nullptr;
+  CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
+  return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
 }
 
 String CanvasRenderingContext2D::font() const {
@@ -1104,14 +1105,6 @@ void CanvasRenderingContext2D::SetIsBeingDisplayed(bool displayed) {
     canvas()->GetCanvas2DLayerBridge()->SetIsBeingDisplayed(displayed);
 }
 
-bool CanvasRenderingContext2D::IsTransformInvertible() const {
-  return GetState().IsTransformInvertible();
-}
-
-TransformationMatrix CanvasRenderingContext2D::GetTransform() const {
-  return GetState().GetTransform();
-}
-
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
   return IsPaintable() ? canvas()->GetCanvas2DLayerBridge()->Layer() : nullptr;
 }
@@ -1160,7 +1153,7 @@ void CanvasRenderingContext2D::DrawFocusIfNeededInternal(const Path& path,
 bool CanvasRenderingContext2D::FocusRingCallIsValid(const Path& path,
                                                     Element* element) {
   DCHECK(element);
-  if (!GetState().IsTransformInvertible())
+  if (!IsTransformInvertible())
     return false;
   if (path.IsEmpty())
     return false;
@@ -1243,7 +1236,7 @@ void CanvasRenderingContext2D::addHitRegion(const HitRegionOptions* options,
 
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
 
-  if (hit_region_path.IsEmpty() || !c || !GetState().IsTransformInvertible() ||
+  if (hit_region_path.IsEmpty() || !c || !IsTransformInvertible() ||
       c->isClipEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "The specified path has no pixels.");

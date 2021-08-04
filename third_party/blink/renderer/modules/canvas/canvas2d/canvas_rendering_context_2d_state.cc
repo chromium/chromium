@@ -477,23 +477,6 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   return resolved_filter_;
 }
 
-bool CanvasRenderingContext2DState::HasFilterForOffscreenCanvas(
-    IntSize canvas_size,
-    BaseRenderingContext2D* context) {
-  // Checking for a non-null m_filterValue isn't sufficient, since this value
-  // might refer to a non-existent filter.
-  return !!GetFilterForOffscreenCanvas(canvas_size, context);
-}
-
-bool CanvasRenderingContext2DState::HasFilter(
-    Element* style_resolution_host,
-    IntSize canvas_size,
-    CanvasRenderingContext2D* context) {
-  // Checking for a non-null m_filterValue isn't sufficient, since this value
-  // might refer to a non-existent filter.
-  return !!GetFilter(style_resolution_host, canvas_size, context);
-}
-
 void CanvasRenderingContext2DState::ClearResolvedFilter() {
   resolved_filter_.reset();
   filter_state_ = (canvas_filter_ || css_filter_value_)
@@ -660,11 +643,6 @@ void CanvasRenderingContext2DState::UpdateFilterQuality(
   stroke_flags_.setFilterQuality(filter_quality);
   fill_flags_.setFilterQuality(filter_quality);
   image_flags_.setFilterQuality(filter_quality);
-}
-
-bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
-  return AlphaChannel(shadow_color_) &&
-         (shadow_blur_ || !shadow_offset_.IsZero());
 }
 
 const PaintFlags* CanvasRenderingContext2DState::GetFlags(

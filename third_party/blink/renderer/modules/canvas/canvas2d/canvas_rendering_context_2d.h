@@ -175,8 +175,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void ClearFilterReferences();
 
   // BaseRenderingContext2D implementation
-  void DidDraw2D(const SkIRect& dirty_rect,
-                 CanvasPerformanceMonitor::DrawType) final;
   bool OriginClean() const final;
   void SetOriginTainted() final;
   bool WouldTaintOrigin(CanvasImageSource* source) final {
@@ -195,10 +193,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() const final;
+  cc::PaintCanvas* GetPaintCanvasForDraw(
+      const SkIRect& dirty_rect,
+      CanvasPerformanceMonitor::DrawType) final;
 
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
-  bool StateHasFilter() final;
   sk_sp<PaintFilter> StateGetFilter() final;
   void SnapshotStateForFilter() final;
 
@@ -292,9 +292,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetIsInHiddenPage(bool) override;
   void SetIsBeingDisplayed(bool) override;
   void Stop() final;
-
-  bool IsTransformInvertible() const override;
-  TransformationMatrix GetTransform() const override;
 
   cc::Layer* CcLayer() const override;
   bool IsCanvas2DBufferValid() const override;

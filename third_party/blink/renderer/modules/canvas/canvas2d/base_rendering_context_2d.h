@@ -291,11 +291,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
   virtual cc::PaintCanvas* GetPaintCanvas() const = 0;
+  virtual cc::PaintCanvas* GetPaintCanvasForDraw(
+      const SkIRect& dirty_rect,
+      CanvasPerformanceMonitor::DrawType) = 0;
 
-  virtual void DidDraw2D(const SkIRect& dirty_rect,
-                         CanvasPerformanceMonitor::DrawType) = 0;
-
-  virtual bool StateHasFilter() = 0;
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
   virtual void SnapshotStateForFilter() = 0;
 
@@ -304,7 +303,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   }
 
   void ValidateStateStack() const {
+#if DCHECK_IS_ON()
     ValidateStateStackWithCanvas(GetPaintCanvas());
+#endif
   }
   virtual void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const = 0;
 
@@ -507,12 +508,18 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   bool ShouldDrawImageAntialiased(const FloatRect& dest_rect) const;
 
+  void SetTransform(const TransformationMatrix&);
+
+  TransformationMatrix GetTransform() const override;
+
+  bool StateHasFilter();
+
   // When the canvas is stroked or filled with a pattern, which is assumed to
   // have a transparent background, the shadow needs to be applied with
   // DropShadowPaintFilter for kNonOpaqueImageType
   // Used in Draw and CompositedDraw to avoid the shadow offset being modified
   // by the transformation matrix
-  bool ShouldUseDropShadowPaintFilter(
+  ALWAYS_INLINE bool ShouldUseDropShadowPaintFilter(
       CanvasRenderingContext2DState::PaintType paint_type,
       CanvasRenderingContext2DState::ImageType image_type) const {
     return (paint_type == CanvasRenderingContext2DState::kFillPaintType ||
@@ -603,28 +610,27 @@ void BaseRenderingContext2D::DrawInternal(
     CanvasRenderingContext2DState::ImageType image_type,
     const SkIRect& clip_bounds,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (IsFullCanvasCompositeMode(GetState().GlobalComposite()) ||
-      StateHasFilter() ||
-      (GetState().ShouldDrawShadows() &&
+  const CanvasRenderingContext2DState& state = GetState();
+  SkBlendMode global_composite = state.GlobalComposite();
+  if (IsFullCanvasCompositeMode(global_composite) || StateHasFilter() ||
+      (state.ShouldDrawShadows() &&
        ShouldUseDropShadowPaintFilter(paint_type, image_type))) {
-    CompositedDraw(draw_func, GetPaintCanvas(), paint_type, image_type);
-    DidDraw2D(clip_bounds, draw_type);
-  } else if (GetState().GlobalComposite() == SkBlendMode::kSrc) {
+    CompositedDraw(draw_func, GetPaintCanvasForDraw(clip_bounds, draw_type),
+                   paint_type, image_type);
+  } else if (global_composite == SkBlendMode::kSrc) {
     ClearCanvas();  // takes care of checkOverdraw()
     const PaintFlags* flags =
-        GetState().GetFlags(paint_type, kDrawForegroundOnly, image_type);
-    draw_func(GetPaintCanvas(), flags);
-    DidDraw2D(clip_bounds, draw_type);
+        state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
+    draw_func(GetPaintCanvasForDraw(clip_bounds, draw_type), flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(bounds, clip_bounds, &dirty_rect)) {
       const PaintFlags* flags =
-          GetState().GetFlags(paint_type, kDrawShadowAndForeground, image_type);
+          state.GetFlags(paint_type, kDrawShadowAndForeground, image_type);
       if (paint_type != CanvasRenderingContext2DState::kStrokePaintType &&
           draw_covers_clip_bounds(clip_bounds))
         CheckOverdraw(bounds, flags, image_type, kClipFill);
-      draw_func(GetPaintCanvas(), flags);
-      DidDraw2D(dirty_rect, draw_type);
+      draw_func(GetPaintCanvasForDraw(dirty_rect, draw_type), flags);
     }
   }
 }
@@ -637,7 +643,7 @@ void BaseRenderingContext2D::Draw(
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (!GetState().IsTransformInvertible())
+  if (!IsTransformInvertible())
     return;
 
   SkIRect clip_bounds;
@@ -665,24 +671,24 @@ void BaseRenderingContext2D::CompositedDraw(
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type) {
   sk_sp<PaintFilter> canvas_filter = StateGetFilter();
-  DCHECK(IsFullCanvasCompositeMode(GetState().GlobalComposite()) ||
-         canvas_filter ||
-         (GetState().ShouldDrawShadows() &&
+  const CanvasRenderingContext2DState& state = GetState();
+  DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()) || canvas_filter ||
+         (state.ShouldDrawShadows() &&
           ShouldUseDropShadowPaintFilter(paint_type, image_type)));
   SkM44 ctm = c->getLocalToDevice();
   c->setMatrix(SkM44());
   PaintFlags composite_flags;
-  composite_flags.setBlendMode(GetState().GlobalComposite());
-  if (GetState().ShouldDrawShadows()) {
+  composite_flags.setBlendMode(state.GlobalComposite());
+  if (state.ShouldDrawShadows()) {
     // unroll into two independently composited passes if drawing shadows
     PaintFlags shadow_flags =
-        *GetState().GetFlags(paint_type, kDrawShadowOnly, image_type);
+        *state.GetFlags(paint_type, kDrawShadowOnly, image_type);
     int save_count = c->getSaveCount();
     c->save();
     if (canvas_filter ||
         ShouldUseDropShadowPaintFilter(paint_type, image_type)) {
       PaintFlags foreground_flags =
-          *GetState().GetFlags(paint_type, kDrawForegroundOnly, image_type);
+          *state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
       shadow_flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
           sk_make_sp<ComposePaintFilter>(foreground_flags.getImageFilter(),
                                          shadow_flags.getImageFilter()),
@@ -693,7 +699,7 @@ void BaseRenderingContext2D::CompositedDraw(
       c->setMatrix(ctm);
       draw_func(c, &foreground_flags);
     } else {
-      DCHECK(IsFullCanvasCompositeMode(GetState().GlobalComposite()));
+      DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()));
       c->saveLayer(nullptr, &composite_flags);
       shadow_flags.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
@@ -705,7 +711,7 @@ void BaseRenderingContext2D::CompositedDraw(
   composite_flags.setImageFilter(std::move(canvas_filter));
   c->saveLayer(nullptr, &composite_flags);
   PaintFlags foreground_flags =
-      *GetState().GetFlags(paint_type, kDrawForegroundOnly, image_type);
+      *state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
   foreground_flags.setBlendMode(SkBlendMode::kSrcOver);
   c->setMatrix(ctm);
   draw_func(c, &foreground_flags);
@@ -736,6 +742,53 @@ void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
     height = -height;
     y -= height;
   }
+}
+
+ALWAYS_INLINE void BaseRenderingContext2D::SetTransform(
+    const TransformationMatrix& matrix) {
+  GetState().SetTransform(matrix);
+  SetIsTransformInvertible(matrix.IsInvertible());
+}
+
+ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(
+    SkBlendMode op) {
+  // See 4.8.11.1.3 Compositing
+  // CompositeSourceAtop and CompositeDestinationOut are not listed here as the
+  // platforms already implement the specification's behavior.
+  return op == SkBlendMode::kSrcIn || op == SkBlendMode::kSrcOut ||
+         op == SkBlendMode::kDstIn || op == SkBlendMode::kDstATop;
+}
+
+ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
+  const CanvasRenderingContext2DState& state = GetState();
+  if (UNLIKELY(state.IsFilterUnresolved())) {
+    DCHECK(!IsInFastMode());  // Should de-opt before reaching this point.
+    return !!StateGetFilter();
+  }
+  // The fast path avoids the virtual call overhead of StateGetFilter
+  return state.IsFilterResolved();
+}
+
+ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
+    const FloatRect& local_rect,
+    const SkIRect& transformed_clip_bounds,
+    SkIRect* dirty_rect) {
+  DCHECK(dirty_rect);
+  const CanvasRenderingContext2DState& state = GetState();
+  FloatRect canvas_rect = state.GetTransform().MapRect(local_rect);
+
+  if (UNLIKELY(AlphaChannel(state.ShadowColor()))) {
+    FloatRect shadow_rect(canvas_rect);
+    shadow_rect.Move(state.ShadowOffset());
+    shadow_rect.Inflate(clampTo<float>(state.ShadowBlur()));
+    canvas_rect.Unite(shadow_rect);
+  }
+
+  static_cast<SkRect>(canvas_rect).roundOut(dirty_rect);
+  if (UNLIKELY(!dirty_rect->intersect(transformed_clip_bounds)))
+    return false;
+
+  return true;
 }
 
 }  // namespace blink

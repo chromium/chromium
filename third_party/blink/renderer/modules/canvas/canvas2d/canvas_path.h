@@ -95,7 +95,8 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
       const HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>& radii,
       ExceptionState& exception_state);
 
-  virtual bool IsTransformInvertible() const { return true; }
+  bool IsTransformInvertible() const;
+
   virtual TransformationMatrix GetTransform() const {
     // This will be the identity matrix
     return TransformationMatrix();
@@ -103,9 +104,29 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
 
  protected:
   CanvasPath() { path_.SetIsVolatile(true); }
-  CanvasPath(const Path& path) : path_(path) { path_.SetIsVolatile(true); }
+  explicit CanvasPath(const Path& path) : path_(path) {
+    path_.SetIsVolatile(true);
+  }
+  ALWAYS_INLINE void SetIsTransformInvertible(bool val) {
+    is_transform_invertible_ = val;
+  }
   Path path_;
+
+  // This mirrors state that is stored in CanvasRenderingContext2DState.  We
+  // replicate it here so that IsTransformInvertible() can be a non-virtual
+  // inline-able call.  We do not replicate the whole CTM. Therefore
+  // GetTransform() remains virtual, which is okay because it is only called in
+  // code paths that handle non-invertible transforms.
+  bool is_transform_invertible_ = true;
 };
+
+ALWAYS_INLINE bool CanvasPath::IsTransformInvertible() const {
+  // Verify that the cached is_transform_invertible_ remains in sync with the
+  // ground truth state.
+  DCHECK(is_transform_invertible_ == GetTransform().IsInvertible());
+
+  return is_transform_invertible_;
+}
 
 }  // namespace blink
 

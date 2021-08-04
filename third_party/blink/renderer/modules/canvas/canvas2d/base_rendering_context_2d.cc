@@ -132,7 +132,7 @@ void BaseRenderingContext2D::restore() {
   }
 
   // Verify that the current state's transform is invertible.
-  if (GetState().IsTransformInvertible())
+  if (IsTransformInvertible())
     path_.Transform(GetState().GetTransform());
 
   PopAndRestore();
@@ -185,7 +185,7 @@ void BaseRenderingContext2D::endLayer() {
     return;
 
   // Verify that the current state's transform is invertible.
-  if (GetState().IsTransformInvertible())
+  if (IsTransformInvertible())
     path_.Transform(GetState().GetTransform());
 
   // All saves performed since the last beginLayer are no-ops.
@@ -206,7 +206,8 @@ void BaseRenderingContext2D::PopAndRestore() {
   state_stack_.pop_back();
   state_stack_.back()->ClearResolvedFilter();
 
-  if (GetState().IsTransformInvertible())
+  SetIsTransformInvertible(GetState().IsTransformInvertible());
+  if (IsTransformInvertible())
     path_.Transform(GetState().GetTransform().Inverse());
 
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
@@ -648,8 +649,8 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->scale(fsx, fsy);
@@ -672,8 +673,8 @@ void BaseRenderingContext2D::scale(double sx, double sy, double sz) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   // SkCanvas has no 3d scale method for now
@@ -696,8 +697,8 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
   c->rotate(clampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
   path_.Transform(AffineTransform().RotateRadians(-angle_in_radians));
@@ -722,8 +723,8 @@ void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
     return;
 
   // Must call setTransform to set the IsTransformInvertible flag.
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(rotation_matrix));
@@ -752,8 +753,8 @@ void BaseRenderingContext2D::rotateAxis(double axisX,
     return;
 
   // Must call setTransform to set the IsTransformInvertible flag.
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(rotation_matrix));
@@ -767,7 +768,7 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
   if (!c)
     return;
 
-  if (!GetState().IsTransformInvertible())
+  if (!IsTransformInvertible())
     return;
 
   if (!std::isfinite(tx) || !std::isfinite(ty))
@@ -781,8 +782,8 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->translate(ftx, fty);
@@ -812,8 +813,8 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
     return;
 
   // We need to call SetTransform() to set the IsTransformInvertible flag.
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(translation_matrix));
@@ -840,8 +841,8 @@ void BaseRenderingContext2D::perspective(double length) {
     return;
 
   // We need to call SetTransform() to set the IsTransformInvertible flag.
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(perspective_matrix));
@@ -904,8 +905,8 @@ void BaseRenderingContext2D::transform(double m11,
     return;
 
   // Must call setTransform to set the IsTransformInvertible flag.
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(transform));
@@ -942,8 +943,8 @@ void BaseRenderingContext2D::transform(double m11,
   if (GetState().GetTransform() == new_transform)
     return;
 
-  GetState().SetTransform(new_transform);
-  if (!GetState().IsTransformInvertible())
+  SetTransform(new_transform);
+  if (!IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(transform));
@@ -956,7 +957,7 @@ void BaseRenderingContext2D::resetTransform() {
     return;
 
   TransformationMatrix ctm = GetState().GetTransform();
-  bool invertible_ctm = GetState().IsTransformInvertible();
+  bool invertible_ctm = IsTransformInvertible();
   // It is possible that CTM is identity while CTM is not invertible.
   // When CTM becomes non-invertible, realizeSaves() can make CTM identity.
   if (ctm.IsIdentity() && invertible_ctm)
@@ -964,6 +965,7 @@ void BaseRenderingContext2D::resetTransform() {
 
   // resetTransform() resolves the non-invertible CTM state.
   GetState().ResetTransform();
+  SetIsTransformInvertible(true);
   // Set the SkCanvas' matrix to identity.
   c->setMatrix(SkM44());
 
@@ -1060,16 +1062,12 @@ DOMMatrix* BaseRenderingContext2D::getTransform() {
   return m;
 }
 
-void BaseRenderingContext2D::beginPath() {
-  path_.Clear();
+TransformationMatrix BaseRenderingContext2D::GetTransform() const {
+  return GetState().GetTransform();
 }
 
-bool BaseRenderingContext2D::IsFullCanvasCompositeMode(SkBlendMode op) {
-  // See 4.8.11.1.3 Compositing
-  // CompositeSourceAtop and CompositeDestinationOut are not listed here as the
-  // platforms already implement the specification's behavior.
-  return op == SkBlendMode::kSrcIn || op == SkBlendMode::kSrcOut ||
-         op == SkBlendMode::kDstIn || op == SkBlendMode::kDstATop;
+void BaseRenderingContext2D::beginPath() {
+  path_.Clear();
 }
 
 void BaseRenderingContext2D::DrawPathInternal(
@@ -1242,7 +1240,7 @@ void BaseRenderingContext2D::ClipInternal(const Path& path,
   if (!c) {
     return;
   }
-  if (!GetState().IsTransformInvertible()) {
+  if (!IsTransformInvertible()) {
     return;
   }
 
@@ -1284,7 +1282,7 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return false;
-  if (!GetState().IsTransformInvertible())
+  if (!IsTransformInvertible())
     return false;
 
   if (!std::isfinite(x) || !std::isfinite(y))
@@ -1313,7 +1311,7 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return false;
-  if (!GetState().IsTransformInvertible())
+  if (!IsTransformInvertible())
     return false;
 
   if (!std::isfinite(x) || !std::isfinite(y))
@@ -1344,7 +1342,7 @@ void BaseRenderingContext2D::clearRect(double x,
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
-  if (!GetState().IsTransformInvertible())
+  if (!IsTransformInvertible())
     return;
 
   SkIRect clip_bounds;
@@ -1366,14 +1364,15 @@ void BaseRenderingContext2D::clearRect(double x,
   if (RectContainsTransformedRect(rect, clip_bounds)) {
     CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
                   kClipFill);
-    c = GetPaintCanvas();  // Check overdraw may have swapped the PaintCanvas
-    c->drawRect(rect, clear_flags);
-    DidDraw2D(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+    GetPaintCanvasForDraw(clip_bounds,
+                          CanvasPerformanceMonitor::DrawType::kOther)
+        ->drawRect(rect, clear_flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(rect, clip_bounds, &dirty_rect)) {
-      c->drawRect(rect, clear_flags);
-      DidDraw2D(dirty_rect, CanvasPerformanceMonitor::DrawType::kOther);
+      GetPaintCanvasForDraw(clip_bounds,
+                            CanvasPerformanceMonitor::DrawType::kOther)
+          ->drawRect(rect, clear_flags);
     }
   }
 }
@@ -1921,34 +1920,10 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
 bool BaseRenderingContext2D::ComputeDirtyRect(const FloatRect& local_rect,
                                               SkIRect* dirty_rect) {
   SkIRect clip_bounds;
-  if (!GetOrCreatePaintCanvas() ||
-      !GetPaintCanvas()->getDeviceClipBounds(&clip_bounds))
+  cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
+  if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds))
     return false;
   return ComputeDirtyRect(local_rect, clip_bounds, dirty_rect);
-}
-
-bool BaseRenderingContext2D::ComputeDirtyRect(
-    const FloatRect& local_rect,
-    const SkIRect& transformed_clip_bounds,
-    SkIRect* dirty_rect) {
-  FloatRect canvas_rect = GetState().GetTransform().MapRect(local_rect);
-
-  if (AlphaChannel(GetState().ShadowColor())) {
-    FloatRect shadow_rect(canvas_rect);
-    shadow_rect.Move(GetState().ShadowOffset());
-    shadow_rect.Inflate(clampTo<float>(GetState().ShadowBlur()));
-    canvas_rect.Unite(shadow_rect);
-  }
-
-  SkIRect canvas_i_rect;
-  static_cast<SkRect>(canvas_rect).roundOut(&canvas_i_rect);
-  if (!canvas_i_rect.intersect(transformed_clip_bounds))
-    return false;
-
-  if (dirty_rect)
-    *dirty_rect = canvas_i_rect;
-
-  return true;
 }
 
 ImageData* BaseRenderingContext2D::createImageData(
@@ -2271,7 +2246,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     }
   }
 
-  DidDraw2D(dest_rect, CanvasPerformanceMonitor::DrawType::kImageData);
+  GetPaintCanvasForDraw(dest_rect,
+                        CanvasPerformanceMonitor::DrawType::kImageData);
 }
 
 void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,

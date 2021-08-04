@@ -288,18 +288,17 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   return GetCanvasResourceProvider()->Canvas();
 }
 
-void OffscreenCanvasRenderingContext2D::DidDraw2D(
+cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvasForDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
+  if (!is_valid_size_ || !GetCanvasResourceProvider())
+    return nullptr;
   dirty_rect_for_commit_.join(dirty_rect);
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
   Host()->DidDraw(dirty_rect_for_commit_);
   if (GetCanvasResourceProvider() && GetCanvasResourceProvider()->needs_flush())
     FinalizeFrame();
-}
-
-bool OffscreenCanvasRenderingContext2D::StateHasFilter() {
-  return GetState().HasFilterForOffscreenCanvas(Host()->Size(), this);
+  return GetCanvasResourceProvider()->Canvas();
 }
 
 sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {

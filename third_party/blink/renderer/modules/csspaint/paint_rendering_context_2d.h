@@ -55,8 +55,9 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
   cc::PaintCanvas* GetPaintCanvas() const final;
-
-  void DidDraw2D(const SkIRect&, CanvasPerformanceMonitor::DrawType) final;
+  cc::PaintCanvas* GetPaintCanvasForDraw(
+      const SkIRect&,
+      CanvasPerformanceMonitor::DrawType) final;
 
   double shadowOffsetX() const final;
   void setShadowOffsetX(double) final;
@@ -67,7 +68,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   double shadowBlur() const final;
   void setShadowBlur(double) final;
 
-  bool StateHasFilter() final;
   sk_sp<PaintFilter> StateGetFilter() final;
   void SnapshotStateForFilter() final {}
 
