@@ -25,6 +25,7 @@ import("//chrome/test/include_js_tests.gni")
 import("//chromeos/assistant/assistant.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/captive_portal/core/features.gni")
+import("//components/exo/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
@@ -9414,7 +9415,9 @@ if (is_chromeos_ash) {
       "base/chromeos/test_chrome_main.cc",
     ]
     deps = [
+      "//ash:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
+      "//ui/base:test_support",
 
       # On Linux, link the dependencies (libraries) that make up actual
       # Chromium functionality directly into the executable.

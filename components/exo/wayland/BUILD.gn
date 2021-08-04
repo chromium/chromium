@@ -190,7 +190,11 @@ source_set("wayland") {
     deps += [ "//ui/base/cursor/mojom:cursor_type" ]
 
     if (enable_weston_test) {
-      deps += [ "//third_party/wayland-protocols:weston_test" ]
+      testonly = true
+      deps += [
+        "//third_party/wayland-protocols:weston_test",
+        "//ui/base:test_support",
+      ]
       sources += [
         "weston_test.cc",
         "weston_test.h",

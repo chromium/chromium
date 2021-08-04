@@ -7,10 +7,30 @@
 
 #include <stdint.h>
 
+#include "base/macros.h"
+
 struct wl_client;
 
 namespace exo {
+class Display;
+
 namespace wayland {
+
+// Tracks button and mouse states for testing.
+struct WestonTestState {
+  WestonTestState() {}
+
+  bool left_button_pressed = false;
+  bool middle_button_pressed = false;
+  bool right_button_pressed = false;
+
+  bool control_pressed = false;
+  bool alt_pressed = false;
+  bool shift_pressed = false;
+  bool command_pressed = false;
+
+  DISALLOW_COPY_AND_ASSIGN(WestonTestState);
+};
 
 constexpr uint32_t kWestonTestVersion = 1;
 

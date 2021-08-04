@@ -18,6 +18,7 @@ import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
+import("//components/exo/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
@@ -2364,6 +2365,7 @@ static_library("browser") {
     "//ui/webui/resources/cr_components/most_visited:mojom",
   ]
   if (is_chromeos_ash) {
+    testonly = enable_weston_test
     sources += [
       "apps/digital_goods/digital_goods_factory_impl.cc",
       "apps/digital_goods/digital_goods_factory_impl.h",

@@ -426,7 +426,7 @@ if (is_linux || is_chromeos) {
 
   copy("fonts_conf") {
     sources = [ "fonts.conf" ]
-    outputs = [ "${root_build_dir}/etc/fonts/{{source_file_part}}" ]
+    outputs = [ "$root_out_dir/etc/fonts/{{source_file_part}}" ]
   }
 
   if (current_toolchain == host_toolchain) {

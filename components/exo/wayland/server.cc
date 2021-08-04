@@ -234,8 +234,9 @@ Server::Server(Display* display) : display_(display) {
                    display_, bind_extended_drag);
 
 #if BUILDFLAG(ENABLE_WESTON_TEST)
+  weston_test_data_ = std::make_unique<WestonTestState>();
   wl_global_create(wl_display_.get(), &weston_test_interface,
-                   kWestonTestVersion, display_, bind_weston_test);
+                   kWestonTestVersion, weston_test_data_.get(), bind_weston_test);
 #endif
 
   zcr_keyboard_extension_data_ =
@@ -257,7 +258,7 @@ Server::Server(Display* display) : display_(display) {
       std::make_unique<WaylandXdgShell>(display_, serial_tracker_.get());
   wl_global_create(wl_display_.get(), &xdg_wm_base_interface, 1,
                    xdg_shell_data_.get(), bind_xdg_shell);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_FULLSCREEN_SHELL)
   wl_global_create(wl_display_.get(), &zwp_fullscreen_shell_v1_interface, 1,
