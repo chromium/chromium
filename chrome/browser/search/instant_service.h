@@ -21,7 +21,6 @@
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
@@ -51,8 +50,6 @@ namespace content {
 class BrowserContext;
 class RenderProcessHost;
 }  // namespace content
-
-extern const char kNtpCustomBackgroundMainColor[];
 
 // Tracks render process host IDs that are associated with Instant, i.e.
 // processes that are used to render an NTP. Also responsible for keeping
@@ -158,19 +155,9 @@ class InstantService : public KeyedService,
   // tests.
   virtual void ResetToDefault();
 
-  // Calculates the most frequent color of the image and stores it in prefs.
-  void UpdateCustomBackgroundColorAsync(
-      base::TimeTicks timestamp,
-      const gfx::Image& fetched_image,
-      const image_fetcher::RequestMetadata& metadata);
-
-  // Fetches the image for the given |fetch_url|.
-  void FetchCustomBackground(base::TimeTicks timestamp, const GURL& fetch_url);
-
  private:
   friend class InstantExtendedTest;
   friend class InstantUnitTestBase;
-  friend class LocalNTPBackgroundsAndDarkModeTest;
   friend class TestInstantService;
 
   FRIEND_TEST_ALL_PREFIXES(InstantExtendedTest, ProcessIsolation);
@@ -232,13 +219,6 @@ class InstantService : public KeyedService,
   // chrome://new-tab-page/background.jpg.
   void SetBackgroundToLocalResource();
 
-  // Updates custom background prefs with color if the background hasn't changed
-  // since the calculation started.
-  void UpdateCustomBackgroundPrefsWithColor(base::TimeTicks timestamp,
-                                            SkColor color);
-
-  void SetImageFetcherForTesting(image_fetcher::ImageFetcher* image_fetcher);
-
   void SetClockForTesting(base::Clock* clock);
 
   base::TimeTicks GetBackgroundUpdatedTimestampForTesting() {
@@ -284,8 +264,6 @@ class InstantService : public KeyedService,
   ui::NativeTheme* native_theme_;
 
   NtpBackgroundService* background_service_;
-
-  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   base::TimeTicks background_updated_timestamp_;
 

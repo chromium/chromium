@@ -202,7 +202,7 @@ Refer to README.md for content description and update process.
  <item id="new_tab_page_handler" added_in_milestone="84" hash_code="48673144" type="0" content_hash_code="49174657" os_list="linux,windows" file_path="chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc"/>
  <item id="notification_client" added_in_milestone="79" hash_code="78479125" type="0" content_hash_code="129874070" os_list="linux,windows" file_path="remoting/client/notification/notification_client.cc"/>
  <item id="ntp_contextual_suggestions_fetch" added_in_milestone="62" hash_code="95711309" type="0" deprecated="2019-04-18" content_hash_code="107035434" file_path=""/>
- <item id="ntp_custom_background" added_in_milestone="76" hash_code="92125886" type="0" content_hash_code="61176452" os_list="linux,windows" file_path="chrome/browser/search/instant_service.cc"/>
+ <item id="ntp_custom_background" added_in_milestone="76" hash_code="92125886" type="0" deprecated="2021-07-30" content_hash_code="61176452" file_path=""/>
  <item id="ntp_custom_link_checker_request" added_in_milestone="71" hash_code="78408551" type="0" deprecated="2018-10-26" content_hash_code="13407730" file_path=""/>
  <item id="ntp_snippets_fetch" added_in_milestone="62" hash_code="15418154" type="0" content_hash_code="10078959" os_list="linux,windows" file_path="components/ntp_snippets/remote/json_request.cc"/>
  <item id="nux_ntp_background_preview" added_in_milestone="74" hash_code="124847649" type="0" content_hash_code="31404656" os_list="linux,windows" file_path="chrome/browser/ui/webui/welcome/ntp_background_fetcher.cc"/>

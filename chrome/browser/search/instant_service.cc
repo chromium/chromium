@@ -20,7 +20,6 @@
 #include "base/time/clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
@@ -52,12 +51,10 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
@@ -71,8 +68,6 @@ const char kNtpCustomBackgroundAttributionActionURL[] =
 const char kNtpCustomBackgroundCollectionId[] = "collection_id";
 const char kNtpCustomBackgroundResumeToken[] = "resume_token";
 const char kNtpCustomBackgroundRefreshTimestamp[] = "refresh_timestamp";
-
-const char kCustomBackgroundsUmaClientName[] = "NtpCustomBackgrounds";
 
 base::DictionaryValue GetBackgroundInfoAsDict(
     const GURL& background_url,
@@ -101,45 +96,6 @@ base::DictionaryValue GetBackgroundInfoAsDict(
   return background_info;
 }
 
-// |GetBackgroundInfoWithColor| has to return new object so that updated version
-// gets synced.
-base::DictionaryValue GetBackgroundInfoWithColor(
-    const base::DictionaryValue* background_info,
-    const SkColor color) {
-  base::DictionaryValue new_background_info;
-  auto url = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundURL));
-  auto attribution_line_1 = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundAttributionLine1));
-  auto attribution_line_2 = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundAttributionLine2));
-  auto action_url = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundAttributionActionURL));
-  auto collection_id = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundCollectionId));
-  auto resume_token = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundResumeToken));
-  auto refresh_timestamp = const_cast<base::Value&&>(
-      *background_info->FindKey(kNtpCustomBackgroundRefreshTimestamp));
-
-  new_background_info.SetKey(kNtpCustomBackgroundURL, url.Clone());
-  new_background_info.SetKey(kNtpCustomBackgroundAttributionLine1,
-                             attribution_line_1.Clone());
-  new_background_info.SetKey(kNtpCustomBackgroundAttributionLine2,
-                             attribution_line_2.Clone());
-  new_background_info.SetKey(kNtpCustomBackgroundAttributionActionURL,
-                             action_url.Clone());
-  new_background_info.SetKey(kNtpCustomBackgroundMainColor,
-                             base::Value((int)color));
-  new_background_info.SetKey(kNtpCustomBackgroundCollectionId,
-                             collection_id.Clone());
-  new_background_info.SetKey(kNtpCustomBackgroundResumeToken,
-                             resume_token.Clone());
-  new_background_info.SetKey(kNtpCustomBackgroundRefreshTimestamp,
-                             refresh_timestamp.Clone());
-  return new_background_info;
-}
-
 base::Value NtpCustomBackgroundDefaults() {
   base::Value defaults(base::Value::Type::DICTIONARY);
   defaults.SetKey(kNtpCustomBackgroundURL,
@@ -166,16 +122,7 @@ void CopyFileToProfilePath(const base::FilePath& from_path,
                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
 }
 
-// |GetBitmapMainColor| just wraps |CalculateKMeanColorOfBitmap|.
-// As |CalculateKMeanColorOfBitmap| is overloaded, it cannot be bind for async
-// call.
-SkColor GetBitmapMainColor(const SkBitmap& bitmap) {
-  return color_utils::CalculateKMeanColorOfBitmap(bitmap);
-}
-
 }  // namespace
-
-const char kNtpCustomBackgroundMainColor[] = "background_main_color";
 
 InstantService::InstantService(Profile* profile)
     : profile_(profile),
@@ -228,11 +175,6 @@ InstantService::InstantService(Profile* profile)
       prefs::kNtpCustomBackgroundDict,
       base::BindRepeating(&InstantService::UpdateBackgroundFromSync,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-      std::make_unique<ImageDecoderImpl>(),
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
 
   theme_observation_.Observe(native_theme_);
 
@@ -339,12 +281,6 @@ void InstantService::SetCustomBackgroundInfo(
   if (!collection_id.empty() && is_backdrop_collection) {
     background_service_->FetchNextCollectionImage(collection_id, absl::nullopt);
   } else if (background_url.is_valid() && is_backdrop_url) {
-    const GURL& thumbnail_url =
-        background_service_->GetThumbnailUrl(background_url);
-    FetchCustomBackground(
-        background_updated_timestamp_,
-        thumbnail_url.is_valid() ? thumbnail_url : background_url);
-
     base::DictionaryValue background_info = GetBackgroundInfoAsDict(
         background_url, attribution_line_1, attribution_line_2, action_url,
         absl::nullopt, absl::nullopt, absl::nullopt);
@@ -693,54 +629,6 @@ void InstantService::ResetToDefault() {
   ResetCustomBackgroundNtpTheme();
 }
 
-void InstantService::UpdateCustomBackgroundColorAsync(
-    base::TimeTicks timestamp,
-    const gfx::Image& fetched_image,
-    const image_fetcher::RequestMetadata& metadata) {
-  // Calculate the bitmap color asynchronously as it is slow (1-2 seconds for
-  // the thumbnail). However, prefs should be updated on the main thread.
-  if (!fetched_image.IsEmpty()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&GetBitmapMainColor, *fetched_image.ToSkBitmap()),
-        base::BindOnce(&InstantService::UpdateCustomBackgroundPrefsWithColor,
-                       weak_ptr_factory_.GetWeakPtr(), timestamp));
-  }
-}
-
-void InstantService::FetchCustomBackground(base::TimeTicks timestamp,
-                                           const GURL& fetch_url) {
-  DCHECK(!fetch_url.is_empty());
-
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("ntp_custom_background",
-                                          R"(
-    semantics {
-      sender: "Desktop Chrome background fetcher"
-      description:
-        "Fetch New Tab Page custom background for color calculation."
-      trigger:
-        "User selects new background on the New Tab Page."
-      data: "The only data sent is the path to an image"
-      destination: GOOGLE_OWNED_SERVICE
-    }
-    policy {
-      cookies_allowed: NO
-      setting:
-        "Users cannot disable this feature. The feature is enabled by "
-        "default."
-      policy_exception_justification: "Not implemented."
-    })");
-
-  image_fetcher::ImageFetcherParams params(traffic_annotation,
-                                           kCustomBackgroundsUmaClientName);
-  image_fetcher_->FetchImage(
-      fetch_url,
-      base::BindOnce(&InstantService::UpdateCustomBackgroundColorAsync,
-                     weak_ptr_factory_.GetWeakPtr(), timestamp),
-      std::move(params));
-}
-
 bool InstantService::IsCustomBackgroundPrefValid(GURL& custom_background_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::DictionaryValue* background_info =
@@ -807,22 +695,6 @@ bool InstantService::ShouldServiceRequest(
          instant_service->IsInstantProcess(render_process_id);
 }
 
-void InstantService::UpdateCustomBackgroundPrefsWithColor(
-    base::TimeTicks timestamp,
-    SkColor color) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Update background color only if the selected background is still the same.
-  const base::DictionaryValue* background_info =
-      pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict);
-  if (!background_info)
-    return;
-
-  if (timestamp == background_updated_timestamp_) {
-    pref_service_->Set(prefs::kNtpCustomBackgroundDict,
-                       GetBackgroundInfoWithColor(background_info, color));
-  }
-}
-
 void InstantService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::DictionaryValue* background_info =
@@ -842,11 +714,6 @@ void InstantService::RefreshBackgroundIfNeeded() {
         background_info->FindKey(kNtpCustomBackgroundResumeToken)->GetString();
     background_service_->FetchNextCollectionImage(collection_id, resume_token);
   }
-}
-
-void InstantService::SetImageFetcherForTesting(
-    image_fetcher::ImageFetcher* image_fetcher) {
-  image_fetcher_ = base::WrapUnique(image_fetcher);
 }
 
 void InstantService::SetClockForTesting(base::Clock* clock) {

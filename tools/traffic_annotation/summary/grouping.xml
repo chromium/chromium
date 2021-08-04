@@ -384,7 +384,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="backdrop_next_image_download"/>
       <traffic_annotation unique_id="drive_service"/>
       <traffic_annotation unique_id="ntp_snippets_fetch"/>
-      <traffic_annotation unique_id="ntp_custom_background"/>
       <traffic_annotation unique_id="nux_ntp_background_preview"/>
       <traffic_annotation unique_id="photos_service"/>
       <traffic_annotation unique_id="popular_sites_fetch"/>
