@@ -39,7 +39,7 @@ cr.define('settings_reset_page', function() {
 
     setup(function() {
       lifetimeBrowserProxy = new settings.TestLifetimeBrowserProxy();
-      settings.LifetimeBrowserProxyImpl.instance_ = lifetimeBrowserProxy;
+      settings.LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
       resetPageBrowserProxy = new reset_page.TestOsResetBrowserProxy();
       settings.OsResetBrowserProxyImpl.instance_ = resetPageBrowserProxy;

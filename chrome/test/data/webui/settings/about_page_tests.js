@@ -64,7 +64,7 @@ suite('AboutPageTest_AllBuilds', function() {
 
     testRoutes = setupRouter();
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
-    LifetimeBrowserProxyImpl.instance_ = lifetimeBrowserProxy;
+    LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     aboutBrowserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;

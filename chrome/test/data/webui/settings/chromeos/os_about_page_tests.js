@@ -28,7 +28,7 @@ cr.define('settings_about_page', function() {
 
     setup(function() {
       lifetimeBrowserProxy = new settings.TestLifetimeBrowserProxy();
-      settings.LifetimeBrowserProxyImpl.instance_ = lifetimeBrowserProxy;
+      settings.LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
       aboutBrowserProxy = new TestAboutPageBrowserProxyChromeOS();
       settings.AboutPageBrowserProxyImpl.instance_ = aboutBrowserProxy;

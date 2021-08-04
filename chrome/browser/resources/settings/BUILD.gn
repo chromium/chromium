@@ -120,7 +120,7 @@ preprocess_if_expr("preprocess") {
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
     "controls/settings_idle_load.js",
-    "downloads_page/downloads_browser_proxy.js",
+    "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.js",
@@ -137,6 +137,7 @@ preprocess_if_expr("preprocess") {
     "people_page/sync_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "prefs/prefs_behavior.js",
+    "prefs/prefs_behavior_ts.ts",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
@@ -170,7 +171,7 @@ preprocess_if_expr("preprocess") {
     if (!is_chromeos_lacros) {
       in_files += [
         "default_browser_page/default_browser_browser_proxy.js",
-        "system_page/system_page_browser_proxy.js",
+        "system_page/system_page_browser_proxy.ts",
       ]
     }
     in_files += [
@@ -235,7 +236,7 @@ preprocess_if_expr("preprocess_generated") {
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
-    "downloads_page/downloads_page.js",
+    "downloads_page/downloads_page.ts",
     "icons.ts",
     "settings_menu/settings_menu.js",
     "on_startup_page/on_startup_page.js",
@@ -333,7 +334,7 @@ preprocess_if_expr("preprocess_generated") {
   if (!is_chromeos) {
     in_files += [
       "default_browser_page/default_browser_page.js",
-      "system_page/system_page.js",
+      "system_page/system_page.ts",
     ]
   }
 
@@ -375,7 +376,6 @@ group("closure_compile") {
     "basic_page:closure_compile",
     "clear_browsing_data_dialog:closure_compile",
     "controls:closure_compile",
-    "downloads_page:closure_compile",
     "on_startup_page:closure_compile",
     "people_page:closure_compile",
     "prefs:closure_compile",
@@ -396,10 +396,7 @@ group("closure_compile") {
   }
 
   if (!is_chromeos) {
-    deps += [
-      "default_browser_page:closure_compile",
-      "system_page:closure_compile",
-    ]
+    deps += [ "default_browser_page:closure_compile" ]
   }
 
   if (is_win) {
@@ -714,8 +711,8 @@ ts_library("build_ts") {
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
-    "downloads_page/downloads_browser_proxy.js",
-    "downloads_page/downloads_page.js",
+    "downloads_page/downloads_browser_proxy.ts",
+    "downloads_page/downloads_page.ts",
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.js",
@@ -742,6 +739,7 @@ ts_library("build_ts") {
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
     "prefs/prefs_behavior.js",
+    "prefs/prefs_behavior_ts.ts",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
@@ -855,8 +853,8 @@ ts_library("build_ts") {
       in_files += [
         "default_browser_page/default_browser_browser_proxy.js",
         "default_browser_page/default_browser_page.js",
-        "system_page/system_page_browser_proxy.js",
-        "system_page/system_page.js",
+        "system_page/system_page_browser_proxy.ts",
+        "system_page/system_page.ts",
       ]
     }
     in_files += [

@@ -40,15 +40,8 @@ class SettingsSystemPageElement extends PolymerElement {
         notify: true,
       },
 
-      /** @private */
-      isProxyEnforcedByPolicy_: {
-        type: Boolean,
-      },
-
-      /** @private */
-      isProxyDefault_: {
-        type: Boolean,
-      },
+      isProxyEnforcedByPolicy_: Boolean,
+      isProxyDefault_: Boolean,
     };
   }
 
@@ -58,9 +51,11 @@ class SettingsSystemPageElement extends PolymerElement {
     ];
   }
 
-  /** @private */
-  observeProxyPrefChanged_() {
-    /** @type {!chrome.settingsPrivate.PrefObject} */
+  prefs: {proxy: chrome.settingsPrivate.PrefObject};
+  private isProxyEnforcedByPolicy_: boolean;
+  private isProxyDefault_: boolean;
+
+  private observeProxyPrefChanged_() {
     const pref = this.prefs.proxy;
     // TODO(dbeam): do types of policy other than USER apply on ChromeOS?
     this.isProxyEnforcedByPolicy_ =
@@ -69,8 +64,7 @@ class SettingsSystemPageElement extends PolymerElement {
     this.isProxyDefault_ = !this.isProxyEnforcedByPolicy_ && !pref.extensionId;
   }
 
-  /** @private */
-  onExtensionDisable_() {
+  private onExtensionDisable_() {
     // TODO(dbeam): this is a pretty huge bummer. It means there are things
     // (inputs) that our prefs system is not observing. And that changes from
     // other sources (i.e. disabling/enabling an extension from
@@ -80,15 +74,13 @@ class SettingsSystemPageElement extends PolymerElement {
         'refresh-pref', {bubbles: true, composed: true, detail: 'proxy'}));
   }
 
-  /** @private */
-  onProxyTap_() {
+  private onProxyTap_() {
     if (this.isProxyDefault_) {
       SystemPageBrowserProxyImpl.getInstance().showProxySettings();
     }
   }
 
-  /** @private */
-  onRestartTap_(e) {
+  private onRestartTap_(e: Event) {
     // Prevent event from bubbling up to the toggle button.
     e.stopPropagation();
     // TODO(dbeam): we should prompt before restarting the browser.
@@ -96,11 +88,9 @@ class SettingsSystemPageElement extends PolymerElement {
   }
 
   /**
-   * @param {boolean} enabled Whether hardware acceleration is currently
-   *     enabled.
-   * @private
+   * @param enabled Whether hardware acceleration is currently enabled.
    */
-  shouldShowRestart_(enabled) {
+  private shouldShowRestart_(enabled: boolean): boolean {
     const proxy = SystemPageBrowserProxyImpl.getInstance();
     return enabled !== proxy.wasHardwareAccelerationEnabledAtStartup();
   }

@@ -44,7 +44,7 @@ suite('DownloadsHandler', function() {
 
   setup(function() {
     downloadsBrowserProxy = new TestDownloadsBrowserProxy();
-    DownloadsBrowserProxyImpl.instance_ = downloadsBrowserProxy;
+    DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
 
     PolymerTest.clearBody();
 

@@ -417,7 +417,7 @@ suite('SafetyCheckUpdatesChildUiTests', function() {
 
   setup(function() {
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
-    LifetimeBrowserProxyImpl.instance_ = lifetimeBrowserProxy;
+    LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;
 

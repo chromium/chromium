@@ -60,7 +60,7 @@ suite('languages page', () => {
     settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
 
     lifetimeProxy = new settings.TestLifetimeBrowserProxy();
-    settings.LifetimeBrowserProxyImpl.instance_ = lifetimeProxy;
+    settings.LifetimeBrowserProxyImpl.setInstance(lifetimeProxy);
 
     // Sets up test metrics proxy.
     metricsProxy = new settings.TestLanguagesMetricsProxy();

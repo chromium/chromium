@@ -44,9 +44,9 @@ suite('settings system page', function() {
   setup(function() {
     PolymerTest.clearBody();
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
-    LifetimeBrowserProxyImpl.instance_ = lifetimeBrowserProxy;
+    LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
     systemBrowserProxy = new TestSystemPageBrowserProxy();
-    SystemPageBrowserProxyImpl.instance_ = systemBrowserProxy;
+    SystemPageBrowserProxyImpl.setInstance(systemBrowserProxy);
 
     systemPage = document.createElement('settings-system-page');
     systemPage.set('prefs', {
