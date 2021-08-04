@@ -36,13 +36,11 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   OmahaServiceProvider* GetOmahaServiceProvider() const override;
   UserFeedbackProvider* GetUserFeedbackProvider() const override;
   SpotlightProvider* GetSpotlightProvider() const override;
-  BrandedImageProvider* GetBrandedImageProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
 
  private:
   std::unique_ptr<AppDistributionProvider> app_distribution_provider_;
-  std::unique_ptr<BrandedImageProvider> branded_image_provider_;
   std::unique_ptr<ChromeIdentityService> chrome_identity_service_;
   std::unique_ptr<ChromeTrustedVaultService> chrome_trusted_vault_service_;
   std::unique_ptr<OmahaServiceProvider> omaha_service_provider_;

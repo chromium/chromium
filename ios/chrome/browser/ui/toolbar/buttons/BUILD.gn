@@ -55,7 +55,6 @@ source_set("buttons") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/images",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ui/base",

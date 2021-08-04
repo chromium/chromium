@@ -103,7 +103,6 @@ source_set("content_suggestions") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
-    "//ios/public/provider/chrome/browser/images",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/ui",
     "//ui/base",

@@ -120,10 +120,6 @@ MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
   return mailto_handler_provider_.get();
 }
 
-BrandedImageProvider* ChromeBrowserProvider::GetBrandedImageProvider() const {
-  return nullptr;
-}
-
 void ChromeBrowserProvider::HideModalViewStack() const {}
 
 void ChromeBrowserProvider::LogIfModalViewsArePresented() const {}

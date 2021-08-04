@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 
 class AppDistributionProvider;
-class BrandedImageProvider;
 class BrowserURLRewriterProvider;
 class DiscoverFeedProvider;
 class MailtoHandlerProvider;
@@ -127,9 +126,6 @@ class ChromeBrowserProvider {
 
   // Returns an instance of the user feedback provider.
   virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
-
-  // Returns an instance of the branded image provider.
-  virtual BrandedImageProvider* GetBrandedImageProvider() const;
 
   // Hides immediately the modals related to this provider.
   virtual void HideModalViewStack() const;

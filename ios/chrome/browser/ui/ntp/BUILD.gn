@@ -230,7 +230,6 @@ source_set("unit_tests") {
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser/images",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

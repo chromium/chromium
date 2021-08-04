@@ -734,8 +734,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (TableViewDetailIconItem*)googleSyncDetailItem {
   if (!_googleSyncDetailItem) {
-    // TODO(crbug.com/805214): This branded icon image needs to come from
-    // BrandedImageProvider.
     _googleSyncDetailItem =
         [self detailItemWithType:SettingsItemTypeGoogleSync
                                text:l10n_util::GetNSString(
@@ -751,8 +749,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)syncAndGoogleServicesCellItem {
-  // TODO(crbug.com/805214): This branded icon image needs to come from
-  // BrandedImageProvider.
   SettingsImageDetailTextItem* googleServicesItem =
       [[SettingsImageDetailTextItem alloc]
           initWithType:SettingsItemTypeSyncAndGoogleServices];

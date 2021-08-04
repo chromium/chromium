@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/providers/chromium_logo_controller.h"
 #import "ios/chrome/browser/providers/chromium_spotlight_provider.h"
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
-#import "ios/chrome/browser/providers/images/chromium_branded_image_provider.h"
 #include "ios/chrome/browser/providers/signin/chromium_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
@@ -24,7 +23,6 @@
 
 ChromiumBrowserProvider::ChromiumBrowserProvider()
     : app_distribution_provider_(std::make_unique<AppDistributionProvider>()),
-      branded_image_provider_(std::make_unique<ChromiumBrandedImageProvider>()),
       signin_error_provider_(std::make_unique<ios::SigninErrorProvider>()),
       signin_resources_provider_(
           std::make_unique<ChromiumSigninResourcesProvider>()),
@@ -79,10 +77,6 @@ UserFeedbackProvider* ChromiumBrowserProvider::GetUserFeedbackProvider() const {
 AppDistributionProvider* ChromiumBrowserProvider::GetAppDistributionProvider()
     const {
   return app_distribution_provider_.get();
-}
-
-BrandedImageProvider* ChromiumBrowserProvider::GetBrandedImageProvider() const {
-  return branded_image_provider_.get();
 }
 
 SpotlightProvider* ChromiumBrowserProvider::GetSpotlightProvider() const {

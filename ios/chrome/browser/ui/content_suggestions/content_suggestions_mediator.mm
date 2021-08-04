@@ -53,7 +53,6 @@
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
-#include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 

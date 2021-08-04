@@ -67,8 +67,8 @@ class TestToolbarMediatorVoiceSearchProvider : public VoiceSearchProvider {
   DISALLOW_COPY_AND_ASSIGN(TestToolbarMediatorVoiceSearchProvider);
 };
 
-// Test ChromeBrowserProvider that install custom BrandedImageProvider and
-// VoiceSearchProvider for ToolbarMediator unit tests.
+// Test ChromeBrowserProvider that install custom VoiceSearchProvider
+// for ToolbarMediator unit tests.
 class TestToolbarMediatorChromeBrowserProvider
     : public ios::TestChromeBrowserProvider {
  public:

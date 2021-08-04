@@ -9,7 +9,6 @@
 #include "base/check.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
-#include "ios/public/provider/chrome/browser/images/test_branded_image_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/test_mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/omaha/test_omaha_service_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -29,7 +28,6 @@ namespace ios {
 
 TestChromeBrowserProvider::TestChromeBrowserProvider()
     : app_distribution_provider_(std::make_unique<AppDistributionProvider>()),
-      branded_image_provider_(std::make_unique<TestBrandedImageProvider>()),
       omaha_service_provider_(std::make_unique<TestOmahaServiceProvider>()),
       signin_error_provider_(std::make_unique<SigninErrorProvider>()),
       signin_resources_provider_(
@@ -103,11 +101,6 @@ UserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
 
 SpotlightProvider* TestChromeBrowserProvider::GetSpotlightProvider() const {
   return spotlight_provider_.get();
-}
-
-BrandedImageProvider* TestChromeBrowserProvider::GetBrandedImageProvider()
-    const {
-  return branded_image_provider_.get();
 }
 
 MailtoHandlerProvider* TestChromeBrowserProvider::GetMailtoHandlerProvider()
