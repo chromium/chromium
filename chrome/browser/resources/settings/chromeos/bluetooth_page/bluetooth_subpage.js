@@ -16,7 +16,7 @@ const MAX_NUMBER_DEVICE_SHOWN = 50;
 
 import {Polymer, html, flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.m.js';
+import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.js';
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics, recordUserInitiatedReconnectionAttemptDuration} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_dialog.m.js';
+import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_dialog.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
