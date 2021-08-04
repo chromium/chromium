@@ -11,6 +11,7 @@ component("common") {
     "web_data_results.h",
     "web_data_service_base.cc",
     "web_data_service_base.h",
+    "web_data_service_consumer.cc",
     "web_data_service_consumer.h",
     "web_database.cc",
     "web_database.h",
