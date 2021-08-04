@@ -1964,7 +1964,11 @@ void Animation::setPlaybackRate(double playback_rate,
 
   // Adds a UseCounter to check if setting playbackRate causes a compensatory
   // seek forcing a change in start_time_
-  if (start_time_before && start_time_ != start_time_before &&
+  // We use an epsilon (1 microsecond) to handle precision issue.
+  double epsilon = 1e-6;
+  if (start_time_before && start_time_ &&
+      fabs(start_time_.value().InMillisecondsF() -
+           start_time_before.value().InMillisecondsF()) > epsilon &&
       CalculateAnimationPlayState() != kFinished) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAnimationSetPlaybackRateCompensatorySeek);
