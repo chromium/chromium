@@ -5305,6 +5305,16 @@ test("unit_tests") {
     ]
   }
 
+  # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
+  # in filenames in depfiles, so temporarily exclude affected files.
+  if (is_fuchsia) {
+    excluded_files = [
+      "chrome/test/data/ie@cookie[1].txt",
+      "chrome/test/data/android/download/[large]wallpaper.dm",
+      "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
+    ]
+  }
+
   if (is_win || is_chromeos_ash || is_mac) {
     deps += [ "//chrome/browser/webshare:unit_tests" ]
   }

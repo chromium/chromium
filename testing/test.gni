@@ -363,7 +363,11 @@ template("test") {
     }
 
     cr_fuchsia_package(_pkg_target) {
-      forward_variables_from(invoker, [ "additional_manifests" ])
+      forward_variables_from(invoker,
+                             [
+                               "additional_manifests",
+                               "excluded_files",
+                             ])
       binary = ":$_exec_target"
       package_name_override = _output_name
       deps = [ ":$combined_manifest" ]
