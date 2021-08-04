@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.start_surface.R;
@@ -87,6 +88,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final TabCreatorManager mTabCreatorManager;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    private final Supplier<Toolbar> mToolbarSupplier;
 
     // Non-null in SurfaceMode.SINGLE_PANE mode.
     @Nullable
@@ -201,6 +203,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while feed or tab switcher are visible.
+     * @param toolbarSupplier Supplies the {@link Toolbar}.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -221,7 +224,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull JankTracker jankTracker) {
+            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier) {
         mFeedLaunchReliabilityLoggingState =
                 new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
         mActivity = activity;
@@ -244,6 +247,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTabCreatorManager = tabCreatorManager;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
+        mToolbarSupplier = toolbarSupplier;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || !mIsStartSurfaceEnabled;
@@ -369,12 +373,12 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitializedWithNative = true;
         if (mIsStartSurfaceEnabled) {
-            mExploreSurfaceCoordinator =
-                    new ExploreSurfaceCoordinator(mActivity, mTasksSurface.getBodyViewContainer(),
-                            mPropertyModel, true, mBottomSheetController, mParentTabSupplier,
-                            new ScrollableContainerDelegateImpl(), mSnackbarManager,
-                            mShareDelegateSupplier, mWindowAndroid, mTabModelSelector,
-                            mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
+            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
+                    mTasksSurface.getBodyViewContainer(), mPropertyModel, true,
+                    mBottomSheetController, mParentTabSupplier,
+                    new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
+                    mWindowAndroid, mTabModelSelector, mToolbarSupplier,
+                    mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,

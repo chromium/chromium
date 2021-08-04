@@ -85,8 +85,9 @@ public class ExploreSurfaceViewBinderTest {
                     mActivityTestRule.getActivity().getSnackbarManager(),
                     mActivityTestRule.getActivity().getShareDelegateSupplier(),
                     mActivityTestRule.getActivity().getWindowAndroid(),
-                    mActivityTestRule.getActivity().getTabModelSelector(),
-                    new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L), null);
+                    mActivityTestRule.getActivity().getTabModelSelector(), () -> {
+                        return null;
+                    }, new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L), null);
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceController()
                             .createFeedSurfaceCoordinator(false, /* isPlaceholderShown= */ false,

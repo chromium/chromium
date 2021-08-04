@@ -660,7 +660,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                             getTabCreatorManagerSupplier().get(),
                             getMenuOrKeyboardActionController(),
-                            getMultiWindowModeStateDispatcher(), mJankTracker);
+                            getMultiWindowModeStateDispatcher(), mJankTracker,
+                            getToolbarManager()::getToolbar);
                 }
             }
 
@@ -1813,7 +1814,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     this::getCompositorViewHolder, getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
                     getLifecycleDispatcher(), getWindowAndroid(), this::getLastUserInteractionTime,
-                    this::hadWarmStart, mJankTracker);
+                    this::hadWarmStart, mJankTracker, getToolbarManager()::getToolbar);
         }
         return mTabDelegateFactory;
     }

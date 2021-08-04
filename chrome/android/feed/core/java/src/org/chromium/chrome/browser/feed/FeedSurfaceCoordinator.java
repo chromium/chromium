@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
@@ -148,6 +150,8 @@ public class FeedSurfaceCoordinator
     private final FeedLaunchReliabilityLoggingState mLaunchReliabilityLoggingState;
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     private final PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+
+    private final Supplier<Toolbar> mToolbarSupplier;
 
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -248,6 +252,10 @@ public class FeedSurfaceCoordinator
      * @param bottomSheetController The bottom sheet controller.
      * @param shareDelegateSupplier The supplier for the share delegate used to share articles.
      * @param launchOrigin The origin of what launched the feed.
+     * @param privacyPreferencesManager Manages the privacy preferences.
+     * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @param FeedLaunchReliabilityLoggingState Holds the state for feed surface creation.
+     * @param swipeRefreshLayout The layout to support pull-to-refresh.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -259,6 +267,7 @@ public class FeedSurfaceCoordinator
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
             @NewTabPageLaunchOrigin int launchOrigin,
             PrivacyPreferencesManagerImpl privacyPreferencesManager,
+            @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
@@ -276,6 +285,7 @@ public class FeedSurfaceCoordinator
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
         mLaunchReliabilityLoggingState = launchReliabilityLoggingState;
         mPrivacyPreferencesManager = privacyPreferencesManager;
+        mToolbarSupplier = toolbarSupplier;
         mSwipeRefreshLayout = swipeRefreshLayout;
 
         Resources resources = mActivity.getResources();
@@ -328,8 +338,13 @@ public class FeedSurfaceCoordinator
     @Override
     public void destroy() {
         if (mSwipeRefreshLayout != null) {
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                updateReloadButtonVisibility(/*isReloading=*/false);
+            }
             mSwipeRefreshLayout.removeOnRefreshListener(this);
             mSwipeRefreshLayout.disableSwipe();
+            mSwipeRefreshLayout = null;
         }
         stopIph();
         mMediator.destroy();
@@ -384,7 +399,19 @@ public class FeedSurfaceCoordinator
 
     @Override
     public void onRefresh() {
-        mStream.triggerRefresh((Boolean v) -> { mSwipeRefreshLayout.setRefreshing(false); });
+        updateReloadButtonVisibility(/*isReloading=*/true);
+        mStream.triggerRefresh((Boolean v) -> {
+            if (mSwipeRefreshLayout == null) return;
+            updateReloadButtonVisibility(/*isReloading=*/false);
+            mSwipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+    void updateReloadButtonVisibility(boolean isReloading) {
+        Toolbar toolbar = mToolbarSupplier.get();
+        if (toolbar != null) {
+            toolbar.updateReloadButtonVisibility(isReloading);
+        }
     }
 
     /**

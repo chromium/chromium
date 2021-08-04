@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
@@ -179,14 +180,14 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull JankTracker jankTracker) {
+            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier) {
         return StartSurfaceDelegate.createStartSurface(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
                 containerView, dynamicResourceLoaderSupplier, tabModelSelector,
                 browserControlsManager, snackbarManager, shareDelegateSupplier, omniboxStubSupplier,
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
-                multiWindowModeStateDispatcher, jankTracker);
+                multiWindowModeStateDispatcher, jankTracker, toolbarSupplier);
     }
 
     @Override
