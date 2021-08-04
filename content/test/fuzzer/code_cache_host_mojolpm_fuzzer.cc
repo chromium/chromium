@@ -141,6 +141,7 @@ class CodeCacheHostTestcase {
       uint32_t id,
       int renderer_id,
       const Origin& origin,
+      const net::NetworkIsolationKey& key,
       mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver);
 
   // Create and bind a new instance for fuzzing. This needs to  make sure that
@@ -309,9 +310,10 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     uint32_t id,
     int renderer_id,
     const Origin& origin,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
   auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
-      renderer_id, generated_code_cache_context_);
+      renderer_id, generated_code_cache_context_, nik);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());
   auto receivers =
@@ -343,7 +345,7 @@ void CodeCacheHostTestcase::AddCodeCacheHost(
       FROM_HERE,
       base::BindOnce(&CodeCacheHostTestcase::AddCodeCacheHostImpl,
                      base::Unretained(this), id, renderer_id, *origin,
-                     std::move(receiver)),
+                     net::NetworkIsolationKey(), std::move(receiver)),
       run_loop.QuitClosure());
   run_loop.Run();
 

@@ -8998,11 +8998,19 @@ void RenderFrameHostImpl::CreateInstalledAppProvider(
   InstalledAppProviderImpl::Create(this, std::move(receiver));
 }
 
+void RenderFrameHostImpl::CreateCodeCacheHostWithIsolationKey(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
+    const net::NetworkIsolationKey& nik) {
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik,
+                                 std::move(receiver),
+                                 GetCodeCacheHostReceiverHandler());
+}
+
 void RenderFrameHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
-  // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetProcess()->GetID(), std::move(receiver),
-                                 GetCodeCacheHostReceiverHandler());
+  CreateCodeCacheHostWithIsolationKey(std::move(receiver),
+                                      GetNetworkIsolationKey());
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
@@ -10393,7 +10401,10 @@ void RenderFrameHostImpl::SendCommitNavigation(
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   if (base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {
-    CreateCodeCacheHost(code_cache_host.InitWithNewPipeAndPassReceiver());
+    CreateCodeCacheHostWithIsolationKey(
+        code_cache_host.InitWithNewPipeAndPassReceiver(),
+        navigation_request->isolation_info_for_subresources()
+            .network_isolation_key());
   }
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),

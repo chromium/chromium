@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "content/browser/code_cache/generated_code_cache.h"
+#include <iostream>
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -41,21 +45,26 @@ void CheckValidKeys(const GURL& resource_url, const GURL& origin_lock) {
           !url::Origin::Create(origin_lock).opaque()));
 }
 
-// Generates the cache key for the given |resource_url| and the |origin_lock|.
+// Generates the cache key for the given |resource_url|, |origin_lock| and
+// |nik|.
 //   |resource_url| is the url corresponding to the requested resource.
 //   |origin_lock| is the origin that the renderer which requested this
 //   resource is locked to.
+//   |nik| is the network isolation key that consists of top-level-site that
+//   initiated the request.
 // For example, if SitePerProcess is enabled and http://script.com/script1.js is
 // requested by http://example.com, then http://script.com/script.js is the
 // resource_url and http://example.com is the origin_lock.
 //
-// This returns the key by concatenating the serialized url and origin lock
+// This returns the key by concatenating the serialized url, origin lock and nik
 // with a separator in between. |origin_lock| could be empty when renderer is
 // not locked to an origin (ex: SitePerProcess is disabled) and it is safe to
 // use only |resource_url| as the key in such cases.
 // TODO(wjmaclean): Either convert this to use a SiteInfo object, or convert it
 // to something not based on URLs.
-std::string GetCacheKey(const GURL& resource_url, const GURL& origin_lock) {
+std::string GetCacheKey(const GURL& resource_url,
+                        const GURL& origin_lock,
+                        const net::NetworkIsolationKey& nik) {
   CheckValidKeys(resource_url, origin_lock);
 
   // Add a prefix _ so it can't be parsed as a valid URL.
@@ -69,6 +78,12 @@ std::string GetCacheKey(const GURL& resource_url, const GURL& origin_lock) {
 
   if (origin_lock.is_valid())
     key.append(net::SimplifyUrlForRequest(origin_lock).spec());
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kSplitCacheByNetworkIsolationKey)) {
+    key.append(kSeparator);
+    key.append(nik.ToString());
+  }
   return key;
 }
 
@@ -331,6 +346,7 @@ void GeneratedCodeCache::GetBackend(GetBackendCallback callback) {
 
 void GeneratedCodeCache::WriteEntry(const GURL& url,
                                     const GURL& origin_lock,
+                                    const net::NetworkIsolationKey& nik,
                                     const base::Time& response_time,
                                     mojo_base::BigBuffer data) {
   if (backend_state_ == kFailed) {
@@ -405,7 +421,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
   WriteCommonDataHeader(small_buffer, response_time, data_size);
 
   // Create the write operation.
-  std::string key = GetCacheKey(url, origin_lock);
+  std::string key = GetCacheKey(url, origin_lock, nik);
   auto op = std::make_unique<PendingOperation>(Operation::kWrite, key,
                                                small_buffer, large_buffer);
   EnqueueOperation(std::move(op));
@@ -413,6 +429,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
 
 void GeneratedCodeCache::FetchEntry(const GURL& url,
                                     const GURL& origin_lock,
+                                    const net::NetworkIsolationKey& nik,
                                     ReadDataCallback read_data_callback) {
   if (backend_state_ == kFailed) {
     CollectStatistics(CacheEntryStatus::kError);
@@ -421,20 +438,22 @@ void GeneratedCodeCache::FetchEntry(const GURL& url,
     return;
   }
 
-  std::string key = GetCacheKey(url, origin_lock);
+  std::string key = GetCacheKey(url, origin_lock, nik);
   auto op = std::make_unique<PendingOperation>(Operation::kFetch, key,
                                                std::move(read_data_callback));
   EnqueueOperation(std::move(op));
 }
 
-void GeneratedCodeCache::DeleteEntry(const GURL& url, const GURL& origin_lock) {
+void GeneratedCodeCache::DeleteEntry(const GURL& url,
+                                     const GURL& origin_lock,
+                                     const net::NetworkIsolationKey& nik) {
   if (backend_state_ == kFailed) {
     // Silently fail.
     CollectStatistics(CacheEntryStatus::kError);
     return;
   }
 
-  std::string key = GetCacheKey(url, origin_lock);
+  std::string key = GetCacheKey(url, origin_lock, nik);
   auto op = std::make_unique<PendingOperation>(Operation::kDelete, key);
   EnqueueOperation(std::move(op));
 }
@@ -854,6 +873,7 @@ void GeneratedCodeCache::DoPendingGetBackend(PendingOperation* op) {
 void GeneratedCodeCache::SetLastUsedTimeForTest(
     const GURL& resource_url,
     const GURL& origin_lock,
+    const net::NetworkIsolationKey& nik,
     base::Time time,
     base::OnceClosure user_callback) {
   // This is used only for tests. So reasonable to assume that backend is
@@ -866,7 +886,7 @@ void GeneratedCodeCache::SetLastUsedTimeForTest(
       &GeneratedCodeCache::OpenCompleteForSetLastUsedForTest,
       weak_ptr_factory_.GetWeakPtr(), time, std::move(split.first));
 
-  std::string key = GetCacheKey(resource_url, origin_lock);
+  std::string key = GetCacheKey(resource_url, origin_lock, nik);
   disk_cache::EntryResult result =
       backend_->OpenEntry(key, net::LOWEST, std::move(callback));
   if (result.net_error() != net::ERR_IO_PENDING) {

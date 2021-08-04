@@ -171,9 +171,11 @@ void AddCodeCacheReceiver(
     mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>* receiver_set,
     scoped_refptr<GeneratedCodeCacheContext> context,
     int render_process_id,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     CodeCacheHostImpl::ReceiverSet::CodeCacheHostReceiverHandler handler) {
-  auto host = std::make_unique<CodeCacheHostImpl>(render_process_id, context);
+  auto host =
+      std::make_unique<CodeCacheHostImpl>(render_process_id, context, nik);
   auto* raw_host = host.get();
   auto id = receiver_set->Add(std::move(host), std::move(receiver));
   if (handler)
@@ -194,6 +196,7 @@ CodeCacheHostImpl::ReceiverSet::~ReceiverSet() = default;
 
 void CodeCacheHostImpl::ReceiverSet::Add(
     int render_process_id,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     CodeCacheHostReceiverHandler handler) {
   if (!receiver_set_) {
@@ -207,14 +210,16 @@ void CodeCacheHostImpl::ReceiverSet::Add(
   GeneratedCodeCacheContext::RunOrPostTask(
       generated_code_cache_context_, FROM_HERE,
       base::BindOnce(&AddCodeCacheReceiver, receiver_set_.get(),
-                     generated_code_cache_context_, render_process_id,
+                     generated_code_cache_context_, render_process_id, nik,
                      std::move(receiver), std::move(handler)));
 }
 
 void CodeCacheHostImpl::ReceiverSet::Add(
     int render_process_id,
+    const net::NetworkIsolationKey& nik,
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
-  Add(render_process_id, std::move(receiver), CodeCacheHostReceiverHandler());
+  Add(render_process_id, nik, std::move(receiver),
+      CodeCacheHostReceiverHandler());
 }
 
 void CodeCacheHostImpl::ReceiverSet::Clear() {
@@ -223,9 +228,11 @@ void CodeCacheHostImpl::ReceiverSet::Clear() {
 
 CodeCacheHostImpl::CodeCacheHostImpl(
     int render_process_id,
-    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context)
+    scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
+    const net::NetworkIsolationKey& nik)
     : render_process_id_(render_process_id),
-      generated_code_cache_context_(std::move(generated_code_cache_context)) {
+      generated_code_cache_context_(std::move(generated_code_cache_context)),
+      network_isolation_key_(nik) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -259,8 +266,8 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
   if (!origin_lock)
     return;
 
-  code_cache->WriteEntry(url, *origin_lock, expected_response_time,
-                         std::move(data));
+  code_cache->WriteEntry(url, *origin_lock, network_isolation_key_,
+                         expected_response_time, std::move(data));
 }
 
 void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
@@ -283,7 +290,8 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
   auto read_callback =
       base::BindOnce(&CodeCacheHostImpl::OnReceiveCachedCode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  code_cache->FetchEntry(url, *origin_lock, std::move(read_callback));
+  code_cache->FetchEntry(url, *origin_lock, network_isolation_key_,
+                         std::move(read_callback));
 }
 
 void CodeCacheHostImpl::ClearCodeCacheEntry(
@@ -299,7 +307,7 @@ void CodeCacheHostImpl::ClearCodeCacheEntry(
   if (!origin_lock)
     return;
 
-  code_cache->DeleteEntry(url, *origin_lock);
+  code_cache->DeleteEntry(url, *origin_lock, network_isolation_key_);
 }
 
 void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(

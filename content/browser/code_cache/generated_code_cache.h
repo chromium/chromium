@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
+#include "net/base/network_isolation_key.h"
 #include "net/disk_cache/disk_cache.h"
 #include "url/origin.h"
 
@@ -89,6 +90,7 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // there is no entry it creates a new one.
   void WriteEntry(const GURL& resource_url,
                   const GURL& origin_lock,
+                  const net::NetworkIsolationKey& nik,
                   const base::Time& response_time,
                   mojo_base::BigBuffer data);
 
@@ -96,15 +98,19 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // and return it using the ReadDataCallback.
   void FetchEntry(const GURL& resource_url,
                   const GURL& origin_lock,
+                  const net::NetworkIsolationKey& nik,
                   ReadDataCallback);
 
   // Delete the entry corresponding to <resource_url, origin_lock>
-  void DeleteEntry(const GURL& resource_url, const GURL& origin_lock);
+  void DeleteEntry(const GURL& resource_url,
+                   const GURL& origin_lock,
+                   const net::NetworkIsolationKey& nik);
 
   // Should be only used for tests. Sets the last accessed timestamp of an
   // entry.
   void SetLastUsedTimeForTest(const GURL& resource_url,
                               const GURL& origin_lock,
+                              const net::NetworkIsolationKey& nik,
                               base::Time time,
                               base::OnceClosure callback);
 

@@ -2650,7 +2650,10 @@ void RenderProcessHostImpl::CreateCodeCacheHost(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetID(), std::move(receiver));
+  // TODO(crbug/1213818): This interface is used by worklets. Once worklets
+  // are fixed to uuse context specific code cache interface remove this code.
+  code_cache_host_receivers_.Add(GetID(), net::NetworkIsolationKey(),
+                                 std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindMediaInterfaceProxy(

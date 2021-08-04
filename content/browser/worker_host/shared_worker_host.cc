@@ -453,7 +453,7 @@ void SharedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   code_cache_host_receivers_.Add(GetProcessHost()->GetID(),
-                                 std::move(receiver));
+                                 GetNetworkIsolationKey(), std::move(receiver));
 }
 
 void SharedWorkerHost::Destruct() {

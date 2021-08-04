@@ -48,9 +48,11 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
         mojo::ReceiverId,
         mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
     void Add(int render_process_id,
+             const net::NetworkIsolationKey& nik,
              mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
              CodeCacheHostReceiverHandler handler);
     void Add(int render_process_id,
+             const net::NetworkIsolationKey& nik,
              mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
     void Clear();
 
@@ -66,7 +68,8 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   // SetCacheStorageControlForTesting.
   CodeCacheHostImpl(
       int render_process_id,
-      scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context);
+      scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
+      const net::NetworkIsolationKey& nik);
   ~CodeCacheHostImpl() override;
 
   void SetCacheStorageControlForTesting(
@@ -104,6 +107,8 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
       nullptr;
 
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
+
+  const net::NetworkIsolationKey network_isolation_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

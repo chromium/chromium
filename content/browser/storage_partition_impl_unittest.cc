@@ -49,6 +49,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
@@ -421,7 +422,8 @@ class RemoveCodeCacheTester {
     GeneratedCodeCache::ReadDataCallback callback =
         base::BindOnce(&RemoveCodeCacheTester::FetchEntryCallback,
                        base::Unretained(this), std::move(quit));
-    GetCache(cache)->FetchEntry(url, origin_lock, std::move(callback));
+    GetCache(cache)->FetchEntry(url, origin_lock, net::NetworkIsolationKey(),
+                                std::move(callback));
   }
 
   void AddEntry(Cache cache,
@@ -443,8 +445,8 @@ class RemoveCodeCacheTester {
                         const std::string& data,
                         base::OnceClosure quit) {
     std::vector<uint8_t> data_vector(data.begin(), data.end());
-    GetCache(cache)->WriteEntry(url, origin_lock, base::Time::Now(),
-                                data_vector);
+    GetCache(cache)->WriteEntry(url, origin_lock, net::NetworkIsolationKey(),
+                                base::Time::Now(), data_vector);
     std::move(quit).Run();
   }
 
@@ -466,8 +468,8 @@ class RemoveCodeCacheTester {
                               const GURL& origin_lock,
                               base::Time time,
                               base::OnceClosure quit) {
-    GetCache(cache)->SetLastUsedTimeForTest(url, origin_lock, time,
-                                            std::move(quit));
+    GetCache(cache)->SetLastUsedTimeForTest(
+        url, origin_lock, net::NetworkIsolationKey(), time, std::move(quit));
   }
 
   std::string received_data() { return received_data_; }

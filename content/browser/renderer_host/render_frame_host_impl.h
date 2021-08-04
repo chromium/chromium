@@ -1661,6 +1661,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void CreateCodeCacheHost(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
+  void CreateCodeCacheHostWithIsolationKey(
+      mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
+      const net::NetworkIsolationKey& nik);
 
 #if defined(OS_ANDROID)
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);
