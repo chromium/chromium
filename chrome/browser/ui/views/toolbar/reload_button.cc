@@ -12,6 +12,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/grit/generated_resources.h"
@@ -161,6 +162,15 @@ void ReloadButton::SetVisibleMode(Mode mode) {
 }
 
 void ReloadButton::ButtonPressed(const ui::Event& event) {
+  // This is called in order to signal that external protocol dialogs are
+  // allowed to show due to a user action, which are likely to happen on the
+  // next page load after the reload button is clicked.
+  // Ideally, the browser UI's event system would notify ExternalProtocolHandler
+  // that a user action occurred and we are OK to open the dialog, but for some
+  // reason that isn't happening every time the reload button is clicked. See
+  // http://crbug.com/1206456
+  ExternalProtocolHandler::PermitLaunchUrl();
+
   ClearPendingMenu();
 
   if (visible_mode_ == Mode::kStop) {
