@@ -494,7 +494,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
     for (CRWSessionStorage* session in sessions) {
       auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(session);
       // Add all tabs at the 0 position as the position is relative to an old
-      // tabModel.
+      // webStateList.
       tabRestoreService->CreateHistoricalTab(live_tab.get(), 0);
     }
     if (base::ios::IsMultiwindowSupported()) {

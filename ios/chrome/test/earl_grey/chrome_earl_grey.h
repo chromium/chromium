@@ -346,7 +346,7 @@ UIWindow* GetAnyKeyWindow();
 - (NSUInteger)evictedMainTabCount WARN_UNUSED_RESULT;
 
 // Evicts the tabs associated with the non-current browser mode.
-- (void)evictOtherTabModelTabs;
+- (void)evictOtherBrowserTabs;
 
 // Sets the normal tabs as 'cold start' tabs and raises an EarlGrey exception if
 // operation not succeeded.

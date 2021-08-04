@@ -1068,7 +1068,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   TabUsageRecorderBrowserAgent* tabUsageRecorder =
       TabUsageRecorderBrowserAgent::FromBrowser(_browser);
   if (tabUsageRecorder) {
-    tabUsageRecorder->RecordPrimaryTabModelChange(
+    tabUsageRecorder->RecordPrimaryBrowserChange(
         primary, _browser->GetWebStateList()->GetActiveWebState());
   }
   if (primary) {
@@ -2706,7 +2706,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Unregistration happens when the WebState is removed from the WebStateList.
   DCHECK_NE(webState->GetDelegate(), _webStateDelegate.get());
 
-  // There should be no pre-rendered Tabs in TabModel.
+  // There should be no pre-rendered Tabs for this BrowserState.
   PrerenderService* prerenderService =
       PrerenderServiceFactory::GetForBrowserState(self.browserState);
   DCHECK(!prerenderService ||

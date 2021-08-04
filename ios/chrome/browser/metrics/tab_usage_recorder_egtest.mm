@@ -188,7 +188,7 @@ void SwitchToNormalMode() {
 
   // Evict the tab.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
@@ -257,7 +257,7 @@ void SwitchToNormalMode() {
   // does not trigger a reload immediately.
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
   // Switch back to the normal tabs. Should be on tab one.
@@ -300,9 +300,9 @@ void SwitchToNormalMode() {
 
   // Open two incognito tabs with urls, clearing normal tabs from memory.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   [ChromeEarlGrey waitForIncognitoTabCount:2];
 
@@ -370,7 +370,7 @@ void SwitchToNormalMode() {
 
   // Open incognito and clear normal tabs from memory.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
   NSError* error = [MetricsAppInterface
@@ -427,7 +427,7 @@ void SwitchToNormalMode() {
   GURL URL = web::test::HttpServer::MakeUrl(kTestUrl1);
   NewMainTabWithURL(URL, kURL1FirstWord);
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   SwitchToNormalMode();
 
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
@@ -480,7 +480,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   [ChromeEarlGrey removeBrowsingCache];
 
   SwitchToNormalMode();
@@ -534,7 +534,7 @@ void SwitchToNormalMode() {
   (void)unused;
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   [ChromeEarlGrey removeBrowsingCache];
 
@@ -584,7 +584,7 @@ void SwitchToNormalMode() {
   (void)unused;
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   [ChromeEarlGrey removeBrowsingCache];
   SwitchToNormalMode();
@@ -643,7 +643,7 @@ void SwitchToNormalMode() {
   int nb_incognito_tab = [ChromeEarlGrey incognitoTabCount];
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:(nb_incognito_tab + 1)];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kWaitElementTimeout,
                  ^{
@@ -731,7 +731,7 @@ void SwitchToNormalMode() {
   NSUInteger tabIndex = [ChromeEarlGrey mainTabCount] - 1;
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   SwitchToNormalMode();
 
@@ -782,7 +782,7 @@ void SwitchToNormalMode() {
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   SwitchToNormalMode();
 
   [ChromeEarlGrey selectTabAtIndex:tabIndex];

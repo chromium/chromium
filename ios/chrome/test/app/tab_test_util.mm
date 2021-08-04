@@ -246,7 +246,7 @@ void SaveSessionImmediately() {
       ->SaveSession(true);
 }
 
-void EvictOtherTabModelTabs() {
+void EvictOtherBrowserTabs() {
   id<BrowserInterfaceProvider> provider = GetMainController().interfaceProvider;
   Browser* otherBrowser = IsIncognitoMode()
                               ? provider.mainInterface.browser

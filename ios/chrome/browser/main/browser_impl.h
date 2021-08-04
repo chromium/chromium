@@ -26,10 +26,6 @@ class BrowserImpl : public Browser {
  public:
   // Constructs a BrowserImpl attached to |browser_state|.
   BrowserImpl(ChromeBrowserState* browser_state);
-  // Creates a The tab Model, this method has to be called for the tabmodel to
-  // exist. Tab Model can't be created on the constructor as it depends on
-  // browser agents.
-  void CreateTabModel();
   ~BrowserImpl() override;
 
   // Browser.

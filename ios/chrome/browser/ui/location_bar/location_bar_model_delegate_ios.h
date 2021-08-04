@@ -16,7 +16,7 @@ class WebState;
 }  // namespace web
 
 // Implementation of LocationBarModelDelegate which uses an instance of
-// TabModel in order to fulfill its duties.
+// WebStateLisy in order to fulfill its duties.
 class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
  public:
   // |web_state_list| must outlive this LocationBarModelDelegateIOS object.

@@ -216,7 +216,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestSwitchedModeTabs) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_c = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordPrimaryTabModelChange(false, nullptr);
+  tab_usage_recorder_->RecordPrimaryBrowserChange(false, nullptr);
 
   // Switch from A (incognito evicted) to B (incognito evicted).
   tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);

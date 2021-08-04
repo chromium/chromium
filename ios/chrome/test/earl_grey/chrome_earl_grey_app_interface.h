@@ -107,7 +107,7 @@
 + (NSUInteger)evictedMainTabCount WARN_UNUSED_RESULT;
 
 // Evicts the tabs associated with the non-current browser mode.
-+ (void)evictOtherTabModelTabs;
++ (void)evictOtherBrowserTabs;
 
 // Sets the normal tabs as 'cold start' tabs
 // If not succeed returns an NSError indicating  why the

@@ -234,7 +234,7 @@ void ExternalFileRemoverImpl::RemoveFiles(
 
 NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Add files from all TabModels.
+  // Add files from all Browsers.
   NSMutableSet* referenced_external_files = [NSMutableSet set];
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);

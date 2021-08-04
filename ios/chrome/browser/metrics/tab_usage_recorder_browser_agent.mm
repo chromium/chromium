@@ -188,10 +188,10 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
                             tab_usage_recorder::TAB_STATE_COUNT);
 }
 
-void TabUsageRecorderBrowserAgent::RecordPrimaryTabModelChange(
-    bool primary_tab_model,
+void TabUsageRecorderBrowserAgent::RecordPrimaryBrowserChange(
+    bool primary_browser,
     web::WebState* active_web_state) {
-  if (primary_tab_model) {
+  if (primary_browser) {
     // User just came back to this tab model, so record a tab selection even
     // though the current tab was reselected.
     if (mode_switch_web_state_ == active_web_state)
