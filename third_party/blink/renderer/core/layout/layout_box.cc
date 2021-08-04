@@ -3549,8 +3549,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
 
   // Only allow simplified layout for non-replaced boxes.
-  if (RuntimeEnabledFeatures::LayoutNGReplacedEnabled() &&
-      cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
+  if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
       IsLayoutReplaced())
     return nullptr;
 

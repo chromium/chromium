@@ -371,41 +371,26 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
     const NGBlockNode& child,
     const NGConstraintSpace& space) {
   const auto& child_style = child.Style();
+  const NGBoxStrut border_padding =
+      ComputeBorders(space, child) + ComputePadding(space, child_style);
+
   MinMaxSizes result;
+  result = ComputeReplacedSize(child, space, border_padding).inline_size;
 
-  if (RuntimeEnabledFeatures::LayoutNGReplacedEnabled()) {
-    const NGBoxStrut border_padding =
-        ComputeBorders(space, child) + ComputePadding(space, child_style);
-    result = ComputeReplacedSize(child, space, border_padding).inline_size;
-
-    if (child_style.LogicalWidth().IsPercentOrCalc() ||
-        child_style.LogicalMaxWidth().IsPercentOrCalc()) {
-      // TODO(ikilpatrick): No browser does this today, but we'd get slightly
-      // better results here if we also considered the min-block size, and
-      // transferred through the aspect-ratio (if available).
-      result.min_size = ResolveMinInlineLength(
-          space, child_style, border_padding,
-          [&](MinMaxSizesType) -> MinMaxSizesResult {
-            // Behave the same as if we couldn't resolve the min-inline size.
-            MinMaxSizes sizes;
-            sizes = border_padding.InlineSum();
-            return {sizes, /* depends_on_block_constraints */ false};
-          },
-          child_style.LogicalMinWidth());
-    }
-  } else {
-    LayoutBox* box = child.GetLayoutBox();
-    bool needs_size_reset = false;
-    if (!box->HasOverrideContainingBlockContentLogicalHeight()) {
-      box->SetOverrideContainingBlockContentLogicalHeight(
-          space.ReplacedPercentageResolutionBlockSize());
-      needs_size_reset = true;
-    }
-
-    result = box->PreferredLogicalWidths();
-
-    if (needs_size_reset)
-      box->ClearOverrideContainingBlockContentSize();
+  if (child_style.LogicalWidth().IsPercentOrCalc() ||
+      child_style.LogicalMaxWidth().IsPercentOrCalc()) {
+    // TODO(ikilpatrick): No browser does this today, but we'd get slightly
+    // better results here if we also considered the min-block size, and
+    // transferred through the aspect-ratio (if available).
+    result.min_size = ResolveMinInlineLength(
+        space, child_style, border_padding,
+        [&](MinMaxSizesType) -> MinMaxSizesResult {
+          // Behave the same as if we couldn't resolve the min-inline size.
+          MinMaxSizes sizes;
+          sizes = border_padding.InlineSum();
+          return {sizes, /* depends_on_block_constraints */ false};
+        },
+        child_style.LogicalMinWidth());
   }
 
   // Replaced elements which have a percentage block-size always depend on
