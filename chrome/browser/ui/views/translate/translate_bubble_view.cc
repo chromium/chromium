@@ -292,21 +292,24 @@ bool TranslateBubbleView::ShouldShowWindowTitle() const {
   return false;
 }
 
+bool TranslateBubbleView::DidLanguageSelectionChange(
+    TranslateBubbleModel::ViewState view_state) {
+  if (view_state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) {
+    return source_language_combobox_->GetSelectedIndex() !=
+           previous_source_language_index_;
+  } else {
+    return target_language_combobox_->GetSelectedIndex() !=
+           previous_target_language_index_;
+  }
+}
+
 void TranslateBubbleView::ResetLanguage() {
   if (GetViewState() == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) {
-    if (source_language_combobox_->GetSelectedIndex() ==
-        previous_source_language_index_) {
-      return;
-    }
     source_language_combobox_->SetSelectedIndex(
         previous_source_language_index_);
     model_->UpdateSourceLanguageIndex(
         source_language_combobox_->GetSelectedIndex());
   } else {
-    if (target_language_combobox_->GetSelectedIndex() ==
-        previous_target_language_index_) {
-      return;
-    }
     target_language_combobox_->SetSelectedIndex(
         previous_target_language_index_);
     model_->UpdateTargetLanguageIndex(
@@ -873,6 +876,13 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
       IDS_TRANSLATE_BUBBLE_SOURCE_LANG_COMBOBOX_ACCNAME));
   source_language_combobox_ = source_language_combobox.get();
 
+  auto advanced_reset_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&TranslateBubbleView::ResetLanguage,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_RESET));
+  advanced_reset_button->SetID(BUTTON_ID_RESET);
+  advanced_reset_button_source_ = advanced_reset_button.get();
+
   auto advanced_done_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&TranslateBubbleView::ConfirmAdvancedOptions,
                           base::Unretained(this)),
@@ -885,6 +895,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
 
   return CreateViewAdvanced(std::move(source_language_combobox),
                             std::move(source_language_title_label),
+                            std::move(advanced_reset_button),
                             std::move(advanced_done_button),
                             std::move(advanced_always_translate_checkbox));
 }
@@ -914,6 +925,13 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
       IDS_TRANSLATE_BUBBLE_TARGET_LANG_COMBOBOX_ACCNAME));
   target_language_combobox_ = target_language_combobox.get();
 
+  auto advanced_reset_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&TranslateBubbleView::ResetLanguage,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_RESET));
+  advanced_reset_button->SetID(BUTTON_ID_RESET);
+  advanced_reset_button_target_ = advanced_reset_button.get();
+
   auto advanced_done_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&TranslateBubbleView::ConfirmAdvancedOptions,
                           base::Unretained(this)),
@@ -926,12 +944,14 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
 
   return CreateViewAdvanced(std::move(target_language_combobox),
                             std::move(target_language_title_label),
+                            std::move(advanced_reset_button),
                             std::move(advanced_done_button), nullptr);
 }
 
 std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
     std::unique_ptr<views::Combobox> combobox,
     std::unique_ptr<views::Label> language_title_label,
+    std::unique_ptr<views::Button> advanced_reset_button,
     std::unique_ptr<views::Button> advanced_done_button,
     std::unique_ptr<views::Checkbox> advanced_always_translate_checkbox) {
   auto view = std::make_unique<AdvancedViewContainer>();
@@ -1053,11 +1073,6 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
   layout->StartRow(views::GridLayout::kFixedSize, COLUMN_SET_ID_BUTTONS);
   layout->SkipColumns(1);
 
-  auto advanced_reset_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&TranslateBubbleView::ResetLanguage,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_RESET));
-  advanced_reset_button->SetID(BUTTON_ID_RESET);
   layout->AddView(std::move(advanced_reset_button));
   layout->AddView(std::move(advanced_done_button));
 
@@ -1208,12 +1223,16 @@ void TranslateBubbleView::UpdateAdvancedView() {
         l10n_util::GetStringUTF16(model_->IsPageTranslatedInCurrentLanguages()
                                       ? IDS_DONE
                                       : IDS_TRANSLATE_BUBBLE_ACCEPT));
+    advanced_reset_button_source_->SetEnabled(DidLanguageSelectionChange(
+        TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE));
   }
   if (advanced_done_button_target_) {
     advanced_done_button_target_->SetText(
         l10n_util::GetStringUTF16(model_->IsPageTranslatedInCurrentLanguages()
                                       ? IDS_DONE
                                       : IDS_TRANSLATE_BUBBLE_ACCEPT));
+    advanced_reset_button_target_->SetEnabled(DidLanguageSelectionChange(
+        TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE));
   }
   Layout();
 }

@@ -346,6 +346,45 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndDoneButton) {
   EXPECT_EQ(1, mock_model_->set_always_translate_called_count_);
 }
 
+TEST_F(TranslateBubbleViewTest, SourceResetButton) {
+  CreateAndShowBubble();
+  bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
+
+  // If there is no change in language selection, the reset button should be
+  // disabled.
+  EXPECT_FALSE(bubble_->advanced_reset_button_source_->GetEnabled());
+
+  // Change the language selection. The reset button should be enabled.
+  bubble_->source_language_combobox_->SetSelectedIndex(10);
+  bubble_->SourceLanguageChanged();
+  EXPECT_EQ(10, bubble_->source_language_combobox_->GetSelectedIndex());
+  EXPECT_TRUE(bubble_->advanced_reset_button_source_->GetEnabled());
+
+  // Press the reset button. Language should change back to initial selection.
+  PressButton(TranslateBubbleView::BUTTON_ID_RESET);
+  EXPECT_EQ(1, bubble_->source_language_combobox_->GetSelectedIndex());
+  EXPECT_FALSE(bubble_->advanced_reset_button_source_->GetEnabled());
+}
+
+TEST_F(TranslateBubbleViewTest, TargetResetButton) {
+  CreateAndShowBubble();
+  bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+
+  // If there is no change in language selection, the reset button should be
+  // disabled.
+  EXPECT_FALSE(bubble_->advanced_reset_button_target_->GetEnabled());
+
+  // Change the language selection. The reset button should be enabled.
+  bubble_->target_language_combobox_->SetSelectedIndex(10);
+  bubble_->TargetLanguageChanged();
+  EXPECT_EQ(10, bubble_->target_language_combobox_->GetSelectedIndex());
+  EXPECT_TRUE(bubble_->advanced_reset_button_target_->GetEnabled());
+
+  // Press the reset button. Language should change back to initial selection.
+  PressButton(TranslateBubbleView::BUTTON_ID_RESET);
+  EXPECT_EQ(2, bubble_->target_language_combobox_->GetSelectedIndex());
+}
+
 TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);

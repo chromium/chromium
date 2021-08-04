@@ -146,6 +146,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                            AlwaysTranslateCheckboxAndCloseButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateCheckboxAndDoneButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceResetButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetResetButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
@@ -221,7 +223,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<views::View> CreateViewAdvanced(
       std::unique_ptr<views::Combobox> combobox,
       std::unique_ptr<views::Label> language_title_label,
-      std::unique_ptr<views::Button> advance_done_button,
+      std::unique_ptr<views::Button> advanced_reset_button,
+      std::unique_ptr<views::Button> advanced_done_button,
       std::unique_ptr<views::Checkbox> advanced_always_translate_checkbox);
 
   // Creates a translate icon for when the bottom branding isn't showing. This
@@ -262,6 +265,10 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   void ShowOriginal();
   void ConfirmAdvancedOptions();
 
+  // Returns whether or not the current language selection is different from the
+  // initial language selection in an advanced view.
+  bool DidLanguageSelectionChange(TranslateBubbleModel::ViewState view_state);
+
   // Handles the reset button in advanced view under Tab UI.
   void ResetLanguage();
 
@@ -293,6 +300,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   views::Checkbox* advanced_always_translate_checkbox_ = nullptr;
   views::TabbedPane* tabbed_pane_ = nullptr;
 
+  views::LabelButton* advanced_reset_button_source_ = nullptr;
+  views::LabelButton* advanced_reset_button_target_ = nullptr;
   views::LabelButton* advanced_done_button_source_ = nullptr;
   views::LabelButton* advanced_done_button_target_ = nullptr;
 
