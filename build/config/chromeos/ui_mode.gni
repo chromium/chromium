@@ -21,6 +21,10 @@ declare_args() {
   # Don't set this unless you're sure you want it, because it'll double
   # your build time.
   also_build_ash_chrome = false
+
+  # Setting this to true when building ash-chrome will cause it to
+  # *also* build lacros-chrome in a subdirectory using an alternate toolchain.
+  also_build_lacros_chrome = false
 }
 
 # is_chromeos_{ash,lacros} is used to specify that it is specific to either
@@ -31,3 +35,6 @@ declare_args() {
 # toolchains.
 is_chromeos_ash = is_chromeos && !chromeos_is_browser_only
 is_chromeos_lacros = is_chromeos && chromeos_is_browser_only
+
+# also_build_ash_chrome and also_build_lacros_chrome cannot be both true.
+assert(!(also_build_ash_chrome && also_build_lacros_chrome))

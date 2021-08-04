@@ -342,6 +342,10 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos_ash && also_build_lacros_chrome) {
+    data_deps += [ "//chrome:chrome(//build/toolchain/linux:lacros_clang_x64)" ]
+  }
+
   if (is_android) {
     public_deps += [
       ":test_support_ui_android",
@@ -8768,8 +8772,11 @@ if (!is_android) {
       deps += [ "//ui/views" ]
     }
 
-    # This target should not require the Chrome executable to run.
-    assert_no_deps = [ "//chrome" ]
+    # This target should not require the Chrome executable to run
+    # except it wants to build lacros as a secondary toolchain.
+    if (!(is_chromeos_ash && also_build_lacros_chrome)) {
+      assert_no_deps = [ "//chrome" ]
+    }
   }
 
   # Executable to measure time to load libraries.

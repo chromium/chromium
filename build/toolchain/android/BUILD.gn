@@ -79,12 +79,14 @@ android_clang_toolchain("android_clang_x86") {
     # TODO(crbug.com/865376)
     use_clang_coverage = false
 
-    # This turns off all of the LaCrOS-specific flags. A LaCrOS build may use
-    # |ash_clang_x64| toolchain, which is a chromeos toolchain, to build
-    # Ash-Chrome in a subdirectory, and because chromeos toolchain uses android
-    # toolchain, which eventually resulted in that android toolchains being used
-    # inside a LaCrOS build.
+    # This turns off all of the LaCrOS-specific flags. A LaCrOS related build
+    # may use |ash_clang_x64| or |lacros_clang_x64| toolchain, which are
+    # chromeos toolchains, to build Ash-Chrome or Lacros-Chrome in a
+    # subdirectory, and because chromeos toolchain uses android toolchain, which
+    # eventually resulted in that android toolchains being used inside a LaCrOS
+    # build.
     also_build_ash_chrome = false
+    also_build_lacros_chrome = false
     chromeos_is_browser_only = false
     ozone_platform = ""
     ozone_platform_wayland = false
@@ -116,12 +118,14 @@ android_clang_toolchain("android_clang_x64") {
     # TODO(crbug.com/865376)
     use_clang_coverage = false
 
-    # This turns off all of the LaCrOS-specific flags. A LaCrOS build may use
-    # |ash_clang_x64| toolchain, which is a chromeos toolchain, to build
-    # Ash-Chrome in a subdirectory, and because chromeos toolchain uses android
-    # toolchain, which eventually resulted in that android toolchains being used
-    # inside a LaCrOS build.
+    # This turns off all of the LaCrOS-specific flags. A LaCrOS related build
+    # may use |ash_clang_x64| or |lacros_clang_x64| toolchain, which are
+    # chromeos toolchains, to build Ash-Chrome or Lacros-Chrome in a
+    # subdirectory, and because chromeos toolchain uses android toolchain, which
+    # eventually resulted in that android toolchains being used inside a LaCrOS
+    # build.
     also_build_ash_chrome = false
+    also_build_lacros_chrome = false
     chromeos_is_browser_only = false
     ozone_platform = ""
     ozone_platform_wayland = false
