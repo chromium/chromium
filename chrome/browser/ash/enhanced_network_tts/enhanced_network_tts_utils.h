@@ -18,6 +18,18 @@ namespace enhanced_network_tts {
 // ReadAloud server.
 std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request);
 
+// Find text breaks for the |utterance|. The text breaks should chunk the
+// utterance into text pieces shorter than |length_limit|. When finding the
+// breaks, we should match text breaks with sentence ends to avoid splitting
+// a sentence into two chunks. If that is not possible, we try to match text
+// breaks with word ends. If that still fails, it indicates that the utterance
+// contains a over-length word and we calculate text breaks using
+// |length_limit| directly. The returned vector contains the indexes for the
+// breaks. For example, a [2, 4] vector means we should pass the utterance
+// "hello" as: "hel" and "lo".
+std::vector<uint16_t> FindTextBreaks(const std::string& utterance,
+                                     const int length_limit);
+
 // Generate a response when encountering errors (e.g., server error, unexpected
 // data).
 mojom::TtsResponsePtr GetResultOnError(const mojom::TtsRequestError error_code);

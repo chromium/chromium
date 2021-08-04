@@ -4,14 +4,29 @@
 
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_text_utils.h"
 
 namespace ash {
 namespace enhanced_network_tts {
+namespace {
+
+// The offsets computed by |ui::GetSentenceEndOffsets| and
+// |ui::GetWordEndOffsets| are pointing to the index after the actual end. This
+// method converts the offsets to indexes.
+void convertOffsetsToIndexes(std::vector<int>& vect) {
+  for (int& end : vect)
+    end -= 1;
+}
+
+}  // namespace
 
 std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
   // utterance is sent as {'text': {'text_parts': [<utterance>]} }
@@ -66,6 +81,92 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
   std::string json_request;
   base::JSONWriter::Write(request, &json_request);
   return json_request;
+}
+
+std::vector<uint16_t> FindTextBreaks(const std::string& utterance,
+                                     const int length_limit) {
+  std::vector<uint16_t> breaks;
+  DCHECK_GT(length_limit, 0);
+
+  if (utterance.empty())
+    return breaks;
+
+  const int utterance_length = utterance.length();
+  if (utterance_length <= length_limit) {
+    breaks.push_back(utterance_length - 1);
+    return breaks;
+  }
+
+  if (length_limit == 1) {
+    for (int i = 1; i < utterance_length; i++)
+      breaks.push_back(base::checked_cast<uint16_t>(i));
+    return breaks;
+  }
+
+  const std::u16string utterance_u16string = base::UTF8ToUTF16(utterance);
+
+  std::vector<int> sentence_ends =
+      ui::GetSentenceEndOffsets(utterance_u16string);
+  convertOffsetsToIndexes(sentence_ends);
+  std::vector<int> word_ends = ui::GetWordEndOffsets(utterance_u16string);
+  convertOffsetsToIndexes(word_ends);
+
+  const int sentence_ends_length = sentence_ends.size();
+  const int word_ends_length = word_ends.size();
+  int cur_word_end_index = 0;
+  int cur_sentence_end_index = 0;
+
+  int text_start = 0;
+  int text_end = -1;
+
+  // Searching for the end of the text piece as long as the |text_end|
+  // (i.e., the end of last text piece) is smaller than the last index of the
+  // utterance.
+  while (text_end < utterance_length - 1) {
+    // The start of the current text piece is the end of last piece plus one.
+    text_start = text_end + 1;
+
+    // Find the sentence end that is within the |length_limit| distance from the
+    // |text_start|.
+    while (cur_sentence_end_index < sentence_ends_length &&
+           sentence_ends[cur_sentence_end_index] - text_start < length_limit) {
+      // Update the |text_end| if we find a sentence end bigger than the prior
+      // |text_end|.
+      text_end = std::max(text_end, sentence_ends[cur_sentence_end_index]);
+      cur_sentence_end_index++;
+    }
+    // If we have found a sentence end as the end of current text piece,
+    // continue to the next search.
+    if (text_end >= text_start) {
+      breaks.push_back(base::checked_cast<uint16_t>(text_end));
+      continue;
+    }
+
+    // If there is no qualified sentence end, this means the current sentence
+    // is longer than |length_limit|. We keep searching for a word end that is
+    // within the |length_limit| distance from the |text_start|.
+    while (cur_word_end_index < word_ends_length &&
+           word_ends[cur_word_end_index] - text_start < length_limit) {
+      // Update the |text_end| if we find a word end bigger than the prior
+      // |text_end|.
+      text_end = std::max(text_end, word_ends[cur_word_end_index]);
+      cur_word_end_index++;
+    }
+    // If we have found a word end as the end of current text piece, continue to
+    // the next search.
+    if (text_end >= text_start) {
+      breaks.push_back(base::checked_cast<uint16_t>(text_end));
+      continue;
+    }
+
+    // If there is no sentence end or word end, we just return the index
+    // corresponding to the |length_limit| or the end of the utterance. In
+    // practice, this means the current word is longer than |length_limit|.
+    text_end = std::min(text_start + length_limit - 1, utterance_length - 1);
+    breaks.push_back(base::checked_cast<uint16_t>(text_end));
+  }
+
+  return breaks;
 }
 
 mojom::TtsResponsePtr GetResultOnError(

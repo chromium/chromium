@@ -94,6 +94,55 @@ TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequestWithUtteranceOnly) {
             RemoveSpaceAndLineBreak(expected_text));
 }
 
+TEST_F(EnhancedNetworkTtsUtilsTest, FindTextBreaks) {
+  std::string utterance = "";
+  int length_limit = 10;
+  std::vector<uint16_t> expected_output = {};
+  EXPECT_EQ(FindTextBreaks(utterance, length_limit), expected_output);
+
+  utterance = "utterance is shorter than length_limit";
+  length_limit = 1000;
+  expected_output = {37};
+  EXPECT_EQ(FindTextBreaks(utterance, length_limit), expected_output);
+
+  utterance = "limit is 1";
+  length_limit = 1;
+  expected_output = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  EXPECT_EQ(FindTextBreaks(utterance, length_limit), expected_output);
+
+  // Index ref:012345678901234
+  utterance = "Sent 1! Sent 2!";
+  length_limit = 4;
+  // 3 = word end of "Sent"
+  // 7 = first sentence end
+  // 11 = word end of "Sent"
+  // 14 = second sentence end
+  expected_output = {3, 7, 11, 14};
+  EXPECT_EQ(FindTextBreaks(utterance, length_limit), expected_output);
+
+  // Index ref:01234567890123456789012
+  utterance = "Sent 1! Sent 2. Sent 3!";
+  length_limit = 8;
+  // 7 = first sentence end
+  // 15 = second sentence end
+  // 22 = third sentence end
+  expected_output = {7, 15, 22};
+  EXPECT_EQ(FindTextBreaks(utterance, length_limit), expected_output);
+
+  // Index ref:01234567890123456
+  utterance = "Sent 1! Sent two!";
+  length_limit = 3;
+  // 2 = over length limit at char 'n'
+  // 5 = word end of "1"
+  // 7 = first sentence end
+  // 10 = over length limit at char 'n'
+  // 11 = word end of "Sent"
+  // 14 = over length limit at char 'w'
+  // 16 = second sentence end
+  expected_output = {2, 5, 7, 10, 11, 14, 16};
+  EXPECT_EQ(FindTextBreaks(utterance, length_limit), expected_output);
+}
+
 TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
   mojom::TtsResponsePtr result =
       GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData);
