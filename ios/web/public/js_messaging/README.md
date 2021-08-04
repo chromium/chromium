@@ -60,7 +60,10 @@ functions for the webpage JavaScript to call directly.
 
 Application JavaScript can choose to be injected into its own world, separate
 from the Page Content World. This is considered an "isolated" world. The
-webpage JavaScript can not interact with these scripts.
+webpage JavaScript can not interact with these scripts under normal
+circumstances. However, a web page that exploits a renderer bug in order to
+execute arbitrary code is also able to interact with scripts in isolated worlds,
+including the ability to manipulate and send messages from isolated worlds. 
 
 NOTE: Isolated worlds are only supported on iOS 14 and later.
 
@@ -165,3 +168,114 @@ UserData.
 
 In order to inject JavaScript, //ios/chrome features must be registered at
 application launch time in `ChromeWebClient::GetJavaScriptFeatures`.
+
+### Best Practices for JavaScript Messaging
+
+Messaging between JavaScript code in a renderer process and native code in
+the browser process is a form of inter-process communication (IPC). Since
+renderers are responsible for processing untrustworthy input provided by
+web pages, they are more vulnerable to security bugs that lead to arbitrary
+code execution. Messaging between renderers and browsers can provide a pathway
+for compromised renderers to compromise the browser process as well.
+
+Following the best practices in this section is one way to reduce the risk of
+introducing security bugs. These best practices are inspired by the security
+guidelines for [Chromium legacy IPC][legacy IPC docs] and
+[Mojo IPC][Mojo IPC docs].
+
+#### Documentation
+
+Message handlers should include comments describing their purpose and the
+arguments they take, including the expected type of each argument.
+
+For example:
+```
+void MyJavaScriptFeature::ScriptMessageReceived(
+    web::WebState* web_state,
+    const web::ScriptMessage& message) {
+  // This message is sent whenever a password field is selected.
+  // Expected arguments:
+  // numImages: (double) The number of <img> tags on the page.
+  // passwordLength: (double) The length of the currently entered password.
+  // elementId: (string) The selected password field’s id attribute.
+
+}
+```
+
+#### Trust only the browser process
+
+JavaScript messages are sent from WebContent (WebKit renderer) processes, which
+may have been compromised. Messages should be treated as if they might have been
+sent by an attacker. These messages are untrustworthy input.
+
+Determine the origin of a message using trusted data rather than the content of
+the message. For example, use `web::ScriptMessage`’s `request_url`_ field, or
+`WKScriptMessage.frameInfo.request.URL`.
+
+#### Sanitize and validate messages
+
+Do not assume that any part of the message is formatted in a particular way or
+is of a particular type. Instead, validate the format of each part of the
+message.
+
+For example:
+```
+void MyJavaScriptFeature::ScriptMessageReceived(
+    web::WebState* web_state,
+    const web::ScriptMessage& message) {
+  if (!message.body() || !message.body()->is_dict()) {
+    return;
+  }
+
+  std::string* event_type = message.body()->FindStringKey("eventType");
+  if (!event_type || event_type->empty()) {
+    return;
+  }
+
+  std::string* text = message.body()->FindStringKey("text");
+  if (!text || text->empty()) {
+    return;
+  }
+
+  // Now use |eventType| and |text|.
+}
+```
+
+#### Safely handle known-bad input
+
+When validating a message, don’t simply use `CHECK`. We do not want the input
+validation mechanism to become an easy way for malicious JavaScript to kill the
+browser process. It is usually better to ignore the bad input, or when possible,
+to immediately destroy and re-create the WKWebView that sent invalid input.
+Destroying and re-creating a WKWebView in this situation is non-trivial so this
+is not currently done on iOS; however, receiving an invalid input that purports
+to be from an isolated world is a strong indication of a compromised renderer.
+If there is no graceful way to handle a particular invalid message, a
+`CHECK`-induced crash is still better than allowing the browser process to
+become compromised. Importantly, a `DCHECK` is not appropriate in this situation,
+since it will not protect users on official builds.
+
+#### Be aware of the subtleties of value types returned by WKWebView
+
+In JavaScript messaging, all numbers are represented as doubles, even if they
+have no fractional part. Make sure parsing logic handles all possible double
+values, including `NaN` and infinity.
+
+JavaScript’s `BigInt` type is not supported, and gets converted to `nil`. A
+`null` value in JavaScript messaging gets converted to `[NSNull null]`. Dates in
+JavaScript are converted to `NSDate`.
+
+While conversions between JavaScript types and Objective-C types are documented
+[here][JS ObjC conversions], prefer using
+[`ValueResultFromWKResult`][ValueResultFromWKResult] to convert values received
+from WKWebView to `base::Value`, rather than directly working with
+WKWebView-provided values. This already happens when working with
+`web::ScriptMessage` in overrides of `JavaScriptFeature::ScriptMessageReceived`,
+and when using `WebStateImpl::ExecuteJavaScript`. Always use
+`WebFrame::CallJavaScriptFunction` rather than directly calling
+`[WKWebView evaluateJavaScript]`, to avoid having to manually handle conversion.
+
+[legacy IPC docs]: https://www.chromium.org/Home/chromium-security/education/security-tips-for-ipc
+[Mojo IPC docs]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/security/mojo.md
+[JS ObjC conversions]: https://developer.apple.com/documentation/javascriptcore/jsvalue?language=objc
+[ValueResultFromWKResult]: https://source.chromium.org/chromium/chromium/src/+/main:ios/web/js_messaging/web_view_js_utils.h;l=36
