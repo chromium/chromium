@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
-
-struct WebApplicationInfo;
-class SkBitmap;
 
 namespace content {
 class WebContents;
@@ -51,11 +49,10 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 std::vector<GURL> GetValidIconUrlsToDownload(
     const WebApplicationInfo& web_app_info);
 
-// A map of icon urls to the bitmaps provided by that url.
-using IconsMap = std::map<GURL, std::vector<SkBitmap>>;
-
 // Populate shortcut item icon maps in WebApplicationInfo using the IconsMap.
 // This ignores icons that might have already existed in `web_app_info`.
+// TODO(estade): also save bitmaps in `icons_map` that are relevant to file
+// handling in `web_app_info->other_icon_bitmaps`.
 void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
                                const IconsMap& icons_map);
 

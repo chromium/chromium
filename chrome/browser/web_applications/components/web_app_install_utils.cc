@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"

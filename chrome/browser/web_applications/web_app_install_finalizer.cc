@@ -512,7 +512,7 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   icon_manager_->WriteData(
       std::move(app_id), web_app_info.icon_bitmaps,
-      web_app_info.shortcuts_menu_icon_bitmaps,
+      web_app_info.shortcuts_menu_icon_bitmaps, web_app_info.other_icon_bitmaps,
       base::BindOnce(&WebAppInstallFinalizer::OnIconsDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
                      std::move(web_app)));

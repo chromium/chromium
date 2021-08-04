@@ -48,6 +48,8 @@ base::FilePath GetAppIconsAnyDir(Profile* profile, const AppId& app_id);
 
 base::FilePath GetAppIconsMaskableDir(Profile* profile, const AppId& app_id);
 
+base::FilePath GetOtherIconsDir(Profile* profile, const AppId& app_id);
+
 // Performs blocking IO and decompression.
 bool ReadBitmap(FileUtilsWrapper* utils,
                 const base::FilePath& file_path,

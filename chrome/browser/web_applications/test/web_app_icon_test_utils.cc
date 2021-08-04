@@ -92,6 +92,14 @@ base::FilePath GetAppIconsMaskableDir(Profile* profile, const AppId& app_id) {
   return icons_dir;
 }
 
+base::FilePath GetOtherIconsDir(Profile* profile, const AppId& app_id) {
+  base::FilePath web_apps_root_directory = GetWebAppsRootDirectory(profile);
+  base::FilePath app_dir =
+      GetManifestResourcesDirectoryForApp(web_apps_root_directory, app_id);
+  base::FilePath icons_dir = app_dir.AppendASCII("Image Cache");
+  return icons_dir;
+}
+
 bool ReadBitmap(FileUtilsWrapper* utils,
                 const base::FilePath& file_path,
                 SkBitmap* bitmap) {
@@ -209,7 +217,7 @@ void IconManagerWriteGeneratedIcons(
   }
 
   base::RunLoop run_loop;
-  icon_manager.WriteData(app_id, std::move(icon_bitmaps), {},
+  icon_manager.WriteData(app_id, std::move(icon_bitmaps), {}, {},
                          base::BindLambdaForTesting([&](bool success) {
                            DCHECK(success);
                            run_loop.Quit();
