@@ -1255,15 +1255,33 @@ void LayoutBlockFlow::AdjustLinePositionForPagination(RootInlineBox& line_box,
     return;
   if (!IsPageLogicalHeightKnown())
     return;
-  LayoutUnit page_logical_height = PageLogicalHeightForOffset(logical_offset);
+  // Ruby annotations do not affect the size of the line box. Instead,
+  // before-annotations are placed above the line's logical top, and
+  // after-annotations are placed below the line's logical bottom. We need to
+  // take this into consideration when block-fragmenting, so that we don't allow
+  // breaking in the middle of an annotation.
+  LayoutUnit logical_offset_with_annotations = logical_offset;
+  LayoutUnit line_height_with_annotations = line_height;
+  if (line_box.HasAnnotationsBefore()) {
+    LayoutUnit adjustment =
+        line_box.ComputeOverAnnotationAdjustment(logical_offset);
+    logical_offset_with_annotations -= adjustment;
+    line_height_with_annotations += adjustment;
+  }
+  if (line_box.HasAnnotationsAfter()) {
+    line_height_with_annotations +=
+        line_box.ComputeUnderAnnotationAdjustment(logical_offset + line_height);
+  }
+  LayoutUnit page_logical_height =
+      PageLogicalHeightForOffset(logical_offset_with_annotations);
   LayoutUnit remaining_logical_height = PageRemainingLogicalHeightForOffset(
-      logical_offset, kAssociateWithLatterPage);
+      logical_offset_with_annotations, kAssociateWithLatterPage);
   int line_index = LineCount(&line_box);
-  if (remaining_logical_height < line_height ||
+  if (remaining_logical_height < line_height_with_annotations ||
       (ShouldBreakAtLineToAvoidWidow() &&
        LineBreakToAvoidWidow() == line_index)) {
-    LayoutUnit pagination_strut =
-        CalculatePaginationStrutToFitContent(logical_offset, line_height);
+    LayoutUnit pagination_strut = CalculatePaginationStrutToFitContent(
+        logical_offset_with_annotations, line_height_with_annotations);
     LayoutUnit new_logical_offset = logical_offset + pagination_strut;
     // Moving to a different page or column may mean that its height is
     // different.
