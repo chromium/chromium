@@ -64,4 +64,15 @@ export function multiPageScanTest() {
     multiPageScan.$$('#scanButton').click();
     assertTrue(scanNextPageEventFired);
   });
+
+  // Verify clicking the Save button fires the 'complete-multi-page-scan' event.
+  test('saveButtonFiresEvent', () => {
+    let completeMultiPageScanEventFired = false;
+    multiPageScan.addEventListener('complete-multi-page-scan', function() {
+      completeMultiPageScanEventFired = true;
+    });
+
+    multiPageScan.$$('#saveButton').click();
+    assertTrue(completeMultiPageScanEventFired);
+  });
 }

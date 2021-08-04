@@ -129,6 +129,12 @@ Polymer({
         return loadTimeData.getBoolean('scanAppMultiPageScanEnabled');
       }
     },
+
+    /** @private {boolean} */
+    showActionToolbar_: {
+      type: Boolean,
+      computed: 'computeShowActionToolbar_(appState, multiPageScanChecked)',
+    },
   },
 
   observers: [
@@ -333,5 +339,15 @@ Polymer({
     const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
         (this.$$('action-toolbar').offsetWidth / 2);
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowActionToolbar_() {
+    assert(!this.multiPageScanChecked || this.scanAppMultiPageScanEnabled_);
+    return this.multiPageScanChecked &&
+        this.appState == AppState.MULTI_PAGE_NEXT_ACTION;
   },
 });

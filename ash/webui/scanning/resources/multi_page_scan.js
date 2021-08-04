@@ -46,4 +46,9 @@ Polymer({
   onScanClick_() {
     this.fire('scan-next-page');
   },
+
+  /** @private */
+  onSaveClick_() {
+    this.fire('complete-multi-page-scan');
+  },
 });

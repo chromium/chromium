@@ -283,11 +283,17 @@ class FakeMultiPageScanController {
     /** @private {!Map<string, !PromiseResolver>} */
     this.resolverMap_ = new Map();
 
+    /** @private {Object} */
+    this.$ = {
+      close() {},
+    };
+
     this.resetForTest();
   }
 
   resetForTest() {
     this.resolverMap_.set('scanNextPage', new PromiseResolver());
+    this.resolverMap_.set('completeMultiPageScan', new PromiseResolver());
   }
 
   /**
@@ -332,7 +338,9 @@ class FakeMultiPageScanController {
     });
   }
 
-  completeMultiPageScan() {}
+  completeMultiPageScan() {
+    this.methodCalled('completeMultiPageScan');
+  }
 }
 
 export function scanningAppTest() {
@@ -743,6 +751,9 @@ export function scanningAppTest() {
 
   // Verify a multi-page scan job can be initiated.
   test('MultiPageScan', () => {
+    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    const scannedFilePaths = [{'path': '/test/path/scan1.pdf'}];
+
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();
@@ -791,6 +802,24 @@ export function scanningAppTest() {
           const scanNextPageButton =
               scanningApp.$$('multi-page-scan').$$('#scanButton');
           assertEquals('Scan page 3', scanNextPageButton.textContent.trim());
+
+          scanningApp.$$('multi-page-scan').$$('#saveButton').click();
+          return fakeMultiPageScanController_.whenCalled(
+              'completeMultiPageScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kSuccess, scannedFilePaths);
+        })
+        .then(() => {
+          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('scan-done-section'))));
+          assertArrayEquals(
+              scannedFilePaths,
+              scanningApp.$$('scan-done-section').scannedFilePaths);
         });
   });
 

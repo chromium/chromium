@@ -142,7 +142,7 @@ export function scanPreviewTest() {
   // Tests that the action toolbar is only displayed for multi-page scans.
   test('showActionToolbarForMultiPageScans', () => {
     scanPreview.objectUrls = ['image'];
-    scanPreview.appState = AppState.DONE;
+    scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
     scanPreview.multiPageScanChecked = false;
     assertTrue(scanPreview.$$('action-toolbar').hidden);
     scanPreview.multiPageScanChecked = true;

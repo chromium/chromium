@@ -65,7 +65,7 @@ Polymer({
   /** @private {?ash.scanning.mojom.ScanServiceInterface} */
   scanService_: null,
 
-  /** @private {?ash.scanning.mojom.MultiPageScanControllerInterface} */
+  /** @private {?ash.scanning.mojom.MultiPageScanControllerRemote} */
   multiPageScanController_: null,
 
   /** @private {!Map<string, !ScannerInfo>} */
@@ -666,6 +666,13 @@ Polymer({
             });
   },
 
+  /** @private */
+  onCompleteMultiPageScan_() {
+    this.multiPageScanController_.completeMultiPageScan();
+    this.multiPageScanController_.$.close();
+    this.multiPageScanController_ = null;
+  },
+
   /**
    * @param {!{success: boolean}} response
    * @private
@@ -762,7 +769,8 @@ Polymer({
       case (AppState.DONE):
         assert(
             this.appState_ === AppState.SCANNING ||
-            this.appState_ === AppState.CANCELING);
+            this.appState_ === AppState.CANCELING ||
+            this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION);
         break;
       case (AppState.CANCELING):
         assert(this.appState_ === AppState.SCANNING);
