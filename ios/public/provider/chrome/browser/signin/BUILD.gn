@@ -35,6 +35,13 @@ source_set("signin_error_api") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("signin_resources_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "signin_resources_api.h" ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -96,6 +103,17 @@ source_set("test_signin_error") {
     "//base",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("test_signin_resources") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_signin_resources.mm" ]
+  deps = [
+    ":signin_resources_api",
+    "//ui/base:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
