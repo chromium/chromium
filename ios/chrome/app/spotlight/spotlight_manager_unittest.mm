@@ -23,8 +23,6 @@
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/spotlight/spotlight_provider.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -176,11 +174,5 @@ TEST_F(SpotlightManagerTest, testDefaultKeywordsExist) {
   CSSearchableItem* item = [items objectAtIndex:0];
   NSSet* spotlightManagerKeywords =
       [NSSet setWithArray:[[item attributeSet] keywords]];
-  EXPECT_TRUE([spotlightManagerKeywords count] > 0);
-  // Check static/hardcoded keywords exist
-  NSSet* hardCodedKeywordsSet =
-      [NSSet setWithArray:ios::GetChromeBrowserProvider()
-                              .GetSpotlightProvider()
-                              ->GetAdditionalKeywords()];
-  EXPECT_TRUE([hardCodedKeywordsSet isSubsetOfSet:spotlightManagerKeywords]);
+  EXPECT_GT([spotlightManagerKeywords count], 10u);
 }

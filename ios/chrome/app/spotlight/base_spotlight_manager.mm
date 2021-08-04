@@ -17,13 +17,12 @@
 #include "base/hash/md5.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "build/branding_buildflags.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/spotlight/spotlight_provider.h"
 #import "net/base/mac/url_conversions.h"
 #include "skia/ext/skia_utils_ios.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -235,7 +234,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 #pragma mark private methods
 
 - (NSArray*)keywordsForSpotlightItems {
-  NSMutableArray* keywordsArray = [NSMutableArray arrayWithArray:@[
+  return @[
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_ONE),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TWO),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_THREE),
@@ -245,15 +244,14 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_SEVEN),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_EIGHT),
     l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_NINE),
-    l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN)
-  ]];
-  NSArray* additionalArray = ios::GetChromeBrowserProvider()
-                                 .GetSpotlightProvider()
-                                 ->GetAdditionalKeywords();
-  if (additionalArray) {
-    [keywordsArray addObjectsFromArray:additionalArray];
-  }
-  return keywordsArray;
+    l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_KEYWORD_TEN),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    @"google",
+    @"chrome",
+#else
+    @"chromium",
+#endif
+  ];
 }
 
 - (void)largeIconResult:(const favicon_base::LargeIconResult&)largeIconResult
