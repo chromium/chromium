@@ -6353,8 +6353,7 @@
     "PowerScheduler2": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
@@ -9571,6 +9570,28 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewMeasureScreenCoverage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewPowerScheduler2": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_ThrottleIdleAndNopAnimation",
+                    "params": {
+                        "include_charging": "false",
+                        "min_cputime_ratio": "0.5",
+                        "min_time_in_mode_ms": "500",
+                        "policy": "kThrottleIdleAndNopAnimation",
+                        "process_types": "browser,renderer"
+                    },
+                    "enable_features": [
+                        "PowerScheduler"
                     ]
                 }
             ]
