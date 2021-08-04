@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
@@ -470,7 +471,58 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, RecordedForNonApps) {
   TestEngagementEventsAfterLaunch(histograms, browser());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindow) {
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
+  base::HistogramTester tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // There should be one browser to start with.
+  unsigned int expected_browsers = 1;
+  const int expected_tabs = 1;
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
+
+  const GURL example_url(
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+
+  auto result_code = ExternallyManagedAppManagerInstall(
+      browser()->profile(), CreateInstallOptions(example_url));
+  ASSERT_EQ(InstallResultCode::kSuccessNewInstall, result_code);
+  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  ASSERT_TRUE(app_id);
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kApp, example_url.spec());
+
+  // The app should open as a window.
+  EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      browser()->profile(), {}));
+  app_loaded_observer.Wait();
+
+  Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(app_browser->is_type_app());
+
+  {
+    // From c/b/ui/startup/launch_mode_recorder.h:
+    constexpr char kLaunchModesHistogram[] = "Launch.Modes";
+    const base::HistogramBase::Sample LM_AS_WEBAPP_WINDOW_BY_URL = 23;
+
+    tester.ExpectUniqueSample(kLaunchModesHistogram, LM_AS_WEBAPP_WINDOW_BY_URL,
+                              1);
+  }
+
+  // Check that the number of browsers and tabs is correct.
+  expected_browsers++;
+
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
+  EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByAppId) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -504,13 +556,15 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindow) {
   Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_EQ(app_browser->type(), Browser::TYPE_APP);
   EXPECT_TRUE(app_browser->app_controller());
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
   {
-    // From startup_browser_creator_impl.cc:
+    // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Modes";
-    const base::HistogramBase::Sample LM_AS_WEBAPP_IN_WINDOW = 1;
+    const base::HistogramBase::Sample LM_AS_WEBAPP_WINDOW_BY_APP_ID = 24;
 
-    tester.ExpectUniqueSample(kLaunchModesHistogram, LM_AS_WEBAPP_IN_WINDOW, 1);
+    tester.ExpectUniqueSample(kLaunchModesHistogram,
+                              LM_AS_WEBAPP_WINDOW_BY_APP_ID, 1);
   }
 
   // Check that the number of browsers and tabs is correct.

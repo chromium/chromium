@@ -363,6 +363,7 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
 
 void FinalizeWebAppLaunch(
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
+    absl::optional<LaunchMode> app_launch_mode,
     Browser* browser,
     apps::mojom::LaunchContainer container) {
   if (!browser)
@@ -373,7 +374,7 @@ void FinalizeWebAppLaunch(
     switch (container) {
       case apps::mojom::LaunchContainer::kLaunchContainerWindow:
         DCHECK(browser->is_type_app());
-        mode = LaunchMode::kAsWebAppInWindow;
+        mode = app_launch_mode.value_or(LaunchMode::kAsWebAppInWindowOther);
         break;
       case apps::mojom::LaunchContainer::kLaunchContainerTab:
         DCHECK(!browser->is_type_app());
@@ -436,7 +437,8 @@ bool MaybeLaunchApplication(
             /*url_handler_launch_url=*/absl::nullopt,
             /*protocol_handler_launch_url=*/absl::nullopt,
             base::BindOnce(&FinalizeWebAppLaunch,
-                           std::move(launch_mode_recorder)));
+                           std::move(launch_mode_recorder),
+                           LaunchMode::kAsWebAppInWindowByAppId));
     return true;
   }
 
@@ -458,7 +460,7 @@ bool MaybeLaunchApplication(
           apps::OpenExtensionAppShortcutWindow(profile, url);
       if (web_contents) {
         FinalizeWebAppLaunch(
-            std::move(launch_mode_recorder),
+            std::move(launch_mode_recorder), LaunchMode::kAsWebAppInWindowByUrl,
             chrome::FindBrowserWithWebContents(web_contents),
             apps::mojom::LaunchContainer::kLaunchContainerWindow);
         return true;
@@ -492,7 +494,7 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
   return web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
       command_line, cur_dir, std::move(on_urls_unhandled_cb),
       base::BindOnce(&FinalizeWebAppLaunch,
-                     std::make_unique<LaunchModeRecorder>()));
+                     std::make_unique<LaunchModeRecorder>(), absl::nullopt));
 }
 #endif
 
@@ -848,7 +850,7 @@ void StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
   web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
       urls, std::move(on_urls_unhandled_cb),
       base::BindOnce(&FinalizeWebAppLaunch,
-                     std::make_unique<LaunchModeRecorder>()));
+                     std::make_unique<LaunchModeRecorder>(), absl::nullopt));
 }
 #endif  // defined(OS_MAC)
 
@@ -1136,7 +1138,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
           command_line, cur_dir, privacy_safe_profile, last_used_profile,
           last_opened_profiles,
           base::BindOnce(&FinalizeWebAppLaunch,
-                         std::make_unique<LaunchModeRecorder>()),
+                         std::make_unique<LaunchModeRecorder>(), absl::nullopt),
           std::move(startup_callback))) {
     return true;
   }

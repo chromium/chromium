@@ -45184,7 +45184,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LaunchMode">
-  <int value="1" label="LM_AS_WEBAPP_WINDOW">
+  <int value="1" label="(DEPRECATED) LM_AS_WEBAPP_WINDOW">
     Launched as an installed web application in a standalone window
   </int>
   <int value="2" label="LM_WITH_URLS">Launched with urls in the cmd line</int>
@@ -45248,6 +45248,18 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
   <int value="22" label="LM_UNKNOWN_WEBAPP">
     The requested web application was not installed
+  </int>
+  <int value="23" label="LM_AS_WEBAPP_WINDOW_BY_URL">
+    Launched installed web app in standalone window from command line, using
+    --app flag.
+  </int>
+  <int value="24" label="LM_AS_WEBAPP_WINDOW_BY_APP_ID">
+    Launched installed web app in standalone window from command line, using
+    --app-id flag.
+  </int>
+  <int value="25" label="LM_AS_WEBAPP_WINDOW_OTHER">
+    Launched installed web app in standalone window by any method other than
+    command line or a platform shortcut.
   </int>
 </enum>
 

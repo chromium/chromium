@@ -27,7 +27,8 @@ class CommandLine;
 
 namespace web_app {
 FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineTab);
-FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindow);
+FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindowByUrl);
+FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindowByAppId);
 }  // namespace web_app
 
 // Indicates how Chrome should start up the first profile.
@@ -204,7 +205,9 @@ class StartupBrowserCreator {
   FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
                            CommandLineTab);
   FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
-                           CommandLineWindow);
+                           CommandLineWindowByUrl);
+  FRIEND_TEST_ALL_PREFIXES(web_app::WebAppEngagementBrowserTest,
+                           CommandLineWindowByAppId);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            LastUsedProfilesWithWebApp);
 
