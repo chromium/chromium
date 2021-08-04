@@ -32,6 +32,8 @@ Other resources that belong in this file:
       <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" resource_path="mojo/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ORIGIN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/origin.mojom-webui.js" resource_path="mojo/url/mojom/origin.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_TOKEN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/token.mojom-webui.js" resource_path="mojo/mojo/public/mojom/base/token.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_JS" file="${root_gen_dir}/ui/base/mojom/window_open_disposition.mojom-lite.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/base/mojom/window_open_disposition.mojom-webui.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_HTML" file="../components/ukm/debug/ukm_internals.html" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_JS" file="../components/ukm/debug/ukm_internals.js" preprocess="true" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_CSS" file="../components/ukm/debug/ukm_internals.css" type="BINDATA" />

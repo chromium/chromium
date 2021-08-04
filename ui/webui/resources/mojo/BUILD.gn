@@ -17,6 +17,7 @@ ts_library("library") {
     "mojo/public/mojom/base/string16.mojom-webui.js",
     "mojo/public/mojom/base/time.mojom-webui.js",
     "skia/public/mojom/skcolor.mojom-webui.js",
+    "ui/base/mojom/window_open_disposition.mojom-webui.js",
     "url/mojom/url.mojom-webui.js",
   ]
 
@@ -26,6 +27,7 @@ ts_library("library") {
     ":copy_bindings_dts",
     "//mojo/public/mojom/base:base_js__generator",
     "//skia/public/mojom:mojom_js__generator",
+    "//ui/base/mojom:mojom_js__generator",
     "//url/mojom:url_mojom_gurl_js__generator",
   ]
 }
