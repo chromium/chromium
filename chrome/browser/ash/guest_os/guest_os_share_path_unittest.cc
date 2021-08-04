@@ -557,7 +557,7 @@ TEST_F(GuestOsSharePathTest, SuccessDriveFsShortcutTargetsById) {
 TEST_F(GuestOsSharePathTest, FailDriveFsTrash) {
   SetUpVolume();
   guest_os_share_path_->SharePath(
-      "vm-running", drivefs_.Append(".Trash").Append("in-the-trash"),
+      "vm-running", drivefs_.Append(".Trash-1000").Append("in-the-trash"),
       PERSIST_NO,
       base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
                      base::Unretained(this), "vm-running", Persist::NO,

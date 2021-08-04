@@ -303,10 +303,6 @@ void FakeDriveFs::Init(
     drivefs::mojom::DriveFsConfigurationPtr config,
     mojo::PendingReceiver<drivefs::mojom::DriveFs> receiver,
     mojo::PendingRemote<drivefs::mojom::DriveFsDelegate> delegate) {
-  {
-    base::ScopedAllowBlockingForTesting allow_io;
-    CHECK(base::CreateDirectory(mount_path_.Append(".Trash")));
-  }
   mojo::FusePipes(std::move(pending_delegate_receiver_), std::move(delegate));
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
