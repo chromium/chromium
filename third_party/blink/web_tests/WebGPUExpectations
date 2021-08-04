@@ -131,9 +131,6 @@ crbug.com/dawn/485 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_p
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 
-# Crash when creating the bindgroup. Most likely because we are using an invalid VkImageView
-crbug.com/dawn/1043 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture,resource_state:* [ Crash Failure ]
-
 # Flaky crash on shutdown
 crbug.com/1236132 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:onscreenCanvas,uploadToWebGL:* [ RetryOnFailure Crash ]
 
