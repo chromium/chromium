@@ -200,7 +200,7 @@ declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md), and not functional at all for
   # iOS. The default linker everywhere else.
-  use_lld = is_clang && (!is_apple || (target_os == "mac" && chrome_pgo_phase != 1))
+  use_lld = is_clang && (!is_apple || host_os == "linux")
 }
 
 declare_args() {
