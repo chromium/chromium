@@ -31,7 +31,8 @@ class ContentSettingsManagerImpl
         content::BrowserContext* browser_context) = 0;
 
     // Allows delegate to override AllowStorageAccess(). If the delegate returns
-    // true here, the default logic will be bypassed.
+    // true here, the default logic will be bypassed. Can be called on any
+    // thread.
     virtual bool AllowStorageAccess(
         int render_process_id,
         int render_frame_id,
@@ -66,9 +67,17 @@ class ContentSettingsManagerImpl
                         ContentSettingsType type) override;
 
  private:
-  ContentSettingsManagerImpl(content::RenderProcessHost* render_process_host,
-                             std::unique_ptr<Delegate> delegate);
+  ContentSettingsManagerImpl(int render_process_id,
+                             std::unique_ptr<Delegate> delegate,
+                             scoped_refptr<CookieSettings> cookie_settings);
   ContentSettingsManagerImpl(const ContentSettingsManagerImpl& other);
+
+  static void CreateOnThread(
+      int render_process_id,
+      mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
+          receiver,
+      scoped_refptr<CookieSettings> cookie_settings,
+      std::unique_ptr<ContentSettingsManagerImpl::Delegate> delegate);
 
   std::unique_ptr<Delegate> delegate_;
 
@@ -77,6 +86,8 @@ class ContentSettingsManagerImpl
 
   // Used to look up storage permissions.
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content_settings

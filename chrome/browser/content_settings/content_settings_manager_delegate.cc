@@ -4,10 +4,13 @@
 
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -48,6 +51,24 @@ void OnFileSystemAccessedInGuestView(int render_process_id,
   web_view_permission_helper->RequestFileSystemPermission(
       url, allowed, std::move(continuation));
 }
+
+// TODO(crbug.com/1187753): Simplify this once NavigationThreadingOptimizations
+// is launched.
+void RunOrPostTaskOnSequence(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::OnceCallback<void(bool)> callback,
+    bool result) {
+  if (task_runner->RunsTasksInCurrentSequence()) {
+    DCHECK(!base::FeatureList::IsEnabled(
+        features::kNavigationThreadingOptimizations));
+    std::move(callback).Run(result);
+    return;
+  }
+
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kNavigationThreadingOptimizations));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
+}
 #endif
 
 }  // namespace
@@ -75,8 +96,13 @@ bool ContentSettingsManagerDelegate::AllowStorageAccess(
                           StorageType::FILE_SYSTEM &&
       extensions::WebViewRendererState::GetInstance()->IsGuest(
           render_process_id)) {
-    OnFileSystemAccessedInGuestView(render_process_id, render_frame_id, url,
-                                    allowed, std::move(*callback));
+    content::RunOrPostTaskOnThread(
+        FROM_HERE, content::BrowserThread::UI,
+        base::BindOnce(&OnFileSystemAccessedInGuestView, render_process_id,
+                       render_frame_id, url, allowed,
+                       base::BindOnce(&RunOrPostTaskOnSequence,
+                                      base::SequencedTaskRunnerHandle::Get(),
+                                      std::move(*callback))));
     return true;
   }
 #endif

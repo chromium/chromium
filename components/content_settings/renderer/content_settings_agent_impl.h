@@ -113,6 +113,11 @@ class ContentSettingsAgentImpl
       const blink::WebFrame* frame,
       const blink::WebURL& secondary_url);
 
+  void SetContentSettingsManager(
+      mojo::Remote<mojom::ContentSettingsManager> manager) {
+    content_settings_manager_ = std::move(manager);
+  }
+
  protected:
   // Allow this to be overridden by tests.
   virtual void BindContentSettingsManager(
