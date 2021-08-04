@@ -1,9 +1,11 @@
 abigailbklein@google.com
 aboxhall@chromium.org
 aleventhal@chromium.org
+dlibby@microsoft.com
 dmazzoni@chromium.org
 dtseng@chromium.org
 katie@chromium.org
+kschmi@microsoft.com
 nektar@chromium.org
 
 per-file *.mojom=set noparent
