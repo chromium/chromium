@@ -10258,6 +10258,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
+      <message name="IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TITLE" desc="Title for a confirmation dialog shown on the captured tab when capture of that tab is terminated due to enterprise policy.">
+        Screen sharing has ended
+      </message>
+      <message name="IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TEXT" desc="Text to be shown in a confirmation dialog on the captured tab when capture of that tab is terminated due to enterprise policy.">
+         Your organization doesn't allow you to share this content. If you need help, contact your administrator.
+      </message>
+
       <!--Printer registration message for local discovery and Print Preview-->
       <message name="IDS_CLOUD_PRINT_REGISTER_PRINTER_INFORMATION" desc="Information about registering printers with Google Cloud Print shown to the user before they confirm registration.">
         Documents are <ph name="BEGIN_LINK_HELP">&lt;a is="action-link" href="https://support.google.com/cloudprint/answer/2541843" target="_blank"&gt;</ph>sent to Google<ph name="END_LINK_HELP">&lt;/a&gt;</ph> to prepare them for printing. View, edit and manage your printers and printer history on the <ph name="BEGIN_LINK_DASHBOARD">&lt;a is="action-link" href="https://www.google.com/cloudprint#jobs" target="_blank"&gt;</ph>Google Cloud Print dashboard<ph name="END_LINK_DASHBOARD">&lt;/a&gt;</ph>.
