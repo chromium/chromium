@@ -1054,12 +1054,6 @@ const base::Feature kMacSyscallSandbox{"MacSyscallSandbox",
 const base::Feature kRetryGetVideoCaptureDeviceInfos{
     "RetryGetVideoCaptureDeviceInfos", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 #endif  // defined(OS_MAC)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
