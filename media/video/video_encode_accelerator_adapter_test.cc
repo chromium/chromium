@@ -225,6 +225,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
           absl::optional<VideoEncoder::CodecDescription>) {
         if (output.timestamp == base::TimeDelta::FromMilliseconds(1))
           EXPECT_EQ(output.temporal_id, 1);
+        else if (output.timestamp == base::TimeDelta::FromMilliseconds(2))
+          EXPECT_EQ(output.temporal_id, 1);
         else
           EXPECT_EQ(output.temporal_id, 2);
         outputs_count++;
@@ -234,6 +236,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
         BitstreamBufferMetadata result(1, keyframe, frame->timestamp());
         if (frame->timestamp() == base::TimeDelta::FromMilliseconds(1)) {
+          result.h264 = H264Metadata();
+          result.h264->temporal_idx = 1;
+        } else if (frame->timestamp() == base::TimeDelta::FromMilliseconds(2)) {
           result.vp8 = Vp8Metadata();
           result.vp8->temporal_idx = 1;
         } else {
@@ -249,11 +254,15 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
                                  base::TimeDelta::FromMilliseconds(1));
   auto frame2 = CreateGreenFrame(options.frame_size, pixel_format,
                                  base::TimeDelta::FromMilliseconds(2));
+  auto frame3 = CreateGreenFrame(options.frame_size, pixel_format,
+                                 base::TimeDelta::FromMilliseconds(3));
   adapter()->Encode(frame1, true, ValidatingStatusCB());
   RunUntilIdle();
   adapter()->Encode(frame2, true, ValidatingStatusCB());
   RunUntilIdle();
-  EXPECT_EQ(outputs_count, 2);
+  adapter()->Encode(frame3, true, ValidatingStatusCB());
+  RunUntilIdle();
+  EXPECT_EQ(outputs_count, 3);
 }
 
 TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
