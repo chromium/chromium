@@ -281,8 +281,8 @@
             field_dependencies: ["color-scheme"]
           },
           {
-            method: "AccentColor()",
-            field_dependencies: ["accent-color"]
+            method: "AccentColorResolved()",
+            field_dependencies: ["accent-color", "color"]
           }
         ],
         predicates_to_test: [
