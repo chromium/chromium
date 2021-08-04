@@ -102,13 +102,6 @@ config("runtime_library") {
     # does not match ours.
     defines += [ "_LIBCPP_NO_AUTO_LINK" ]
 
-    if (is_component_build) {
-      # TODO(crbug.com/1090975): Disable the exclude_from_explicit_instantiation
-      # to work around compiler bugs in the interaction between it and
-      # dllimport/dllexport.
-      defines += [ "_LIBCPP_HIDE_FROM_ABI=_LIBCPP_HIDDEN" ]
-    }
-
     # Add a debug visualizer for Microsoft's debuggers so that they can display
     # libc++ types well.
     if (libcxx_natvis_include) {
