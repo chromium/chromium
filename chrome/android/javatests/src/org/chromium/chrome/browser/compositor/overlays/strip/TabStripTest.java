@@ -541,12 +541,14 @@ public class TabStripTest {
 
         // Create visibility callback helper.
         final CallbackHelper helper = new CallbackHelper();
-        tab.addObserver(new StripLayoutTab.Observer() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                // Notify the callback when tab becomes visible.
-                if (visible) helper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new StripLayoutTab.Observer() {
+                @Override
+                public void onVisibilityChanged(boolean visible) {
+                    // Notify the callback when tab becomes visible.
+                    if (visible) helper.notifyCalled();
+                }
+            });
         });
 
         // Open another incognito tab to switch to the incognito model.
@@ -717,12 +719,14 @@ public class TabStripTest {
 
         // Create visibility callback helper.
         final CallbackHelper helper = new CallbackHelper();
-        tab.addObserver(new StripLayoutTab.Observer() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                // Notify the helper when tab becomes visible.
-                if (visible) helper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new StripLayoutTab.Observer() {
+                @Override
+                public void onVisibilityChanged(boolean visible) {
+                    // Notify the helper when tab becomes visible.
+                    if (visible) helper.notifyCalled();
+                }
+            });
         });
 
         // Select tab 0.
@@ -760,11 +764,13 @@ public class TabStripTest {
 
         // Create callback helper to be notified when first tab becomes visible.
         final CallbackHelper visibleHelper = new CallbackHelper();
-        tabs[0].addObserver(new StripLayoutTab.Observer() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                if (visible) visibleHelper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabs[0].addObserver(new StripLayoutTab.Observer() {
+                @Override
+                public void onVisibilityChanged(boolean visible) {
+                    if (visible) visibleHelper.notifyCalled();
+                }
+            });
         });
 
         // Switch to the first tab and wait until it's visible.
@@ -779,11 +785,13 @@ public class TabStripTest {
 
         // Create callback helper to be notified when first tab is no longer visible.
         final CallbackHelper notVisibleHelper = new CallbackHelper();
-        tabs[0].addObserver(new StripLayoutTab.Observer() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                if (!visible) notVisibleHelper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabs[0].addObserver(new StripLayoutTab.Observer() {
+                @Override
+                public void onVisibilityChanged(boolean visible) {
+                    if (!visible) notVisibleHelper.notifyCalled();
+                }
+            });
         });
 
         // Scroll tab strip to 0 and check tab positions.
@@ -863,7 +871,8 @@ public class TabStripTest {
                 tabModelSelectedCallback.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getTabModelSelector().addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getTabModelSelector().addObserver(observer));
         StripLayoutHelperManager manager =
                 TabStripUtils.getStripLayoutHelperManager(mActivityTestRule.getActivity());
         TabStripUtils.clickCompositorButton(manager.getModelSelectorButton(),
@@ -873,7 +882,9 @@ public class TabStripTest {
         } catch (TimeoutException e) {
             Assert.fail("Tab model selected event never occurred.");
         }
-        mActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
+        });
     }
 
     /**
