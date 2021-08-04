@@ -48,8 +48,15 @@ if (is_ios) {
 test("components_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
-  if (is_android || is_linux || is_chromeos || is_mac || is_win) {
+  if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     data = [ "test/data/" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    ]
   }
 
   # Add only ":unit_tests" dependencies here.If your tests have dependencies
