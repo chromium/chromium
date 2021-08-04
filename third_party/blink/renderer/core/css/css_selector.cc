@@ -143,6 +143,10 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           FALLTHROUGH;
         case kPseudoIs:
           return MaximumSpecificity(SelectorList());
+        case kPseudoHas:
+          return MaximumSpecificity(SelectorList());
+        case kPseudoRelativeLeftmost:
+          return 0;
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
         case kPseudoAny:
@@ -342,6 +346,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoXrOverlay:
     case kPseudoModal:
     case kPseudoHas:
+    case kPseudoRelativeLeftmost:
       return kPseudoIdNone;
   }
 
@@ -369,6 +374,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-modal", CSSSelector::kPseudoModal},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
     {"-internal-popup-open", CSSSelector::kPseudoPopupOpen},
+    {"-internal-relative-leftmost", CSSSelector::kPseudoRelativeLeftmost},
     {"-internal-shadow-host-has-appearance",
      CSSSelector::kPseudoHostHasAppearance},
     {"-internal-spatial-navigation-focus",
@@ -727,6 +733,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPastCue:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
+    case kPseudoRelativeLeftmost:
     case kPseudoRequired:
     case kPseudoRoot:
     case kPseudoScope:
@@ -870,6 +877,9 @@ const CSSSelector* CSSSelector::SerializeCompound(
         case kPseudoIs:
         case kPseudoWhere:
           break;
+        case kPseudoRelativeLeftmost:
+          NOTREACHED();
+          return nullptr;
         default:
           break;
       }
@@ -993,6 +1003,14 @@ String CSSSelector::SelectorText() const {
       case kShadowSlot:
         result = builder.ToString() + result;
         break;
+      case kRelativeDescendant:
+        return builder.ToString() + result;
+      case kRelativeChild:
+        return "> " + builder.ToString() + result;
+      case kRelativeDirectAdjacent:
+        return "+ " + builder.ToString() + result;
+      case kRelativeIndirectAdjacent:
+        return "~ " + builder.ToString() + result;
     }
   }
   NOTREACHED();
