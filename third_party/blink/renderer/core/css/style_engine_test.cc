@@ -1588,7 +1588,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrast) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredContrast(
       mojom::blink::PreferredContrast::kNoPreference);
-  color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kNone);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -1622,7 +1621,8 @@ TEST_F(StyleEngineTest, MediaQueriesChangePrefersContrast) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 
-  color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
+  color_scheme_helper.SetPreferredContrast(
+      mojom::blink::PreferredContrast::kCustom);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(MakeRGB(0, 0, 255),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
@@ -1636,7 +1636,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredContrast(
       mojom::blink::PreferredContrast::kNoPreference);
-  color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kNone);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -1646,6 +1645,9 @@ TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
       }
       @media (prefers-contrast: less) {
         body { color: orange }
+      }
+      @media (prefers-contrast: custom) {
+        body { color: yellow }
       }
     </style>
     <body></body>
@@ -1667,6 +1669,13 @@ TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
       mojom::blink::PreferredContrast::kLess);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(MakeRGB(255, 165, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+
+  color_scheme_helper.SetPreferredContrast(
+      mojom::blink::PreferredContrast::kCustom);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(MakeRGB(255, 255, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 }

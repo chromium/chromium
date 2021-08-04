@@ -123,7 +123,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kNoPreference = 0,
     kMore = 1,
     kLess = 2,
-    kMaxValue = kLess,
+    kCustom = 3,
+    kMaxValue = kCustom,
   };
 
   // IMPORTANT!
@@ -431,8 +432,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Notify observers of caption style changes.
   virtual void NotifyOnCaptionStyleUpdated();
 
-  // Returns whether the user has an explicit contrast preference, i.e. whether
-  // we are in forced colors mode or PreferredContrast is set.
+  // Returns whether the user has an explicit contrast preference.
   virtual bool UserHasContrastPreference() const;
 
   // Returns whether we are in forced colors mode, controlled by system

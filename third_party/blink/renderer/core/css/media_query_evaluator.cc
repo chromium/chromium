@@ -924,6 +924,8 @@ static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kNoPreference:
       return preferred_contrast ==
              mojom::blink::PreferredContrast::kNoPreference;
+    case CSSValueID::kCustom:
+      return preferred_contrast == mojom::blink::PreferredContrast::kCustom;
     default:
       NOTREACHED();
       return false;

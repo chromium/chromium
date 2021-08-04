@@ -3400,6 +3400,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     case ui::NativeTheme::PreferredContrast::kLess:
       web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kLess;
       break;
+    case ui::NativeTheme::PreferredContrast::kCustom:
+      web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kCustom;
+      break;
   }
 
   UpdatePreferredColorScheme(

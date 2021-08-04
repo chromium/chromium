@@ -70,7 +70,7 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kMore);
 
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorRED);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kCustom);
 
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorYELLOW);
   EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kLess);

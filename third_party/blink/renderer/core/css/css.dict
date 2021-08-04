@@ -927,6 +927,7 @@
 "hidden-matchable"
 "more"
 "less"
+"custom"
 
 # at-rules
 "@charset"

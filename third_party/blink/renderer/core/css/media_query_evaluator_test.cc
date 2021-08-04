@@ -191,6 +191,7 @@ MediaQueryEvaluatorTestCase g_preferscontrast_nopreference_cases[] = {
     {"(prefers-contrast: more)", false},
     {"(prefers-contrast: less)", false},
     {"(prefers-contrast: no-preference)", true},
+    {"(prefers-contrast: custom)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
@@ -199,6 +200,7 @@ MediaQueryEvaluatorTestCase g_preferscontrast_more_cases[] = {
     {"(prefers-contrast: more)", true},
     {"(prefers-contrast: less)", false},
     {"(prefers-contrast: no-preference)", false},
+    {"(prefers-contrast: custom)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
@@ -207,6 +209,16 @@ MediaQueryEvaluatorTestCase g_preferscontrast_less_cases[] = {
     {"(prefers-contrast: more)", false},
     {"(prefers-contrast: less)", true},
     {"(prefers-contrast: no-preference)", false},
+    {"(prefers-contrast: custom)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_preferscontrast_custom_cases[] = {
+    {"(prefers-contrast)", true},
+    {"(prefers-contrast: more)", false},
+    {"(prefers-contrast: less)", false},
+    {"(prefers-contrast: no-preference)", false},
+    {"(prefers-contrast: custom)", true},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
@@ -503,6 +515,14 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_preferscontrast_less_cases, media_query_evaluator);
+  }
+
+  // Prefers-contrast - custom.
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kCustom;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_custom_cases, media_query_evaluator);
   }
 }
 

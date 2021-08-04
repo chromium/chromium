@@ -378,6 +378,8 @@ class PrefersContrastTest
         return "more";
       case ui::NativeTheme::PreferredContrast::kLess:
         return "less";
+      case ui::NativeTheme::PreferredContrast::kCustom:
+        return "custom";
     }
   }
 
@@ -437,7 +439,8 @@ INSTANTIATE_TEST_SUITE_P(
     PrefersContrastTest,
     testing::Values(ui::NativeTheme::PreferredContrast::kNoPreference,
                     ui::NativeTheme::PreferredContrast::kMore,
-                    ui::NativeTheme::PreferredContrast::kLess));
+                    ui::NativeTheme::PreferredContrast::kLess,
+                    ui::NativeTheme::PreferredContrast::kCustom));
 
 class ProtocolHandlerTest : public InProcessBrowserTest {
  public:

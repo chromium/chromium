@@ -149,8 +149,7 @@ bool NativeTheme::ShouldUseDarkColors() const {
 
 bool NativeTheme::UserHasContrastPreference() const {
   return GetPreferredContrast() !=
-             NativeTheme::PreferredContrast::kNoPreference ||
-         InForcedColorsMode();
+         NativeTheme::PreferredContrast::kNoPreference;
 }
 
 bool NativeTheme::InForcedColorsMode() const {
@@ -304,8 +303,11 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     notify_observers = true;
   }
 
-  if (notify_observers)
+  if (notify_observers) {
+    DCHECK(theme_to_update_->UserHasContrastPreference() ||
+           !theme_to_update_->InForcedColorsMode());
     theme_to_update_->NotifyOnNativeThemeUpdated();
+  }
 }
 
 NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {

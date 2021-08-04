@@ -82,7 +82,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
   if (RuntimeEnabledFeatures::PrefersContrastEnabled()) {
     if (media_feature == media_feature_names::kPrefersContrastMediaFeature) {
       return ident == CSSValueID::kNoPreference || ident == CSSValueID::kMore ||
-             ident == CSSValueID::kLess;
+             ident == CSSValueID::kLess || ident == CSSValueID::kCustom;
     }
   }
 
