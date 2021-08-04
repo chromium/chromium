@@ -1,0 +1,21 @@
+# These owners approve changes to VirtualTestSuites.
+#
+# The following things should be checked whether they are justified in the
+# CL description:
+# - If the CL adds virtual tests (by adding new virtual suites or new
+#   directories to existing virtual suties), how many tests the CL adds.
+# - If the number of new tests is big (e.g. >=1000),
+#   - Whether the new tests can be skipped on some platforms / OS versions.
+#   - Whether the new directories are essential for test coverage.
+#   - Whether other alternatives [1] are more suitable than virtual suites.
+#   - How much more time of the swarm jobs for the blink_web_tests step on
+#     bots will take.
+#
+# [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
+
+ikilpatrick@chromium.org
+kojii@chromium.org
+masonf@chromium.org
+pdr@chromium.org
+tkent@chromium.org
+wangxianzhu@chromium.org
