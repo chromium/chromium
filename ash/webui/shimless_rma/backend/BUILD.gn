@@ -15,6 +15,7 @@ static_library("backend") {
     "//ash/webui/shimless_rma/mojom",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/dbus/util",
     "//chromeos/services/network_config/public/mojom:mojom",
     "//components/qr_code_generator",
   ]

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/dbus/util/version_loader.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 
 using chromeos::network_config::mojom::ConnectionStateType;
@@ -121,8 +122,9 @@ void ShimlessRmaService::NetworkSelectionComplete(
 
 void ShimlessRmaService::GetCurrentOsVersion(
     GetCurrentOsVersionCallback callback) {
-  // TODO(gavindodd): Get actual Chrome version.
-  std::move(callback).Run("Chrome OS 0.0.0.0");
+  // TODO(gavindodd): Decide whether to use full or short Chrome version.
+  std::move(callback).Run(chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL));
 }
 
 void ShimlessRmaService::CheckForOsUpdates(CheckForOsUpdatesCallback callback) {
