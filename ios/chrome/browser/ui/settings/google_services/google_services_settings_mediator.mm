@@ -328,6 +328,27 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   }
 }
 
+- (TableViewItem*)allowChromeSigninItem {
+  if (signin::IsSigninAllowedByPolicy(self.userPrefService)) {
+    return
+        [self switchItemWithItemType:AllowChromeSigninItemType
+                        textStringID:
+                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
+                      detailStringID:
+                          IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
+                            dataType:0];
+  }
+  // Disables "Allow Chrome Sign-in" switch with a disclosure that the
+  // setting has been disabled by the organization.
+  return [self
+      TableViewInfoButtonItemType:AllowChromeSigninItemType
+                     textStringID:
+                         IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
+                   detailStringID:
+                       IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
+                           status:NO];
+}
+
 #pragma mark - Loads sync section
 
 // Loads the sync section.
@@ -689,16 +710,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   if (!_nonPersonalizedItems) {
     NSMutableArray* items = [NSMutableArray array];
     if (signin::IsMobileIdentityConsistencyEnabled()) {
-      int detailTextID =
-          signin::IsSigninAllowedByPolicy(self.userPrefService)
-              ? IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
-              : IDS_IOS_GOOGLE_SERVICES_SETTINGS_SIGNIN_DISABLED_BY_ADMINISTRATOR;
-      SyncSwitchItem* allowSigninItem =
-          [self switchItemWithItemType:AllowChromeSigninItemType
-                          textStringID:
-                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
-                        detailStringID:detailTextID
-                              dataType:0];
+      TableViewItem* allowSigninItem = [self allowChromeSigninItem];
       allowSigninItem.accessibilityIdentifier =
           kAllowSigninItemAccessibilityIdentifier;
       [items addObject:allowSigninItem];
@@ -841,6 +853,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   managedItem.detailText = GetNSString(detailStringID);
   managedItem.statusText = status ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  if (!status) {
+    managedItem.tintColor = [UIColor colorNamed:kGrey300Color];
+    managedItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
   managedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   return managedItem;
