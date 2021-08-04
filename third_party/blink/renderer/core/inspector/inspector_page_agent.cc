@@ -1824,4 +1824,19 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
   InspectorBaseAgent::Trace(visitor);
 }
 
+Response InspectorPageAgent::getOriginTrials(
+    const String& frame_id,
+    std::unique_ptr<protocol::Array<protocol::Page::OriginTrial>>*
+        originTrials) {
+  LocalFrame* frame =
+      IdentifiersFactory::FrameById(inspected_frames_, frame_id);
+
+  if (!frame)
+    return Response::InvalidParams("Invalid frame id");
+
+  *originTrials = CreateOriginTrials(frame->DomWindow());
+
+  return Response::Success();
+}
+
 }  // namespace blink

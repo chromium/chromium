@@ -7361,6 +7361,13 @@ domain Page
     returns
       array of PermissionsPolicyFeatureState states
 
+  # Get Origin Trials on given frame.
+  experimental command getOriginTrials
+    parameters
+      FrameId frameId
+    returns
+      array of OriginTrial originTrials
+
   # Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
   # window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media
   # query results).

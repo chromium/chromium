@@ -8,5 +8,9 @@
   await dp.Page.enable();
   testRunner.log(
     (await dp.Page.getResourceTree()).result.frameTree.frame.originTrials);
+
+  const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
+  const result = (await dp.Page.getOriginTrials({frameId})).result;
+  testRunner.log(result.originTrials);
   testRunner.completeTest();
 });

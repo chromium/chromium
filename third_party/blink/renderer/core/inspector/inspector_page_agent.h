@@ -148,6 +148,9 @@ class CORE_EXPORT InspectorPageAgent final
       std::unique_ptr<
           protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>*)
       override;
+  protocol::Response getOriginTrials(
+      const String& frame_id,
+      std::unique_ptr<protocol::Array<protocol::Page::OriginTrial>>*) override;
 
   protocol::Response startScreencast(Maybe<String> format,
                                      Maybe<int> quality,
