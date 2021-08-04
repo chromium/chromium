@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "qrZePjKjcYAEId2PuvAx2MQsYIfhgn_DV1qfYiFrGMUC"  # 30.6.5
+  version: "Dogc_gNCYNb3fIG-ovlMkV5EhjaYwdA_Jw9goUpl3A8C"  # 30.7.5
   dest_path: ".emulator_sdk"
 }
 
@@ -28,5 +28,9 @@ avd_settings {
     density: 480
     height: 1920
     width: 1080
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
   }
 }
