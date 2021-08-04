@@ -143,15 +143,18 @@ class Port(object):
         ('mac11.0', 'x86'),
         ('mac-arm11.0', 'arm64'),
         ('win7', 'x86'),
-        ('win10', 'x86'),
+        ('win10.1909', 'x86'),
+        ('win10.20h2', 'x86'),
         ('trusty', 'x86_64'),
         ('fuchsia', 'x86_64'),
     )
 
     CONFIGURATION_SPECIFIER_MACROS = {
-        'mac': ['mac10.12', 'mac10.13', 'mac10.14', 'mac10.15', 'mac11.0',
-                'mac-arm11.0'],
-        'win': ['win7', 'win10'],
+        'mac': [
+            'mac10.12', 'mac10.13', 'mac10.14', 'mac10.15', 'mac11.0',
+            'mac-arm11.0'
+        ],
+        'win': ['win7', 'win10.1909', 'win10.20h2'],
         'linux': ['trusty'],
         'fuchsia': ['fuchsia'],
     }

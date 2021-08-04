@@ -56,8 +56,8 @@
     },
     "Win10 Tests x64": {
         "master": "chromium.win",
-        "port_name": "win-win10",
-        "specifiers": ["Win10", "Release"]
+        "port_name": "win-win10.1909",
+        "specifiers": ["Win10.1909", "Release"]
     },
     "Win7 Tests (dbg)(1)": {
         "master": "chromium.win",
@@ -127,8 +127,14 @@
     },
     "win10-blink-rel": {
         "master": "tryserver.blink",
-        "port_name": "win-win10",
-        "specifiers": ["Win10", "Release"],
+        "port_name": "win-win10.1909",
+        "specifiers": ["Win10.1909", "Release"],
+        "is_try_builder": true
+    },
+    "win10.20h2-blink-rel": {
+        "master": "tryserver.blink",
+        "port_name": "win-win10.20h2",
+        "specifiers": ["Win10.20h2", "Release"],
         "is_try_builder": true
     },
     "linux-rel": {
@@ -148,8 +154,8 @@
     },
     "win10_chromium_x64_rel_ng": {
         "master": "tryserver.chromium.win",
-        "port_name": "win-win10",
-        "specifiers": ["Win10", "Release"],
+        "port_name": "win-win10.1909",
+        "specifiers": ["Win10.1909", "Release"],
         "is_try_builder": true,
         "is_cq_builder":true
     },

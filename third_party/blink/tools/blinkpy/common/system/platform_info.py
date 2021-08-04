@@ -191,7 +191,12 @@ class PlatformInfo(object):
 
     def _determine_win_version(self, win_version_tuple):
         if win_version_tuple[:2] == (10, 0):
-            return '10'
+            # came across instances where build number was 15063.
+            # Treat those as 1909.
+            if win_version_tuple[2] > 19000:
+                return '10.20h2'
+            else:
+                return '10.1909'
         if win_version_tuple[:2] == (6, 3):
             return '8.1'
         if win_version_tuple[:2] == (6, 2):

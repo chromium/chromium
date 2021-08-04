@@ -47,7 +47,7 @@ SPECIAL_PREFIXES = ('# tags:', '# results:', '# conflicts_allowed:')
 
 _PLATFORM_TOKENS_LIST = [
     'Android', 'Fuchsia', 'Linux', 'Mac', 'Mac10.12', 'Mac10.13', 'Mac10.14',
-    'Win', 'Win7', 'Win10'
+    'Win', 'Win7', 'Win10.1909', 'Win10.20h2'
 ]
 
 _BUILD_TYPE_TOKEN_LIST = [
