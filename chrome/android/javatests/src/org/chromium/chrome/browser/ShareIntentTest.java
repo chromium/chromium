@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -34,9 +33,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -135,40 +133,42 @@ public class ShareIntentTest {
             // package and class names do not matter.
             return new MockChromeActivity(mActivityTestRule.getActivity());
         });
-        RootUiCoordinator rootUiCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return new RootUiCoordinator(mockActivity, null,
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ActivityWindowAndroid activityWindowAndroid =
+                    new ActivityWindowAndroid(mockActivity, false, null);
+            BrowserControlsManager browserControlsManager = new BrowserControlsManager(
+                    mockActivity, BrowserControlsManager.ControlsPosition.TOP);
+            RootUiCoordinator rootUiCoordinator = new RootUiCoordinator(mockActivity, null,
                     mockActivity.getShareDelegateSupplier(), mockActivity.getActivityTabProvider(),
                     null, null, null, null, new OneshotSupplierImpl<>(),
                     new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                     ()
                             -> null,
-                    new BrowserControlsManager(
-                            mockActivity, BrowserControlsManager.ControlsPosition.TOP),
-                    mActivityTestRule.getActivity().getWindowAndroid(), new DummyJankTracker());
-        });
-        ShareHelper.setLastShareComponentName(
-                null, new ComponentName("test.package", "test.activity"));
+                    browserControlsManager, activityWindowAndroid, new DummyJankTracker(),
+                    mockActivity.getLifecycleDispatcher(), mockActivity.getLayoutManagerSupplier(),
+                    /* menuOrKeyboardActionController= */ mockActivity,
+                    mockActivity::getActivityThemeColor,
+                    mockActivity.getModalDialogManagerSupplier(),
+                    /* appMenuBlocker= */ mockActivity, mockActivity::supportsAppMenu,
+                    mockActivity::supportsFindInPage, mockActivity.getTabCreatorManagerSupplier(),
+                    browserControlsManager.getFullscreenManager(),
+                    mockActivity.getCompositorViewHolderSupplier(),
+                    mockActivity.getTabContentManagerSupplier(),
+                    mockActivity.getOverviewModeBehaviorSupplier(),
+                    mockActivity::getSnackbarManager, mockActivity.getActivityType(),
+                    mockActivity::isInOverviewMode, mockActivity::isWarmOnResume,
+                    /* appMenuDelegate= */ mockActivity,
+                    /* statusBarColorProvider= */ mockActivity);
 
-        WindowAndroid window = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return new WindowAndroid(mActivityTestRule.getActivity()) {
-                @Override
-                public WeakReference<Activity> getActivity() {
-                    return new WeakReference<>(mockActivity);
-                }
-            };
-        });
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mockActivity.getActivityTab().updateAttachment(window, null));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> rootUiCoordinator.onShareMenuItemSelected(
-                                true /* shareDirectly */, false /* isIncognito */));
-
-        ShareHelper.setLastShareComponentName(null, new ComponentName("", ""));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShareHelper.setLastShareComponentName(
+                    null, new ComponentName("test.package", "test.activity"));
+            mockActivity.getActivityTab().updateAttachment(activityWindowAndroid, null);
+            rootUiCoordinator.onShareMenuItemSelected(
+                    true /* shareDirectly */, false /* isIncognito */);
+            ShareHelper.setLastShareComponentName(null, new ComponentName("", ""));
             mockActivity.getActivityTab().updateAttachment(null, null);
-            window.destroy();
+            activityWindowAndroid.destroy();
         });
     }
 

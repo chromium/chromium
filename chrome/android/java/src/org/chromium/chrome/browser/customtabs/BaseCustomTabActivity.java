@@ -148,14 +148,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
+        // clang-format off
         return new BaseCustomTabRootUiCoordinator(this, getShareDelegateSupplier(),
-                ()
-                        -> mToolbarCoordinator,
-                ()
-                        -> mNavigationController,
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 this::getContextualSearchManager, getTabModelSelectorSupplier(),
-                getBrowserControlsManager(), getWindowAndroid());
+                getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
+                getLayoutManagerSupplier(),
+                /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
+                getModalDialogManagerSupplier(), /* appMenuBlocker= */ this, this::supportsAppMenu,
+                this::supportsFindInPage, getTabCreatorManagerSupplier(), getFullscreenManager(),
+                getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
+                getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
+                this::isInOverviewMode, this::isWarmOnResume,
+                /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
+                () -> mToolbarCoordinator, () -> mNavigationController);
+        // clang-format on
     }
 
     @Override

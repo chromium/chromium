@@ -140,7 +140,9 @@ public class StatusBarColorControllerTest {
     public void testColorWithStatusIndicator() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity().getStatusBarColorController();
+                sActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getStatusBarColorController();
         final Supplier<Integer> statusBarColor = () -> activity.getWindow().getStatusBarColor();
         final int initialColor = statusBarColor.get();
 

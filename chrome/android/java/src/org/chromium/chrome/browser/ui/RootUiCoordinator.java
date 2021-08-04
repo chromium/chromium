@@ -16,6 +16,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -24,6 +25,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -34,11 +36,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.ChromePowerModeVoter;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
@@ -49,10 +53,12 @@ import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -77,6 +83,7 @@ import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
@@ -92,7 +99,10 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -116,6 +126,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.vr.VrModeObserver;
@@ -138,14 +149,14 @@ public class RootUiCoordinator
             new TabObscuringHandlerSupplier();
     private final JankTracker mJankTracker;
 
-    protected ChromeActivity mActivity;
+    protected AppCompatActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
     private final @Nullable AutofillSessionLifetimeController mAutofillSessionLifetimeController;
-    private final ActivityWindowAndroid mWindowAndroid;
+    protected final ActivityWindowAndroid mWindowAndroid;
 
-    private ActivityTabProvider mActivityTabProvider;
+    protected final ActivityTabProvider mActivityTabProvider;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
 
     protected @Nullable FindToolbarManager mFindToolbarManager;
@@ -190,8 +201,8 @@ public class RootUiCoordinator
     private BottomSheetObserver mContextualSearchSuppressor;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
-    private final BrowserControlsManager mBrowserControlsManager;
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    protected final BrowserControlsManager mBrowserControlsManager;
+    protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
     private ManagedMessageDispatcher mMessageDispatcher;
@@ -207,39 +218,95 @@ public class RootUiCoordinator
     @Nullable
     private VoiceRecognitionHandler.Observer mMicStateObserver;
     private MediaCaptureOverlayController mCaptureController;
+    protected final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final ObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier;
+    protected final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final AppMenuBlocker mAppMenuBlocker;
+    private final BooleanSupplier mSupportsAppMenuSupplier;
+    protected final BooleanSupplier mSupportsFindInPageSupplier;
+    protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
+    private final FullscreenManager mFullscreenManager;
+    protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    protected final StatusBarColorController mStatusBarColorController;
+    protected final OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    protected final @ActivityType int mActivityType;
+    protected final Supplier<Boolean> mIsInOverviewModeSupplier;
+    private final Supplier<Boolean> mIsWarmOnResumeSupplier;
+    private final AppMenuDelegate mAppMenuDelegate;
+    private final StatusBarColorProvider mStatusBarColorProvider;
+    private final Supplier<TabContentManager> mTabContentManagerSupplier;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
-     * @param activity The containing {@link ChromeActivity}. TODO(https://crbug.com/931496):
-     *         Remove this in favor of passing in direct dependencies.
-     * @param onOmniboxFocusChangedListener Callback<Boolean> callback to invoke when Omnibox focus
+     * @param activity The activity whose UI the coordinator is responsible for.
+     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus
      *         changes.
-     * @param shareDelegateSupplier Supplies {@link ShareDelegate} object.
+     * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
-     * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
      * @param browserControlsManager Manages the browser controls.
      * @param windowAndroid The current {@link WindowAndroid}.
+     * @param jankTracker Tracks the jank in the app.
+     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
+     * @param layoutManagerSupplier Supplies the {@link LayoutManager}.
+     * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
+     * @param activityThemeColorSupplier Supplies the activity color theme.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param appMenuBlocker Controls the app menu blocking.
+     * @param supportsAppMenuSupplier Supplies the support state for the app menu.
+     * @param supportsFindInPage Supplies the support state for find in page.
+     * @param tabCreatorManagerSupplier Supplies the {@link TabCreatorManager}.
+     * @param fullscreenManager Manages the fullscreen state.
+     * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
+     * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
+     * @param overviewModeBehaviorSupplier Supplier of the overview mode manager.
+     * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
+     * @param activityType The {@link ActivityType} for the activity.
+     * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
+     * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
+     * @param appMenuDelegate The app menu delegate.
+     * @param statusBarColorProvider Provides the status bar color.
      */
-    public RootUiCoordinator(ChromeActivity activity,
+    public RootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
-            OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+            @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull ActivityTabProvider tabProvider,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
+            @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
+            @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
-            @NonNull ActivityWindowAndroid windowAndroid, JankTracker jankTracker) {
+            @NonNull ActivityWindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @NonNull ObservableSupplier<LayoutManagerImpl> layoutManagerSupplier,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull Supplier<Integer> activityThemeColorSupplier,
+            @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull AppMenuBlocker appMenuBlocker,
+            @NonNull BooleanSupplier supportsAppMenuSupplier,
+            @NonNull BooleanSupplier supportsFindInPage,
+            @NonNull Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            @NonNull FullscreenManager fullscreenManager,
+            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
+            @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
+            @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
+            @NonNull AppMenuDelegate appMenuDelegate,
+            @NonNull StatusBarColorProvider statusBarColorProvider) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -247,25 +314,42 @@ public class RootUiCoordinator
         setupUnownedUserDataSuppliers();
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
         mBrowserControlsManager = browserControlsManager;
-        mActivity.getLifecycleDispatcher().register(this);
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
+        mAppMenuBlocker = appMenuBlocker;
+        mSupportsAppMenuSupplier = supportsAppMenuSupplier;
+        mSupportsFindInPageSupplier = supportsFindInPage;
+        mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
+        mFullscreenManager = fullscreenManager;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mActivityType = activityType;
+        mIsInOverviewModeSupplier = isInOverviewModeSupplier;
+        mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
+        mAppMenuDelegate = appMenuDelegate;
+        mStatusBarColorProvider = statusBarColorProvider;
 
-        mMenuOrKeyboardActionController = mActivity.getMenuOrKeyboardActionController();
+        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
 
         mLayoutManagerSupplierCallback = this::onLayoutManagerAvailable;
-        mActivity.getLayoutManagerSupplier().addObserver(mLayoutManagerSupplierCallback);
+        mLayoutManagerSupplier = layoutManagerSupplier;
+        mLayoutManagerSupplier.addObserver(mLayoutManagerSupplierCallback);
 
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
         mAccessibilityVisibilityHandler =
-                new AccessibilityVisibilityHandler(activity.getLifecycleDispatcher(),
+                new AccessibilityVisibilityHandler(mActivityLifecycleDispatcher,
                         mActivityTabProvider, mTabObscuringHandlerSupplier.get());
         // While Autofill is supported on Android O, meaningful Autofill interactions in Chrome
         // require the compatibility mode introduced in Android P.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mAutofillSessionLifetimeController = new AutofillSessionLifetimeController(
-                    activity, activity.getLifecycleDispatcher(), mActivityTabProvider);
+                    activity, mActivityLifecycleDispatcher, mActivityTabProvider);
         } else {
             mAutofillSessionLifetimeController = null;
         }
@@ -289,13 +373,23 @@ public class RootUiCoordinator
         mStartSurfaceParentTabSupplier = startSurfaceParentTabSupplier;
 
         mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabProvider,
-                mActivity::getActivityThemeColor, mActivity::isTablet,
+                activityThemeColorSupplier,
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity),
                 shouldAllowThemingInNightMode(), shouldAllowBrightThemeColors());
+
+        mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
+                mActivity.getResources(), mStatusBarColorProvider, mOverviewModeBehaviorSupplier,
+                mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
     public ToolbarManager getToolbarManager() {
         return mToolbarManager;
+    }
+
+    public StatusBarColorController getStatusBarColorController() {
+        return mStatusBarColorController;
     }
 
     // TODO(jinsukkim): remove this in favor of wiring it directly.
@@ -309,7 +403,7 @@ public class RootUiCoordinator
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof QrCodeDialog) {
             QrCodeDialog qrCodeDialog = (QrCodeDialog) fragment;
-            qrCodeDialog.setAndroidPermissionDelegate(mActivity.getWindowAndroid());
+            qrCodeDialog.setAndroidPermissionDelegate(mWindowAndroid);
         }
     }
 
@@ -321,7 +415,8 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
 
         destroyUnownedUserDataSuppliers();
-        mActivity.getLayoutManagerSupplier().removeObserver(mLayoutManagerSupplierCallback);
+        mActivityLifecycleDispatcher.unregister(this);
+        mLayoutManagerSupplier.removeObserver(mLayoutManagerSupplierCallback);
 
         if (mMessageDispatcher != null) {
             mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
@@ -363,7 +458,7 @@ public class RootUiCoordinator
 
         if (mAppMenuCoordinator != null) {
             mAppMenuCoordinator.unregisterAppMenuBlocker(this);
-            mAppMenuCoordinator.unregisterAppMenuBlocker(mActivity);
+            mAppMenuCoordinator.unregisterAppMenuBlocker(mAppMenuBlocker);
             mAppMenuCoordinator.destroy();
         }
 
@@ -376,8 +471,8 @@ public class RootUiCoordinator
 
         if (mVrModeObserver != null) VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
 
-        if (mModalDialogManagerObserver != null && mActivity.getModalDialogManager() != null) {
-            mActivity.getModalDialogManager().removeObserver(mModalDialogManagerObserver);
+        if (mModalDialogManagerObserver != null && mModalDialogManagerSupplier.hasValue()) {
+            mModalDialogManagerSupplier.get().removeObserver(mModalDialogManagerObserver);
         }
 
         if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
@@ -446,16 +541,16 @@ public class RootUiCoordinator
         initAppMenu();
         initDirectActionInitializer();
         initContextualSearchSuppressor();
-        if (mAppMenuCoordinator != null) {
+        if (mAppMenuCoordinator != null && mModalDialogManagerSupplier.hasValue()) {
             mModalDialogManagerObserver = new ModalDialogManagerObserver() {
                 @Override
                 public void onDialogAdded(PropertyModel model) {
                     mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
                 }
             };
-            mActivity.getModalDialogManager().addObserver(mModalDialogManagerObserver);
+            mModalDialogManagerSupplier.get().addObserver(mModalDialogManagerObserver);
         }
-        mChromeActionModeHandler = new ChromeActionModeHandler(mActivity.getActivityTabProvider(),
+        mChromeActionModeHandler = new ChromeActionModeHandler(mActivityTabProvider,
                 mToolbarManager::onActionBarVisibilityChanged, (searchText) -> {
                     if (mTabModelSelectorSupplier.get() == null) return;
 
@@ -463,7 +558,7 @@ public class RootUiCoordinator
                             searchText, ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
                     if (TextUtils.isEmpty(query)) return;
 
-                    Tab tab = mActivity.getActivityTabProvider().get();
+                    Tab tab = mActivityTabProvider.get();
                     TrackerFactory
                             .getTrackerForProfile(Profile.fromWebContents(tab.getWebContents()))
                             .notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
@@ -484,7 +579,7 @@ public class RootUiCoordinator
         VrModuleProvider.registerVrModeObserver(mVrModeObserver);
 
         mCaptureController = new MediaCaptureOverlayController(
-                mActivity.getWindowAndroid(), mActivity.findViewById(R.id.capture_overlay));
+                mWindowAndroid, mActivity.findViewById(R.id.capture_overlay));
 
         // Ensure the bottom sheet's container has been laid out at least once before hiding it.
         // TODO(1196804): This should be owned by the BottomSheetControllerImpl, but there are some
@@ -516,16 +611,16 @@ public class RootUiCoordinator
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     new ChromeMessageAutodismissDurationProvider(),
-                    mWindowAndroid::startAnimationOverContent, mActivity.getWindowAndroid());
+                    mWindowAndroid::startAnimationOverContent, mWindowAndroid);
             mMessageQueueMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                     mMessageContainerCoordinator, mActivityTabProvider,
-                    mLayoutStateProviderOneShotSupplier, mActivity.getModalDialogManagerSupplier(),
+                    mLayoutStateProviderOneShotSupplier, mModalDialogManagerSupplier,
                     mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }
         DownloadManagerService.getDownloadManagerService().onActivityLaunched(
-                mActivity, mMessageDispatcher, mActivity.getModalDialogManager());
+                mActivity, mMessageDispatcher, mModalDialogManagerSupplier.get());
     }
 
     /**
@@ -591,7 +686,7 @@ public class RootUiCoordinator
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
         } else if (id == R.id.get_image_descriptions_id) {
             ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(mActivity,
-                    mActivity.getModalDialogManager(), mActivityTabProvider.get().getWebContents());
+                    mModalDialogManagerSupplier.get(), mActivityTabProvider.get().getWebContents());
         }
 
         return false;
@@ -695,12 +790,12 @@ public class RootUiCoordinator
             };
 
             mIdentityDiscController = new IdentityDiscController(
-                    mActivity, mActivity.getLifecycleDispatcher(), mProfileSupplier);
+                    mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
             ShareButtonController shareButtonController = new ShareButtonController(mActivity,
                     AppCompatResources.getDrawable(
                             mActivity, R.drawable.ic_toolbar_share_offset_24dp),
                     mActivityTabProvider, mShareDelegateSupplier, trackerSupplier, new ShareUtils(),
-                    mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
+                    mActivityLifecycleDispatcher, mModalDialogManagerSupplier.get(),
                     () -> mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS));
             VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
                     new VoiceToolbarButtonController.VoiceSearchDelegate() {
@@ -724,20 +819,17 @@ public class RootUiCoordinator
             VoiceToolbarButtonController voiceToolbarButtonController =
                     new VoiceToolbarButtonController(mActivity,
                             AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
-                            mActivityTabProvider, trackerSupplier,
-                            mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
-                            voiceSearchDelegate);
+                            mActivityTabProvider, trackerSupplier, mActivityLifecycleDispatcher,
+                            mModalDialogManagerSupplier.get(), voiceSearchDelegate);
             OptionalNewTabButtonController newTabButtonController =
                     new OptionalNewTabButtonController(mActivity,
                             AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
-                            mActivity.getLifecycleDispatcher(),
-                            mActivity.getTabCreatorManagerSupplier(), mTabModelSelectorSupplier,
-                            trackerSupplier);
+                            mActivityLifecycleDispatcher, mTabCreatorManagerSupplier,
+                            mTabModelSelectorSupplier, trackerSupplier);
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
-                            mActivity.getLifecycleDispatcher(),
-                            new AdaptiveButtonActionMenuCoordinator(), mActivity.getWindowAndroid(),
-                            SharedPreferencesManager.getInstance());
+                            mActivityLifecycleDispatcher, new AdaptiveButtonActionMenuCoordinator(),
+                            mWindowAndroid, SharedPreferencesManager.getInstance());
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
@@ -747,24 +839,22 @@ public class RootUiCoordinator
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
-                    mActivity.getFullscreenManager(), toolbarContainer,
-                    mActivity.getCompositorViewHolder(), urlFocusChangedCallback,
-                    mTopUiThemeColorProvider, mTabObscuringHandlerSupplier.get(),
-                    mShareDelegateSupplier, mIdentityDiscController, mButtonDataProviders,
-                    mActivityTabProvider, mScrimCoordinator, mActionModeControllerCallback,
-                    mFindToolbarManager, mProfileSupplier, mBookmarkBridgeSupplier,
-                    mCanAnimateBrowserControls, mLayoutStateProviderOneShotSupplier,
-                    mAppMenuSupplier, shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier,
-                    mStartSurfaceSupplier, mOmniboxFocusStateSupplier,
-                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier, mWindowAndroid,
-                    mActivity::isInOverviewMode, mActivity.getModalDialogManagerSupplier(),
-                    mActivity.getStatusBarColorController(),
-                    /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher(),
-                    mStartSurfaceParentTabSupplier, mBottomSheetController,
-                    mActivity::isWarmOnResume, mActivity.getTabContentManager(),
-                    /* tabCreatorManager= */ mActivity, mActivity.getOverviewModeBehaviorSupplier(),
-                    mActivity.getSnackbarManager(), mJankTracker);
-            if (!mActivity.supportsAppMenu()) {
+                    mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
+                    urlFocusChangedCallback, mTopUiThemeColorProvider,
+                    mTabObscuringHandlerSupplier.get(), mShareDelegateSupplier,
+                    mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
+                    mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
+                    mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
+                    mLayoutStateProviderOneShotSupplier, mAppMenuSupplier,
+                    shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier, mStartSurfaceSupplier,
+                    mOmniboxFocusStateSupplier, mIntentMetadataOneshotSupplier,
+                    mPromoShownOneshotSupplier, mWindowAndroid, mIsInOverviewModeSupplier,
+                    mModalDialogManagerSupplier, mStatusBarColorController, mAppMenuDelegate,
+                    mActivityLifecycleDispatcher, mStartSurfaceParentTabSupplier,
+                    mBottomSheetController, mIsWarmOnResumeSupplier,
+                    mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
+                    mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker);
+            if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
 
@@ -787,8 +877,7 @@ public class RootUiCoordinator
                 new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
-                        mActivity.getStatusBarColorController().setStatusBarScrimFraction(
-                                scrimFraction);
+                        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
                     }
 
                     @Override
@@ -857,14 +946,14 @@ public class RootUiCoordinator
     private void initAppMenu() {
         // TODO(https://crbug.com/931496): Revisit this as part of the broader
         // discussion around activity-specific UI customizations.
-        if (mActivity.supportsAppMenu()) {
+        if (mSupportsAppMenuSupplier.getAsBoolean()) {
             mAppMenuCoordinator = AppMenuCoordinatorFactory.createAppMenuCoordinator(mActivity,
-                    mActivity.getLifecycleDispatcher(), mToolbarManager, mActivity,
+                    mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
 
             mAppMenuCoordinator.registerAppMenuBlocker(this);
-            mAppMenuCoordinator.registerAppMenuBlocker(mActivity);
+            mAppMenuCoordinator.registerAppMenuBlocker(mAppMenuBlocker);
 
             mAppMenuSupplier.set(mAppMenuCoordinator);
         }
@@ -875,7 +964,7 @@ public class RootUiCoordinator
     }
 
     private void initFindToolbarManager() {
-        if (!mActivity.supportsFindInPage()) return;
+        if (!mSupportsFindInPageSupplier.getAsBoolean()) return;
 
         int stubId = R.id.find_toolbar_stub;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
@@ -945,7 +1034,7 @@ public class RootUiCoordinator
         };
 
         Supplier<OverlayPanelManager> panelManagerSupplier = ()
-                -> mActivity.getCompositorViewHolder().getLayoutManager().getOverlayPanelManager();
+                -> mCompositorViewHolderSupplier.get().getLayoutManager().getOverlayPanelManager();
 
         // TODO(1094000): Initialize after inflation so we don't need to pass in view suppliers.
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
@@ -960,7 +1049,7 @@ public class RootUiCoordinator
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
-                mBrowserControlsManager, mActivity::getModalDialogManager,
+                mBrowserControlsManager, mModalDialogManagerSupplier,
                 this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
                 mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier);
     }
@@ -1003,13 +1092,11 @@ public class RootUiCoordinator
     }
 
     private void initDirectActionInitializer() {
-        @ActivityType
-        int activityType = mActivity.getActivityType();
-        mDirectActionInitializer = new DirectActionInitializer(mActivity, activityType, mActivity,
-                mActivity::onBackPressed, mTabModelSelectorSupplier.get(), mFindToolbarManager,
-                getBottomSheetController(), mBrowserControlsManager,
-                mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider());
-        mActivity.getLifecycleDispatcher().register(mDirectActionInitializer);
+        mDirectActionInitializer = new DirectActionInitializer(mActivity, mActivityType,
+                mMenuOrKeyboardActionController, mActivity::onBackPressed,
+                mTabModelSelectorSupplier.get(), mFindToolbarManager, getBottomSheetController(),
+                mBrowserControlsManager, mCompositorViewHolderSupplier.get(), mActivityTabProvider);
+        mActivityLifecycleDispatcher.register(mDirectActionInitializer);
     }
 
     /**

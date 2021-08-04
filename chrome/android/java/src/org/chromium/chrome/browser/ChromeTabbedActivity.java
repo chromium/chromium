@@ -1593,13 +1593,22 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
-                mIntentMetadataOneshotSupplier, getShareDelegateSupplier(),
-                getActivityTabProvider(), mEphemeralTabCoordinatorSupplier,
-                mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
+                getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
+                mBookmarkBridgeSupplier, this::getContextualSearchManager,
                 getTabModelSelectorSupplier(), mStartSurfaceSupplier,
-                mLayoutStateProviderOneshotSupplier, mStartSurfaceParentTabSupplier,
-                getBrowserControlsManager(), getWindowAndroid(), mJankTracker);
+                mIntentMetadataOneshotSupplier, mLayoutStateProviderOneshotSupplier,
+                mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
+                mJankTracker, getLifecycleDispatcher(), getLayoutManagerSupplier(),
+                /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
+                getModalDialogManagerSupplier(), /* appMenuBlocker= */ this, this::supportsAppMenu,
+                this::supportsFindInPage, getTabCreatorManagerSupplier(), getFullscreenManager(),
+                getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
+                getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
+                this::isInOverviewMode, this::isWarmOnResume,
+                /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
+                mEphemeralTabCoordinatorSupplier, getIntentRequestTracker(),
+                getControlContainerHeightResource(), getInsetObserverView(),
+                this::backShouldCloseTab);
     }
 
     @Override

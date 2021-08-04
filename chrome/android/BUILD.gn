@@ -569,6 +569,7 @@ android_library("chrome_java") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_media:android_media_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
