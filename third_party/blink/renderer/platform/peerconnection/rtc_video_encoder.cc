@@ -224,6 +224,16 @@ bool CreateSpatialLayersConfig(
         spatial_layers,
     media::VideoEncodeAccelerator::Config::InterLayerPredMode*
         inter_layer_pred) {
+  if (codec_settings.codecType == webrtc::kVideoCodecH264 &&
+      codec_settings.H264().numberOfTemporalLayers > 1 &&
+      !RTCVideoEncoder::H264HwSupportForTemporalLayers()) {
+    DVLOG(1) << "H264 temporal layers not yet supported by HW codecs, but use"
+             << " HW codecs and leave the fallback decision to a webrtc client"
+             << " by seeing metadata in webrtc::CodecSpecificInfo";
+
+    return true;
+  }
+
   if (codec_settings.codecType == webrtc::kVideoCodecVP8 &&
       codec_settings.mode == webrtc::VideoCodecMode::kScreensharing &&
       codec_settings.VP8().numberOfTemporalLayers > 1) {
@@ -249,6 +259,22 @@ bool CreateSpatialLayersConfig(
 
   // We fill SpatialLayer only in temporal layer or spatial layer encoding.
   switch (codec_settings.codecType) {
+    case webrtc::kVideoCodecH264:
+      if (codec_settings.H264().numberOfTemporalLayers > 1) {
+        // Though we don't support H264 SVC. We allocate 1 element in
+        // spatial_layers for temporal layer encoding.
+        spatial_layers->resize(1u);
+        auto& sl = (*spatial_layers)[0];
+        sl.width = codec_settings.width;
+        sl.height = codec_settings.height;
+        if (!ConvertKbpsToBps(codec_settings.startBitrate, &sl.bitrate_bps))
+          return false;
+        sl.framerate = codec_settings.maxFramerate;
+        sl.max_qp = base::saturated_cast<uint8_t>(codec_settings.qpMax);
+        sl.num_of_temporal_layers = base::saturated_cast<uint8_t>(
+            codec_settings.H264().numberOfTemporalLayers);
+      }
+      break;
     case webrtc::kVideoCodecVP8:
       if (codec_settings.VP8().numberOfTemporalLayers > 1) {
         // Though there is no SVC in VP8 spec. We allocate 1 element in
@@ -993,6 +1019,18 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   webrtc::CodecSpecificInfo info;
   info.codecType = video_codec_type_;
   switch (video_codec_type_) {
+    case webrtc::kVideoCodecH264: {
+      webrtc::CodecSpecificInfoH264& h264 = info.codecSpecific.H264;
+      h264.packetization_mode = webrtc::H264PacketizationMode::NonInterleaved;
+      h264.idr_frame = metadata.key_frame;
+      if (metadata.h264) {
+        h264.temporal_idx = metadata.h264->temporal_idx;
+        h264.base_layer_sync = metadata.h264->layer_sync;
+      } else {
+        h264.temporal_idx = webrtc::kNoTemporalIdx;
+        h264.base_layer_sync = false;
+      }
+    } break;
     case webrtc::kVideoCodecVP8:
       info.codecSpecific.VP8.keyIdx = -1;
       break;
@@ -1599,10 +1637,13 @@ webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
 }
 
 // static
+bool RTCVideoEncoder::H264HwSupportForTemporalLayers() {
+  // Temporal layers are not supported by hardware encoders.
+  return false;
+}
+
+// static
 bool RTCVideoEncoder::Vp9HwSupportForSpatialLayers() {
-  // TODO(crbug.com/1217919): Query spatial scalability support for the HW
-  // encoder instead of checking OS.
-  // Underlying encoder will check the spatial SVC encoding capability on CrOS.
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWEncoding);
 #endif

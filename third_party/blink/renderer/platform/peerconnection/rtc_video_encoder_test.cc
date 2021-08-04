@@ -111,14 +111,14 @@ class RTCVideoEncoderTest
 
     EXPECT_CALL(*mock_gpu_factories_.get(), GetTaskRunner())
         .WillRepeatedly(Return(encoder_thread_.task_runner()));
-    mock_vea_ = ExpectCreateInitAndDestroyVEA();
   }
 
   void TearDown() override {
     DVLOG(3) << __func__;
     EXPECT_TRUE(encoder_thread_.IsRunning());
     RunUntilIdle();
-    rtc_encoder_->Release();
+    if (rtc_encoder_)
+      rtc_encoder_->Release();
     RunUntilIdle();
     encoder_thread_.Stop();
   }
@@ -148,6 +148,8 @@ class RTCVideoEncoderTest
         ADD_FAILURE() << "Unexpected codec type: " << codec_type;
         media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
     }
+
+    mock_vea_ = ExpectCreateInitAndDestroyVEA();
     rtc_encoder_ = std::make_unique<RTCVideoEncoder>(media_profile, false,
                                                      mock_gpu_factories_.get());
   }
@@ -180,8 +182,8 @@ class RTCVideoEncoderTest
     return codec;
   }
 
-  webrtc::VideoCodec GetSVCLayerCodec(size_t num_spatial_layers) {
-    const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  webrtc::VideoCodec GetSVCLayerCodec(webrtc::VideoCodecType codec_type,
+                                      size_t num_spatial_layers) {
     webrtc::VideoCodec codec{};
     codec.codecType = codec_type;
     codec.width = kInputFrameWidth;
@@ -194,23 +196,34 @@ class RTCVideoEncoderTest
     codec.qpMax = 30;
     codec.numberOfSimulcastStreams = 1;
     codec.mode = webrtc::VideoCodecMode::kRealtimeVideo;
-    webrtc::VideoCodecVP9& vp9 = *codec.VP9();
-    vp9.numberOfTemporalLayers = 3;
-    vp9.numberOfSpatialLayers = num_spatial_layers;
-    num_spatial_layers_ = num_spatial_layers;
-    constexpr int kDenom[] = {4, 2, 1};
-    for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
-      webrtc::SpatialLayer& sl = codec.spatialLayers[sid];
-      const int denom = kDenom[sid];
-      sl.width = kInputFrameWidth / denom;
-      sl.height = kInputFrameHeight / denom;
-      sl.maxFramerate = 24;
-      sl.numberOfTemporalLayers = vp9.numberOfTemporalLayers;
-      sl.targetBitrate = kStartBitrate / denom;
-      sl.maxBitrate = sl.targetBitrate / denom;
-      sl.minBitrate = sl.targetBitrate / denom;
-      sl.qpMax = 30;
-      sl.active = true;
+
+    switch (codec_type) {
+      case webrtc::kVideoCodecH264: {
+        webrtc::VideoCodecH264& h264 = *codec.H264();
+        h264.numberOfTemporalLayers = 2;
+      } break;
+      case webrtc::kVideoCodecVP9: {
+        webrtc::VideoCodecVP9& vp9 = *codec.VP9();
+        vp9.numberOfTemporalLayers = 3;
+        vp9.numberOfSpatialLayers = num_spatial_layers;
+        num_spatial_layers_ = num_spatial_layers;
+        constexpr int kDenom[] = {4, 2, 1};
+        for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
+          webrtc::SpatialLayer& sl = codec.spatialLayers[sid];
+          const int denom = kDenom[sid];
+          sl.width = kInputFrameWidth / denom;
+          sl.height = kInputFrameHeight / denom;
+          sl.maxFramerate = 24;
+          sl.numberOfTemporalLayers = vp9.numberOfTemporalLayers;
+          sl.targetBitrate = kStartBitrate / denom;
+          sl.maxBitrate = sl.targetBitrate / denom;
+          sl.minBitrate = sl.targetBitrate / denom;
+          sl.qpMax = 30;
+          sl.active = true;
+        }
+      } break;
+      default:
+        NOTREACHED();
     }
     return codec;
   }
@@ -349,17 +362,24 @@ TEST_P(RTCVideoEncoderTest, RepeatedInitSucceeds) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
-INSTANTIATE_TEST_SUITE_P(CodecProfiles,
-                         RTCVideoEncoderTest,
-                         Values(webrtc::kVideoCodecVP8,
-                                webrtc::kVideoCodecH264));
-
-TEST_F(RTCVideoEncoderTest, CreateAndInitSucceedsForTemporalLayer) {
-  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/1);
+TEST_P(RTCVideoEncoderTest, CreateAndInitSucceedsForTemporalLayer) {
+  const webrtc::VideoCodecType codec_type = GetParam();
+  if (codec_type == webrtc::kVideoCodecVP8) {
+    GTEST_SKIP() << "VP8 temporal layer encoding is not supported";
+    return;
+  }
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(codec_type,
+                                                 /*num_spatial_layers=*/1);
   CreateEncoder(tl_codec.codecType);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
 }
+
+INSTANTIATE_TEST_SUITE_P(CodecProfiles,
+                         RTCVideoEncoderTest,
+                         Values(webrtc::kVideoCodecH264,
+                                webrtc::kVideoCodecVP8,
+                                webrtc::kVideoCodecVP9));
 
 // Checks that WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE is returned when there is
 // platform error.
@@ -477,8 +497,9 @@ TEST_F(RTCVideoEncoderTest, PreserveTimestamps) {
             rtc_encoder_->Encode(rtc_frame, &frame_types));
 }
 
-TEST_F(RTCVideoEncoderTest, EncodeTemporalLayer) {
-  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/1);
+TEST_F(RTCVideoEncoderTest, EncodeVP9TemporalLayer) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/1);
   CreateEncoder(tl_codec.codecType);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
@@ -512,7 +533,8 @@ TEST_F(RTCVideoEncoderTest, EncodeTemporalLayer) {
 
 // http://crbug.com/1226875
 TEST_F(RTCVideoEncoderTest, EncodeSpatialLayer) {
-  webrtc::VideoCodec sl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+  webrtc::VideoCodec sl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/3);
   CreateEncoder(sl_codec.codecType);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&sl_codec, kVideoEncoderSettings));
@@ -540,8 +562,9 @@ TEST_F(RTCVideoEncoderTest, EncodeSpatialLayer) {
   }
 }
 
-TEST_F(RTCVideoEncoderTest, CreateAndInitThreeLayerSvc) {
-  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+TEST_F(RTCVideoEncoderTest, CreateAndInitVP9ThreeLayerSvc) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/3);
   CreateEncoder(tl_codec.codecType);
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -558,8 +581,9 @@ TEST_F(RTCVideoEncoderTest, CreateAndInitThreeLayerSvc) {
                       Field(&SpatialLayer::height, kInputFrameHeight)))));
 }
 
-TEST_F(RTCVideoEncoderTest, CreateAndInitSvcSinglecast) {
-  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+TEST_F(RTCVideoEncoderTest, CreateAndInitVP9SvcSinglecast) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/3);
   tl_codec.spatialLayers[1].active = false;
   tl_codec.spatialLayers[2].active = false;
   CreateEncoder(tl_codec.codecType);
@@ -573,8 +597,10 @@ TEST_F(RTCVideoEncoderTest, CreateAndInitSvcSinglecast) {
                         Field(&SpatialLayer::height, kInputFrameHeight / 4)))));
 }
 
-TEST_F(RTCVideoEncoderTest, CreateAndInitSvcSinglecastWithoutTemporalLayers) {
-  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
+TEST_F(RTCVideoEncoderTest,
+       CreateAndInitVP9SvcSinglecastWithoutTemporalLayers) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/3);
   tl_codec.spatialLayers[1].active = false;
   tl_codec.spatialLayers[2].active = false;
   tl_codec.spatialLayers[0].numberOfTemporalLayers = 1;
