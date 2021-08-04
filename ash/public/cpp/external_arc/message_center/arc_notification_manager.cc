@@ -14,6 +14,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -22,7 +23,6 @@
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
 #include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/message_center_observer.h"
-#include "ui/message_center/views/message_view_factory.h"
 
 using arc::ConnectionHolder;
 using arc::MojoChannel;
@@ -133,7 +133,7 @@ class ArcNotificationManager::InstanceOwner {
 
 // static
 void ArcNotificationManager::SetCustomNotificationViewFactory() {
-  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+  MessageViewFactory::SetCustomNotificationViewFactory(
       kArcNotificationCustomViewType,
       base::BindRepeating(&CreateCustomMessageView));
 }
@@ -656,7 +656,7 @@ void ArcNotificationManager::Init(
 
   instance_owner_->holder()->SetHost(this);
   instance_owner_->holder()->AddObserver(this);
-  if (!message_center::MessageViewFactory::HasCustomNotificationViewFactory(
+  if (!MessageViewFactory::HasCustomNotificationViewFactory(
           kArcNotificationCustomViewType)) {
     SetCustomNotificationViewFactory();
   }

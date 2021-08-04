@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_VIEW_FACTORY_H_
-#define UI_MESSAGE_CENTER_VIEWS_MESSAGE_VIEW_FACTORY_H_
+#ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_VIEW_FACTORY_H_
+#define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_VIEW_FACTORY_H_
 
-#include "ui/message_center/message_center_export.h"
+#include "ash/ash_export.h"
 
 #include <memory>
 #include <string>
@@ -13,23 +13,24 @@
 #include "base/callback_forward.h"
 
 namespace message_center {
-
 class MessageView;
 class Notification;
+}  // namespace message_center
+
+namespace ash {
 
 // Creates appropriate MessageViews for notifications depending on the
-// notification type. A notification is top level if it needs to be rendered
-// outside the browser window. No custom shadows are created for top level
-// notifications on Linux with Aura.
-class MESSAGE_CENTER_EXPORT MessageViewFactory {
+// notification type.
+class ASH_EXPORT MessageViewFactory {
  public:
   // A function that creates MessageView for a NOTIFICATION_TYPE_CUSTOM
   // notification.
   using CustomMessageViewFactoryFunction =
-      base::RepeatingCallback<std::unique_ptr<MessageView>(
-          const Notification&)>;
+      base::RepeatingCallback<std::unique_ptr<message_center::MessageView>(
+          const message_center::Notification&)>;
 
-  static MessageView* Create(const Notification& notification);
+  static message_center::MessageView* Create(
+      const message_center::Notification& notification);
 
   // Sets the function that will be invoked to create a custom notification view
   // for a specific |custom_view_type|. This should be a repeating callback.
@@ -45,6 +46,6 @@ class MESSAGE_CENTER_EXPORT MessageViewFactory {
       const std::string& custom_view_type);
 };
 
-}  // namespace message_center
+}  // namespace ash
 
-#endif  // UI_MESSAGE_CENTER_VIEWS_MESSAGE_VIEW_FACTORY_H_
+#endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_VIEW_FACTORY_H_

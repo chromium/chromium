@@ -69,6 +69,8 @@ class ASH_EXPORT AshMessagePopupCollection
   void NotifyPopupClosed(message_center::MessagePopupView* popup) override;
   void AnimationStarted() override;
   void AnimationFinished() override;
+  message_center::MessagePopupView* CreatePopup(
+      const message_center::Notification& notification) override;
 
   // Returns the current tray bubble height or 0 if there is no bubble.
   int tray_bubble_height_for_test() const { return tray_bubble_height_; }

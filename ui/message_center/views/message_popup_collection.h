@@ -134,8 +134,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void AnimationStarted() {}
   virtual void AnimationFinished() {}
 
-  // virtual for testing.
   virtual MessagePopupView* CreatePopup(const Notification& notification);
+
+  // virtual for testing.
   virtual void RestartPopupTimers();
   virtual void PausePopupTimers();
 

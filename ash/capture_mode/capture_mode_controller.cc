@@ -21,6 +21,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
@@ -52,7 +53,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/snapshot/snapshot.h"
 
 namespace ash {
@@ -345,14 +345,14 @@ CaptureModeController::CaptureModeController(
           &CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek,
           weak_ptr_factory_.GetWeakPtr()));
 
-  DCHECK(!message_center::MessageViewFactory::HasCustomNotificationViewFactory(
+  DCHECK(!MessageViewFactory::HasCustomNotificationViewFactory(
       kScreenShotNotificationType));
-  DCHECK(!message_center::MessageViewFactory::HasCustomNotificationViewFactory(
+  DCHECK(!MessageViewFactory::HasCustomNotificationViewFactory(
       kScreenRecordingNotificationType));
-  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+  MessageViewFactory::SetCustomNotificationViewFactory(
       kScreenShotNotificationType,
       base::BindRepeating(&CaptureModeNotificationView::CreateForImage));
-  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+  MessageViewFactory::SetCustomNotificationViewFactory(
       kScreenRecordingNotificationType,
       base::BindRepeating(&CaptureModeNotificationView::CreateForVideo));
 
@@ -364,9 +364,9 @@ CaptureModeController::~CaptureModeController() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
   // Remove the custom notification view factories.
-  message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+  MessageViewFactory::ClearCustomNotificationViewFactory(
       kScreenShotNotificationType);
-  message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+  MessageViewFactory::ClearCustomNotificationViewFactory(
       kScreenRecordingNotificationType);
 
   DCHECK_EQ(g_instance, this);

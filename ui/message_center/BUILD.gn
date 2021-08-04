@@ -100,8 +100,6 @@ component("message_center") {
         "views/message_popup_view.h",
         "views/message_view.cc",
         "views/message_view.h",
-        "views/message_view_factory.cc",
-        "views/message_view_factory.h",
         "views/notification_background_painter.cc",
         "views/notification_background_painter.h",
         "views/notification_control_buttons_view.cc",

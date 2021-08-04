@@ -35,6 +35,7 @@ static_library("external_arc") {
   ]
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",

@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/message_center/views/message_view_factory.h"
+#include "ash/system/message_center/message_view_factory.h"
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/notification_view_md.h"
 
-namespace message_center {
+namespace ash {
 
 namespace {
 
@@ -21,8 +21,8 @@ using MessageViewCustomFactoryMap =
 base::LazyInstance<MessageViewCustomFactoryMap>::Leaky g_custom_view_factories =
     LAZY_INSTANCE_INITIALIZER;
 
-std::unique_ptr<MessageView> GetCustomNotificationView(
-    const Notification& notification) {
+std::unique_ptr<message_center::MessageView> GetCustomNotificationView(
+    const message_center::Notification& notification) {
   MessageViewCustomFactoryMap* factories = g_custom_view_factories.Pointer();
   auto iter = factories->find(notification.custom_view_type());
   DCHECK(iter != factories->end());
@@ -32,17 +32,18 @@ std::unique_ptr<MessageView> GetCustomNotificationView(
 }  // namespace
 
 // static
-MessageView* MessageViewFactory::Create(const Notification& notification) {
-  MessageView* notification_view = nullptr;
+message_center::MessageView* MessageViewFactory::Create(
+    const message_center::Notification& notification) {
+  message_center::MessageView* notification_view = nullptr;
   switch (notification.type()) {
-    case NOTIFICATION_TYPE_BASE_FORMAT:
-    case NOTIFICATION_TYPE_IMAGE:
-    case NOTIFICATION_TYPE_MULTIPLE:
-    case NOTIFICATION_TYPE_SIMPLE:
-    case NOTIFICATION_TYPE_PROGRESS:
+    case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
+    case message_center::NOTIFICATION_TYPE_IMAGE:
+    case message_center::NOTIFICATION_TYPE_MULTIPLE:
+    case message_center::NOTIFICATION_TYPE_SIMPLE:
+    case message_center::NOTIFICATION_TYPE_PROGRESS:
       // Rely on default construction after the switch.
       break;
-    case NOTIFICATION_TYPE_CUSTOM:
+    case message_center::NOTIFICATION_TYPE_CUSTOM:
       notification_view = GetCustomNotificationView(notification).release();
       break;
     default:
@@ -58,7 +59,7 @@ MessageView* MessageViewFactory::Create(const Notification& notification) {
   }
 
   if (!notification_view)
-    notification_view = new NotificationViewMD(notification);
+    notification_view = new message_center::NotificationViewMD(notification);
 
   return notification_view;
 }
@@ -85,4 +86,4 @@ void MessageViewFactory::ClearCustomNotificationViewFactory(
   g_custom_view_factories.Get().erase(custom_view_type);
 }
 
-}  // namespace message_center
+}  // namespace ash

@@ -1091,6 +1091,8 @@ component("ash") {
     "system/message_center/message_center_ui_delegate.h",
     "system/message_center/message_center_utils.cc",
     "system/message_center/message_center_utils.h",
+    "system/message_center/message_view_factory.cc",
+    "system/message_center/message_view_factory.h",
     "system/message_center/metrics_utils.cc",
     "system/message_center/metrics_utils.h",
     "system/message_center/notification_swipe_control_view.cc",

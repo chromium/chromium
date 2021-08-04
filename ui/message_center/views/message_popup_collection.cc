@@ -16,6 +16,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_view_md.h"
 
 namespace message_center {
 
@@ -243,7 +244,11 @@ MessagePopupView* MessagePopupCollection::GetPopupViewForNotificationID(
 
 MessagePopupView* MessagePopupCollection::CreatePopup(
     const Notification& notification) {
-  return new MessagePopupView(notification, this);
+  bool a11_feedback_on_init =
+      notification.rich_notification_data()
+          .should_make_spoken_feedback_for_popup_updates;
+  return new MessagePopupView(new NotificationViewMD(notification), this,
+                              a11_feedback_on_init);
 }
 
 void MessagePopupCollection::RestartPopupTimers() {

@@ -9,6 +9,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -29,7 +30,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_md.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -207,11 +207,11 @@ class PhoneHubNotificationController::NotificationDelegate
 };
 
 PhoneHubNotificationController::PhoneHubNotificationController() {
-  if (message_center::MessageViewFactory::HasCustomNotificationViewFactory(
+  if (MessageViewFactory::HasCustomNotificationViewFactory(
           kNotificationCustomViewType))
     return;
 
-  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+  MessageViewFactory::SetCustomNotificationViewFactory(
       kNotificationCustomViewType,
       base::BindRepeating(
           &PhoneHubNotificationController::CreateCustomNotificationView,

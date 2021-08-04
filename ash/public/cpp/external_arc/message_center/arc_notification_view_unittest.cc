@@ -12,6 +12,7 @@
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_surface.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
@@ -29,7 +30,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -69,9 +69,9 @@ class ArcNotificationViewTest : public AshTestBase {
 
     item_ = std::make_unique<MockArcNotificationItem>(kDefaultNotificationKey);
 
-    message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+    MessageViewFactory::ClearCustomNotificationViewFactory(
         kArcNotificationCustomViewType);
-    message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+    MessageViewFactory::SetCustomNotificationViewFactory(
         kArcNotificationCustomViewType,
         base::BindRepeating(
             &ArcNotificationViewTest::CreateCustomMessageViewForTest,
@@ -81,7 +81,7 @@ class ArcNotificationViewTest : public AshTestBase {
 
     std::unique_ptr<ArcNotificationView> notification_view(
         static_cast<ArcNotificationView*>(
-            message_center::MessageViewFactory::Create(*notification)));
+            MessageViewFactory::Create(*notification)));
     notification_view_ = notification_view.get();
     surface_ =
         std::make_unique<MockArcNotificationSurface>(kDefaultNotificationKey);

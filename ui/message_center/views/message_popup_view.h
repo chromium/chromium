@@ -24,8 +24,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
  public:
   METADATA_HEADER(MessagePopupView);
 
-  MessagePopupView(const Notification& notification,
-                   MessagePopupCollection* popup_collection);
+  MessagePopupView(MessageView* message_view,
+                   MessagePopupCollection* popup_collection,
+                   bool a11y_feedback_on_init);
   MessagePopupView(const MessagePopupView&) = delete;
   MessagePopupView& operator=(const MessagePopupView&) = delete;
   ~MessagePopupView() override;

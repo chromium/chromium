@@ -8,6 +8,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/notification_swipe_control_view.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -23,7 +24,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -558,7 +558,7 @@ void UnifiedMessageListView::AnimationCanceled(
 
 MessageView* UnifiedMessageListView::CreateMessageView(
     const Notification& notification) {
-  auto* view = message_center::MessageViewFactory::Create(notification);
+  auto* view = MessageViewFactory::Create(notification);
   view->SetIsNested();
   view->AddObserver(this);
   message_center_view_->ConfigureMessageView(view);

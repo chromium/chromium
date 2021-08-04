@@ -19,6 +19,7 @@
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -43,7 +44,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -137,7 +137,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
 
     surface_manager_ = std::make_unique<ArcNotificationSurfaceManagerImpl>();
 
-    message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+    MessageViewFactory::ClearCustomNotificationViewFactory(
         kArcNotificationCustomViewType);
     ArcNotificationManager::SetCustomNotificationViewFactory();
   }
@@ -184,7 +184,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
   CreateNotificationView(const Notification& notification) {
     std::unique_ptr<ArcNotificationView> notification_view(
         static_cast<ArcNotificationView*>(
-            message_center::MessageViewFactory::Create(notification)));
+            MessageViewFactory::Create(notification)));
 
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -344,13 +344,13 @@ TEST_F(ArcNotificationContentViewTest, CloseButton) {
 TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
   std::string notification_key("notification id");
 
-  message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+  MessageViewFactory::ClearCustomNotificationViewFactory(
       kArcNotificationCustomViewType);
 
   // Override MessageView factory to capture the created notification view in
   // |notification_view|.
   ArcNotificationView* notification_view = nullptr;
-  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+  MessageViewFactory::SetCustomNotificationViewFactory(
       kArcNotificationCustomViewType,
       base::BindLambdaForTesting(
           [&notification_view](const message_center::Notification& notification)

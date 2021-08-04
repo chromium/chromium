@@ -15,7 +15,6 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -30,13 +29,12 @@
 
 namespace message_center {
 
-MessagePopupView::MessagePopupView(const Notification& notification,
-                                   MessagePopupCollection* popup_collection)
-    : message_view_(MessageViewFactory::Create(notification)),
+MessagePopupView::MessagePopupView(MessageView* message_view,
+                                   MessagePopupCollection* popup_collection,
+                                   bool a11y_feedback_on_init)
+    : message_view_(message_view),
       popup_collection_(popup_collection),
-      a11y_feedback_on_init_(
-          notification.rich_notification_data()
-              .should_make_spoken_feedback_for_popup_updates) {
+      a11y_feedback_on_init_(a11y_feedback_on_init) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   if (!message_view_->IsManuallyExpandedOrCollapsed())
