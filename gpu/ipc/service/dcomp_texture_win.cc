@@ -176,7 +176,7 @@ gpu::Mailbox DCOMPTexture::CreateSharedImage() {
       this, mailbox, viz::BGRA_8888, GetSize(), gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       /*usage=*/SHARED_IMAGE_USAGE_DISPLAY, params, attribs,
-      /*use_passthrough=*/false);
+      /*use_passthrough=*/true);
 
   channel_->shared_image_stub()->factory()->RegisterBacking(
       std::move(shared_image), /*allow_legacy_mailbox=*/false);
