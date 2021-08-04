@@ -34,39 +34,6 @@ AnimationBuilder::~AnimationBuilder() {
     a.first->layer()->GetAnimator()->StartTogether(a.second);
 }
 
-AnimationBuilder& AnimationBuilder::SetDuration(base::TimeDelta duration) {
-  duration_ = duration;
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::SetOpacity(View* view,
-                                               float target_opacity) {
-  AnimationKey key = {view, ui::LayerAnimationElement::OPACITY};
-  AddAnimation(key, ui::LayerAnimationElement::CreateOpacityElement(
-                        target_opacity, duration_));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::SetRoundedCorners(
-    View* view,
-    gfx::RoundedCornersF& rounded_corners) {
-  AnimationKey key = {view, ui::LayerAnimationElement::ROUNDED_CORNERS};
-  AddAnimation(key, ui::LayerAnimationElement::CreateRoundedCornersElement(
-                        rounded_corners, duration_));
-  return *this;
-}
-
-AnimationBuilder& AnimationBuilder::Repeat() {
-  // Go through all empty sequences added in StartSequence() and set the correct
-  // repeating behavior.
-  is_sequence_repeating_ = true;
-  for (auto& animation : animation_sequences_) {
-    animation_sequences_[animation.first].back()->set_is_repeating(
-        is_sequence_repeating_);
-  }
-  return *this;
-}
-
 AnimationBuilder& AnimationBuilder::NewSequence() {
   // Add an empty sequence for all existing views. If the same property is
   // animated at the same time in different sequences PreemptionStrategy will
@@ -87,6 +54,43 @@ AnimationBuilder& AnimationBuilder::EndSequence() {
       animation_sequences_[animation.first].pop_back();
     }
   }
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::SetDuration(base::TimeDelta duration) {
+  duration_ = duration;
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::Repeat() {
+  // Go through all empty sequences added in StartSequence() and set the correct
+  // repeating behavior.
+  is_sequence_repeating_ = true;
+  for (auto& animation : animation_sequences_) {
+    animation_sequences_[animation.first].back()->set_is_repeating(
+        is_sequence_repeating_);
+  }
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::Then() {
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::SetOpacity(View* view,
+                                               float target_opacity) {
+  AnimationKey key = {view, ui::LayerAnimationElement::OPACITY};
+  AddAnimation(key, ui::LayerAnimationElement::CreateOpacityElement(
+                        target_opacity, duration_));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::SetRoundedCorners(
+    View* view,
+    gfx::RoundedCornersF& rounded_corners) {
+  AnimationKey key = {view, ui::LayerAnimationElement::ROUNDED_CORNERS};
+  AddAnimation(key, ui::LayerAnimationElement::CreateRoundedCornersElement(
+                        rounded_corners, duration_));
   return *this;
 }
 

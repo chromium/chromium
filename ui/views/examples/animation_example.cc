@@ -176,9 +176,8 @@ void AnimationExample::CreateExampleView(View* container) {
           .NewSequence()
           .Repeat()
           .SetDuration(base::TimeDelta::FromSeconds(2))
-          // TODO(elainechien): These two opacity changes will be separated by a
-          // .Then() call as they happen in sequence.
           .SetOpacity(view, 0.4f)
+          .Then()
           .SetOpacity(view, 0.9f)
           .EndSequence();
     }

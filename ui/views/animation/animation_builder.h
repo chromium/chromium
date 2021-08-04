@@ -27,7 +27,15 @@ class VIEWS_EXPORT AnimationBuilder {
   AnimationBuilder();
   ~AnimationBuilder();
 
+  AnimationBuilder& NewSequence();
+  AnimationBuilder& EndSequence();
+
   AnimationBuilder& SetDuration(base::TimeDelta duration);
+
+  // No effect if called before NewSequence();
+  AnimationBuilder& Repeat();
+
+  AnimationBuilder& Then();
 
   // These methods should be changed to OnSetXXX if we integrate with the View
   // base class.
@@ -35,10 +43,6 @@ class VIEWS_EXPORT AnimationBuilder {
   AnimationBuilder& SetRoundedCorners(views::View* view,
                                       gfx::RoundedCornersF& rounded_corners);
 
-  // No effect if called before NewSequence();
-  AnimationBuilder& Repeat();
-  AnimationBuilder& NewSequence();
-  AnimationBuilder& EndSequence();
 
   // Called when the animation starts.
   void OnStarted(base::OnceClosure callback);
