@@ -293,8 +293,15 @@ void FrameLoader::SaveScrollState() {
   // scroll offsets. In order to avoid keeping around a stale anchor, we clear
   // it when the saved scroll offset changes.
   history_item->SetScrollAnchorData(ScrollAnchorData());
-  if (ScrollableArea* layout_scrollable_area = frame_->View()->LayoutViewport())
+  if (ScrollableArea* layout_scrollable_area =
+          frame_->View()->LayoutViewport()) {
+    if (!history_item->GetViewState() ||
+        layout_scrollable_area->GetScrollOffset() !=
+            history_item->GetViewState()->scroll_offset_) {
+      document_loader_->DidChangeScrollOffset();
+    }
     history_item->SetScrollOffset(layout_scrollable_area->GetScrollOffset());
+  }
   history_item->SetVisualViewportScrollOffset(ToScrollOffset(
       frame_->GetPage()->GetVisualViewport().VisibleRect().Location()));
 
@@ -422,7 +429,8 @@ void FrameLoader::DetachDocumentLoader(Member<DocumentLoader>& loader,
 void FrameLoader::DidFinishSameDocumentNavigation(
     const KURL& url,
     WebFrameLoadType frame_load_type,
-    HistoryItem* history_item) {
+    HistoryItem* history_item,
+    bool may_restore_scroll_offset) {
   // If we have a state object, we cannot also be a new navigation.
   scoped_refptr<SerializedScriptValue> state_object =
       history_item ? history_item->StateObject() : nullptr;
@@ -438,7 +446,7 @@ void FrameLoader::DidFinishSameDocumentNavigation(
                                        ? std::move(state_object)
                                        : SerializedScriptValue::NullValue());
 
-  if (view_state) {
+  if (view_state && may_restore_scroll_offset) {
     RestoreScrollPositionAndViewState(frame_load_type, *view_state,
                                       history_item->ScrollRestorationType());
   }

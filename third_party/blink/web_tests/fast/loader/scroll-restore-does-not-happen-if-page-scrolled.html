@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<style>
+#content {
+  height: 2000px;
+  width: 2000px;
+}
+</style>
+
+<div id='console'></div>
+<div id='content'></div>
+
+<script src="../../resources/js-test.js"></script>
+<script>
+jsTestIsAsync = true;
+setPrintTestResultsLazily();
+description('Test ensures that frame scroll position is not restored if the ' +
+            'page scrolled away before the history navigation finished.');
+
+// Scroll to (100, 100).
+window.scrollTo(100, 100);
+shouldBe('document.scrollingElement.scrollLeft', '100');
+shouldBe('document.scrollingElement.scrollTop', '100');
+
+// Add a new session history entry with URL fragment #test.
+// The previous session history entry will save the current scroll offset.
+history.pushState(null, null, '#test');
+
+setTimeout(() => {
+  // Scroll to (200, 200).
+  window.scrollTo(200, 200);
+  shouldBe('document.scrollingElement.scrollLeft', '200');
+  shouldBe('document.scrollingElement.scrollTop', '200');
+
+  // Navigate back to the first session history entry. This would normally do a
+  // scroll restoration back to (100, 100) when the navigation commits.
+  history.back();
+  // However, we immediately scroll to (300, 300).
+  window.scrollTo(300, 300);
+  shouldBe('document.scrollingElement.scrollLeft', '300');
+  shouldBe('document.scrollingElement.scrollTop', '300');
+}, 0);
+
+window.addEventListener('hashchange', _ => {
+  // After the back navigation committed, the scroll position stays at (300, 300).
+  debug('Verify that scroll position is kept correctly during navigation.');
+  shouldBe('document.scrollingElement.scrollLeft', '300');
+  shouldBe('document.scrollingElement.scrollTop', '300');
+
+  finishJSTest();
+});
+</script>

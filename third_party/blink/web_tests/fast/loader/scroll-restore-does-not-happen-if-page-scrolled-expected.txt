@@ -1,0 +1,18 @@
+Test ensures that frame scroll position is not restored if the page scrolled away before the history navigation finished.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.scrollingElement.scrollLeft is 100
+PASS document.scrollingElement.scrollTop is 100
+PASS document.scrollingElement.scrollLeft is 200
+PASS document.scrollingElement.scrollTop is 200
+PASS document.scrollingElement.scrollLeft is 300
+PASS document.scrollingElement.scrollTop is 300
+Verify that scroll position is kept correctly during navigation.
+PASS document.scrollingElement.scrollLeft is 300
+PASS document.scrollingElement.scrollTop is 300
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+

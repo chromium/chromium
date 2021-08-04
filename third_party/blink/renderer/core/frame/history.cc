@@ -196,6 +196,7 @@ void History::go(ScriptState* script_state,
       if (Page* page = DomWindow()->GetFrame()->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }
+    DomWindow()->document()->Loader()->DidTriggerBackForwardNavigation();
   } else {
     // We intentionally call reload() for the current frame if delta is zero.
     // Otherwise, navigation happens on the root frame.

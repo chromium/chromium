@@ -315,6 +315,7 @@ struct SameSizeAsDocumentLoader
   WebVector<WebHistoryItem> app_history_forward_entries;
   mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host;
   HashSet<KURL> early_hints_preloaded_resources_;
+  bool scroll_offset_changed_since_last_history_navigation_triggered_;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -642,11 +643,24 @@ void DocumentLoader::DidObserveInputDelay(base::TimeDelta input_delay) {
     GetLocalFrameClient().DidObserveInputDelay(input_delay);
   }
 }
+
 void DocumentLoader::DidObserveLoadingBehavior(LoadingBehaviorFlag behavior) {
   if (frame_) {
     DCHECK_GE(state_, kCommitted);
     GetLocalFrameClient().DidObserveLoadingBehavior(behavior);
   }
+}
+
+void DocumentLoader::DidTriggerBackForwardNavigation() {
+  scroll_offset_changed_since_last_history_navigation_triggered_ = false;
+}
+
+void DocumentLoader::DidChangeScrollOffset() {
+  // The scroll offset changed. If a pending history navigation commits in this
+  // document later on, we should keep the updated scroll offset instead of
+  // trying to restore the scroll offset from the session history entry.
+  // See also https://crbug.com/1209717.
+  scroll_offset_changed_since_last_history_navigation_triggered_ = true;
 }
 
 // static
@@ -1396,6 +1410,10 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   // to check again if frame_ is null.
   if (!frame_ || !frame_->GetPage())
     return;
+
+  bool may_restore_scroll_offset =
+      history_item &&
+      !scroll_offset_changed_since_last_history_navigation_triggered_;
   GetFrameLoader().SaveScrollState();
 
   KURL old_url = frame_->GetDocument()->Url();
@@ -1435,8 +1453,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   // to a same ISN when a history navigation targets a frame that no longer
   // exists (https://crbug.com/705550).
   if (!same_item_sequence_number) {
-    GetFrameLoader().DidFinishSameDocumentNavigation(url, frame_load_type,
-                                                     history_item);
+    GetFrameLoader().DidFinishSameDocumentNavigation(
+        url, frame_load_type, history_item, may_restore_scroll_offset);
   }
 }
 
