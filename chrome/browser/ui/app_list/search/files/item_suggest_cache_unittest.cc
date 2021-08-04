@@ -154,6 +154,13 @@ TEST_F(ItemSuggestCacheTest, ConvertJsonSuccess) {
     })");
   ResultsMatch(ItemSuggestCache::ConvertJsonForTest(&empty_items),
                "the suggestion id", {});
+
+  const base::Value no_items = Parse(R"(
+    {
+      "suggestionSessionId": "the suggestion id"
+    })");
+  ResultsMatch(ItemSuggestCache::ConvertJsonForTest(&no_items),
+               "the suggestion id", {});
 }
 
 TEST_F(ItemSuggestCacheTest, ConvertJsonFailure) {
@@ -191,12 +198,6 @@ TEST_F(ItemSuggestCacheTest, ConvertJsonFailure) {
     })");
   EXPECT_FALSE(
       ItemSuggestCache::ConvertJsonForTest(&no_session_id).has_value());
-
-  const base::Value no_items = Parse(R"(
-    {
-      "suggestionSessionId": "the suggestion id"
-    })");
-  EXPECT_FALSE(ItemSuggestCache::ConvertJsonForTest(&no_items).has_value());
 }
 
 TEST_F(ItemSuggestCacheTest, UpdateCacheDisabledByExperiment) {

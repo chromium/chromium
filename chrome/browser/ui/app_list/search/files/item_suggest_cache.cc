@@ -129,8 +129,10 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
   ItemSuggestCache::Results results(suggestion_id.value());
 
   const auto items = GetList(value, "item");
-  if (!items)
-    return absl::nullopt;
+  if (!items) {
+    // Return empty results if there are no items.
+    return results;
+  }
 
   for (const auto& result_value : items.value()) {
     auto result = ConvertResult(&result_value);
