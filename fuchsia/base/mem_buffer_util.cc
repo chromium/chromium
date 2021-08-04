@@ -106,8 +106,8 @@ fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer,
                                  base::StringPiece name) {
   fuchsia::mem::Buffer output;
   output.size = buffer.size;
-  zx_status_t status = buffer.vmo.create_child(ZX_VMO_CHILD_COPY_ON_WRITE, 0,
-                                               buffer.size, &output.vmo);
+  zx_status_t status = buffer.vmo.create_child(
+      ZX_VMO_CHILD_SNAPSHOT_AT_LEAST_ON_WRITE, 0, buffer.size, &output.vmo);
   ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create_child";
 
   status = output.vmo.set_property(ZX_PROP_NAME, name.data(), name.size());
