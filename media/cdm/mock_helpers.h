@@ -53,7 +53,10 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
 #if defined(OS_WIN)
-  MOCK_METHOD(void, GetCdmOriginId, (GetCdmOriginIdCB callback), (override));
+  MOCK_METHOD(void,
+              GetCdmPreferenceData,
+              (GetCdmPreferenceDataCB callback),
+              (override));
 #endif  // defined(OS_WIN)
 
  private:

@@ -125,6 +125,8 @@ source_set("cdm") {
 
   if (is_win) {
     sources += [
+      "cdm_preference_data.cc",
+      "cdm_preference_data.h",
       "win/media_foundation_cdm.cc",
       "win/media_foundation_cdm.h",
       "win/media_foundation_cdm_factory.cc",

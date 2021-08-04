@@ -2008,7 +2008,7 @@ const char kMediaStorageIdSalt[] = "media.storage_id_salt";
 #if defined(OS_WIN)
 // Mapping of origin to their origin id (UnguessableToken). Origin IDs are only
 // stored for origins using MediaFoundation-based CDMs.
-const char kMediaCdmOrigin[] = "media.cdm.origins";
+const char kMediaCdmOriginData[] = "media.cdm.origin_data";
 #endif  // defined(OS_WIN)
 
 // The last used printer and its settings.

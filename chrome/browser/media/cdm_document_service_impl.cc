@@ -242,7 +242,8 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
-void CdmDocumentServiceImpl::GetCdmOriginId(GetCdmOriginIdCallback callback) {
+void CdmDocumentServiceImpl::GetCdmPreferenceData(
+    GetCdmPreferenceDataCallback callback) {
   const url::Origin cdm_origin = origin();
   if (cdm_origin.opaque()) {
     mojo::ReportBadMessage("EME use is not allowed on opaque origin");
@@ -252,7 +253,22 @@ void CdmDocumentServiceImpl::GetCdmOriginId(GetCdmOriginIdCallback callback) {
   PrefService* user_prefs = user_prefs::UserPrefs::Get(
       content::WebContents::FromRenderFrameHost(render_frame_host())
           ->GetBrowserContext());
+
   std::move(callback).Run(
-      CdmPrefServiceHelper::GetCdmOriginId(user_prefs, cdm_origin));
+      CdmPrefServiceHelper::GetCdmPreferenceData(user_prefs, cdm_origin));
+}
+
+void CdmDocumentServiceImpl::SetCdmClientToken(
+    const std::vector<uint8_t>& client_token) {
+  const url::Origin cdm_origin = origin();
+  if (cdm_origin.opaque()) {
+    mojo::ReportBadMessage("EME use is not allowed on opaque origin");
+    return;
+  }
+
+  PrefService* user_prefs = user_prefs::UserPrefs::Get(
+      content::WebContents::FromRenderFrameHost(render_frame_host())
+          ->GetBrowserContext());
+  CdmPrefServiceHelper::SetCdmClientToken(user_prefs, cdm_origin, client_token);
 }
 #endif  // defined(OS_WIN)

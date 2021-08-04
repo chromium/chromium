@@ -197,7 +197,7 @@ void MediaFoundationCdmFactory::Create(
   DCHECK(cdm_config.allow_distinctive_identifier);
 
   // Don't cache `cdm_origin_id` in this class since user can clear it any time.
-  helper_->GetCdmOriginId(base::BindOnce(
+  helper_->GetCdmPreferenceData(base::BindOnce(
       &MediaFoundationCdmFactory::OnCdmOriginIdObtained,
       weak_factory_.GetWeakPtr(), key_system, cdm_config, session_message_cb,
       session_closed_cb, session_keys_change_cb, session_expiration_update_cb,
@@ -212,8 +212,14 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb,
-    const base::UnguessableToken& cdm_origin_id) {
-  if (cdm_origin_id.is_empty()) {
+    const std::unique_ptr<CdmPreferenceData> cdm_preference_data) {
+  if (!cdm_preference_data) {
+    std::move(cdm_created_cb)
+        .Run(nullptr, "Failed to get the CDM preference data.");
+    return;
+  }
+
+  if (cdm_preference_data->origin_id.is_empty()) {
     std::move(cdm_created_cb).Run(nullptr, "Failed to get the CDM origin ID.");
     return;
   }
@@ -221,7 +227,7 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
   auto cdm = base::MakeRefCounted<MediaFoundationCdm>(
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
                           weak_factory_.GetWeakPtr(), key_system, cdm_config,
-                          cdm_origin_id),
+                          cdm_preference_data->origin_id),
       base::BindRepeating(&MediaFoundationCdmFactory::IsTypeSupported,
                           weak_factory_.GetWeakPtr(), key_system),
       session_message_cb, session_closed_cb, session_keys_change_cb,

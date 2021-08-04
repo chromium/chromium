@@ -682,7 +682,7 @@ extern const char kDefaultVideoCaptureDevice[];
 extern const char kMediaDeviceIdSalt[];
 extern const char kMediaStorageIdSalt[];
 #if defined(OS_WIN)
-extern const char kMediaCdmOrigin[];
+extern const char kMediaCdmOriginData[];
 #endif  // defined(OS_WIN)
 
 extern const char kPrintPreviewStickySettings[];

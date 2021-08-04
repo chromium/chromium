@@ -621,6 +621,23 @@ mojom("mojom") {
     ]
   }
 
+  if (is_win) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "media.mojom.CdmPreferenceData"
+            cpp = "::std::unique_ptr<::media::CdmPreferenceData>"
+            move_only = true
+          },
+        ]
+        traits_headers = [ "cdm_preference_data_mojom_traits.h" ]
+        traits_sources = [ "cdm_preference_data_mojom_traits.cc" ]
+        traits_public_deps = [ "//media" ]
+      },
+    ]
+  }
+
   cpp_typemaps += shared_typemaps
   blink_cpp_typemaps = shared_typemaps
 

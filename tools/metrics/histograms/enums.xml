@@ -81716,7 +81716,7 @@ Full version information for the fingerprint enum values:
   <int value="28" label="kSettingsResetPromptLastTriggeredForHomepage"/>
   <int value="29" label="kMediaStorageIdSalt"/>
   <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
-  <int value="32" label="kMediaCdmOrigin"/>
+  <int value="32" label="kMediaCdmOriginData"/>
 </enum>
 
 <enum name="TranslateAssistContentResult">

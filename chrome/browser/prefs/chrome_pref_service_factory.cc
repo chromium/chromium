@@ -184,7 +184,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
 #if defined(OS_WIN)
     {31, prefs::kSwReporterReportingEnabled, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-    {32, prefs::kMediaCdmOrigin, EnforcementLevel::ENFORCE_ON_LOAD,
+    {32, prefs::kMediaCdmOriginData, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif  // defined(OS_WIN)
 

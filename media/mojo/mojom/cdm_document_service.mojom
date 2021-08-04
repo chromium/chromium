@@ -7,6 +7,20 @@ module media.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// Contains data linked to an origin that the CDM stores in the Preference
+// Service.
+[EnableIf=is_win]
+struct CdmPreferenceData {
+  // The origin ID of the document associated with the CDM. The origin ID
+  // is used in place of the origin when hiding the concrete origin is needed.
+  // The origin ID is also user resettable by clearing the browsing data.
+  mojo_base.mojom.UnguessableToken origin_id;
+
+  // The token is set by the CDM. The token is then saved in the Pref Service so
+  // that it can be reused by the CDM for that same origin in the future.
+  array<uint8>? client_token;
+};
+
 // The service itself is associated with a RenderFrameHost in the browser
 // process and will be called by a client living in the utility process hosting
 // the CDM.
@@ -41,10 +55,15 @@ interface CdmDocumentService {
   [EnableIf=is_chromeos_ash]
   IsVerifiedAccessEnabled() => (bool enabled);
 
-  // Gets the origin ID of the frame associated with the CDM. The origin ID is
-  // used in place of the origin when hiding the concrete origin is needed. The
-  // origin ID is also user resettable by clearing the browsing data.
-  // - `cdm_origin_id`: The origin id of the frame associated with the CDM.
+  // Gets the CDM preference data for the origin associated with the CDM.
+  // - `cdm_preference_data`: The CDM preference data for the origin associated
+  //                          with the CDM.
   [EnableIf=is_win]
-  GetCdmOriginId() => (mojo_base.mojom.UnguessableToken cdm_origin_id);
+  GetCdmPreferenceData() => (CdmPreferenceData cdm_preference_data);
+
+  // Sets the client token for the origin associated with the CDM. The token is
+  // set by the CDM. The token is then saved in the Pref Service so that it can
+  // be reused by the CDM for that same origin in the future.
+  [EnableIf=is_win]
+  SetCdmClientToken(array<uint8> client_token);
 };

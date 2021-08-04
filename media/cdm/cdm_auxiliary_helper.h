@@ -69,7 +69,8 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
 #if defined(OS_WIN)
-  void GetCdmOriginId(GetCdmOriginIdCB callback) override;
+  void GetCdmPreferenceData(GetCdmPreferenceDataCB callback) override;
+  void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
 #endif  // defined(OS_WIN)
 
  private:

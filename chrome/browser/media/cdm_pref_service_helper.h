@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 #define CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 
+#include "media/cdm/cdm_preference_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class PrefService;
@@ -24,8 +26,20 @@ class CdmPrefServiceHelper {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  static base::UnguessableToken GetCdmOriginId(PrefService* user_prefs,
-                                               const url::Origin& origin);
+  // Gets the CDM preference data associated with the current origin. If no
+  // preference data exist for the current origin, an entry is created with a
+  // new origin id and an empty client token. Returns nullptr if the preference
+  // could not be retrieved.
+  static std::unique_ptr<media::CdmPreferenceData> GetCdmPreferenceData(
+      PrefService* user_prefs,
+      const url::Origin& cdm_origin);
+
+  // Sets the client token for the origin associated with the CDM. The token is
+  // set by the CDM. If no entry exist for the current origin, the client token
+  // will not be saved.
+  static void SetCdmClientToken(PrefService* user_prefs,
+                                const url::Origin& cdm_origin,
+                                const std::vector<uint8_t>& client_token);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
