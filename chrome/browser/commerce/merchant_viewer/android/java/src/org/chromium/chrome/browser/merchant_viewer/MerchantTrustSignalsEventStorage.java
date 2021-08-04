@@ -99,14 +99,6 @@ public class MerchantTrustSignalsEventStorage {
         MerchantTrustSignalsEventStorageJni.get().deleteAll(mNativeMerchantSignalDB, onComplete);
     }
 
-    /**
-     * Destroy the database.
-     */
-    public void destroy() {
-        makeNativeAssertion();
-        MerchantTrustSignalsEventStorageJni.get().destroy(mNativeMerchantSignalDB);
-    }
-
     @CalledByNative
     private void setNativePtr(long nativePtr) {
         if (!sSkipNativeAssertionsForTesting) {
@@ -130,7 +122,6 @@ public class MerchantTrustSignalsEventStorage {
     @NativeMethods
     interface Natives {
         void init(MerchantTrustSignalsEventStorage caller, BrowserContextHandle handle);
-        void destroy(long nativeMerchantSignalDB);
         void save(long nativeMerchantSignalDB, String key, long timestamp, Runnable onComplete);
         void load(long nativeMerchantSignalDB, String key,
                 Callback<MerchantTrustSignalsEvent> callback);

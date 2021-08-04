@@ -128,10 +128,6 @@ void MerchantSignalDB::DeleteAll(
       base::android::ScopedJavaGlobalRef<jobject>(joncomplete_for_testing)));
 }
 
-void MerchantSignalDB::Destroy(JNIEnv* env) {
-  proto_db_->Destroy();
-}
-
 static void JNI_MerchantTrustSignalsEventStorage_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
