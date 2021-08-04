@@ -52,17 +52,18 @@ class DeviceNameStore {
     kInvalidName
   };
 
-  // Types of states for the current device name.
+  // Types of states for the current device name. Numerical values from this
+  // enum must stay in sync with the JS enum in device_name_util.js.
   enum class DeviceNameState {
     // Device name can be modified.
-    kCanBeModified,
+    kCanBeModified = 0,
 
     // Device name change is prohibited by policy. An administrator can choose
     // the device name directly and/or prevent managed users from changing it.
-    kCannotBeModifiedBecauseOfPolicy,
+    kCannotBeModifiedBecauseOfPolicy = 1,
 
     // Non-managed users who are not device owners cannot modify the name.
-    kCannotBeModifiedBecauseNotDeviceOwner,
+    kCannotBeModifiedBecauseNotDeviceOwner = 2,
   };
 
   class Observer : public base::CheckedObserver {
@@ -111,7 +112,7 @@ class DeviceNameStore {
   DeviceNameStore();
   virtual ~DeviceNameStore();
 
-  void NotifyDeviceNameChanged();
+  void NotifyDeviceNameMetadataChanged();
 
  private:
   DeviceNameStore(const DeviceNameStore&) = delete;

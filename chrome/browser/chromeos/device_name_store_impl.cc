@@ -102,7 +102,7 @@ void DeviceNameStoreImpl::AttemptDeviceNameUpdate(
     ChangeDeviceName(new_device_name);
 
   device_name_state_ = new_state;
-  NotifyDeviceNameChanged();
+  NotifyDeviceNameMetadataChanged();
 }
 
 DeviceNameStore::SetDeviceNameResult DeviceNameStoreImpl::SetDeviceName(

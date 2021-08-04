@@ -239,6 +239,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_search_page/search_engines_browser_proxy.js",
     "chromeos/bluetooth_page/bluetooth_page_browser_proxy.js",
     "chromeos/os_about_page/device_name_browser_proxy.js",
+    "chromeos/os_about_page/device_name_util.js",
     "chromeos/os_reset_page/os_reset_browser_proxy.js",
     "chromeos/os_settings.js",
     "chromeos/personalization_page/change_picture_browser_proxy.js",

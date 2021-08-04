@@ -36,13 +36,18 @@ DeviceNameStore::SetDeviceNameResult FakeDeviceNameStore::SetDeviceName(
         return DeviceNameStore::SetDeviceNameResult::kInvalidName;
 
       device_name_ = new_device_name;
+      NotifyDeviceNameMetadataChanged();
       return DeviceNameStore::SetDeviceNameResult::kSuccess;
   }
 }
 
 void FakeDeviceNameStore::SetDeviceNameState(
     DeviceNameStore::DeviceNameState device_name_state) {
+  if (device_name_state_ == device_name_state)
+    return;
+
   device_name_state_ = device_name_state;
+  NotifyDeviceNameMetadataChanged();
 }
 
 }  // namespace chromeos

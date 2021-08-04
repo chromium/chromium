@@ -13,6 +13,7 @@ js_type_check("closure_compile_module") {
     ":channel_switcher_dialog",
     ":detailed_build_info",
     ":device_name_browser_proxy",
+    ":device_name_util",
     ":edit_hostname_dialog",
     ":os_about_page",
     ":update_warning_dialog",
@@ -31,6 +32,7 @@ js_library("channel_switcher_dialog") {
 js_library("detailed_build_info") {
   deps = [
     ":channel_switcher_dialog",
+    ":device_name_util",
     ":edit_hostname_dialog",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
@@ -40,12 +42,17 @@ js_library("detailed_build_info") {
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
     "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 
 js_library("device_name_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("device_name_util") {
+  deps = []
 }
 
 js_library("edit_hostname_dialog") {

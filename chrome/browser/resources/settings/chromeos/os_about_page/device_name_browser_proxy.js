@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {DeviceNameState} from './device_name_util.js';
 // clang-format on
 
 /**
  * @typedef {{
  *   deviceName: string,
+ *   deviceNameState: !DeviceNameState,
  * }}
  */
 export let DeviceNameMetadata;
@@ -16,10 +18,10 @@ export let DeviceNameMetadata;
 /** @interface */
 export class DeviceNameBrowserProxy {
   /**
-   * Queries the system for metadata about the device name.
+   * Notifies the system that the page is ready for the device name.
    * @return {!Promise<!DeviceNameMetadata>}
    */
-  getDeviceNameMetadata() {}
+  notifyReadyForDeviceName() {}
 }
 
 /**
@@ -27,8 +29,8 @@ export class DeviceNameBrowserProxy {
  */
 export class DeviceNameBrowserProxyImpl {
   /** @override */
-  getDeviceNameMetadata() {
-    return sendWithPromise('getDeviceNameMetadata');
+  notifyReadyForDeviceName() {
+    return chrome.send('notifyReadyForDeviceName');
   }
 }
 

@@ -19,6 +19,7 @@ import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_in
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from '../../about_page/about_page_browser_proxy.js';
@@ -27,7 +28,8 @@ import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
 
-import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
+import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl, DeviceNameMetadata} from './device_name_browser_proxy.js';
+import {DeviceNameState} from './device_name_util.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -35,6 +37,7 @@ Polymer({
 
   behaviors: [
     DeepLinkingBehavior,
+    WebUIListenerBehavior,
     I18nBehavior,
     RouteObserverBehavior,
   ],
@@ -46,11 +49,11 @@ Polymer({
     /** @private {!ChannelInfo} */
     channelInfo_: Object,
 
-    /** @private */
-    currentlyOnChannelText_: String,
+    /** @private {!DeviceNameMetadata} */
+    deviceNameMetadata_: Object,
 
     /** @private */
-    deviceNameText_: String,
+    currentlyOnChannelText_: String,
 
     /** @private */
     showChannelSwitcherDialog_: Boolean,
@@ -119,7 +122,10 @@ Polymer({
     this.updateChannelInfo_();
 
     if (this.isHostnameSettingEnabled_) {
-      this.updateDeviceName_();
+      this.addWebUIListener(
+          'settings.updateDeviceNameMetadata',
+          this.updateDeviceNameMetadata_.bind(this));
+      DeviceNameBrowserProxyImpl.getInstance().notifyReadyForDeviceName();
     }
   },
 
@@ -165,12 +171,37 @@ Polymer({
     });
   },
 
-  /** @private */
-  updateDeviceName_() {
-    const browserProxy = DeviceNameBrowserProxyImpl.getInstance();
-    browserProxy.getDeviceNameMetadata().then(data => {
-      this.deviceNameText_ = data.deviceName;
-    });
+  /**
+   * @param {!DeviceNameMetadata} data
+   * @private
+   */
+  updateDeviceNameMetadata_(data) {
+    this.deviceNameMetadata_ = data;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDeviceNameText_() {
+    if (!this.deviceNameMetadata_) {
+      return '';
+    }
+
+    return this.deviceNameMetadata_.deviceName;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  canEditDeviceName_() {
+    if (!this.deviceNameMetadata_) {
+      return false;
+    }
+
+    return this.deviceNameMetadata_.deviceNameState ===
+        DeviceNameState.CAN_BE_MODIFIED;
   },
 
   /**

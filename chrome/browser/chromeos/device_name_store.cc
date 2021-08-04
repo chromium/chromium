@@ -61,7 +61,7 @@ void DeviceNameStore::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void DeviceNameStore::NotifyDeviceNameChanged() {
+void DeviceNameStore::NotifyDeviceNameMetadataChanged() {
   for (auto& observer : observer_list_) {
     observer.OnDeviceNameMetadataChanged();
   }

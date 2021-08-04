@@ -6,7 +6,7 @@
 // #import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.m.js';
 // #import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.m.js';
 // #import {BrowserChannel,UpdateStatus,Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {AboutPageBrowserProxyImpl,DeviceNameBrowserProxyImpl,LifetimeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AboutPageBrowserProxyImpl,DeviceNameBrowserProxyImpl,DeviceNameState,LifetimeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
@@ -704,18 +704,54 @@ cr.define('settings_about_page', function() {
       checkCopyBuildDetailsButton();
     });
 
-    test('DeviceName', async () => {
+    /**
+     * Checks whether the "edit device name" button state (enabled/disabled)
+     * correctly reflects whether the user is allowed to edit the name.
+     * @param {string} testDeviceName
+     * @param {DeviceNameState} deviceNameState
+     * @return {!Promise}
+     */
+    function checkDeviceNameMetadata(testDeviceName, deviceNameState) {
+      cr.webUIListenerCallback(
+          'settings.updateDeviceNameMetadata',
+          {deviceName: testDeviceName, deviceNameState: deviceNameState});
+
+      assertEquals(page.$$('#deviceName').innerText, testDeviceName);
+
+      let canEditDeviceName = null;
+      switch (deviceNameState) {
+        case (DeviceNameState.CAN_BE_MODIFIED):
+          canEditDeviceName = true;
+          break;
+        default:
+          canEditDeviceName = false;
+      }
+
+      const canEditDeviceNameButton = page.$$('cr-icon-button');
+      assertTrue(!!canEditDeviceNameButton);
+      assertEquals(canEditDeviceName, !canEditDeviceNameButton.disabled);
+    }
+
+    test('DeviceNameMetadata', async () => {
       loadTimeData.overrideValues({
         isHostnameSettingEnabled: true,
       });
 
-      deviceNameBrowserProxy.setDeviceName('TestDeviceName');
-
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
-      await deviceNameBrowserProxy.whenCalled('getDeviceNameMetadata');
 
-      assertEquals(page.$$('#deviceName').innerText, 'TestDeviceName');
+      await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
+      checkDeviceNameMetadata(
+          'TestDeviceName1', DeviceNameState.CAN_BE_MODIFIED);
+
+      // Verify that we can still make changes to device name metadata even
+      // if notifyReadyForDeviceName() is not called again.
+      checkDeviceNameMetadata(
+          'TestDeviceName2',
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES);
+      checkDeviceNameMetadata(
+          'TestDeviceName3',
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER);
     });
   });
 

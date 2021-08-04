@@ -10,21 +10,12 @@
 /* #export */ class TestDeviceNameBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'getDeviceNameMetadata',
+      'notifyReadyForDeviceName',
     ]);
-
-    /** @private {String} */
-    this.deviceName_ = '';
-  }
-
-  /** @param {String} deviceName */
-  setDeviceName(deviceName) {
-    this.deviceName_ = deviceName;
   }
 
   /** @override */
-  getDeviceNameMetadata() {
-    this.methodCalled('getDeviceNameMetadata');
-    return Promise.resolve({deviceName: this.deviceName_});
+  notifyReadyForDeviceName() {
+    this.methodCalled('notifyReadyForDeviceName');
   }
 }

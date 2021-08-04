@@ -72,10 +72,11 @@
     <div class="start">
       <div role="heading">$i18n{aboutDeviceName}</div>
       <div id="deviceName" aria-hidden="true" class="secondary">
-        [[deviceNameText_]]
+        [[getDeviceNameText_(deviceNameMetadata_)]]
       </div>
     </div>
-    <cr-icon-button class="icon-edit" on-click="onEditHostnameTap_">
+    <cr-icon-button class="icon-edit" on-click="onEditHostnameTap_"
+        disabled="[[!canEditDeviceName_(deviceNameMetadata_)]]">
     </cr-icon-button>
   </div>
   <template is="dom-if" if="[[showEditHostnameDialog_]]" restamp>

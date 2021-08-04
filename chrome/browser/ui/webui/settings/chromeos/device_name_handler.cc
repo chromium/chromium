@@ -14,6 +14,15 @@
 namespace chromeos {
 namespace settings {
 
+namespace {
+
+// Key names for first and second key-value pairs in dictionary that is passed
+// as argument to FireWebUIListener.
+const char kMetadataFirstKey[] = "deviceName";
+const char kMetadataSecondKey[] = "deviceNameState";
+
+}  // namespace
+
 DeviceNameHandler::DeviceNameHandler()
     : DeviceNameHandler(DeviceNameStore::GetInstance()) {}
 
@@ -22,26 +31,41 @@ DeviceNameHandler::DeviceNameHandler(DeviceNameStore* device_name_store)
 
 DeviceNameHandler::~DeviceNameHandler() = default;
 
+void DeviceNameHandler::OnJavascriptAllowed() {
+  observation_.Observe(device_name_store_);
+}
+
+void DeviceNameHandler::OnJavascriptDisallowed() {
+  observation_.Reset();
+}
+
 void DeviceNameHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getDeviceNameMetadata",
-      base::BindRepeating(&DeviceNameHandler::HandleGetDeviceNameMetadata,
+      "notifyReadyForDeviceName",
+      base::BindRepeating(&DeviceNameHandler::HandleNotifyReadyForDeviceName,
                           base::Unretained(this)));
 }
 
-void DeviceNameHandler::HandleGetDeviceNameMetadata(
+base::Value DeviceNameHandler::GetDeviceNameMetadata() const {
+  base::Value metadata(base::Value::Type::DICTIONARY);
+  DeviceNameStore::DeviceNameMetadata device_name_metadata =
+      device_name_store_->GetDeviceNameMetadata();
+  metadata.SetStringKey(kMetadataFirstKey, device_name_metadata.device_name);
+  metadata.SetIntKey(kMetadataSecondKey,
+                     static_cast<int>(device_name_metadata.device_name_state));
+  return metadata;
+}
+
+void DeviceNameHandler::HandleNotifyReadyForDeviceName(
     const base::ListValue* args) {
   AllowJavascript();
+  FireWebUIListener("settings.updateDeviceNameMetadata",
+                    base::Value(GetDeviceNameMetadata()));
+}
 
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-
-  base::DictionaryValue metadata;
-  metadata.SetString("deviceName",
-                     device_name_store_->GetDeviceNameMetadata().device_name);
-
-  ResolveJavascriptCallback(base::Value(callback_id), metadata);
+void DeviceNameHandler::OnDeviceNameMetadataChanged() {
+  FireWebUIListener("settings.updateDeviceNameMetadata",
+                    base::Value(GetDeviceNameMetadata()));
 }
 
 }  // namespace settings
