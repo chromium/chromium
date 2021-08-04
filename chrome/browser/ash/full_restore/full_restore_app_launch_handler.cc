@@ -160,8 +160,6 @@ void FullRestoreAppLaunchHandler::OnGetRestoreData(
     // active profile path is set when switch users.
     ::full_restore::SetActiveProfilePath(profile_->GetPath());
   }
-
-  MaybePostRestore();
 }
 
 void FullRestoreAppLaunchHandler::MaybePostRestore() {

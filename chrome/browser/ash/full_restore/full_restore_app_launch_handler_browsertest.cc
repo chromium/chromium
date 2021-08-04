@@ -303,6 +303,12 @@ class FullRestoreAppLaunchHandlerBrowserTest
   }
   ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
 
+  void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {
+    content::RunAllTasksUntilIdle();
+    app_launch_handler->SetShouldRestore();
+    content::RunAllTasksUntilIdle();
+  }
+
   void CreateWebApp() {
     auto web_application_info = std::make_unique<WebApplicationInfo>();
     web_application_info->start_url = GURL("https://example.org");
@@ -381,9 +387,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create FullRestoreAppLaunchHandler, and set should restore.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Verify there is no new browser launched.
   EXPECT_EQ(count, BrowserList::GetInstance()->size());
@@ -405,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create FullRestoreAppLaunchHandler, and set should restore.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
+  SetShouldRestore(app_launch_handler.get());
 
   CreateWebApp();
 
@@ -437,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create FullRestoreAppLaunchHandler, and set should restore.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
+  SetShouldRestore(app_launch_handler.get());
 
   // The web app window should be attainable.
   CreateWebApp();
@@ -475,10 +479,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   CreateWebApp();
 
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   EXPECT_TRUE(FindWebAppWindow());
 }
@@ -556,10 +557,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create FullRestoreAppLaunchHandler.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
@@ -590,10 +588,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create FullRestoreAppLaunchHandler.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
@@ -658,11 +653,9 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create FullRestoreAppLaunchHandler, and set should restore.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
-  content::RunAllTasksUntilIdle();
 
   CreateWebApp();
   content::RunAllTasksUntilIdle();
@@ -695,14 +688,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
-  content::RunAllTasksUntilIdle();
 
   CreateWebApp();
-  content::RunAllTasksUntilIdle();
 
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Verify there is new browser launched.
   EXPECT_EQ(count + 2, BrowserList::GetInstance()->size());
@@ -726,8 +715,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   ASSERT_EQ(count + 1u, BrowserList::GetInstance()->size());
 
@@ -786,8 +774,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
   app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   ASSERT_EQ(count + 1u, browser_list->size());
   ASSERT_EQ(1u, browser_list->size());
@@ -852,8 +839,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   // Read from the restore data.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Verify the restore window id.
   app_window = CreateAppWindow(browser()->profile(), extension);
@@ -922,8 +908,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   // Read from the restore data.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Tests that the created window is minimized.
   app_window = CreateAppWindow(browser()->profile(), extension);
@@ -959,8 +944,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   // Read from the restore data.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Verify the restore window id;
   app_window1 = CreateAppWindow(browser()->profile(), extension);
@@ -1023,8 +1007,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   // Read from the restore data.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Tests that the created window is not fullscreen.
   app_window = CreateAppWindow(browser()->profile(), extension);
@@ -1139,9 +1122,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
 
     app_launch_handler_ =
         std::make_unique<FullRestoreAppLaunchHandler>(profile());
-    app_launch_handler_->SetShouldRestore();
-
-    content::RunAllTasksUntilIdle();
+    SetShouldRestore(app_launch_handler_.get());
   }
 
   void ForceLaunchApp(const std::string& app_id, int32_t window_id) {
@@ -2255,9 +2236,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreLate) {
   // Simulate the user clicks the `restore` button.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->SetShouldRestore();
-
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   widget1->CloseNow();
 
@@ -2347,6 +2326,12 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
                  false /* should_notify_initialized */);
   }
 
+  void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {
+    content::RunAllTasksUntilIdle();
+    app_launch_handler->SetShouldRestore();
+    content::RunAllTasksUntilIdle();
+  }
+
   bool HasWindowInfo(int32_t restore_window_id) {
     return ::full_restore::FullRestoreReadHandler::GetInstance()->HasWindowInfo(
         restore_window_id);
@@ -2377,11 +2362,8 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   ASSERT_FALSE(HasWindowInfo(window_id));
 
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
+  SetShouldRestore(app_launch_handler.get());
 
-  // Wait for the restoration.
-  content::RunAllTasksUntilIdle();
   ASSERT_TRUE(HasWindowInfo(window_id));
 
   // Get the restored browser for the system web app.
@@ -2458,11 +2440,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-
-  // Wait for the restoration.
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Verify the app is not restored because the app is not installed.
   Browser* restore_app_browser = GetBrowserForWindowId(window_id);
@@ -2518,13 +2496,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Close |app_browser| so that the SWA can be relaunched.
   web_app::CloseAndWait(app_browser);
 
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-
-  // Wait for the restoration.
-  // TODO(chinsenj|nancylingwang): Look into using a more specific signal to
-  // detect when restoration is done.
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   // Get the restored browser for the system web app.
   Browser* restore_app_browser = GetBrowserForWindowId(window_id);
@@ -2584,11 +2556,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   web_app::CloseAndWait(app1_browser);
   web_app::CloseAndWait(app2_browser);
 
-  // Set should restore.
-  app_launch_handler->SetShouldRestore();
-
-  // Wait for the restoration.
-  content::RunAllTasksUntilIdle();
+  SetShouldRestore(app_launch_handler.get());
 
   aura::Window* restore_app1_window = nullptr;
   aura::Window* restore_app2_window = nullptr;
