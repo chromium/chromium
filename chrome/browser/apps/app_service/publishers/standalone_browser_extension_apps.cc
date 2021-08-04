@@ -82,8 +82,9 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
 
 void StandaloneBrowserExtensionApps::OnApps(
     std::vector<apps::mojom::AppPtr> deltas) {
-  // TODO(https://crbug.com/1225848): Implement.
-  NOTIMPLEMENTED();
+  for (apps::mojom::AppPtr& delta : deltas) {
+    Publish(std::move(delta), subscribers_);
+  }
 }
 
 void StandaloneBrowserExtensionApps::RegisterAppController(

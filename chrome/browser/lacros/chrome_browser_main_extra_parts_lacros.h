@@ -12,6 +12,8 @@
 class AutomationManagerLacros;
 class BrowserServiceLacros;
 class DownloadControllerClientLacros;
+class LacrosExtensionAppsController;
+class LacrosExtensionAppsPublisher;
 
 namespace crosapi {
 class TaskManagerLacros;
@@ -45,6 +47,12 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles tab property requests from ash.
   std::unique_ptr<crosapi::WebPageInfoProviderLacros> web_page_info_provider_;
+
+  // Receives extension app events from ash.
+  std::unique_ptr<LacrosExtensionAppsController> extension_apps_controller_;
+
+  // Sends extension app events to ash.
+  std::unique_ptr<LacrosExtensionAppsPublisher> extension_apps_publisher_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

@@ -521,18 +521,6 @@ void LacrosService::StartNativeThemeCache() {
   native_theme_cache_->Start();
 }
 
-template <typename PendingReceiverOrRemote,
-          void (Crosapi::*bind_func)(PendingReceiverOrRemote)>
-void LacrosService::BindPendingReceiverOrRemote(
-    PendingReceiverOrRemote pending_receiver_or_remote) {
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosServiceNeverBlockingState::BindCrosapiFeatureReceiver<
-              PendingReceiverOrRemote, bind_func>,
-          weak_sequenced_state_, std::move(pending_receiver_or_remote)));
-}
-
 template <typename CrosapiInterface,
           void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>)>
 void LacrosService::InitializeAndBindRemote(

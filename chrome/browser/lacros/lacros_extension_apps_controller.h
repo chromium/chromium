@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_LACROS_LACROS_EXTENSION_APPS_CONTROLLER_H_
 
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 // This class is responsible for receiving AppController events from Ash, and
 // implementing their effects.
@@ -20,6 +22,11 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   LacrosExtensionAppsController(const LacrosExtensionAppsController&) = delete;
   LacrosExtensionAppsController& operator=(
       const LacrosExtensionAppsController&) = delete;
+
+  // This class does not receive events from ash until Initialize is called.
+  // Tests may construct this class without using Initialize if the tests
+  // directly call the AppController methods.
+  void Initialize(mojo::Remote<crosapi::mojom::AppPublisher>& publisher);
 
   // crosapi::mojom::AppController
   // Public for testing.
@@ -39,6 +46,10 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+
+ private:
+  // Mojo endpoint that's responsible for receiving messages from Ash.
+  mojo::Receiver<crosapi::mojom::AppController> controller_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_EXTENSION_APPS_CONTROLLER_H_

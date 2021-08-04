@@ -17,8 +17,14 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 
-LacrosExtensionAppsController::LacrosExtensionAppsController() = default;
+LacrosExtensionAppsController::LacrosExtensionAppsController()
+    : controller_{this} {}
 LacrosExtensionAppsController::~LacrosExtensionAppsController() = default;
+
+void LacrosExtensionAppsController::Initialize(
+    mojo::Remote<crosapi::mojom::AppPublisher>& publisher) {
+  publisher->RegisterAppController(controller_.BindNewPipeAndPassRemote());
+}
 
 void LacrosExtensionAppsController::Uninstall(
     const std::string& app_id,

@@ -26,6 +26,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
+#include "chromeos/lacros/lacros_service_never_blocking_state.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -234,9 +235,26 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // working Mojo connection to Ash.
   void SetInitParamsForTests(crosapi::mojom::BrowserInitParamsPtr init_params);
 
- private:
   using Crosapi = crosapi::mojom::Crosapi;
 
+  // This function binds a pending receiver or remote by posting the
+  // corresponding bind task to the |never_blocking_sequence_|.
+  // This method is public because not all clients can use the syntax sugar of
+  // ConstructRemote(), which relies on the assumption that each crosapi
+  // interface only has a single associated Bind* method.
+  template <typename PendingReceiverOrRemote,
+            void (Crosapi::*bind_func)(PendingReceiverOrRemote)>
+  void BindPendingReceiverOrRemote(
+      PendingReceiverOrRemote pending_receiver_or_remote) {
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosServiceNeverBlockingState::BindCrosapiFeatureReceiver<
+                PendingReceiverOrRemote, bind_func>,
+            weak_sequenced_state_, std::move(pending_receiver_or_remote)));
+  }
+
+ private:
   // This class is a wrapper around a crosapi remote, e.g.
   // mojo::Remote<crosapi::mojom::Automation>. This base class uses type erasure
   // to allow us to store all instances in a single container.
@@ -292,13 +310,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
 
   // Requests ash-chrome to send native theme info updates.
   void StartNativeThemeCache();
-
-  // This function binds a pending receiver or remote by posting the
-  // corresponding bind task to the |never_blocking_sequence_|.
-  template <typename PendingReceiverOrRemote,
-            void (Crosapi::*bind_func)(PendingReceiverOrRemote)>
-  void BindPendingReceiverOrRemote(
-      PendingReceiverOrRemote pending_receiver_or_remote);
 
   // This function initializes a remote for a given CrosapiInterface.
   // It performs the following operations:

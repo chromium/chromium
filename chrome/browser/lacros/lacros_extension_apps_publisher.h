@@ -13,7 +13,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 // This class tracks extension-based apps running in Lacros [e.g. chrome apps,
 // aka v2 packaged apps]. This class forwards metadata about these apps to Ash,
@@ -46,10 +48,13 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // pointers get passed and used in inner classes.
   void Initialize();
 
+  // Exposed so that LacrosExtensionAppsController can initialize its receiver.
+  mojo::Remote<crosapi::mojom::AppPublisher>& publisher() { return publisher_; }
+
  protected:
   // Publishes differential app updates to the app_service in Ash via crosapi.
   // Virtual for testing.
-  virtual void Publish(std::vector<crosapi::mojom::AppPtr> apps);
+  virtual void Publish(std::vector<apps::mojom::AppPtr> apps);
 
  private:
   // An inner class that tracks extension-based app activity scoped to a
@@ -63,6 +68,9 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
 
   // A map that maintains a single ProfileTracker per Profile.
   std::map<Profile*, std::unique_ptr<ProfileTracker>> profile_trackers_;
+
+  // Mojo endpoint that's responsible for sending messages to Ash.
+  mojo::Remote<crosapi::mojom::AppPublisher> publisher_;
 
   // Scoped observer for the ProfileManager.
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>

@@ -14,7 +14,7 @@
 
 namespace {
 
-using Apps = std::vector<crosapi::mojom::AppPtr>;
+using Apps = std::vector<apps::mojom::AppPtr>;
 
 // This fake intercepts and tracks all calls to Publish().
 class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
@@ -104,14 +104,14 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Unload) {
   {
     Apps& apps = publisher->apps_history()[0];
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, crosapi::mojom::Readiness::kReady);
+    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kReady);
   }
 
   // The last event should be an unload event.
   {
     Apps& apps = publisher->apps_history().back();
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, crosapi::mojom::Readiness::kDisabledByUser);
+    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kDisabledByUser);
   }
 }
 
@@ -130,15 +130,14 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Uninstall) {
   {
     Apps& apps = publisher->apps_history()[0];
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, crosapi::mojom::Readiness::kReady);
+    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kReady);
   }
 
   // The last event should be an uninstall event.
   {
     Apps& apps = publisher->apps_history().back();
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness,
-              crosapi::mojom::Readiness::kUninstalledByUser);
+    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kUninstalledByUser);
   }
 }
 

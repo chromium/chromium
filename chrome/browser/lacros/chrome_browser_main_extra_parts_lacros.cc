@@ -7,6 +7,8 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
+#include "chrome/browser/lacros/lacros_extension_apps_controller.h"
+#include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
@@ -32,4 +34,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     monitor->SetSystemEvaluator(std::make_unique<LacrosMemoryPressureEvaluator>(
         monitor->CreateVoter()));
   }
+
+  extension_apps_publisher_ = std::make_unique<LacrosExtensionAppsPublisher>();
+  extension_apps_publisher_->Initialize();
+  extension_apps_controller_ =
+      std::make_unique<LacrosExtensionAppsController>();
+  extension_apps_controller_->Initialize(
+      extension_apps_publisher_->publisher());
 }
