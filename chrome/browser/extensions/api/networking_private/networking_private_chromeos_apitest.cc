@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetGlobalPolicy) {
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       base::Value(true));
   global_config.SetKey(
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value(false));
   global_config.SetKey("SomeNewGlobalPolicy", base::Value(false));
   chromeos::NetworkHandler::Get()

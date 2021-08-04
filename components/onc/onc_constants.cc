@@ -503,6 +503,14 @@ const char kAllowOnlyPolicyNetworksToConnect[] =
     "AllowOnlyPolicyNetworksToConnect";
 const char kAllowOnlyPolicyNetworksToConnectIfAvailable[] =
     "AllowOnlyPolicyNetworksToConnectIfAvailable";
+// AllowOnlyPolicyNetworksToConnect and
+// AllowOnlyPolicyNetworksToConnectIfAvailable field are currently only applied
+// to WiFi networks. TODO(crbug.com/1234561): Fix this when ONC field is
+// updated.
+const char* kAllowOnlyPolicyWiFiToConnect = kAllowOnlyPolicyNetworksToConnect;
+const char* kAllowOnlyPolicyWiFiToConnectIfAvailable =
+    kAllowOnlyPolicyNetworksToConnectIfAvailable;
+
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated
 const char kBlockedHexSSIDs[] = "BlockedHexSSIDs";
 const char kDisableNetworkTypes[] = "DisableNetworkTypes";

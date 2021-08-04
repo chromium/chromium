@@ -208,12 +208,12 @@ void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
   std::set<std::string> hidden_hex_ssids_at_scan_start;
   std::swap(hidden_hex_ssids_at_scan_start_, hidden_hex_ssids_at_scan_start);
 
-  // Enforce AllowOnlyPolicyNetworksToConnectIfAvailable policy if enabled.
+  // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled.
   const NetworkState* managed_network =
       network_state_handler_->GetAvailableManagedWifiNetwork();
   if (device_policy_applied_ && user_policy_applied_ && managed_network &&
       managed_configuration_handler_
-          ->AllowOnlyPolicyNetworksToConnectIfAvailable()) {
+          ->AllowOnlyPolicyWiFiToConnectIfAvailable()) {
     const NetworkState* connected_network =
         network_state_handler_->ConnectedNetworkByType(
             NetworkTypePattern::WiFi());
@@ -348,12 +348,12 @@ void AutoConnectHandler::DisconnectIfPolicyRequires() {
   std::vector<std::string> blocked_hex_ssids =
       managed_configuration_handler_->GetBlockedHexSSIDs();
   bool only_managed =
-      managed_configuration_handler_->AllowOnlyPolicyNetworksToConnect();
+      managed_configuration_handler_->AllowOnlyPolicyWiFiToConnect();
   bool only_managed_autoconnect =
       managed_configuration_handler_->AllowOnlyPolicyNetworksToAutoconnect();
   bool available_only =
       managed_configuration_handler_
-          ->AllowOnlyPolicyNetworksToConnectIfAvailable() &&
+          ->AllowOnlyPolicyWiFiToConnectIfAvailable() &&
       network_state_handler_->GetAvailableManagedWifiNetwork();
 
   // Enforce the autoconnect-policy only once.

@@ -169,12 +169,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& guid,
       const std::string& profile_path) const = 0;
 
-  // Return true if the AllowOnlyPolicyNetworksToConnect policy is enabled.
-  virtual bool AllowOnlyPolicyNetworksToConnect() const = 0;
+  // Return true if the AllowOnlyPolicyWiFiToConnect policy is enabled.
+  virtual bool AllowOnlyPolicyWiFiToConnect() const = 0;
 
-  // Return true if the AllowOnlyPolicyNetworksToConnectIfAvailable policy is
+  // Return true if the AllowOnlyPolicyWiFiToConnectIfAvailable policy is
   // enabled.
-  virtual bool AllowOnlyPolicyNetworksToConnectIfAvailable() const = 0;
+  virtual bool AllowOnlyPolicyWiFiToConnectIfAvailable() const = 0;
 
   // Return true if the AllowOnlyPolicyNetworksToAutoconnect policy is enabled.
   virtual bool AllowOnlyPolicyNetworksToAutoconnect() const = 0;

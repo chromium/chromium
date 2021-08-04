@@ -1630,7 +1630,7 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       true);
   global_config.SetBoolKey(
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect, false);
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, false);
   base::Value blocked(base::Value::Type::LIST);
   blocked.Append(base::Value("blocked_ssid1"));
   blocked.Append(base::Value("blocked_ssid2"));

@@ -2658,12 +2658,12 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
     result->allow_only_policy_networks_to_autoconnect = GetBoolean(
         global_policy_dict,
         ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect);
-    result->allow_only_policy_networks_to_connect = GetBoolean(
-        global_policy_dict,
-        ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect);
+    result->allow_only_policy_networks_to_connect =
+        GetBoolean(global_policy_dict,
+                   ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect);
     result->allow_only_policy_networks_to_connect_if_available = GetBoolean(
-        global_policy_dict, ::onc::global_network_config::
-                                kAllowOnlyPolicyNetworksToConnectIfAvailable);
+        global_policy_dict,
+        ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable);
     absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
         global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
     if (blocked_hex_ssids)

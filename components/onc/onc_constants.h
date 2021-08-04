@@ -505,8 +505,8 @@ ONC_EXPORT extern const char kWPAD[];
 
 namespace global_network_config {
 ONC_EXPORT extern const char kAllowOnlyPolicyNetworksToAutoconnect[];
-ONC_EXPORT extern const char kAllowOnlyPolicyNetworksToConnect[];
-ONC_EXPORT extern const char kAllowOnlyPolicyNetworksToConnectIfAvailable[];
+ONC_EXPORT extern const char* kAllowOnlyPolicyWiFiToConnect;
+ONC_EXPORT extern const char* kAllowOnlyPolicyWiFiToConnectIfAvailable;
 ONC_EXPORT extern const char kBlacklistedHexSSIDs[];  // Deprecated
 ONC_EXPORT extern const char kBlockedHexSSIDs[];
 ONC_EXPORT extern const char kDisableNetworkTypes[];

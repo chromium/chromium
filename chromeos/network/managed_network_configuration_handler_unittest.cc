@@ -805,8 +805,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ManagedNetworkConfigurationHandlerTest,
-       AllowOnlyPolicyNetworksToConnect) {
+TEST_F(ManagedNetworkConfigurationHandlerTest, AllowOnlyPolicyWiFiToConnect) {
   InitializeStandardProfiles();
 
   // Check transfer to NetworkStateHandler
@@ -815,22 +814,21 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       UpdateBlockedWifiNetworks(true, false, std::vector<std::string>()))
       .Times(1);
 
-  // Set 'AllowOnlyPolicyNetworksToConnect' policy and a random user policy.
+  // Set 'AllowOnlyPolicyWiFiToConnect' policy and a random user policy.
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_allow_only_policy_networks_to_connect.onc");
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
-  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyNetworksToConnect());
-  EXPECT_FALSE(
-      managed_handler()->AllowOnlyPolicyNetworksToConnectIfAvailable());
+  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest,
-       AllowOnlyPolicyNetworksToConnectIfAvailable) {
+       AllowOnlyPolicyWiFiToConnectIfAvailable) {
   InitializeStandardProfiles();
 
   // Check transfer to NetworkStateHandler
@@ -839,7 +837,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       UpdateBlockedWifiNetworks(false, true, std::vector<std::string>()))
       .Times(1);
 
-  // Set 'AllowOnlyPolicyNetworksToConnect' policy and a random user policy.
+  // Set 'AllowOnlyPolicyWiFiToConnect' policy and a random user policy.
   SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
       "policy/policy_allow_only_policy_networks_to_connect_if_available.onc");
@@ -847,8 +845,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
-  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToConnect());
-  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyNetworksToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
 }
@@ -870,9 +868,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
-  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToConnect());
-  EXPECT_FALSE(
-      managed_handler()->AllowOnlyPolicyNetworksToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_TRUE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_TRUE(managed_handler()->GetBlockedHexSSIDs().empty());
 }
@@ -894,9 +891,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlacklistedHexSSIDs) {
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
-  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToConnect());
-  EXPECT_FALSE(
-      managed_handler()->AllowOnlyPolicyNetworksToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_EQ(blocked, managed_handler()->GetBlockedHexSSIDs());
 }
@@ -917,9 +913,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlockedHexSSIDs) {
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
-  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToConnect());
-  EXPECT_FALSE(
-      managed_handler()->AllowOnlyPolicyNetworksToConnectIfAvailable());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_EQ(blocked, managed_handler()->GetBlockedHexSSIDs());
 }

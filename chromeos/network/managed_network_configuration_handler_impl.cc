@@ -691,8 +691,8 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
 
     if (device_policy_applied_ && user_policy_applied_) {
       network_state_handler_->UpdateBlockedWifiNetworks(
-          AllowOnlyPolicyNetworksToConnect(),
-          AllowOnlyPolicyNetworksToConnectIfAvailable(), GetBlockedHexSSIDs());
+          AllowOnlyPolicyWiFiToConnect(),
+          AllowOnlyPolicyWiFiToConnectIfAvailable(), GetBlockedHexSSIDs());
     }
 
     for (auto& observer : observers_)
@@ -794,7 +794,7 @@ bool ManagedNetworkConfigurationHandlerImpl::CanRemoveNetworkConfig(
   return !IsNetworkConfiguredByPolicy(guid, profile_path);
 }
 
-bool ManagedNetworkConfigurationHandlerImpl::AllowOnlyPolicyNetworksToConnect()
+bool ManagedNetworkConfigurationHandlerImpl::AllowOnlyPolicyWiFiToConnect()
     const {
   const base::DictionaryValue* global_network_config =
       GetGlobalConfigFromPolicy(
@@ -803,13 +803,13 @@ bool ManagedNetworkConfigurationHandlerImpl::AllowOnlyPolicyNetworksToConnect()
     return false;
 
   const base::Value* managed_only_value = global_network_config->FindKeyOfType(
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value::Type::BOOLEAN);
   return managed_only_value && managed_only_value->GetBool();
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::
-    AllowOnlyPolicyNetworksToConnectIfAvailable() const {
+    AllowOnlyPolicyWiFiToConnectIfAvailable() const {
   const base::DictionaryValue* global_network_config =
       GetGlobalConfigFromPolicy(
           std::string() /* no username hash, device policy */);
@@ -820,7 +820,7 @@ bool ManagedNetworkConfigurationHandlerImpl::
   const base::Value* available_only_value =
       global_network_config->FindKeyOfType(
           ::onc::global_network_config::
-              kAllowOnlyPolicyNetworksToConnectIfAvailable,
+              kAllowOnlyPolicyWiFiToConnectIfAvailable,
           base::Value::Type::BOOLEAN);
   return available_only_value && available_only_value->GetBool();
 }

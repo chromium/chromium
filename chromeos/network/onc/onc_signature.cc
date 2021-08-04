@@ -381,9 +381,9 @@ const OncFieldSignature network_with_state_fields[] = {
 const OncFieldSignature global_network_configuration_fields[] = {
     {::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
      &kBoolSignature},
-    {::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect,
+    {::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
      &kBoolSignature},
-    {::onc::global_network_config::kAllowOnlyPolicyNetworksToConnectIfAvailable,
+    {::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
      &kBoolSignature},
     {/* Deprecated */ ::onc::global_network_config::kBlacklistedHexSSIDs,
      &kStringListSignature},

@@ -587,7 +587,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
   ASSERT_FALSE(wifi0_service_path.empty());
   base::DictionaryValue global_config;
   global_config.SetKey(
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value(true));
   SetupPolicy("[]", global_config, false /* load as device policy */);
   SetupPolicy("[]", base::DictionaryValue(), true /* load as user policy */);

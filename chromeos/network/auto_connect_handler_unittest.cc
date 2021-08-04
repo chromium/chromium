@@ -757,7 +757,7 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyRescanOnlyOnce) {
 }
 
 TEST_F(AutoConnectHandlerTest,
-       DisconnectOnPolicyLoadingAllowOnlyPolicyNetworksToConnect) {
+       DisconnectOnPolicyLoadingAllowOnlyPolicyWiFiToConnect) {
   std::string wifi0_service_path =
       ConfigureService(kConfigWifi0UnmanagedSharedConnected);
   ASSERT_FALSE(wifi0_service_path.empty());
@@ -774,7 +774,7 @@ TEST_F(AutoConnectHandlerTest,
 
   base::DictionaryValue global_config;
   global_config.SetKey(
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect,
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value(true));
 
   // Applying the policy which restricts connections should disconnect from the
@@ -901,7 +901,7 @@ TEST_F(AutoConnectHandlerTest, DisconnectFromBlockedNetwork) {
   EXPECT_EQ(0, test_observer_->num_auto_connect_events());
 }
 
-TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyNetworksToConnectIfAvailable) {
+TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyWiFiToConnectIfAvailable) {
   std::string wifi0_service_path =
       ConfigureService(kConfigWifi0UnmanagedSharedConnected);
   ASSERT_FALSE(wifi0_service_path.empty());
@@ -915,12 +915,12 @@ TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyNetworksToConnectIfAvailable) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(wifi0_service_path));
 
-  // Apply 'AllowOnlyPolicyNetworksToConnectIfAvailable' policy as a device
+  // Apply 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy as a device
   // policy and provide a network configuration for wifi1 to make it managed.
   base::DictionaryValue global_config;
-  global_config.SetKey(::onc::global_network_config::
-                           kAllowOnlyPolicyNetworksToConnectIfAvailable,
-                       base::Value(true));
+  global_config.SetKey(
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      base::Value(true));
   SetupPolicy(kPolicy, global_config, false /* load as device policy */);
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
