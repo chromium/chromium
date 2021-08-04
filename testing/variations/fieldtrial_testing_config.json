@@ -7504,6 +7504,21 @@
             ]
         }
     ],
+    "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingPasswordProtectionRequestWithToken": [
         {
             "platforms": [
