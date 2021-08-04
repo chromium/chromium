@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(async function() {
+(async function () {
   TestRunner.addResult(`Verify that navigator is properly rendered in case of multiple iframes.\n`);
   await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
@@ -22,10 +22,12 @@
 
   TestRunner.markStep('detachFrame1');
   await BindingsTestRunner.detachFrame('frame1');
+  await TestRunner.evaluateInPageAnonymously('GCController.collectAll()');
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('detachFrame2');
   await BindingsTestRunner.detachFrame('frame2');
+  await TestRunner.evaluateInPageAnonymously('GCController.collectAll()');
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.completeTest();

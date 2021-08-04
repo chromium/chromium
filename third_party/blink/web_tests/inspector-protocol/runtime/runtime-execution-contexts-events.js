@@ -1,5 +1,5 @@
-(async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(`Tests execution context lifetime events.`);
+(async function (testRunner) {
+  var { page, session, dp } = await testRunner.startBlank(`Tests execution context lifetime events.`);
 
   dp.Runtime.enable();
   await dp.Runtime.onceExecutionContextCreated();
@@ -18,7 +18,10 @@
 
   await loadPromise;
   testRunner.log('Navigate frame');
-  session.evaluate(`window.frames[0].location = '${testRunner.url('../resources/runtime-events-iframe.html')}'`);
+  session.evaluate(`
+    window.frames[0].location = '${testRunner.url('../resources/runtime-events-iframe.html')}'
+    GCController.collectAll();
+  `);
   var executionContextId = (await dp.Runtime.onceExecutionContextDestroyed()).params.executionContextId;
   if (frameExecutionContextId !== executionContextId) {
     testRunner.fail(`Execution context with id = ${executionContextId} was destroyed, but iframe's executionContext had id = ${frameExecutionContextId} before navigation`);
@@ -31,7 +34,10 @@
   testRunner.log('Frame context was created');
 
   testRunner.log('Remove frame');
-  session.evaluate(`document.querySelector('#iframe').remove()`);
+  session.evaluate(`
+    document.querySelector('#iframe').remove();
+    GCController.collectAll();
+  `);
   executionContextId = (await dp.Runtime.onceExecutionContextDestroyed()).params.executionContextId;
   if (frameExecutionContextId !== executionContextId) {
     testRunner.fail(`Deleted frame had execution context with id = ${frameExecutionContextId}, but executionContext with id = ${executionContextId} was removed`);
@@ -53,7 +59,10 @@
   testRunner.log('Crafted frame context was created');
 
   testRunner.log('Remove crafted frame');
-  session.evaluate(`document.querySelector('#crafted-iframe').remove()`);
+  session.evaluate(`
+    document.querySelector('#crafted-iframe').remove();
+    GCController.collectAll();
+  `);
   executionContextId = (await dp.Runtime.onceExecutionContextDestroyed()).params.executionContextId;
   if (frameExecutionContextId !== executionContextId) {
     testRunner.fail(`Deleted frame had execution context with id = ${frameExecutionContextId}, but executionContext with id = ${executionContextId} was removed`);

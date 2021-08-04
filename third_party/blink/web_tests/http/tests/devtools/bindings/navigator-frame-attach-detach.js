@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(async function() {
+(async function () {
   TestRunner.addResult(`Verify that navigator is rendered properly when frames come and go.\n`);
   await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');

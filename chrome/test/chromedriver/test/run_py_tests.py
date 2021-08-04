@@ -823,6 +823,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.SwitchToFrame('id')
     self.assertTrue(self._driver.ExecuteScript('return window.top != window'))
     self._driver.ExecuteScript('parent.postMessage("remove", "*");')
+    self._driver.SwitchToMainFrame()
     self.assertTrue(self._driver.ExecuteScript('return window.top == window'))
 
   def testSwitchToStaleFrame(self):
