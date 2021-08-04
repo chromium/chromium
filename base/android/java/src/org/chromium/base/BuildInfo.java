@@ -239,7 +239,6 @@ public class BuildInfo {
      *
      * @return {@code true} if S APIs are available for use, {@code false} otherwise
      */
-    @CalledByNative
     @ChecksSdkIntAtLeast(api = 31, codename = "S")
     public static boolean isAtLeastS() {
         return VERSION.SDK_INT >= 31 || isAtLeastPreReleaseCodename("S", VERSION.CODENAME);

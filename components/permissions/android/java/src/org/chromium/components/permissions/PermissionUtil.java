@@ -4,7 +4,7 @@
 
 package org.chromium.components.permissions;
 
-import androidx.core.os.BuildCompat;
+import android.os.Build;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -44,7 +44,7 @@ public class PermissionUtil {
         // targeting SDK version 31. Therefore enable support based on the current device's
         // software's SDK version as opposed to Chrome's targetSdkVersion. See:
         // https://developer.android.com/about/versions/12/approximate-location
-        return BuildCompat.isAtLeastS()
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && PermissionsAndroidFeatureList.isEnabled(
                         PermissionsAndroidFeatureList
                                 .ANDROID_APPROXIMATE_LOCATION_PERMISSION_SUPPORT);

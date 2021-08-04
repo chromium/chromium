@@ -28,7 +28,6 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
@@ -215,7 +214,7 @@ class AndroidNetworkLibrary {
      */
     private static WifiInfo getWifiInfo() {
         if (haveAccessWifiState()) {
-            if (BuildInfo.isAtLeastS()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
                 ConnectivityManager connectivityManager =
                         (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(

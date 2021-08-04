@@ -4,6 +4,7 @@
 
 package org.chromium.ui.test.util;
 
+import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 
@@ -11,7 +12,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -71,7 +71,7 @@ public class DisableAnimationsTestRule implements TestRule {
             // TODO(https://crbug.com/1225707): Always throw once this works on Android S. The above
             // API is no longer accessible and will crash regardless of filter rules so just warn
             // instead.
-            if (BuildInfo.isAtLeastS()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 Log.w(TAG, "Failed to access animation methods", e);
             } else {
                 throw new RuntimeException("Failed to access animation methods", e);

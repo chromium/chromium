@@ -28,7 +28,6 @@ import android.os.HandlerThread;
 import android.os.Process;
 import android.provider.Settings;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -557,7 +556,7 @@ class AudioManagerAndroid {
         mHasBluetoothPermission = hasPermission(
                 android.Manifest.permission.BLUETOOTH);
 
-        if (BuildInfo.isAtLeastS()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             mHasBluetoothPermission &= ApiHelperForS.hasBluetoothConnectPermission();
         }
 

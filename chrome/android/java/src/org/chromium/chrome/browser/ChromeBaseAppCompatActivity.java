@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAM
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -16,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -187,7 +187,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // are not synchronized. Typically the first time overscroll is enabled, the following will
         // use the old value and then content will pick up the enabled value, causing one execution
         // of inconsistency.
-        if (BuildInfo.isAtLeastS()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && !CachedFeatureFlags.isEnabled(ChromeFeatureList.ELASTIC_OVERSCROLL)) {
             setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }

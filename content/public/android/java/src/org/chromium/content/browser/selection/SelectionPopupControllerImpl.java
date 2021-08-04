@@ -31,7 +31,6 @@ import android.view.textclassifier.TextClassifier;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.UserData;
@@ -1404,7 +1403,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @CalledByNative
     /* package */ void onDragUpdate(@TouchSelectionDraggableType int type, float x, float y) {
         // If this is for longpress drag selector, we can only have mangifier on S and above.
-        if (type == TouchSelectionDraggableType.LONGPRESS && !BuildInfo.isAtLeastS()) {
+        if (type == TouchSelectionDraggableType.LONGPRESS
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             return;
         }
 
