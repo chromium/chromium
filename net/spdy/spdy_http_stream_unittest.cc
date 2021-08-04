@@ -144,7 +144,6 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
 
  protected:
   void TearDown() override {
-    crypto::ECSignatureCreator::SetFactoryForTesting(nullptr);
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(sequenced_data_->AllReadDataConsumed());
     EXPECT_TRUE(sequenced_data_->AllWriteDataConsumed());
@@ -176,7 +175,6 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
   base::WeakPtr<SpdySession> session_;
 
  private:
-  MockECSignatureCreatorFactory ec_signature_creator_factory_;
   SSLSocketDataProvider ssl_;
 };
 

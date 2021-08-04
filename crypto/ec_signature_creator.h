@@ -19,13 +19,6 @@ namespace crypto {
 class ECPrivateKey;
 class ECSignatureCreator;
 
-class CRYPTO_EXPORT ECSignatureCreatorFactory {
- public:
-  virtual ~ECSignatureCreatorFactory() {}
-
-  virtual std::unique_ptr<ECSignatureCreator> Create(ECPrivateKey* key) = 0;
-};
-
 // Signs data using a bare private key (as opposed to a full certificate).
 // We need this class because SignatureCreator is hardcoded to use
 // RSAPrivateKey.
@@ -38,12 +31,6 @@ class CRYPTO_EXPORT ECSignatureCreator {
   // TODO(rch):  This is currently hard coded to use SHA256. Ideally, we should
   // pass in the hash algorithm identifier.
   static std::unique_ptr<ECSignatureCreator> Create(ECPrivateKey* key);
-
-  // Set a factory to make the Create function return non-standard
-  // ECSignatureCreator objects.  Because the ECDSA algorithm involves
-  // randomness, this is useful for higher-level tests that want to have
-  // deterministic mocked output to compare.
-  static void SetFactoryForTesting(ECSignatureCreatorFactory* factory);
 
   // Signs |data| and writes the results into |signature| as a DER encoded
   // ECDSA-Sig-Value from RFC 3279.

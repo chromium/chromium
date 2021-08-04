@@ -283,47 +283,6 @@ void StreamReleaserCallback::OnComplete(
   SetResult(result);
 }
 
-MockECSignatureCreator::MockECSignatureCreator(crypto::ECPrivateKey* key)
-    : key_(key) {
-}
-
-bool MockECSignatureCreator::Sign(base::span<const uint8_t> data,
-                                  std::vector<uint8_t>* signature) {
-  std::vector<uint8_t> private_key;
-  if (!key_->ExportPrivateKey(&private_key))
-    return false;
-  std::string head = "fakesignature";
-  std::string tail = "/fakesignature";
-
-  signature->clear();
-  signature->insert(signature->end(), head.begin(), head.end());
-  signature->insert(signature->end(), private_key.begin(), private_key.end());
-  signature->insert(signature->end(), '-');
-  signature->insert(signature->end(), data.begin(), data.end());
-  signature->insert(signature->end(), tail.begin(), tail.end());
-  return true;
-}
-
-bool MockECSignatureCreator::DecodeSignature(
-    const std::vector<uint8_t>& signature,
-    std::vector<uint8_t>* out_raw_sig) {
-  *out_raw_sig = signature;
-  return true;
-}
-
-MockECSignatureCreatorFactory::MockECSignatureCreatorFactory() {
-  crypto::ECSignatureCreator::SetFactoryForTesting(this);
-}
-
-MockECSignatureCreatorFactory::~MockECSignatureCreatorFactory() {
-  crypto::ECSignatureCreator::SetFactoryForTesting(nullptr);
-}
-
-std::unique_ptr<crypto::ECSignatureCreator>
-MockECSignatureCreatorFactory::Create(crypto::ECPrivateKey* key) {
-  return std::make_unique<MockECSignatureCreator>(key);
-}
-
 SpdySessionDependencies::SpdySessionDependencies()
     : SpdySessionDependencies(
           ConfiguredProxyResolutionService::CreateDirect()) {}
