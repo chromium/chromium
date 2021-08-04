@@ -31,11 +31,6 @@ void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
   process_action_callback_ = std::move(callback);
 
   const ShowCastProto& show_cast = proto_.show_cast();
-  if (show_cast.has_title()) {
-    // TODO(crbug.com/806868): Deprecate and remove message from this action and
-    // use tell instead.
-    delegate_->SetStatusMessage(show_cast.title());
-  }
   Selector selector = Selector(show_cast.element_to_present());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";

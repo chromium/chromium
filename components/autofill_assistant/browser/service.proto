@@ -1453,9 +1453,6 @@ message ShowCastProto {
   // Element to scroll to.
   optional SelectorProto element_to_present = 1;
 
-  // Optional title to show in the status bar.
-  optional string title = 2;
-
   // Restrict interaction to a series of rectangular areas.
   optional ElementAreaProto touchable_element_area = 6;
 
@@ -1480,7 +1477,7 @@ message ShowCastProto {
   // not set, the window will be scrolled.
   optional SelectorProto container = 12;
 
-  reserved 3, 4, 5, 8;
+  reserved 2 to 5, 8;
 }
 
 // Set the touchable and restricted area of the overlay.
@@ -1695,9 +1692,6 @@ message UploadDomProto {
 
 // Shows the progress bar.
 message ShowProgressBarProto {
-  // Message to show on the progress bar while loading.
-  optional string message = 3;
-
   oneof progress_indicator {
     // Value between 0 and 100 indicating the current progress. Values above 100
     // will be capped to 100, values below 0 will be capped to 0 by the client.
@@ -1755,7 +1749,7 @@ message ShowProgressBarProto {
   }
   optional StepProgressBarConfiguration step_progress_bar_configuration = 9;
 
-  reserved 1, 2, 4, 5;
+  reserved 1 to 5;
 }
 
 // Contain all arguments to perform a highlight element action.

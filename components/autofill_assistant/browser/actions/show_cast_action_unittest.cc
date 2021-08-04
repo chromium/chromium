@@ -187,29 +187,5 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 1000);
 }
 
-TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
-  ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
-                                        base::TimeDelta::FromSeconds(0)));
-  test_util::MockFindAnyElement(mock_action_delegate_);
-  ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
-      .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
-                                        base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_, StoreScrolledToElement(_));
-  ON_CALL(mock_web_controller_, ScrollToElementPosition(_, _, _, _))
-      .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
-
-  Selector selector({"#focus"});
-  *proto_.mutable_element_to_present() = selector.proto;
-  proto_.set_title("Title");
-
-  EXPECT_CALL(mock_action_delegate_, SetStatusMessage("Title"));
-
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
-}
-
 }  // namespace
 }  // namespace autofill_assistant

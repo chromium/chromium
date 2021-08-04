@@ -40,22 +40,11 @@ class ShowProgressBarActionTest : public testing::Test {
 };
 
 TEST_F(ShowProgressBarActionTest, EmptyProgressBarDoesNothing) {
-  EXPECT_CALL(mock_action_delegate_, SetStatusMessage(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetProgressVisible(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetStepProgressBarConfiguration(_))
       .Times(0);
   EXPECT_CALL(mock_action_delegate_, SetProgress(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(_)).Times(0);
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
-}
-
-TEST_F(ShowProgressBarActionTest, SpecifiedMessageGetsSet) {
-  proto_.set_message("Message");
-
-  EXPECT_CALL(mock_action_delegate_, SetStatusMessage("Message"));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));

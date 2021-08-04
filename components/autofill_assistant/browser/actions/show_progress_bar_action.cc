@@ -24,12 +24,6 @@ ShowProgressBarAction::~ShowProgressBarAction() = default;
 
 void ShowProgressBarAction::InternalProcessAction(
     ProcessActionCallback callback) {
-  if (proto_.show_progress_bar().has_message()) {
-    // TODO(crbug.com/806868): Deprecate and remove message from this action and
-    // use tell instead.
-    delegate_->SetStatusMessage(proto_.show_progress_bar().message());
-  }
-
   if (proto_.show_progress_bar().has_hide()) {
     delegate_->SetProgressVisible(!proto_.show_progress_bar().hide());
   }
