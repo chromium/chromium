@@ -19,7 +19,7 @@ suite('extension controlled indicator', function() {
   setup(function() {
     PolymerTest.clearBody();
     browserProxy = new TestExtensionControlBrowserProxy();
-    ExtensionControlBrowserProxyImpl.instance_ = browserProxy;
+    ExtensionControlBrowserProxyImpl.setInstance(browserProxy);
     indicator = document.createElement('extension-controlled-indicator');
     indicator.extensionId = 'peiafolljookckjknpgofpbjobgbmpge';
     indicator.extensionCanBeDisabled = true;

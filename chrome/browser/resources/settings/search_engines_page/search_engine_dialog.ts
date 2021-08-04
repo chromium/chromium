@@ -10,23 +10,30 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
+interface SettingsSearchEngineDialogElement {
+  $: {
+    actionButton: CrButtonElement,
+    dialog: CrDialogElement,
+    keyword: CrInputElement,
+    queryUrl: CrInputElement,
+    searchEngine: CrInputElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSearchEngineDialogElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsSearchEngineDialogElement extends
     SettingsSearchEngineDialogElementBase {
   static get is() {
@@ -42,45 +49,38 @@ class SettingsSearchEngineDialogElement extends
       /**
        * The search engine to be edited. If not populated a new search engine
        * should be added.
-       * @type {?SearchEngine}
        */
       model: Object,
 
-      /** @private {string} */
       searchEngine_: String,
-
-      /** @private {string} */
       keyword_: String,
-
-      /** @private {string} */
       queryUrl_: String,
-
-      /** @private {string} */
       dialogTitle_: String,
-
-      /** @private {string} */
       actionButtonText_: String,
-
     };
   }
 
-  /** @override */
+  model: SearchEngine|null;
+  private searchEngine_: string;
+  private keyword_: string;
+  private queryUrl_: string;
+  private dialogTitle_: string;
+  private actionButtonText_: string;
+  private browserProxy_: SearchEnginesBrowserProxy =
+      SearchEnginesBrowserProxyImpl.getInstance();
+  DEFAULT_MODEL_INDEX: number;
+
   constructor() {
     super();
-
-    /** @private {SearchEnginesBrowserProxy} */
-    this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
 
     /**
      * The |modelIndex| to use when a new search engine is added. Must match
      * with kNewSearchEngineIndex constant specified at
      * chrome/browser/ui/webui/settings/search_engines_handler.cc
-     * @type {number}
      */
     this.DEFAULT_MODEL_INDEX = -1;
   }
 
-  /** @override */
   ready() {
     super.ready();
 
@@ -107,7 +107,6 @@ class SettingsSearchEngineDialogElement extends
         'search-engines-changed', this.enginesChanged_.bind(this));
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -117,16 +116,12 @@ class SettingsSearchEngineDialogElement extends
     this.$.dialog.showModal();
   }
 
-  /**
-   * @param {!SearchEnginesInfo} searchEnginesInfo
-   * @private
-   */
-  enginesChanged_(searchEnginesInfo) {
+  private enginesChanged_(searchEnginesInfo: SearchEnginesInfo) {
     if (this.model) {
       const engineWasRemoved =
           ['defaults', 'actives', 'others', 'extensions'].every(
               engineType => searchEnginesInfo[engineType].every(
-                  e => e.id !== this.model.id));
+                  e => e.id !== this.model!.id));
       if (engineWasRemoved) {
         this.cancel_();
         return;
@@ -137,23 +132,17 @@ class SettingsSearchEngineDialogElement extends
         element => this.validateElement_(element));
   }
 
-  /** @private */
-  cancel_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).cancel();
+  private cancel_() {
+    this.$.dialog.cancel();
   }
 
-  /** @private */
-  onActionButtonTap_() {
+  private onActionButtonTap_() {
     this.browserProxy_.searchEngineEditCompleted(
         this.searchEngine_, this.keyword_, this.queryUrl_);
     this.$.dialog.close();
   }
 
-  /**
-   * @param {!Element} inputElement
-   * @private
-   */
-  validateElement_(inputElement) {
+  private validateElement_(inputElement: CrInputElement) {
     // If element is empty, disable the action button, but don't show the red
     // invalid message.
     if (inputElement.value === '') {
@@ -170,17 +159,12 @@ class SettingsSearchEngineDialogElement extends
         });
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  validate_(event) {
-    const inputElement = /** @type {!Element} */ (event.target);
+  private validate_(event: Event) {
+    const inputElement = event.target as CrInputElement;
     this.validateElement_(inputElement);
   }
 
-  /** @private */
-  updateActionButtonState_() {
+  private updateActionButtonState_() {
     const allValid = [
       this.$.searchEngine, this.$.keyword, this.$.queryUrl
     ].every(function(inputElement) {

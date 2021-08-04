@@ -7,3 +7,4 @@ template.innerHTML = `
 <dom-module id="search-engine-entry">{__html_template__}</dom-module>
 `;
 document.body.appendChild(template.content.cloneNode(true));
+export {};

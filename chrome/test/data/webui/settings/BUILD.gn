@@ -102,7 +102,7 @@ js_type_check("closure_compile") {
     ":safety_check_page_test",
 
     #":search_engines_page_test",
-    ":search_page_test",
+    #":search_page_test",
 
     #":search_settings_test",
     #":secure_dns_interactive_test",
@@ -157,7 +157,7 @@ js_type_check("closure_compile") {
 
     #":test_profile_info_browser_proxy",
     #":test_reset_browser_proxy",
-    ":test_search_engines_browser_proxy",
+    #":test_search_engines_browser_proxy",
     ":test_site_settings_prefs_browser_proxy",
     ":test_sync_browser_proxy",
     ":test_util",

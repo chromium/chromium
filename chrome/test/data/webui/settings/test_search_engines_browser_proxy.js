@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { SearchEngine,SearchEnginesBrowserProxy, SearchEnginesInfo} from 'chrome://settings/settings.js';
-
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 // clang-format on
 

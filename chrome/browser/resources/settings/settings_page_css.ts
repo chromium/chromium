@@ -7,3 +7,4 @@ template.innerHTML = `
 <dom-module id="settings-page-styles">{__html_template__}</dom-module>
 `;
 document.body.appendChild(template.content.cloneNode(true));
+export {};

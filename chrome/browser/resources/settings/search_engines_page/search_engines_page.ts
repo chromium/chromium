@@ -21,7 +21,8 @@ import '../settings_vars_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
@@ -29,25 +30,26 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
+import {SettingsSearchEnginesListElement} from './search_engines_list.js';
 
-/**
- * @typedef {!CustomEvent<!{
- *     engine: !SearchEngine,
- *     anchorElement: !HTMLElement
- * }>}
- */
-let SearchEngineEditEvent;
+type SearchEngineEditEvent = CustomEvent<{
+  engine: SearchEngine,
+  anchorElement: HTMLElement,
+}>;
 
+interface SettingsSearchEnginesPageElement {
+  $: {
+    addSearchEngine: HTMLElement,
+    extensions: IronListElement,
+    otherEngines: SettingsSearchEnginesListElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsSearchEnginesPageElementBase = mixinBehaviors(
-    [WebUIListenerBehavior], GlobalScrollTargetMixin(PolymerElement));
+const SettingsSearchEnginesPageElementBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior], GlobalScrollTargetMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {
   static get is() {
@@ -68,28 +70,19 @@ class SettingsSearchEnginesPageElement extends
         notify: true,
       },
 
-      /** @type {!Array<!SearchEngine>} */
       defaultEngines: Array,
-
-      /** @type {!Array<!SearchEngine>} */
       activeEngines: Array,
-
-      /** @type {!Array<!SearchEngine>} */
       otherEngines: Array,
-
-      /** @type {!Array<!SearchEngine>} */
       extensions: Array,
 
       /**
        * Needed by GlobalScrollTargetMixin.
-       * @override
        */
       subpageRoute: {
         type: Object,
         value: routes.SEARCH_ENGINES,
       },
 
-      /** @private {boolean} */
       showExtensionsList_: {
         type: Boolean,
         computed: 'computeShowExtensionsList_(extensions)',
@@ -101,66 +94,53 @@ class SettingsSearchEnginesPageElement extends
         value: '',
       },
 
-      /** @private {!Array<!SearchEngine>} */
       matchingDefaultEngines_: {
         type: Array,
         computed: 'computeMatchingEngines_(defaultEngines, filter)',
       },
 
-      /** @private {!Array<!SearchEngine>} */
       matchingActiveEngines_: {
         type: Array,
         computed: 'computeMatchingEngines_(activeEngines, filter)',
       },
 
-      /** @private {!Array<!SearchEngine>} */
       matchingOtherEngines_: {
         type: Array,
         computed: 'computeMatchingEngines_(otherEngines, filter)',
       },
 
-      /** @private {!Array<!SearchEngine>} */
       matchingExtensions_: {
         type: Array,
         computed: 'computeMatchingEngines_(extensions, filter)',
       },
 
-      /** @private {HTMLElement} */
       omniboxExtensionlastFocused_: Object,
-
-      /** @private {boolean} */
       omniboxExtensionListBlurred_: Boolean,
 
-      /** @private {?SearchEngine} */
       dialogModel_: {
         type: Object,
         value: null,
       },
 
-      /** @private {?HTMLElement} */
       dialogAnchorElement_: {
         type: Object,
         value: null,
       },
 
-      /** @private */
       showDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showKeywordTriggerSetting_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showKeywordTriggerSetting'),
       },
 
-      /** @private */
       showActiveSearchEngines_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showActiveSearchEngines'),
       },
-
     };
   }
 
@@ -168,7 +148,24 @@ class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
-  /** @override */
+  defaultEngines: Array<SearchEngine>;
+  activeEngines: Array<SearchEngine>;
+  otherEngines: Array<SearchEngine>;
+  extensions: Array<SearchEngine>;
+  private showExtensionsList_: boolean;
+  filter: string;
+  private matchingDefaultEngines_: Array<SearchEngine>;
+  private matchingActiveEngines_: Array<SearchEngine>;
+  private matchingOtherEngines_: Array<SearchEngine>;
+  private matchingExtensions_: Array<SearchEngine>;
+  private omniboxExtensionlastFocused_: HTMLElement;
+  private omniboxExtensionListBlurred_: boolean;
+  private dialogModel_: SearchEngine|null;
+  private dialogAnchorElement_: HTMLElement|null;
+  private showDialog_: boolean;
+  private showKeywordTriggerSetting_: boolean;
+  private showActiveSearchEngines_: boolean;
+
   ready() {
     super.ready();
 
@@ -178,56 +175,40 @@ class SettingsSearchEnginesPageElement extends
         'search-engines-changed', this.enginesChanged_.bind(this));
 
     // Sets offset in iron-list that uses the page as a scrollTarget.
-    afterNextRender(this, function() {
+    afterNextRender(this, () => {
       this.$.otherEngines.scrollOffset = this.$.otherEngines.offsetTop;
     });
 
     this.addEventListener(
         'edit-search-engine',
-        e => this.onEditSearchEngine_(
-            /** @type {!SearchEngineEditEvent} */ (e)));
+        e => this.onEditSearchEngine_(e as SearchEngineEditEvent));
   }
 
-  /**
-   * @param {?SearchEngine} searchEngine
-   * @param {!HTMLElement} anchorElement
-   * @private
-   */
-  openDialog_(searchEngine, anchorElement) {
+  private openDialog_(
+      searchEngine: SearchEngine|null, anchorElement: HTMLElement) {
     this.dialogModel_ = searchEngine;
     this.dialogAnchorElement_ = anchorElement;
     this.showDialog_ = true;
   }
 
-  /** @private */
-  onCloseDialog_() {
+  private onCloseDialog_() {
     this.showDialog_ = false;
-    const anchor = /** @type {!HTMLElement} */ (this.dialogAnchorElement_);
-    focusWithoutInk(anchor);
+    focusWithoutInk(this.dialogAnchorElement_ as HTMLElement);
     this.dialogModel_ = null;
     this.dialogAnchorElement_ = null;
   }
 
-  /**
-   * @param {!SearchEngineEditEvent} e
-   * @private
-   */
-  onEditSearchEngine_(e) {
+  private onEditSearchEngine_(e: SearchEngineEditEvent) {
     this.openDialog_(e.detail.engine, e.detail.anchorElement);
   }
 
-  /** @private */
-  extensionsChanged_() {
+  private extensionsChanged_() {
     if (this.showExtensionsList_ && this.$.extensions) {
-      /** @type {!IronListElement} */ (this.$.extensions).notifyResize();
+      this.$.extensions.notifyResize();
     }
   }
 
-  /**
-   * @param {!SearchEnginesInfo} searchEnginesInfo
-   * @private
-   */
-  enginesChanged_(searchEnginesInfo) {
+  private enginesChanged_(searchEnginesInfo: SearchEnginesInfo) {
     this.defaultEngines = searchEnginesInfo.defaults;
 
     // Sort |activeEngines| and |otherEngines| in alphabetical order.
@@ -241,28 +222,20 @@ class SettingsSearchEnginesPageElement extends
     this.extensions = searchEnginesInfo.extensions;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onAddSearchEngineTap_(e) {
+  private onAddSearchEngineTap_(e: Event) {
     e.preventDefault();
-    this.openDialog_(
-        null, assert(/** @type {HTMLElement} */ (this.$.addSearchEngine)));
+    this.openDialog_(null, this.$.addSearchEngine);
   }
 
-  /** @private */
-  computeShowExtensionsList_() {
+  private computeShowExtensionsList_(): boolean {
     return this.extensions.length > 0;
   }
 
   /**
    * Filters the given list based on the currently existing filter string.
-   * @param {!Array<!SearchEngine>} list
-   * @return {!Array<!SearchEngine>}
-   * @private
    */
-  computeMatchingEngines_(list) {
+  private computeMatchingEngines_(list: Array<SearchEngine>):
+      Array<SearchEngine> {
     if (this.filter === '') {
       return list;
     }
@@ -275,12 +248,12 @@ class SettingsSearchEnginesPageElement extends
   }
 
   /**
-   * @param {!Array<!SearchEngine>} list The original list.
-   * @param {!Array<!SearchEngine>} filteredList The filtered list.
-   * @return {boolean} Whether to show the "no results" message.
-   * @private
+   * @param list The original list.
+   * @param filteredList The filtered list.
+   * @return Whether to show the "no results" message.
    */
-  showNoResultsMessage_(list, filteredList) {
+  private showNoResultsMessage_(
+      list: Array<SearchEngine>, filteredList: Array<SearchEngine>): boolean {
     return list.length > 0 && filteredList.length === 0;
   }
 }

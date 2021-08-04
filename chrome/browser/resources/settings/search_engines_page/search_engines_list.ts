@@ -16,9 +16,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
-
-/** @polymer */
-class SettingsSearchEnginesListElement extends PolymerElement {
+export class SettingsSearchEnginesListElement extends PolymerElement {
   static get is() {
     return 'settings-search-engines-list';
   }
@@ -29,22 +27,18 @@ class SettingsSearchEnginesListElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<!SearchEngine>} */
       engines: Array,
 
       /**
        * The scroll target that this list should use.
-       * @type {?HTMLElement}
        */
       scrollTarget: Object,
 
       /** Used to fix scrolling glitch when list is not top most element. */
       scrollOffset: Number,
 
-      /** @private {Object}*/
       lastFocused_: Object,
 
-      /** @private */
       listBlurred_: Boolean,
 
       fixedHeight: {
@@ -52,9 +46,15 @@ class SettingsSearchEnginesListElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
-
     };
   }
+
+  engines: Array<SearchEngine>;
+  scrollTarget: HTMLElement|null;
+  scrollOffset: number;
+  fixedHeight: boolean;
+  private lastFocused_: HTMLElement;
+  private listBlurred_: boolean;
 }
 
 customElements.define(

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 export interface ExtensionControlBrowserProxy {
   // TODO(dbeam): should be be returning !Promise<boolean> to indicate whether
   // it succeeded?
@@ -21,6 +19,14 @@ export class ExtensionControlBrowserProxyImpl implements
   manageExtension(extensionId: string) {
     window.open('chrome://extensions?id=' + extensionId);
   }
+
+  static getInstance(): ExtensionControlBrowserProxy {
+    return instance || (instance = new ExtensionControlBrowserProxyImpl());
+  }
+
+  static setInstance(obj: ExtensionControlBrowserProxy) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(ExtensionControlBrowserProxyImpl);
+let instance: ExtensionControlBrowserProxy|null = null;

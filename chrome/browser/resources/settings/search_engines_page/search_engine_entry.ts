@@ -13,23 +13,17 @@ import './search_engine_entry_css.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FocusRowBehaviorInterface}
- */
 const SettingsSearchEngineEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement);
+    mixinBehaviors([FocusRowBehavior], PolymerElement) as
+    {new (): PolymerElement & FocusRowBehavior};
 
-/** @polymer */
 class SettingsSearchEngineEntryElement extends
     SettingsSearchEngineEntryElementBase {
   static get is() {
@@ -42,10 +36,8 @@ class SettingsSearchEngineEntryElement extends
 
   static get properties() {
     return {
-      /** @type {!SearchEngine} */
       engine: Object,
 
-      /** @type {boolean} */
       isDefault: {
         reflectToAttribute: true,
         type: Boolean,
@@ -55,47 +47,32 @@ class SettingsSearchEngineEntryElement extends
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  engine: SearchEngine;
+  isDefault: boolean;
+  private browserProxy_: SearchEnginesBrowserProxy =
+      SearchEnginesBrowserProxyImpl.getInstance();
 
-    /** @private {!SearchEnginesBrowserProxy} */
-    this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
+  private closePopupMenu_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
-  /** @private */
-  closePopupMenu_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsDefault_() {
+  private computeIsDefault_(): boolean {
     return this.engine.default;
   }
 
-  /** @private */
-  onDeleteTap_() {
+  private onDeleteTap_() {
     this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
     this.closePopupMenu_();
   }
 
-  /** @private */
-  onDotsTap_() {
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .showAt(assert(this.shadowRoot.querySelector('cr-icon-button')), {
+  private onDotsTap_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
+        assert(this.shadowRoot!.querySelector('cr-icon-button')!), {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onEditTap_(e) {
+  private onEditTap_(e: Event) {
     e.preventDefault();
     this.closePopupMenu_();
     this.dispatchEvent(new CustomEvent('edit-search-engine', {
@@ -103,13 +80,13 @@ class SettingsSearchEngineEntryElement extends
       composed: true,
       detail: {
         engine: this.engine,
-        anchorElement: assert(this.shadowRoot.querySelector('cr-icon-button')),
+        anchorElement:
+            assert(this.shadowRoot!.querySelector('cr-icon-button')!),
       },
     }));
   }
 
-  /** @private */
-  onMakeDefaultTap_() {
+  private onMakeDefaultTap_() {
     this.closePopupMenu_();
     this.browserProxy_.setDefaultSearchEngine(this.engine.modelIndex);
   }

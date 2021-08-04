@@ -146,7 +146,7 @@ preprocess_if_expr("preprocess") {
     "route.js",
     "router.js",
     "safety_check_page/safety_check_browser_proxy.js",
-    "search_engines_page/search_engines_browser_proxy.js",
+    "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.js",
     "setting_id_param_util.ts",
     "settings.ts",
@@ -273,13 +273,13 @@ preprocess_if_expr("preprocess_generated") {
     "safety_check_page/safety_check_passwords_child.js",
     "safety_check_page/safety_check_safe_browsing_child.js",
     "safety_check_page/safety_check_updates_child.js",
-    "search_engines_page/omnibox_extension_entry.js",
-    "search_engines_page/search_engine_dialog.js",
-    "search_engines_page/search_engine_entry_css.js",
-    "search_engines_page/search_engine_entry.js",
-    "search_engines_page/search_engines_list.js",
-    "search_engines_page/search_engines_page.js",
-    "search_page/search_page.js",
+    "search_engines_page/omnibox_extension_entry.ts",
+    "search_engines_page/search_engine_dialog.ts",
+    "search_engines_page/search_engine_entry_css.ts",
+    "search_engines_page/search_engine_entry.ts",
+    "search_engines_page/search_engines_list.ts",
+    "search_engines_page/search_engines_page.ts",
+    "search_page/search_page.ts",
     "settings_main/settings_main.js",
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
@@ -383,8 +383,6 @@ group("closure_compile") {
     "privacy_page/privacy_review:closure_compile",
     "privacy_sandbox:closure_compile",
     "safety_check_page:closure_compile",
-    "search_engines_page:closure_compile",
-    "search_page:closure_compile",
     "settings_main:closure_compile",
     "settings_menu:closure_compile",
     "settings_page:closure_compile",
@@ -455,7 +453,6 @@ js_library("settings") {
     "privacy_page:privacy_page",
     "privacy_page:privacy_page_browser_proxy",
     "safety_check_page:safety_check_browser_proxy",
-    "search_engines_page:search_engines_browser_proxy",
     "settings_ui:settings_ui",
   ]
   extra_deps = [ ":build_ts" ]
@@ -779,14 +776,14 @@ ts_library("build_ts") {
     "safety_check_page/safety_check_passwords_child.js",
     "safety_check_page/safety_check_safe_browsing_child.js",
     "safety_check_page/safety_check_updates_child.js",
-    "search_engines_page/omnibox_extension_entry.js",
-    "search_engines_page/search_engine_dialog.js",
-    "search_engines_page/search_engine_entry_css.js",
-    "search_engines_page/search_engine_entry.js",
-    "search_engines_page/search_engines_browser_proxy.js",
-    "search_engines_page/search_engines_list.js",
-    "search_engines_page/search_engines_page.js",
-    "search_page/search_page.js",
+    "search_engines_page/omnibox_extension_entry.ts",
+    "search_engines_page/search_engine_dialog.ts",
+    "search_engines_page/search_engine_entry_css.ts",
+    "search_engines_page/search_engine_entry.ts",
+    "search_engines_page/search_engines_browser_proxy.ts",
+    "search_engines_page/search_engines_list.ts",
+    "search_engines_page/search_engines_page.ts",
+    "search_page/search_page.ts",
     "search_settings.js",
     "setting_id_param_util.ts",
     "settings.ts",
@@ -891,7 +888,10 @@ ts_library("build_ts") {
         [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
   }
 
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
 
   extra_deps = [
     ":preprocess",

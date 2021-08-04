@@ -70,7 +70,7 @@ suite('AddSearchEngineDialogTests', function() {
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
-    SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-search-engine-dialog');
     document.body.appendChild(dialog);
@@ -177,7 +177,7 @@ suite('SearchEngineEntryTests', function() {
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
-    SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     entry = document.createElement('settings-search-engine-entry');
     entry.set('engine', searchEngine);
@@ -311,7 +311,7 @@ suite('SearchEnginePageTests', function() {
       others: searchEnginesInfo.others.slice(),
       extensions: searchEnginesInfo.extensions.slice(),
     });
-    SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-search-engines-page');
     document.body.appendChild(page);
@@ -485,7 +485,7 @@ suite('OmniboxExtensionEntryTests', function() {
 
   setup(function() {
     browserProxy = new TestExtensionControlBrowserProxy();
-    ExtensionControlBrowserProxyImpl.instance_ = browserProxy;
+    ExtensionControlBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     entry = document.createElement('settings-omnibox-extension-entry');
     entry.set('engine', createSampleOmniboxExtension());

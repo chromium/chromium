@@ -12,25 +12,19 @@ import './search_engine_entry_css.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
+import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {FocusRowBehaviorInterface}
- */
 const SettingsOmniboxExtensionEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement);
+    mixinBehaviors([FocusRowBehavior], PolymerElement) as
+    {new (): PolymerElement & FocusRowBehavior};
 
-/** @polymer */
 class SettingsOmniboxExtensionEntryElement extends
     SettingsOmniboxExtensionEntryElementBase {
   static get is() {
@@ -43,41 +37,31 @@ class SettingsOmniboxExtensionEntryElement extends
 
   static get properties() {
     return {
-      /** @type {!SearchEngine} */
       engine: Object,
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  engine: SearchEngine;
+  private browserProxy_: ExtensionControlBrowserProxy =
+      ExtensionControlBrowserProxyImpl.getInstance();
 
-    /** @private {!ExtensionControlBrowserProxyImpl} */
-    this.browserProxy_ = ExtensionControlBrowserProxyImpl.getInstance();
-  }
-
-  /** @private */
-  onManageTap_() {
+  private onManageTap_() {
     this.closePopupMenu_();
-    this.browserProxy_.manageExtension(this.engine.extension.id);
+    this.browserProxy_.manageExtension(this.engine.extension!.id);
   }
 
-  /** @private */
-  onDisableTap_() {
+  private onDisableTap_() {
     this.closePopupMenu_();
-    this.browserProxy_.disableExtension(this.engine.extension.id);
+    this.browserProxy_.disableExtension(this.engine.extension!.id);
   }
 
-  /** @private */
-  closePopupMenu_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private closePopupMenu_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
-  /** @private */
-  onDotsTap_() {
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .showAt(assert(this.shadowRoot.querySelector('cr-icon-button')), {
+  private onDotsTap_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
+        assert(this.shadowRoot!.querySelector('cr-icon-button')!), {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
   }

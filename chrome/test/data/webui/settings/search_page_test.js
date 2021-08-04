@@ -40,7 +40,7 @@ suite('SearchPageTests', function() {
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     browserProxy.setSearchEnginesInfo(generateSearchEngineInfo());
-    SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     page = /** @type {!SettingsSearchPageElement} */ (
         document.createElement('settings-search-page'));
