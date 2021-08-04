@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
@@ -337,9 +338,8 @@ void XboxControllerMac::SetVibration(double strong_magnitude,
     return;
 
   // Clamp magnitudes to [0,1]
-  strong_magnitude =
-      std::max<double>(0.0, std::min<double>(strong_magnitude, 1.0));
-  weak_magnitude = std::max<double>(0.0, std::min<double>(weak_magnitude, 1.0));
+  strong_magnitude = base::clamp<double>(strong_magnitude, 0.0, 1.0);
+  weak_magnitude = base::clamp<double>(weak_magnitude, 0.0, 1.0);
 
   if (xinput_type_ == kXInputTypeXbox360) {
     WriteXbox360Rumble(static_cast<uint8_t>(strong_magnitude * 255.0),

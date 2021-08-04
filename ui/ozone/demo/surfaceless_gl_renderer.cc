@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -174,7 +175,7 @@ bool SurfacelessGlRenderer::Initialize() {
     base::StringToInt(
         command_line->GetSwitchValueASCII("enable-overlay").c_str(),
         &requested_overlay_cnt);
-    overlay_cnt_ = std::max(1, std::min(kMaxLayers, requested_overlay_cnt));
+    overlay_cnt_ = base::clamp(requested_overlay_cnt, 1, kMaxLayers);
 
     const gfx::Size overlay_size =
         gfx::Size(size_.width() / 8, size_.height() / 8);

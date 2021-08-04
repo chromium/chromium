@@ -9,9 +9,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include <algorithm>
-
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
@@ -276,7 +275,7 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
     // value to an int before calling NumberToWString. TODO(dtseng): cleanup if
     // we ever use any other properties that require xml.
     double adjusted_pitch =
-        std::max<double>(-10, std::min<double>(params.pitch * 10 - 10, 10));
+        base::clamp<double>(params.pitch * 10 - 10, -10, 10);
     std::wstring adjusted_pitch_string =
         base::NumberToWString(static_cast<int>(adjusted_pitch));
     prefix = L"<pitch absmiddle=\"" + adjusted_pitch_string + L"\">";
