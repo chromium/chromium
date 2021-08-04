@@ -695,7 +695,13 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, PolicyCheck) {
 }
 
 // Only use MSE since this is independent to the demuxer.
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, RemoveTemporarySession) {
+// Disable the test on Linux and CrOS due to flaky. crbug.com/1232895
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_RemoveTemporarySession DISABLED_RemoveTemporarySession
+#else
+#define MAYBE_RemoveTemporarySession RemoveTemporarySession
+#endif
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_RemoveTemporarySession) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "RemoveTemporarySession test requires license server.";
 
