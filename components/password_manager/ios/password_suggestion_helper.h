@@ -79,7 +79,7 @@ class WebState;
 // with password forms.
 
 // Resets fill data, callbacks and state flags for new page. This method should
-// be called in password controller's -webState:didLoadPageWithSuccess:.
+// be called in password controller's -webState:didFinishNavigation:.
 - (void)resetForNewPage;
 
 // Prepares fill data with given password form data. Triggers callback for
