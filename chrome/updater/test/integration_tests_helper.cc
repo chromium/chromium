@@ -25,6 +25,10 @@
 #include "chrome/updater/updater_scope.h"
 #include "url/gurl.h"
 
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
+
 namespace updater {
 namespace test {
 namespace {
@@ -220,6 +224,11 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
 
+#if defined(OS_WIN)
+  auto scoped_com_initializer =
+      std::make_unique<base::win::ScopedCOMInitializer>(
+          base::win::ScopedCOMInitializer::kMTA);
+#endif
   return MakeAppTestHelper()->Run();
 }
 

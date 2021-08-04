@@ -165,6 +165,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     EXPECT_TRUE(base::PathExists(path));
     path = MakeAbsoluteFilePath(path);
     path = path.Append(FILE_PATH_LITERAL("updater_integration_tests_helper"));
+#if defined(OS_WIN)
+    path = path.AddExtension(L"exe");
+#endif
     EXPECT_TRUE(base::PathExists(path));
 
     base::CommandLine helper_command(path);

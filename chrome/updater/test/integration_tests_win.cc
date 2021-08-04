@@ -57,10 +57,14 @@ base::FilePath GetTestAppExecutablePath() {
   return test_executable.DirName().AppendASCII(TEST_APP_FULLNAME_STRING ".exe");
 }
 
-absl::optional<base::FilePath> GetProductPath() {
+absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
   base::FilePath app_data_dir;
-  if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &app_data_dir))
+  if (!base::PathService::Get(scope == UpdaterScope::kSystem
+                                  ? base::DIR_PROGRAM_FILES
+                                  : base::DIR_LOCAL_APP_DATA,
+                              &app_data_dir)) {
     return absl::nullopt;
+  }
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING)
       .AppendASCII(kUpdaterVersion);
@@ -84,7 +88,7 @@ bool DeleteRegKey(HKEY root, REGSAM regsam, const std::wstring& path) {
 }  // namespace
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   if (!path)
     return absl::nullopt;
   return path->AppendASCII("updater.exe");
@@ -93,7 +97,7 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
 absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
     UpdaterScope scope,
     const base::Version& version) {
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   if (!path)
     return absl::nullopt;
   return path->AppendASCII(version.GetString());
@@ -162,7 +166,7 @@ void Clean(UpdaterScope scope) {
   }
 
   // TODO(crbug.com/1062288): Delete the Wake task.
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
@@ -230,7 +234,7 @@ void ExpectClean(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_FALSE(base::PathExists(*path));
@@ -257,7 +261,7 @@ void ExpectInstalled(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are Wake tasks.
 
   // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::PathExists(*path));
@@ -268,7 +272,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 
   // Files must not exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_FALSE(base::PathExists(*path));
@@ -278,7 +282,7 @@ void ExpectActiveUpdater(UpdaterScope scope) {
   // TODO(crbug.com/1062288): Assert that COM interfaces point to this version.
 
   // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetProductPath();
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::PathExists(*path));
@@ -323,8 +327,8 @@ void Uninstall(UpdaterScope scope) {
   SleepFor(5);
 }
 
-void SetActive(UpdaterScope scope, const std::string& id) {
-  // TODO(crbug/1159498): Standardize registry access.
+void SetActive(UpdaterScope /*scope*/, const std::string& id) {
+  // TODO(crbug.com/1159498): Standardize registry access.
   base::win::RegKey key;
   ASSERT_EQ(key.Create(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                        KEY_WRITE | KEY_WOW64_32KEY),
@@ -332,8 +336,8 @@ void SetActive(UpdaterScope scope, const std::string& id) {
   EXPECT_EQ(key.WriteValue(kDidRun, L"1"), ERROR_SUCCESS);
 }
 
-void ExpectActive(UpdaterScope scope, const std::string& id) {
-  // TODO(crbug/1159498): Standardize registry access.
+void ExpectActive(UpdaterScope /*scope*/, const std::string& id) {
+  // TODO(crbug.com/1159498): Standardize registry access.
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                      KEY_READ | KEY_WOW64_32KEY),
@@ -343,8 +347,8 @@ void ExpectActive(UpdaterScope scope, const std::string& id) {
   EXPECT_EQ(value, L"1");
 }
 
-void ExpectNotActive(UpdaterScope scope, const std::string& id) {
-  // TODO(crbug/1159498): Standardize registry access.
+void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
+  // TODO(crbug.com/1159498): Standardize registry access.
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
