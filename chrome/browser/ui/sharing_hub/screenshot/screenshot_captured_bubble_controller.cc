@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace sharing_hub {
 
@@ -29,6 +30,8 @@ ScreenshotCapturedBubbleController* ScreenshotCapturedBubbleController::Get(
 void ScreenshotCapturedBubbleController::ShowBubble(
     const image_editor::ScreenshotCaptureResult& image) {
   const gfx::Image& captured_image = image.image;
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteImage(*captured_image.ToSkBitmap());
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   browser->window()->ShowScreenshotCapturedBubble(web_contents_, captured_image,
                                                   this);
