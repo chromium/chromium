@@ -67,7 +67,7 @@ class PLATFORM_EXPORT HTTPHeaderMap final {
   void Clear() { headers_.clear(); }
   bool Contains(const AtomicString& k) const { return headers_.Contains(k); }
   const AtomicString& Get(const AtomicString& k) const {
-    return headers_.at(k);
+    return headers_.DeprecatedAtOrEmptyValue(k);
   }
   AddResult Set(const AtomicString& k, const AtomicString& v) {
     SECURITY_DCHECK(!k.Contains('\n') && !k.Contains('\r'));
