@@ -41,7 +41,7 @@ class ColorCorrectionTestUtils {
   static void CompareColorCorrectedPixels(
       const void* actual_pixels,
       const void* expected_pixels,
-      int num_pixels,
+      size_t num_pixels,
       PixelFormat pixel_format,
       PixelsAlphaMultiply alpha_multiplied = kAlphaUnmultiplied,
       UnpremulRoundTripTolerance premul_unpremul_tolerance =

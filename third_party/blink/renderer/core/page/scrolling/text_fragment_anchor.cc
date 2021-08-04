@@ -34,8 +34,8 @@ bool ParseTextDirective(const String& fragment_directive,
                         Vector<TextFragmentSelector>* out_selectors) {
   DCHECK(out_selectors);
 
-  size_t start_pos = 0;
-  size_t end_pos = 0;
+  wtf_size_t start_pos = 0;
+  wtf_size_t end_pos = 0;
   while (end_pos != kNotFound) {
     if (fragment_directive.Find(kTextFragmentIdentifierPrefix, start_pos) !=
         start_pos) {

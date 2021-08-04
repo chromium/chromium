@@ -50,7 +50,7 @@ class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
  public:
   RecodingTimeAfterBackForwardCacheRestoreFrameCallback(
       PaintTiming* paint_timing,
-      size_t record_index)
+      wtf_size_t record_index)
       : paint_timing_(paint_timing), record_index_(record_index) {}
   ~RecodingTimeAfterBackForwardCacheRestoreFrameCallback() override = default;
 
@@ -82,7 +82,7 @@ class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
 
  private:
   Member<PaintTiming> paint_timing_;
-  const size_t record_index_;
+  const wtf_size_t record_index_;
   size_t count_ = 0;
 };
 
@@ -275,7 +275,7 @@ void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {
 
 void PaintTiming::
     RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
-        size_t index) {
+        wtf_size_t index) {
   RegisterNotifyPresentationTime(CrossThreadBindOnce(
       &PaintTiming::
           ReportFirstPaintAfterBackForwardCacheRestorePresentationTime,
@@ -327,7 +327,7 @@ void PaintTiming::ReportPresentationTime(PaintEvent event,
 }
 
 void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
-    size_t index,
+    wtf_size_t index,
     WebSwapResult result,
     base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
@@ -389,7 +389,7 @@ void PaintTiming::SetFirstImagePaintPresentation(base::TimeTicks stamp) {
 
 void PaintTiming::SetFirstPaintAfterBackForwardCacheRestorePresentation(
     base::TimeTicks stamp,
-    size_t index) {
+    wtf_size_t index) {
   // The elements are allocated when the page is restored from the cache.
   DCHECK_GE(first_paints_after_back_forward_cache_restore_presentation_.size(),
             index);
@@ -400,7 +400,7 @@ void PaintTiming::SetFirstPaintAfterBackForwardCacheRestorePresentation(
 }
 
 void PaintTiming::SetRequestAnimationFrameAfterBackForwardCacheRestore(
-    size_t index,
+    wtf_size_t index,
     size_t count) {
   auto now = clock_->NowTicks();
 
@@ -417,7 +417,7 @@ void PaintTiming::SetRequestAnimationFrameAfterBackForwardCacheRestore(
 void PaintTiming::OnRestoredFromBackForwardCache() {
   // Allocate the last element with 0, which indicates that the first paint
   // after this navigation doesn't happen yet.
-  size_t index =
+  wtf_size_t index =
       first_paints_after_back_forward_cache_restore_presentation_.size();
   DCHECK_EQ(index,
             request_animation_frames_after_back_forward_cache_restore_.size());

@@ -66,7 +66,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
   void ProvideInput(const WebVector<float*>& audio_data,
-                    size_t number_of_frames) override;
+                    int number_of_frames) override;
 
   // RestartableAudioRendererSink implementation.
   void Initialize(const media::AudioParameters& params,

@@ -82,7 +82,7 @@ void SimRequestBase::WriteInternal(base::span<const char> data) {
   if (navigation_body_loader_)
     navigation_body_loader_->Write(data.data(), data.size());
   else
-    client_->DidReceiveData(data.data(), data.size());
+    client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
 void SimRequestBase::Finish(bool body_loader_finished) {

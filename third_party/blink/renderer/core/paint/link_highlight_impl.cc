@@ -244,7 +244,7 @@ void LinkHighlightImpl::UpdateAfterPrePaint() {
     return;
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  size_t fragment_count = 0;
+  wtf_size_t fragment_count = 0;
   for (const auto* fragment = &object->FirstFragment(); fragment;
        fragment = fragment->NextFragment())
     ++fragment_count;

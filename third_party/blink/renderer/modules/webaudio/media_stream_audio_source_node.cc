@@ -118,7 +118,8 @@ void MediaStreamAudioSourceHandler::Process(uint32_t number_of_frames) {
       output_bus->Zero();
       return;
     }
-    audio_source_provider_.get()->ProvideInput(output_bus, number_of_frames);
+    audio_source_provider_.get()->ProvideInput(
+        output_bus, base::checked_cast<int>(number_of_frames));
     if (!is_processing_) {
       SendLogMessage(String::Format("%s({number_of_frames=%u})", __func__,
                                     number_of_frames));

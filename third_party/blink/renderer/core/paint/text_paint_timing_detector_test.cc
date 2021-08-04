@@ -85,7 +85,8 @@ class TextPaintTimingDetectorTest : public testing::Test {
 
   wtf_size_t CountRankingSetSize() {
     DCHECK(GetTextPaintTimingDetector());
-    return GetLargestTextPaintManager()->size_ordered_set_.size();
+    return static_cast<wtf_size_t>(
+        GetLargestTextPaintManager()->size_ordered_set_.size());
   }
 
   wtf_size_t CountInvisibleTexts() {

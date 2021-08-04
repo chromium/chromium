@@ -16,8 +16,8 @@ namespace {
 // return an empty string to indicate no prefix/suffix was specified or it
 // was malformed and should be ignored.
 String ExtractPrefix(String* target_text) {
-  size_t comma_pos = target_text->find(',');
-  size_t hyphen_pos = target_text->find('-');
+  wtf_size_t comma_pos = target_text->find(',');
+  wtf_size_t hyphen_pos = target_text->find('-');
 
   if (hyphen_pos != kNotFound && hyphen_pos == comma_pos - 1) {
     String prefix = target_text->Substring(0, hyphen_pos);
@@ -28,8 +28,8 @@ String ExtractPrefix(String* target_text) {
 }
 
 String ExtractSuffix(String* target_text) {
-  size_t last_comma_pos = target_text->ReverseFind(',');
-  size_t last_hyphen_pos = target_text->ReverseFind('-');
+  wtf_size_t last_comma_pos = target_text->ReverseFind(',');
+  wtf_size_t last_hyphen_pos = target_text->ReverseFind('-');
 
   if (last_hyphen_pos != kNotFound && last_hyphen_pos == last_comma_pos + 1) {
     String suffix = target_text->Substring(last_hyphen_pos + 1);
@@ -49,10 +49,10 @@ TextFragmentSelector TextFragmentSelector::Create(String target_text) {
   String prefix = ExtractPrefix(&target_text);
   String suffix = ExtractSuffix(&target_text);
 
-  size_t comma_pos = target_text.find(',');
+  wtf_size_t comma_pos = target_text.find(',');
 
   // If there are more commas, this is an invalid text fragment selector.
-  size_t next_comma_pos = target_text.find(',', comma_pos + 1);
+  wtf_size_t next_comma_pos = target_text.find(',', comma_pos + 1);
   if (next_comma_pos != kNotFound)
     return TextFragmentSelector(kInvalid);
 

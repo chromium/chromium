@@ -707,8 +707,8 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
   InitializeLibXMLIfNecessary();
 
   // appendFragmentSource() checks that the length doesn't overflow an int.
-  xmlParserCtxtPtr parser =
-      xmlCreateMemoryParserCtxt(chunk.c_str(), chunk.length());
+  xmlParserCtxtPtr parser = xmlCreateMemoryParserCtxt(
+      chunk.c_str(), base::checked_cast<int>(chunk.length()));
 
   if (!parser)
     return nullptr;

@@ -82,7 +82,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     underline_position = ResolvedUnderlinePosition::kUnder;
   }
 
-  for (size_t applied_decoration_index = 0;
+  for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
@@ -158,7 +158,7 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
   if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
 
-  for (size_t applied_decoration_index = 0;
+  for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =

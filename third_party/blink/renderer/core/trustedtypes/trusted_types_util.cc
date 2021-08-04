@@ -188,7 +188,8 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
       execution_context->GetContentSecurityPolicy()
           ->AllowTrustedTypeAssignmentFailure(
               GetMessage(kind),
-              prefix == "Function" ? value.Substring(strlen(kAnonymousPrefix))
+              prefix == "Function" ? value.Substring(static_cast<wtf_size_t>(
+                                         strlen(kAnonymousPrefix)))
                                    : value,
               prefix);
 

@@ -4446,7 +4446,7 @@ void HTMLMediaElement::AudioSourceProviderImpl::SetClient(
 
 void HTMLMediaElement::AudioSourceProviderImpl::ProvideInput(
     AudioBus* bus,
-    uint32_t frames_to_process) {
+    int frames_to_process) {
   DCHECK(bus);
 
   MutexTryLocker try_locker(provide_input_lock);

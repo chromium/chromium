@@ -201,11 +201,11 @@ inline bool RequiresSquashing(CompositingReasons reasons) {
 }
 
 struct CompositingReasonsStats {
-  size_t overlap_layers = 0;
-  size_t active_animation_layers = 0;
-  size_t assumed_overlap_layers = 0;
-  size_t indirect_composited_layers = 0;
-  size_t total_composited_layers = 0;
+  int overlap_layers = 0;
+  int active_animation_layers = 0;
+  int assumed_overlap_layers = 0;
+  int indirect_composited_layers = 0;
+  int total_composited_layers = 0;
 };
 
 }  // namespace blink

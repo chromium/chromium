@@ -79,7 +79,7 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
   void Paint(GraphicsContext&);
 
   wtf_size_t FragmentCountForTesting() const { return fragments_.size(); }
-  cc::PictureLayer* LayerForTesting(size_t index) const {
+  cc::PictureLayer* LayerForTesting(wtf_size_t index) const {
     return fragments_[index].Layer();
   }
 

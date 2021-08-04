@@ -88,7 +88,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     const int packet_size = params.frames_per_buffer() * 2 * params.channels();
     const size_t length = packet_size * kNumberOfPacketsForTest;
     std::unique_ptr<char[]> capture_data(new char[length]);
-    ReadDataFromSpeechFile(capture_data.get(), length);
+    ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
     const int16_t* data_ptr =
         reinterpret_cast<const int16_t*>(capture_data.get());
     std::unique_ptr<media::AudioBus> data_bus =

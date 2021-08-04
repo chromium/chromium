@@ -574,7 +574,7 @@ class OriginTrialContextDevtoolsTest : public OriginTrialContextTest {
     EXPECT_EQ(trial_result->value.token_results.size(),
               expected_token_results.size());
 
-    for (size_t i = 0; i < expected_token_results.size(); i++) {
+    for (wtf_size_t i = 0; i < expected_token_results.size(); i++) {
       const auto& expected_token_result = expected_token_results[i];
       const auto& actual_token_result = trial_result->value.token_results[i];
 

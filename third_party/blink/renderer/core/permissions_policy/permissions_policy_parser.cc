@@ -50,7 +50,7 @@ class ParsedFeaturePolicies final
                   1) {}
 
   bool Observed(mojom::blink::PermissionsPolicyFeature feature) {
-    size_t feature_index = static_cast<size_t>(feature);
+    wtf_size_t feature_index = static_cast<wtf_size_t>(feature);
     if (policies_[feature_index])
       return true;
     policies_[feature_index] = true;

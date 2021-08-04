@@ -294,7 +294,7 @@ void MockMediaStreamVideoRenderer::QueueFrames(
     int double_size_index,
     media::VideoRotation rotation) {
   gfx::Size standard_size = standard_size_;
-  for (size_t i = 0; i < timestamp_or_frame_type.size(); i++) {
+  for (wtf_size_t i = 0; i < timestamp_or_frame_type.size(); i++) {
     const int token = timestamp_or_frame_type[i];
     if (static_cast<int>(i) == double_size_index) {
       standard_size =

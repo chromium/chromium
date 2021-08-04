@@ -204,15 +204,14 @@ void WebAudioSourceProviderImpl::SetClient(
 
 void WebAudioSourceProviderImpl::ProvideInput(
     const WebVector<float*>& audio_data,
-    size_t number_of_frames) {
+    int number_of_frames) {
   if (!bus_wrapper_ ||
       static_cast<size_t>(bus_wrapper_->channels()) != audio_data.size()) {
     bus_wrapper_ =
         media::AudioBus::CreateWrapper(static_cast<int>(audio_data.size()));
   }
 
-  const int incoming_number_of_frames = static_cast<int>(number_of_frames);
-  bus_wrapper_->set_frames(incoming_number_of_frames);
+  bus_wrapper_->set_frames(number_of_frames);
   for (size_t i = 0; i < audio_data.size(); ++i)
     bus_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
 
@@ -245,8 +244,8 @@ void WebAudioSourceProviderImpl::ProvideInput(
     return;
   }
 
-  if (frames < incoming_number_of_frames)
-    bus_wrapper_->ZeroFramesPartial(frames, incoming_number_of_frames - frames);
+  if (frames < number_of_frames)
+    bus_wrapper_->ZeroFramesPartial(frames, number_of_frames - frames);
 
   bus_wrapper_->Scale(volume_);
 }

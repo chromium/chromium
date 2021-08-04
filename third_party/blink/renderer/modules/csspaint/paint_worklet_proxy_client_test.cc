@@ -89,13 +89,13 @@ class PaintWorkletProxyClientTest : public RenderingTest {
     // create multiple WorkerThread for this. Note that the underlying thread
     // may be shared even though they are unique WorkerThread instances!
     Vector<std::unique_ptr<WorkerThread>> worklet_threads;
-    for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; i++) {
+    for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; i++) {
       worklet_threads.push_back(CreateThreadAndProvidePaintWorkletProxyClient(
           &GetDocument(), reporting_proxy_.get(), proxy_client_));
     }
 
     // Add the global scopes. This must happen on the worklet thread.
-    for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; i++) {
+    for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; i++) {
       base::WaitableEvent waitable_event;
       PostCrossThreadTask(
           *worklet_threads[i]->GetTaskRunner(TaskType::kInternalTest),
@@ -121,7 +121,7 @@ class PaintWorkletProxyClientTest : public RenderingTest {
     waitable_event.Wait();
 
     // And finally clean up.
-    for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; i++) {
+    for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; i++) {
       worklet_threads[i]->Terminate();
       worklet_threads[i]->WaitForShutdownForTesting();
     }
@@ -356,7 +356,7 @@ void RunAllDefinitionsMustBeRegisteredBeforePostingTestOnWorklet(
   // end up posting a task to the PaintWorklet.
   const Vector<CrossThreadPersistent<PaintWorkletGlobalScope>>& global_scopes =
       proxy_client->GetGlobalScopesForTesting();
-  for (size_t i = 0; i < global_scopes.size() - 1; i++) {
+  for (wtf_size_t i = 0; i < global_scopes.size() - 1; i++) {
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode("registerPaint('foo', class { paint() { } });"))
         ->RunScriptOnWorkerOrWorklet(*global_scopes[i]);

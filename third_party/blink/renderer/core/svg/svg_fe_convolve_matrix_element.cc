@@ -180,8 +180,8 @@ float SVGFEConvolveMatrixElement::ComputeDivisor() const {
     return divisor_->CurrentValue()->Value();
   float divisor_value = 0;
   SVGNumberList* kernel_matrix = kernel_matrix_->CurrentValue();
-  size_t kernel_matrix_size = kernel_matrix->length();
-  for (size_t i = 0; i < kernel_matrix_size; ++i)
+  uint32_t kernel_matrix_size = kernel_matrix->length();
+  for (uint32_t i = 0; i < kernel_matrix_size; ++i)
     divisor_value += kernel_matrix->at(i)->Value();
   return divisor_value ? divisor_value : 1;
 }

@@ -117,7 +117,7 @@ class FakeNfcService : public device::mojom::blink::NFC {
     std::move(callback).Run(nullptr);
   }
   void CancelWatch(uint32_t id) override {
-    size_t index = watchIDs_.Find(id);
+    wtf_size_t index = watchIDs_.Find(id);
     if (index != kNotFound)
       watchIDs_.EraseAt(index);
   }

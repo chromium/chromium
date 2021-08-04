@@ -110,7 +110,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
   }
 
   // Number of instantiated mixers.
-  int mixer_count() { return manager_->mixers_.size(); }
+  size_t mixer_count() { return manager_->mixers_.size(); }
 
  protected:
   scoped_refptr<media::MockAudioRendererSink> GetSink(
@@ -154,7 +154,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
 // respect to the explicit ref counting done.
 TEST_F(AudioRendererMixerManagerTest, GetReturnMixer) {
   // There should be no mixers outstanding to start with.
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params1(media::AudioParameters::AUDIO_PCM_LINEAR,
                                  kChannelLayout, kSampleRate, kBufferSize);
@@ -163,17 +163,17 @@ TEST_F(AudioRendererMixerManagerTest, GetReturnMixer) {
       GetMixer(kFrameToken, params1, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   // The same parameters should return the same mixer1.
   EXPECT_EQ(mixer1,
             GetMixer(kFrameToken, params1, AudioLatency::LATENCY_PLAYBACK,
                      kDefaultDeviceId, SinkUseState::kExistingSink));
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   // Return the extra mixer we just acquired.
   ReturnMixer(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   media::AudioParameters params2(AudioParameters::AUDIO_PCM_LINEAR,
                                  kAnotherChannelLayout, kSampleRate * 2,
@@ -182,22 +182,22 @@ TEST_F(AudioRendererMixerManagerTest, GetReturnMixer) {
       GetMixer(kFrameToken, params2, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer2);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
 
   // Different parameters should result in a different mixer1.
   EXPECT_NE(mixer1, mixer2);
 
   // Return both outstanding mixers.
   ReturnMixer(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify GetMixer() correctly deduplicates mixer with irrelevant AudioParameter
 // differences.
 TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
-  EXPECT_EQ(mixer_count(), 0);
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params1(AudioParameters::AUDIO_PCM_LINEAR,
                                  kChannelLayout, kSampleRate, kBufferSize);
@@ -205,7 +205,7 @@ TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
       GetMixer(kFrameToken, params1, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   // Different sample rates, formats, bit depths, and buffer sizes should not
   // result in a different mixer.
@@ -216,9 +216,9 @@ TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
       GetMixer(kFrameToken, params2, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kExistingSink);
   EXPECT_EQ(mixer1, mixer2);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   // Modify some parameters that do matter: channel layout
   media::AudioParameters params3(AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -229,13 +229,13 @@ TEST_F(AudioRendererMixerManagerTest, MixerReuse) {
       GetMixer(kFrameToken, params3, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   EXPECT_NE(mixer1, mixer3);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer3);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   // Return final mixer.
   ReturnMixer(mixer1);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify CreateInput() provides AudioRendererMixerInput with the appropriate
@@ -247,14 +247,14 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
                                 kChannelLayout, kSampleRate, kBufferSize);
 
   // Create two mixer inputs and ensure this doesn't instantiate any mixers yet.
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
   media::FakeAudioRenderCallback callback(0, kSampleRate);
   mock_sink_ = CreateNormalSink();
   EXPECT_CALL(*mock_sink_, Start()).Times(1);
   auto input =
       CreateInputHelper(kFrameToken, base::UnguessableToken(), kDefaultDeviceId,
                         AudioLatency::LATENCY_PLAYBACK, params, &callback);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
   media::FakeAudioRenderCallback another_callback(1, kSampleRate);
 
   EXPECT_FALSE(!!mock_sink_);
@@ -263,22 +263,22 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
   auto another_input = CreateInputHelper(
       kAnotherFrameToken, base::UnguessableToken(), kDefaultDeviceId,
       AudioLatency::LATENCY_PLAYBACK, params, &another_callback);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   // Implicitly test that AudioRendererMixerInput was provided with the expected
   // callbacks needed to acquire an AudioRendererMixer and return it.
   input->Start();
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   another_input->Start();
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
 
   // Destroying the inputs should destroy the mixers.
   input->Stop();
   input = nullptr;
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   another_input->Stop();
   another_input = nullptr;
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify CreateInput() provided with session id creates AudioRendererMixerInput
@@ -291,68 +291,68 @@ TEST_F(AudioRendererMixerManagerTest, DISABLED_CreateInputWithSessionId) {
   media::AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                                 kChannelLayout, kSampleRate, kBufferSize);
   media::FakeAudioRenderCallback callback(0, kSampleRate);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   // Empty device id, zero session id;
   auto input_to_default_device = CreateInputHelper(
       kFrameToken, base::UnguessableToken(),  // session_id
       std::string(), AudioLatency::LATENCY_PLAYBACK, params, &callback);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   // Specific device id, zero session id;
   auto input_to_another_device = CreateInputHelper(
       kFrameToken, base::UnguessableToken(),  // session_id
       kMatchedDeviceId, AudioLatency::LATENCY_PLAYBACK, params, &callback);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   // Specific device id, non-zero session id (to be ignored);
   auto input_to_matched_device = CreateInputHelper(
       kFrameToken,
       base::UnguessableToken::Create(),  // session id
       kAnotherDeviceId, AudioLatency::LATENCY_PLAYBACK, params, &callback);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   // Empty device id, non-zero session id;
   auto input_to_matched_device_with_session_id = CreateInputHelper(
       kFrameToken,
       base::UnguessableToken::Create(),  // session id
       std::string(), AudioLatency::LATENCY_PLAYBACK, params, &callback);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   // Implicitly test that AudioRendererMixerInput was provided with the expected
   // callbacks needed to acquire an AudioRendererMixer and return it.
   input_to_default_device->Start();
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   input_to_another_device->Start();
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
 
   input_to_matched_device->Start();
-  EXPECT_EQ(3, mixer_count());
+  EXPECT_EQ(3u, mixer_count());
 
   // Should go to the same device as the input above.
   input_to_matched_device_with_session_id->Start();
-  EXPECT_EQ(3, mixer_count());
+  EXPECT_EQ(3u, mixer_count());
 
   // Destroying the inputs should destroy the mixers.
   input_to_default_device->Stop();
   input_to_default_device = nullptr;
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   input_to_another_device->Stop();
   input_to_another_device = nullptr;
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   input_to_matched_device->Stop();
   input_to_matched_device = nullptr;
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   input_to_matched_device_with_session_id->Stop();
   input_to_matched_device_with_session_id = nullptr;
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify GetMixer() correctly creates different mixers with the same
 // parameters, but different device ID.
 TEST_F(AudioRendererMixerManagerTest, MixerDevices) {
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                                 kChannelLayout, kSampleRate, kBufferSize);
@@ -360,25 +360,25 @@ TEST_F(AudioRendererMixerManagerTest, MixerDevices) {
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   media::AudioRendererMixer* mixer2 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kAnotherDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer2);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   EXPECT_NE(mixer1, mixer2);
 
   ReturnMixer(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify GetMixer() correctly deduplicate mixers with the same
 // parameters and default device ID, even if one is "" and one is "default".
 TEST_F(AudioRendererMixerManagerTest, OneMixerDifferentDefaultDeviceIDs) {
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                                 kChannelLayout, kSampleRate, kBufferSize);
@@ -386,25 +386,25 @@ TEST_F(AudioRendererMixerManagerTest, OneMixerDifferentDefaultDeviceIDs) {
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   media::AudioRendererMixer* mixer2 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                std::string(), SinkUseState::kExistingSink);
   ASSERT_TRUE(mixer2);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   EXPECT_EQ(mixer1, mixer2);
 
   ReturnMixer(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify that GetMixer() correctly returns a null mixer and an appropriate
 // status code when a nonexistent device is requested.
 TEST_F(AudioRendererMixerManagerTest, NonexistentDevice) {
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                                 kChannelLayout, kSampleRate, kBufferSize);
@@ -416,13 +416,13 @@ TEST_F(AudioRendererMixerManagerTest, NonexistentDevice) {
 
   EXPECT_EQ(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND,
             device_info.device_status());
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify GetMixer() correctly deduplicate mixers basing on latency
 // requirements.
 TEST_F(AudioRendererMixerManagerTest, LatencyMixing) {
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                                 kChannelLayout, kSampleRate, kBufferSize);
@@ -430,58 +430,58 @@ TEST_F(AudioRendererMixerManagerTest, LatencyMixing) {
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   media::AudioRendererMixer* mixer2 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kExistingSink);
   ASSERT_TRUE(mixer2);
   EXPECT_EQ(mixer1, mixer2);  // Same latency => same mixer.
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   media::AudioRendererMixer* mixer3 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_RTC, kDefaultDeviceId,
                SinkUseState::kNewSink);
   ASSERT_TRUE(mixer3);
   EXPECT_NE(mixer1, mixer3);
-  EXPECT_EQ(2, mixer_count());  // Another latency => another mixer.
+  EXPECT_EQ(2u, mixer_count());  // Another latency => another mixer.
 
   media::AudioRendererMixer* mixer4 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_RTC, kDefaultDeviceId,
                SinkUseState::kExistingSink);
   EXPECT_EQ(mixer3, mixer4);
-  EXPECT_EQ(2, mixer_count());  // Same latency => same mixer.
+  EXPECT_EQ(2u, mixer_count());  // Same latency => same mixer.
 
   media::AudioRendererMixer* mixer5 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_INTERACTIVE,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer5);
-  EXPECT_EQ(3, mixer_count());  // Another latency => another mixer.
+  EXPECT_EQ(3u, mixer_count());  // Another latency => another mixer.
 
   media::AudioRendererMixer* mixer6 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_INTERACTIVE,
                kDefaultDeviceId, SinkUseState::kExistingSink);
   EXPECT_EQ(mixer5, mixer6);
-  EXPECT_EQ(3, mixer_count());  // Same latency => same mixer.
+  EXPECT_EQ(3u, mixer_count());  // Same latency => same mixer.
 
   ReturnMixer(mixer1);
-  EXPECT_EQ(3, mixer_count());
+  EXPECT_EQ(3u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer3);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer4);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer5);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer6);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify GetMixer() correctly deduplicate mixers basing on the effects
 // requirements.
 TEST_F(AudioRendererMixerManagerTest, EffectsMixing) {
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 
   media::AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                                 kChannelLayout, kSampleRate, kBufferSize);
@@ -490,14 +490,14 @@ TEST_F(AudioRendererMixerManagerTest, EffectsMixing) {
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   media::AudioRendererMixer* mixer2 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kExistingSink);
   ASSERT_TRUE(mixer2);
   EXPECT_EQ(mixer1, mixer2);  // Same effects => same mixer.
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
 
   params.set_effects(2);
   media::AudioRendererMixer* mixer3 =
@@ -505,39 +505,39 @@ TEST_F(AudioRendererMixerManagerTest, EffectsMixing) {
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer3);
   EXPECT_NE(mixer1, mixer3);
-  EXPECT_EQ(2, mixer_count());  // Another effects => another mixer.
+  EXPECT_EQ(2u, mixer_count());  // Another effects => another mixer.
 
   media::AudioRendererMixer* mixer4 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kExistingSink);
   EXPECT_EQ(mixer3, mixer4);
-  EXPECT_EQ(2, mixer_count());  // Same effects => same mixer.
+  EXPECT_EQ(2u, mixer_count());  // Same effects => same mixer.
 
   params.set_effects(3);
   media::AudioRendererMixer* mixer5 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kNewSink);
   ASSERT_TRUE(mixer5);
-  EXPECT_EQ(3, mixer_count());  // Another effects => another mixer.
+  EXPECT_EQ(3u, mixer_count());  // Another effects => another mixer.
 
   media::AudioRendererMixer* mixer6 =
       GetMixer(kFrameToken, params, AudioLatency::LATENCY_PLAYBACK,
                kDefaultDeviceId, SinkUseState::kExistingSink);
   EXPECT_EQ(mixer5, mixer6);
-  EXPECT_EQ(3, mixer_count());  // Same effects => same mixer.
+  EXPECT_EQ(3u, mixer_count());  // Same effects => same mixer.
 
   ReturnMixer(mixer1);
-  EXPECT_EQ(3, mixer_count());
+  EXPECT_EQ(3u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer3);
-  EXPECT_EQ(2, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer4);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer5);
-  EXPECT_EQ(1, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer6);
-  EXPECT_EQ(0, mixer_count());
+  EXPECT_EQ(0u, mixer_count());
 }
 
 // Verify output bufer size of the mixer is correctly adjusted for Playback

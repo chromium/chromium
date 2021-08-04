@@ -29,7 +29,7 @@ UChar32 OperatorCodepoint(const String& text_content) {
     return kNonCharacter;
 
   UChar32 character;
-  size_t offset = 0;
+  unsigned offset = 0;
   U16_NEXT(text_content, offset, content_length, character);
   return character;
 }

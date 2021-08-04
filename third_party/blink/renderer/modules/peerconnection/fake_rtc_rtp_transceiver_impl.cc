@@ -158,8 +158,9 @@ MediaStreamComponent* FakeRTCRtpReceiverImpl::Track() const {
 }
 
 Vector<String> FakeRTCRtpReceiverImpl::StreamIds() const {
-  Vector<String> wtf_stream_ids(stream_ids_.size());
-  for (size_t i = 0; i < stream_ids_.size(); ++i) {
+  Vector<String> wtf_stream_ids(
+      base::checked_cast<wtf_size_t>(stream_ids_.size()));
+  for (wtf_size_t i = 0; i < wtf_stream_ids.size(); ++i) {
     wtf_stream_ids[i] = String::FromUTF8(stream_ids_[i]);
   }
   return wtf_stream_ids;

@@ -46,7 +46,7 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
       public media::AudioConverter::InputCallback,
       public WebMediaStreamAudioSink {
  public:
-  static const size_t kWebAudioRenderBufferSize;
+  static const int kWebAudioRenderBufferSize;
 
   explicit WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
                                         int context_sample_rate);
@@ -61,7 +61,7 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
   void ProvideInput(const WebVector<float*>& audio_data,
-                    size_t number_of_frames) override;
+                    int number_of_frames) override;
 
   // Method to allow the unittests to inject its own sink parameters to avoid
   // query the hardware.

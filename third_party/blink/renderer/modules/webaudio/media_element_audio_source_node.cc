@@ -186,7 +186,8 @@ void MediaElementAudioSourceHandler::ProvideResamplerInput(
   DCHECK(Context()->IsAudioThread());
   DCHECK(MediaElement());
   DCHECK(dest);
-  MediaElement()->GetAudioSourceProvider().ProvideInput(dest, dest->length());
+  MediaElement()->GetAudioSourceProvider().ProvideInput(
+      dest, base::checked_cast<int>(dest->length()));
 }
 
 void MediaElementAudioSourceHandler::Process(uint32_t number_of_frames) {
@@ -214,14 +215,15 @@ void MediaElementAudioSourceHandler::Process(uint32_t number_of_frames) {
     AudioSourceProvider& provider = MediaElement()->GetAudioSourceProvider();
     // Grab data from the provider so that the element continues to make
     // progress, even if we're going to output silence anyway.
+    const int frames_int = base::checked_cast<int>(number_of_frames);
     if (multi_channel_resampler_.get()) {
       DCHECK_NE(source_sample_rate_, Context()->sampleRate());
-      multi_channel_resampler_->Resample(number_of_frames, output_bus);
+      multi_channel_resampler_->Resample(frames_int, output_bus);
     } else {
       // Bypass the resampler completely if the source is at the context's
       // sample-rate.
       DCHECK_EQ(source_sample_rate_, Context()->sampleRate());
-      provider.ProvideInput(output_bus, number_of_frames);
+      provider.ProvideInput(output_bus, frames_int);
     }
     // Output silence if we don't have access to the element.
     if (is_origin_tainted_) {

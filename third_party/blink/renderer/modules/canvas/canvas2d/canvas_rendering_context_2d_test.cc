@@ -961,7 +961,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
   EXPECT_EQ(data_length, data_f32->length());
 
   ImageData* image_data = nullptr;
-  int num_pixels = data_length / 4;
+  size_t num_pixels = data_length / 4;
 
   // At most four bytes are needed for Float32 output per color component.
   std::unique_ptr<uint8_t[]> pixels_converted_manually(

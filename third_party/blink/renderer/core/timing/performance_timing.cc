@@ -354,12 +354,12 @@ PerformanceTiming::BackForwardCacheRestore() const {
 
   WTF::Vector<BackForwardCacheRestoreTiming> restore_timings(
       navigation_starts.size());
-  for (size_t i = 0; i < restore_timings.size(); i++) {
+  for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     restore_timings[i].navigation_start =
         MonotonicTimeToIntegerMilliseconds(navigation_starts[i]);
     restore_timings[i].first_paint =
         MonotonicTimeToIntegerMilliseconds(first_paints[i]);
-    for (size_t j = 0; j < request_animation_frames[i].size(); j++) {
+    for (wtf_size_t j = 0; j < request_animation_frames[i].size(); j++) {
       restore_timings[i].request_animation_frames[j] =
           MonotonicTimeToIntegerMilliseconds(request_animation_frames[i][j]);
     }

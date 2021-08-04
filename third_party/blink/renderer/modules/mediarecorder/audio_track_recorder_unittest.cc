@@ -202,12 +202,12 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     if (codec_ == AudioTrackRecorder::CodecId::OPUS) {
       // Decode |encoded_data| and check we get the expected number of frames
       // per buffer.
-      EXPECT_EQ(
-          kDefaultSampleRate * kOpusBufferDurationMs / 1000,
-          opus_decode_float(
-              opus_decoder_,
-              reinterpret_cast<uint8_t*>(base::data(encoded_data)),
-              encoded_data.size(), opus_buffer_.get(), kFramesPerBuffer, 0));
+      EXPECT_EQ(kDefaultSampleRate * kOpusBufferDurationMs / 1000,
+                opus_decode_float(
+                    opus_decoder_,
+                    reinterpret_cast<uint8_t*>(base::data(encoded_data)),
+                    static_cast<wtf_size_t>(encoded_data.size()),
+                    opus_buffer_.get(), kFramesPerBuffer, 0));
     } else if (codec_ == AudioTrackRecorder::CodecId::PCM) {
       // Manually confirm that we're getting the same data out as what we
       // generated from the sine wave.
@@ -246,7 +246,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   // Save the data we generate from the first source so that we might compare it
   // later if we happen to be using the PCM encoder.
   Vector<float> first_source_cache_;
-  size_t first_source_cache_pos_;
+  wtf_size_t first_source_cache_pos_;
 
  private:
   // Prepares a blink track of a given MediaStreamType and attaches the native

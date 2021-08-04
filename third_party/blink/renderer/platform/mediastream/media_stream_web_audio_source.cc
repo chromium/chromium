@@ -42,7 +42,7 @@ MediaStreamWebAudioSource::MediaStreamWebAudioSource(
 MediaStreamWebAudioSource::~MediaStreamWebAudioSource() = default;
 
 void MediaStreamWebAudioSource::ProvideInput(AudioBus* bus,
-                                             uint32_t frames_to_process) {
+                                             int frames_to_process) {
   DCHECK(bus);
   if (!bus)
     return;

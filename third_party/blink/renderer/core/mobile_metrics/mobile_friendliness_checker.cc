@@ -63,10 +63,10 @@ bool IsTimeBudgetExpired(const base::Time& from) {
 // targets which are too close.
 class FenwickTree {
  public:
-  explicit FenwickTree(size_t n) : tree(n + 1) {}
+  explicit FenwickTree(wtf_size_t n) : tree(n + 1) {}
 
   // Returns prefix sum of the array from 0 to |index|.
-  int sum(size_t index) const {
+  int sum(wtf_size_t index) const {
     int sum = 0;
     for (index += 1; 0 < index; index -= index & -index)
       sum += tree[index];
@@ -74,7 +74,7 @@ class FenwickTree {
   }
 
   // Adds |val| at |index| of the array.
-  void add(size_t index, int val) {
+  void add(wtf_size_t index, int val) {
     for (index += 1; index <= tree.size() - 1; index += index & -index)
       tree[index] += val;
   }
@@ -92,37 +92,42 @@ class FenwickTree {
 struct EdgeOrCenter {
   enum Type : int { kStartEdge = 0, kCenter = 1, kEndEdge = 2 } type;
 
+  union PositionOrIndexUnion {
+    int position;
+    wtf_size_t index;
+  };
+
   union EdgeOrCenterUnion {
     // Valid iff |type| is Edge.
     struct Edge {
-      int left;
-      int right;
+      PositionOrIndexUnion left;
+      PositionOrIndexUnion right;
     } edge;
 
     // Valid iff |type| is Center.
-    int center;
+    PositionOrIndexUnion center;
   } v;
 
   static EdgeOrCenter StartEdge(int left, int right) {
     EdgeOrCenter edge;
     edge.type = EdgeOrCenter::kStartEdge;
-    edge.v.edge.left = left;
-    edge.v.edge.right = right;
+    edge.v.edge.left.position = left;
+    edge.v.edge.right.position = right;
     return edge;
   }
 
   static EdgeOrCenter EndEdge(int left, int right) {
     EdgeOrCenter edge;
     edge.type = EdgeOrCenter::kEndEdge;
-    edge.v.edge.left = left;
-    edge.v.edge.right = right;
+    edge.v.edge.left.position = left;
+    edge.v.edge.right.position = right;
     return edge;
   }
 
   static EdgeOrCenter Center(int center) {
     EdgeOrCenter edge;
     edge.type = EdgeOrCenter::kCenter;
-    edge.v.center = center;
+    edge.v.center.position = center;
     return edge;
   }
 };
@@ -202,21 +207,21 @@ void CompressKeyWithVector(const Vector<int>& positions,
     switch (vertex.type) {
       case EdgeOrCenter::kStartEdge:
       case EdgeOrCenter::kEndEdge: {
-        vertex.v.edge.left =
+        vertex.v.edge.left.index = static_cast<wtf_size_t>(
             std::distance(positions.begin(),
                           std::lower_bound(positions.begin(), positions.end(),
-                                           vertex.v.edge.left));
-        vertex.v.edge.right =
+                                           vertex.v.edge.left.position)));
+        vertex.v.edge.right.index = static_cast<wtf_size_t>(
             std::distance(positions.begin(),
                           std::lower_bound(positions.begin(), positions.end(),
-                                           vertex.v.edge.right));
+                                           vertex.v.edge.right.position)));
         break;
       }
       case EdgeOrCenter::kCenter: {
-        vertex.v.center =
+        vertex.v.center.index = static_cast<wtf_size_t>(
             std::distance(positions.begin(),
                           std::lower_bound(positions.begin(), positions.end(),
-                                           vertex.v.center));
+                                           vertex.v.center.position)));
         break;
       }
     }
@@ -229,7 +234,7 @@ void CompressKeyWithVector(const Vector<int>& positions,
 // rightmost_position: Rightmost x position in all vertices.
 // Returns bad tap targets count.
 // Returns -1 if time limit exceeded.
-int CountBadTapTargets(int rightmost_position,
+int CountBadTapTargets(wtf_size_t rightmost_position,
                        const Vector<std::pair<int, EdgeOrCenter>>& vertices,
                        const base::Time& started) {
   FenwickTree tree(rightmost_position);
@@ -239,20 +244,20 @@ int CountBadTapTargets(int rightmost_position,
     switch (vertex.type) {
       case EdgeOrCenter::kStartEdge: {
         // Tap region begins.
-        tree.add(vertex.v.edge.left, 1);
-        tree.add(vertex.v.edge.right, -1);
+        tree.add(vertex.v.edge.left.index, 1);
+        tree.add(vertex.v.edge.right.index, -1);
         break;
       }
       case EdgeOrCenter::kEndEdge: {
         // Tap region ends.
-        tree.add(vertex.v.edge.left, -1);
-        tree.add(vertex.v.edge.right, 1);
+        tree.add(vertex.v.edge.left.index, -1);
+        tree.add(vertex.v.edge.right.index, 1);
         break;
       }
       case EdgeOrCenter::kCenter: {
         // Iff the center of a tap target is included other than itself, it is a
         // Bad Target.
-        if (tree.sum(vertex.v.center) > 1)
+        if (tree.sum(vertex.v.center.index) > 1)
           bad_tap_targets++;
         break;
       }

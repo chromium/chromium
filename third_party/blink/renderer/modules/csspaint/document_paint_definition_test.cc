@@ -30,7 +30,7 @@ TEST(DocumentPaintDefinitionTest, NativeInvalidationProperties) {
                                               custom_invalidation_properties,
                                               input_argument_types, true);
   EXPECT_EQ(document_definition.NativeInvalidationProperties().size(), 3u);
-  for (size_t i = 0; i < 3; i++) {
+  for (wtf_size_t i = 0; i < 3; i++) {
     EXPECT_EQ(native_invalidation_properties[i],
               document_definition.NativeInvalidationProperties()[i]);
   }
@@ -48,7 +48,7 @@ TEST(DocumentPaintDefinitionTest, CustomInvalidationProperties) {
                                               custom_invalidation_properties,
                                               input_argument_types, true);
   EXPECT_EQ(document_definition.CustomInvalidationProperties().size(), 2u);
-  for (size_t i = 0; i < 2; i++) {
+  for (wtf_size_t i = 0; i < 2; i++) {
     EXPECT_EQ(custom_invalidation_properties[i],
               document_definition.CustomInvalidationProperties()[i]);
   }
@@ -82,7 +82,7 @@ TEST(DocumentPaintDefinitionTest, InputArgumentTypes) {
                                               input_argument_types, true);
 
   EXPECT_EQ(document_definition.InputArgumentTypes().size(), 2u);
-  for (size_t i = 0; i < 2; i++) {
+  for (wtf_size_t i = 0; i < 2; i++) {
     EXPECT_EQ(input_argument_types[i],
               document_definition.InputArgumentTypes()[i]);
   }

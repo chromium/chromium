@@ -311,7 +311,8 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
 
   static Vector<uint8_t> AsVector(const char* data, size_t size) {
     Vector<uint8_t> v;
-    v.Append(reinterpret_cast<const uint8_t*>(data), size);
+    v.Append(reinterpret_cast<const uint8_t*>(data),
+             static_cast<wtf_size_t>(size));
     return v;
   }
   static Vector<uint8_t> AsVector(const char* data) {

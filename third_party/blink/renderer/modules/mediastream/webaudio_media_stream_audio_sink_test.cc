@@ -60,7 +60,7 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
 
   // Point the WebVector into memory owned by |sink_bus_|.
   WebVector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
+  for (int i = 0; i < sink_bus_->channels(); ++i)
     audio_data[i] = sink_bus_->channel(i);
 
   // Enable the |source_provider_| by asking for data. This will inject

@@ -53,7 +53,7 @@ class PLATFORM_EXPORT MediaStreamWebAudioSource : public AudioSourceProvider {
 
  private:
   // blink::AudioSourceProvider implementation.
-  void ProvideInput(AudioBus*, uint32_t frames_to_process) override;
+  void ProvideInput(AudioBus*, int frames_to_process) override;
 
   std::unique_ptr<WebAudioSourceProvider> web_audio_source_provider_;
   WebVector<float*> web_audio_data_;

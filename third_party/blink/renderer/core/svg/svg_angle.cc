@@ -187,7 +187,7 @@ String SVGAngle::ValueAsString() const {
   }
   StringBuilder builder;
   builder.AppendNumber(value_in_specified_units_);
-  builder.Append(unit_string, strlen(unit_string));
+  builder.Append(unit_string, static_cast<unsigned>(strlen(unit_string)));
   return builder.ToString();
 }
 

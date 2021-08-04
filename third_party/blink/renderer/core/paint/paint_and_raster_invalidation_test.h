@@ -19,7 +19,7 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
             MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
-  ContentLayerClientImpl* GetContentLayerClient(size_t index = 0) const {
+  ContentLayerClientImpl* GetContentLayerClient(wtf_size_t index = 0) const {
     DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     const auto& clients = GetDocument()
                               .View()
@@ -29,7 +29,7 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
   }
 
   const RasterInvalidationTracking* GetRasterInvalidationTracking(
-      size_t index = 0) const {
+      wtf_size_t index = 0) const {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       if (auto* client = GetContentLayerClient(index))
         return client->GetRasterInvalidator().GetTracking();

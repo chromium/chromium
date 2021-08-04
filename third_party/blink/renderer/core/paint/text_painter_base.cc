@@ -248,7 +248,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     underline_position = ResolvedUnderlinePosition::kUnder;
   }
 
-  for (size_t applied_decoration_index = 0;
+  for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
@@ -317,7 +317,7 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
 
-  for (size_t applied_decoration_index = 0;
+  for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
