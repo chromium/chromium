@@ -50487,7 +50487,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M92",
-              "revision": "version:92.0.4515.135"
+              "revision": "version:92.0.4515.137"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -50751,7 +50751,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M92",
-              "revision": "version:92.0.4515.135"
+              "revision": "version:92.0.4515.137"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -51088,7 +51088,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M92",
-              "revision": "version:92.0.4515.135"
+              "revision": "version:92.0.4515.137"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -51349,7 +51349,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M92",
-              "revision": "version:92.0.4515.135"
+              "revision": "version:92.0.4515.137"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -51685,7 +51685,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M92",
-              "revision": "version:92.0.4515.135"
+              "revision": "version:92.0.4515.137"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -51946,7 +51946,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M92",
-              "revision": "version:92.0.4515.135"
+              "revision": "version:92.0.4515.137"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
