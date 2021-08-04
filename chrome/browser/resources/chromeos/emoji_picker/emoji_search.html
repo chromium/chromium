@@ -98,6 +98,10 @@
     overflow-y: scroll;
     padding-bottom: var(--emoji-picker-bottom-padding);
   }
+
+  #no-emoji-image {
+    display: block;
+  }
 </style>
 
 <div id="search-shadow">
@@ -120,7 +124,7 @@
     </template>
     <template is="dom-if" if="[[!results.length]]">
       <div class="no-result">
-        <img src="no_results.svg">
+        <img src="no_results.svg" id = "no-emoji-image">
         No emoji found
         </div>
     </template>
