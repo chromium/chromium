@@ -93,6 +93,12 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   // through the interstitial will continue the navigation in a regular browser
   // window.
   if (std::move(is_in_hosted_app_callback_).Run(handle->GetWebContents())) {
+    // Non-primary pages (e.g. prerendering, fenced-frame, portal) should not
+    // be handled as a hosted app since they are associated with the non-app
+    // WebContents. For prerendering specifically, we should already have
+    // canceled the prerender from OnSSLCertificateError before the throttle
+    // runs WillProcessResponse.
+    DCHECK(navigation_handle()->IsInPrimaryMainFrame());
     QueueShowInterstitial(
         std::move(handle_ssl_error_callback_), handle->GetWebContents(),
         // The navigation handle's net error code will be
@@ -138,6 +144,11 @@ void SSLErrorNavigationThrottle::ShowInterstitial(
   std::string error_page_content = blocking_page->GetHTMLContents();
 
   content::NavigationHandle* handle = navigation_handle();
+
+  // For non-primary pages (e.g. prerendering) we should already have canceled
+  // the prerender from OnSSLCertificateError before the throttle failure.
+  DCHECK(handle->IsInPrimaryMainFrame());
+
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
       handle->GetWebContents(), handle->GetNavigationId(),
       std::move(blocking_page));
