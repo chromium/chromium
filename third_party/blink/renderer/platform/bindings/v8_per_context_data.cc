@@ -171,7 +171,7 @@ void V8PerContextData::ClearData(const char* key) {
 }
 
 V8PerContextData::Data* V8PerContextData::GetData(const char* key) {
-  return data_map_.at(key);
+  return data_map_.DeprecatedAtOrEmptyValue(key);
 }
 
 }  // namespace blink

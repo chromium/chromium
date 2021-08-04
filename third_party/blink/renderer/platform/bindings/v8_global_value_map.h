@@ -48,7 +48,7 @@ class V8GlobalValueMapTraits {
     return old_value;
   }
   static v8::PersistentContainerValue Get(const Impl* impl, KeyType key) {
-    return impl->at(key);
+    return impl->DeprecatedAtOrEmptyValue(key);
   }
 
   static v8::PersistentContainerValue Remove(Impl* impl, KeyType key) {

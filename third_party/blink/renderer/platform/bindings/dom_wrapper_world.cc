@@ -226,7 +226,8 @@ static IsolatedWorldHumanReadableNameMap& IsolatedWorldHumanReadableNames() {
 
 String DOMWrapperWorld::NonMainWorldHumanReadableName() const {
   DCHECK(!IsMainWorld());
-  return IsolatedWorldHumanReadableNames().at(GetWorldId());
+  return IsolatedWorldHumanReadableNames().DeprecatedAtOrEmptyValue(
+      GetWorldId());
 }
 
 void DOMWrapperWorld::SetNonMainWorldHumanReadableName(
