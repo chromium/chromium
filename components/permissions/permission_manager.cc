@@ -172,6 +172,20 @@ void ContentSettingCallbackWrapper(
   std::move(callback).Run(vector.at(0));
 }
 
+// TODO(crbug.com/698985): As part of the permission API refactoring, this
+// method should be used in all places where wer check or request permissions.
+// Currently it is used only in `RequestPermissions` and
+// `GetPermissionStatusForFrame`.
+GURL GetEmbeddingOrigin(content::WebContents* web_contents,
+                        const GURL& requesting_origin) {
+  if (PermissionsClient::Get()->DoOriginsMatchNewTabPage(
+          requesting_origin, web_contents->GetLastCommittedURL().GetOrigin())) {
+    return web_contents->GetLastCommittedURL().GetOrigin();
+  } else {
+    return PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  }
+}
+
 }  // anonymous namespace
 
 class PermissionManager::PendingRequest {
@@ -364,8 +378,7 @@ void PermissionManager::RequestPermissions(
       request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
-  const GURL embedding_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  GURL embedding_origin = GetEmbeddingOrigin(web_contents, requesting_origin);
 
   for (size_t i = 0; i < permissions.size(); ++i) {
     const ContentSettingsType permission = permissions[i];
@@ -435,8 +448,8 @@ PermissionResult PermissionManager::GetPermissionStatusForFrame(
     const GURL& requesting_origin) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  GURL embedding_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+  GURL embedding_origin = GetEmbeddingOrigin(web_contents, requesting_origin);
+
   return GetPermissionStatusHelper(permission, render_frame_host,
                                    requesting_origin, embedding_origin);
 }

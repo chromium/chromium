@@ -295,6 +295,7 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
   // excluded as currently they can request permission from iframes when
   // embedded in non-secure contexts (https://crbug.com/530507).
   return embedding_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() ||
+         embedding_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
          requesting_origin.SchemeIs(extensions::kExtensionScheme);
 }
 
@@ -319,6 +320,13 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   }
 
   return absl::nullopt;
+}
+
+bool ChromePermissionsClient::DoOriginsMatchNewTabPage(
+    const GURL& requesting_origin,
+    const GURL& embedding_origin) {
+  return embedding_origin == GURL(chrome::kChromeUINewTabURL).GetOrigin() &&
+         requesting_origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin();
 }
 
 #if defined(OS_ANDROID)
