@@ -523,7 +523,8 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 
   if (!new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned() &&
       !new_child->IsTablePart()) {
-    if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())) {
+    if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
+        !ForceLegacyLayout()) {
       // TODO(crbug.com/716930): This logic is still at the prototype level and
       // to be re-written, but landed under the runtime flag to allow us working
       // on dependent code in parallel.
@@ -1605,7 +1606,8 @@ PaintLayerType LayoutInline::LayerTypeRequired() const {
 
 void LayoutInline::ChildBecameNonInline(LayoutObject* child) {
   NOT_DESTROYED();
-  if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())) {
+  if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
+      !ForceLegacyLayout()) {
     DCHECK(!child->IsInline());
     // TODO(crbug.com/716930): Add anonymous blocks as
     // |AddChildIgnoringContinuation| does.
