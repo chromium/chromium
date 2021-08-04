@@ -153,6 +153,10 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Change the current |state_| to the specified |state|.
   void SetState(State state);
 
+  // Tell SetState() to change the |state_| to kError and send |message| to
+  // MediaLog and to LOG(ERROR).
+  void SetErrorState(std::string message);
+
   // Callback for the CDM to notify |this|.
   void OnCdmContextEvent(CdmContext::Event event);
 
