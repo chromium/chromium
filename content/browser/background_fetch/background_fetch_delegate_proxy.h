@@ -28,6 +28,7 @@ class SkBitmap;
 namespace content {
 
 class PermissionControllerImpl;
+class RenderFrameHostImpl;
 class StoragePartitionImpl;
 
 // This class was previously responsible for passing messages between
@@ -91,7 +92,7 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
 
   // Checks if the provided origin has permission to start a Background Fetch.
   void GetPermissionForOrigin(const url::Origin& origin,
-                              const WebContents::Getter& wc_getter,
+                              RenderFrameHostImpl* rfh,
                               GetPermissionForOriginCallback callback);
 
   // Creates a new download grouping described by |fetch_description|. Further

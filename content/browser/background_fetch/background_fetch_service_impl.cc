@@ -50,11 +50,10 @@ void BackgroundFetchServiceImpl::CreateForWorker(
       WrapRefCounted(static_cast<StoragePartitionImpl*>(
                          render_process_host->GetStoragePartition())
                          ->GetBackgroundFetchContext());
-  mojo::MakeSelfOwnedReceiver(std::make_unique<BackgroundFetchServiceImpl>(
-                                  std::move(context), info.storage_key,
-                                  /*render_frame_tree_node_id=*/0,
-                                  /*wc_getter=*/base::NullCallback()),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BackgroundFetchServiceImpl>(
+          std::move(context), info.storage_key, /*rfh=*/nullptr),
+      std::move(receiver));
 }
 
 // static
@@ -67,35 +66,23 @@ void BackgroundFetchServiceImpl::CreateForFrame(
   RenderProcessHost* render_process_host = rfhi->GetProcess();
   DCHECK(render_process_host);
 
-  WebContents::Getter wc_getter = base::NullCallback();
-
-  // Permissions need to go through the DownloadRequestLimiter if the fetch
-  // is started from a top-level frame.
-  if (!rfhi->GetParent()) {
-    wc_getter = base::BindRepeating(&WebContents::FromFrameTreeNodeId,
-                                    rfhi->GetFrameTreeNodeId());
-  }
-
   scoped_refptr<BackgroundFetchContext> context =
       WrapRefCounted(static_cast<StoragePartitionImpl*>(
                          render_process_host->GetStoragePartition())
                          ->GetBackgroundFetchContext());
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<BackgroundFetchServiceImpl>(
-          std::move(context), rfhi->storage_key(), rfhi->GetFrameTreeNodeId(),
-          std::move(wc_getter)),
+      std::make_unique<BackgroundFetchServiceImpl>(std::move(context),
+                                                   rfhi->storage_key(), rfhi),
       std::move(receiver));
 }
 
 BackgroundFetchServiceImpl::BackgroundFetchServiceImpl(
     scoped_refptr<BackgroundFetchContext> background_fetch_context,
     blink::StorageKey storage_key,
-    int render_frame_tree_node_id,
-    WebContents::Getter wc_getter)
+    RenderFrameHostImpl* rfh)
     : background_fetch_context_(std::move(background_fetch_context)),
       storage_key_(std::move(storage_key)),
-      render_frame_tree_node_id_(render_frame_tree_node_id),
-      wc_getter_(std::move(wc_getter)) {
+      rfh_id_(rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(background_fetch_context_);
@@ -130,7 +117,7 @@ void BackgroundFetchServiceImpl::Fetch(
 
   background_fetch_context_->StartFetch(
       registration_id, std::move(requests), std::move(options), icon,
-      std::move(ukm_data), render_frame_tree_node_id_, wc_getter_,
+      std::move(ukm_data), RenderFrameHostImpl::FromID(rfh_id_),
       std::move(callback));
 }
 

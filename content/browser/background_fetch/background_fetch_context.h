@@ -35,6 +35,7 @@ class BackgroundFetchRegistrationId;
 class BackgroundFetchRegistrationNotifier;
 class BackgroundFetchRequestMatchParams;
 class BackgroundFetchScheduler;
+class RenderFrameHostImpl;
 class ServiceWorkerContextWrapper;
 class StoragePartitionImpl;
 
@@ -76,16 +77,17 @@ class CONTENT_EXPORT BackgroundFetchContext
       const blink::StorageKey& storage_key,
       blink::mojom::BackgroundFetchService::GetDeveloperIdsCallback callback);
 
-  // Starts a Background Fetch for the |registration_id|. The |requests| will be
-  // asynchronously fetched. The |callback| will be invoked when the fetch has
+  // Starts a Background Fetch for the `registration_id`. The `requests` will be
+  // asynchronously fetched. The `callback` will be invoked when the fetch has
   // been registered, or an error occurred that prevents it from doing so.
+  // `rfh` may be null if a document is not initiating the fetch (e.g., a worker
+  // is).
   void StartFetch(const BackgroundFetchRegistrationId& registration_id,
                   std::vector<blink::mojom::FetchAPIRequestPtr> requests,
                   blink::mojom::BackgroundFetchOptionsPtr options,
                   const SkBitmap& icon,
                   blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
-                  int render_frame_tree_node_id,
-                  const WebContents::Getter& wc_getter,
+                  RenderFrameHostImpl* rfh,
                   blink::mojom::BackgroundFetchService::FetchCallback callback);
 
   // Gets display size for the icon for Background Fetch UI.
@@ -187,7 +189,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                         blink::mojom::BackgroundFetchOptionsPtr options,
                         const SkBitmap& icon,
                         blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
-                        int frame_tree_node_id,
+                        const GlobalRenderFrameHostId& rfh_id,
                         BackgroundFetchPermission permission);
 
   std::unique_ptr<BackgroundFetchDataManager> data_manager_;

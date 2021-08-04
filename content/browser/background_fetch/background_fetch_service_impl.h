@@ -28,8 +28,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   BackgroundFetchServiceImpl(
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
       blink::StorageKey storage_key,
-      int render_frame_tree_node_id,
-      WebContents::Getter wc_getter);
+      RenderFrameHostImpl* rfh);
   ~BackgroundFetchServiceImpl() override;
 
   static void CreateForWorker(
@@ -69,8 +68,11 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
 
   const blink::StorageKey storage_key_;
 
-  int render_frame_tree_node_id_;
-  WebContents::Getter wc_getter_;
+  // Identifies the RenderFrameHost that is using this service, if any. May not
+  // resolve to a host if the frame has already been destroyed or a worker is
+  // using this service.
+  GlobalRenderFrameHostId rfh_id_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchServiceImpl);

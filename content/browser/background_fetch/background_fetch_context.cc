@@ -16,6 +16,7 @@
 #include "content/browser/background_fetch/background_fetch_registration_service_impl.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/background_fetch/background_fetch_types.h"
@@ -144,8 +145,7 @@ void BackgroundFetchContext::StartFetch(
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
-    int render_frame_tree_node_id,
-    const WebContents::Getter& wc_getter,
+    RenderFrameHostImpl* rfh,
     blink::mojom::BackgroundFetchService::FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -156,12 +156,13 @@ void BackgroundFetchContext::StartFetch(
   DCHECK_EQ(0u, fetch_callbacks_.count(registration_id));
   fetch_callbacks_[registration_id] = std::move(callback);
 
+  auto rfh_id = rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId();
   delegate_proxy_.GetPermissionForOrigin(
-      registration_id.storage_key().origin(), wc_getter,
+      registration_id.storage_key().origin(), rfh,
       base::BindOnce(&BackgroundFetchContext::DidGetPermission,
                      weak_factory_.GetWeakPtr(), registration_id,
                      std::move(requests), std::move(options), icon,
-                     std::move(ukm_data), render_frame_tree_node_id));
+                     std::move(ukm_data), rfh_id));
 }
 
 void BackgroundFetchContext::DidGetPermission(
@@ -170,13 +171,13 @@ void BackgroundFetchContext::DidGetPermission(
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
-    int frame_tree_node_id,
+    const GlobalRenderFrameHostId& rfh_id,
     BackgroundFetchPermission permission) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   background_fetch::RecordBackgroundFetchUkmEvent(
       registration_id.storage_key(), requests.size(), options.Clone(), icon,
-      std::move(ukm_data), frame_tree_node_id, permission);
+      std::move(ukm_data), RenderFrameHostImpl::FromID(rfh_id), permission);
 
   if (permission != BackgroundFetchPermission::BLOCKED) {
     data_manager_->CreateRegistration(

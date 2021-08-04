@@ -11,6 +11,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
@@ -55,16 +56,24 @@ void BackgroundFetchDelegateProxy::GetIconDisplaySize(
 
 void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
     const url::Origin& origin,
-    const WebContents::Getter& wc_getter,
+    RenderFrameHostImpl* rfh,
     GetPermissionForOriginCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BackgroundFetchPermission result = BackgroundFetchPermission::BLOCKED;
 
   if (auto* controller = GetPermissionController()) {
-    content::WebContents* web_contents = wc_getter ? wc_getter.Run() : nullptr;
-    content::RenderFrameHost* rfh =
-        web_contents ? web_contents->GetMainFrame() : nullptr;
+    // Use GetPermissionStatusForFrame() only if the fetch is started from
+    // a top-level document. Permissions need to go through the
+    // DownloadRequestLimiter in that case.
+    // TODO(falken): Consider using GetPermissionStatusForFrame() for any `rfh`.
+    // The code may currently not be doing that just for historical reasons.
+    // Previously a WebContents was plumbed here instead of a
+    // RenderFrameHostImpl, and it was only set for the top-level document, so
+    // there was no way to get the RenderFrameHostImpl for subframes.
+    if (rfh && rfh->GetParent())
+      rfh = nullptr;
+
     blink::mojom::PermissionStatus permission_status =
         rfh ? controller->GetPermissionStatusForFrame(
                   PermissionType::BACKGROUND_FETCH, rfh,
