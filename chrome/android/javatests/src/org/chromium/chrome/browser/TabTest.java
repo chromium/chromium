@@ -59,7 +59,7 @@ public class TabTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
-        mTab.addObserver(mTabObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mTabObserver));
         mOnTitleUpdatedHelper = new CallbackHelper();
     }
 

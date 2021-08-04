@@ -1285,7 +1285,8 @@ public class InstantStartTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
 
-        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
 
         // Launches Chrome and verifies that the Tab switcher is showing.
@@ -1308,7 +1309,8 @@ public class InstantStartTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
 
-        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
 
         // Launches Chrome and verifies that the last visited Tab is showing.

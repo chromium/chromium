@@ -68,7 +68,8 @@ public class ToolbarProgressBarIntegrationTest {
 
         final WebContents webContents = mActivityTestRule.getWebContents();
 
-        TestWebContentsObserver observer = new TestWebContentsObserver(webContents);
+        TestWebContentsObserver observer = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new TestWebContentsObserver(webContents));
         // Start and stop load events are carefully tracked; there should be two start-stop pairs
         // that do not overlap.
         OnPageStartedHelper startHelper = observer.getOnPageStartedHelper();

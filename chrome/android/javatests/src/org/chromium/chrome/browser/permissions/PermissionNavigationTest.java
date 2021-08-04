@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test suite for interaction between permissions requests and navigation.
@@ -68,9 +69,9 @@ public class PermissionNavigationTest {
                 callbackHelper.notifyCalled();
             }
         };
-        tab.addObserver(navigationWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(navigationWaiter));
         callbackHelper.waitForCallback(0);
-        tab.removeObserver(navigationWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navigationWaiter));
 
         mPermissionRule.waitForDialogShownState(false);
     }

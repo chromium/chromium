@@ -410,12 +410,14 @@ public class NewTabPageTest {
             OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);
 
             final CallbackHelper loadedCallback = new CallbackHelper();
-            mTab.addObserver(new EmptyTabObserver() {
-                @Override
-                public void onPageLoadFinished(Tab tab, GURL url) {
-                    loadedCallback.notifyCalled();
-                    tab.removeObserver(this);
-                }
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mTab.addObserver(new EmptyTabObserver() {
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        loadedCallback.notifyCalled();
+                        tab.removeObserver(this);
+                    }
+                });
             });
 
             final View v = urlBar;

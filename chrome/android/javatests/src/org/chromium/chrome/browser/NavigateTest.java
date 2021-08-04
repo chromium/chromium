@@ -355,7 +355,7 @@ public class NavigateTest {
             }
         };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        tab.addObserver(onPageLoadStartedObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         Assert.assertEquals("Desired Link not open", url2,
@@ -642,7 +642,7 @@ public class NavigateTest {
             }
         };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        tab.addObserver(onPageLoadStartedObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "rendererInitiated");
         ChromeTabUtils.waitForTabPageLoaded(tab, finalUrl);
     }

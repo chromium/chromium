@@ -144,7 +144,9 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "denied: ", mNotificationTestRule.getActivity());
 
-        mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        });
 
         mPermissionTestRule.runDenyTest(updateWaiter, NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)", 1, false, true);
@@ -182,7 +184,9 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "granted: ", mNotificationTestRule.getActivity());
 
-        mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        });
 
         mPermissionTestRule.runAllowTest(updateWaiter, NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)", 1, false, true);

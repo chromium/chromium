@@ -108,9 +108,8 @@ public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoWithIcon() throws IOException {
-        mLocationBarModel.setTab(null, /*  incognito= */ true);
-
         runOnUiThreadBlocking(() -> {
+            mLocationBarModel.setTab(null, /*  incognito= */ true);
             mStatusView.setIncognitoBadgeVisibility(true);
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
                     new StatusIconResource(R.drawable.ic_search, 0));
@@ -122,9 +121,8 @@ public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoNoIcon() throws IOException {
-        mLocationBarModel.setTab(null, /*  incognito= */ true);
-
         runOnUiThreadBlocking(() -> {
+            mLocationBarModel.setTab(null, /*  incognito= */ true);
             mStatusView.setIncognitoBadgeVisibility(true);
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         });

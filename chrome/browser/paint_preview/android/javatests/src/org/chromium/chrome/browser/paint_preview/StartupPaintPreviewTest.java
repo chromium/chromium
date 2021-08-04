@@ -163,7 +163,9 @@ public class StartupPaintPreviewTest {
         showAndWaitForInflation(startupPaintPreview, tabbedPaintPreview, dismissCallback);
         assertAttachedAndShown(tabbedPaintPreview, true, true);
         // Should be removed on PageLoadFinished signal.
-        startupPaintPreview.getTabObserverForTesting().onPageLoadFinished(tab, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            startupPaintPreview.getTabObserverForTesting().onPageLoadFinished(tab, null);
+        });
         assertAttachedAndShown(tabbedPaintPreview, false, false);
         Assert.assertEquals(
                 "Dismiss callback should have been called.", 1, dismissCallback.getCallCount());

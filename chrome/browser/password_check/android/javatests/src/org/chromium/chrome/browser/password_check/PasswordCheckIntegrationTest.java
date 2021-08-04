@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Integration test for the Password Check component, testing the interaction between sub-components
@@ -59,7 +60,8 @@ public class PasswordCheckIntegrationTest {
     @Test
     @MediumTest
     public void testDestroysComponentIfFirstInSettingsStack() {
-        PasswordCheckFactory.getOrCreate(mMockSettingsLauncher);
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
         Activity activity = setUpUiLaunchedFromDialog();
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
@@ -69,13 +71,14 @@ public class PasswordCheckIntegrationTest {
     @Test
     @MediumTest
     public void testDoesNotDestroyComponentIfNotFirstInSettingsStack() {
-        PasswordCheckFactory.getOrCreate(mMockSettingsLauncher);
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
         Activity activity = setUpUiLaunchedFromSettings();
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
         // Clean up the password check component.
-        PasswordCheckFactory.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(PasswordCheckFactory::destroy);
     }
 
     private Activity setUpUiLaunchedFromSettings() {

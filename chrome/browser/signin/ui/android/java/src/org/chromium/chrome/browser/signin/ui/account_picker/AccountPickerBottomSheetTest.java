@@ -82,7 +82,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 public class AccountPickerBottomSheetTest {
     private static class CustomFakeAccountInfoService extends FakeAccountInfoService {
         int getNumberOfObservers() {
-            return mObservers.size();
+            return TestThreadUtils.runOnUiThreadBlockingNoException(mObservers::size);
         }
     }
 

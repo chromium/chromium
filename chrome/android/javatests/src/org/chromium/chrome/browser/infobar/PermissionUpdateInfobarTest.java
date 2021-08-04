@@ -86,7 +86,7 @@ public class PermissionUpdateInfobarTest {
                 () -> mActivityTestRule.getInfoBarContainer() != null);
         InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         mListener =  new InfoBarTestAnimationListener();
-        container.addAnimationListener(mListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(mListener));
 
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
         final PermissionInfo geolocationSettings =

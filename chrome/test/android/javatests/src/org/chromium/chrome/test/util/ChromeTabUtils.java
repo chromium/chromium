@@ -747,15 +747,17 @@ public class ChromeTabUtils {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 testRule.getActivity().getTabModelSelector().getModel(expectIncognito);
-        tabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
-                    createdCallback.notifyCalled();
-                    tabModel.removeObserver(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didAddTab(
+                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                    if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
+                        createdCallback.notifyCalled();
+                        tabModel.removeObserver(this);
+                    }
                 }
-            }
+            });
         });
 
         TestTouchUtils.performLongClickOnMainSync(
@@ -797,15 +799,17 @@ public class ChromeTabUtils {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 backgroundActivity.getTabModelSelector().getModel(expectIncognito);
-        tabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
-                    createdCallback.notifyCalled();
-                    tabModel.removeObserver(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didAddTab(
+                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                    if (TextUtils.equals(expectedUrl, tab.getUrl().getSpec())) {
+                        createdCallback.notifyCalled();
+                        tabModel.removeObserver(this);
+                    }
                 }
-            }
+            });
         });
 
         TestTouchUtils.performLongClickOnMainSync(

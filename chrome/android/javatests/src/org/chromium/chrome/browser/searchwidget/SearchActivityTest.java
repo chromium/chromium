@@ -510,7 +510,7 @@ public class SearchActivityTest {
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Dismiss the dialog without acting on it.
-        mTestDelegate.shownPromoDialog.dismiss();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTestDelegate.shownPromoDialog.dismiss());
 
         // SearchActivity should realize the failure case and prevent the user from using it.
         CriteriaHelper.pollUiThread(() -> {

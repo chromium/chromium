@@ -115,10 +115,12 @@ public class TabThemeTest {
 
         ThemeColorWebContentsObserver colorObserver = new ThemeColorWebContentsObserver();
         CallbackHelper themeColorHelper = colorObserver.getCallbackHelper();
-        mActivityTestRule.getActivity()
-                .getRootUiCoordinatorForTesting()
-                .getTopUiThemeColorProvider()
-                .addThemeColorObserver(colorObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getRootUiCoordinatorForTesting()
+                    .getTopUiThemeColorProvider()
+                    .addThemeColorObserver(colorObserver);
+        });
 
         // Navigate to a themed page.
         int curCallCount = themeColorHelper.getCallCount();

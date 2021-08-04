@@ -87,11 +87,7 @@ public class AssistantVoiceSearchConsentUiTest {
             mBottomSheetController =
                     cta.getRootUiCoordinatorForTesting().getBottomSheetController();
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-            mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
-                    cta.getWindowAndroid(), cta, mSharedPreferencesManager,
-                    ()
-                            -> AutofillAssistantPreferenceFragment.launchSettings(cta),
-                    mBottomSheetController);
+            mAssistantVoiceSearchConsentUi = createConsentUi();
         });
     }
 
@@ -104,6 +100,17 @@ public class AssistantVoiceSearchConsentUiTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mAssistantVoiceSearchConsentUi.show(mCallback);
             mBottomSheetTestSupport.endAllAnimations();
+        });
+    }
+
+    private AssistantVoiceSearchConsentUi createConsentUi() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+            return new AssistantVoiceSearchConsentUi(cta.getWindowAndroid(), cta,
+                    mSharedPreferencesManager,
+                    ()
+                            -> AutofillAssistantPreferenceFragment.launchSettings(cta),
+                    mBottomSheetController);
         });
     }
 
@@ -258,12 +265,7 @@ public class AssistantVoiceSearchConsentUiTest {
 
         // Successful showing of the consent calls destroy(). Need to recreate the new
         // instance to set up the state again.
-        mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
-                mActivityTestRule.getActivity().getWindowAndroid(), mActivityTestRule.getActivity(),
-                mSharedPreferencesManager, () -> {
-                    AutofillAssistantPreferenceFragment.launchSettings(
-                            mActivityTestRule.getActivity());
-                }, mBottomSheetController);
+        mAssistantVoiceSearchConsentUi = createConsentUi();
         verifyAcceptingConsent();
     }
 
@@ -282,12 +284,7 @@ public class AssistantVoiceSearchConsentUiTest {
                     ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
             // Successful showing of the consent calls destroy(). Need to recreate the new
             // instance to set up the state again.
-            mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
-                    mActivityTestRule.getActivity().getWindowAndroid(),
-                    mActivityTestRule.getActivity(), mSharedPreferencesManager, () -> {
-                        AutofillAssistantPreferenceFragment.launchSettings(
-                                mActivityTestRule.getActivity());
-                    }, mBottomSheetController);
+            mAssistantVoiceSearchConsentUi = createConsentUi();
         }
 
         // But the max_taps_ignored+1-th will be treated as a rejection.

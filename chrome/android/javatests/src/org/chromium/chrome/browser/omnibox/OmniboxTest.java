@@ -226,7 +226,8 @@ public class OmniboxTest {
                 onSSLStateUpdatedCallbackHelper.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         try {
             final String testHttpsUrl =
@@ -278,7 +279,8 @@ public class OmniboxTest {
                 onSSLStateUpdatedCallbackHelper.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         try {
             final String testHttpsUrl =

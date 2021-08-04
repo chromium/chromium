@@ -202,7 +202,8 @@ public class NavigationHandlerTest {
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the handler(and also
         // handler action delegate) is destroyed.
-        Assert.assertFalse(mNavigationHandler.triggerUi(LEFT_EDGE, 0, 0));
+        Assert.assertFalse(TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mNavigationHandler.triggerUi(LEFT_EDGE, 0, 0)));
 
         // Just check we're still on the same URL.
         Assert.assertEquals(mTestServer.getURL(RENDERED_PAGE),

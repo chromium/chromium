@@ -189,11 +189,12 @@ public class ContactsPickerDialogTest extends DummyUiActivityTestCase
             });
             ContactsPicker.showContactsPicker(mWindowAndroid, this, multiselect, includeNames,
                     includeEmails, includeTel, includeAddresses, includeIcons, "example.com");
-        });
 
-        mSelectionDelegate = mDialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
-        if (!multiselect) mSelectionDelegate.setSingleSelectionMode();
-        mSelectionDelegate.addObserver(this);
+            mSelectionDelegate =
+                    mDialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
+            if (!multiselect) mSelectionDelegate.setSingleSelectionMode();
+            mSelectionDelegate.addObserver(this);
+        });
     }
 
     /**

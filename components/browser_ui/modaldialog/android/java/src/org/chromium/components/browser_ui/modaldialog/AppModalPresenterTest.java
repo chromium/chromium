@@ -85,7 +85,7 @@ public class AppModalPresenterTest {
 
     @After
     public void tearDown() {
-        sManager.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(sManager::destroy);
     }
 
     @Test

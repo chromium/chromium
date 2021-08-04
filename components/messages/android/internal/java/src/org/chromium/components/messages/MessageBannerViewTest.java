@@ -90,15 +90,16 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testSecondaryActionDirectCallback() {
-        PropertyModel propertyModel =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.TEST_MESSAGE)
-                        .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
-                                android.R.drawable.ic_menu_add)
-                        .with(MessageBannerProperties.ON_SECONDARY_ACTION, mSecondaryActionCallback)
-                        .build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                    android.R.drawable.ic_menu_add)
+                            .with(MessageBannerProperties.ON_SECONDARY_ACTION,
+                                    mSecondaryActionCallback)
+                            .build();
             PropertyModelChangeProcessor.create(
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });
@@ -114,17 +115,18 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testSecondaryActionMenu() {
-        PropertyModel propertyModel =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.TEST_MESSAGE)
-                        .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
-                                android.R.drawable.ic_menu_add)
-                        .with(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
-                                SECONDARY_BUTTON_MENU_TEXT)
-                        .with(MessageBannerProperties.ON_SECONDARY_ACTION, mSecondaryActionCallback)
-                        .build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                    android.R.drawable.ic_menu_add)
+                            .with(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
+                                    SECONDARY_BUTTON_MENU_TEXT)
+                            .with(MessageBannerProperties.ON_SECONDARY_ACTION,
+                                    mSecondaryActionCallback)
+                            .build();
             PropertyModelChangeProcessor.create(
                     propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         });

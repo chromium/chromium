@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -109,29 +110,32 @@ public class TabModelSelectorTabObserverTest {
     @Test
     @SmallTest
     public void testObserverAddedBeforeInitialize() {
-        TabModelSelectorBase selector = new TabModelSelectorBase(
-                null, EmptyTabModelFilter::new, false) {
-            @Override
-            public void requestToShowTab(Tab tab, int type) {}
+        TabModelSelectorBase selector = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
+                @Override
+                public void requestToShowTab(Tab tab, int type) {}
 
-            @Override
-            public boolean closeAllTabsRequest(boolean incognito) {
-                return false;
-            }
+                @Override
+                public boolean closeAllTabsRequest(boolean incognito) {
+                    return false;
+                }
 
-            @Override
-            public boolean isSessionRestoreInProgress() {
-                return false;
-            }
+                @Override
+                public boolean isSessionRestoreInProgress() {
+                    return false;
+                }
 
-            @Override
-            public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
-                    boolean incognito) {
-                return null;
-            }
-        };
+                @Override
+                public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type,
+                        Tab parent, boolean incognito) {
+                    return null;
+                }
+            };
+        });
         TestTabModelSelectorTabObserver observer = createTabModelSelectorTabObserver();
-        selector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            selector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
+        });
 
         Tab normalTab1 = createTestTab(false);
         addTab(sTestRule.getNormalTabModel(), normalTab1);

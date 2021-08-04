@@ -54,16 +54,18 @@ public class TranslateCompactInfoBarTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> TranslateBridge.setIgnoreMissingKeyForTesting(true));
-        mInfoBarContainer = mActivityTestRule.getInfoBarContainer();
-        mListener = new InfoBarTestAnimationListener();
-        mInfoBarContainer.addAnimationListener(mListener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TranslateBridge.setIgnoreMissingKeyForTesting(true);
+            mInfoBarContainer = mActivityTestRule.getInfoBarContainer();
+            mListener = new InfoBarTestAnimationListener();
+            mInfoBarContainer.addAnimationListener(mListener);
+        });
     }
 
     @After
     public void tearDown() {
-        mInfoBarContainer.removeAnimationListener(mListener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mInfoBarContainer.removeAnimationListener(mListener));
     }
 
     /**

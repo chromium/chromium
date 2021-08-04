@@ -1589,7 +1589,9 @@ public class BookmarkTest {
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
         toggleSelectionAndEndAnimation(googleId, row);
         CallbackHelper helper = new CallbackHelper();
-        mManager.getSelectionDelegate().addObserver((x) -> { helper.notifyCalled(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mManager.getSelectionDelegate().addObserver((x) -> helper.notifyCalled());
+        });
 
         removeBookmark(googleId);
 
@@ -1627,7 +1629,10 @@ public class BookmarkTest {
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
         toggleSelectionAndEndAnimation(aId, aRow);
         CallbackHelper helper = new CallbackHelper();
-        mManager.getSelectionDelegate().addObserver((x) -> { helper.notifyCalled(); });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mManager.getSelectionDelegate().addObserver((x) -> helper.notifyCalled());
+        });
 
         removeBookmark(googleId);
 

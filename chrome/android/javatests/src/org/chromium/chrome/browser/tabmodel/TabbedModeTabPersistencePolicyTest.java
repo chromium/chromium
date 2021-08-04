@@ -88,6 +88,9 @@ public class TabbedModeTabPersistencePolicyTest {
 
     private TabbedModeTabModelOrchestrator buildTestTabModelSelector(
             int[] normalTabIds, int[] incognitoTabIds) throws Exception {
+        final CallbackHelper callbackSignal = new CallbackHelper();
+        final int callCount = callbackSignal.getCallCount();
+
         MockTabModel.MockTabModelDelegate tabModelDelegate =
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
@@ -101,21 +104,29 @@ public class TabbedModeTabPersistencePolicyTest {
                         return tab;
                     }
                 };
-        final MockTabModel normalTabModel = new MockTabModel(false, tabModelDelegate);
-        final MockTabModel incognitoTabModel = new MockTabModel(true, tabModelDelegate);
-        TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestrator(false);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> orchestrator.createTabModels(new ChromeTabbedActivity(), null, null, 0));
-        TabModelSelector selector = orchestrator.getTabModelSelector();
-        ((MockTabModelSelector) selector).initializeTabModels(normalTabModel, incognitoTabModel);
-        final CallbackHelper callbackSignal = new CallbackHelper();
-        final int callCount = callbackSignal.getCallCount();
-        TabPersistentStore store = orchestrator.getTabPersistentStoreForTesting();
-        store.addObserver(new TabPersistentStoreObserver() {
-            @Override
-            public void onMetadataSavedAsynchronously(TabModelSelectorMetadata metadata) {
-                callbackSignal.notifyCalled();
-            }
+
+        final MockTabModel normalTabModel = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new MockTabModel(false, tabModelDelegate));
+        final MockTabModel incognitoTabModel = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new MockTabModel(true, tabModelDelegate));
+        TabbedModeTabModelOrchestrator orchestrator = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabbedModeTabModelOrchestrator tmpOrchestrator =
+                    new TabbedModeTabModelOrchestrator(false);
+            tmpOrchestrator.createTabModels(new ChromeTabbedActivity(), null, null, 0);
+            TabModelSelector selector = tmpOrchestrator.getTabModelSelector();
+            ((MockTabModelSelector) selector)
+                    .initializeTabModels(normalTabModel, incognitoTabModel);
+            return tmpOrchestrator;
+        });
+        TabPersistentStore store = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabPersistentStore tmpStore = orchestrator.getTabPersistentStoreForTesting();
+            tmpStore.addObserver(new TabPersistentStoreObserver() {
+                @Override
+                public void onMetadataSavedAsynchronously(TabModelSelectorMetadata metadata) {
+                    callbackSignal.notifyCalled();
+                }
+            });
+            return tmpStore;
         });
 
         // Adding tabs results in writing to disk running on AsyncTasks. Run on the main thread

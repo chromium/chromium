@@ -42,26 +42,28 @@ public class PromoCardCoordinatorTest {
     @Before
     public void setUp() {
         mContext = InstrumentationRegistry.getInstrumentation().getContext();
-        mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build();
+        mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build());
     }
 
     @After
     public void tearDown() {
-        mPromoCardCoordinator.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mPromoCardCoordinator::destroy);
     }
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
         // TODO(https://crbug.com/1217140): Remove this theme wrapper after dummy ui activity
         //  is based on material theme. For now we need the theme wrapper to inflate the layout;
         //  because we are not setting our theme overlay for the test apk
-        ContextThemeWrapper wrapperColor = new ContextThemeWrapper(
-                mContext, org.chromium.components.browser_ui.widget.R.style.ColorOverlay);
-        ContextThemeWrapper wrapperTheme = new ContextThemeWrapper(
-                wrapperColor, org.chromium.components.browser_ui.widget.R.style.Theme_BrowserUI);
-        mPromoCardCoordinator =
-                new PromoCardCoordinator(wrapperTheme, mModel, "test-feature", layoutStyle);
-        mView = (PromoCardView) mPromoCardCoordinator.getView();
-
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ContextThemeWrapper wrapperColor = new ContextThemeWrapper(
+                    mContext, org.chromium.components.browser_ui.widget.R.style.ColorOverlay);
+            ContextThemeWrapper wrapperTheme = new ContextThemeWrapper(wrapperColor,
+                    org.chromium.components.browser_ui.widget.R.style.Theme_BrowserUI);
+            mPromoCardCoordinator =
+                    new PromoCardCoordinator(wrapperTheme, mModel, "test-feature", layoutStyle);
+            mView = (PromoCardView) mPromoCardCoordinator.getView();
+        });
         Assert.assertNotNull("PromoCardView is null", mView);
     }
 

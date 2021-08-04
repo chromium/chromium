@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
 /**
@@ -43,10 +44,10 @@ public class MediaTest {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(prefix, mPermissionRule.getActivity());
-        tab.addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(
                 updateWaiter, TEST_FILE, script, numUpdates, withGesture, isDialog);
-        tab.removeObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
     /**

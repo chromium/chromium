@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordAccessorySheetViewTest {
-    private final AccessorySheetTabModel mModel = new AccessorySheetTabModel();
+    private AccessorySheetTabModel mModel;
     private AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule
@@ -66,6 +66,7 @@ public class PasswordAccessorySheetViewTest {
     private void openLayoutInAccessorySheet(
             @LayoutRes int layout, KeyboardAccessoryData.Tab.Listener listener) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = new AccessorySheetTabModel();
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
                             R.id.keyboard_accessory_sheet_stub));
