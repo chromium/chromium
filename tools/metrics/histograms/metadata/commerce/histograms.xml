@@ -1,0 +1,87 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Commerce histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="LocationIdentifiers">
+  <variant name="EnterTabSwitcher" summary="enters the Tab Switcher."/>
+  <variant name="NavigationComplete" summary="completes a navigation."/>
+</variants>
+
+<variants name="TabUsageStatuses">
+  <variant name="">
+    <obsolete>
+      Previous histogram didn't differentiate between Stale and Active Tab.
+    </obsolete>
+  </variant>
+  <variant name="ActiveTab"
+      summary="Tabs between 0 and 1 day since last usage."/>
+  <variant name="StaleTab"
+      summary="Tabs between 1 and 90 days since last usage."/>
+</variants>
+
+<histogram
+    name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
+    enum="BooleanContainsPrice" expires_after="2022-06-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records if a page contains a price, as determined by the commerce data
+    obtained to power the price drop feature. This data is acquired when the
+    user finishes navigating to a page. Recorded when the user
+    {LocationIdentifier}. Recorded for {TabUsageStatus}.
+  </summary>
+  <token key="LocationIdentifier" variants="LocationIdentifiers"/>
+  <token key="TabUsageStatus" variants="TabUsageStatuses"/>
+</histogram>
+
+<histogram
+    name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPriceDrop"
+    enum="BooleanContainsPriceDrop" expires_after="2022-06-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records if a page contains a decrease in price for an offer, relative to the
+    previously seen price for the offer. This is determined by the commerce data
+    obtained to power the price drop feature. The data is acquired when the user
+    finishes navigating to a page. Recorded when the user {LocationIdentifier}.
+    Recorded for {TabUsageStatus}.
+  </summary>
+  <token key="LocationIdentifier" variants="LocationIdentifiers"/>
+  <token key="TabUsageStatus" variants="TabUsageStatuses"/>
+</histogram>
+
+<histogram
+    name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.IsProductDetailPage"
+    enum="BooleanIsProductDetailPage" expires_after="2022-06-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records if a page is a product detail page, as determined by the commerce
+    data obtained to power the price drop feature. This data is acquired when
+    the user finishes navigating to a page. Recorded when the user
+    {LocationIdentifier}. Recorded for {TabUsageStatus}.
+  </summary>
+  <token key="LocationIdentifier" variants="LocationIdentifiers"/>
+  <token key="TabUsageStatus" variants="TabUsageStatuses"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
