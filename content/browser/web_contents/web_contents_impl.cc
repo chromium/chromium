@@ -6066,14 +6066,18 @@ void WebContentsImpl::SavableResourceLinksResponse(
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::SavableResourceLinksResponse",
                         "render_frame_host", source);
-  save_package_->SavableResourceLinksResponse(source, resources_list,
-                                              std::move(referrer), subframes);
+  if (save_package_) {
+    save_package_->SavableResourceLinksResponse(source, resources_list,
+                                                std::move(referrer), subframes);
+  }
 }
 
 void WebContentsImpl::SavableResourceLinksError(RenderFrameHostImpl* source) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SavableResourceLinksError",
                         "render_frame_host", source);
-  save_package_->SavableResourceLinksError(source);
+  if (save_package_) {
+    save_package_->SavableResourceLinksError(source);
+  }
 }
 
 void WebContentsImpl::OnServiceWorkerAccessed(
