@@ -1870,6 +1870,7 @@ Unknown properties are collapsed to zero. -->
   <int value="10" label="DINO_PAGE_OFFLINE_CONTENT"/>
   <int value="11" label="OFFLINE_INDICATOR"/>
   <int value="12" label="OFFLINE_CONTENT_NOTIFICATION"/>
+  <int value="13" label="DOWNLOAD_PROGRESS_MESSAGE"/>
 </enum>
 
 <enum name="AndroidEnhancedProtectionPromoAction">
@@ -54861,6 +54862,7 @@ Called by update_use_counter_css.py.-->
   <int value="13" label="GroupedPermission"/>
   <int value="14" label="PermissionUpdate"/>
   <int value="15" label="AdsBlocked"/>
+  <int value="16" label="DownloadProgress"/>
 </enum>
 
 <enum name="MessageLoopProblems">

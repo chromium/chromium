@@ -91,6 +91,8 @@ public class MessagesMetrics {
                 return "PermissionUpdate";
             case MessageIdentifier.ADS_BLOCKED:
                 return "AdsBlocked";
+            case MessageIdentifier.DOWNLOAD_PROGRESS:
+                return "DownloadProgress";
             default:
                 return "Unknown";
         }

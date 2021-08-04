@@ -530,6 +530,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/download/DownloadInfoBarController.java",
   "java/src/org/chromium/chrome/browser/download/DownloadItem.java",
   "java/src/org/chromium/chrome/browser/download/DownloadManagerService.java",
+  "java/src/org/chromium/chrome/browser/download/DownloadMessageUiController.java",
+  "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerImpl.java",
   "java/src/org/chromium/chrome/browser/download/DownloadMetrics.java",
   "java/src/org/chromium/chrome/browser/download/DownloadNotificationFactory.java",
   "java/src/org/chromium/chrome/browser/download/DownloadNotificationService.java",

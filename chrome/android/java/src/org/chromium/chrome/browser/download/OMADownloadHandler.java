@@ -864,7 +864,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
     }
 
     private void showDownloadOnInfoBar(DownloadItem downloadItem, int downloadStatus) {
-        DownloadInfoBarController infobarController =
+        DownloadMessageUiController infobarController =
                 DownloadManagerService.getDownloadManagerService().getInfoBarController(
                         downloadItem.getDownloadInfo().getOTRProfileId());
         if (infobarController == null) return;

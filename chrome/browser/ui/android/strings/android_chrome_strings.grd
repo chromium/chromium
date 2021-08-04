@@ -2018,6 +2018,42 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         You’ll see a notification when this download starts at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
       </message>
 
+      <!-- Download progress message UI -->
+      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_IN_PROGRESS_DESCRIPTION" desc="Download message text describing that user can find about their download status from notifications.">
+        You can see the download status in your notifications
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_COMPLETE_DESCRIPTION" desc="Download message description text about downloaded file name and their size.">
+        (<ph name="megabytes">%1$s<ex>100 MB</ex></ph>)\n<ph name="url">%2$s<ex>https://...example.com</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_IN_PROGRESS" desc="Download message text describing that chrome is downloading multiple files.">
+        {FILE_COUNT, plural,
+            =1 {Downloading file…}
+            other {Downloading # files…}}
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_COMPLETE" desc="Download message label describing that one or more downloads have completed">
+        {FILE_COUNT, plural,
+          =1 {File downloaded}
+          other {# downloads complete}}
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_FAILED" desc="Download message label describing that one or more downloads have failed">
+        {FILE_COUNT, plural,
+          =1 {1 download failed}
+          other {# downloads failed}}
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_PENDING" desc="Download message label describing that one or more downloads are pending">
+        {FILE_COUNT, plural,
+          =1 {1 download pending}
+          other {# downloads pending}}
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_SCHEDULED" desc="Download message label describing that one or more downloads are scheduled">
+        {FILE_COUNT, plural,
+          =1 {1 download scheduled}
+          other {# downloads scheduled}}
+      </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION" desc="Download message text describing that user can find about their download status from notifications.">
+        Download will start when on Wi-Fi
+      </message>
+
       <!-- Inline Update Infobar -->
       <message name="IDS_INLINE_UPDATE_INFOBAR_READY_MESSAGE" desc="Text showing that the update process is almost ready.">
         Almost finished!
