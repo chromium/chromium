@@ -3943,19 +3943,21 @@ void RenderFrameImpl::RunScriptsAtDocumentElementAvailable() {
 
 void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
   // Ignore all but top level navigations.
-  if (!frame_->Parent()) {
+  if (!frame_->Parent() && !title.IsEmpty()) {
     base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
         routing_id_, title.Utf8());
   } else {
-    // Set process title for sub-frames in traces.
+    // Set process title for sub-frames and title-less frames in traces.
     GURL loading_url = GetLoadingUrl();
     if (!loading_url.host().empty() &&
         loading_url.scheme() != url::kFileScheme) {
-      std::string subframe_title = "Subframe: " + loading_url.scheme() +
-                                   url::kStandardSchemeSeparator +
-                                   loading_url.host();
+      std::string frame_title;
+      if (frame_->Parent()) {
+        frame_title += "Subframe: ";
+      }
+      frame_title += loading_url.GetOrigin().spec();
       base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
-          routing_id_, subframe_title);
+          routing_id_, frame_title);
     }
   }
 
