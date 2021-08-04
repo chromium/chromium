@@ -87651,6 +87651,13 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="Well-Known supported"/>
 </enum>
 
+<enum name="WhatsNewLoadEvent">
+  <int value="0" label="Load started"/>
+  <int value="1" label="Load succeeded"/>
+  <int value="2" label="Load failed and error page whas shown"/>
+  <int value="3" label="Load failed and was redirected to NTP"/>
+</enum>
+
 <enum name="WhitelistedDownloadType">
   <int value="0" label="Does not match any whitelists"/>
   <int value="1" label="URL whitelist"/>

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,28 @@
 #include "url/gurl.h"
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
+
+namespace whats_new {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LoadEvent {
+  kLoadStart = 0,
+  kLoadSuccess = 1,
+  kLoadFailAndShowError = 2,
+  kLoadFailAndFallbackToNtp = 3,
+  kMaxValue = kLoadFailAndFallbackToNtp,
+};
+
+}  // namespace whats_new
+
+namespace {
+
+void LogLoadEvent(whats_new::LoadEvent event) {
+  base::UmaHistogramEnumeration("WhatsNew.LoadEvent", event);
+}
+
+}  // namespace
 
 WhatsNewHandler::WhatsNewHandler() = default;
 
@@ -63,6 +86,7 @@ void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
 }
 
 void WhatsNewHandler::Fetch(const GURL& url, OnFetchResultCallback on_result) {
+  LogLoadEvent(whats_new::LoadEvent::kLoadStart);
   auto traffic_annotation =
       net::DefineNetworkTrafficAnnotation("whats_new_handler", R"(
         semantics {
@@ -124,12 +148,15 @@ void WhatsNewHandler::OnFetchResult(const std::string& callback_id,
     if (!browser)
       return;
 
+    LogLoadEvent(whats_new::LoadEvent::kLoadFailAndFallbackToNtp);
     content::OpenURLParams params(GURL(chrome::kChromeUINewTabPageURL),
                                   content::Referrer(),
                                   WindowOpenDisposition::CURRENT_TAB,
                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
     browser->OpenURL(params);
   } else {
+    LogLoadEvent(success ? whats_new::LoadEvent::kLoadSuccess
+                         : whats_new::LoadEvent::kLoadFailAndShowError);
     // Update pref if successfully shown automatically.
     if (success && is_auto) {
       whats_new::SetLastVersion(g_browser_process->local_state());
