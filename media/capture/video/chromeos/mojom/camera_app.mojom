@@ -118,22 +118,11 @@ interface CameraAppDevice {
   // Adds the remote of a ResultMetadataObserver to CameraAppDevice.
   // The |observer| will have a remote call from camera device.
   AddResultMetadataObserver(pending_remote<ResultMetadataObserver> observer,
-                            StreamType stream_type)
-      => (uint32 id);
+                            StreamType stream_type) => ();
 
-  // Remove a ResultMetadataObserver by supplying its id returned by
-  // AddResultMetadataObserver.
-  // If the ResultMetadataObserver is found, |is_success| returns true.
-  RemoveResultMetadataObserver(uint32 id) => (bool is_success);
-
-  // Adds an observer for camera events and returns the observer |id|. The
-  // |observer| is the remote of the observer to be added.
-  AddCameraEventObserver(pending_remote<CameraEventObserver> observer)
-      => (uint32 id);
-
-  // Removes the camera events observer according to given observer |id|. Sets
-  // |is_success| to true if remove successfully, false otherwise.
-  RemoveCameraEventObserver(uint32 id) => (bool is_success);
+  // Adds an observer for camera events. The |observer| is the remote of the
+  // observer to be added.
+  AddCameraEventObserver(pending_remote<CameraEventObserver> observer) => ();
 
   // Sets whether to disable the camera frame rotation at source. Sets
   // |is_success| to true if |is_enabled| is correctly set.
@@ -145,14 +134,9 @@ interface CameraAppDevice {
   // |rotation| are 0, 90, 180, and 270.
   GetCameraFrameRotation() => (uint32 rotation);
 
-  // Registers the document corners observer for preview and returns the
-  // observer |id|.
+  // Registers the document corners observer for preview.
   RegisterDocumentCornersObserver(
-      pending_remote<DocumentCornersObserver> observer)
-      => (uint32 id);
-
-  // Unregister the document corners observer by given |id|.
-  UnregisterDocumentCornersObserver(uint32 id) => (bool is_success);
+      pending_remote<DocumentCornersObserver> observer) => ();
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.

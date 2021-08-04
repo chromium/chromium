@@ -11,6 +11,10 @@ import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import {FaceOverlay} from '../../face.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
+import {
+  closeEndpoint,
+  MojoEndpoint,  // eslint-disable-line no-unused-vars
+} from '../../mojo/util.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {
@@ -47,11 +51,11 @@ export class Preview {
     this.video_ = dom.get('#preview-video', HTMLVideoElement);
 
     /**
-     * The observer id for preview metadata.
-     * @type {?number}
+     * The observer endpoint for preview metadata.
+     * @type {?MojoEndpoint}
      * @private
      */
-    this.metadataObserverId_ = null;
+    this.metadataObserver_ = null;
 
     /**
      * The face overlay for showing faces over preview.
@@ -597,7 +601,7 @@ export class Preview {
       updateFace(faceMode, faceRects);
     };
 
-    this.metadataObserverId_ = await deviceOperator.addMetadataObserver(
+    this.metadataObserver_ = await deviceOperator.addMetadataObserver(
         deviceId, callback, cros.mojom.StreamType.PREVIEW_OUTPUT);
   }
 
@@ -607,7 +611,7 @@ export class Preview {
    * @private
    */
   async disableShowMetadata_() {
-    if (!this.stream_ || this.metadataObserverId_ === null) {
+    if (!this.stream_ || this.metadataObserver_ === null) {
       return;
     }
 
@@ -616,16 +620,8 @@ export class Preview {
       return;
     }
 
-    const {deviceId} = this.getVideoTrack_().getSettings();
-    const isSuccess = await deviceOperator.removeMetadataObserver(
-        deviceId, this.metadataObserverId_);
-    if (!isSuccess) {
-      reportError(
-          ErrorType.REMOVE_METADATA_OBSERVER_FAILURE, ErrorLevel.ERROR,
-          new Error(`Failed to remove metadata observer with id: ${
-              this.metadataObserverId_}`));
-    }
-    this.metadataObserverId_ = null;
+    closeEndpoint(this.metadataObserver_);
+    this.metadataObserver_ = null;
 
     if (this.faceOverlay_ !== null) {
       this.faceOverlay_.clear();

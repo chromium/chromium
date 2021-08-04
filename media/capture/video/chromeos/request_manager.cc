@@ -1001,9 +1001,8 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
     auto camera_app_device =
         CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
             device_id_);
-    if (camera_app_device && stream_type == StreamType::kPreviewOutput &&
-        camera_app_device->ShouldDetectDocumentCorners()) {
-      camera_app_device->DetectDocumentCorners(
+    if (camera_app_device && stream_type == StreamType::kPreviewOutput) {
+      camera_app_device->MaybeDetectDocumentCorners(
           stream_buffer_manager_->CreateGpuMemoryBuffer(
               buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
               gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE),

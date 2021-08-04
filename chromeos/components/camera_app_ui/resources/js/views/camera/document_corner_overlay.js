@@ -11,6 +11,10 @@ import {
   vectorFromPoints,
 } from '../../geometry.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
+import {
+  closeEndpoint,
+  MojoEndpoint,  // eslint-disable-line no-unused-vars
+} from '../../mojo/util.js';
 import * as util from '../../util.js';
 
 /**
@@ -163,10 +167,10 @@ export class DocumentCornerOverlay {
     this.deviceId_ = null;
 
     /**
-     * @type {?number}
+     * @type {?MojoEndpoint}
      * @private
      */
-    this.observerId_ = null;
+    this.observer_ = null;
 
     /**
      * @type {!Array<!Line>}
@@ -233,7 +237,7 @@ export class DocumentCornerOverlay {
    * @return {!Promise}
    */
   async start() {
-    if (this.observerId_ !== null) {
+    if (this.observer_ !== null) {
       return;
     }
     const deviceOperator = await DeviceOperator.getInstance();
@@ -241,7 +245,7 @@ export class DocumentCornerOverlay {
       // Skip showing indicator on fake camera.
       return;
     }
-    this.observerId_ = await deviceOperator.registerDocumentCornersObserver(
+    this.observer_ = await deviceOperator.registerDocumentCornersObserver(
         assertString(this.deviceId_), (corners) => {
           if (corners.length === 0) {
             this.onNoCornerDetected_();
@@ -261,16 +265,11 @@ export class DocumentCornerOverlay {
    * @return {!Promise}
    */
   async stop() {
-    if (this.observerId_ === null) {
+    if (this.observer_ === null) {
       return;
     }
-    const nonNullObserverId = this.observerId_;
-    const deviceOperator =
-        assertInstanceof(await DeviceOperator.getInstance(), DeviceOperator);
-    const isSuccess = await deviceOperator.unregisterDocumentCornersObserver(
-        assertString(this.deviceId_), nonNullObserverId);
-    assert(isSuccess);
-    this.observerId_ = null;
+    closeEndpoint(this.observer_);
+    this.observer_ = null;
     this.hide_();
     this.clearNoDocumentTimer_();
   }
@@ -279,7 +278,7 @@ export class DocumentCornerOverlay {
    * @return {boolean}
    */
   isEnabled() {
-    return this.observerId_ !== null;
+    return this.observer_ !== null;
   }
 
   /**

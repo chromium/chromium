@@ -244,8 +244,6 @@ export const ErrorType = {
   NO_AVAILABLE_LEVEL: 'no-available-level',
   PERF_METRICS_FAILURE: 'perf-metrics-failure',
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
-  REMOVE_METADATA_OBSERVER_FAILURE: 'remove-metadata-observer-failure',
-  REMOVE_SHUTTER_OBSERVER_FAILURE: 'remove-shutter-observer-failure',
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
   START_CAMERA_FAILURE: 'start-camera-failure',
   START_CAPTURE_FAILURE: 'start-capture-failure',

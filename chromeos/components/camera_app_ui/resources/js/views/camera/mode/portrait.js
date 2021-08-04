@@ -61,7 +61,7 @@ export class Portrait extends Photo {
     const refImageName = filenamer.newBurstName(false);
     const portraitImageName = filenamer.newBurstName(true);
 
-    if (this.metadataObserverId_ !== null) {
+    if (this.metadataObserver_ !== null) {
       [refImageName, portraitImageName].forEach((/** string */ imageName) => {
         this.metadataNames_.push(Filenamer.getMetadataName(imageName));
       });

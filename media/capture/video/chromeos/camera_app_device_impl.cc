@@ -74,8 +74,6 @@ CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
       allow_new_ipc_weak_ptrs_(true),
       camera_info_(std::move(camera_info)),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
-      next_metadata_observer_id_(0),
-      next_camera_event_observer_id_(0),
       camera_device_context_(nullptr) {}
 
 CameraAppDeviceImpl::~CameraAppDeviceImpl() {
@@ -86,10 +84,6 @@ CameraAppDeviceImpl::~CameraAppDeviceImpl() {
   // All the weak pointers of |weak_ptr_factory_| should be invalidated on
   // camera device IPC thread before destroying CameraAppDeviceImpl.
   DCHECK(!weak_ptr_factory_.HasWeakPtrs());
-
-  // Document scanner service must be reset on the device IPC thread, where its
-  // mojo channels are bound.
-  DCHECK(!document_scanner_service_);
 }
 
 void CameraAppDeviceImpl::BindReceiver(
@@ -99,6 +93,8 @@ void CameraAppDeviceImpl::BindReceiver(
       base::BindRepeating(&CameraAppDeviceImpl::OnMojoConnectionError,
                           weak_ptr_factory_for_mojo_.GetWeakPtr()));
   mojo_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+
+  document_scanner_service_ = chromeos::DocumentScannerServiceClient::Create();
 }
 
 base::WeakPtr<CameraAppDeviceImpl> CameraAppDeviceImpl::GetWeakPtr() {
@@ -111,7 +107,6 @@ void CameraAppDeviceImpl::ResetOnDeviceIpcThread(base::OnceClosure callback,
     allow_new_ipc_weak_ptrs_ = false;
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
-  document_scanner_service_.reset();
   std::move(callback).Run();
 }
 
@@ -178,71 +173,23 @@ void CameraAppDeviceImpl::SetCameraDeviceContext(
   camera_device_context_ = camera_device_context;
 }
 
-bool CameraAppDeviceImpl::ShouldDetectDocumentCorners() {
+void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
+    std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
+    VideoRotation rotation) {
   {
     base::AutoLock lock(capture_intent_lock_);
     if (capture_intent_ != cros::mojom::CaptureIntent::DOCUMENT) {
-      return false;
+      return;
     }
   }
-
   if (!chromeos::DocumentScannerServiceClient::IsSupported()) {
-    return false;
-  }
-
-  if (!document_scanner_service_) {
-    document_scanner_service_ =
-        chromeos::DocumentScannerServiceClient::Create();
-    DCHECK(document_scanner_service_);
-  }
-
-  base::AutoLock lock(document_corners_observer_lock_);
-  return !document_corners_observers_.empty() &&
-         !has_ongoing_document_detection_task_ &&
-         document_scanner_service_->IsLoaded();
-}
-
-void CameraAppDeviceImpl::DetectDocumentCorners(
-    std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
-    VideoRotation rotation) {
-  DCHECK(gmb);
-  if (!gmb->Map()) {
-    LOG(ERROR) << "Failed to map frame buffer";
     return;
   }
-  auto frame_size = gmb->GetSize();
-  int width = frame_size.width();
-  int height = frame_size.height();
-
-  base::MappedReadOnlyRegion memory = base::ReadOnlySharedMemoryRegion::Create(
-      kDetectionWidth * kDetectionHeight * 3 / 2);
-
-  auto* y_data = memory.mapping.GetMemoryAs<uint8_t>();
-  auto* uv_data = y_data + kDetectionWidth * kDetectionHeight;
-
-  int status = libyuv::NV12Scale(
-      static_cast<uint8_t*>(gmb->memory(0)), gmb->stride(0),
-      static_cast<uint8_t*>(gmb->memory(1)), gmb->stride(1), width, height,
-      y_data, kDetectionWidth, uv_data, kDetectionWidth, kDetectionWidth,
-      kDetectionHeight, libyuv::FilterMode::kFilterNone);
-  gmb->Unmap();
-  if (status != 0) {
-    LOG(ERROR) << "Failed to scale buffer";
-    return;
-  }
-
-  {
-    base::AutoLock lock(document_corners_observer_lock_);
-    has_ongoing_document_detection_task_ = true;
-
-    DCHECK(document_scanner_service_);
-    document_scanner_service_->DetectCornersFromNV12Image(
-        std::move(memory.region),
-        base::BindPostTask(
-            mojo_task_runner_,
-            base::BindOnce(&CameraAppDeviceImpl::OnDetectedDocumentCorners,
-                           weak_ptr_factory_for_mojo_.GetWeakPtr(), rotation)));
-  }
+  mojo_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread,
+                     weak_ptr_factory_for_mojo_.GetWeakPtr(), std::move(gmb),
+                     rotation));
 }
 
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
@@ -343,29 +290,8 @@ void CameraAppDeviceImpl::AddResultMetadataObserver(
     AddResultMetadataObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  uint32_t id = next_metadata_observer_id_++;
-  metadata_observers_[id] =
-      mojo::Remote<cros::mojom::ResultMetadataObserver>(std::move(observer));
-  stream_metadata_observer_ids_[stream_type].insert(id);
-
-  std::move(callback).Run(id);
-}
-
-void CameraAppDeviceImpl::RemoveResultMetadataObserver(
-    uint32_t id,
-    RemoveResultMetadataObserverCallback callback) {
-  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
-
-  if (metadata_observers_.erase(id) == 0) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  for (auto& kv : stream_metadata_observer_ids_) {
-    auto& observer_ids = kv.second;
-    observer_ids.erase(id);
-  }
-  std::move(callback).Run(true);
+  stream_to_metadata_observers_map_[stream_type].Add(std::move(observer));
+  std::move(callback).Run();
 }
 
 void CameraAppDeviceImpl::AddCameraEventObserver(
@@ -373,19 +299,8 @@ void CameraAppDeviceImpl::AddCameraEventObserver(
     AddCameraEventObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  uint32_t id = next_camera_event_observer_id_++;
-  camera_event_observers_[id] =
-      mojo::Remote<cros::mojom::CameraEventObserver>(std::move(observer));
-  std::move(callback).Run(id);
-}
-
-void CameraAppDeviceImpl::RemoveCameraEventObserver(
-    uint32_t id,
-    RemoveCameraEventObserverCallback callback) {
-  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
-
-  bool is_success = camera_event_observers_.erase(id) == 1;
-  std::move(callback).Run(is_success);
+  camera_event_observers_.Add(std::move(observer));
+  std::move(callback).Run();
 }
 
 void CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource(
@@ -426,23 +341,8 @@ void CameraAppDeviceImpl::RegisterDocumentCornersObserver(
     RegisterDocumentCornersObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock lock(document_corners_observer_lock_);
-
-  uint32_t id = next_document_corners_observer_id_++;
-  document_corners_observers_[id] =
-      mojo::Remote<cros::mojom::DocumentCornersObserver>(std::move(observer));
-  std::move(callback).Run(id);
-}
-
-void CameraAppDeviceImpl::UnregisterDocumentCornersObserver(
-    uint32_t id,
-    UnregisterDocumentCornersObserverCallback callback) {
-  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
-
-  base::AutoLock lock(document_corners_observer_lock_);
-
-  bool is_success = document_corners_observers_.erase(id) == 1;
-  std::move(callback).Run(is_success);
+  document_corners_observers_.Add(std::move(observer));
+  std::move(callback).Run();
 }
 
 // static
@@ -457,11 +357,62 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
   task->extra_metadata.push_back(std::move(nr_entry));
 }
 
-void CameraAppDeviceImpl::OnDetectedDocumentCorners(
+void CameraAppDeviceImpl::OnMojoConnectionError() {
+  CameraAppDeviceBridgeImpl::GetInstance()->OnDeviceMojoDisconnected(
+      device_id_);
+}
+
+void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
+    std::unique_ptr<gpu::GpuMemoryBufferImpl> image,
+    VideoRotation rotation) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+  DCHECK(document_scanner_service_);
+
+  if (!document_scanner_service_->IsLoaded() ||
+      has_ongoing_document_detection_task_) {
+    return;
+  }
+
+  DCHECK(image);
+  if (!image->Map()) {
+    LOG(ERROR) << "Failed to map frame buffer";
+    return;
+  }
+  auto frame_size = image->GetSize();
+  int width = frame_size.width();
+  int height = frame_size.height();
+
+  base::MappedReadOnlyRegion memory = base::ReadOnlySharedMemoryRegion::Create(
+      kDetectionWidth * kDetectionHeight * 3 / 2);
+
+  auto* y_data = memory.mapping.GetMemoryAs<uint8_t>();
+  auto* uv_data = y_data + kDetectionWidth * kDetectionHeight;
+
+  int status = libyuv::NV12Scale(
+      static_cast<uint8_t*>(image->memory(0)), image->stride(0),
+      static_cast<uint8_t*>(image->memory(1)), image->stride(1), width, height,
+      y_data, kDetectionWidth, uv_data, kDetectionWidth, kDetectionWidth,
+      kDetectionHeight, libyuv::FilterMode::kFilterNone);
+  image->Unmap();
+  if (status != 0) {
+    LOG(ERROR) << "Failed to scale buffer";
+    return;
+  }
+
+  has_ongoing_document_detection_task_ = true;
+  document_scanner_service_->DetectCornersFromNV12Image(
+      std::move(memory.region),
+      base::BindOnce(
+          &CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread,
+          weak_ptr_factory_for_mojo_.GetWeakPtr(), rotation));
+}
+
+void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
     VideoRotation rotation,
     bool success,
     const std::vector<gfx::PointF>& corners) {
-  base::AutoLock lock(document_corners_observer_lock_);
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
   has_ongoing_document_detection_task_ = false;
   if (!success) {
     LOG(ERROR) << "Failed to detect document corners";
@@ -494,13 +445,8 @@ void CameraAppDeviceImpl::OnDetectedDocumentCorners(
   }
 
   for (auto& observer : document_corners_observers_) {
-    observer.second->OnDocumentCornersUpdated(rotated_corners);
+    observer->OnDocumentCornersUpdated(rotated_corners);
   }
-}
-
-void CameraAppDeviceImpl::OnMojoConnectionError() {
-  CameraAppDeviceBridgeImpl::GetInstance()->OnDeviceMojoDisconnected(
-      device_id_);
 }
 
 void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(
@@ -516,7 +462,7 @@ void CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread() {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
   for (auto& observer : camera_event_observers_) {
-    observer.second->OnShutterDone();
+    observer->OnShutterDone();
   }
 }
 
@@ -525,9 +471,9 @@ void CameraAppDeviceImpl::NotifyResultMetadataOnMojoThread(
     cros::mojom::StreamType streamType) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  const auto& observer_ids = stream_metadata_observer_ids_[streamType];
-  for (auto& id : observer_ids) {
-    metadata_observers_[id]->OnMetadataAvailable(metadata.Clone());
+  auto& metadata_observers = stream_to_metadata_observers_map_[streamType];
+  for (auto& observer : metadata_observers) {
+    observer->OnMetadataAvailable(metadata.Clone());
   }
 }
 

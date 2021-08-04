@@ -5,17 +5,18 @@
 import {assertInstanceof} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
-import {reportError} from '../../../error.js';
 import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import * as filesystem from '../../../models/file_system.js';
 import {DeviceOperator, parseMetadata} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
+import {
+  closeEndpoint,
+  MojoEndpoint,  // eslint-disable-line no-unused-vars
+} from '../../../mojo/util.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
-  ErrorLevel,
-  ErrorType,
   Facing,  // eslint-disable-line no-unused-vars
   PerfEvent,
   Resolution,
@@ -97,11 +98,11 @@ export class Photo extends ModeBase {
         new CrosImageCapture(this.stream_.getVideoTracks()[0]);
 
     /**
-     * The observer id for saving metadata.
-     * @type {?number}
+     * The observer endpoint for saving metadata.
+     * @type {?MojoEndpoint}
      * @protected
      */
-    this.metadataObserverId_ = null;
+    this.metadataObserver_ = null;
 
     /**
      * Metadata names ready to be saved.
@@ -125,7 +126,7 @@ export class Photo extends ModeBase {
    */
   async start_() {
     const imageName = (new Filenamer()).newImageName();
-    if (this.metadataObserverId_ !== null) {
+    if (this.metadataObserver_ !== null) {
       this.metadataNames_.push(Filenamer.getMetadataName(imageName));
     }
 
@@ -221,7 +222,7 @@ export class Photo extends ModeBase {
     };
 
     const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
-    this.metadataObserverId_ = await deviceOperator.addMetadataObserver(
+    this.metadataObserver_ = await deviceOperator.addMetadataObserver(
         deviceId, callback, cros.mojom.StreamType.JPEG_OUTPUT);
   }
 
@@ -230,7 +231,7 @@ export class Photo extends ModeBase {
    * @return {!Promise} Promise for the operation.
    */
   async removeMetadataObserver() {
-    if (!this.stream_ || this.metadataObserverId_ === null) {
+    if (!this.stream_ || this.metadataObserver_ === null) {
       return;
     }
 
@@ -239,16 +240,8 @@ export class Photo extends ModeBase {
       return;
     }
 
-    const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
-    const isSuccess = await deviceOperator.removeMetadataObserver(
-        deviceId, this.metadataObserverId_);
-    if (!isSuccess) {
-      reportError(
-          ErrorType.REMOVE_METADATA_OBSERVER_FAILURE, ErrorLevel.ERROR,
-          new Error(`Failed to remove metadata observer with id: ${
-              this.metadataObserverId_}`));
-    }
-    this.metadataObserverId_ = null;
+    closeEndpoint(this.metadataObserver_);
+    this.metadataObserver_ = null;
   }
 }
 

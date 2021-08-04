@@ -7,6 +7,12 @@ import {WaitableEvent} from '../waitable_event.js';
 
 const windowUnload = new WaitableEvent();
 
+/**
+ * @typedef {{$: {close: function(): void}}}
+ */
+export let MojoEndpoint;
+
+
 addUnloadCallback(() => {
   windowUnload.signal();
 });
@@ -39,10 +45,10 @@ const mojoResponseHandler = {
 /**
  * Closes the given mojo endpoint once the page is unloaded.
  * Reference b/176139064.
- * @param {{$: {close: function(): void}}} endpoint The mojo endpoint.
+ * @param {!MojoEndpoint} endpoint The mojo endpoint.
  */
 function closeWhenUnload(endpoint) {
-  addUnloadCallback(() => endpoint.$.close());
+  addUnloadCallback(() => closeEndpoint(endpoint));
 }
 
 /**
@@ -54,4 +60,12 @@ function closeWhenUnload(endpoint) {
 export function wrapEndpoint(endpoint) {
   closeWhenUnload(endpoint);
   return /** @type {!T} */ (new Proxy(endpoint, mojoResponseHandler));
+}
+
+/**
+ * Returns the target mojo endpoint.
+ * @param {!MojoEndpoint} endpoint
+ */
+export function closeEndpoint(endpoint) {
+  endpoint.$.close();
 }
