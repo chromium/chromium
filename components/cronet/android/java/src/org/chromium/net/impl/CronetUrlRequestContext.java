@@ -150,6 +150,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     @UsedByReflection("CronetEngine.java")
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder) {
+        mRttListenerList.disableThreadAsserts();
+        mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
         CronetLibraryLoader.ensureInitialized(builder.getContext(), builder);
         if (!IntegratedModeState.INTEGRATED_MODE_ENABLED) {
