@@ -105,8 +105,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PrimarySignInButton()];
   [SigninEarlGrey verifySignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]

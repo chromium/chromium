@@ -661,7 +661,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsCollectionView {
-  return grey_accessibilityID(kSettingsTableViewId);
+  return grey_allOf(grey_accessibilityID(kSettingsTableViewId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)clearBrowsingHistoryButton {

@@ -108,8 +108,10 @@ NSString* const kPassphrase = @"hello";
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Select Encryption item.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_MANAGE_SYNC_ENCRYPTION)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
+                                              IDS_IOS_MANAGE_SYNC_ENCRYPTION),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Type and submit the sync passphrase.

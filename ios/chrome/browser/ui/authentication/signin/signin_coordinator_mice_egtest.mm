@@ -247,10 +247,6 @@ NSString* const kPassphrase = @"hello";
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
 - (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
-// TODO(crbug.com/1236354): test failing on devices
-#if !TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on devices.");
-#endif
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -281,6 +277,8 @@ NSString* const kPassphrase = @"hello";
   // Type and submit the sync passphrase.
   [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
 
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsDoneButton()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI openSettingsMenu];

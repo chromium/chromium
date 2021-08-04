@@ -320,6 +320,10 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
       performAction:grey_typeText(passphrase)];
 
   [[EarlGrey
