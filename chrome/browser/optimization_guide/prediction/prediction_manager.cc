@@ -740,7 +740,8 @@ void PredictionManager::OnStoreInitialized() {
             BackgroundDownloadServiceFactory::GetForKey(
                 profile_->GetProfileKey()),
             base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                 base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
     prediction_model_download_manager_->AddObserver(this);
   }
 
