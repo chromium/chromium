@@ -223,6 +223,11 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   // Returns the accelerator histotry.
   virtual AcceleratorHistory* GetAcceleratorHistory() = 0;
 
+  // Returns true if the provided accelerator matches the provided accelerator
+  // action.
+  virtual bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
+                                          const AcceleratorAction action) = 0;
+
  protected:
   AcceleratorController();
   virtual ~AcceleratorController();

@@ -1583,6 +1583,13 @@ AcceleratorHistoryImpl* AcceleratorControllerImpl::GetAcceleratorHistory() {
   return accelerator_history_.get();
 }
 
+bool AcceleratorControllerImpl::DoesAcceleratorMatchAction(
+    const ui::Accelerator& accelerator,
+    AcceleratorAction action) {
+  AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  return action_ptr && *action_ptr == action;
+}
+
 bool AcceleratorControllerImpl::IsPreferred(
     const ui::Accelerator& accelerator) const {
   const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);

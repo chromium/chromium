@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/time/time.h"
@@ -152,6 +153,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   bool ShouldEnableExtraKeyboardAccessibility() override;
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
+  absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;

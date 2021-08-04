@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
 #include "base/macros.h"
@@ -66,6 +67,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // Called when a bubble wants to hide/destroy itself (e.g. last visible
     // child view was closed).
     virtual void HideBubble(const TrayBubbleView* bubble_view);
+
+    // Returns the accelerator action associated with the delegate's bubble
+    // view.
+    virtual absl::optional<AcceleratorAction> GetAcceleratorAction() const;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(Delegate);
@@ -128,6 +133,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   // Returns the border insets. Called by TrayEventFilter.
   gfx::Insets GetBorderInsets() const;
+
+  // Returns the accelerator action associated with this bubble view.
+  absl::optional<AcceleratorAction> GetAcceleratorAction() const;
 
   // Called when the delegate is destroyed. This must be called before the
   // delegate is actually destroyed. TrayBubbleView will do clean up in

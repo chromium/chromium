@@ -39,6 +39,8 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/power/power_button_controller_test_api.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_media_client.h"
 #include "ash/wm/lock_state_controller.h"
@@ -1306,6 +1308,23 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
+}
+
+TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
+  UnifiedSystemTray* tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
+
+  auto* generator = GetEventGenerator();
+
+  // Pressing accelerator once should show the quick settings bubble.
+  generator->PressKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(tray->IsBubbleShown());
+
+  // Pressing accelerator a second time should dismiss the bubble.
+  generator->PressKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(tray->IsBubbleShown());
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
