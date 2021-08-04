@@ -225,6 +225,8 @@ cast_source_set("runtime_service") {
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",
+    "//chromecast/browser:browser_base",
+    "//chromecast/metrics:cast_event_builder_simple",
     "//chromecast/service",
   ]
 
@@ -293,17 +295,30 @@ executable("demo_platform_service") {
   deps = [ "//third_party/grpc:grpc++" ]
 }
 
+cast_source_set("cast_core_test_utils") {
+  testonly = true
+
+  sources = [
+    "cast_runtime_metrics_test_helpers.cc",
+    "cast_runtime_metrics_test_helpers.h",
+  ]
+
+  deps = [
+    "//third_party/metrics_proto",
+    "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
+  ]
+}
+
 # TODO(b/194439829): Upstream additional metrics unit tests.
 test("cast_cast_core_unittests") {
   sources = [
     "cast_runtime_histogram_flattener_unittest.cc",
-    "cast_runtime_metrics_test_helpers.cc",
-    "cast_runtime_metrics_test_helpers.h",
     "streaming_receiver_session_client_unittest.cc",
     "url_rewrite_rules_adapter_unittests.cc",
   ]
 
   deps = [
+    ":cast_core_test_utils",
     ":metrics_recorder",
     ":streaming_receiver_session_client",
     ":url_rewrite",
