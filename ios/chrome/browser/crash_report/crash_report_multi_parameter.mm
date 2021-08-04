@@ -13,6 +13,7 @@
 #include "base/values.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,46 +28,41 @@ const int kMaximumBreakpadValueSize = 255;
 
 @implementation CrashReportMultiParameter {
   crash_reporter::CrashKeyString<256>* _key;
-  std::unique_ptr<base::DictionaryValue> _dictionary;
+  base::Value _dictionary;
 }
 
 - (instancetype)initWithKey:(crash_reporter::CrashKeyString<256>&)key {
   if ((self = [super init])) {
-    _dictionary.reset(new base::DictionaryValue());
+    _dictionary = base::Value(base::Value::Type::DICTIONARY);
     _key = &key;
   }
   return self;
 }
 
-- (void)removeValue:(NSString*)key {
-  _dictionary->RemoveKey(base::SysNSStringToUTF8(key).c_str());
+- (void)removeValue:(base::StringPiece)key {
+  _dictionary.RemoveKey(key);
   [self updateCrashReport];
 }
 
-- (void)setValue:(NSString*)key withValue:(int)value {
-  _dictionary->SetInteger(base::SysNSStringToUTF8(key).c_str(), value);
+- (void)setValue:(base::StringPiece)key withValue:(int)value {
+  _dictionary.SetIntKey(key, value);
   [self updateCrashReport];
 }
 
-- (void)incrementValue:(NSString*)key {
-  int value;
-  std::string utf8_string = base::SysNSStringToUTF8(key);
-  if (_dictionary->GetInteger(utf8_string.c_str(), &value)) {
-    _dictionary->SetInteger(utf8_string.c_str(), value + 1);
-  } else {
-    _dictionary->SetInteger(utf8_string.c_str(), 1);
-  }
+- (void)incrementValue:(base::StringPiece)key {
+  const int value = _dictionary.FindIntKey(key).value_or(0);
+  _dictionary.SetIntKey(key, value + 1);
   [self updateCrashReport];
 }
 
-- (void)decrementValue:(NSString*)key {
-  int value;
-  std::string utf8_string = base::SysNSStringToUTF8(key);
-  if (_dictionary->GetInteger(utf8_string.c_str(), &value)) {
+- (void)decrementValue:(base::StringPiece)key {
+  const absl::optional<int> maybe_value = _dictionary.FindIntKey(key);
+  if (maybe_value.has_value()) {
+    const int value = maybe_value.value();
     if (value <= 1) {
-      _dictionary->RemoveKey(utf8_string.c_str());
+      _dictionary.RemoveKey(key);
     } else {
-      _dictionary->SetInteger(utf8_string.c_str(), value - 1);
+      _dictionary.SetIntKey(key, value - 1);
     }
     [self updateCrashReport];
   }
@@ -74,7 +70,7 @@ const int kMaximumBreakpadValueSize = 255;
 
 - (void)updateCrashReport {
   std::string stateAsJson;
-  base::JSONWriter::Write(*_dictionary.get(), &stateAsJson);
+  base::JSONWriter::Write(_dictionary, &stateAsJson);
   if (stateAsJson.length() > kMaximumBreakpadValueSize) {
     NOTREACHED();
     return;
