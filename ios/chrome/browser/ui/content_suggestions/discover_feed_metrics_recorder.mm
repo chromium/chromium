@@ -107,6 +107,8 @@ const char kDiscoverFeedUserActionReportContentOpened[] =
     "ContentSuggestions.Feed.CardAction.ReportContent";
 const char kDiscoverFeedUserActionReportContentClosed[] =
     "ContentSuggestions.Feed.CardAction.ClosedReportContent";
+const char kDiscoverFeedUserActionPreviewTapped[] =
+    "ContentSuggestions.Feed.CardAction.TapPreview";
 
 // User action names for feed header menu.
 const char kDiscoverFeedUserActionManageActivityTapped[] =
@@ -223,6 +225,13 @@ const int kMinutesBetweenSessions = 5;
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedHistogramDeviceOrientationChangedToLandscape));
   }
+}
+
+- (void)recordDiscoverFeedPreviewTapped {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedDiscoverFeedPreview];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionPreviewTapped));
 }
 
 - (void)recordHeaderMenuLearnMoreTapped {

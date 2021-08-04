@@ -110,8 +110,11 @@ enum class FeedUserActionType {
   // After following an active web feed, the user tapped to dismiss the
   // post-follow help dialog.
   kTappedDismissPostFollowActiveHelp = 38,
+  // After long-pressing on the feed and seeing the preview, the user tapped
+  // on the preview.
+  kTappedDiscoverFeedPreview = 39,
 
-  kMaxValue = kTappedDismissPostFollowActiveHelp,
+  kMaxValue = kTappedDiscoverFeedPreview,
 };
 
 // The requested order of the Feed content.

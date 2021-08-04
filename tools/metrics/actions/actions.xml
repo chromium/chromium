@@ -5377,6 +5377,15 @@ should be able to be added at any place in this file.
   <description>The user selected 'share' option for a Feed card.</description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.TapPreview">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    After long-pressing the feed card and seeing the preview, the user tapped on
+    preview.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.DeviceOrientationChanged.Landscape">
   <owner>adamta@google.org</owner>
   <owner>sczs@chromium.org</owner>

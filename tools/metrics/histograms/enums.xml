@@ -34437,6 +34437,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="38"
       label="After following an active web feed, the user tapped to dismiss
              the post-follow help dialog."/>
+  <int value="39"
+      label="After long-pressing on the feed and seeing the preview, the user
+             tapped on the preview."/>
 </enum>
 
 <enum name="FeedUserCommandType">
