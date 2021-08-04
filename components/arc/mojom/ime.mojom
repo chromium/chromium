@@ -110,9 +110,6 @@ interface ImeHost {
   // However, hiding can be canceled if a text field gets focus.
   [MinVersion=9] RequestHideImeDeprecated@5();
 
-  // Asks Chrome whether the proxy IME should send a key event to the host IME.
-  [MinVersion=13] ShouldEnableKeyEventForwarding@6() => (bool should_forward);
-
   // Sends a key event to Chrome to pass it to the Chrome OS IME.
   [MinVersion=14] SendKeyEvent@7(KeyEventData key_event_data)
       => (bool is_consumed);

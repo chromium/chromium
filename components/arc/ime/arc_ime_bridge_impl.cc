@@ -165,12 +165,6 @@ void ArcImeBridgeImpl::RequestHideImeDeprecated() {
   DVLOG(1) << "RequestHideIme is deprecated.";
 }
 
-void ArcImeBridgeImpl::ShouldEnableKeyEventForwarding(
-    ShouldEnableKeyEventForwardingCallback callback) {
-  // TODO(b/190487153): Clean up this once the caller is removed.
-  std::move(callback).Run(true);
-}
-
 void ArcImeBridgeImpl::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                                     SendKeyEventCallback callback) {
   delegate_->SendKeyEvent(std::move(key_event), std::move(callback));
