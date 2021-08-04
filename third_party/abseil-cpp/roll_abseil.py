@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-# NOTE: This script requires python 3.
+#!/usr/bin/env python3
 
 """Script to do the first step of Abseil roll into chromium.
 """
