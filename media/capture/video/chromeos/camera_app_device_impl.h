@@ -17,6 +17,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/components/camera_app_ui/document_scanner_service_client.h"
+#include "media/base/video_transformation.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
@@ -123,7 +124,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   bool ShouldDetectDocumentCorners();
 
   // Detect document corners on the frame given by its gpu memory buffer.
-  void DetectDocumentCorners(std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb);
+  void DetectDocumentCorners(std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
+                             VideoRotation rotation);
 
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
@@ -163,7 +165,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
  private:
   static void DisableEeNr(ReprocessTask* task);
 
-  void OnDetectedDocumentCorners(bool success,
+  void OnDetectedDocumentCorners(VideoRotation rotation,
+                                 bool success,
                                  const std::vector<gfx::PointF>& corners);
 
   void OnMojoConnectionError();

@@ -970,17 +970,6 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
             stream_type, buffer_ipc_id, &format);
     CHECK(buffer);
 
-    auto camera_app_device =
-        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
-            device_id_);
-    if (camera_app_device && stream_type == StreamType::kPreviewOutput &&
-        camera_app_device->ShouldDetectDocumentCorners()) {
-      camera_app_device->DetectDocumentCorners(
-          stream_buffer_manager_->CreateGpuMemoryBuffer(
-              buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
-              gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE));
-    }
-
     // TODO: Figure out the right color space for the camera frame.  We may need
     // to populate the camera metadata with the color space reported by the V4L2
     // device.
@@ -1008,6 +997,19 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
       // All frames are pre-rotated to the display orientation.
       metadata.transformation = VIDEO_ROTATION_0;
     }
+
+    auto camera_app_device =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_id_);
+    if (camera_app_device && stream_type == StreamType::kPreviewOutput &&
+        camera_app_device->ShouldDetectDocumentCorners()) {
+      camera_app_device->DetectDocumentCorners(
+          stream_buffer_manager_->CreateGpuMemoryBuffer(
+              buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
+              gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE),
+          metadata.transformation->rotation);
+    }
+
     device_context_->SubmitCapturedVideoCaptureBuffer(
         client_type, std::move(*buffer), format, pending_result.reference_time,
         pending_result.timestamp, metadata);

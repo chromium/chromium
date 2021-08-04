@@ -4,6 +4,8 @@
 
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 
+#include <cmath>
+
 #include "base/bind_post_task.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/bind_to_current_loop.h"
@@ -201,7 +203,8 @@ bool CameraAppDeviceImpl::ShouldDetectDocumentCorners() {
 }
 
 void CameraAppDeviceImpl::DetectDocumentCorners(
-    std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb) {
+    std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
+    VideoRotation rotation) {
   DCHECK(gmb);
   if (!gmb->Map()) {
     LOG(ERROR) << "Failed to map frame buffer";
@@ -238,7 +241,7 @@ void CameraAppDeviceImpl::DetectDocumentCorners(
         base::BindPostTask(
             mojo_task_runner_,
             base::BindOnce(&CameraAppDeviceImpl::OnDetectedDocumentCorners,
-                           weak_ptr_factory_for_mojo_.GetWeakPtr())));
+                           weak_ptr_factory_for_mojo_.GetWeakPtr(), rotation)));
   }
 }
 
@@ -455,6 +458,7 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
 }
 
 void CameraAppDeviceImpl::OnDetectedDocumentCorners(
+    VideoRotation rotation,
     bool success,
     const std::vector<gfx::PointF>& corners) {
   base::AutoLock lock(document_corners_observer_lock_);
@@ -464,8 +468,33 @@ void CameraAppDeviceImpl::OnDetectedDocumentCorners(
     return;
   }
 
+  // Rotate a point in coordination space {x: [0.0, 1.0], y: [0.0, 1.0]} with
+  // anchor point {x: 0.5, y: 0.5}.
+  auto rotate_corner = [&](const gfx::PointF& corner) -> gfx::PointF {
+    float x = base::clamp(corner.x(), 0.0f, 1.0f);
+    float y = base::clamp(corner.y(), 0.0f, 1.0f);
+
+    switch (rotation) {
+      case VIDEO_ROTATION_0:
+        return {x, y};
+      case VIDEO_ROTATION_90:
+        return {y, 1.0f - x};
+      case VIDEO_ROTATION_180:
+        return {1.0f - x, 1.0f - y};
+      case VIDEO_ROTATION_270:
+        return {1.0f - y, x};
+      default:
+        NOTREACHED();
+    }
+  };
+
+  std::vector<gfx::PointF> rotated_corners;
+  for (auto& corner : corners) {
+    rotated_corners.push_back(rotate_corner(corner));
+  }
+
   for (auto& observer : document_corners_observers_) {
-    observer.second->OnDocumentCornersUpdated(corners);
+    observer.second->OnDocumentCornersUpdated(rotated_corners);
   }
 }
 
