@@ -29,6 +29,7 @@
     <color name="baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2" tools:ignore="UnusedResources">#DADBDE</color>
     <color name="baseline_neutral_50">#F2F2F2</color>
     <color name="baseline_neutral_100">#E3E3E3</color>
+    <color name="baseline_neutral_100_alpha_10">#19E3E3E3</color>
     <color name="baseline_neutral_100_alpha_12">#1EE3E3E3</color>
     <color name="baseline_neutral_100_alpha_38">#61E3E3E3</color>
     <color name="baseline_neutral_200">#C7C7C7</color>
@@ -41,6 +42,7 @@
     <color name="baseline_neutral_800">#303030</color>
     <color name="baseline_neutral_800_alpha_38">#61303030</color>
     <color name="baseline_neutral_900">#1F1F1F</color>
+    <color name="baseline_neutral_900_alpha_10">#191F1F1F</color>
     <color name="baseline_neutral_900_alpha_12">#1E1F1F1F</color>
     <color name="baseline_neutral_900_alpha_38">#611F1F1F</color>
     <color name="baseline_neutral_900_with_neutral_100_alpha_38">#696969</color>

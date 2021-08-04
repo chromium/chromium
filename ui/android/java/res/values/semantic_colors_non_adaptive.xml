@@ -121,9 +121,10 @@
     <!-- Same as ?attr/colorOnSurfaceVariant. -->
     <color name="default_control_color_normal_light" tools:ignore="UnusedResources">@color/baseline_neutral_variant_700</color>
     <color name="default_control_color_normal_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_200</color>
-    <!-- TODO(https://crbug/1216642): Figure out how to route this correctly. -->
-    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_900</color>
-    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_100</color>
+    <!-- TODO(https://crbug/1216642): Rework to route through
+         ?attr/colorOnSurface with alpha. -->
+    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_900_alpha_10</color>
+    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_100_alpha_10</color>
 
     <!--  Filled Button  -->
     <color name="filled_button_bg_color_dark">@color/modern_blue_600</color>
