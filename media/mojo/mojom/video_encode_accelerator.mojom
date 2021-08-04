@@ -178,14 +178,28 @@ interface VideoEncodeAccelerator {
   Flush() => (bool result);
 };
 
+// H264Metadata, Vp8Metadata, Vp9Metadata define mojo transport formats for
+// media::H264Metadata, media::Vp8Metadata and media::Vp9Metadata, respectively.
+// See the structures defined video_encode_accelerator.h for the descriptions of
+// the variables.
+// Either of them is filled in GPU process only in the case of temporal/spatial
+// SVC encoding. That is, none of them is filled in the case of non
+// temporal/spatial SVC encoding. Thus CodecMetadata is union and CodecMetadata
+// exists as optional in BitstreamBufferMetadata.
+// BitstreamBufferMetadata is metadata about a bitstream buffer produced by a
+// hardware encoder. The structure is passed from GPU process to renderer
+// process in BitstreamBufferReady() call.
+struct H264Metadata {
+  uint8 temporal_idx;
+  bool layer_sync;
+};
+
 struct Vp8Metadata {
   bool non_reference;
   uint8 temporal_idx;
   bool layer_sync;
 };
 
-// This defines a mojo transport format for media::Vp9Metadata.
-// See media::Vp9Metadata for the descriptions of the variables.
 struct Vp9Metadata {
   bool has_reference;
   bool temporal_up_switch;
@@ -200,6 +214,7 @@ struct Vp9Metadata {
 
 // Codec specific metadata.
 union CodecMetadata {
+  H264Metadata h264;
   Vp8Metadata vp8;
   Vp9Metadata vp9;
 };

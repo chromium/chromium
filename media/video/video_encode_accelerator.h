@@ -30,6 +30,20 @@ namespace media {
 class BitstreamBuffer;
 class VideoFrame;
 
+//  Metadata for a H264 bitstream buffer.
+//  |temporal_idx|  indicates the temporal index for this frame.
+//  |layer_sync|    is true iff this frame has |temporal_idx| > 0 and does NOT
+//                  reference any reference buffer containing a frame with
+//                  temporal_idx > 0.
+struct MEDIA_EXPORT H264Metadata final {
+  H264Metadata();
+  ~H264Metadata();
+  H264Metadata(const H264Metadata&);
+
+  uint8_t temporal_idx = 0;
+  bool layer_sync = false;
+};
+
 //  Metadata for a VP8 bitstream buffer.
 //  |non_reference| is true iff this frame does not update any reference buffer,
 //                  meaning dropping this frame still results in a decodable
@@ -97,8 +111,9 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool key_frame;
   base::TimeDelta timestamp;
 
-  // Either |vp8| or |vp9| may be set, but not both of them. Presumably, it's
-  // also possible for none of them to be set.
+  // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
+  // it's also possible for none of them to be set.
+  absl::optional<H264Metadata> h264;
   absl::optional<Vp8Metadata> vp8;
   absl::optional<Vp9Metadata> vp9;
 };

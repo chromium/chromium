@@ -74,7 +74,9 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
                    media::BitstreamBufferMetadata> {
   static media::mojom::CodecMetadataDataView::Tag GetTag(
       const media::BitstreamBufferMetadata& metadata) {
-    if (metadata.vp8) {
+    if (metadata.h264) {
+      return media::mojom::CodecMetadataDataView::Tag::H264;
+    } else if (metadata.vp8) {
       return media::mojom::CodecMetadataDataView::Tag::VP8;
     } else if (metadata.vp9) {
       return media::mojom::CodecMetadataDataView::Tag::VP9;
@@ -84,12 +86,18 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {
-    return !metadata.vp8 && !metadata.vp9;
+    return !metadata.h264 && !metadata.vp8 && !metadata.vp9;
   }
 
   static void SetToNull(media::BitstreamBufferMetadata* metadata) {
+    metadata->h264.reset();
     metadata->vp8.reset();
     metadata->vp9.reset();
+  }
+
+  static const media::H264Metadata& h264(
+      const media::BitstreamBufferMetadata& metadata) {
+    return *metadata.h264;
   }
 
   static const media::Vp8Metadata& vp8(
@@ -126,6 +134,21 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
 
   static bool Read(media::mojom::BitstreamBufferMetadataDataView data,
                    media::BitstreamBufferMetadata* out_metadata);
+};
+
+template <>
+class StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata> {
+ public:
+  static uint8_t temporal_idx(const media::H264Metadata& vp8) {
+    return vp8.temporal_idx;
+  }
+
+  static bool layer_sync(const media::H264Metadata& vp8) {
+    return vp8.layer_sync;
+  }
+
+  static bool Read(media::mojom::H264MetadataDataView data,
+                   media::H264Metadata* out_metadata);
 };
 
 template <>

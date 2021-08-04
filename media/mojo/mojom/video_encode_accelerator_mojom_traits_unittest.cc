@@ -111,6 +111,17 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
           input_metadata, output_metadata));
   EXPECT_EQ(input_metadata, output_metadata);
 
+  H264Metadata h264;
+  h264.temporal_idx = 1;
+  h264.layer_sync = true;
+  input_metadata.h264 = h264;
+  output_metadata = ::media::BitstreamBufferMetadata();
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
+          input_metadata, output_metadata));
+  EXPECT_EQ(input_metadata, output_metadata);
+  input_metadata.h264.reset();
+
   Vp8Metadata vp8;
   vp8.non_reference = true;
   vp8.temporal_idx = 1;

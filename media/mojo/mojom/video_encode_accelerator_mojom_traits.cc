@@ -116,6 +116,9 @@ bool UnionTraits<media::mojom::CodecMetadataDataView,
     Read(media::mojom::CodecMetadataDataView data,
          media::BitstreamBufferMetadata* out) {
   switch (data.tag()) {
+    case media::mojom::CodecMetadataDataView::Tag::H264: {
+      return data.ReadH264(&out->h264);
+    }
     case media::mojom::CodecMetadataDataView::Tag::VP8: {
       return data.ReadVp8(&out->vp8);
     }
@@ -139,6 +142,15 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   }
 
   return data.ReadCodecMetadata(metadata);
+}
+
+// static
+bool StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata>::
+    Read(media::mojom::H264MetadataDataView data,
+         media::H264Metadata* out_metadata) {
+  out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->layer_sync = data.layer_sync();
+  return true;
 }
 
 // static
