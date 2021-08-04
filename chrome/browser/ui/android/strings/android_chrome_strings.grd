@@ -2884,8 +2884,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_DISCOVER_NO_CARDS_INSTRUCTIONS" desc="Message body for the article feed on the New Tab Page. Instructs the user to come back later when new feed content is available. Please translate 'stories' to match its use in TC ID 792300740424433300. Also see TC ID 7331961212006720987 for the corresponding message in Discover.">Check back later for new stories</message>
       <message name="IDS_DISCOVER_CANT_REFRESH" desc="Message title for the article feed on the New Tab Page. Shown when feed content is not available because there is no internet connection. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278). Also see TC ID 6114827482740570724 for the corresponding message in Discover.">Can't refresh Discover</message>
       <message name="IDS_DISCOVER_CANT_REFRESH_INSTRUCTIONS" desc="Message body for the article feed on the New Tab Page. Instructs the user to wait and try to refresh the feed once the internet connection returns. Please translate 'stories' to match its use in TC ID 792300740424433300. Also see TC ID 6114827482740570724 for the corresponding message in Discover.">Check back later for new stories</message>
-      <message name="IDS_WEB_FEED_NO_CARDS_TITLE" desc="Message title for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles. Please translate 'stories' to match its use in TC ID 792300740424433300.">You'll find stories here</message>
-      <message name="IDS_WEB_FEED_NO_CARDS_INSTRUCTIONS" desc="Message body for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles. Instructs the user to follow more sites or check back later. Please translate 'Follow' (with capital F) to match its use in TC ID 4108314971463891922.">To follow a site, go to the site, open the Chrome menu, and tap Follow.</message>
+      <message name="IDS_WEB_FEED_NO_CARDS_TITLE" desc="Message title for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles.">
+        Keep up with your favorite sites
+      </message>
+      <message name="IDS_WEB_FEED_NO_CARDS_INSTRUCTIONS" desc="Message body for the user-customizable web feed on the New Tab Page. Shown when the user either has not followed any websites or when the user has followed some websites but the sites do not have any new articles. Instructs the user to follow more sites or check back later. Please translate 'Follow' (with capital F) to match its use in TC ID 4108314971463891922.">
+        To follow a site, go to the site, open the Chrome menu, and tap Follow.
+      </message>
       <message name="IDS_FEED_SWIPE_REFRESH_IPH" desc="In-product help that prompts the user to use pull-down gesture to refresh the feed content.">
         For new stories, pull down to refresh
       </message>
@@ -3732,37 +3736,37 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEB_FEED_FOLLOW_LOADING_DESCRIPTION" desc="The content description of the loading spinner after the user presses Follow and is waiting for a response.">
         Following...
       </message>
-      <message name="IDS_WEB_FEED_FOLLOW_SUCCESS_SNACKBAR_MESSAGE" desc="The snackbar message after a successful Web Feed follow.">
-        Followed <ph name="SITE_NAME">%1$s<ex>Google</ex></ph>
+      <message name="IDS_WEB_FEED_FOLLOW_SUCCESS_SNACKBAR_MESSAGE" desc="The snackbar message after a successful Web Feed follow request.">
+        Following <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph>
       </message>
-      <message name="IDS_WEB_FEED_FOLLOW_SUCCESS_SNACKBAR_ACTION" desc="The snackbar action after a successful Web Feed follow.">
+      <message name="IDS_WEB_FEED_FOLLOW_SUCCESS_SNACKBAR_ACTION" desc="The snackbar action after a successful Web Feed follow request.">
         Go to feed
       </message>
-      <message name="IDS_WEB_FEED_FOLLOW_GENERIC_FAILURE_SNACKBAR_MESSAGE" desc="The generic snackbar message after an unsuccessful Web Feed follow.">
+      <message name="IDS_WEB_FEED_FOLLOW_GENERIC_FAILURE_SNACKBAR_MESSAGE" desc="The generic snackbar message after an unsuccessful Web Feed follow request.">
         Can’t follow. Something went wrong.
       </message>
-      <message name="IDS_WEB_FEED_UNFOLLOW_GENERIC_FAILURE_SNACKBAR_MESSAGE" desc="The generic snackbar message after an unsuccessful Web Feed unfollow.">
+      <message name="IDS_WEB_FEED_UNFOLLOW_GENERIC_FAILURE_SNACKBAR_MESSAGE" desc="The generic snackbar message after an unsuccessful Web Feed unfollow request.">
         Can’t unfollow. Something went wrong.
       </message>
-      <message name="IDS_WEB_FEED_GENERIC_FAILURE_SNACKBAR_ACTION" desc="The snackbar action after an unsuccessful Web Feed follow/unfollow.">
+      <message name="IDS_WEB_FEED_GENERIC_FAILURE_SNACKBAR_ACTION" desc="The snackbar action after an unsuccessful Web Feed follow or unfollow request.">
         Try again
       </message>
-      <message name="IDS_WEB_FEED_UNFOLLOW_SUCCESS_SNACKBAR_MESSAGE" desc="The snackbar message after a successful Web Feed unfollow.">
-        Unfollowed <ph name="SITE_NAME">%1$s<ex>Google</ex></ph>
+      <message name="IDS_WEB_FEED_UNFOLLOW_SUCCESS_SNACKBAR_MESSAGE" desc="The snackbar message after a successful Web Feed unfollow request.">
+        Unfollowed <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph>
       </message>
-      <message name="IDS_WEB_FEED_UNFOLLOW_SUCCESS_SNACKBAR_ACTION" desc="The snackbar action after a successful Web Feed unfollow.">
+      <message name="IDS_WEB_FEED_UNFOLLOW_SUCCESS_SNACKBAR_ACTION" desc="The snackbar action after a successful Web Feed unfollow request.">
         Refollow
       </message>
-      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_TITLE" desc="The snackbar action after a successful Web Feed unfollow.">
-        You’re following <ph name="SITE_NAME">%1$s<ex>Google</ex></ph>
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_TITLE" desc="The title of the dialog presented a few times after a successful Web Feed follow request.">
+        You’re following <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph>
       </message>
-      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_READY_DESCRIPTION" desc="The snackbar action after a successful Web Feed unfollow.">
-        You’ll now see stories from <ph name="SITE_NAME">%1$s<ex>Google</ex></ph> when you open a new tab. You can control the sites you’re following in Manage Follows.
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_READY_DESCRIPTION" desc="The body text of the dialog presented a few times after a successful Web Feed follow request, when content from that Web Feed is immediately available. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        You'll now see stories from <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> when you open a new tab. Sites you follow are saved in your Google account. You can manage them in Discover settings.
       </message>
-      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_NOT_READY_DESCRIPTION" desc="The snackbar action after a successful Web Feed unfollow.">
-        Soon, you’ll see stories from <ph name="SITE_NAME">%1$s<ex>Google</ex></ph> when you open a new tab. You can control the sites you’re following in Manage Follows.
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_STORIES_NOT_READY_DESCRIPTION" desc="The body text of the dialog presented a few times after a successful Web Feed follow request, when content from that Web Feed is not readily available. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
+        Soon, you’ll see stories from <ph name="SITE_NAME">%1$s<ex>Reuters</ex></ph> when you open a new tab. Sites you follow are saved in your Google account. You can manage them in Discover settings.
       </message>
-      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_OPEN_A_NEW_TAB" desc="The snackbar action after a successful Web Feed unfollow.">
+      <message name="IDS_WEB_FEED_POST_FOLLOW_DIALOG_OPEN_A_NEW_TAB" desc="The main action of the dialog presented a few times after a successful Web Feed follow request, when content from from that Web Feed is immediately available.">
         Open a new tab
       </message>
 
