@@ -8,6 +8,7 @@ import mock
 import unittest
 
 import test_apps
+import test_runner_errors
 import test_runner_test
 
 
@@ -135,6 +136,50 @@ class SimulatorXCTestUnitTestsAppTest(test_runner_test.TestCase):
     }
     xctestrun_node = test_app.fill_xctestrun_node()
     self.assertEqual(xctestrun_node, expected_xctestrun_node)
+
+
+class GTestsAppTest(test_runner_test.TestCase):
+  """Tests to test methods of GTestsApp."""
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_repeat_count(self, _1, _2):
+    """Tests correct arguments present when repeat_count."""
+    gtests_app = test_apps.GTestsApp('app_path', repeat_count=2)
+    xctestrun_data = gtests_app.fill_xctestrun_node()
+    cmd_args = xctestrun_data[gtests_app.module_name +
+                              '_module']['CommandLineArguments']
+    self.assertTrue('--gtest_repeat=2' in cmd_args)
+
+
+class EgtestsAppTest(test_runner_test.TestCase):
+  """Tests to test methods of EgTestsApp."""
+
+  @mock.patch('xcode_util.using_xcode_13_or_higher', return_value=True)
+  @mock.patch('test_apps.EgtestsApp.fill_xctest_run', return_value='xctestrun')
+  @mock.patch('os.path.exists', return_value=True)
+  def test_command_with_repeat_count(self, _1, _2, _3):
+    """Tests command method can produce repeat_count arguments when available.
+    """
+    egtests_app = test_apps.EgtestsApp(
+        'app_path', host_app_path='host_app_path', repeat_count=2)
+    cmd = egtests_app.command('outdir', 'id=UUID', 1)
+    expected_cmd = [
+        'xcodebuild', 'test-without-building', '-xctestrun', 'xctestrun',
+        '-destination', 'id=UUID', '-resultBundlePath', 'outdir',
+        '-test-iterations', '2'
+    ]
+    self.assertEqual(cmd, expected_cmd)
+
+  @mock.patch('xcode_util.using_xcode_13_or_higher', return_value=False)
+  @mock.patch('test_apps.EgtestsApp.fill_xctest_run', return_value='xctestrun')
+  @mock.patch('os.path.exists', return_value=True)
+  def test_command_with_repeat_count_incorrect_xcode(self, _1, _2, _3):
+    """Tests |command| raises error with repeat_count in lower Xcode version."""
+    egtests_app = test_apps.EgtestsApp(
+        'app_path', host_app_path='host_app_path', repeat_count=2)
+    with self.assertRaises(test_runner_errors.XcodeUnsupportedFeatureError):
+      cmd = egtests_app.command('outdir', 'id=UUID', 1)
 
 
 if __name__ == '__main__':

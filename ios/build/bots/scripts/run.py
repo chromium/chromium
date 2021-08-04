@@ -97,6 +97,35 @@ class Runner():
     else:
       return (True, is_legacy_xcode)
 
+  def resolve_test_cases(self):
+    """Forms |self.args.test_cases| considering swarming shard and cmd inputs.
+
+    Note:
+    - Xcode intallation is required before invoking this method since it
+      requires otool to parse test names from compiled targets.
+    - It's validated in |parse_args| that test filters won't work in sharding
+      environment.
+    """
+    args_json = json.loads(self.args.args_json)
+
+    # GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS are additional test environment
+    # variables, set by Swarming, that are only set for a swarming task
+    # shard count is > 1.
+    #
+    # For a given test on a given run, otool should return the same total
+    # counts and thus, should generate the same sublists. With the shard
+    # index, each shard would then know the exact test case to run.
+    gtest_shard_index = os.getenv('GTEST_SHARD_INDEX', '')
+    gtest_total_shards = os.getenv('GTEST_TOTAL_SHARDS', '')
+    if gtest_shard_index and gtest_total_shards:
+      self.args.test_cases = shard_util.shard_test_cases(
+          self.args, gtest_shard_index, gtest_total_shards)
+    else:
+      self.args.test_cases = self.args.test_cases or []
+      if self.args.gtest_filter:
+        self.args.test_cases.extend(self.args.gtest_filter.split(':'))
+      self.args.test_cases.extend(args_json.get('test_cases', []))
+
   def run(self, args):
     """
     Main coordinating function.
@@ -109,18 +138,7 @@ class Runner():
     if not install_success:
       raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
 
-    # GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS are additional test environment
-    # variables, set by Swarming, that are only set for a swarming task
-    # shard count is > 1.
-    #
-    # For a given test on a given run, otool should return the same total
-    # counts and thus, should generate the same sublists. With the shard index,
-    # each shard would then know the exact test case to run.
-    gtest_shard_index = os.getenv('GTEST_SHARD_INDEX', 0)
-    gtest_total_shards = os.getenv('GTEST_TOTAL_SHARDS', 0)
-    if gtest_shard_index and gtest_total_shards:
-      self.args.test_cases = shard_util.shard_test_cases(
-          self.args, gtest_shard_index, gtest_total_shards)
+    self.resolve_test_cases()
 
     summary = {}
     tr = None
@@ -138,6 +156,7 @@ class Runner():
             self.args.platform,
             out_dir=self.args.out_dir,
             release=self.args.release,
+            repeat_count=self.args.gtest_repeat,
             retries=self.args.retries,
             shards=self.args.shards,
             test_cases=self.args.test_cases,
@@ -169,6 +188,7 @@ class Runner():
             self.args.version,
             self.args.out_dir,
             env_vars=self.args.env_var,
+            repeat_count=self.args.gtest_repeat,
             retries=self.args.retries,
             shards=self.args.shards,
             test_args=self.test_args,
@@ -183,6 +203,7 @@ class Runner():
             host_app_path=self.args.host_app,
             out_dir=self.args.out_dir,
             release=self.args.release,
+            repeat_count=self.args.gtest_repeat,
             retries=self.args.retries,
             test_cases=self.args.test_cases,
             test_args=self.test_args,
@@ -192,6 +213,7 @@ class Runner():
             self.args.app,
             self.args.out_dir,
             env_vars=self.args.env_var,
+            repeat_count=self.args.gtest_repeat,
             restart=self.args.restart,
             retries=self.args.retries,
             test_args=self.test_args,
@@ -255,8 +277,10 @@ class Runner():
                                   'FramebufferServerRendererPolicy')
 
   def parse_args(self, args):
-    """
-    Parse the args into args and test_args.
+    """Parse the args into args and test_args.
+
+    Note: test_cases related arguments are handled in |resolve_test_cases|
+    instead of this function.
     """
     parser = argparse.ArgumentParser()
 
@@ -285,6 +309,21 @@ class Runner():
         action='append',
         help='Environment variable to pass to the test itself.',
         metavar='ENV=val',
+    )
+    parser.add_argument(
+        '--gtest_filter',
+        help='List of test names to run. (In GTest filter format but not '
+        'necessarily for GTests). Note: Specifying test cases is not supported '
+        'in multiple swarming shards environment. Will be merged with tests'
+        'specified in --test-cases and --args-json.',
+        metavar='gtest_filter',
+    )
+    parser.add_argument(
+        '--gtest_repeat',
+        help='Number of times to repeat each test case. (Not necessarily for '
+        'GTests)',
+        metavar='n',
+        type=int,
     )
     parser.add_argument(
         '--host-app',
@@ -375,7 +414,10 @@ class Runner():
         '--test-cases',
         action='append',
         help=('Tests that should be included in the test run. All other tests '
-              'will be excluded from this run. If unspecified, run all tests.'),
+              'will be excluded from this run. If unspecified, run all tests. '
+              'Note: Specifying test cases is not supported in multiple '
+              'swarming shards environment. Will be merged with tests '
+              'specified in --gtest_filter and --args-json.'),
         metavar='testcase',
     )
     parser.add_argument(
@@ -429,15 +471,15 @@ class Runner():
         'collect_task.py and merge scripts.')
 
     def load_from_json(args):
-      """
-      Load and set arguments from args_json
+      """Loads and sets arguments from args_json.
+
+      Note: |test_cases| in --args-json is handled in
+      |Runner.resolve_test_cases()| instead of this function.
       """
       args_json = json.loads(args.args_json)
       args.env_var = args.env_var or []
       args.env_var.extend(args_json.get('env_var', []))
       args.restart = args_json.get('restart', args.restart)
-      args.test_cases = args.test_cases or []
-      args.test_cases.extend(args_json.get('test_cases', []))
       args.xctest = args_json.get('xctest', args.xctest)
       args.xcode_parallelization = args_json.get('xcode_parallelization',
                                                  args.xcode_parallelization)
@@ -462,6 +504,13 @@ class Runner():
       if args.xcode_parallelization and not (args.platform and args.version):
         parser.error('--xcode-parallelization also requires '
                      'both -p/--platform and -v/--version')
+
+      args_json = json.loads(args.args_json)
+      if (args.gtest_filter or args.test_cases or args_json.get('test_cases')
+         ) and int(os.getenv('GTEST_TOTAL_SHARDS', '1')) > 1:
+        parser.error(
+            'Specifying test cases is not supported in multiple swarming '
+            'shards environment.')
 
     args, test_args = parser.parse_known_args(args)
     load_from_json(args)

@@ -25,6 +25,8 @@ class UnitTest(unittest.TestCase):
         'some/dir',
         '--xcode-path',
         'some/Xcode.app',
+        '--gtest_repeat',
+        '2',
 
         # Required
         '--xcode-build-version',
@@ -38,6 +40,7 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(runner.args.app == './foo-Runner.app')
     self.assertTrue(runner.args.runtime_cache_prefix == 'some/dir')
     self.assertTrue(runner.args.xcode_path == 'some/Xcode.app')
+    self.assertTrue(runner.args.gtest_repeat == 2)
 
   def test_parse_args_iossim_platform_version(self):
     """
@@ -182,6 +185,85 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(runner.args.restart)
     self.assertEquals(runner.args.shards, 2)
 
+  def test_merge_test_cases(self):
+    """Tests test cases are merges in --test-cases and --args-json."""
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--gtest_filter',
+        'TestClass3.TestCase4:TestClass4.TestCase5',
+        '--test-cases',
+        'TestClass1.TestCase2',
+        '--args-json',
+        '{"test_cases": ["TestClass2.TestCase3"]}',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    runner.resolve_test_cases()
+    expected_test_cases = [
+        'TestClass1.TestCase2', 'TestClass3.TestCase4', 'TestClass4.TestCase5',
+        'TestClass2.TestCase3'
+    ]
+    self.assertEqual(runner.args.test_cases, expected_test_cases)
+
+  def test_gtest_filter_arg(self):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--gtest_filter',
+        'TestClass1.TestCase2:TestClass2.TestCase3',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    runner.resolve_test_cases()
+    expected_test_cases = ['TestClass1.TestCase2', 'TestClass2.TestCase3']
+    self.assertEqual(runner.args.test_cases, expected_test_cases)
+
+  @mock.patch('os.getenv', return_value='2')
+  def test_parser_error_sharding_environment(self, _):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--test-cases',
+        'SomeClass.SomeTestCase',
+        '--gtest_filter',
+        'TestClass1.TestCase2:TestClass2.TestCase3',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    with self.assertRaises(SystemExit) as ctx:
+      runner.parse_args(cmd)
+      self.assertTrue(
+          re.match(
+              'Specifying test cases is not supported in multiple swarming '
+              'shards environment.', ctx.message))
+      self.assertEqual(ctx.exception.code, 2)
+
 
 class RunnerInstallXcodeTest(test_runner_test.TestCase):
   """Tests Xcode and runtime installing logic in Runner.run()"""
@@ -191,6 +273,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     self.runner = run.Runner()
 
     self.mock(self.runner, 'parse_args', lambda _: None)
+    self.mock(self.runner, 'resolve_test_cases', lambda: None)
     self.runner.args = mock.MagicMock()
     # Make run() choose xcodebuild_runner.SimulatorParallelTestRunner as tr.
     self.runner.args.xcode_parallelization = True

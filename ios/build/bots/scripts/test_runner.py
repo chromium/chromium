@@ -307,7 +307,8 @@ class TestRunner(object):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
-      retries: Number of times to retry failed test cases.
+      repeat_count: Number of times to run each test case (passed to test app).
+      retries: Number of times to retry failed test cases in test runner.
       test_args: List of strings to pass as arguments to the test when
         launching.
       test_cases: List of tests to be included in the test run. None or [] to
@@ -339,6 +340,7 @@ class TestRunner(object):
     self.env_vars = kwargs.get('env_vars') or []
     self.logs = collections.OrderedDict()
     self.out_dir = out_dir
+    self.repeat_count = kwargs.get('repeat_count') or 1
     self.retries = kwargs.get('retries') or 0
     self.shards = kwargs.get('shards') or 1
     self.test_args = kwargs.get('test_args') or []
@@ -707,6 +709,7 @@ class SimulatorTestRunner(TestRunner):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
+      repeat_count: Number of times to run each test case (passed to test app).
       retries: Number of times to retry failed test cases.
       test_args: List of strings to pass as arguments to the test when
         launching.
@@ -921,12 +924,14 @@ class SimulatorTestRunner(TestRunner):
           self.app_path,
           included_tests=self.test_cases,
           env_vars=self.env_vars,
+          repeat_count=self.repeat_count,
           test_args=self.test_args)
 
     return test_apps.SimulatorXCTestUnitTestsApp(
         self.app_path,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
+        repeat_count=self.repeat_count,
         test_args=self.test_args)
 
 
@@ -941,6 +946,7 @@ class DeviceTestRunner(TestRunner):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
+      repeat_count: Number of times to run each test case (passed to test app).
       restart: Whether or not restart device when test app crashes on startup.
       retries: Number of times to retry failed test cases.
       test_args: List of strings to pass as arguments to the test when
@@ -1113,10 +1119,12 @@ class DeviceTestRunner(TestRunner):
           self.app_path,
           included_tests=self.test_cases,
           env_vars=self.env_vars,
+          repeat_count=self.repeat_count,
           test_args=self.test_args)
 
     return test_apps.DeviceXCTestUnitTestsApp(
         self.app_path,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
+        repeat_count=self.repeat_count,
         test_args=self.test_args)

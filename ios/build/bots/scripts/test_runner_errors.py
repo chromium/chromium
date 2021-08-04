@@ -19,6 +19,11 @@ class XcodeInstallError(Error):
   pass
 
 
+class XcodeUnsupportedFeatureError(Error):
+  """Base class for unsupported features related with Xcode."""
+  pass
+
+
 class XcodeMacToolchainMismatchError(XcodeInstallError):
   """The mac_toolchain version can't work with the Xcode package."""
 

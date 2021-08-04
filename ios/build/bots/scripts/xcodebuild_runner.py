@@ -302,6 +302,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       out_dir: (str) A directory to emit test data into.
       (Following are potential args in **kwargs)
       release: (bool) Whether this test runner is running for a release build.
+      repeat_count: (int) Number of times to run each test (passed to test app).
       retries: (int) A number to retry test run, will re-run only failed tests.
       shards: (int) A number of shards. Default is 1.
       test_cases: (list) List of tests to be included in the test run.
@@ -512,6 +513,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
       host_app_path: (str) A path to the host app for EG2.
       out_dir: (str) A directory to emit test data into.
       (Following are potential args in **kwargs)
+      repeat_count: (int) Number of times to run each test (passed to test app).
       retries: (int) A number to retry test run, will re-run only failed tests.
       test_cases: (list) List of tests to be included in the test run.
                   None or [] to include all tests.

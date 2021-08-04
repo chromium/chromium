@@ -10,6 +10,8 @@ import time
 
 import shard_util
 import test_runner
+import test_runner_errors
+import xcode_util
 
 
 OUTPUT_DISABLED_TESTS_TEST_ARG = '--write-compiled-tests-json-to-writable-path'
@@ -72,6 +74,7 @@ class GTestsApp(object):
         launching.
       env_vars: List of environment variables to pass to the test itself.
       release: (bool) Whether the app is release build.
+      repeat_count: (int) Number of times to run each test case.
       inserted_libs: List of libraries to insert when running the test.
 
     Raises:
@@ -95,6 +98,7 @@ class GTestsApp(object):
     self.disabled_tests = []
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
     self.release = kwargs.get('release')
+    self.repeat_count = kwargs.get('repeat_count') or 1
     self.host_app_path = kwargs.get('host_app_path')
     self.inserted_libs = kwargs.get('inserted_libs') or []
 
@@ -171,6 +175,9 @@ class GTestsApp(object):
       self.test_args = [el for el in self.test_args
                         if not el.startswith('--gtest_filter=')]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
+
+    if self.repeat_count > 1:
+      self.test_args.append('--gtest_repeat=%s' % self.repeat_count)
 
     if self.env_vars:
       xctestrun_data[module].update({'EnvironmentVariables': self.env_vars})
@@ -277,6 +284,7 @@ class EgtestsApp(GTestsApp):
       env_vars: List of environment variables to pass to the test itself.
       host_app_path: (str) full path to host app.
       inserted_libs: List of libraries to insert when running the test.
+      repeat_count: (int) Number of times to run each test case.
 
     Raises:
       AppNotFoundError: If the given app does not exist
@@ -308,6 +316,21 @@ class EgtestsApp(GTestsApp):
     if not plugin_xctest:
       raise test_runner.XCTestPlugInNotFoundError(plugin_xctest)
     return plugin_xctest.replace(self.test_app_path, '')
+
+  def command(self, out_dir, destination, shards):
+    """Returns the command that launches tests for EG Tests.
+
+    See details in parent class method docstring. This method appends the
+    command line switch if test repeat is required.
+    """
+    cmd = super(EgtestsApp, self).command(out_dir, destination, shards)
+    if self.repeat_count > 1:
+      if xcode_util.using_xcode_13_or_higher():
+        cmd += ['-test-iterations', str(self.repeat_count)]
+      else:
+        raise test_runner_errors.XcodeUnsupportedFeatureError(
+            'Test repeat is only supported in Xcode 13 or higher!')
+    return cmd
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for egtests in xctestrun file.
@@ -368,6 +391,7 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
       test_args: List of strings to pass as arguments to the test when
         launching. Test arg to run as XCTest based unit test will be appended.
       env_vars: List of environment variables to pass to the test itself.
+      repeat_count: (int) Number of times to run each test case.
 
     Raises:
       AppNotFoundError: If the given app does not exist
@@ -479,6 +503,7 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
       test_args: List of strings to pass as arguments to the test when
         launching. Test arg to run as XCTest based unit test will be appended.
       env_vars: List of environment variables to pass to the test itself.
+      repeat_count: (int) Number of times to run each test case.
 
     Raises:
       AppNotFoundError: If the given app does not exist
