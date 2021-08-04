@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_monitor/resource_coalition_mac.h"
@@ -31,59 +32,84 @@ TEST(ProcessMetricsRecorderUtilTest, RecordCoalitionData) {
   }
 
   metrics.coalition_data = coalition_data;
-  RecordCoalitionData(metrics);
 
-  // These histograms reports the CPU/GPU times as a percentage of time with a
-  // permyriad granularity, 10% (0.1) will be represented as 1000.
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.CPUTime2",
-      coalition_data.cpu_time_per_second * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.GPUTime2",
-      coalition_data.gpu_time_per_second * 10000, 1);
+  std::vector<const char*> suffixes = {"", ".Foo", ".Bar"};
+  RecordCoalitionData(metrics, suffixes);
 
-  // These histograms report counts with a millievent/second granularity.
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond",
-      coalition_data.interrupt_wakeups_per_second * 1000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond",
-      coalition_data.platform_idle_wakeups_per_second * 1000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.BytesReadPerSecond",
-      coalition_data.bytesread_per_second * 1000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond",
-      coalition_data.byteswritten_per_second * 1000, 1);
-  // Power is reported in milliwatts (mj/s), the data is in nj/s so it has to
-  // be divided by 1000000.
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.Power",
-      coalition_data.power_nw / 1000000, 1);
+  for (const char* scenario_suffix : suffixes) {
+    // These histograms reports the CPU/GPU times as a percentage of time with a
+    // permyriad granularity, 10% (0.1) will be represented as 1000.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.CPUTime2", scenario_suffix}),
+        coalition_data.cpu_time_per_second * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.GPUTime2", scenario_suffix}),
+        coalition_data.gpu_time_per_second * 10000, 1);
 
-  // The QoS histograms also reports the CPU times as a percentage of time with
-  // a permyriad granularity.
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.Default",
-      coalition_data.qos_time_per_second[0] * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.Maintenance",
-      coalition_data.qos_time_per_second[1] * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.Background",
-      coalition_data.qos_time_per_second[2] * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.Utility",
-      coalition_data.qos_time_per_second[3] * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.Legacy",
-      coalition_data.qos_time_per_second[4] * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated",
-      coalition_data.qos_time_per_second[5] * 10000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
-      coalition_data.qos_time_per_second[6] * 10000, 1);
+    // These histograms report counts with a millievent/second granularity.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond",
+             scenario_suffix}),
+        coalition_data.interrupt_wakeups_per_second * 1000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"PerformanceMonitor.ResourceCoalition."
+                      "PlatformIdleWakeupsPerSecond",
+                      scenario_suffix}),
+        coalition_data.platform_idle_wakeups_per_second * 1000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond",
+                      scenario_suffix}),
+        coalition_data.bytesread_per_second * 1000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond",
+             scenario_suffix}),
+        coalition_data.byteswritten_per_second * 1000, 1);
+    // Power is reported in milliwatts (mj/s), the data is in nj/s so it has to
+    // be divided by 1000000.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.Power", scenario_suffix}),
+        coalition_data.power_nw / 1000000, 1);
+
+    // The QoS histograms also reports the CPU times as a percentage of time
+    // with a permyriad granularity.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"PerformanceMonitor.ResourceCoalition.QoSLevel.Default",
+                      scenario_suffix}),
+        coalition_data.qos_time_per_second[0] * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.QoSLevel.Maintenance",
+             scenario_suffix}),
+        coalition_data.qos_time_per_second[1] * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.QoSLevel.Background",
+             scenario_suffix}),
+        coalition_data.qos_time_per_second[2] * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"PerformanceMonitor.ResourceCoalition.QoSLevel.Utility",
+                      scenario_suffix}),
+        coalition_data.qos_time_per_second[3] * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"PerformanceMonitor.ResourceCoalition.QoSLevel.Legacy",
+                      scenario_suffix}),
+        coalition_data.qos_time_per_second[4] * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInitiated",
+             scenario_suffix}),
+        coalition_data.qos_time_per_second[5] * 10000, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.QoSLevel.UserInteractive",
+             scenario_suffix}),
+        coalition_data.qos_time_per_second[6] * 10000, 1);
+  }
 }
 #endif
 
