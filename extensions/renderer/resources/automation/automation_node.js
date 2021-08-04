@@ -1290,16 +1290,21 @@ AutomationNodeImpl.prototype = {
       throw new Error(actionType + ' requires {"desktop": true} or' +
           ' {"interact": true} in the "automation" manifest key.');
     }
+
     let requestID = -1;
     if (opt_callback) {
-      requestID = this.rootImpl.addActionResultCallback(opt_callback);
+      requestID = this.rootImpl.addActionResultCallback(
+          actionType, opt_args, opt_callback);
     }
 
-    automationInternal.performAction({ treeID: this.rootImpl.treeID,
-                                       automationNodeID: this.id,
-                                       actionType: actionType,
-                                       requestID: requestID},
-                                     opt_args || {});
+    automationInternal.performAction(
+        {
+          treeID: this.rootImpl.treeID,
+          automationNodeID: this.id,
+          actionType: actionType,
+          requestID: requestID
+        },
+        opt_args || {});
   },
 
   domQuerySelectorCallback_: function(userCallback, resultAutomationNodeID) {
@@ -1887,9 +1892,14 @@ AutomationRootNodeImpl.prototype = {
     return true;
   },
 
-  addActionResultCallback: function(callback) {
-    AutomationRootNodeImpl.actionRequestIDToCallback[
-        ++AutomationRootNodeImpl.actionRequestCounter] = callback;
+  addActionResultCallback: function(actionType, opt_args, callback) {
+    AutomationRootNodeImpl
+        .actionRequestIDToCallback[++AutomationRootNodeImpl
+                                         .actionRequestCounter] = {
+      actionType,
+      opt_args,
+      callback
+    };
     return AutomationRootNodeImpl.actionRequestCounter;
   },
 
@@ -1897,7 +1907,7 @@ AutomationRootNodeImpl.prototype = {
     const requestID = textLocationParams.requestID;
     if (requestID in AutomationRootNodeImpl.actionRequestIDToCallback) {
       const callback =
-          AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+          AutomationRootNodeImpl.actionRequestIDToCallback[requestID].callback;
       try {
         if (textLocationParams.result) {
           callback(ComputeGlobalBounds(
@@ -1916,7 +1926,51 @@ AutomationRootNodeImpl.prototype = {
 
   onActionResult: function(requestID, result) {
     if (requestID in AutomationRootNodeImpl.actionRequestIDToCallback) {
-      AutomationRootNodeImpl.actionRequestIDToCallback[requestID](result);
+      const data = AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+      if (data.actionType.indexOf('hitTest') === 0 && result &&
+          result.role === 'window' && result.className &&
+          result.className.indexOf('ExoSurface') === 0) {
+        // Search for a node containing app id, which indicates Lacros.
+        function findApp(node) {
+          // Exit early if we've crossed roots from |result|.
+          if (result.root !== node.root) {
+            return null;
+          }
+
+          // This node is actually in a different backing C++ tree though at
+          // this internal js layer, we merge the trees so that it is rooted to
+          // the desktop tree (same as |result|).
+          if (node.appId) {
+            return node;
+          }
+
+          for (const child of node.children) {
+            const found = findApp(child);
+            if (found) {
+              return found;
+            }
+          }
+
+          return null;
+        }
+
+        // The hit test |result| node is not quite what we need to start
+        // searching in. Find the topmost ExoShell surface.
+        while (result.parent && result.parent.className &&
+               result.parent.className.indexOf('ExoShellSurface') === 0) {
+          result = result.parent;
+        }
+
+        const appNode = findApp(result);
+        if (appNode) {
+          delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+          privates(appNode).impl.performAction_(
+              data.actionType, data.opt_args, data.callback);
+          return;
+        }
+      }
+
+      data.callback(result);
       delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
     }
   },
