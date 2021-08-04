@@ -92,6 +92,7 @@ const struct {
     {"new_control_navigation", IDS_NEW_CONTROL_NAVIGATION},
     {"new_control_toast", IDS_NEW_CONTROL_TOAST},
     {"new_document_scan_toast", IDS_NEW_DOCUMENT_SCAN_TOAST},
+    {"no_document_guide_msg", IDS_NO_DOCUMENT_GUIDE_MSG},
     {"open_ptz_panel_button", IDS_OPEN_PTZ_PANEL_BUTTON},
     {"pan_left_button", IDS_PAN_LEFT_BUTTON},
     {"pan_right_button", IDS_PAN_RIGHT_BUTTON},

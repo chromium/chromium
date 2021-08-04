@@ -146,6 +146,12 @@ Element.prototype.computedStyleMap = function() {};
 StylePropertyMap.prototype.get = function(property) {};
 
 /**
+ * @param {string} property
+ * @return {boolean}
+ */
+StylePropertyMap.prototype.has = function(property) {};
+
+/**
  * @constructor
  * @extends {CSSStyleValue}
  * @param {!CSSStyleValue} x

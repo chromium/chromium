@@ -505,6 +505,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Text on ack button in dialog introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_GOT_IT">
         Got it
       </message>
+      <message desc="Toast message for guiding user to reposition document when no document in the camera FOV." name="IDS_NO_DOCUMENT_GUIDE_MSG">
+        Place all edges of the document within the frame
+      </message>
     </messages>
   </release>
 </grit>

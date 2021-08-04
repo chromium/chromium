@@ -296,7 +296,7 @@ body.enable-scan-barcode .barcode-scan-box {
   top: 0;
 }
 
-#preview-document-corner-overlay.clear div {
+#preview-document-corner-overlay:not(.show-corner-indicator) :is(.line, .corner) {
   display: none;
 }
 
@@ -341,4 +341,20 @@ body.enable-scan-barcode .barcode-scan-box {
   background: rgba(66, 133, 244, 1);
   height: 1px;
   width: 1px;
+}
+
+#preview-document-corner-overlay .no-document-toast {
+  background: var(--grey-900);
+  border-radius: 6px;
+  color: var(--grey-500);
+  display: inline-block;
+  font: normal 400 14px/20px Roboto;
+  left: 50%;
+  padding: 10px 8px;
+  position: absolute;
+  text-align: center;
+  top: 22px;
+  transform: translateX(-50%);
+  transition: visibility var(--fast1-duration) ease-in;
+  white-space: nowrap;
 }

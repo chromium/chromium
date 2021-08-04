@@ -131,6 +131,11 @@ class Corner {
 }
 
 /**
+ * Timeout to show toast message when no document is detected within the time.
+ */
+const SHOW_NO_DOCUMENT_TOAST_TIMEOUT_MS = 4000;
+
+/**
  * An overlay to show document corner rectangles over preview.
  */
 export class DocumentCornerOverlay {
@@ -143,6 +148,13 @@ export class DocumentCornerOverlay {
      * @private
      */
     this.overlay_ = dom.get('#preview-document-corner-overlay', HTMLDivElement);
+
+    /**
+     * @const {!HTMLDivElement}
+     * @private
+     */
+    this.noDocumentToast_ =
+        dom.getFrom(this.overlay_, '.no-document-toast', HTMLDivElement);
 
     /**
      * @type {?string}
@@ -183,7 +195,13 @@ export class DocumentCornerOverlay {
       return corners;
     })();
 
-    this.clear_();
+    /**
+     * @type {?number}
+     * @private
+     */
+    this.noDocumentTimerId_ = null;
+
+    this.hide_();
   }
 
   /**
@@ -226,14 +244,17 @@ export class DocumentCornerOverlay {
     this.observerId_ = await deviceOperator.registerDocumentCornersObserver(
         assertString(this.deviceId_), (corners) => {
           if (corners.length === 0) {
-            this.clear_();
+            this.onNoCornerDetected_();
             return;
           }
           const rect = this.overlay_.getBoundingClientRect();
           const toOverlaySpace = (pt) =>
               new Point(rect.width * pt.x, rect.height * pt.y);
-          this.setCorners_(corners.map(toOverlaySpace));
+          this.onCornerDetected_(corners.map(toOverlaySpace));
         });
+    this.hide_();
+    this.clearNoDocumentTimer_();
+    this.setNoDocumentTimer_();
   }
 
   /**
@@ -246,11 +267,12 @@ export class DocumentCornerOverlay {
     const nonNullObserverId = this.observerId_;
     const deviceOperator =
         assertInstanceof(await DeviceOperator.getInstance(), DeviceOperator);
-    const isSuccess = deviceOperator.unregisterDocumentCornersObserver(
+    const isSuccess = await deviceOperator.unregisterDocumentCornersObserver(
         assertString(this.deviceId_), nonNullObserverId);
     assert(isSuccess);
     this.observerId_ = null;
-    this.clear_();
+    this.hide_();
+    this.clearNoDocumentTimer_();
   }
 
   /**
@@ -261,13 +283,29 @@ export class DocumentCornerOverlay {
   }
 
   /**
+   * @private
+   */
+  onNoCornerDetected_() {
+    this.hideIndicators_();
+    if (this.isNoDocumentToastShown_()) {
+      return;
+    }
+    if (this.noDocumentTimerId_ === null) {
+      this.setNoDocumentTimer_();
+    }
+  }
+
+  /**
    * @param {!Array<!Point>} corners
    */
-  setCorners_(corners) {
-    if (this.overlay_.classList.contains('clear')) {
-      this.settleCorners_(corners);
-    } else {
+  onCornerDetected_(corners) {
+    this.hideNoDocumentToast_();
+    this.clearNoDocumentTimer_();
+    if (this.isIndicatorsShown_()) {
       this.updateCorners_(corners);
+    } else {
+      this.showIndicators_();
+      this.settleCorners_(corners);
     }
   }
 
@@ -277,8 +315,6 @@ export class DocumentCornerOverlay {
    * @private
    */
   settleCorners_(corners) {
-    this.overlay_.classList.remove('clear');
-
     /**
      * Start point(corner coordinates + outer shift) of settle animation.
      * @param {!Point} corn
@@ -366,10 +402,78 @@ export class DocumentCornerOverlay {
   }
 
   /**
-   * Clears all indicator on overlay.
+   * Hides overlay related UIs.
    * @private
    */
-  clear_() {
-    this.overlay_.classList.add('clear');
+  hide_() {
+    this.hideIndicators_();
+    this.hideNoDocumentToast_();
+  }
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  isIndicatorsShown_() {
+    return this.overlay_.classList.contains('show-corner-indicator');
+  }
+
+  /**
+   * @private
+   */
+  showIndicators_() {
+    this.overlay_.classList.add('show-corner-indicator');
+  }
+
+  /**
+   * @private
+   */
+  hideIndicators_() {
+    this.overlay_.classList.remove('show-corner-indicator');
+  }
+
+  /**
+   * @private
+   */
+  showNoDocumentToast_() {
+    this.noDocumentToast_.attributeStyleMap.delete('visibility');
+  }
+
+  /**
+   * @private
+   */
+  hideNoDocumentToast_() {
+    this.noDocumentToast_.attributeStyleMap.set('visibility', 'hidden');
+  }
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  isNoDocumentToastShown_() {
+    return !this.noDocumentToast_.attributeStyleMap.has('visibility');
+  }
+
+  /**
+   * @private
+   */
+  setNoDocumentTimer_() {
+    if (this.noDocumentTimerId_ !== null) {
+      clearTimeout(this.noDocumentTimerId_);
+    }
+    this.noDocumentTimerId_ = setTimeout(() => {
+      this.showNoDocumentToast_();
+      this.clearNoDocumentTimer_();
+    }, SHOW_NO_DOCUMENT_TOAST_TIMEOUT_MS);
+  }
+
+  /**
+   * @private
+   */
+  clearNoDocumentTimer_() {
+    if (this.noDocumentTimerId_ !== null) {
+      clearTimeout(this.noDocumentTimerId_);
+      this.noDocumentTimerId_ = null;
+    }
   }
 }
