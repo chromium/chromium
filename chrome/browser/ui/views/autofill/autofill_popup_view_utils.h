@@ -16,7 +16,7 @@ class WebContents;
 // direction it's supposed to grow (either to the left or to the right).
 // Components |y| and |height| of |popup_bounds| are not changed.
 void CalculatePopupXAndWidth(int popup_preferred_width,
-                             const gfx::Rect& window_bounds,
+                             const gfx::Rect& content_area_bounds,
                              const gfx::Rect& element_bounds,
                              bool is_rtl,
                              gfx::Rect* popup_bounds);
@@ -26,14 +26,14 @@ void CalculatePopupXAndWidth(int popup_preferred_width,
 // direction it's supposed to grow (either up or down). Components |x| and
 // |width| of |popup_bounds| are not changed.
 void CalculatePopupYAndHeight(int popup_preferred_height,
-                              const gfx::Rect& window_bounds,
+                              const gfx::Rect& content_area_bounds,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds);
 
 // Convenience method which handles both the vertical and horizontal bounds
 // and returns a new Rect.
 gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
-                               const gfx::Rect& window_bounds,
+                               const gfx::Rect& content_area_bounds,
                                const gfx::Rect& element_bounds,
                                bool is_rtl);
 

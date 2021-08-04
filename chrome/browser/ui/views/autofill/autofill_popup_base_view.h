@@ -74,9 +74,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // boundaries. Should be overridden together with CreateBorder.
   void UpdateClipPath();
 
-  // Returns the bounds of the containing window in screen space.
-  gfx::Rect GetWindowBounds() const;
-
   // Returns the bounds of the content area in screen space.
   gfx::Rect GetContentAreaBounds() const;
 

@@ -12,17 +12,18 @@
 #include "ui/views/widget/widget.h"
 
 void CalculatePopupXAndWidth(int popup_preferred_width,
-                             const gfx::Rect& window_bounds,
+                             const gfx::Rect& content_area_bounds,
                              const gfx::Rect& element_bounds,
                              bool is_rtl,
                              gfx::Rect* popup_bounds) {
-  int right_growth_start =
-      base::clamp(element_bounds.x(), window_bounds.x(), window_bounds.right());
-  int left_growth_end = base::clamp(element_bounds.right(), window_bounds.x(),
-                                    window_bounds.right());
+  int right_growth_start = base::clamp(
+      element_bounds.x(), content_area_bounds.x(), content_area_bounds.right());
+  int left_growth_end =
+      base::clamp(element_bounds.right(), content_area_bounds.x(),
+                  content_area_bounds.right());
 
-  int right_available = window_bounds.right() - right_growth_start;
-  int left_available = left_growth_end - window_bounds.x();
+  int right_available = content_area_bounds.right() - right_growth_start;
+  int left_available = left_growth_end - content_area_bounds.x();
 
   int popup_width = std::min(popup_preferred_width,
                              std::max(left_available, right_available));
@@ -45,16 +46,17 @@ void CalculatePopupXAndWidth(int popup_preferred_width,
 }
 
 void CalculatePopupYAndHeight(int popup_preferred_height,
-                              const gfx::Rect& window_bounds,
+                              const gfx::Rect& content_area_bounds,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds) {
-  int top_growth_end = base::clamp(element_bounds.y(), window_bounds.y(),
-                                   window_bounds.bottom());
-  int bottom_growth_start = base::clamp(
-      element_bounds.bottom(), window_bounds.y(), window_bounds.bottom());
+  int top_growth_end = base::clamp(element_bounds.y(), content_area_bounds.y(),
+                                   content_area_bounds.bottom());
+  int bottom_growth_start =
+      base::clamp(element_bounds.bottom(), content_area_bounds.y(),
+                  content_area_bounds.bottom());
 
-  int top_available = top_growth_end - window_bounds.y();
-  int bottom_available = window_bounds.bottom() - bottom_growth_start;
+  int top_available = top_growth_end - content_area_bounds.y();
+  int bottom_available = content_area_bounds.bottom() - bottom_growth_start;
 
   popup_bounds->set_height(popup_preferred_height);
   popup_bounds->set_y(top_growth_end);
@@ -65,21 +67,22 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
         gfx::Rect(popup_bounds->x(), element_bounds.bottom(),
                   popup_bounds->width(), bottom_available));
   } else {
-    popup_bounds->AdjustToFit(gfx::Rect(popup_bounds->x(), window_bounds.y(),
+    popup_bounds->AdjustToFit(gfx::Rect(popup_bounds->x(),
+                                        content_area_bounds.y(),
                                         popup_bounds->width(), top_available));
   }
 }
 
 gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
-                               const gfx::Rect& window_bounds,
+                               const gfx::Rect& content_area_bounds,
                                const gfx::Rect& element_bounds,
                                bool is_rtl) {
   gfx::Rect popup_bounds;
 
-  CalculatePopupXAndWidth(desired_size.width(), window_bounds, element_bounds,
-                          is_rtl, &popup_bounds);
-  CalculatePopupYAndHeight(desired_size.height(), window_bounds, element_bounds,
-                           &popup_bounds);
+  CalculatePopupXAndWidth(desired_size.width(), content_area_bounds,
+                          element_bounds, is_rtl, &popup_bounds);
+  CalculatePopupYAndHeight(desired_size.height(), content_area_bounds,
+                           element_bounds, &popup_bounds);
 
   return popup_bounds;
 }
