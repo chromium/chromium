@@ -463,6 +463,11 @@ void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
   if (!wcax)
     return;
 
+  // We do not need to clear a node more than once per atomic update.
+  if (nodes_already_cleared_.find(unique_id) != nodes_already_cleared_.end())
+    return;
+
+  nodes_already_cleared_.emplace(unique_id);
   wcax->ClearNodeInfoCacheForGivenId(unique_id);
 }
 
@@ -530,6 +535,9 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
 
   // Reset content changed events counter every time we finish an atomic update.
   wcax->ResetContentChangedEventsCounter();
+
+  // Clear unordered_set of nodes cleared from the cache after atomic update.
+  nodes_already_cleared_.clear();
 
   if (root_changed) {
     wcax->HandleNavigate();

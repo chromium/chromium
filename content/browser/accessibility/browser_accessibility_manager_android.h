@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 
+#include <unordered_set>
 #include <utility>
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -161,6 +162,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // any node uses touch passthrough in any frame. See comment next to
   // any_node_uses_touch_passthrough(), above, for details.
   bool touch_passthrough_enabled_ = false;
+
+  // An unordered_set of |unique_id| values for nodes cleared from the cache
+  // with each atomic update to prevent superfluous cache clear calls.
+  std::unordered_set<int32_t> nodes_already_cleared_ =
+      std::unordered_set<int32_t>();
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAndroid);
 };
