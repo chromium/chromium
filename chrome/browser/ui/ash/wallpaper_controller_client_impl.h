@@ -50,9 +50,6 @@ class WallpaperControllerClientImpl
 
   static WallpaperControllerClientImpl* Get();
 
-  // Returns files identifier for the |account_id|.
-  std::string GetFilesId(const AccountId& account_id) const;
-
   // ash::WallpaperControllerClient:
   void OpenWallpaperPicker() override;
   void MaybeClosePreviewWallpaper() override;
@@ -64,6 +61,9 @@ class WallpaperControllerClientImpl
       DailyWallpaperUrlFetchedCallback callback) override;
   bool SaveWallpaperToDriveFs(const AccountId& account_id,
                               const base::FilePath& origin) override;
+  void GetFilesId(const AccountId& account_id,
+                  base::OnceCallback<void(const std::string&)>
+                      files_id_callback) const override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -74,7 +74,6 @@ class WallpaperControllerClientImpl
 
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
@@ -95,7 +94,6 @@ class WallpaperControllerClientImpl
   void SetPolicyWallpaper(const AccountId& account_id,
                           std::unique_ptr<std::string> data);
   bool SetThirdPartyWallpaper(const AccountId& account_id,
-                              const std::string& wallpaper_files_id,
                               const std::string& file_name,
                               ash::WallpaperLayout layout,
                               const gfx::ImageSkia& image);

@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 
+#include "base/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -19,6 +20,7 @@ void TestWallpaperControllerClient::ResetCounts() {
   fetch_daily_refresh_wallpaper_param_ = std::string();
   fetch_daily_refresh_info_fails_ = false;
   save_wallpaper_to_drive_fs_account_id.clear();
+  fake_files_ids_.clear();
 }
 
 // WallpaperControllerClient:
@@ -56,6 +58,17 @@ bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(
     const base::FilePath& origin) {
   save_wallpaper_to_drive_fs_account_id = account_id;
   return true;
+}
+
+void TestWallpaperControllerClient::GetFilesId(
+    const AccountId& account_id,
+    base::OnceCallback<void(const std::string&)> files_id_callback) const {
+  auto iter = fake_files_ids_.find(account_id);
+  if (iter == fake_files_ids_.end()) {
+    LOG(ERROR) << "No fake files id for account id: " << account_id;
+    return;
+  }
+  std::move(files_id_callback).Run(iter->second);
 }
 
 }  // namespace ash

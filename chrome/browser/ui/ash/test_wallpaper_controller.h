@@ -47,13 +47,11 @@ class TestWallpaperController : public ash::WallpaperController {
             const base::FilePath& custom_wallpapers,
             const base::FilePath& device_policy_wallpaper) override;
   void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const base::FilePath& file_path,
                           ash::WallpaperLayout layout,
                           bool preview_mode,
                           SetCustomWallpaperCallback callback) override;
   void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
@@ -66,18 +64,15 @@ class TestWallpaperController : public ash::WallpaperController {
                                   const std::string& image_data,
                                   SetOnlineWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
-                           const std::string& wallpaper_files_id,
                            bool show_wallpaper) override;
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;
   void SetPolicyWallpaper(const AccountId& account_id,
-                          const std::string& wallpaper_files_id,
                           const std::string& data) override;
   void SetDevicePolicyWallpaperPath(
       const base::FilePath& device_policy_wallpaper_path) override;
   bool SetThirdPartyWallpaper(const AccountId& account_id,
-                              const std::string& wallpaper_files_id,
                               const std::string& file_name,
                               ash::WallpaperLayout layout,
                               const gfx::ImageSkia& image) override;
@@ -90,10 +85,8 @@ class TestWallpaperController : public ash::WallpaperController {
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path) override;
   void RemoveAlwaysOnTopWallpaper() override;
-  void RemoveUserWallpaper(const AccountId& account_id,
-                           const std::string& wallpaper_files_id) override;
-  void RemovePolicyWallpaper(const AccountId& account_id,
-                             const std::string& wallpaper_files_id) override;
+  void RemoveUserWallpaper(const AccountId& account_id) override;
+  void RemovePolicyWallpaper(const AccountId& account_id) override;
   void GetOfflineWallpaperList(
       GetOfflineWallpaperListCallback callback) override;
   void SetAnimationDuration(base::TimeDelta animation_duration) override;

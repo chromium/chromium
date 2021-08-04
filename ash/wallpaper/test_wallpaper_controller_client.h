@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "components/account_id/account_id.h"
 
@@ -40,6 +42,11 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     fetch_daily_refresh_info_fails_ = fails;
   }
 
+  void set_fake_files_id_for_account_id(const AccountId& account_id,
+                                        std::string fake_files_id) {
+    fake_files_ids_[account_id] = fake_files_id;
+  }
+
   void ResetCounts();
 
   // WallpaperControllerClient:
@@ -53,6 +60,9 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
       DailyWallpaperUrlFetchedCallback callback) override;
   bool SaveWallpaperToDriveFs(const AccountId& account_id,
                               const base::FilePath& origin) override;
+  void GetFilesId(const AccountId& account_id,
+                  base::OnceCallback<void(const std::string&)>
+                      files_id_callback) const override;
 
  private:
   size_t open_count_ = 0;
@@ -62,6 +72,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;
   AccountId save_wallpaper_to_drive_fs_account_id;
+  std::unordered_map<AccountId, std::string> fake_files_ids_;
 };
 
 }  // namespace ash
