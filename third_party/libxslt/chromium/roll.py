@@ -65,10 +65,8 @@ import tempfile
 #       git cl try-results; etc.
 
 PATCHES = [
-    'get-file-attributes-a.patch',
     'xslt-locale.patch',
     'remove-crypto.patch',
-    'Fix-use-after-free-in-xsltApplyTemplates.patch',
 ]
 
 

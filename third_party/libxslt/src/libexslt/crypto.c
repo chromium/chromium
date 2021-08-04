@@ -124,10 +124,10 @@ exsltCryptoCryptoApiReportError (xmlXPathParserContextPtr ctxt,
     char *lpMsgBuf;
     DWORD dw = GetLastError ();
 
-    FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER |
+    FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		   FORMAT_MESSAGE_FROM_SYSTEM, NULL, dw,
 		   MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-		   (LPTSTR) & lpMsgBuf, 0, NULL);
+		   &lpMsgBuf, 0, NULL);
 
     xsltTransformError (xsltXPathGetTransformContext (ctxt), NULL, NULL,
 			"exslt:crypto error (line %d). %s", line,
