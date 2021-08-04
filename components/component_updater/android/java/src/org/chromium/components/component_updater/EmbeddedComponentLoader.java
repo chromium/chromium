@@ -17,6 +17,8 @@ import android.os.ResultReceiver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -92,29 +94,29 @@ public class EmbeddedComponentLoader implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        ThreadUtils.assertOnUiThread();
-
-        try {
-            IComponentsProviderService providerService =
-                    IComponentsProviderService.Stub.asInterface(service);
-            for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                String componentId = receiver.getComponentLoaderPolicy().getComponentId();
-                providerService.getFilesForComponent(componentId, receiver);
-            }
-        } catch (RemoteException e) {
-            Log.d(TAG, "Remote Exception calling ComponentProviderService", e);
-            if (!mComponentsResultReceivers.isEmpty()) {
-                // Clearing up receivers here to avoid unbinding multiple times in the future.
-                // This means if some receivers get their result after this step, their results
-                // will be ignored.
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            try {
+                IComponentsProviderService providerService =
+                        IComponentsProviderService.Stub.asInterface(service);
                 for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                    receiver.getComponentLoaderPolicy().componentLoadFailed(
-                            ComponentLoadResult.REMOTE_EXCEPTION);
+                    String componentId = receiver.getComponentLoaderPolicy().getComponentId();
+                    providerService.getFilesForComponent(componentId, receiver);
                 }
-                mComponentsResultReceivers.clear();
-                ContextUtils.getApplicationContext().unbindService(this);
+            } catch (RemoteException e) {
+                Log.d(TAG, "Remote Exception calling ComponentProviderService", e);
+                if (!mComponentsResultReceivers.isEmpty()) {
+                    // Clearing up receivers here to avoid unbinding multiple times in the future.
+                    // This means if some receivers get their result after this step, their results
+                    // will be ignored.
+                    for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
+                        receiver.getComponentLoaderPolicy().componentLoadFailed(
+                                ComponentLoadResult.REMOTE_EXCEPTION);
+                    }
+                    mComponentsResultReceivers.clear();
+                    ContextUtils.getApplicationContext().unbindService(this);
+                }
             }
-        }
+        });
     }
 
     @Override
