@@ -200,16 +200,12 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(!neutered_);
-  if (!current_swap_buffer_ || neutered_) {
+  if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
     return false;
   }
 
   DCHECK(client_);
   client_->OnTextureTransferred();
-
-  if (!GetContextProviderWeakPtr()) {
-    return false;
-  }
 
   // Make Dawn relinquish access to the texture so it can be used by the
   // compositor. This will call wgpu::Texture::Destroy so that further accesses
