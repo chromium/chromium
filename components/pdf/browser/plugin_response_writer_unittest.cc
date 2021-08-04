@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -113,6 +115,7 @@ TEST_F(PluginResponseWriterTest, Start) {
 
     EXPECT_CALL(mock_client_, OnReceiveResponse)
         .WillOnce([](network::mojom::URLResponseHeadPtr head) {
+          EXPECT_EQ(200, head->headers->response_code());
           EXPECT_EQ("text/html", head->mime_type);
         });
 

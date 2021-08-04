@@ -1239,8 +1239,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureSameOriginRepliesAllowed) {
 }
 
 // TODO(crbug.com/1004425): Should be allowed?
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       EnsureOpaqueOriginRepliesBlocked) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureOpaqueOriginRepliesBlocked) {
   TestGetSelectedTextReply(
       embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"), false);
 }

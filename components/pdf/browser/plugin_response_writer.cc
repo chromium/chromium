@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -83,6 +85,8 @@ PluginResponseWriter::~PluginResponseWriter() = default;
 
 void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   auto response = network::mojom::URLResponseHead::New();
+  response->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   response->mime_type = "text/html";
   client_->OnReceiveResponse(std::move(response));
 
