@@ -106,17 +106,6 @@ const char kPathKey[] = "path";
 const char kPathTypeKey[] = "path-type";
 const char kTimestampKey[] = "timestamp";
 
-// TODO(https://crbug.com/1177334): Remove migration logic.
-// Deprecated 2/2021. Former schema (per origin):
-// {
-//  ...
-//   "default-path" : <path>,
-//   "default-path-type" : <type>,
-//  ...
-// }
-const char kDeprecatedLastPickedDirectoryKey[] = "default-path";
-const char kDeprecatedLastPickedDirectoryTypeKey[] = "default-path-type";
-
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
@@ -1162,45 +1151,6 @@ void ChromeFileSystemAccessPermissionContext::
                      std::move(result_callback)));
 }
 
-// TODO(https://crbug.com/1177334): Remove migration logic.
-void ChromeFileSystemAccessPermissionContext::MaybeMigrateOriginToNewSchema(
-    const url::Origin& origin) {
-  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
-
-  if (!value)
-    return;
-
-  auto* default_path_value = value->FindKey(kDeprecatedLastPickedDirectoryKey);
-  if (!default_path_value)
-    return;
-
-  auto default_path =
-      base::ValueToFilePath(default_path_value).value_or(base::FilePath());
-  auto default_type =
-      value->FindIntKey(kDeprecatedLastPickedDirectoryTypeKey) ==
-              static_cast<int>(PathType::kExternal)
-          ? PathType::kExternal
-          : PathType::kLocal;
-
-  // Remove old keys.
-  value->RemoveKey(kDeprecatedLastPickedDirectoryKey);
-  value->RemoveKey(kDeprecatedLastPickedDirectoryTypeKey);
-
-  // Set this information as the default.
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetKey(kPathKey, base::FilePathToValue(default_path));
-  entry.SetIntKey(kPathTypeKey, static_cast<int>(default_type));
-
-  value->SetKey(GenerateLastPickedDirectoryKey(std::string()),
-                std::move(entry));
-
-  content_settings_->SetWebsiteSettingDefaultScope(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
-}
-
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     std::unique_ptr<base::Value>& value) {
   if (!value->is_dict()) {
@@ -1235,8 +1185,6 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const std::string& id,
     const base::FilePath& path,
     const PathType type) {
-  MaybeMigrateOriginToNewSchema(origin);
-
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
@@ -1262,8 +1210,6 @@ ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
-  MaybeMigrateOriginToNewSchema(origin);
-
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);

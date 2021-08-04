@@ -645,45 +645,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             new_path);
 }
 
-// TODO(https://crbug.com/1177334): Remove test when removing migration logic.
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       Migrate_LastPickedDirectory) {
-  EXPECT_EQ(permission_context()
-                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
-                .path,
-            base::FilePath());
-
-  // Set keys using the old method.
-  const char kDeprecatedLastPickedDirectoryKey[] = "default-path";
-  const char kDeprecatedLastPickedDirectoryTypeKey[] = "default-path-type";
-  const base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/baz/bar"));
-  const auto type = PathType::kExternal;
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kDeprecatedLastPickedDirectoryKey, base::FilePathToValue(path));
-  dict.SetIntKey(kDeprecatedLastPickedDirectoryTypeKey, static_cast<int>(type));
-  HostContentSettingsMapFactory::GetForProfile(&profile_)
-      ->SetWebsiteSettingDefaultScope(
-          kTestOrigin.GetURL(), kTestOrigin.GetURL(),
-          ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
-          base::Value::ToUniquePtrValue(std::move(dict)));
-
-  // Retrieve key using the new method. Information should have been migrated.
-  auto result = permission_context()->GetLastPickedDirectory(
-      kTestOrigin, /*id=*/std::string());
-  EXPECT_EQ(result.path, path);
-  EXPECT_EQ(result.type, type);
-
-  // Confirm that the old keys have been removed.
-  std::unique_ptr<base::Value> value =
-      HostContentSettingsMapFactory::GetForProfile(&profile_)
-          ->GetWebsiteSetting(
-              kTestOrigin.GetURL(), kTestOrigin.GetURL(),
-              ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
-              /*info=*/nullptr);
-  EXPECT_FALSE(value->FindKey(kDeprecatedLastPickedDirectoryKey));
-  EXPECT_FALSE(value->FindIntKey(kDeprecatedLastPickedDirectoryKey));
-}
-
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWellKnownDirectoryPath_Base_OK) {
   base::ScopedPathOverride user_desktop_override(
