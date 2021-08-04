@@ -19,15 +19,23 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 namespace {
-constexpr int kIconSize = 36;
 constexpr int kPreferredWidth = 242;
 constexpr int kPreferredHeight = 52;
+
+constexpr int kLabelLeftPadding = 8;
+constexpr int kLabelRightPadding = 16;
+constexpr int kLabelContainerHeight = 38;
+
+constexpr int kIconSize = 36;
+constexpr int kIconVericalPadding = 8;
+
 }  // namespace
 
 ContinueTaskView::ContinueTaskView(SearchResult* task_result)
@@ -40,12 +48,18 @@ ContinueTaskView::ContinueTaskView(SearchResult* task_result)
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
-  icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  icon_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets((kPreferredHeight - kIconSize) / 2, kIconVericalPadding)));
   SetIcon(result()->chip_icon());
 
   auto* label_container = AddChildView(std::make_unique<views::View>());
   label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  label_container->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+      (kPreferredHeight - kLabelContainerHeight) / 2, kLabelLeftPadding,
+      (kPreferredHeight - kLabelContainerHeight) / 2, kLabelRightPadding)));
 
   title_ = label_container->AddChildView(
       std::make_unique<views::Label>(result()->title()));

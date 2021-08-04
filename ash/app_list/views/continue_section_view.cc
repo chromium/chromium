@@ -20,16 +20,26 @@
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 namespace {
 
-// Vertical space between header and content in dips.
-constexpr int kVerticalSpacing = 8;
+// Continue File Section view paddings. This view encloses the header and the
+// suggested tasks container.
+constexpr int kSectionVerticalPadding = 16;
+constexpr int kSectionHorizontalPadding = 20;
 
-// Continue files section constants.
+// Header paddings in dips.
+constexpr int kHeaderVerticalSpacing = 4;
+constexpr int kHeaderHorizontalPadding = 12;
+
+// Suggested tasks padding in dips
+constexpr int kSuggestedTasksHorizontalPadding = 6;
+
+// Suggested tasks layout constants.
 constexpr int kContinueColumnSpacing = 8;
 constexpr int kContinueRowSpacing = 8;
 constexpr int kMinFilesForContinueSection = 3;
@@ -82,18 +92,23 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
   DCHECK(view_delegate_);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kVerticalSpacing));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets(kSectionVerticalPadding, kSectionHorizontalPadding),
+      kHeaderVerticalSpacing));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
 
   // TODO(https://crbug.com/1204551): Localized strings.
   // TODO(https://crbug.com/1204551): Styling.
   auto* continue_label = AddChildView(CreateContinueLabel(u"Continue"));
   continue_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  continue_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(0, kHeaderHorizontalPadding)));
 
   suggestions_container_ = AddChildView(std::make_unique<views::View>());
   suggestions_container_->SetLayoutManager(std::make_unique<SimpleGridLayout>(
       columns_, kContinueColumnSpacing, kContinueRowSpacing));
+  suggestions_container_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(0, kSuggestedTasksHorizontalPadding)));
 
   std::vector<SearchResult*> tasks =
       GetTasksResultsFromSuggestionChips(view_delegate_->GetSearchModel());
