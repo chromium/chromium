@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module audio.mojom;
+
+// Interface for creating page handler
+interface PageHandlerFactory {
+    // Creates a page handler to update and respond to requests or
+    // audio device information
+    CreatePageHandler(pending_remote<Page> page,
+                      pending_receiver<PageHandler> handler);
+};
+
+// Interface for browser-side handler
+// Respond to calls from the WebUI page.
+interface PageHandler {
+    // Request to get audio device information from the browser side
+    GetAudioDeviceInfo() => (string device_name);
+};
+
+// Interface for the WebUI page
+// Respond to calls from the browser end
+interface Page {
+    // Updates the page with new audio device information
+    UpdateDeviceInfo(string device_name);
+};

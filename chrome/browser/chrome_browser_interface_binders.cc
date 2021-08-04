@@ -183,6 +183,8 @@
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
@@ -918,6 +920,10 @@ void PopulateChromeWebUIFrameBinders(
         chromeos::bluetooth_config::mojom::CrosBluetoothConfig,
         chromeos::settings::OSSettingsUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
+                                         chromeos::AudioUI>(map);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)

@@ -778,7 +778,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
     return &NewWebUI<chromeos::AddSupervisionUI>;
   if (url.host_piece() == chrome::kChromeUIAudioHost)
-    return &NewWebUI<AudioUI>;
+    return &NewWebUI<chromeos::AudioUI>;
   if (url.host_piece() == chrome::kChromeUIBluetoothPairingHost)
     return &NewWebUI<chromeos::BluetoothPairingDialogUI>;
 // TODO(crbug.com/1147032): The certificates settings page is temporarily

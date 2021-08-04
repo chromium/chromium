@@ -6,11 +6,34 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+copy("copy_audio") {
+  sources = [
+    "audio.ts",
+    "audio_broker.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/audio/audio.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
 ts_library("build_ts") {
   deps = [ "//third_party/polymer/v3_0:library" ]
-  root_dir = "./"
+  extra_deps = [
+    ":copy_audio",
+    ":copy_mojo",
+  ]
+  root_dir = "$target_gen_dir"
   out_dir = "$target_gen_dir/tsc"
-  in_files = [ "audio.ts" ]
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "audio_broker.ts",
+    "audio.ts",
+    "audio.mojom-webui.js",
+  ]
 }
 
 resources_grd_file = "$target_gen_dir/resources.grd"
