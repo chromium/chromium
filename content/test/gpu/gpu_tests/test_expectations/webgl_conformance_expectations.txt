@@ -478,8 +478,6 @@ crbug.com/angleproject/4986 [ mac passthrough ] conformance/textures/misc/gl-tex
 
 # Mac / Passthrough command decoder / OpenGL
 crbug.com/989194 [ mac passthrough angle-opengl ] conformance/extensions/oes-texture-half-float.html [ Failure ]
-crbug.com/1233213 [ mac passthrough angle-opengl ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1233213 [ mac passthrough angle-opengl ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
 
 # Mac / Passthrough command decoder / OpenGL / NVIDIA
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
