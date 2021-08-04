@@ -5154,7 +5154,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  form_structure.set_passwords_were_revealed(true);
   form_structure.field(0)->set_single_username_vote_type(
       AutofillUploadContents::Field::STRONG);
 
@@ -5166,6 +5165,39 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
       false /* is_raw_metadata_uploading_enabled */, &upload, &signatures));
   EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
             upload.field(0).single_username_vote_type());
+}
+
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
+  FormData form;
+  form.url = GURL("http://www.foo.com/");
+  FormFieldData field;
+  field.name = u"text field";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+
+  AutofillUploadContents::SingleUsernameData single_username_data;
+  single_username_data.set_username_form_signature(12345);
+  single_username_data.set_username_field_signature(678910);
+  single_username_data.set_value_type(AutofillUploadContents::EMAIL);
+  single_username_data.set_prompt_edit(AutofillUploadContents::EDITED_POSITIVE);
+  form_structure.set_single_username_data(single_username_data);
+
+  AutofillUploadContents upload;
+  std::vector<FormSignature> signatures;
+  EXPECT_TRUE(form_structure.EncodeUploadRequest(
+      {{}} /* available_field_types */, false /* form_was_autofilled */,
+      std::string() /* login_form_signature */, true /* observed_submission */,
+      false /* is_raw_metadata_uploading_enabled */, &upload, &signatures));
+  EXPECT_EQ(form_structure.single_username_data()->username_form_signature(),
+            upload.single_username_data().username_form_signature());
+  EXPECT_EQ(form_structure.single_username_data()->username_field_signature(),
+            upload.single_username_data().username_field_signature());
+  EXPECT_EQ(form_structure.single_username_data()->value_type(),
+            upload.single_username_data().value_type());
+  EXPECT_EQ(form_structure.single_username_data()->prompt_edit(),
+            upload.single_username_data().prompt_edit());
 }
 
 // Test that server predictions get precedence over htmll types if they are

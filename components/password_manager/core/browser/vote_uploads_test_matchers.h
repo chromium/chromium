@@ -187,6 +187,55 @@ MATCHER_P(UploadedSingleUsernameVoteTypeIs, expected_type, "") {
   return true;
 }
 
+MATCHER_P(UploadedSingleUsernameDataIs, expected_data, "") {
+  if (!arg.single_username_data()) {
+    *result_listener << "Single username data missing";
+    return false;
+  }
+  if (expected_data.username_form_signature() !=
+      arg.single_username_data()->username_form_signature()) {
+    // Wrong form signature.
+    *result_listener << "Expected form signature is "
+                     << expected_data.username_form_signature()
+                     << ", but found "
+                     << arg.single_username_data()->username_form_signature();
+    return false;
+  }
+  if (expected_data.username_field_signature() !=
+      arg.single_username_data()->username_field_signature()) {
+    // Wrong field signature.
+    *result_listener << "Expected field signature is "
+                     << expected_data.username_field_signature()
+                     << ", but found "
+                     << arg.single_username_data()->username_field_signature();
+    return false;
+  }
+  if (expected_data.value_type() != arg.single_username_data()->value_type()) {
+    // Wrong value type.
+    *result_listener << "Expected value type is " << expected_data.value_type()
+                     << ", but found "
+                     << arg.single_username_data()->value_type();
+    return false;
+  }
+  if (expected_data.prompt_edit() !=
+      arg.single_username_data()->prompt_edit()) {
+    // Wrong information about username edits in prompt.
+    *result_listener << "Expected prompt edit is "
+                     << expected_data.prompt_edit() << ", but found "
+                     << arg.single_username_data()->prompt_edit();
+    return false;
+  }
+  return true;
+}
+
+MATCHER(SingleUsernameDataNotUploaded, "") {
+  if (arg.single_username_data()) {
+    *result_listener << "Single username not expected to be uploaded";
+    return false;
+  }
+  return true;
+}
+
 MATCHER_P(PasswordsWereRevealed, passwords_were_revealed, "") {
   return passwords_were_revealed == arg.passwords_were_revealed();
 }

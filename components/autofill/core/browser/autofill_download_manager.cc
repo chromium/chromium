@@ -420,6 +420,24 @@ LogBuffer& operator<<(LogBuffer& out,
   if (upload.has_has_form_tag())
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
 
+  if (upload.has_single_username_data()) {
+    LogBuffer single_username_data;
+    single_username_data << Tag{"span"} << "[";
+    single_username_data
+        << Tr{} << "username_form_signature:"
+        << upload.single_username_data().username_form_signature();
+    single_username_data
+        << Tr{} << "username_field_signature:"
+        << upload.single_username_data().username_field_signature();
+    single_username_data << Tr{} << "value_type:"
+                         << static_cast<int>(
+                                upload.single_username_data().value_type());
+    single_username_data << Tr{} << "prompt_edit:"
+                         << static_cast<int>(
+                                upload.single_username_data().prompt_edit());
+    out << Tr{} << "single_username_data" << std::move(single_username_data);
+  }
+
   out << Tr{} << "form_signature:" << upload.form_signature();
   for (const auto& field : upload.field()) {
     out << Tr{} << Attrib{"style", "font-weight: bold"}

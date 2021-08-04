@@ -722,6 +722,8 @@ bool FormStructure::EncodeUploadRequest(
   if (!current_page_language_->empty() && randomized_encoder_ != nullptr) {
     upload->set_language(current_page_language_.value());
   }
+  if (single_username_data_)
+    upload->mutable_single_username_data()->CopyFrom(*single_username_data_);
 
   auto triggering_event = (submission_event_ != SubmissionIndicatorEvent::NONE)
                               ? submission_event_

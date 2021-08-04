@@ -524,7 +524,9 @@ class PasswordFormMetricsRecorder
   absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
 
+  // Whether a single username candidate was populated in prompt.
   bool possible_username_used_ = false;
+
   bool username_updated_in_bubble_ = false;
 
   absl::optional<JsOnlyInput> js_only_input_;

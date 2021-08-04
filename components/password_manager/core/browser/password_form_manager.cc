@@ -709,25 +709,35 @@ bool PasswordFormManager::ProvisionallySave(
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
+  // TODO(crbug.com/959776): Reset possible username after it's used.
   if (IsUsernameFirstFlowFeatureEnabled() &&
-      parsed_submitted_form_->username_value.empty() && possible_username &&
-      IsPossibleSingleUsernameAvailable(possible_username)) {
-    // Suggest the possible username value in a prompt if the server confirmed
-    // it is a single username field. Otherwise, |possible_username| is used
-    // only for voting.
-    if (possible_username->HasSingleUsernameServerPrediction()) {
-      parsed_submitted_form_->username_value = possible_username->value;
-      LogUsingPossibleUsername(client_, /*is_used*/ true,
-                               "Valid possible username, populated in prompt");
-    } else {
-      LogUsingPossibleUsername(
-          client_, /*is_used*/ true,
-          "Valid possible username, not populated in prompt");
+      parsed_submitted_form_->username_value.empty()) {
+    if (IsPossibleSingleUsernameAvailable(possible_username)) {
+      // Suggest the possible username value in a prompt if the server confirmed
+      // it is a single username field. Otherwise, |possible_username| is used
+      // only for voting.
+      if (possible_username->HasSingleUsernameServerPrediction()) {
+        parsed_submitted_form_->username_value = possible_username->value;
+        metrics_recorder_->set_possible_username_used(true);
+        LogUsingPossibleUsername(
+            client_, /*is_used*/ true,
+            "Valid possible username, populated in prompt");
+      } else {
+        LogUsingPossibleUsername(
+            client_, /*is_used*/ true,
+            "Valid possible username, not populated in prompt");
+      }
+      votes_uploader_.set_single_username_vote_data(
+          possible_username->renderer_id, possible_username->value,
+          possible_username->form_predictions.value_or(FormPredictions()),
+          form_fetcher_->GetBestMatches());
+    } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
+      // If no single username typing preceded single password typing, set
+      // empty single username vote data for the fallback classifier.
+      votes_uploader_.set_single_username_vote_data(
+          FieldRendererId(), std::u16string(), FormPredictions(),
+          form_fetcher_->GetBestMatches());
     }
-    metrics_recorder_->set_possible_username_used(true);
-    votes_uploader_.set_single_username_vote_data(
-        possible_username->renderer_id, possible_username->value,
-        possible_username->form_predictions.value_or(FormPredictions()));
   }
   CreatePendingCredentials();
   return true;

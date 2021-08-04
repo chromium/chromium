@@ -417,6 +417,15 @@ class FormStructure {
                          form_interactions_ukm_logger, nullptr);
   }
 
+  void set_single_username_data(
+      AutofillUploadContents::SingleUsernameData single_username_data) {
+    single_username_data_ = single_username_data;
+  }
+  absl::optional<AutofillUploadContents::SingleUsernameData>
+  single_username_data() const {
+    return single_username_data_;
+  }
+
  private:
   friend class AutofillMergeTest;
   friend class FormStructureTestImpl;
@@ -673,6 +682,10 @@ class FormStructure {
   // An identifier of the form that is unique among the forms from the same
   // frame.
   FormRendererId unique_renderer_id_;
+
+  // Single username details, if applicable.
+  absl::optional<AutofillUploadContents::SingleUsernameData>
+      single_username_data_;
 
   DISALLOW_COPY_AND_ASSIGN(FormStructure);
 };
