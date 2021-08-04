@@ -259,6 +259,7 @@ void TabStripUIHandler::OnTabGroupChanged(const TabGroupChange& change) {
     }
 
     case TabGroupChange::kClosed: {
+      embedder_->HideEditDialogForGroup();
       FireWebUIListener("tab-group-closed",
                         base::Value(change.group.ToString()));
       break;

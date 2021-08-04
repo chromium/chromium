@@ -859,8 +859,15 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
     tab_groups::TabGroupId group) {
   ConvertPointToScreen(this, &point);
   rect.set_origin(point);
-  TabGroupEditorBubbleView::Show(browser_view_->browser(), group, nullptr, rect,
-                                 this);
+  editor_bubble_widget_ = TabGroupEditorBubbleView::Show(
+      browser_view_->browser(), group, nullptr, rect, this);
+  scoped_widget_observation_.Observe(editor_bubble_widget_);
+}
+
+void WebUITabStripContainerView::HideEditDialogForGroup() {
+  if (editor_bubble_widget_)
+    editor_bubble_widget_->CloseWithReason(
+        BrowserFrame::ClosedReason::kUnspecified);
 }
 
 TabStripUILayout WebUITabStripContainerView::GetLayout() {
@@ -956,6 +963,14 @@ void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
     tab_counter_ = nullptr;
   else if (observed_view == tab_contents_container_)
     tab_contents_container_ = nullptr;
+}
+
+void WebUITabStripContainerView::OnWidgetDestroying(views::Widget* widget) {
+  if (widget != editor_bubble_widget_)
+    return;
+
+  scoped_widget_observation_.Reset();
+  editor_bubble_widget_ = nullptr;
 }
 
 bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {

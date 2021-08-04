@@ -34,6 +34,7 @@ class TabStripUIEmbedder {
   virtual void ShowEditDialogForGroupAtPoint(gfx::Point point,
                                              gfx::Rect rect,
                                              tab_groups::TabGroupId group) = 0;
+  virtual void HideEditDialogForGroup() = 0;
 
   virtual TabStripUILayout GetLayout() = 0;
 
