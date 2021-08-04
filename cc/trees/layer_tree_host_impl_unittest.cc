@@ -3474,21 +3474,87 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
 class MissingTilesLayer : public LayerImpl {
  public:
-  MissingTilesLayer(LayerTreeImpl* layer_tree_impl, int id)
-      : LayerImpl(layer_tree_impl, id), has_missing_tiles_(true) {}
-
-  void set_has_missing_tiles(bool has_missing_tiles) {
-    has_missing_tiles_ = has_missing_tiles;
+  static std::unique_ptr<MissingTilesLayer> Create(LayerTreeImpl* tree_impl,
+                                                   int id) {
+    return base::WrapUnique(new MissingTilesLayer(tree_impl, id));
   }
+  MissingTilesLayer(LayerTreeImpl* layer_tree_impl, int id)
+      : LayerImpl(layer_tree_impl, id) {}
 
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
-    append_quads_data->num_missing_tiles += has_missing_tiles_;
+    append_quads_data->num_missing_tiles += 10;
+    append_quads_data->checkerboarded_no_recording_content_area += 200;
+    append_quads_data->checkerboarded_needs_raster_content_area += 200;
+    append_quads_data->visible_layer_area += 200;
   }
-
- private:
-  bool has_missing_tiles_;
 };
+
+TEST_P(ScrollUnifiedLayerTreeHostImplTest,
+       CurrentScrollDidCheckerboardLargeArea) {
+  LayerTreeSettings settings = DefaultSettings();
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
+
+  const gfx::Size content_size(1000, 1000);
+  const gfx::Size viewport_size(500, 500);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+
+  LayerImpl* outer_scroll_layer = OuterViewportScrollLayer();
+  outer_scroll_layer->SetDrawsContent(true);
+  LayerImpl* inner_scroll_layer = InnerViewportScrollLayer();
+  inner_scroll_layer->SetDrawsContent(true);
+
+  // Add layer that draws content and has checkerboarded areas.
+  auto* scroll_layer = AddLayer<MissingTilesLayer>(host_impl_->active_tree());
+  CopyProperties(inner_scroll_layer, scroll_layer);
+  scroll_layer->SetBounds(gfx::Size(500, 500));
+  scroll_layer->SetDrawsContent(true);
+  scroll_layer->SetHitTestable(false);
+  host_impl_->active_tree()->SetElementIdsForTesting();
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  DrawFrame();
+
+  // No scroll has taken place so this should be false.
+  EXPECT_FALSE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+
+  // Send scroll begin.
+  GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+
+  DrawFrame();
+
+  // Even though a ScrollBegin has been processed, we still don't consider the
+  // interaction to be "actively scrolling". Expect this to be false.
+  EXPECT_FALSE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+
+  gfx::ScrollOffset scroll_delta(0, 10);
+
+  // Send scroll update.
+  GetInputHandler().ScrollUpdate(
+      UpdateState(gfx::Point(10, 10),
+                  gfx::ScrollOffsetToVector2dF(scroll_delta),
+                  ui::ScrollInputType::kWheel)
+          .get());
+
+  host_impl_->SetFullViewportDamage();
+  DrawFrame();
+
+  // Now that a scroll update has been processed and the latest
+  // CalculateRenderPasses run has computed significant visible checkerboarding,
+  // expect this flag to be true.
+  EXPECT_TRUE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+
+  GetInputHandler().ScrollEnd();
+
+  // Expect state to be reset after a scroll end.
+  EXPECT_FALSE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+}
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ImplPinchZoom) {
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));

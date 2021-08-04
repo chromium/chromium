@@ -906,7 +906,8 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
   // continue to rasterize the tile right now rather than for images only.
   if (tile_priority.distance_to_visible <
           max_skewport_extent_in_screen_space_ &&
-      client_->ScrollInteractionInProgress() && client_->DidCheckerboardQuad())
+      client_->ScrollInteractionInProgress() &&
+      client_->CurrentScrollDidCheckerboardLargeArea())
     process_for_images_only = false;
   return PrioritizedTile(tile, this, tile_priority, IsTileOccluded(tile),
                          process_for_images_only,

@@ -143,6 +143,12 @@ using ScrollThread = cc::InputHandler::ScrollThread;
 namespace cc {
 namespace {
 
+// The threshold which determines at what point during a scroll, should the
+// tree priority change from SMOOTHNESS_TAKES_PRIORITY to
+// NEW_CONTENT_TAKES_PRIORITY. The threshold represents visible checkerboarded
+// area.
+const float kVisibleCheckerboardedThresholdForPreferNewContent = 0.3f;
+
 // In BuildHitTestData we iterate all layers to find all layers that overlap
 // OOPIFs, but when the number of layers is greater than
 // |kAssumeOverlapThreshold|, it can be inefficient to accumulate layer bounds
@@ -318,6 +324,7 @@ void LayerTreeHostImpl::DidStartScroll() {
 
 void LayerTreeHostImpl::DidEndScroll() {
   scroll_affects_scroll_handler_ = false;
+  current_scroll_did_checkerboard_large_area_ = false;
 }
 
 void LayerTreeHostImpl::DidMouseLeave() {
@@ -1316,6 +1323,18 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     }
     frame->use_default_lower_bound_deadline |=
         append_quads_data.use_default_lower_bound_deadline;
+  }
+
+  if (total_visible_area > 0 &&
+      GetActivelyScrollingType() != ActivelyScrollingType::kNone) {
+    float visible_area_checkerboarded_ratio =
+        (checkerboarded_no_recording_content_area +
+         checkerboarded_needs_raster_content_area) /
+        total_visible_area;
+    if (visible_area_checkerboarded_ratio >
+        kVisibleCheckerboardedThresholdForPreferNewContent) {
+      SetCurrentScrollDidCheckerboardLargeArea();
+    }
   }
 
   // If CommitToActiveTree() is true, then we wait to draw until

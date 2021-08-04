@@ -410,6 +410,7 @@ void ProxyImpl::RenewTreePriority() {
   DCHECK(IsImplThread());
 
   bool scroll_type_considered_interaction = false;
+  bool prefer_new_content = false;
   bool non_scroll_interaction_in_progress =
       host_impl_->IsPinchGestureActive() ||
       host_impl_->page_scale_animation_active();
@@ -436,8 +437,14 @@ void ProxyImpl::RenewTreePriority() {
         user_interaction_in_progress);
   }
 
+  if (host_impl_->CurrentScrollDidCheckerboardLargeArea() &&
+      base::FeatureList::IsEnabled(
+          features::kPreferNewContentForCheckerboardedScrolls)) {
+    prefer_new_content = true;
+  }
+
   // Schedule expiration if smoothness currently takes priority.
-  if (user_interaction_in_progress)
+  if (user_interaction_in_progress && !prefer_new_content)
     smoothness_priority_expiration_notifier_.Schedule();
 
   // We use the same priority for both trees by default.

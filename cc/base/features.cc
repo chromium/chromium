@@ -57,4 +57,8 @@ const base::Feature kHudDisplayForPerformanceMetrics{
 const base::Feature kJankInjectionAblationFeature{
     "JankInjectionAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPreferNewContentForCheckerboardedScrolls{
+    "PreferNewContentForCheckerboardedScrolls",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

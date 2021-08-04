@@ -131,8 +131,8 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->ScrollInteractionInProgress();
   }
 
-  bool DidCheckerboardQuad() const override {
-    return base_client_->DidCheckerboardQuad();
+  bool CurrentScrollDidCheckerboardLargeArea() const override {
+    return base_client_->CurrentScrollDidCheckerboardLargeArea();
   }
 
  private:

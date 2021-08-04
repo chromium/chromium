@@ -663,6 +663,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // See comment in equivalent ThreadedInputHandler method for what this means.
   ActivelyScrollingType GetActivelyScrollingType() const;
   bool ScrollAffectsScrollHandler() const;
+  bool CurrentScrollDidCheckerboardLargeArea() const {
+    return current_scroll_did_checkerboard_large_area_;
+  }
+  void SetCurrentScrollDidCheckerboardLargeArea() {
+    current_scroll_did_checkerboard_large_area_ = true;
+  }
   void SetExternalPinchGestureActive(bool active);
   void set_force_smooth_wheel_scrolling_for_testing(bool enabled) {
     GetInputHandler().set_force_smooth_wheel_scrolling_for_testing(enabled);
@@ -1239,6 +1245,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // TODO(bokan): This is quite old and scheduling has become much more
   // sophisticated since so it's not clear how much value it's still providing.
   bool scroll_affects_scroll_handler_ = false;
+
+  // Whether at least 30% of the viewport at the time of draw was
+  // checkerboarded during a scroll. This bit can get set during a scroll and
+  // is sticky for the duration of the scroll.
+  bool current_scroll_did_checkerboard_large_area_ = false;
 
   // Provides support for PaintWorklets which depend on input properties that
   // are being animated by the compositor (aka 'animated' PaintWorklets).

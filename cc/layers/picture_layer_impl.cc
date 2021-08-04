@@ -207,11 +207,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
-  // If did_checkerboard_quad_ is set to true, don't set to false until the
-  // scroll is completed.
-  if (!ScrollInteractionInProgress())
-    SetDidCheckerboardQuad(false);
-
   if (raster_source_->IsSolidColor()) {
     // TODO(979672): This is still hard-coded at 1.0. This has some history:
     //  - for crbug.com/769319, the contents scale was allowed to change, to
@@ -549,7 +544,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       append_quads_data->checkerboarded_no_recording_content_area +=
           visible_geometry_area - checkerboarded_has_recording_area;
 
-      SetDidCheckerboardQuad(true);
       continue;
     }
 
@@ -1013,8 +1007,8 @@ bool PictureLayerImpl::ScrollInteractionInProgress() const {
          ActivelyScrollingType::kNone;
 }
 
-bool PictureLayerImpl::DidCheckerboardQuad() const {
-  return did_checkerboard_quad_;
+bool PictureLayerImpl::CurrentScrollDidCheckerboardLargeArea() const {
+  return layer_tree_impl()->CurrentScrollDidCheckerboardLargeArea();
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {

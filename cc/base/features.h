@@ -47,6 +47,12 @@ CC_BASE_EXPORT extern const base::Feature kHudDisplayForPerformanceMetrics;
 // When enabled, some jank is injected to the animation/scrolling pipeline.
 CC_BASE_EXPORT extern const base::Feature kJankInjectionAblationFeature;
 
+// When enabled, scheduler tree priority will change to
+// NEW_CONTENT_TAKES_PRIORITY if during a scrollbar scroll, CC has to
+// checkerboard.
+CC_BASE_EXPORT extern const base::Feature
+    kPreferNewContentForCheckerboardedScrolls;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
