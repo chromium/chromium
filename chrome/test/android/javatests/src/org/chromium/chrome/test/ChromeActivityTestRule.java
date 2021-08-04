@@ -481,6 +481,18 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     @SuppressWarnings("unchecked")
     public static <T extends ChromeActivity> T waitFor(final Class<T> expectedClass) {
+        return waitFor(expectedClass, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+    }
+
+    /**
+     * Waits for an Activity of the given class to be started.
+     * @param expectedClass The class of the Activity being waited on.
+     * @param maxTimeToPoll Maximum time in milliseconds to poll.
+     * @return The Activity.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends ChromeActivity> T waitFor(
+            final Class<T> expectedClass, long maxTimeToPoll) {
         final Activity[] holder = new Activity[1];
         CriteriaHelper.pollUiThread(() -> {
             holder[0] = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -488,7 +500,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             Criteria.checkThat(holder[0].getClass(), Matchers.typeCompatibleWith(expectedClass));
             Criteria.checkThat(
                     ((ChromeActivity) holder[0]).getActivityTab(), Matchers.notNullValue());
-        });
+        }, maxTimeToPoll, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return (T) holder[0];
     }
 
