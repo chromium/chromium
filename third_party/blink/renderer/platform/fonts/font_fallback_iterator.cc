@@ -12,6 +12,12 @@
 
 namespace blink {
 
+namespace {
+
+const unsigned kMaxRecursionDepth = 128;
+
+}
+
 FontFallbackIterator::FontFallbackIterator(
     const FontDescription& description,
     scoped_refptr<FontFallbackList> fallback_list,
@@ -106,8 +112,11 @@ bool FontFallbackIterator::NeedsHintList() const {
 
 scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
     const Vector<UChar32>& hint_list) {
-  if (fallback_stage_ == kOutOfLuck)
+  if (fallback_stage_ == kOutOfLuck || recursion_depth_ > kMaxRecursionDepth)
     return base::AdoptRef(new FontDataForRangeSet());
+
+  base::AutoReset<unsigned> recursion_scope(&recursion_depth_,
+                                            recursion_depth_ + 1);
 
   if (fallback_stage_ == kFallbackPriorityFonts) {
     // Only try one fallback priority font,

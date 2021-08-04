@@ -87,6 +87,9 @@ class FontFallbackIterator {
   scoped_refptr<FontDataForRangeSet> first_candidate_;
   Vector<scoped_refptr<FontDataForRangeSet>> tracked_loading_range_sets_;
   FontFallbackPriority font_fallback_priority_;
+
+  // Limits the recursion depth on Next().
+  unsigned recursion_depth_ = 0;
 };
 
 }  // namespace blink
