@@ -4,11 +4,19 @@
 
 #include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
 
+#include "base/strings/strcat.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -45,7 +53,9 @@ ScreenshotCapturedBubble::ScreenshotCapturedBubble(
     views::View* anchor_view,
     content::WebContents* web_contents,
     const gfx::Image& image)
-    : LocationBarBubbleDelegateView(anchor_view, nullptr), image_(image) {
+    : LocationBarBubbleDelegateView(anchor_view, nullptr),
+      image_(image),
+      web_contents_(web_contents) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE);
 }
@@ -112,7 +122,7 @@ void ScreenshotCapturedBubble::Init() {
 
   // Edit button.
   auto edit_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&ScreenshotCapturedBubble::DownloadButtonPressed,
+      base::BindRepeating(&ScreenshotCapturedBubble::EditButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL));
@@ -120,7 +130,7 @@ void ScreenshotCapturedBubble::Init() {
 
   // Share button.
   auto share_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&ScreenshotCapturedBubble::DownloadButtonPressed,
+      base::BindRepeating(&ScreenshotCapturedBubble::ShareButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SHARE_BUTTON_LABEL));
@@ -173,8 +183,57 @@ void ScreenshotCapturedBubble::Init() {
   // End controls row
 }
 
+/*static*/
+const std::u16string ScreenshotCapturedBubble::GetFilenameForURL(
+    const GURL& url) {
+  if (!url.has_host() || url.HostIsIPAddress())
+    return u"chrome_screenshot.png";
+
+  return base::ASCIIToUTF16(
+      base::StrCat({"chrome_screenshot_", url.host(), ".png"}));
+}
+
 void ScreenshotCapturedBubble::DownloadButtonPressed() {
-  NOTIMPLEMENTED();
+  // Returns closest scaling to parameter (1.0).
+  const gfx::ImageSkia& image_ref = image_view_->GetImage();
+  const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
+  const SkBitmap& bitmap = image_rep.GetBitmap();
+  const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  content::DownloadManager* download_manager =
+      browser->profile()->GetDownloadManager();
+  // TODO(crbug.com/1186839): Update the annotation's |setting| and
+  // |chrome_policy| fields once the Sharing Hub is landed.
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("desktop_screenshot_save", R"(
+      semantics {
+        sender: "Desktop Screenshots"
+        description:
+          "The user may capture a selection of the current page. This bubble "
+          "view has a download button to save the generated image to disk. "
+        trigger: "User clicks 'download' in a bubble view launched from the "
+          "omnibox after the 'Screenshot' option is selected in the sharing "
+          "hub and a selection is made on the page. "
+        data: "A capture of a portion of the current webpage."
+        destination: LOCAL
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No user-visible setting for this feature. Experiment and rollout to "
+          "be coordinated via Chrome Variations."
+        policy_exception_justification:
+          "Not implemented, considered not required."
+      })");
+  std::unique_ptr<download::DownloadUrlParameters> params =
+      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          web_contents_, data_url, traffic_annotation);
+  // Suggest a name incorporating the hostname. Protocol, TLD, etc are
+  // not taken into consideration. Duplicate names get automatic suffixes.
+  params->set_suggested_name(
+      GetFilenameForURL(web_contents_->GetLastCommittedURL()));
+  download_manager->DownloadUrl(std::move(params));
 }
 
 void ScreenshotCapturedBubble::ShareButtonPressed() {

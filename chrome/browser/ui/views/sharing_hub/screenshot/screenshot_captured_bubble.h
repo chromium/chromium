@@ -42,6 +42,8 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
 
+  static const std::u16string GetFilenameForURL(const GURL& url);
+
   // views::BubbleDialogDelegateView:
   void Init() override;
 
@@ -52,6 +54,8 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   void ShareButtonPressed();
 
   const gfx::Image& image_;
+
+  content::WebContents* web_contents_;
 
   // Pointers to view widgets; weak.
   views::ImageView* image_view_ = nullptr;
