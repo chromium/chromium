@@ -182,10 +182,7 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
   // DrawingBuffer::SetupRGBEmulationForBlitFramebuffer to bind an RGBA
   // IOSurface as RGB. We should support this.
 
-  if (texture_bound_) {
-    LOG(ERROR) << "Cannot re-bind already bound IOSurface.";
-    return false;
-  }
+  CHECK(!texture_bound_) << "Cannot re-bind already bound IOSurface.";
 
   GLenum target_getter = TargetGetterFromGLTarget(target);
   EGLint target_egl = EGLTargetFromGLTarget(target);
