@@ -95,7 +95,9 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 
 - (void)performActivity {
   BookmarkAddCommand* command =
-      [[BookmarkAddCommand alloc] initWithURL:self.URL title:self.title];
+      [[BookmarkAddCommand alloc] initWithURL:self.URL
+                                        title:self.title
+                         presentFolderChooser:NO];
   [self.handler bookmark:command];
   [self activityDidFinish:YES];
 }

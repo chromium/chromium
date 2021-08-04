@@ -16,11 +16,11 @@
 @protocol BookmarksCommands <NSObject>
 
 // Adds bookmarks for the given list of URLs in |command|.
-// If there are multiple URLs provided:
+// If |command.presentFolderChooser| is true:
 // - the user will be prompted to choose a location to store the bookmarks.
-// If a single URL is provided:
-// - and it is already bookmarked, the "edit bookmark" flow will begin.
-// - which is not already bookmarked, it will be bookmarked automatically and an
+// Otherwise, only a single URL must be provided:
+// - If it is already bookmarked, the "edit bookmark" flow will begin.
+// - If it is not already bookmarked, it will be bookmarked automatically and an
 //   "Edit" button will be provided in the displayed snackbar message.
 - (void)bookmark:(BookmarkAddCommand*)command;
 

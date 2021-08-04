@@ -594,10 +594,19 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
   if (!self.bookmarkModel->loaded())
     return;
 
-  if (command.URLs.count == 1) {
+  if (command.URLs.count == 1 && !command.presentFolderChooser) {
     URLWithTitle* URLWithTitle = command.URLs.firstObject;
     DCHECK(URLWithTitle);
-    [self bookmarkURL:URLWithTitle.URL title:URLWithTitle.title];
+
+    const BookmarkNode* existingBookmark =
+        self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(
+            URLWithTitle.URL);
+
+    if (existingBookmark) {
+      [self presentBookmarkEditorForURL:URLWithTitle.URL];
+    } else {
+      [self bookmarkURL:URLWithTitle.URL title:URLWithTitle.title];
+    }
     return;
   }
 
