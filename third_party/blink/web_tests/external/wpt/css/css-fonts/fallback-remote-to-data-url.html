@@ -21,14 +21,15 @@ document.fonts.add(dataFont);
   font-family: remote-font;
   /* Set a long delay to make sure it doesn't finish loading */
   src: url('/fonts/Revalia.woff?pipe=trickle(d1)') format('woff');
+  font-display: swap;
 }
 
-#target {
+#target, #not-covered {
   font: 25px/1 remote-font, data-font, monospace;
 }
 </style>
 <span id="target">0123456789</span>
-<span id="non-target">ABCDEFGHIJ</span>
+<span id="not-covered">ABCDEFGHIJ</span>
 <script>
 promise_test(async () => {
   // The loading of data-font may still be asynchronous. Wait to allow it to load.
@@ -40,7 +41,7 @@ promise_test(async () => {
     target.offsetWidth, 250,
     'Digits are in the unicode range of data-font and hence shaped with it');
   assert_not_equals(
-    document.getElementById('non-target').offsetWidth, 250,
+    document.getElementById('not-covered').offsetWidth, 250,
     'Letters are out of the unicode range of data-font and hence shaped with fallback');
 }, 'We should use the inline custom font to render the page when the primary remote font is loading');
 </script>
