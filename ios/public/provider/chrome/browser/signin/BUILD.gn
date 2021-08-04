@@ -28,6 +28,13 @@ source_set("signin") {
   ]
 }
 
+source_set("signin_error_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "signin_error_api.h" ]
+  deps = []
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -78,6 +85,17 @@ source_set("constants") {
     "fake_chrome_identity_service_constants.mm",
   ]
   deps = [ "//base" ]
+}
+
+source_set("test_signin_error") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_signin_error.mm" ]
+  deps = [
+    ":signin_error_api",
+    "//base",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

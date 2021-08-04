@@ -15,3 +15,13 @@ source_set("signin") {
   frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
+
+source_set("chromium_signin_error") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_signin_error.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
