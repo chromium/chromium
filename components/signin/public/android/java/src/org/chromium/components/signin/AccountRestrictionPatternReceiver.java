@@ -35,15 +35,16 @@ final class AccountRestrictionPatternReceiver {
             BroadcastReceiver receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    getRestrictionPatternsAsync().then(onPatternsUpdated::onResult);
+                    getRestrictionPatternsAsync().then(onPatternsUpdated);
                 }
             };
             ContextUtils.getApplicationContext().registerReceiver(
                     receiver, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
         }
+        getRestrictionPatternsAsync().then(onPatternsUpdated);
     }
 
-    Promise<List<PatternMatcher>> getRestrictionPatternsAsync() {
+    private Promise<List<PatternMatcher>> getRestrictionPatternsAsync() {
         final Promise<List<PatternMatcher>> promise = new Promise<>();
         new AsyncTask<List<PatternMatcher>>() {
             @Override
@@ -60,7 +61,7 @@ final class AccountRestrictionPatternReceiver {
     }
 
     @WorkerThread
-    List<PatternMatcher> getRestrictionPatterns() {
+    private List<PatternMatcher> getRestrictionPatterns() {
         final List<PatternMatcher> patternMatchers = new ArrayList<>();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             return patternMatchers;
