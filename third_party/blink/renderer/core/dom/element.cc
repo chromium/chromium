@@ -4426,6 +4426,16 @@ void Element::ForceLegacyLayoutInFragmentationContext(
   // positives; e.g. if there's an absolutely positioned table, whose containing
   // block of the table is on the outside of the fragmentation context, we're
   // still going to fall back to legacy.
+
+  if (GetDocument().Printing()) {
+    // Force legacy layout on the entire document, since we're printing, and
+    // there's some fragmentable box that needs legacy layout inside somewhere.
+    Element* root = GetDocument().documentElement();
+    root->SetShouldForceLegacyLayoutForChild(true);
+    root->SetNeedsReattachLayoutTree();
+    return;
+  }
+
   Element* parent;
   for (Element* walker = this; walker; walker = parent) {
     parent = DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*walker));
@@ -4440,12 +4450,6 @@ void Element::ForceLegacyLayoutInFragmentationContext(
     if (parent && !parent->GetComputedStyle()->InsideNGFragmentationContext())
       return;
   }
-  DCHECK(GetDocument().Printing());
-  // Force legacy layout on the entire document, since we're printing, and
-  // there's some fragmentable box that needs legacy layout inside somewhere.
-  Element* root = GetDocument().documentElement();
-  root->SetShouldForceLegacyLayoutForChild(true);
-  root->SetNeedsReattachLayoutTree();
 }
 
 bool Element::IsFocusedElementInDocument() const {
