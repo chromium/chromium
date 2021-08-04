@@ -85,6 +85,7 @@ source_set("common") {
     "//remoting/base:authorization",
     "//remoting/host:base",
     "//remoting/host:common",
+    "//remoting/host:headers",
     "//remoting/host/native_messaging:native_messaging",
     "//remoting/protocol",
     "//remoting/resources",
@@ -109,7 +110,10 @@ source_set("common") {
     deps += [ "//ui/base:base" ]
   }
   if (is_win) {
-    deps += [ "//remoting/host/win:elevated_native_messaging_host" ]
+    deps += [
+      "//remoting/host/win:elevated_native_messaging_host",
+      "//remoting/host/win:headers",
+    ]
   }
 }
 
@@ -285,6 +289,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
       deps = [
         ":common",
         "//remoting/host",
+        "//remoting/host:headers",
         "//remoting/host/native_messaging",
         "//remoting/proto",
         "//third_party/webrtc_overrides:webrtc_component",

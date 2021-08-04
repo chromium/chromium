@@ -12,6 +12,7 @@ source_set("file_transfer") {
 
   deps = [
     "//base",
+    "//remoting/host:headers",
     "//remoting/protocol",
     "//remoting/resources",
   ]
@@ -41,6 +42,7 @@ source_set("file_transfer") {
       "//ipc:ipc",
       "//remoting/host:base",
       "//remoting/host:common",
+      "//remoting/host/win:headers",
     ]
   } else {
     sources += [ "get_desktop_directory.cc" ]

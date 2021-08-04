@@ -174,6 +174,46 @@ source_set("host_extension") {
   ]
 }
 
+source_set("headers") {
+  sources = [
+    "action_executor.h",
+    "audio_capturer.h",
+    "audio_silence_detector.h",
+    "audio_volume_filter.h",
+    "basic_desktop_environment.h",
+    "chromoting_messages.h",
+    "chromoting_param_traits.h",
+    "desktop_and_cursor_conditional_composer.h",
+    "desktop_environment.h",
+    "desktop_environment_options.h",
+    "evaluate_capability.h",
+    "host_export.h",
+    "input_injector.h",
+    "sas_injector.h",
+    "screen_controls.h",
+    "screen_resolution.h",
+  ]
+  if (is_win) {
+    sources += [
+      "host_main.h",
+      "worker_process_ipc_delegate.h",
+    ]
+  }
+  if (!is_chromeos_ash) {
+    sources += [ "me2me_desktop_environment.h" ]
+  }
+
+  deps = [
+    "//base",
+    "//ipc",
+    "//remoting/base",
+    "//remoting/protocol",
+  ]
+  if (is_win) {
+    deps += [ "//remoting/host/win:headers" ]
+  }
+}
+
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -184,19 +224,14 @@ source_set("host_extension") {
 static_library("common") {
   sources = [
     "action_executor.cc",
-    "action_executor.h",
     "action_message_handler.cc",
     "action_message_handler.h",
     "audio_capturer.cc",
-    "audio_capturer.h",
     "audio_silence_detector.cc",
-    "audio_silence_detector.h",
     "audio_volume_filter.cc",
-    "audio_volume_filter.h",
     "backoff_timer.cc",
     "backoff_timer.h",
     "basic_desktop_environment.cc",
-    "basic_desktop_environment.h",
     "branding.cc",
     "branding.h",
     "chromoting_host.cc",
@@ -204,9 +239,7 @@ static_library("common") {
     "chromoting_host_context.cc",
     "chromoting_host_context.h",
     "chromoting_messages.cc",
-    "chromoting_messages.h",
     "chromoting_param_traits.cc",
-    "chromoting_param_traits.h",
     "chromoting_param_traits_impl.h",
     "client_session.cc",
     "client_session.h",
@@ -223,7 +256,6 @@ static_library("common") {
     "desktop_and_cursor_composer_notifier.cc",
     "desktop_and_cursor_composer_notifier.h",
     "desktop_and_cursor_conditional_composer.cc",
-    "desktop_and_cursor_conditional_composer.h",
     "desktop_capturer_checker.cc",
     "desktop_capturer_checker.h",
     "desktop_capturer_proxy.cc",
@@ -231,9 +263,7 @@ static_library("common") {
     "desktop_display_info.cc",
     "desktop_display_info.h",
     "desktop_display_info_loader.h",
-    "desktop_environment.h",
     "desktop_environment_options.cc",
-    "desktop_environment_options.h",
     "desktop_process.cc",
     "desktop_process.h",
     "desktop_resizer.h",
@@ -245,7 +275,6 @@ static_library("common") {
     "desktop_session_proxy.cc",
     "desktop_session_proxy.h",
     "evaluate_capability.cc",
-    "evaluate_capability.h",
     "forward_process_stats_agent.cc",
     "forward_process_stats_agent.h",
     "ftl_echo_message_listener.cc",
@@ -265,7 +294,6 @@ static_library("common") {
     "host_event_logger.h",
     "host_experiment_session_plugin.cc",
     "host_experiment_session_plugin.h",
-    "host_export.h",
     "host_extension_session_manager.cc",
     "host_extension_session_manager.h",
     "host_power_save_blocker.cc",
@@ -281,7 +309,6 @@ static_library("common") {
     "host_window.h",
     "host_window_proxy.cc",
     "host_window_proxy.h",
-    "input_injector.h",
     "ipc_action_executor.cc",
     "ipc_action_executor.h",
     "ipc_audio_capturer.cc",
@@ -333,10 +360,7 @@ static_library("common") {
     "resizing_host_observer.cc",
     "resizing_host_observer.h",
     "resources.h",
-    "sas_injector.h",
-    "screen_controls.h",
     "screen_resolution.cc",
-    "screen_resolution.h",
     "server_log_entry_host.cc",
     "server_log_entry_host.h",
     "shutdown_watchdog.cc",
@@ -376,6 +400,7 @@ static_library("common") {
     ":base",
     ":client_session_control",
     ":clipboard",
+    ":headers",
     ":host_settings",
     ":remote_open_url_support",
     "//base:i18n",
@@ -516,10 +541,7 @@ static_library("common") {
       ]
     }
   } else {
-    sources += [
-      "me2me_desktop_environment.cc",
-      "me2me_desktop_environment.h",
-    ]
+    sources += [ "me2me_desktop_environment.cc" ]
   }
 
   if (is_mac) {
@@ -578,20 +600,6 @@ static_library("common") {
       "url_forwarder_configurator_win.cc",
       "url_forwarder_configurator_win.h",
       "usage_stats_consent_win.cc",
-
-      # TODO(crbug.com/1184893): These are in //remoting/host/win:remoting_core, but we can't add a
-      # dep for it because it would make a circular dependency. These should be
-      # moved to a new build target that both can depend on if possible.
-      "host_main.h",
-      "win/core_resource.h",
-      "win/etw_trace_consumer.h",
-      "win/host_event_file_logger.h",
-      "win/host_event_logger.h",
-      "win/host_event_windows_event_logger.h",
-      "win/host_service.h",
-      "win/unprivileged_process_delegate.h",
-      "win/wts_session_process_delegate.h",
-      "worker_process_ipc_delegate.h",
     ]
     libs += [ "crypt32.lib" ]
     deps += [
@@ -602,6 +610,7 @@ static_library("common") {
       "//media/gpu:gpu",
       "//mojo/core/embedder:embedder",
       "//remoting/host/win",
+      "//remoting/host/win:headers",
       "//remoting/host/win:messages",
       "//remoting/host/win:remoting_lib_idl",
     ]
@@ -630,6 +639,7 @@ static_library("test_support") {
 
   deps = [
     ":client_session_control",
+    ":headers",
     "//remoting/codec:encoder",
     "//remoting/host/file_transfer:common",
     "//remoting/host/security_key:security_key",
@@ -713,6 +723,7 @@ source_set("unit_tests") {
     ":base",
     ":client_session_control",
     ":common",
+    ":headers",
     ":test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -794,6 +805,7 @@ if (enable_remoting_host) {
     sources = [ "setup/start_host_entry_point.cc" ]
 
     deps = [
+      ":headers",
       "//third_party/libjingle_xmpp",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
@@ -924,6 +936,7 @@ if (enable_me2me_host) {
 
     deps = [
       ":base",
+      ":headers",
       ":host_settings",
       "//base",
       "//base:i18n",
@@ -987,6 +1000,7 @@ if (enable_me2me_host) {
       deps = [
         ":base",
         ":common",
+        ":headers",
         "//base",
         "//base:debugging_buildflags",
         "//mojo/core/embedder:embedder",
@@ -1008,6 +1022,7 @@ if (enable_me2me_host) {
         ]
 
         deps = [
+          ":headers",
           ":remoting_me2me_host_static",
           "//base",
           "//mojo/core/embedder:embedder",
@@ -1076,6 +1091,7 @@ if (enable_me2me_host && (is_linux || is_win)) {
       ]
       deps = [
         ":common",
+        ":headers",
         ":host_settings",
         ":logging",
         ":remoting_me2me_host_static",
