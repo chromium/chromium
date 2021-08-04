@@ -39,6 +39,15 @@ id<GREYMatcher> GetAcceptButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns a matcher for the sign-in screen "Continue as <identity>" button.
+id<GREYMatcher> GetContinueButtonWithIdentity(
+    FakeChromeIdentity* fakeIdentity) {
+  NSString* buttonTitle = l10n_util::GetNSStringF(
+      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  return grey_accessibilityLabel(buttonTitle);
+}
+
 }  // namespace
 
 // Test first run stages
@@ -250,10 +259,8 @@ id<GREYMatcher> GetAcceptButton() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Check that the title of the primary button updates for |fakeIdentity|.
-  NSString* buttonTitle = l10n_util::GetNSStringF(
-      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(buttonTitle)]
+  [[EarlGrey
+      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey
@@ -279,7 +286,7 @@ id<GREYMatcher> GetAcceptButton() {
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
 
-  // Check that |fakeIdentity1| is displayed.
+  // Check that |fakeIdentity2| is displayed.
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity2.userEmail)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -295,10 +302,8 @@ id<GREYMatcher> GetAcceptButton() {
       performAction:grey_tap()];
 
   // Check that the title of the primary button updates for |fakeIdentity2|.
-  NSString* buttonTitle = l10n_util::GetNSStringF(
-      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-      base::SysNSStringToUTF16(fakeIdentity2.userGivenName));
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(buttonTitle)]
+  [[EarlGrey
+      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity2)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -319,6 +324,61 @@ id<GREYMatcher> GetAcceptButton() {
       performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedOut];
+}
+
+// Checks that sync is turned on after the user chose to turn on sync.
+- (void)testTurnOnSync {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  [self verifySignInScreenIsDisplayed];
+  [[EarlGrey
+      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity)]
+      performAction:grey_tap()];
+
+  [self verifySyncScreenIsDisplayed];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_text(l10n_util::GetNSString(
+                                IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [SigninEarlGrey verifySyncUIEnabled:YES];
+}
+
+// Checks that sync is not turned on if an account has been signed in but the
+// user chose not to turn on sync.
+- (void)testNoSync {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  [self verifySignInScreenIsDisplayed];
+  [[EarlGrey
+      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity)]
+      performAction:grey_tap()];
+
+  [self verifySyncScreenIsDisplayed];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_text(l10n_util::GetNSString(
+                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Verify that the user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [SigninEarlGrey verifySyncUIEnabled:NO];
 }
 
 @end
