@@ -332,6 +332,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetPrimaryMainFrameImportance(ChildProcessImportance importance);
 #endif
 
+  // Returns the human-readable name for title in Media Controls.
+  // If the returned value is an empty string, it means that there is no
+  // human-readable name.
+  std::string GetTitleForMediaControls();
+
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() override;
   void SetDelegate(WebContentsDelegate* delegate) override;

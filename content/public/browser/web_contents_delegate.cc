@@ -236,6 +236,11 @@ std::string WebContentsDelegate::GetDefaultMediaDeviceID(
   return std::string();
 }
 
+std::string WebContentsDelegate::GetTitleForMediaControls(
+    WebContents* web_contents) {
+  return {};
+}
+
 #if defined(OS_ANDROID)
 bool WebContentsDelegate::ShouldBlockMediaRequest(const GURL& url) {
   return false;

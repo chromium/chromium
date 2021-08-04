@@ -136,6 +136,8 @@ class ExtensionHost : public DeferredStartRenderHost,
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
+  std::string GetTitleForMediaControls(
+      content::WebContents* web_contents) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionReady(content::BrowserContext* browser_context,

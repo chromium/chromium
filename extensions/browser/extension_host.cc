@@ -466,6 +466,11 @@ void ExtensionHost::ExitPictureInPicture() {
   delegate_->ExitPictureInPicture();
 }
 
+std::string ExtensionHost::GetTitleForMediaControls(
+    content::WebContents* web_contents) {
+  return extension() ? extension()->name() : std::string();
+}
+
 void ExtensionHost::RecordStopLoadingUMA() {
   CHECK(load_start_.get());
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {

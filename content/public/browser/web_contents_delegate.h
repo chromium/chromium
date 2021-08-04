@@ -549,6 +549,13 @@ class CONTENT_EXPORT WebContentsDelegate {
       WebContents* web_contents,
       blink::mojom::MediaStreamType type);
 
+  // Returns the human-readable name for title in Media Controls.
+  // If the returned value is an empty string, it means that there is no
+  // human-readable name.
+  // For example, this returns an extension name for title instead of extension
+  // url.
+  virtual std::string GetTitleForMediaControls(WebContents* web_contents);
+
 #if defined(OS_ANDROID)
   // Returns true if the given media should be blocked to load.
   virtual bool ShouldBlockMediaRequest(const GURL& url);

@@ -1582,17 +1582,29 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
   ContentClient* content_client = content::GetContentClient();
   const GURL& url = web_contents()->GetLastCommittedURL();
 
-  // If the url is a file then we should display a placeholder.
-  std::u16string formatted_origin =
-      url.SchemeIsFile()
-          ? content_client->GetLocalizedString(IDS_MEDIA_SESSION_FILE_SOURCE)
-          : url_formatter::FormatUrl(
-                url::Origin::Create(url).GetURL(),
-                url_formatter::kFormatUrlOmitDefaults |
-                    url_formatter::kFormatUrlOmitHTTPS |
-                    url_formatter::kFormatUrlOmitTrivialSubdomains,
-                net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
-  metadata.source_title = formatted_origin;
+  // If |url| wraps a chrome extension ID, we can display the extension
+  // name instead, which is more human-readable.
+  std::u16string source_title;
+  WebContentsDelegate* delegate = web_contents()->GetDelegate();
+  if (delegate) {
+    source_title =
+        base::UTF8ToUTF16(delegate->GetTitleForMediaControls(web_contents()));
+  }
+
+  if (source_title.empty()) {
+    // If the url is a file then we should display a placeholder.
+    source_title =
+        url.SchemeIsFile()
+            ? content_client->GetLocalizedString(IDS_MEDIA_SESSION_FILE_SOURCE)
+            : url_formatter::FormatUrl(
+                  url::Origin::Create(url).GetURL(),
+                  url_formatter::kFormatUrlOmitDefaults |
+                      url_formatter::kFormatUrlOmitHTTPS |
+                      url_formatter::kFormatUrlOmitTrivialSubdomains,
+                  net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+  }
+
+  metadata.source_title = source_title;
 
   // If we have no artwork in |images_| or the arwork has changed then we should
   // update it with the latest artwork from the routed service.
