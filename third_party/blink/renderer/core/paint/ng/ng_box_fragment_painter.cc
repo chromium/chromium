@@ -721,6 +721,11 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
 
   DCHECK(items_);
   NGInlineCursor children(fragment, *items_);
+  if (fragment.IsSvgText()) {
+    ScopedSVGPaintState paint_state(*fragment.GetLayoutObject(), paint_info);
+    PaintLineBoxChildren(&children, paint_info.ForDescendants(), paint_offset);
+    return;
+  }
   PaintLineBoxChildren(&children, paint_info.ForDescendants(), paint_offset);
 }
 
