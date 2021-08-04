@@ -9,10 +9,10 @@
 #include "base/run_loop.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_app_list_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -239,10 +239,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   EXPECT_TRUE(SyncItemsMatch(service, &compare_service));
 }
 
-// Tests for SplitSettingsSync.
-class SingleClientAppListOsSyncTest : public OsSyncTest {
+// Tests for SyncSettingsCategorization.
+class SingleClientAppListOsSyncTest
+    : public SyncSettingsCategorizationSyncTest {
  public:
-  SingleClientAppListOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientAppListOsSyncTest()
+      : SyncSettingsCategorizationSyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppListOsSyncTest() override = default;
 };
 

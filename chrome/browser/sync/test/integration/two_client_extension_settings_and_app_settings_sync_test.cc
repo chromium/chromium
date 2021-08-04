@@ -15,7 +15,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #endif
 
 namespace {
@@ -220,11 +220,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests for SplitSettingsSync, which uses a different ModelTypeController for
-// syncer::APP_SETTINGS.
-class TwoClientAppSettingsOsSyncTest : public OsSyncTest {
+// Tests for SyncSettingsCategorization, which uses a different
+// ModelTypeController for syncer::APP_SETTINGS.
+class TwoClientAppSettingsOsSyncTest
+    : public SyncSettingsCategorizationSyncTest {
  public:
-  TwoClientAppSettingsOsSyncTest() : OsSyncTest(TWO_CLIENT) {}
+  TwoClientAppSettingsOsSyncTest()
+      : SyncSettingsCategorizationSyncTest(TWO_CLIENT) {}
   ~TwoClientAppSettingsOsSyncTest() override = default;
 
   bool UseVerifier() override {

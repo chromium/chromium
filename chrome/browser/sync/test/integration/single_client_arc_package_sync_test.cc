@@ -4,8 +4,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -91,9 +91,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, DisableAndReenable) {
   ASSERT_TRUE(AllProfilesHaveSameArcPackageDetails());
 }
 
-class SingleClientArcPackageOsSyncTest : public OsSyncTest {
+class SingleClientArcPackageOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientArcPackageOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientArcPackageOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientArcPackageOsSyncTest() override = default;
 };
 

@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #endif
 
 using syncer::UserSelectableType;
@@ -23,9 +23,10 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS syncs apps as an OS type.
-class SingleClientAppSettingsOsSyncTest : public OsSyncTest {
+class SingleClientAppSettingsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientAppSettingsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientAppSettingsOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppSettingsOsSyncTest() override = default;
 };
 

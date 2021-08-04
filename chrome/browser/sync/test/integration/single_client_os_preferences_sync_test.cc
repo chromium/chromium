@@ -5,8 +5,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -22,9 +23,11 @@ using preferences_helper::ChangeStringPref;
 using preferences_helper::GetPrefs;
 using testing::Eq;
 
-class SingleClientOsPreferencesSyncTest : public OsSyncTest {
+class SingleClientOsPreferencesSyncTest
+    : public SyncSettingsCategorizationSyncTest {
  public:
-  SingleClientOsPreferencesSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientOsPreferencesSyncTest()
+      : SyncSettingsCategorizationSyncTest(SINGLE_CLIENT) {}
   ~SingleClientOsPreferencesSyncTest() override = default;
 };
 
@@ -40,7 +43,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
               Eq(ash::kShelfAlignmentRight));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
+class SingleClientOsPreferencesOptionalConsentSyncTest
+    : public SyncConsentOptionalSyncTest {
+ public:
+  SingleClientOsPreferencesOptionalConsentSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
+  ~SingleClientOsPreferencesOptionalConsentSyncTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesOptionalConsentSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
   ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
   ASSERT_TRUE(SetupSync());

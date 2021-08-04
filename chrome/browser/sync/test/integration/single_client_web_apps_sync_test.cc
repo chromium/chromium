@@ -25,7 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #endif
 
 using syncer::UserSelectableType;
@@ -44,9 +44,9 @@ const char kVersion[] = "1.0.0.1";
 // These tests test the new Web Apps system with next generation sync.
 //
 // Chrome OS syncs apps as an OS type.
-class SingleClientWebAppsOsSyncTest : public OsSyncTest {
+class SingleClientWebAppsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientWebAppsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
+  SingleClientWebAppsOsSyncTest() : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
     scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);

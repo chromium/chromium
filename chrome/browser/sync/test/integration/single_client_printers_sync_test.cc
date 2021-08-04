@@ -6,8 +6,8 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -118,9 +118,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
 }
 
 // Tests for SplitSettingsSync.
-class SingleClientPrintersOsSyncTest : public OsSyncTest {
+class SingleClientPrintersOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientPrintersOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientPrintersOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientPrintersOsSyncTest() override = default;
 };
 

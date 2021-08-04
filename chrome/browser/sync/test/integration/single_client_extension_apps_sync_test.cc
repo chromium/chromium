@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #endif
 
 using apps_helper::AllProfilesHaveSameApps;
@@ -119,10 +119,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests for SplitSettingsSync.
-class SingleClientExtensionAppsOsSyncTest : public OsSyncTest {
+class SingleClientExtensionAppsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientExtensionAppsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
-  }
+  SingleClientExtensionAppsOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionAppsOsSyncTest() override = default;
 
  private:
