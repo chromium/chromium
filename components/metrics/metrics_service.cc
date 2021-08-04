@@ -434,6 +434,28 @@ void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
 }
 
+#if defined(OS_CHROMEOS)
+void MetricsService::SetUserLogStore(
+    std::unique_ptr<UnsentLogStore> user_log_store) {
+  // This should only be set after the service has finished initializing.
+  DCHECK_EQ(SENDING_LOGS, state_);
+
+  // Closes the current log so that a new log can be opened in the user log
+  // store.
+  PushPendingLogsToPersistentStorage();
+  log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
+  OpenNewLog();
+}
+
+void MetricsService::UnsetUserLogStore() {
+  DCHECK_EQ(SENDING_LOGS, state_);
+  // Pushes all the existing logs to user log store before unbound.
+  PushPendingLogsToPersistentStorage();
+  log_store()->UnsetAlternateOngoingLogStore();
+  OpenNewLog();
+}
+#endif
+
 bool MetricsService::StageCurrentLogForTest() {
   CloseCurrentLog();
 
@@ -449,7 +471,6 @@ bool MetricsService::StageCurrentLogForTest() {
 //------------------------------------------------------------------------------
 // private methods
 //------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 // Initialization methods
@@ -654,8 +675,7 @@ void MetricsService::StartSchedulerIfNecessary() {
   // Even if reporting is disabled, the scheduler is needed to trigger the
   // creation of the initial log, which must be done in order for any logs to be
   // persisted on shutdown or backgrounding.
-  if (recording_active() &&
-      (reporting_active() || state_ < SENDING_LOGS)) {
+  if (recording_active() && (reporting_active() || state_ < SENDING_LOGS)) {
     rotation_scheduler_->Start();
     reporting_service_.Start();
   }
@@ -673,8 +693,7 @@ void MetricsService::StartScheduledUpload() {
   // that has to happen in order for logs to be cut and stored when persisting.
   // TODO(stuartmorgan): Call Stop() on the scheduler when reporting and/or
   // recording are turned off instead of letting it fire and then aborting.
-  if (idle_since_last_transmission_ ||
-      !recording_active() ||
+  if (idle_since_last_transmission_ || !recording_active() ||
       (!reporting_active() && state_ >= SENDING_LOGS)) {
     rotation_scheduler_->Stop();
     rotation_scheduler_->RotationFinished();

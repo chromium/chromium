@@ -43,8 +43,8 @@ const char kTestMimeType[] = "test_mime_type";
 
 class TestLogStore : public LogStore {
  public:
-  TestLogStore() {}
-  ~TestLogStore() {}
+  TestLogStore() = default;
+  ~TestLogStore() override = default;
 
   void AddLog(const TestLog& log) { logs_.push_back(log); }
 

@@ -55,7 +55,7 @@ class UnsentLogStore : public LogStore {
                  size_t min_log_bytes,
                  size_t max_log_size,
                  const std::string& signing_key);
-  ~UnsentLogStore();
+  ~UnsentLogStore() override;
 
   // LogStore:
   bool has_unsent_logs() const override;

@@ -42,7 +42,7 @@ FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
 namespace base {
 class HistogramSamples;
 class PrefService;
-}
+}  // namespace base
 
 namespace metrics {
 
@@ -158,6 +158,17 @@ class MetricsService : public base::HistogramFlattener {
   // Clears the stability metrics that are saved in local state.
   void ClearSavedStabilityMetrics();
 
+#if defined(OS_CHROMEOS)
+  // Binds a user log store to store unsent logs. This log store will be
+  // fully managed by MetricsLogStore. This will no-op if another log store has
+  // already been set.
+  void SetUserLogStore(std::unique_ptr<UnsentLogStore> user_log_store);
+
+  // Unbinds the user log store. If there was no user log store, then this does
+  // nothing.
+  void UnsetUserLogStore();
+#endif
+
   variations::SyntheticTrialRegistry* synthetic_trial_registry() {
     return &synthetic_trial_registry_;
   }
@@ -209,7 +220,7 @@ class MetricsService : public base::HistogramFlattener {
   enum RecordingState {
     INACTIVE,
     ACTIVE,
-    UNSET
+    UNSET,
   };
 
   // Gets the LogStore for UMA logs.
