@@ -149,6 +149,17 @@ class SearchPermissionsService : public KeyedService {
                          ContentSettingsType type,
                          ContentSetting setting);
 
+  // Record how the content setting transitions when DSE permissions autogrant
+  // is disabled via feature.
+  void RecordAutoDSEPermissionReverted(ContentSettingsType permission_type,
+                                       ContentSetting backed_up_setting,
+                                       ContentSetting effective_setting,
+                                       const GURL& origin);
+
+  // Record the content settings for notifications and geolocation on the DSE
+  // origin. Called at initialization or when the DSE origin changes.
+  void RecordEffectiveDSEOriginPermissions();
+
   void SetSearchEngineDelegateForTest(
       std::unique_ptr<SearchEngineDelegate> delegate);
 

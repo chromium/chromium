@@ -137,4 +137,70 @@ TEST_F(PermissionUmaUtilTest, CrowdDenyVersionTest) {
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 1, 1);
 }
 
+// Test that the appropriate UMA metrics have been recorded when the DSE is
+// disabled.
+TEST_F(PermissionUmaUtilTest, MetricsAreRecordedWhenAutoDSEPermissionReverted) {
+  constexpr char kNotificationsHistogram[] =
+      "Permissions.DSE.AutoPermissionRevertTransition.Notifications";
+  constexpr char kGeolocationHistogram[] =
+      "Permissions.DSE.AutoPermissionRevertTransition.Geolocation";
+
+  constexpr struct {
+    ContentSetting backed_up_setting;
+    ContentSetting effective_setting;
+    ContentSetting end_state_setting;
+    permissions::AutoDSEPermissionRevertTransition expected_transition;
+  } kTests[] = {
+      // Expected valid combinations.
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
+       permissions::AutoDSEPermissionRevertTransition::NO_DECISION_ASK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
+       permissions::AutoDSEPermissionRevertTransition::CONFLICT_ASK},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ASK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_BLOCK},
+
+      // Invalid combinations.
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
+       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+       permissions::AutoDSEPermissionRevertTransition::INVALID_END_STATE},
+  };
+
+  // We test every combination of test case for notifications and geolocation to
+  // basically test the entire possible transition space.
+  for (const auto& test : kTests) {
+    for (const auto type : {ContentSettingsType::NOTIFICATIONS,
+                            ContentSettingsType::GEOLOCATION}) {
+      base::HistogramTester histograms;
+      PermissionUmaUtil::RecordAutoDSEPermissionReverted(
+          type, test.backed_up_setting, test.effective_setting,
+          test.end_state_setting);
+
+      // Test that the expected samples are recorded in histograms.
+      for (auto sample = static_cast<int>(
+               permissions::AutoDSEPermissionRevertTransition::NO_DECISION_ASK);
+           sample <
+           static_cast<int>(
+               permissions::AutoDSEPermissionRevertTransition::kMaxValue);
+           ++sample) {
+        histograms.ExpectBucketCount(
+            type == ContentSettingsType::NOTIFICATIONS ? kNotificationsHistogram
+                                                       : kGeolocationHistogram,
+            sample,
+            static_cast<int>(test.expected_transition) == sample ? 1 : 0);
+      }
+    }
+  }
+}
+
 }  // namespace permissions

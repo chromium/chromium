@@ -5091,6 +5091,16 @@ others/histograms.xml -->
   <int value="28" label="TILE_SUGGESTION"/>
 </enum>
 
+<enum name="AutoDSEPermissionRevertTransition">
+  <int value="0" label="NO_DECISION_ASK"/>
+  <int value="1" label="PRESERVE_ALLOW"/>
+  <int value="2" label="CONFLICT_ASK"/>
+  <int value="3" label="PRESERVE_BLOCK_ASK"/>
+  <int value="4" label="PRESERVE_BLOCK_ALLOW"/>
+  <int value="5" label="PRESERVE_BLOCK_BLOCK"/>
+  <int value="6" label="INVALID_END_STATE"/>
+</enum>
+
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>
