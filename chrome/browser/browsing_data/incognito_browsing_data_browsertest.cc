@@ -538,9 +538,15 @@ const std::vector<std::string> kStorageTypes{
     "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
     "IndexedDb", "WebSql",       "ServiceWorker", "CacheStorage"};
 
+// https://crbug.com/1236235
+#if defined(OS_CHROMEOS)
+#define MAYBE_StorageDoesntWriteToDisk DISABLED_StorageDoesntWriteToDisk
+#else
+#define MAYBE_StorageDoesntWriteToDisk StorageDoesntWriteToDisk
+#endif
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
-                       StorageDoesntWriteToDisk) {
+                       MAYBE_StorageDoesntWriteToDisk) {
   ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {}));
   ASSERT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(GetBrowser(), 0);
