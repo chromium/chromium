@@ -403,7 +403,13 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   EXPECT_TRUE(CanPasteFromClipboard(model.get(), model->other_node()));
 }
 
-TEST_F(BookmarkUtilsTest, PasteNonEditableNodes) {
+// Test is flaky on Mac and LaCros: crbug.com/1236362
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PasteNonEditableNodes DISABLED_PasteNonEditableNodes
+#else
+#define MAYBE_PasteNonEditableNodes PasteNonEditableNodes
+#endif
+TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
   // Load a model with an managed node that is not editable.
   auto client = std::make_unique<TestBookmarkClient>();
   BookmarkNode* managed_node = client->EnableManagedNode();
