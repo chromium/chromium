@@ -67,7 +67,7 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
       mojo::PendingReceiver<filesystem::mojom::Directory> receiver) const;
 
   // Called when the ZipFileCreator service finished.
-  void OnFinished(bool success);
+  void OnFinished(bool success) override;
 
   // Notifies by calling |result_callback| specified in the constructor the end
   // of the ZIP operation.

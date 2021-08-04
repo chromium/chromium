@@ -155,42 +155,42 @@ void ZipFileCreator::CreateZipFile(
     PendingDirectory src_dir,
     const std::vector<base::FilePath>& relative_paths,
     base::File zip_file,
-    PendingListener listener,
-    CreateZipFileCallback callback) {
+    PendingListener listener) {
   DCHECK(zip_file.IsValid());
 
   for (const base::FilePath& path : relative_paths) {
     if (path.IsAbsolute() || path.ReferencesParent()) {
       // Paths are expected to be relative. If there are not, the API is used
       // incorrectly and this is an error.
-      std::move(callback).Run(/*success=*/false);
+      Listener(std::move(listener))->OnFinished(/*success=*/false);
       return;
     }
   }
 
-  runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ZipFileCreator::WriteZipFile, this, std::move(src_dir),
-                     std::move(relative_paths), std::move(zip_file),
-                     std::move(listener)),
-      std::move(callback));
+  runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ZipFileCreator::WriteZipFile, this,
+                                std::move(src_dir), std::move(relative_paths),
+                                std::move(zip_file), std::move(listener)));
 }
 
-bool ZipFileCreator::WriteZipFile(
+void ZipFileCreator::WriteZipFile(
     PendingDirectory src_dir,
     const std::vector<base::FilePath>& relative_paths,
     base::File zip_file,
-    PendingListener listener) const {
+    PendingListener pending_listener) const {
   MojoFileAccessor file_accessor(std::move(src_dir));
-  return zip::Zip({
+  const Listener listener(std::move(pending_listener));
+  const bool success = zip::Zip({
       .file_accessor = &file_accessor,
       .dest_fd = zip_file.GetPlatformFile(),
       .src_files = relative_paths,
-      .progress_callback = base::BindRepeating(
-          &ZipFileCreator::OnProgress, this, Listener(std::move(listener))),
+      .progress_callback = base::BindRepeating(&ZipFileCreator::OnProgress,
+                                               this, std::cref(listener)),
       .progress_period = base::TimeDelta::FromMilliseconds(1000),
       .recursive = true,
   });
+
+  listener->OnFinished(success);
 }
 
 bool ZipFileCreator::OnProgress(const Listener& listener,

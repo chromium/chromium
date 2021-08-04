@@ -47,12 +47,11 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
   void CreateZipFile(PendingDirectory src_dir,
                      const std::vector<base::FilePath>& relative_paths,
                      base::File zip_file,
-                     PendingListener listener,
-                     CreateZipFileCallback callback) override;
+                     PendingListener listener) override;
 
   // Zips |src_dir| files given by |relative_paths| into |zip_file|.
   // Must be run in a separate task runner.
-  bool WriteZipFile(PendingDirectory src_dir,
+  void WriteZipFile(PendingDirectory src_dir,
                     const std::vector<base::FilePath>& relative_paths,
                     base::File zip_file,
                     PendingListener listener) const;

@@ -87,10 +87,12 @@ void ZipFileCreator::CreateZipFile(
   remote_zip_file_creator_.set_disconnect_handler(
       base::BindOnce(&ZipFileCreator::ReportResult, this, kError));
 
-  remote_zip_file_creator_->CreateZipFile(
-      std::move(directory), src_relative_paths_, std::move(file),
-      listener_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&ZipFileCreator::OnFinished, this));
+  remote_zip_file_creator_->CreateZipFile(std::move(directory),
+                                          src_relative_paths_, std::move(file),
+                                          listener_.BindNewPipeAndPassRemote());
+
+  listener_.set_disconnect_handler(
+      base::BindOnce(&ZipFileCreator::ReportResult, this, kError));
 }
 
 void ZipFileCreator::BindDirectory(

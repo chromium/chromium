@@ -16,6 +16,9 @@ interface ZipListener {
   // Regularly called during ZIP creation operation to report progress, with the
   // total number of bytes, files and directories processed so far.
   OnProgress(uint64 bytes, uint32 files, uint32 directories);
+
+  // Called once after the ZIP operation finished.
+  OnFinished(bool success);
 };
 
 // Service that zips files and folders.
@@ -28,6 +31,5 @@ interface ZipFileCreator {
   CreateZipFile(pending_remote<filesystem.mojom.Directory> src_dir,
                 array<mojo_base.mojom.FilePath> relative_paths,
                 mojo_base.mojom.File zip_file,
-                pending_remote<ZipListener> listener)
-      => (bool success);
+                pending_remote<ZipListener> listener);
 };
