@@ -65,9 +65,10 @@ struct Elf64IntelTraits : public Elf64Traits {
 };
 
 // Disassembler for ELF.
-template <class Traits>
+template <class TRAITS>
 class DisassemblerElf : public Disassembler {
  public:
+  using Traits = TRAITS;
   // Applies quick checks to determine whether |image| *may* point to the start
   // of an executable. Returns true iff the check passes.
   static bool QuickDetect(ConstBufferView image);
@@ -155,9 +156,10 @@ class DisassemblerElf : public Disassembler {
 };
 
 // Disassembler for ELF with Intel architectures.
-template <class Traits>
-class DisassemblerElfIntel : public DisassemblerElf<Traits> {
+template <class TRAITS>
+class DisassemblerElfIntel : public DisassemblerElf<TRAITS> {
  public:
+  using Traits = TRAITS;
   enum ReferenceType : uint8_t { kReloc, kAbs32, kRel32, kTypeCount };
 
   DisassemblerElfIntel();

@@ -43,8 +43,8 @@ enum SectionJudgement : int {
 
 // Decides how a section affects ELF parsing, and returns a bit field composed
 // from SectionJudgement values.
-template <class Traits>
-int JudgeSection(size_t image_size, const typename Traits::Elf_Shdr* section) {
+template <class TRAITS>
+int JudgeSection(size_t image_size, const typename TRAITS::Elf_Shdr* section) {
   // BufferRegion uses |size_t| this can be 32-bit in some cases. For Elf64
   // |sh_addr|, |sh_offset| and |sh_size| are 64-bit this can result in
   // overflows in the subsequent validation steps.
@@ -96,21 +96,21 @@ int JudgeSection(size_t image_size, const typename Traits::Elf_Shdr* section) {
 }
 
 // Determines whether |section| is a reloc section.
-template <class Traits>
-bool IsRelocSection(const typename Traits::Elf_Shdr& section) {
+template <class TRAITS>
+bool IsRelocSection(const typename TRAITS::Elf_Shdr& section) {
   DCHECK_GT(section.sh_size, 0U);
   if (section.sh_type == elf::SHT_REL) {
     // Also validate |section.sh_entsize|, which gets used later.
-    return section.sh_entsize == sizeof(typename Traits::Elf_Rel);
+    return section.sh_entsize == sizeof(typename TRAITS::Elf_Rel);
   }
   if (section.sh_type == elf::SHT_RELA)
-    return section.sh_entsize == sizeof(typename Traits::Elf_Rela);
+    return section.sh_entsize == sizeof(typename TRAITS::Elf_Rela);
   return false;
 }
 
 // Determines whether |section| is a section with executable code.
-template <class Traits>
-bool IsExecSection(const typename Traits::Elf_Shdr& section) {
+template <class TRAITS>
+bool IsExecSection(const typename TRAITS::Elf_Shdr& section) {
   DCHECK_GT(section.sh_size, 0U);
   return section.sh_type == elf::SHT_PROGBITS &&
          (section.sh_flags & elf::SHF_EXECINSTR) != 0;
@@ -149,8 +149,8 @@ constexpr uint32_t Elf64IntelTraits::kRelType;
 /******** DisassemblerElf ********/
 
 // static.
-template <class Traits>
-bool DisassemblerElf<Traits>::QuickDetect(ConstBufferView image) {
+template <class TRAITS>
+bool DisassemblerElf<TRAITS>::QuickDetect(ConstBufferView image) {
   BufferSource source(image);
 
   // Do not consume the bytes for the magic value, as they are part of the
@@ -183,25 +183,25 @@ bool DisassemblerElf<Traits>::QuickDetect(ConstBufferView image) {
   return true;
 }
 
-template <class Traits>
-DisassemblerElf<Traits>::~DisassemblerElf() = default;
+template <class TRAITS>
+DisassemblerElf<TRAITS>::~DisassemblerElf() = default;
 
-template <class Traits>
-ExecutableType DisassemblerElf<Traits>::GetExeType() const {
+template <class TRAITS>
+ExecutableType DisassemblerElf<TRAITS>::GetExeType() const {
   return Traits::kExeType;
 }
 
-template <class Traits>
-std::string DisassemblerElf<Traits>::GetExeTypeString() const {
+template <class TRAITS>
+std::string DisassemblerElf<TRAITS>::GetExeTypeString() const {
   return Traits::kExeTypeString;
 }
 
 // |num_equivalence_iterations_| = 2 for reloc -> abs32.
-template <class Traits>
-DisassemblerElf<Traits>::DisassemblerElf() : Disassembler(2) {}
+template <class TRAITS>
+DisassemblerElf<TRAITS>::DisassemblerElf() : Disassembler(2) {}
 
-template <class Traits>
-bool DisassemblerElf<Traits>::Parse(ConstBufferView image) {
+template <class TRAITS>
+bool DisassemblerElf<TRAITS>::Parse(ConstBufferView image) {
   image_ = image;
   if (!ParseHeader())
     return false;
@@ -209,8 +209,8 @@ bool DisassemblerElf<Traits>::Parse(ConstBufferView image) {
   return true;
 }
 
-template <class Traits>
-std::unique_ptr<ReferenceReader> DisassemblerElf<Traits>::MakeReadRelocs(
+template <class TRAITS>
+std::unique_ptr<ReferenceReader> DisassemblerElf<TRAITS>::MakeReadRelocs(
     offset_t lo,
     offset_t hi) {
   DCHECK_LE(lo, hi);
@@ -224,14 +224,14 @@ std::unique_ptr<ReferenceReader> DisassemblerElf<Traits>::MakeReadRelocs(
       supported_relocation_type(), lo, hi, translator_);
 }
 
-template <class Traits>
-std::unique_ptr<ReferenceWriter> DisassemblerElf<Traits>::MakeWriteRelocs(
+template <class TRAITS>
+std::unique_ptr<ReferenceWriter> DisassemblerElf<TRAITS>::MakeWriteRelocs(
     MutableBufferView image) {
   return std::make_unique<RelocWriterElf>(image, Traits::kBitness, translator_);
 }
 
-template <class Traits>
-bool DisassemblerElf<Traits>::ParseHeader() {
+template <class TRAITS>
+bool DisassemblerElf<TRAITS>::ParseHeader() {
   BufferSource source(image_);
   // Ensure any offsets will fit within the |image_|'s bounds.
   if (!base::IsValueInRangeForNumericType<offset_t>(image_.size()))
@@ -329,8 +329,8 @@ bool DisassemblerElf<Traits>::ParseHeader() {
   return true;
 }
 
-template <class Traits>
-void DisassemblerElf<Traits>::ExtractInterestingSectionHeaders() {
+template <class TRAITS>
+void DisassemblerElf<TRAITS>::ExtractInterestingSectionHeaders() {
   DCHECK(reloc_section_dims_.empty());
   DCHECK(exec_headers_.empty());
   for (elf::Elf32_Half i = 0; i < sections_count_; ++i) {
@@ -350,8 +350,8 @@ void DisassemblerElf<Traits>::ExtractInterestingSectionHeaders() {
   std::sort(exec_headers_.begin(), exec_headers_.end(), comp);
 }
 
-template <class Traits>
-void DisassemblerElf<Traits>::GetAbs32FromRelocSections() {
+template <class TRAITS>
+void DisassemblerElf<TRAITS>::GetAbs32FromRelocSections() {
   constexpr int kAbs32Width = Traits::kVAWidth;
   DCHECK(abs32_locations_.empty());
 
@@ -380,15 +380,15 @@ void DisassemblerElf<Traits>::GetAbs32FromRelocSections() {
   abs32_locations_.shrink_to_fit();
 }
 
-template <class Traits>
-void DisassemblerElf<Traits>::GetRel32FromCodeSections() {
+template <class TRAITS>
+void DisassemblerElf<TRAITS>::GetRel32FromCodeSections() {
   for (const typename Traits::Elf_Shdr* section : exec_headers_)
     ParseExecSection(*section);
   PostProcessRel32();
 }
 
-template <class Traits>
-void DisassemblerElf<Traits>::ParseSections() {
+template <class TRAITS>
+void DisassemblerElf<TRAITS>::ParseSections() {
   ExtractInterestingSectionHeaders();
   GetAbs32FromRelocSections();
   GetRel32FromCodeSections();
@@ -396,32 +396,34 @@ void DisassemblerElf<Traits>::ParseSections() {
 
 /******** DisassemblerElfIntel ********/
 
-template <class Traits>
-DisassemblerElfIntel<Traits>::DisassemblerElfIntel() = default;
+template <class TRAITS>
+DisassemblerElfIntel<TRAITS>::DisassemblerElfIntel() = default;
 
-template <class Traits>
-DisassemblerElfIntel<Traits>::~DisassemblerElfIntel() = default;
+template <class TRAITS>
+DisassemblerElfIntel<TRAITS>::~DisassemblerElfIntel() = default;
 
-template <class Traits>
-std::vector<ReferenceGroup> DisassemblerElfIntel<Traits>::MakeReferenceGroups()
+template <class TRAITS>
+std::vector<ReferenceGroup> DisassemblerElfIntel<TRAITS>::MakeReferenceGroups()
     const {
   return {
-      {ReferenceTypeTraits{sizeof(Traits::Elf_Rel::r_offset), TypeTag(kReloc),
+      {ReferenceTypeTraits{sizeof(TRAITS::Elf_Rel::r_offset), TypeTag(kReloc),
                            PoolTag(kReloc)},
-       &DisassemblerElfIntel<Traits>::MakeReadRelocs,
-       &DisassemblerElfIntel<Traits>::MakeWriteRelocs},
+       &DisassemblerElfIntel<TRAITS>::MakeReadRelocs,
+       &DisassemblerElfIntel<TRAITS>::MakeWriteRelocs},
       {ReferenceTypeTraits{Traits::kVAWidth, TypeTag(kAbs32), PoolTag(kAbs32)},
-       &DisassemblerElfIntel<Traits>::MakeReadAbs32,
-       &DisassemblerElfIntel<Traits>::MakeWriteAbs32},
+       &DisassemblerElfIntel<TRAITS>::MakeReadAbs32,
+       &DisassemblerElfIntel<TRAITS>::MakeWriteAbs32},
       // N.B.: Rel32 |width| is 4 bytes, even for x64.
       {ReferenceTypeTraits{4, TypeTag(kRel32), PoolTag(kRel32)},
-       &DisassemblerElfIntel<Traits>::MakeReadRel32,
-       &DisassemblerElfIntel<Traits>::MakeWriteRel32}};
+       &DisassemblerElfIntel<TRAITS>::MakeReadRel32,
+       &DisassemblerElfIntel<TRAITS>::MakeWriteRel32}};
 }
 
-template <class Traits>
-void DisassemblerElfIntel<Traits>::ParseExecSection(
-    const typename Traits::Elf_Shdr& section) {
+template <class TRAITS>
+void DisassemblerElfIntel<TRAITS>::ParseExecSection(
+    const typename TRAITS::Elf_Shdr& section) {
+  constexpr int kAbs32Width = Traits::kVAWidth;
+
   // |this->| is needed to access protected members of templated base class. To
   // reduce noise, use local references for these.
   ConstBufferView& image_ = this->image_;
@@ -435,8 +437,8 @@ void DisassemblerElfIntel<Traits>::ParseExecSection(
   AddressTranslator::RvaToOffsetCache target_rva_checker(translator_);
 
   ConstBufferView region(image_.begin() + section.sh_offset, section.sh_size);
-  Abs32GapFinder gap_finder(image_, region, abs32_locations_, 4);
-  typename Traits::Rel32FinderUse rel_finder(image_, translator_);
+  Abs32GapFinder gap_finder(image_, region, abs32_locations_, kAbs32Width);
+  typename TRAITS::Rel32FinderUse rel_finder(image_, translator_);
   // Iterate over gaps between abs32 references, to avoid collision.
   while (gap_finder.FindNext()) {
     rel_finder.SetRegion(gap_finder.GetGap());
@@ -452,43 +454,43 @@ void DisassemblerElfIntel<Traits>::ParseExecSection(
   }
 }
 
-template <class Traits>
-void DisassemblerElfIntel<Traits>::PostProcessRel32() {
+template <class TRAITS>
+void DisassemblerElfIntel<TRAITS>::PostProcessRel32() {
   rel32_locations_.shrink_to_fit();
   std::sort(rel32_locations_.begin(), rel32_locations_.end());
 }
 
-template <class Traits>
-std::unique_ptr<ReferenceReader> DisassemblerElfIntel<Traits>::MakeReadAbs32(
+template <class TRAITS>
+std::unique_ptr<ReferenceReader> DisassemblerElfIntel<TRAITS>::MakeReadAbs32(
     offset_t lo,
     offset_t hi) {
   // TODO(huangs): Don't use Abs32RvaExtractorWin32 here; use new class that
   // caters to different ELF architectures.
   Abs32RvaExtractorWin32 abs_rva_extractor(
-      this->image_, AbsoluteAddress(Traits::kBitness, kElfImageBase),
+      this->image_, AbsoluteAddress(TRAITS::kBitness, kElfImageBase),
       this->abs32_locations_, lo, hi);
   return std::make_unique<Abs32ReaderWin32>(std::move(abs_rva_extractor),
                                             this->translator_);
 }
 
-template <class Traits>
-std::unique_ptr<ReferenceWriter> DisassemblerElfIntel<Traits>::MakeWriteAbs32(
+template <class TRAITS>
+std::unique_ptr<ReferenceWriter> DisassemblerElfIntel<TRAITS>::MakeWriteAbs32(
     MutableBufferView image) {
   return std::make_unique<Abs32WriterWin32>(
-      image, AbsoluteAddress(Traits::kBitness, kElfImageBase),
+      image, AbsoluteAddress(TRAITS::kBitness, kElfImageBase),
       this->translator_);
 }
 
-template <class Traits>
-std::unique_ptr<ReferenceReader> DisassemblerElfIntel<Traits>::MakeReadRel32(
+template <class TRAITS>
+std::unique_ptr<ReferenceReader> DisassemblerElfIntel<TRAITS>::MakeReadRel32(
     offset_t lo,
     offset_t hi) {
   return std::make_unique<Rel32ReaderX86>(this->image_, lo, hi,
                                           &rel32_locations_, this->translator_);
 }
 
-template <class Traits>
-std::unique_ptr<ReferenceWriter> DisassemblerElfIntel<Traits>::MakeWriteRel32(
+template <class TRAITS>
+std::unique_ptr<ReferenceWriter> DisassemblerElfIntel<TRAITS>::MakeWriteRel32(
     MutableBufferView image) {
   return std::make_unique<Rel32WriterX86>(image, this->translator_);
 }
