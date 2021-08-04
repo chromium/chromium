@@ -77,6 +77,9 @@ class TestShimClient : public chrome::mojom::AppShim {
   void SetBadgeLabel(const std::string& badge_label) override {}
   void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
                              profile_menu_items) override {}
+  void UpdateApplicationDockMenu(
+      std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
+      override {}
 
  private:
   void OnShimConnectedDone(
@@ -143,6 +146,7 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
   void FilesOpened(const std::vector<base::FilePath>& files) override {}
   void ProfileSelectedFromMenu(const base::FilePath& profile_path) override {}
   void UrlsOpened(const std::vector<GURL>& urls) override {}
+  void OpenAppWithOverrideUrl(const GURL& override_url) override {}
 
   std::unique_ptr<base::RunLoop> runner_;
   mojo::Receiver<chrome::mojom::AppShimHost> receiver_{this};

@@ -55,12 +55,17 @@ class MockDelegate : public AppShimManager::Delegate {
   MOCK_METHOD2(AppIsMultiProfile, bool(Profile*, const std::string&));
   MOCK_METHOD3(EnableExtension,
                void(Profile*, const std::string&, base::OnceCallback<void()>));
-  MOCK_METHOD5(LaunchApp,
+  MOCK_METHOD6(LaunchApp,
                void(Profile*,
                     const std::string& app_id,
                     const std::vector<base::FilePath>&,
                     const std::vector<GURL>&,
+                    const GURL&,
                     chrome::mojom::AppShimLoginItemRestoreState));
+  MOCK_METHOD2(GetAppShortcutsMenuItemInfos,
+               std::vector<chrome::mojom::ApplicationDockMenuItemPtr>(
+                   Profile*,
+                   const std::string&));
 
   // Conditionally mock LaunchShim. Some tests will execute |launch_callback|
   // with a particular value.
@@ -249,8 +254,14 @@ class TestAppShim : public chrome::mojom::AppShim {
                              profile_menu_items) override {
     profile_menu_items_ = std::move(profile_menu_items);
   }
+  void UpdateApplicationDockMenu(
+      std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
+      override {
+    dock_menu_items_ = std::move(dock_menu_items);
+  }
 
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
+  std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
 };
 
 class TestHost : public AppShimHost {
@@ -286,6 +297,7 @@ class TestHost : public AppShimHost {
   }
 
   using AppShimHost::FilesOpened;
+  using AppShimHost::OpenAppWithOverrideUrl;
   using AppShimHost::ProfileSelectedFromMenu;
   using AppShimHost::ReopenApp;
   using AppShimHost::UrlsOpened;
@@ -420,7 +432,8 @@ class AppShimManagerTest : public testing::Test {
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*delegate_, AppIsInstalled(_, kTestAppIdB))
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _)).WillRepeatedly(Return());
+    EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _, _))
+        .WillRepeatedly(Return());
   }
 
   void TearDown() override {
@@ -612,7 +625,7 @@ TEST_F(AppShimManagerTest, LaunchAndCloseShim) {
   std::vector<base::FilePath> some_file(1, base::FilePath("some_file"));
   std::vector<GURL> some_url(1, GURL("web+test://foo"));
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdB, some_file, some_url,
+              LaunchApp(&profile_b_, kTestAppIdB, some_file, some_url, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone));
   DoShimLaunch(bootstrap_bb_, std::move(host_bb_unique_),
                chrome::mojom::AppShimLaunchType::kNormal, some_file, some_url,
@@ -652,7 +665,7 @@ TEST_F(AppShimManagerTest, RunOnOsLoginLaunchAndCloseShim) {
   std::vector<GURL> some_url(1, GURL("web+test://foo"));
   EXPECT_CALL(
       *delegate_,
-      LaunchApp(&profile_b_, kTestAppIdB, some_file, some_url,
+      LaunchApp(&profile_b_, kTestAppIdB, some_file, some_url, _,
                 chrome::mojom::AppShimLoginItemRestoreState::kWindowed));
   DoShimLaunch(bootstrap_bb_, std::move(host_bb_unique_),
                chrome::mojom::AppShimLaunchType::kNormal, some_file, some_url,
@@ -733,7 +746,7 @@ TEST_F(AppShimManagerTest, AppLifetime) {
 
   // Normal shim launch adds an entry in the map.
   // App should not be launched here, but return success to the shim.
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(0);
   RegisterOnlyLaunch(bootstrap_aa_, nullptr);
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
@@ -743,14 +756,14 @@ TEST_F(AppShimManagerTest, AppLifetime) {
   // Return no app windows for OnShimFocus. This will do nothing.
   EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(0);
   ShimNormalFocus(host_aa_.get());
 
   // Return no app windows for OnShimReopen. This will result in a launch call.
   EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(1);
   host_aa_->ReopenApp();
 
@@ -758,7 +771,7 @@ TEST_F(AppShimManagerTest, AppLifetime) {
   EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _,
+              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(0);
   host_aa_->ReopenApp();
@@ -768,16 +781,24 @@ TEST_F(AppShimManagerTest, AppLifetime) {
   EXPECT_CALL(
       *delegate_,
       LaunchApp(&profile_a_, kTestAppIdA, some_file, std::vector<GURL>(),
-                chrome::mojom::AppShimLoginItemRestoreState::kNone));
+                GURL(), chrome::mojom::AppShimLoginItemRestoreState::kNone));
   host_aa_->FilesOpened(some_file);
 
   // Open urls should trigger a launch with those urls
   std::vector<GURL> some_url(1, GURL("web+test://foo"));
-  EXPECT_CALL(
-      *delegate_,
-      LaunchApp(&profile_a_, kTestAppIdA, std::vector<base::FilePath>(),
-                some_url, chrome::mojom::AppShimLoginItemRestoreState::kNone));
+  EXPECT_CALL(*delegate_,
+              LaunchApp(&profile_a_, kTestAppIdA, std::vector<base::FilePath>(),
+                        some_url, GURL(),
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone));
   host_aa_->UrlsOpened(some_url);
+
+  // Open app with override url should trigger a launch with that url
+  GURL some_override_url("https://some-override-url.com");
+  EXPECT_CALL(*delegate_,
+              LaunchApp(&profile_a_, kTestAppIdA, std::vector<base::FilePath>(),
+                        std::vector<GURL>(), some_override_url,
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone));
+  host_aa_->OpenAppWithOverrideUrl(some_override_url);
 
   // OnAppDeactivated should not close the shim.
   EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
@@ -803,7 +824,7 @@ TEST_F(AppShimManagerTest, AppLifetimeOld) {
 
   // Normal shim launch adds an entry in the map.
   // App should not be launched here, but return success to the shim.
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(0);
   RegisterOnlyLaunch(bootstrap_aa_, nullptr);
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
@@ -813,36 +834,43 @@ TEST_F(AppShimManagerTest, AppLifetimeOld) {
   // Return no app windows for OnShimFocus. This will do nothing.
   EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(0);
   ShimNormalFocus(host_aa_.get());
 
   // Return no app windows for OnShimReopen. This will result in a launch call.
   EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(1);
   host_aa_->ReopenApp();
 
   // Return one window. This should do nothing.
   EXPECT_CALL(*delegate_, ShowAppWindows(&profile_a_, kTestAppIdA))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _))
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _))
       .Times(0);
   host_aa_->ReopenApp();
 
   // Open files should trigger a launch with those files.
   std::vector<base::FilePath> some_file(1, base::FilePath("some_file"));
   EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, some_file,
-                                    std::vector<GURL>(), _));
+                                    std::vector<GURL>(), GURL(), _));
   host_aa_->FilesOpened(some_file);
 
   // Open urls should trigger a launch with those urls
   std::vector<GURL> some_url(1, GURL("web+test://foo"));
   EXPECT_CALL(*delegate_,
               LaunchApp(&profile_a_, kTestAppIdA, std::vector<base::FilePath>(),
-                        some_url, _));
+                        some_url, GURL(), _));
   host_aa_->UrlsOpened(some_url);
+
+  // Open app with override url should trigger a launch with that url
+  GURL some_override_url("https://some-override-url.com");
+  EXPECT_CALL(*delegate_,
+              LaunchApp(&profile_a_, kTestAppIdA, std::vector<base::FilePath>(),
+                        std::vector<GURL>(), some_override_url, _));
+  host_aa_->OpenAppWithOverrideUrl(some_override_url);
 
   // Process disconnect will cause the host to be deleted.
   manager_->OnShimProcessDisconnected(host_aa_.get());
@@ -1039,7 +1067,7 @@ TEST_F(AppShimManagerTest, MaybeTerminateOld) {
 TEST_F(AppShimManagerTest, RegisterOnly) {
   // For an chrome::mojom::AppShimLaunchType::kRegisterOnly, don't launch the
   // app.
-  EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _, _)).Times(0);
   RegisterOnlyLaunch(bootstrap_aa_, std::move(host_aa_unique_));
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
             *bootstrap_aa_result_);
@@ -1054,7 +1082,7 @@ TEST_F(AppShimManagerTest, DontCreateHost) {
   delegate_->SetAppCanCreateHost(false);
 
   // The app should be launched.
-  EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(*delegate_, LaunchApp(_, _, _, _, _, _)).Times(1);
   NormalLaunch(bootstrap_ab_, std::move(host_ab_unique_));
   // But the bootstrap should be closed.
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect,
@@ -1107,7 +1135,7 @@ TEST_F(AppShimManagerTest, PreExistingHost) {
   // Launch the app for this host. It should find the pre-existing host, and the
   // pre-existing host's launch result should be set.
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _,
+              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(0);
   EXPECT_FALSE(host_aa_->did_connect_to_host());
@@ -1221,7 +1249,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu) {
   // Select profile B from the menu. This should request that the app be
   // launched.
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdA, _, _,
+              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone));
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
   EXPECT_CALL(*delegate_, DoLaunchShim(_, _, _)).Times(0);
@@ -1230,9 +1258,9 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu) {
   // Select profile A and B from the menu -- this should not request a launch,
   // because the profiles are already enabled.
   EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *delegate_,
-      LaunchApp(_, _, _, _, chrome::mojom::AppShimLoginItemRestoreState::kNone))
+  EXPECT_CALL(*delegate_,
+              LaunchApp(_, _, _, _, _,
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(0);
   host_aa_->ProfileSelectedFromMenu(profile_path_a_);
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
@@ -1262,7 +1290,7 @@ TEST_F(AppShimManagerTest, ProfileMenuOneProfile) {
 
   // Launch the shim.
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _,
+              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(0);
   RegisterOnlyLaunch(bootstrap_aa_, nullptr);
@@ -1319,11 +1347,11 @@ TEST_F(AppShimManagerTest, FindProfileFromBadProfile) {
   // Launch the shim requesting profile C.
   manager_->SetHostForCreate(std::move(host_aa_unique_));
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _,
+              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(1);
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdA, _, _,
+              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(0);
   EXPECT_CALL(*delegate_, EnableExtension(&profile_c_, kTestAppIdA, _))
@@ -1342,11 +1370,11 @@ TEST_F(AppShimManagerTest, FindProfileFromNoProfile) {
   // Launch the shim without specifying a profile.
   manager_->SetHostForCreate(std::move(host_aa_unique_));
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_a_, kTestAppIdA, _, _,
+              LaunchApp(&profile_a_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(1);
   EXPECT_CALL(*delegate_,
-              LaunchApp(&profile_b_, kTestAppIdA, _, _,
+              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
                         chrome::mojom::AppShimLoginItemRestoreState::kNone))
       .Times(0);
   NormalLaunch(bootstrap_xa_, nullptr);
@@ -1354,4 +1382,108 @@ TEST_F(AppShimManagerTest, FindProfileFromNoProfile) {
             *bootstrap_xa_result_);
   EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
 }
+
+TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
+  // Set this app to be installed for profile A and B.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_b_);
+
+  struct DockMenuItems {
+    std::u16string name;
+    GURL url;
+  };
+
+  DockMenuItems menu_items_profile_a[] = {
+      {u"dock_menu_item_a_1", GURL(".")},
+      {u"dock_menu_item_a_2", GURL("/settings")},
+      {u"dock_menu_item_a_3", GURL("https://anothersite.com")},
+  };
+  const size_t kNumMenuItemsForProfileA = base::size(menu_items_profile_a);
+
+  DockMenuItems menu_items_profile_b[] = {
+      {u"dock_menu_item_b_1", GURL("/about")},
+      {u"dock_menu_item_b_2", GURL("/another-link")},
+  };
+  const size_t kNumMenuItemsForProfileB = base::size(menu_items_profile_b);
+
+  // Lambda to help with creation of application dock menu items.
+  auto MakeDockMenuItems = [](DockMenuItems* menu_items,
+                              size_t menu_items_size) {
+    std::vector<chrome::mojom::ApplicationDockMenuItemPtr> mock_dock_menu_items;
+    for (size_t i = 0; i < menu_items_size; i++) {
+      auto dock_menu_item = chrome::mojom::ApplicationDockMenuItem::New();
+      dock_menu_item->name = menu_items[i].name;
+      dock_menu_item->url = menu_items[i].url;
+      mock_dock_menu_items.push_back(std::move(dock_menu_item));
+    }
+    return mock_dock_menu_items;
+  };
+
+  auto ValidateDockMenuItems = [&](DockMenuItems* expected_menu_items,
+                                   size_t expected_menu_items_size) {
+    const auto& dock_menu_items = host_aa_->test_app_shim_->dock_menu_items_;
+    EXPECT_EQ(expected_menu_items_size, dock_menu_items.size());
+    for (size_t i = 0; i < dock_menu_items.size(); i++) {
+      EXPECT_EQ(expected_menu_items[i].name, dock_menu_items[i]->name);
+      EXPECT_EQ(expected_menu_items[i].url, dock_menu_items[i]->url);
+    }
+  };
+
+  // Activate the app for profile_a_ and profile_b_
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_a_, kTestAppIdA));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  manager_->SetHostForCreate(std::move(host_ba_unique_));
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_b_, kTestAppIdA));
+  manager_->OnAppActivated(&profile_b_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_b_, kTestAppIdA));
+
+  // Validate no application dock menu items have been set yet.
+  ValidateDockMenuItems(nullptr, 0);
+
+  // Create browser objects that can be passed via OnBrowserSetLastActive.
+  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
+  std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
+
+  {
+    auto browser_window = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+        app_name, true, browser_window->GetBounds(), &profile_a_, true);
+    params.window = browser_window.get();
+    browser_profile_a = std::unique_ptr<Browser>(Browser::Create(params));
+  }
+
+  {
+    auto browser_window = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+        app_name, true, browser_window->GetBounds(), &profile_b_, true);
+    params.window = browser_window.get();
+    browser_profile_b = std::unique_ptr<Browser>(Browser::Create(params));
+  }
+
+  // Set profile A browser as last active, and validate the application dock
+  // menu items.
+  EXPECT_CALL(*delegate_,
+              GetAppShortcutsMenuItemInfos(&profile_a_, kTestAppIdA))
+      .WillOnce(Return(testing::ByMove(
+          MakeDockMenuItems(menu_items_profile_a, kNumMenuItemsForProfileA))));
+
+  manager_->OnBrowserSetLastActive(browser_profile_a.get());
+  ValidateDockMenuItems(menu_items_profile_a, kNumMenuItemsForProfileA);
+
+  // Set profile B browser as last active, and validate the application dock
+  // menu items.
+  EXPECT_CALL(*delegate_,
+              GetAppShortcutsMenuItemInfos(&profile_b_, kTestAppIdA))
+      .WillOnce(Return(testing::ByMove(
+          MakeDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB))));
+
+  manager_->OnBrowserSetLastActive(browser_profile_b.get());
+  ValidateDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB);
+}
+
 }  // namespace apps

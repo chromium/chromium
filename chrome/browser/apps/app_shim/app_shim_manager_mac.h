@@ -93,6 +93,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                            const web_app::AppId& app_id,
                            const std::vector<base::FilePath>& files,
                            const std::vector<GURL>& urls,
+                           const GURL& override_url,
                            chrome::mojom::AppShimLoginItemRestoreState
                                login_item_restore_state) = 0;
 
@@ -107,6 +108,10 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     // Return true if any app windows are open. This is eventually invoked
     // by MaybeTerminate. It does not apply to bookmark apps.
     virtual bool HasNonBookmarkAppWindowsOpen() = 0;
+
+    virtual std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+    GetAppShortcutsMenuItemInfos(Profile* profile,
+                                 const web_app::AppId& app_id) = 0;
   };
 
   // Helper function to get the instance on the browser process. This will be
@@ -160,7 +165,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                              const base::FilePath& profile_path) override;
   void OnShimOpenedUrls(AppShimHost* host,
                         const std::vector<GURL>& urls) override;
-
+  void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                    const GURL& override_url) override;
   // AppLifetimeMonitor::Observer overrides:
   void OnAppStart(content::BrowserContext* context,
                   const std::string& app_id) override;
@@ -280,6 +286,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     web_app::AppId app_id;
     std::vector<base::FilePath> files;
     std::vector<GURL> urls;
+    GURL override_url;
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state =
         chrome::mojom::AppShimLoginItemRestoreState::kNone;
   };
@@ -327,6 +334,9 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // Update the profiles menu for the specified host.
   void UpdateAppProfileMenu(AppState* app_state);
+
+  // Update the application dock menu for the specified host.
+  void UpdateApplicationDockMenu(Profile* profile, ProfileState* profile_state);
 
   std::unique_ptr<Delegate> delegate_;
 

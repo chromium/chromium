@@ -600,8 +600,8 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
     Profile* profile,
     ProfileState* profile_state,
     const LoadAndLaunchAppParams& params) {
-  // If `params.files` or `params.urls` is non-empty, then always
-  // do a launch to open the files or URLs.
+  // If `params.files`, `params.urls` or `params.override_url` is non-empty,
+  // then always do a launch to open the files or URL(s).
   bool do_launch = params.HasFilesOrURLs();
 
   // Otherwise, only launch if there are no open windows.
@@ -616,7 +616,7 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
 
   if (do_launch) {
     delegate_->LaunchApp(profile, params.app_id, params.files, params.urls,
-                         params.login_item_restore_state);
+                         params.override_url, params.login_item_restore_state);
   }
 }
 
@@ -863,6 +863,19 @@ void AppShimManager::OnShimOpenedUrls(AppShimHost* host,
       params, base::DoNothing());
 }
 
+void AppShimManager::OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                                  const GURL& override_url) {
+  auto found_app = apps_.find(host->GetAppId());
+  DCHECK(found_app != apps_.end());
+  AppState* app_state = found_app->second.get();
+  LoadAndLaunchAppParams params;
+  params.app_id = host->GetAppId();
+  params.override_url = override_url;
+  LoadAndLaunchApp(
+      app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
+      params, base::DoNothing());
+}
+
 void AppShimManager::OnProfileAdded(Profile* profile) {
   if (profile->IsOffTheRecord())
     return;
@@ -975,6 +988,13 @@ void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
   if (avatar_menu_)
     avatar_menu_->ActiveBrowserChanged(browser);
   UpdateAllProfileMenus();
+
+  // Update the application dock menu for the current profile.
+  const std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
+  auto* profile_state = GetOrCreateProfileState(browser->profile(), app_id);
+  if (profile_state)
+    UpdateApplicationDockMenu(browser->profile(), profile_state);
 }
 
 void AppShimManager::OnAppLaunchCancelled(content::BrowserContext* context,
@@ -1055,6 +1075,14 @@ void AppShimManager::UpdateAppProfileMenu(AppState* app_state) {
       std::move(items));
 }
 
+void AppShimManager::UpdateApplicationDockMenu(Profile* profile,
+                                               ProfileState* profile_state) {
+  AppState* app_state = profile_state->app_state;
+  // Send the application dock menu to the app shim process.
+  profile_state->GetHost()->GetAppShim()->UpdateApplicationDockMenu(
+      delegate_->GetAppShortcutsMenuItemInfos(profile, app_state->app_id));
+}
+
 AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
     Profile* profile,
     const web_app::AppId& app_id) {
@@ -1113,7 +1141,7 @@ AppShimManager::LoadAndLaunchAppParams::operator=(
     const LoadAndLaunchAppParams&) = default;
 
 bool AppShimManager::LoadAndLaunchAppParams::HasFilesOrURLs() const {
-  return !files.empty() || !urls.empty();
+  return !files.empty() || !urls.empty() || !override_url.is_empty();
 }
 
 }  // namespace apps

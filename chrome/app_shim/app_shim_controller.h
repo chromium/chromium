@@ -26,6 +26,7 @@ class MachBootstrapAcceptorTest;
 
 @class AppShimDelegate;
 @class ProfileMenuTarget;
+@class ApplicationDockMenuTarget;
 
 // The AppShimController is responsible for launching and maintaining the
 // connection with the main Chrome process, and generally controls the lifetime
@@ -63,10 +64,15 @@ class AppShimController : public chrome::mojom::AppShim {
   // Called when a profile is selected from the profiles NSMenu.
   void ProfileMenuItemSelected(uint32_t index);
 
+  // Called when a item is selected from the application dock menu.
+  void CommandFromDock(uint32_t index);
+
   // Called by AppShimDelegate in response to an URL being opened. If this
   // occurs before OnDidFinishLaunching, then the argument is the files that
   // triggered the launch of the app.
   void OpenUrls(const std::vector<GURL>& urls);
+
+  NSMenu* GetApplicationDockMenu();
 
  private:
   friend class TestShimClient;
@@ -122,6 +128,9 @@ class AppShimController : public chrome::mojom::AppShim {
       chrome::mojom::AppShimAttentionType attention_type) override;
   void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
                              profile_menu_items) override;
+  void UpdateApplicationDockMenu(
+      std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
+      override;
 
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.
@@ -172,8 +181,15 @@ class AppShimController : public chrome::mojom::AppShim {
   // The target for NSMenuItems in the profile menu.
   base::scoped_nsobject<ProfileMenuTarget> profile_menu_target_;
 
+  // The target for NSMenuItems in the application dock menu.
+  base::scoped_nsobject<ApplicationDockMenuTarget>
+      application_dock_menu_target_;
+
   // The items in the profile menu.
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
+
+  // The items in the appliation dock menu.
+  std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
 
   NSInteger attention_request_id_ = 0;
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 
+#include <algorithm>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
@@ -25,6 +28,9 @@
 namespace web_app {
 
 namespace {
+
+// Align with Windows implementation which only supports 10 items.
+constexpr int kMaxApplicationDockMenuItems = 10;
 
 // Testing hook for BrowserAppLauncher::LaunchAppWithParams
 web_app::BrowserAppLauncherForTesting& GetBrowserAppLauncherForTesting() {
@@ -113,10 +119,11 @@ void WebAppShimManagerDelegate::LaunchApp(
     const AppId& app_id,
     const std::vector<base::FilePath>& files,
     const std::vector<GURL>& urls,
+    const GURL& override_url,
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   DCHECK(AppIsInstalled(profile, app_id));
   if (UseFallback(profile, app_id)) {
-    fallback_delegate_->LaunchApp(profile, app_id, files, urls,
+    fallback_delegate_->LaunchApp(profile, app_id, files, urls, override_url,
                                   login_item_restore_state);
     return;
   }
@@ -135,6 +142,7 @@ void WebAppShimManagerDelegate::LaunchApp(
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                launch_source);
   params.launch_files = files;
+  params.override_url = override_url;
 
   for (const GURL& url : urls) {
     if (!url.is_valid() || !url.has_scheme()) {
@@ -269,6 +277,37 @@ bool WebAppShimManagerDelegate::UseFallback(Profile* profile,
   // Use |fallback_delegate_| only if |app_id| is installed for |profile|
   // as an extension.
   return fallback_delegate_->AppIsInstalled(profile, app_id);
+}
+
+std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
+                                                        const AppId& app_id) {
+  if (UseFallback(profile, app_id))
+    return fallback_delegate_->GetAppShortcutsMenuItemInfos(profile, app_id);
+
+  std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items;
+
+  if (!base::FeatureList::IsEnabled(
+          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
+    return dock_menu_items;
+  }
+
+  DCHECK(profile);
+
+  auto shortcuts_menu_item_infos =
+      WebAppProvider::Get(profile)->registrar().GetAppShortcutsMenuItemInfos(
+          app_id);
+
+  int num_entries = std::min(static_cast<int>(shortcuts_menu_item_infos.size()),
+                             kMaxApplicationDockMenuItems);
+  for (int i = 0; i < num_entries; i++) {
+    auto mojo_item = chrome::mojom::ApplicationDockMenuItem::New();
+    mojo_item->name = shortcuts_menu_item_infos[i].name;
+    mojo_item->url = shortcuts_menu_item_infos[i].url;
+    dock_menu_items.push_back(std::move(mojo_item));
+  }
+
+  return dock_menu_items;
 }
 
 }  // namespace web_app

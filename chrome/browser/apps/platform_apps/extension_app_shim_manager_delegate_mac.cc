@@ -189,6 +189,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
     const web_app::AppId& app_id,
     const std::vector<base::FilePath>& files,
     const std::vector<GURL>& urls,
+    const GURL& override_url,
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   DCHECK(extension);
@@ -245,6 +246,13 @@ void ExtensionAppShimManagerDelegate::LaunchShim(
 
 bool ExtensionAppShimManagerDelegate::HasNonBookmarkAppWindowsOpen() {
   return AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(0);
+}
+
+std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+ExtensionAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(
+    Profile* profile,
+    const web_app::AppId& app_id) {
+  return std::vector<chrome::mojom::ApplicationDockMenuItemPtr>();
 }
 
 }  // namespace apps

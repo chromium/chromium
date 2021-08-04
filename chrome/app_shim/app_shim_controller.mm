@@ -74,6 +74,38 @@
 }
 @end
 
+// The ApplicationDockMenuTarget bridges between Objective C (as the target for
+// the profile menu NSMenuItems) and C++ (the mojo methods called by
+// AppShimController).
+@interface ApplicationDockMenuTarget : NSObject {
+  AppShimController* _controller;
+}
+- (instancetype)initWithController:(AppShimController*)controller;
+- (void)clearController;
+@end
+
+@implementation ApplicationDockMenuTarget
+- (instancetype)initWithController:(AppShimController*)controller {
+  if (self = [super init])
+    _controller = controller;
+  return self;
+}
+
+- (void)clearController {
+  _controller = nullptr;
+}
+
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+  return YES;
+}
+
+- (void)commandFromDock:(id)sender {
+  if (_controller)
+    _controller->CommandFromDock([sender tag]);
+}
+
+@end
+
 namespace {
 // The maximum amount of time to wait for Chrome's AppShimListener to be
 // ready.
@@ -95,8 +127,9 @@ AppShimController::AppShimController(const Params& params)
     : params_(params),
       host_receiver_(host_.BindNewPipeAndPassReceiver()),
       delegate_([[AppShimDelegate alloc] initWithController:this]),
-      profile_menu_target_(
-          [[ProfileMenuTarget alloc] initWithController:this]) {
+      profile_menu_target_([[ProfileMenuTarget alloc] initWithController:this]),
+      application_dock_menu_target_(
+          [[ApplicationDockMenuTarget alloc] initWithController:this]) {
   // Since AppShimController is created before the main message loop starts,
   // NSApp will not be set, so use sharedApplication.
   NSApplication* sharedApplication = [NSApplication sharedApplication];
@@ -108,6 +141,7 @@ AppShimController::~AppShimController() {
   NSApplication* sharedApplication = [NSApplication sharedApplication];
   [sharedApplication setDelegate:nil];
   [profile_menu_target_ clearController];
+  [application_dock_menu_target_ clearController];
 }
 
 void AppShimController::OnAppFinishedLaunching() {
@@ -480,6 +514,11 @@ void AppShimController::UpdateProfileMenu(
   }
 }
 
+void AppShimController::UpdateApplicationDockMenu(
+    std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items) {
+  dock_menu_items_ = std::move(dock_menu_items);
+}
+
 void AppShimController::SetUserAttention(
     chrome::mojom::AppShimAttentionType attention_type) {
   switch (attention_type) {
@@ -516,4 +555,36 @@ void AppShimController::OpenUrls(const std::vector<GURL>& urls) {
   } else {
     host_->UrlsOpened(urls);
   }
+}
+
+void AppShimController::CommandFromDock(uint32_t index) {
+  DCHECK(0 <= index && index < dock_menu_items_.size());
+  DCHECK(init_state_ != InitState::kWaitingForAppToFinishLaunch);
+
+  [NSApp activateIgnoringOtherApps:YES];
+  host_->OpenAppWithOverrideUrl(dock_menu_items_[index]->url);
+}
+
+NSMenu* AppShimController::GetApplicationDockMenu() {
+  if (init_state_ == InitState::kWaitingForAppToFinishLaunch ||
+      dock_menu_items_.size() == 0)
+    return nullptr;
+
+  NSMenu* dockMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+
+  for (size_t i = 0; i < dock_menu_items_.size(); ++i) {
+    const auto& mojo_item = dock_menu_items_[i];
+    NSString* name = base::SysUTF16ToNSString(mojo_item->name);
+    NSMenuItem* item =
+        [[[NSMenuItem alloc] initWithTitle:name
+                                    action:@selector(commandFromDock:)
+                             keyEquivalent:@""] autorelease];
+    [item setTag:i];
+    [item setTarget:application_dock_menu_target_];
+    [item setEnabled:[application_dock_menu_target_
+                         validateUserInterfaceItem:item]];
+    [dockMenu addItem:item];
+  }
+
+  return dockMenu;
 }
