@@ -402,7 +402,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback) override;
-  void UpdateDictationButtonVisibility() override;
+  void UpdateDictationButtonOnSodaChanged(
+      bool soda_download_in_progress) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;

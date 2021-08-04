@@ -17,7 +17,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/soda/soda_installer.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -114,26 +113,25 @@ void DictationButtonTray::UpdateIcon(bool dictation_active) {
 }
 
 void DictationButtonTray::UpdateVisibility() {
-  bool dictation_enabled =
+  bool is_visible =
       Shell::Get()->accessibility_controller()->dictation().enabled();
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  if (!features::IsDictationOfflineAvailableAndEnabled() || !pref_service) {
-    // If we can't get the pref service or soda installer, then simply use
-    // Dictation's enabled state.
-    SetVisiblePreferred(dictation_enabled);
-    return;
-  }
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  const std::string locale =
-      pref_service->GetString(prefs::kAccessibilityDictationLocale);
-  bool soda_downloading =
-      soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale));
-  SetVisiblePreferred(dictation_enabled && !soda_downloading);
+  SetVisiblePreferred(is_visible);
 }
 
 void DictationButtonTray::CheckDictationStatusAndUpdateIcon() {
   UpdateIcon(Shell::Get()->accessibility_controller()->dictation_active());
+}
+
+void DictationButtonTray::UpdateOnSodaChanged(bool soda_download_in_progress) {
+  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled() ||
+      !visible_preferred())
+    return;
+
+  SetEnabled(!soda_download_in_progress);
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+      soda_download_in_progress
+          ? IDS_ASH_ACCESSIBILITY_DICTATION_BUTTON_TOOLTIP_SODA_DOWNLOADING
+          : IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
 }
 
 }  // namespace ash

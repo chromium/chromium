@@ -96,4 +96,5 @@ bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(
 void FakeAccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {}
 
-void FakeAccessibilityController::UpdateDictationButtonVisibility() {}
+void FakeAccessibilityController::UpdateDictationButtonOnSodaChanged(
+    bool soda_download_in_progress) {}

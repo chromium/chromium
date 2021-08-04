@@ -55,11 +55,14 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // views::View:
   const char* GetClassName() const override;
 
-  // Updates the visibility of the button.
-  void UpdateVisibility();
+  // Updates this button's state when SODA download state changes.
+  void UpdateOnSodaChanged(bool soda_download_in_progress);
 
  private:
   friend class DictationButtonTrayTest;
+
+  // Updates the visibility of the button.
+  void UpdateVisibility();
 
   // Sets the icon when Dictation is activated / deactiviated.
   // Also updates visibility when Dictation is enabled / disabled.

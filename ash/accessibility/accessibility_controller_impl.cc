@@ -2001,12 +2001,13 @@ void AccessibilityControllerImpl::ShowConfirmationDialog(
   confirmation_dialog_ = dialog->GetWeakPtr();
 }
 
-void AccessibilityControllerImpl::UpdateDictationButtonVisibility() {
+void AccessibilityControllerImpl::UpdateDictationButtonOnSodaChanged(
+    bool soda_download_in_progress) {
   Shell::Get()
       ->GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->dictation_button_tray()
-      ->UpdateVisibility();
+      ->UpdateOnSodaChanged(soda_download_in_progress);
 }
 
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {

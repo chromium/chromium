@@ -1920,8 +1920,17 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
   soda_installer->Init(profile_->GetPrefs(), g_browser_process->local_state());
 }
 
-void OnSodaInstallUpdated() {
-  AccessibilityController::Get()->UpdateDictationButtonVisibility();
+void AccessibilityManager::OnSodaInstallUpdated() {
+  if (!features::IsDictationOfflineAvailableAndEnabled())
+    return;
+
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  const std::string locale =
+      profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+  bool is_soda_downloading =
+      soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale));
+  AccessibilityController::Get()->UpdateDictationButtonOnSodaChanged(
+      is_soda_downloading);
 }
 
 // SodaInstaller::Observer:

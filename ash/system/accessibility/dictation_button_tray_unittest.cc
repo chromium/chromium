@@ -24,6 +24,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -44,6 +45,9 @@
 namespace ash {
 
 namespace {
+
+const std::string kEnabledTooltip = "Dictation";
+const std::string kDisabledTooltip = "Downloading speech files";
 
 DictationButtonTray* GetTray() {
   return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
@@ -168,20 +172,22 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
   std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
 };
 
-TEST_F(DictationButtonTraySodaTest, VisiblityChangesWhenSodaInstalled) {
+// Tests the behavior of the UpdateOnSodaChanged() method, which gets called
+// whenever SODA download state changes.
+TEST_F(DictationButtonTraySodaTest, UpdateOnSodaChanged) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  TestAccessibilityControllerClient client;
   controller->dictation().SetEnabled(true);
+  DictationButtonTray* tray = GetTray();
+  views::ImageView* image = GetImageView(tray);
 
-  speech::SodaInstaller::GetInstance()->NotifySodaDownloadProgressForTesting(
-      50);
-  GetTray()->UpdateVisibility();
-  EXPECT_FALSE(GetTray()->GetVisible());
+  tray->UpdateOnSodaChanged(true);
+  EXPECT_FALSE(tray->GetEnabled());
+  EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
 
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  GetTray()->UpdateVisibility();
-  EXPECT_TRUE(GetTray()->GetVisible());
+  tray->UpdateOnSodaChanged(false);
+  EXPECT_TRUE(tray->GetEnabled());
+  EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
 }
 
 }  // namespace ash

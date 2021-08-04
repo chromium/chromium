@@ -465,6 +465,7 @@ class AccessibilityManager
   void OnNetworkDictationDialogAccepted();
   void OnNetworkDictationDialogDismissed();
   void MaybeInstallSoda(const std::string& locale);
+  void OnSodaInstallUpdated();
 
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
