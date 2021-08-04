@@ -159,7 +159,7 @@ export function LocalImagesTest() {
         assertTrue(Array.from(images).every(
             image => image.getAttribute('aria-selected') === 'false'));
 
-        personalizationStore.data.selected = {key: 'LocalImage1'};
+        personalizationStore.data.currentSelected = {key: 'LocalImage1'};
         personalizationStore.notifyObservers();
 
         assertEquals(2, images.length);

@@ -31,6 +31,7 @@ static_files = [
 js_library("local_images_element") {
   deps = [
     ":personalization_controller",
+    ":personalization_reducers",
     ":styles",
     "../common:constants",
     "../common:icons",
@@ -151,6 +152,7 @@ js_library("wallpaper_error_element") {
 js_library("wallpaper_images_element") {
   deps = [
     ":personalization_controller",
+    ":personalization_reducers",
     ":styles",
     "../common:constants",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",

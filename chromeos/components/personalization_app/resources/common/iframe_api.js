@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendSelectedWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
 import {isNonEmptyArray} from './utils.js';
 
 /**
@@ -92,9 +92,21 @@ export function sendLocalImageData(target, data) {
  * @param {!Window} target
  * @param {?bigint} assetId
  */
-export function sendSelectedWallpaperAssetId(target, assetId) {
-  /** @type {!SendSelectedWallpaperAssetIdEvent} */
-  const event = {type: EventType.SEND_SELECTED_WALLPAPER_ASSET_ID, assetId};
+export function sendCurrentWallpaperAssetId(target, assetId) {
+  /** @type {!SendCurrentWallpaperAssetIdEvent} */
+  const event = {type: EventType.SEND_CURRENT_WALLPAPER_ASSET_ID, assetId};
+  target.postMessage(event, untrustedOrigin);
+}
+
+/**
+ * Send the |assetId| to the |target| iframe when the user clicks on online
+ * wallpaper image.
+ * @param {!Window} target
+ * @param {?bigint} assetId
+ */
+export function sendPendingWallpaperAssetId(target, assetId) {
+  /** @type {!SendPendingWallpaperAssetIdEvent} */
+  const event = {type: EventType.SEND_PENDING_WALLPAPER_ASSET_ID, assetId};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -182,7 +194,8 @@ export function validateReceivedData(event, expectedEventType) {
    * @type {
    *   SendCollectionsEvent|
    *   SendImagesEvent|
-   *   SendSelectedWallpaperAssetIdEvent|
+   *   SendCurrentWallpaperAssetIdEvent|
+   *   SendPendingWallpaperAssetIdEvent|
    *   SendLocalImagesEvent|
    *   SendLocalImageDataEvent|
    *   SendVisibleEvent
@@ -201,7 +214,8 @@ export function validateReceivedData(event, expectedEventType) {
       // Images array may be empty.
       assert(Array.isArray(data.images), 'Expected images array');
       return data.images;
-    case EventType.SEND_SELECTED_WALLPAPER_ASSET_ID:
+    case EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
+    case EventType.SEND_PENDING_WALLPAPER_ASSET_ID:
       assert(data.assetId === null || typeof data.assetId === 'bigint');
       return data.assetId;
     case EventType.SEND_VISIBLE:

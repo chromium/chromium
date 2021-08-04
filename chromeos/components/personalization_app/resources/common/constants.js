@@ -21,7 +21,8 @@ export const EventType = {
   SEND_IMAGES: 'send_images',
   SEND_LOCAL_IMAGE_DATA: 'send_local_image_data',
   SEND_LOCAL_IMAGES: 'send_local_images',
-  SEND_SELECTED_WALLPAPER_ASSET_ID: 'send_selected_wallpaper_asset_id',
+  SEND_CURRENT_WALLPAPER_ASSET_ID: 'send_current_wallpaper_asset_id',
+  SEND_PENDING_WALLPAPER_ASSET_ID: 'send_pending_wallpaper_asset_id',
   SELECT_IMAGE: 'select_image',
   SELECT_LOCAL_IMAGE: 'select_local_image',
   SEND_VISIBLE: 'send_visible',
@@ -82,7 +83,15 @@ export let SendLocalImageDataEvent;
  *   assetId: ?bigint,
  * }}
  */
-export let SendSelectedWallpaperAssetIdEvent;
+export let SendCurrentWallpaperAssetIdEvent;
+
+/**
+ * @typedef {{
+ *  type: EventType,
+ *  assetId: ?bigint,
+ * }}
+ */
+export let SendPendingWallpaperAssetIdEvent;
 
 /**
  * @typedef {{ type: EventType, assetId: bigint }}

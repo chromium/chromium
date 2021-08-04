@@ -180,7 +180,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.watch('image_', state => state.selected);
+    this.watch('image_', state => state.currentSelected);
     this.watch(
         'isLoading_',
         state => Math.max(state.loading.selected, state.loading.setImage) > 0 ||

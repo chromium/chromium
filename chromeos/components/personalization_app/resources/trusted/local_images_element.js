@@ -21,6 +21,7 @@ import {getLoadingPlaceholderAnimationDelay} from '../common/utils.js';
 import {isSelectionEvent, stringToUnguessableToken, unguessableTokensEqual, unguessableTokenToString} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {selectWallpaper} from './personalization_controller.js';
+import {DisplayableImage} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /** @polymer */
@@ -73,7 +74,16 @@ export class LocalImages extends WithPersonalizationStore {
        * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
        * @private
        */
-      selected_: {
+      currentSelected_: {
+        type: Object,
+      },
+
+      /**
+       * The pending selected image.
+       * @type {?DisplayableImage}
+       * @private
+       */
+      pendingSelected_: {
         type: Object,
       },
 
@@ -98,7 +108,8 @@ export class LocalImages extends WithPersonalizationStore {
     this.watch('images_', state => state.local.images);
     this.watch('imageData_', state => state.local.data);
     this.watch('imageDataLoading_', state => state.loading.local.data);
-    this.watch('selected_', state => state.selected);
+    this.watch('currentSelected_', state => state.currentSelected);
+    this.watch('pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
   }
 
@@ -158,15 +169,19 @@ export class LocalImages extends WithPersonalizationStore {
 
   /**
    * @param {!chromeos.personalizationApp.mojom.LocalImage} image
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+   *     currentSelected
+   * @param {?DisplayableImage} pendingSelected
    * @return {string}
    * @private
    */
-  getAriaSelected_(image, selected) {
-    if (!image || !selected) {
+  getAriaSelected_(image, currentSelected, pendingSelected) {
+    if (!image || (!currentSelected && !pendingSelected)) {
       return 'false';
     }
-    return (!!selected && selected.key === image.name).toString();
+    return (!!pendingSelected && image.id === pendingSelected.id ||
+            !!currentSelected && currentSelected.key === image.name)
+        .toString();
   }
 
   /**
@@ -246,7 +261,6 @@ export class LocalImages extends WithPersonalizationStore {
         /** @type {!chromeos.personalizationApp.mojom.LocalImage} */ (image),
         getWallpaperProvider(), this.getStore());
   }
-
 
   /**
    * @param {number} i

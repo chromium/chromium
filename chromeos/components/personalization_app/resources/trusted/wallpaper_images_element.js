@@ -12,9 +12,9 @@
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {sendImages, sendSelectedWallpaperAssetId, sendVisible} from '../common/iframe_api.js';
+import {sendCurrentWallpaperAssetId, sendImages, sendPendingWallpaperAssetId, sendVisible} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
-import {WallpaperType} from './personalization_reducers.js';
+import {DisplayableImage, WallpaperType} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendImagesFunction = sendImages;
@@ -27,17 +27,17 @@ export function promisifySendImagesForTesting() {
 }
 
 /**
- * If |selected| is set and is an online wallpaper, return the assetId of that
+ * If |current| is set and is an online wallpaper, return the assetId of that
  * image. Otherwise returns null.
- * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
+ * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} current
  * @return {?bigint}
  */
-function getAssetId(selected) {
-  if (selected?.type !== WallpaperType.kOnline) {
+function getAssetId(current) {
+  if (current?.type !== WallpaperType.kOnline) {
     return null;
   }
   try {
-    return BigInt(selected.key);
+    return BigInt(current.key);
   } catch (e) {
     console.warn('Required a BigInt value here', e);
     return null;
@@ -100,7 +100,16 @@ export class WallpaperImages extends WithPersonalizationStore {
       /**
        * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
        */
-      selected_: {
+      currentSelected_: {
+        type: Object,
+      },
+
+      /**
+       * The pending selected image.
+       * @type {?DisplayableImage}
+       * @private
+       */
+      pendingSelected_: {
         type: Object,
       },
 
@@ -123,7 +132,8 @@ export class WallpaperImages extends WithPersonalizationStore {
   static get observers() {
     return [
       'onShouldSendImages_(showImages_, collectionId)',
-      'onShouldSendSelectedAssetId_(showImages_, selected_)',
+      'onShouldSendCurrentAssetId_(showImages_, currentSelected_)',
+      'onShouldSendPendingAssetId_(pendingSelected_)',
     ]
   }
 
@@ -139,7 +149,8 @@ export class WallpaperImages extends WithPersonalizationStore {
     this.watch('images_', state => state.backdrop.images);
     this.watch('imagesLoading_', state => state.loading.images);
     this.watch('collections_', state => state.backdrop.collections);
-    this.watch('selected_', state => state.selected);
+    this.watch('currentSelected_', state => state.currentSelected);
+    this.watch('pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
   }
 
@@ -206,15 +217,27 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   /**
    * @param {boolean} showImages
-   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+   *     currentSelected
    */
-  async onShouldSendSelectedAssetId_(showImages, selected) {
+  async onShouldSendCurrentAssetId_(showImages, currentSelected) {
     if (showImages) {
-      const assetId = getAssetId(selected);
+      const assetId = getAssetId(currentSelected);
       const iframe = await this.iframePromise_;
-      sendSelectedWallpaperAssetId(
+      sendCurrentWallpaperAssetId(
           /** @type {!Window} */ (iframe.contentWindow), assetId);
     }
+  }
+
+  /**
+   * @param {?DisplayableImage} pendingSelected
+   */
+  async onShouldSendPendingAssetId_(pendingSelected) {
+    if (!pendingSelected || !pendingSelected.assetId)
+      return;
+    const iframe = await this.iframePromise_;
+    sendPendingWallpaperAssetId(
+        /** @type {!Window} */ (iframe.contentWindow), pendingSelected.assetId);
   }
 
   /**

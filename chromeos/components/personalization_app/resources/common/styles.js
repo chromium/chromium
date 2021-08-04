@@ -125,12 +125,23 @@ styles.innerHTML = `
       min-width: initial;
       margin: 12px;
     }
+    @keyframes scale-up {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
     .photo-container iron-icon[icon='personalization:checkmark'] {
       --iron-icon-height: 20px;
       --iron-icon-width: 20px;
       left: 8px;
       position: absolute;
       top: 8px;
+      animation-name: scale-up;
+      animation-duration: 200ms;
+      animation-timing-functino: cubic-bezier(0.40, 0.00, 0.20, 1.00);
     }
     .photo-inner-container:not([aria-selected='true'])
     iron-icon[icon='personalization:checkmark'] {
@@ -141,9 +152,17 @@ styles.innerHTML = `
           var(--personalization-app-second-tone-opacity));
       border-radius: 16px;
     }
+    @keyframes resize {
+      100% {
+        height: calc(100% - 8px);
+        width: calc(100% - 8px);
+      }
+    }
     .photo-inner-container[aria-selected='true'] .photo-images-container {
-      height: calc(100% - 8px);
-      width: calc(100% - 8px);
+      animation-name: resize;
+      animation-duration: 200ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
     }
     .photo-inner-container:focus-visible:not([aria-selected='true'])
     .photo-images-container {

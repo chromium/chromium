@@ -79,9 +79,13 @@ class ImagesGrid extends PolymerElement {
           this.images_ = [];
         }
         return;
-      case EventType.SEND_SELECTED_WALLPAPER_ASSET_ID:
+      case EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
         this.selectedAssetId_ = validateReceivedData(
-            message, EventType.SEND_SELECTED_WALLPAPER_ASSET_ID);
+            message, EventType.SEND_CURRENT_WALLPAPER_ASSET_ID);
+        return;
+      case EventType.SEND_PENDING_WALLPAPER_ASSET_ID:
+        this.selectedAssetId_ = validateReceivedData(
+          message, EventType.SEND_PENDING_WALLPAPER_ASSET_ID);
         return;
       case EventType.SEND_VISIBLE:
         const visible = validateReceivedData(message, EventType.SEND_VISIBLE);

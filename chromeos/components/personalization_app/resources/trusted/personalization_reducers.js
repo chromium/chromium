@@ -94,7 +94,8 @@ export let DailyRefreshState;
  *   backdrop: !BackdropState,
  *   loading: !LoadingState,
  *   local: !LocalState,
- *   selected: ?DisplayableImage,
+ *   currentSelected: ?DisplayableImage,
+ *   pendingSelected: ?DisplayableImage,
  *   dailyRefresh: !DailyRefreshState,
  * }}
  */
@@ -116,7 +117,8 @@ export function emptyState() {
       setImage: 0,
     },
     local: {images: null, data: {}},
-    selected: null,
+    currentSelected: null,
+    pendingSelected: null,
     dailyRefresh: {collectionId: null},
   };
 }
@@ -279,9 +281,23 @@ function localReducer(state, action) {
  * @param {!Action} action
  * @return {?DisplayableImage}
  */
-function selectedReducer(state, action) {
+function currentSelectedReducer(state, action) {
   switch (action.name) {
     case ActionName.SET_SELECTED_IMAGE:
+      return action.image;
+    default:
+      return state;
+  }
+}
+
+/**
+ * @param {?DisplayableImage} state
+ * @param {!Action} action
+ * @return {?DisplayableImage}
+ */
+function pendingSelectedReducer(state, action) {
+  switch (action.name) {
+    case ActionName.BEGIN_SELECT_IMAGE:
       return action.image;
     default:
       return state;
@@ -309,7 +325,8 @@ const root = combineReducers({
   backdrop: backdropReducer,
   loading: loadingReducer,
   local: localReducer,
-  selected: selectedReducer,
+  currentSelected: currentSelectedReducer,
+  pendingSelected: pendingSelectedReducer,
   dailyRefresh: dailyRefreshReducer,
 });
 
