@@ -6,8 +6,12 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.os.Debug;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.metrics.RecordHistogram;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,6 +29,18 @@ class SuggestionsMetrics {
     private static final long MIN_HISTOGRAM_DURATION_US = 100;
     private static final long MAX_HISTOGRAM_DURATION_US = TimeUnit.MILLISECONDS.toMicros(10);
     private static final int NUM_DURATION_BUCKETS = 100;
+
+    @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
+            RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
+            RefineActionUsage.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RefineActionUsage {
+        int NOT_USED = 0; // User did not interact with Refine button.
+        int SEARCH_WITH_ZERO_PREFIX = 1; // User interacted with Refine button in zero-prefix mode.
+        int SEARCH_WITH_PREFIX = 2; // User interacted with Refine button in non-zero-prefix mode.
+        int SEARCH_WITH_BOTH = 3; // User interacted with Refine button in both contexts.
+        int COUNT = 4;
+    }
 
     /** Class for reporting timing metrics using try-with-resources block. */
     public static class TimingMetric implements AutoCloseable {
@@ -120,5 +136,18 @@ class SuggestionsMetrics {
     static final void recordUsedSuggestionFromCache(boolean isFromCache) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.Omnibox.UsedSuggestionFromCache", isFromCache);
+    }
+
+    /**
+     * Record the Refine action button usage.
+     * Unlike the MobileOmniobxRefineSuggestion UserAction, this is recorded only once at the end of
+     * an Omnibox interaction, and includes the cases where the user has not interacted with the
+     * Refine button at all.
+     *
+     * @param refineActionUsage Whether - and how Refine action button was used.
+     */
+    static final void recordRefineActionUsage(@RefineActionUsage int refineActionUsage) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Omnibox.RefineActionUsage", refineActionUsage, RefineActionUsage.COUNT);
     }
 }
