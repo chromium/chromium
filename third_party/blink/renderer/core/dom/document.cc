@@ -8112,6 +8112,11 @@ void Document::CountUse(mojom::WebFeature feature) {
     execution_context_->CountUse(feature);
 }
 
+void Document::CountDeprecation(mojom::WebFeature feature) {
+  if (execution_context_)
+    execution_context_->CountDeprecation(feature);
+}
+
 void Document::CountProperty(CSSPropertyID property) const {
   if (DocumentLoader* loader = Loader()) {
     loader->GetUseCounter().Count(

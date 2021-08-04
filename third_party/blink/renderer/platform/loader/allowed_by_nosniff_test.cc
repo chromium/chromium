@@ -30,6 +30,7 @@ class MockUseCounter : public GarbageCollected<MockUseCounter>,
   }
 
   MOCK_METHOD1(CountUse, void(mojom::WebFeature));
+  MOCK_METHOD1(CountDeprecation, void(mojom::WebFeature));
 };
 
 class MockConsoleLogger : public GarbageCollected<MockConsoleLogger>,

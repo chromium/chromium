@@ -252,6 +252,10 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   ReportingProxy().CountFeature(feature);
 }
 
+void WorkerOrWorkletGlobalScope::CountDeprecation(WebFeature feature) {
+  Deprecation::CountDeprecation(this, feature);
+}
+
 ResourceLoadScheduler::ThrottleOptionOverride
 WorkerOrWorkletGlobalScope::GetThrottleOptionOverride() const {
   return ResourceLoadScheduler::ThrottleOptionOverride::kNone;

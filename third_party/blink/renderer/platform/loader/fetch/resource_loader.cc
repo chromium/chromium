@@ -739,7 +739,7 @@ bool ResourceLoader::WillFollowRedirect(
   DCHECK(!passed_redirect_response.IsNull());
 
   if (passed_redirect_response.HasAuthorizationCoveredByWildcardOnPreflight()) {
-    fetcher_->GetUseCounter().CountUse(
+    fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
@@ -922,7 +922,7 @@ void ResourceLoader::DidReceiveResponseInternal(
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
   if (response.HasAuthorizationCoveredByWildcardOnPreflight()) {
-    fetcher_->GetUseCounter().CountUse(
+    fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 

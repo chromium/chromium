@@ -2584,6 +2584,10 @@ void DocumentLoader::CountUse(mojom::WebFeature feature) {
   return use_counter_.Count(feature, GetFrame());
 }
 
+void DocumentLoader::CountDeprecation(mojom::WebFeature feature) {
+  return use_counter_.Count(feature, GetFrame());
+}
+
 void DocumentLoader::RecordUseCountersForCommit() {
   // Pre-commit state, count usage the use counter associated with "this"
   // (provisional document loader) instead of frame_'s document loader.

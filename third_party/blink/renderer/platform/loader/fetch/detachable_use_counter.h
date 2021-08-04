@@ -24,6 +24,11 @@ class DetachableUseCounter final
       use_counter_->CountUse(feature);
     }
   }
+  void CountDeprecation(mojom::WebFeature feature) override {
+    if (use_counter_) {
+      use_counter_->CountDeprecation(feature);
+    }
+  }
   void Trace(Visitor* visitor) const override { visitor->Trace(use_counter_); }
 
   void Detach() { use_counter_ = nullptr; }

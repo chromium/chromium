@@ -586,6 +586,12 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kXHRJSONEncodingDetection:
       return {"XHRJSONEncodingDetection", kM93,
               "UTF-16 is not supported by response json in XMLHttpRequest"};
+
+    case WebFeature::kAuthorizationCoveredByWildcard:
+      return {"AuthorizationCoveredByWildcard", kM97,
+              "\"Authorization\" will not be covered by the wildcard symbol (*)"
+              "in CORS \"Access-Control-Allow-Headers\" handling."};
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};

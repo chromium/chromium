@@ -90,6 +90,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
 
   // UseCounter
   void CountUse(WebFeature feature) final;
+  void CountDeprecation(WebFeature feature) final;
 
   // May return nullptr if this global scope is not threaded (i.e.,
   // WorkletGlobalScope for the main thread) or after Dispose() is called.
