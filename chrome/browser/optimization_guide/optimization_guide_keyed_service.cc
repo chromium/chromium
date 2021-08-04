@@ -17,7 +17,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -216,16 +215,14 @@ OptimizationGuideKeyedService::GetHintsManager() {
 }
 
 void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(
-    content::NavigationHandle* navigation_handle) {
+    OptimizationGuideNavigationData* navigation_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  OptimizationGuideNavigationData* navigation_data =
-      GetNavigationDataFromNavigationHandle(navigation_handle);
   base::flat_set<optimization_guide::proto::OptimizationType>
       registered_optimization_types =
           hints_manager_->registered_optimization_types();
   if (!registered_optimization_types.empty()) {
-    hints_manager_->OnNavigationStartOrRedirect(navigation_handle,
+    hints_manager_->OnNavigationStartOrRedirect(navigation_data,
                                                 base::DoNothing());
   }
 
@@ -257,20 +254,6 @@ void OptimizationGuideKeyedService::RegisterOptimizationTargets(
   }
   prediction_manager_->RegisterOptimizationTargets(
       optimization_targets_and_metadata);
-}
-
-// static
-OptimizationGuideNavigationData*
-OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
-    content::NavigationHandle* navigation_handle) {
-  OptimizationGuideWebContentsObserver*
-      optimization_guide_web_contents_observer =
-          OptimizationGuideWebContentsObserver::FromWebContents(
-              navigation_handle->GetWebContents());
-  if (!optimization_guide_web_contents_observer)
-    return nullptr;
-  return optimization_guide_web_contents_observer
-      ->GetOrCreateOptimizationGuideNavigationData(navigation_handle);
 }
 
 void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(

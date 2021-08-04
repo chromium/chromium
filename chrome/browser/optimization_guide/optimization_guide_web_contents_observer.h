@@ -31,12 +31,6 @@ class OptimizationGuideWebContentsObserver
  public:
   ~OptimizationGuideWebContentsObserver() override;
 
-  // Gets the OptimizationGuideNavigationData associated with
-  // |navigation_handle|. If one does not exist already, one will be created for
-  // it.
-  OptimizationGuideNavigationData* GetOrCreateOptimizationGuideNavigationData(
-      content::NavigationHandle* navigation_handle);
-
   // Notifies |this| to flush |last_navigation_data| so metrics are recorded.
   void FlushLastNavigationData();
 
@@ -48,12 +42,19 @@ class OptimizationGuideWebContentsObserver
 
  private:
   friend class OptimizationGuideHintsManagerFetchingTest;
+  friend class OptimizationGuideHintsManagerTest;
 
   friend class content::WebContentsUserData<
       OptimizationGuideWebContentsObserver>;
 
   explicit OptimizationGuideWebContentsObserver(
       content::WebContents* web_contents);
+
+  // Gets the OptimizationGuideNavigationData associated with the
+  // |navigation_handle|. If one does not exist already, one will be created for
+  // it.
+  OptimizationGuideNavigationData* GetOrCreateOptimizationGuideNavigationData(
+      content::NavigationHandle* navigation_handle);
 
   // Clears the state related to hints to be fetched at onload due to navigation
   // predictions.

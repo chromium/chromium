@@ -54,7 +54,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -210,12 +209,10 @@ void MaybeLogOptimizationAutotuningUKMForNavigation(
 class ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder {
  public:
   explicit ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder(
-      content::NavigationHandle* navigation_handle)
+      OptimizationGuideNavigationData* navigation_data)
       : race_attempt_status_(
             optimization_guide::RaceNavigationFetchAttemptStatus::kUnknown),
-        navigation_data_(
-            OptimizationGuideKeyedService::
-                GetNavigationDataFromNavigationHandle(navigation_handle)) {}
+        navigation_data_(navigation_data) {}
 
   ~ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder() {
     DCHECK_NE(race_attempt_status_,
@@ -833,12 +830,10 @@ void OptimizationGuideHintsManager::SetLastHintsFetchAttemptTime(
       last_attempt_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
-void OptimizationGuideHintsManager::LoadHintForNavigation(
-    content::NavigationHandle* navigation_handle,
-    base::OnceClosure callback) {
+void OptimizationGuideHintsManager::LoadHintForURL(const GURL& url,
+                                                   base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const auto& url = navigation_handle->GetURL();
   if (!url.has_host()) {
     std::move(callback).Run();
     return;
@@ -1284,37 +1279,33 @@ bool OptimizationGuideHintsManager::IsAllowedToFetchNavigationHints(
 }
 
 void OptimizationGuideHintsManager::OnNavigationStartOrRedirect(
-    content::NavigationHandle* navigation_handle,
+    OptimizationGuideNavigationData* navigation_data,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  LoadHintForNavigation(navigation_handle, std::move(callback));
+  LoadHintForURL(navigation_data->navigation_url(), std::move(callback));
 
   if (optimization_guide::switches::
           DisableFetchingHintsAtNavigationStartForTesting()) {
     return;
   }
 
-  MaybeFetchHintsForNavigation(navigation_handle);
+  MaybeFetchHintsForNavigation(navigation_data);
 }
 
 void OptimizationGuideHintsManager::MaybeFetchHintsForNavigation(
-    content::NavigationHandle* navigation_handle) {
+    OptimizationGuideNavigationData* navigation_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (registered_optimization_types_.empty())
     return;
 
-  const GURL url = navigation_handle->GetURL();
+  const GURL url = navigation_data->navigation_url();
   if (!IsAllowedToFetchNavigationHints(url))
     return;
 
   ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder
-      race_navigation_recorder(navigation_handle);
-
-  OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
-          navigation_handle);
+      race_navigation_recorder(navigation_data);
 
   // We expect that if the URL is being fetched for, we have already run through
   // the logic to decide if we also require fetching hints for the host.
@@ -1325,8 +1316,7 @@ void OptimizationGuideHintsManager::MaybeFetchHintsForNavigation(
 
     // Just set the hints fetch start to the start of the navigation, so we can
     // track whether the hint came back before commit or not.
-    navigation_data->set_hints_fetch_start(
-        navigation_handle->NavigationStart());
+    navigation_data->set_hints_fetch_start(navigation_data->navigation_start());
     return;
   }
 

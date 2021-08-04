@@ -100,11 +100,6 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationTarget optimization_target,
       std::unique_ptr<optimization_guide::ModelInfo> model_info);
 
-  // Returns the OptimizationGuideNavigationData for |navigation_handle|. Will
-  // return nullptr if one cannot be created for it for any reason.
-  static OptimizationGuideNavigationData* GetNavigationDataFromNavigationHandle(
-      content::NavigationHandle* navigation_handle);
-
  private:
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
@@ -131,9 +126,9 @@ class OptimizationGuideKeyedService
   }
 
   // Notifies |hints_manager_| that the navigation associated with
-  // |navigation_handle| has started or redirected.
+  // |navigation_data| has started or redirected.
   void OnNavigationStartOrRedirect(
-      content::NavigationHandle* navigation_handle);
+      OptimizationGuideNavigationData* navigation_data);
 
   // Notifies |hints_manager_| that the navigation associated with
   // |navigation_redirect_chain| has finished.

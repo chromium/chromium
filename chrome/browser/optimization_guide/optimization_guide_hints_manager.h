@@ -28,10 +28,6 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -143,12 +139,13 @@ class OptimizationGuideHintsManager
   // Overrides |clock_| for testing.
   void SetClockForTesting(const base::Clock* clock);
 
-  // Notifies |this| that a navigation with |navigation_handle| has started.
+  // Notifies |this| that a navigation with |navigation_data| started.
   // |callback| is run when the request has finished regardless of whether there
   // was actually a hint for that load or not. The callback can be used as a
   // signal for tests.
-  void OnNavigationStartOrRedirect(content::NavigationHandle* navigation_handle,
-                                   base::OnceClosure callback);
+  void OnNavigationStartOrRedirect(
+      OptimizationGuideNavigationData* navigation_data,
+      base::OnceClosure callback);
 
   // Notifies |this| that a navigation with redirect chain
   // |navigation_redirect_chain| has finished.
@@ -298,12 +295,11 @@ class OptimizationGuideHintsManager
   // |url|.
   bool IsAllowedToFetchNavigationHints(const GURL& url);
 
-  // Loads the hint if available.
+  // Loads the hint if available for navigation to |url|.
   // |callback| is run when the request has finished regardless of whether there
   // was actually a hint for that load or not. The callback can be used as a
   // signal for tests.
-  void LoadHintForNavigation(content::NavigationHandle* navigation_handle,
-                             base::OnceClosure callback);
+  void LoadHintForURL(const GURL& url, base::OnceClosure callback);
 
   // Loads the hint for |host| if available.
   // |callback| is run when the request has finished regardless of whether there
@@ -330,11 +326,12 @@ class OptimizationGuideHintsManager
   // optimization types are covered by optimization filters.
   bool HasOptimizationTypeToFetchFor();
 
-  // Creates a hints fetch for |navigation_handle| if it is allowed. The
-  // fetch will include the host and URL of the |navigation_handle| if the
-  // associated hints for each are not already in the cache.
+  // Creates a hints fetch for navigation represented by |navigation_data|, if
+  // it is allowed. The fetch will include the host and URL of the
+  // |navigation_data| if the associated hints for each are not already in the
+  // cache.
   void MaybeFetchHintsForNavigation(
-      content::NavigationHandle* navigation_handle);
+      OptimizationGuideNavigationData* navigation_data);
 
   // If an entry for |navigation_url| is contained in |registered_callbacks_|,
   // it will load the hint for |navigation_url|'s host and upon completion, will

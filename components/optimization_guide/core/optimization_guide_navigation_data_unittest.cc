@@ -25,7 +25,8 @@ TEST(OptimizationGuideNavigationDataTest, RecordMetricsNoData) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/base::TimeTicks::Now());
   data.reset();
 
   // Make sure no UKM recorded.
@@ -41,7 +42,8 @@ TEST(OptimizationGuideNavigtaionDataTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/base::TimeTicks::Now());
   data->set_registered_optimization_types(
       {optimization_guide::proto::NOSCRIPT,
        optimization_guide::proto::RESOURCE_LOADING});
@@ -67,7 +69,8 @@ TEST(OptimizationGuideNavigtaionDataTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/base::TimeTicks::Now());
   data->set_registered_optimization_targets(
       {optimization_guide::proto::OPTIMIZATION_TARGET_UNKNOWN,
        optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
@@ -93,7 +96,8 @@ TEST(OptimizationGuideNavigationDataTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/base::TimeTicks::Now());
   data->set_hints_fetch_attempt_status(
       optimization_guide::RaceNavigationFetchAttemptStatus::
           kRaceNavigationFetchHost);
@@ -119,9 +123,10 @@ TEST(OptimizationGuideNavigationDataTest,
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
   base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<OptimizationGuideNavigationData> data =
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/now);
   data->set_hints_fetch_start(now);
   data->set_hints_fetch_end(now + base::TimeDelta::FromMilliseconds(123));
   data.reset();
@@ -145,9 +150,10 @@ TEST(OptimizationGuideNavigationDataTest,
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
   base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<OptimizationGuideNavigationData> data =
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/now);
   data->set_hints_fetch_end(now);
   data.reset();
 
@@ -162,9 +168,10 @@ TEST(OptimizationGuideNavigationDataTest,
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
   base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<OptimizationGuideNavigationData> data =
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/now);
   data->set_hints_fetch_start(now);
   data.reset();
 
@@ -187,9 +194,10 @@ TEST(OptimizationGuideNavigationDataTest,
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  std::unique_ptr<OptimizationGuideNavigationData> data =
-      std::make_unique<OptimizationGuideNavigationData>(/*navigation_id=*/3);
   base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<OptimizationGuideNavigationData> data =
+      std::make_unique<OptimizationGuideNavigationData>(
+          /*navigation_id=*/3, /*navigation_start=*/now);
   data->set_hints_fetch_start(now);
   data->set_hints_fetch_end(now - base::TimeDelta::FromMilliseconds(123));
   data.reset();
