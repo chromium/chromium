@@ -66,8 +66,7 @@ base::Value MediaRouterDesktop::GetState() const {
 void MediaRouterDesktop::GetProviderState(
     mojom::MediaRouteProviderId provider_id,
     mojom::MediaRouteProvider::GetStateCallback callback) const {
-  if (provider_id == mojom::MediaRouteProviderId::CAST &&
-      CastMediaRouteProviderEnabled()) {
+  if (provider_id == mojom::MediaRouteProviderId::CAST) {
     media_route_providers_.at(provider_id)->GetState(std::move(callback));
   } else {
     std::move(callback).Run(mojom::ProviderStatePtr());
@@ -145,10 +144,8 @@ void MediaRouterDesktop::InitializeMediaRouteProviders() {
   }
 
   InitializeWiredDisplayMediaRouteProvider();
-  if (CastMediaRouteProviderEnabled())
-    InitializeCastMediaRouteProvider();
-  if (DialMediaRouteProviderEnabled())
-    InitializeDialMediaRouteProvider();
+  InitializeCastMediaRouteProvider();
+  InitializeDialMediaRouteProvider();
 }
 
 void MediaRouterDesktop::InitializeWiredDisplayMediaRouteProvider() {

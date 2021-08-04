@@ -552,11 +552,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "cast-media-route-provider",
-    "owners": [ "takumif", "openscreen-eng@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "categorical-search",
     "owners": [ "tby", "thanhdng", "wrong" ],
     "expiry_milestone": 96
@@ -3696,15 +3691,6 @@
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // This flag is used for debugging and development purposes, allowing users
     // and developers to test LiteVideos reliably on any origin.'
-    "expiry_milestone": -1
-  },
-  {
-    "name": "load-media-router-component-extension",
-    "owners": [ "mfoltz", "media-dev" ],
-    // This flag has two purposes: in-team development/Q&A, and allowing
-    // Chromium users to load this extension, which isn't normally distributed
-    // with Chromium. It can be removed once the extension is removed, which has
-    // external dependencies.
     "expiry_milestone": -1
   },
   {

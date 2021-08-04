@@ -32,12 +32,6 @@ void ClearMediaRouterStoredPrefsForTesting();
 // and triggers a permission prompt.
 extern const base::Feature kMediaRouter;
 
-// TODO(crbug.com/1028753): Remove default-enabled kDialMediaRouteProvider after
-// tests stop disabling it.
-extern const base::Feature kDialMediaRouteProvider;
-
-extern const base::Feature kCastMediaRouteProvider;
-
 // If enabled, allows Media Router to connect to Cast devices on all IP
 // addresses, not just RFC1918/RFC4193 private addresses. Workaround for
 // https://crbug.com/813974.
@@ -49,15 +43,6 @@ extern const base::Feature kGlobalMediaControlsCastStartStop;
 // If enabled, allows all websites to request to start mirroring via
 // Presentation API. If disabled, only the allowlisted sites can do so.
 extern const base::Feature kAllowAllSitesToInitiateMirroring;
-
-// If enabled, meetings appear as receivers in the Cast menu.
-extern const base::Feature kCastToMeetingFromCastDialog;
-
-// If enabled, users can submit Cast feedback via the chrome://cast-feedback
-// WebUI.
-// TODO(crbug.com/1173633): Remove this flag now that the feature is enabled by
-// default.
-extern const base::Feature kCastFeedbackDialog;
 
 namespace prefs {
 // Pref name for the enterprise policy for allowing Cast devices on all IPs.
@@ -86,10 +71,6 @@ std::string GetReceiverIdHashToken(PrefService* pref_service);
 
 // Returns true if browser side DIAL Media Route Provider is enabled.
 bool DialMediaRouteProviderEnabled();
-
-// Returns true if browser side Cast Media Route Provider and sink query are
-// enabled.
-bool CastMediaRouteProviderEnabled();
 
 // Returns true if global media controls are used to start and stop casting.
 bool GlobalMediaControlsCastStartStopEnabled();
