@@ -99,6 +99,8 @@ std::string TestDataSource::GetContentSecurityPolicy(
                  network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
              directive == network::mojom::CSPDirectiveName::TrustedTypes) {
     return std::string();
+  } else if (directive == network::mojom::CSPDirectiveName::FrameAncestors) {
+    return "frame-ancestors chrome://* 'self';";
   }
 
   return content::URLDataSource::GetContentSecurityPolicy(directive);

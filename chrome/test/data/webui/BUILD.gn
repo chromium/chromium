@@ -111,6 +111,7 @@ if (include_js_tests) {
       "tab_search/tab_search_browsertest.js",
       "text_defaults_browsertest.js",
       "webui_resource_async_browsertest.js",
+      "whats_new/whats_new_browsertest.js",
     ]
 
     if (is_chrome_branded) {

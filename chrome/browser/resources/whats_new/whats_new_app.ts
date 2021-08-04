@@ -6,9 +6,10 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import './whats_new_error_page.js';
 import './strings.m.js';
 
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 
 export class WhatsNewAppElement extends PolymerElement {
   static get is() {
@@ -30,7 +31,7 @@ export class WhatsNewAppElement extends PolymerElement {
 
     const queryParams = new URLSearchParams(window.location.search);
     const isAutoOpen = queryParams.has('auto');
-    sendWithPromise('initialize', isAutoOpen).then(url => {
+    WhatsNewProxyImpl.getInstance().initialize(isAutoOpen).then(url => {
       if (!url) {
         this.showErrorPage_ = true;
         return;
