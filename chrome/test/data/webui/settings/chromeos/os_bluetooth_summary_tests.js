@@ -10,20 +10,40 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {FakeBluetoothConfig} from './fake_bluetooth_config.m.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // clang-format on
 
 suite('OsBluetoothSummaryTest', function() {
+  /** @type {!FakeBluetoothConfig} */
+  let bluetoothConfig;
+
   /** @type {!SettingsBluetoothSummaryElement|undefined} */
   let bluetoothSummary;
 
+  /**
+   * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+   */
+  let propertiesObserver;
+
   setup(function() {
-    // TODO(crbug.com/1010321): Replace this with fake_cros_bluetooth_config
-    // when it is created.
-    setBluetoothConfigForTesting({setBluetoothEnabledState: (enabled) => {}});
+    bluetoothConfig = new FakeBluetoothConfig();
+    setBluetoothConfigForTesting(bluetoothConfig);
     bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
     document.body.appendChild(bluetoothSummary);
     Polymer.dom.flush();
+
+    propertiesObserver = {
+      /**
+       * SystemPropertiesObserverInterface override
+       * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       *     properties
+       */
+      onPropertiesUpdated(properties) {
+        bluetoothSummary.systemProperties = properties;
+      }
+    };
+    bluetoothConfig.observeSystemProperties(propertiesObserver);
   });
 
   function flushAsync() {
@@ -43,24 +63,42 @@ suite('OsBluetoothSummaryTest', function() {
   });
 
   test('Toggle button states', async function() {
-    // TODO(crbug.com/1010321): Remove |mockSystemProperties| once
-    // fake_cros_bluetooth_config has been added.
-    const mockSystemProperties = {
-      systemState: chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled,
-    };
-    bluetoothSummary.systemProperties = {...mockSystemProperties};
+    const enableBluetoothToggle = bluetoothSummary.$$('#enableBluetoothToggle');
+    assertTrue(!!enableBluetoothToggle);
+    assertFalse(enableBluetoothToggle.checked);
 
-    const enableBluettonToggle = bluetoothSummary.$$('#enableBluetoothToggle');
-    assertTrue(!!enableBluettonToggle);
-    assertTrue(enableBluettonToggle.checked);
-
-    // Simulate disabled state.
-    mockSystemProperties.systemState =
-        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kDisabled;
-    bluetoothSummary.systemProperties = {...mockSystemProperties};
+    // Simulate clicking toggle.
+    enableBluetoothToggle.click();
     await flushAsync();
 
-    assertFalse(enableBluettonToggle.checked);
-  });
+    // Toggle should be on since systemState is enabling.
+    assertTrue(enableBluetoothToggle.checked);
 
+    // Mock operation failing.
+    bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ false);
+    await flushAsync();
+
+    // Toggle should be off again.
+    assertFalse(enableBluetoothToggle.checked);
+
+    // Click again.
+    enableBluetoothToggle.click();
+    await flushAsync();
+
+    // Toggle should be on since systemState is enabling.
+    assertTrue(enableBluetoothToggle.checked);
+
+    // Mock operation success.
+    bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
+    await flushAsync();
+
+    // Toggle should still be on.
+    assertTrue(enableBluetoothToggle.checked);
+
+    // Mock systemState becoming unavailable.
+    bluetoothConfig.setSystemState(
+        chromeos.bluetoothConfig.mojom.BluetoothSystemState.kUnavailable);
+    await flushAsync();
+    assertTrue(enableBluetoothToggle.disabled);
+  });
 });
