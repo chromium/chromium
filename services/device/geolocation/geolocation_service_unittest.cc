@@ -95,11 +95,19 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   DISALLOW_COPY_AND_ASSIGN(GeolocationServiceUnitTest);
 };
 
+// GeolocationServiceUnitTest.UrlWithApiKey is flaky on mac
+// https://crbug.com/1235907.
+#if defined(OS_MAC)
+#define MAYBE_UrlWithApiKey DISABLED_UrlWithApiKey
+#else
+#define MAYBE_UrlWithApiKey UrlWithApiKey
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 // ChromeOS fails to perform network geolocation when zero wifi networks are
 // detected in a scan: https://crbug.com/767300.
 #else
-TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
+TEST_F(GeolocationServiceUnitTest, MAYBE_UrlWithApiKey) {
 // To align with user expectation we do not make Network Location Requests
 // on macOS unless the browser has Location Permission from the OS.
 #if defined(OS_MAC)
