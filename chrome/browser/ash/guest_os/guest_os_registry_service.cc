@@ -58,6 +58,9 @@ constexpr char kCrostiniAppsInstalledHistogram[] =
 constexpr char kPluginVmAppsInstalledHistogram[] =
     "PluginVm.AppsInstalledAtLogin";
 
+constexpr char kBorealisAppsInstalledHistogram[] =
+    "Borealis.AppsInstalledAtLogin";
+
 base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
   base::Value result(base::Value::Type::DICTIONARY);
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
@@ -354,14 +357,10 @@ std::string GuestOsRegistryService::Registration::DesktopFileId() const {
 
 GuestOsRegistryService::VmType GuestOsRegistryService::Registration::VmType()
     const {
-  absl::optional<int> vm_type =
-      pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey);
   // The VmType field is new, existing Apps that do not include it must be
-  // TERMINA Apps, as Plugin VM apps are not yet in production.
-  if (!vm_type) {
-    return GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA;
-  }
-  return static_cast<GuestOsRegistryService::VmType>(*vm_type);
+  // TERMINA (0) Apps, as Plugin VM apps are not yet in production.
+  return static_cast<GuestOsRegistryService::VmType>(
+      pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0));
 }
 
 std::string GuestOsRegistryService::Registration::VmName() const {
@@ -378,8 +377,7 @@ std::string GuestOsRegistryService::Registration::ContainerName() const {
 }
 
 std::string GuestOsRegistryService::Registration::Name() const {
-  if (VmType() ==
-      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM) {
+  if (VmType() == VmType::ApplicationList_VmType_PLUGIN_VM) {
     return l10n_util::GetStringFUTF8(
         IDS_PLUGIN_VM_APP_NAME_WINDOWS_SUFFIX,
         base::UTF8ToUTF16(LocalizedString(guest_os::prefs::kAppNameKey)));
@@ -643,18 +641,7 @@ void GuestOsRegistryService::RecordStartupMetrics() {
   const base::DictionaryValue* apps =
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
 
-  bool crostini_enabled =
-      crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
-  bool plugin_vm_enabled =
-      plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  bool borealis_enabled = borealis::BorealisService::GetForProfile(profile_)
-                              ->Features()
-                              .IsEnabled();
-  if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled)
-    return;
-
-  int num_crostini_apps = 0;
-  int num_plugin_vm_apps = 0;
+  base::flat_map<int, int> num_apps;
 
   for (const auto item : apps->DictItems()) {
     if (item.first == crostini::kCrostiniTerminalSystemAppId)
@@ -665,28 +652,27 @@ void GuestOsRegistryService::RecordStartupMetrics() {
     if (no_display && no_display.value())
       continue;
 
-    absl::optional<int> vm_type =
-        item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey);
-    if (!vm_type ||
-        vm_type ==
-            GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA) {
-      num_crostini_apps++;
-    } else if (vm_type == GuestOsRegistryService::VmType::
-                              ApplicationList_VmType_PLUGIN_VM) {
-      num_plugin_vm_apps++;
-    } else {
-      NOTREACHED();
-    }
+    int vm_type =
+        item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0);
+    num_apps[vm_type]++;
   }
 
-  if (crostini_enabled)
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
     UMA_HISTOGRAM_COUNTS_1000(kCrostiniAppsInstalledHistogram,
-                              num_crostini_apps);
-  if (plugin_vm_enabled)
-    UMA_HISTOGRAM_COUNTS_1000(kPluginVmAppsInstalledHistogram,
-                              num_plugin_vm_apps);
-
-  // TODO(b/166691285): borealis launch metrics.
+                              num_apps[VmType::ApplicationList_VmType_TERMINA]);
+  }
+  if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        kPluginVmAppsInstalledHistogram,
+        num_apps[VmType::ApplicationList_VmType_PLUGIN_VM]);
+  }
+  if (borealis::BorealisService::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled()) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        kBorealisAppsInstalledHistogram,
+        num_apps[VmType::ApplicationList_VmType_BOREALIS]);
+  }
 }
 
 base::FilePath GuestOsRegistryService::GetAppPath(
