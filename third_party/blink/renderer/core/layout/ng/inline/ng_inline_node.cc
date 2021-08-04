@@ -1727,7 +1727,12 @@ static LayoutUnit ComputeContentSize(
           // NGInlineItem.
           continue;
         }
-        if (item.Type() == NGInlineItem::kAtomicInline) {
+#if DCHECK_IS_ON()
+        if (item.Type() == NGInlineItem::kBlockInInline)
+          DCHECK(line_info.HasForcedBreak());
+#endif
+        if (item.Type() == NGInlineItem::kAtomicInline ||
+            item.Type() == NGInlineItem::kBlockInInline) {
           // The max-size for atomic inlines are cached in |max_size_cache|.
           unsigned item_index = &item - items_data.items.begin();
           position += max_size_cache[item_index];
@@ -1747,10 +1752,6 @@ static LayoutUnit ComputeContentSize(
             continue;
           }
         }
-#if DCHECK_IS_ON()
-        if (item.Type() == NGInlineItem::kBlockInInline)
-          DCHECK(line_info.HasForcedBreak());
-#endif
         position += result.inline_size;
       }
       // Compute the forced break after all results were handled, because

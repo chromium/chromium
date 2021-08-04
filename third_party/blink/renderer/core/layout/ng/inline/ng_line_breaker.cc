@@ -1982,30 +1982,36 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
     return;
   }
 
-  // TODO(crbug.com/716930): Support MinMax.
-
   NGInlineItemResult* item_result = AddItem(item, line_info);
-  const NGBlockBreakToken* block_break_token =
-      break_token_ ? break_token_->BlockInInlineBreakToken() : nullptr;
-  scoped_refptr<const NGLayoutResult> layout_result =
-      NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
-          .Layout(constraint_space_, block_break_token);
-  if (layout_result->Status() != NGLayoutResult::kSuccess) {
-    line_info->SetAbortedLayoutResult(std::move(layout_result));
-    state_ = LineBreakState::kDone;
-    return;
-  }
-  const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
-  item_result->inline_size =
-      NGFragment(constraint_space_.GetWritingDirection(), fragment)
-          .InlineSize();
-  position_ += item_result->inline_size;
-  item_result->should_create_line_box = !layout_result->IsSelfCollapsing();
-  item_result->layout_result = std::move(layout_result);
+  if (mode_ == NGLineBreakerMode::kContent) {
+    const NGBlockBreakToken* block_break_token =
+        break_token_ ? break_token_->BlockInInlineBreakToken() : nullptr;
+    scoped_refptr<const NGLayoutResult> layout_result =
+        NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
+            .Layout(constraint_space_, block_break_token);
+    if (layout_result->Status() != NGLayoutResult::kSuccess) {
+      line_info->SetAbortedLayoutResult(std::move(layout_result));
+      state_ = LineBreakState::kDone;
+      return;
+    }
+    const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+    item_result->inline_size =
+        NGFragment(constraint_space_.GetWritingDirection(), fragment)
+            .InlineSize();
 
-  DCHECK(!line_info->BlockInInlineBreakToken());
-  line_info->SetBlockInInlineBreakToken(
-      To<NGBlockBreakToken>(fragment.BreakToken()));
+    item_result->should_create_line_box = !layout_result->IsSelfCollapsing();
+    item_result->layout_result = std::move(layout_result);
+
+    DCHECK(!line_info->BlockInInlineBreakToken());
+    line_info->SetBlockInInlineBreakToken(
+        To<NGBlockBreakToken>(fragment.BreakToken()));
+  } else {
+    DCHECK(mode_ == NGLineBreakerMode::kMaxContent ||
+           mode_ == NGLineBreakerMode::kMinContent);
+    ComputeMinMaxContentSizeForBlockChild(item, item_result);
+  }
+
+  position_ += item_result->inline_size;
   line_info->SetIsBlockInInline();
   line_info->SetHasForcedBreak();
   is_after_forced_break_ = true;
