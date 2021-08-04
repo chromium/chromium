@@ -1060,15 +1060,7 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
       // Fall back on the main data pack (shouldn't be any strings here except
       // in unittests).
       data = GetRawDataResource(resource_id);
-#if defined(OS_FUCHSIA)
-      CHECK(!data.empty());
-#else   // !defined(OS_FUCHSIA)
-      if (data.empty()) {
-        LOG(WARNING) << "unable to find resource: " << resource_id;
-        NOTREACHED();
-        return std::u16string();
-      }
-#endif  // !defined(OS_FUCHSIA)
+      CHECK(!data.empty()) << "Unable to find resource: " << resource_id;
     }
   }
 
