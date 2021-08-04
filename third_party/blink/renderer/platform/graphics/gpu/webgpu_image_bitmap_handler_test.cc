@@ -59,13 +59,11 @@ bool GPUUploadingPathSupported() {
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
  public:
   MockWebGPUInterface() {
-    procs_ = {};
-
     // WebGPU functions the tests will call. No-op them since we don't have a
     // real WebGPU device.
-    procs_.deviceReference = [](WGPUDevice) {};
-    procs_.deviceRelease = [](WGPUDevice) {};
-    procs_.textureRelease = [](WGPUTexture) {};
+    procs()->deviceReference = [](WGPUDevice) {};
+    procs()->deviceRelease = [](WGPUDevice) {};
+    procs()->textureRelease = [](WGPUTexture) {};
   }
 
   MOCK_METHOD(gpu::webgpu::ReservedTexture,
@@ -82,11 +80,6 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
   MOCK_METHOD(void,
               DissociateMailbox,
               (GLuint texture_id, GLuint texture_generation));
-
-  const DawnProcTable& GetProcs() const override { return procs_; }
-
- private:
-  DawnProcTable procs_;
 };
 
 // The six reference pixels are: red, green, blue, white, black.

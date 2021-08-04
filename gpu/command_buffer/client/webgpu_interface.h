@@ -24,12 +24,28 @@ struct ReservedTexture {
   uint32_t deviceGeneration;
 };
 
+// APIChannel is a RefCounted class which holds the Dawn wire client.
+class APIChannel : public base::RefCounted<APIChannel> {
+ public:
+  // Get the proc table.
+  // As long as a reference to this APIChannel alive, it is valid to
+  // call these procs.
+  virtual const DawnProcTable& GetProcs() const = 0;
+
+  // Disconnect. All commands using the WebGPU API should become a
+  // no-op and server-side resources can be freed.
+  virtual void Disconnect() = 0;
+
+ protected:
+  friend class base::RefCounted<APIChannel>;
+  APIChannel() = default;
+  virtual ~APIChannel() = default;
+};
+
 class WebGPUInterface : public InterfaceBase {
  public:
-  WebGPUInterface() {}
-  virtual ~WebGPUInterface() {}
-
-  virtual const DawnProcTable& GetProcs() const = 0;
+  WebGPUInterface() = default;
+  virtual ~WebGPUInterface() = default;
 
   // Flush all commands.
   virtual void FlushCommands() = 0;
@@ -44,9 +60,8 @@ class WebGPUInterface : public InterfaceBase {
   // nothing.
   virtual void FlushAwaitingCommands() = 0;
 
-  // Disconnect. All commands should become a no-op and server-side resources
-  // can be freed.
-  virtual void DisconnectContextAndDestroyServer() = 0;
+  // Get a strong reference to the APIChannel backing the implementation.
+  virtual scoped_refptr<APIChannel> GetAPIChannel() const = 0;
 
   virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
   virtual void RequestAdapterAsync(

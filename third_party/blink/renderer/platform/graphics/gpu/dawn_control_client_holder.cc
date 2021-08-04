@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 
 #include "base/check.h"
-#include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -18,9 +18,8 @@ scoped_refptr<DawnControlClientHolder> DawnControlClientHolder::Create(
       base::MakeRefCounted<DawnControlClientHolder>(std::move(context_provider),
                                                     std::move(task_runner));
   dawn_control_client_holder->context_provider_->ContextProvider()
-      ->SetLostContextCallback(
-          WTF::BindRepeating(&DawnControlClientHolder::SetContextLost,
-                             dawn_control_client_holder));
+      ->SetLostContextCallback(WTF::BindRepeating(
+          &DawnControlClientHolder::Destroy, dawn_control_client_holder));
   return dawn_control_client_holder;
 }
 
@@ -29,16 +28,35 @@ DawnControlClientHolder::DawnControlClientHolder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : context_provider_(std::make_unique<WebGraphicsContext3DProviderWrapper>(
           std::move(context_provider))),
-      procs_(
-          context_provider_->ContextProvider()->WebGPUInterface()->GetProcs()),
+      task_runner_(task_runner),
+      api_channel_(context_provider_->ContextProvider()
+                       ->WebGPUInterface()
+                       ->GetAPIChannel()),
+      procs_(api_channel_->GetProcs()),
       recyclable_resource_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
+DawnControlClientHolder::~DawnControlClientHolder() = default;
+
 void DawnControlClientHolder::Destroy() {
-  SetContextLost();
+  api_channel_->Disconnect();
+
+  // Destroy the WebGPU context.
+  // This ensures that GPU resources are eagerly reclaimed.
+  // Because we have disconnected the wire client, any JavaScript which uses
+  // WebGPU will do nothing.
   if (context_provider_) {
-    context_provider_->ContextProvider()
-        ->WebGPUInterface()
-        ->DisconnectContextAndDestroyServer();
+    // If the context provider is destroyed during a real lost context event, it
+    // causes the CommandBufferProxy that the context provider owns, which is
+    // what issued the lost context event in the first place, to be destroyed
+    // before the event is done being handled. This causes a crash when an
+    // outstanding AutoLock goes out of scope. To avoid this, we create a no-op
+    // task to hold a reference to the context provider until this function is
+    // done executing, and drop it after.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce([](std::unique_ptr<WebGraphicsContext3DProviderWrapper>
+                              context_provider) {},
+                       std::move(context_provider_)));
   }
 }
 
@@ -50,12 +68,8 @@ DawnControlClientHolder::GetContextProviderWeakPtr() const {
   return context_provider_->GetWeakPtr();
 }
 
-void DawnControlClientHolder::SetContextLost() {
-  lost_ = true;
-}
-
 bool DawnControlClientHolder::IsContextLost() const {
-  return lost_;
+  return !context_provider_;
 }
 
 std::unique_ptr<RecyclableCanvasResource>

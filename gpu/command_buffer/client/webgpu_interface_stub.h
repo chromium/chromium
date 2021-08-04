@@ -24,11 +24,10 @@ class WebGPUInterfaceStub : public WebGPUInterface {
   void ShallowFlushCHROMIUM() override;
 
   // WebGPUInterface implementation
-  const DawnProcTable& GetProcs() const override;
+  scoped_refptr<APIChannel> GetAPIChannel() const override;
   void FlushCommands() override;
   void EnsureAwaitingFlush(bool* needs_flush) override;
   void FlushAwaitingCommands() override;
-  void DisconnectContextAndDestroyServer() override;
   ReservedTexture ReserveTexture(WGPUDevice device) override;
   void RequestAdapterAsync(
       PowerPreference power_preference,
@@ -47,8 +46,11 @@ class WebGPUInterfaceStub : public WebGPUInterface {
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_stub_autogen.h"
 
+ protected:
+  DawnProcTable* procs();
+
  private:
-  DawnProcTable null_procs_;
+  scoped_refptr<APIChannel> api_channel_;
 };
 
 }  // namespace webgpu

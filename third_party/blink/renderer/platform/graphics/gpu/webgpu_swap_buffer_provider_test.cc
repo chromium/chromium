@@ -21,12 +21,10 @@ namespace {
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
  public:
   MockWebGPUInterface() {
-    procs_ = {};
-
     // WebGPU functions the tests will call. No-op them since we don't have a
     // real WebGPU device.
-    procs_.deviceReference = [](WGPUDevice) {};
-    procs_.deviceRelease = [](WGPUDevice) {};
+    procs()->deviceReference = [](WGPUDevice) {};
+    procs()->deviceRelease = [](WGPUDevice) {};
   }
 
   MOCK_METHOD1(ReserveTexture, gpu::webgpu::ReservedTexture(WGPUDevice device));
@@ -51,13 +49,10 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
     memcpy(&most_recent_waited_token, sync_token_data, sizeof(gpu::SyncToken));
   }
 
-  const DawnProcTable& GetProcs() const override { return procs_; }
-
   gpu::SyncToken most_recent_generated_token;
   gpu::SyncToken most_recent_waited_token;
 
  private:
-  DawnProcTable procs_;
   uint64_t token_id_ = 42;
 };
 

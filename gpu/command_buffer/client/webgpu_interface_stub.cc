@@ -7,9 +7,33 @@
 namespace gpu {
 namespace webgpu {
 
-WebGPUInterfaceStub::WebGPUInterfaceStub() = default;
+namespace {
+
+class APIChannelStub : public APIChannel {
+ public:
+  APIChannelStub() = default;
+
+  const DawnProcTable& GetProcs() const override { return procs_; }
+  void Disconnect() override {}
+
+  DawnProcTable* procs() { return &procs_; }
+
+ private:
+  ~APIChannelStub() override = default;
+
+  DawnProcTable procs_ = {};
+};
+
+}  // anonymous namespace
+
+WebGPUInterfaceStub::WebGPUInterfaceStub()
+    : api_channel_(base::MakeRefCounted<APIChannelStub>()) {}
 
 WebGPUInterfaceStub::~WebGPUInterfaceStub() = default;
+
+DawnProcTable* WebGPUInterfaceStub::procs() {
+  return static_cast<APIChannelStub*>(api_channel_.get())->procs();
+}
 
 // InterfaceBase implementation.
 void WebGPUInterfaceStub::GenSyncTokenCHROMIUM(GLbyte* sync_token) {}
@@ -20,13 +44,12 @@ void WebGPUInterfaceStub::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {}
 void WebGPUInterfaceStub::ShallowFlushCHROMIUM() {}
 
 // WebGPUInterface implementation
-const DawnProcTable& WebGPUInterfaceStub::GetProcs() const {
-  return null_procs_;
+scoped_refptr<APIChannel> WebGPUInterfaceStub::GetAPIChannel() const {
+  return api_channel_;
 }
 void WebGPUInterfaceStub::FlushCommands() {}
 void WebGPUInterfaceStub::EnsureAwaitingFlush(bool* needs_flush) {}
 void WebGPUInterfaceStub::FlushAwaitingCommands() {}
-void WebGPUInterfaceStub::DisconnectContextAndDestroyServer() {}
 ReservedTexture WebGPUInterfaceStub::ReserveTexture(WGPUDevice) {
   return {nullptr, 0, 0, 0, 0};
 }

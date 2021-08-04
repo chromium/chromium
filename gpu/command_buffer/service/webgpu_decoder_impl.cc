@@ -917,14 +917,6 @@ void WebGPUDecoderImpl::SendRequestedDeviceInfo(
       sizeof(return_request_device_info)));
 }
 
-error::Error WebGPUDecoderImpl::HandleDestroyServer(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  Destroy(false);
-
-  return error::kNoError;
-}
-
 error::Error WebGPUDecoderImpl::HandleRequestAdapter(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

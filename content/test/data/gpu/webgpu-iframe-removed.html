@@ -178,8 +178,8 @@
         parent.removeIframe();
       });
 
-      // Test creating a mappable buffer and then removing the iframe while
-      // the mapping is in flight.
+      // Test creating a mappable buffer and then in the next task, removing the
+      // iframe while the mapping is in flight.
       // Mappable buffers are tracked because mappings need to be detached
       // when the context is destroyed.
       await runTestCase(async () => {
@@ -201,6 +201,30 @@
         setTimeout(() => {
           parent.removeIframe();
         }, 0);
+      });
+
+      // Test creating a mappable buffer and then in the same task, removing the
+      // iframe while the mapping is in flight.
+      // Mappable buffers are tracked because mappings need to be detached
+      // when the context is destroyed.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+        const device = await adapter.requestDevice();
+
+        const buffer = device.createBuffer({
+          size: 4,
+          usage: GPUBufferUsage.MAP_READ,
+        });
+
+        buffer.mapAsync(GPUMapMode.READ);
+        /* Empty submit to force a flush */
+        device.queue.submit([]);
+        parent.removeIframe();
       });
 
       // Test removing the iframe while the buffer is mapped.

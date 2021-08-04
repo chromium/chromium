@@ -112,13 +112,4 @@ TEST_F(WebGPUFormatTest, RequestDevice) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(WebGPUFormatTest, DestroyServer) {
-  cmds::DestroyServer& cmd = *GetBufferAs<cmds::DestroyServer>();
-  void* next_cmd = cmd.Set(&cmd);
-  EXPECT_EQ(static_cast<uint32_t>(cmds::DestroyServer::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 #endif  // GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_TEST_AUTOGEN_H_

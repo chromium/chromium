@@ -203,8 +203,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (!dawn_control_client_ || dawn_control_client_->IsContextLost() ||
-      !dawn_control_client_->GetContextProviderWeakPtr()) {
+  if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
     // TODO(natlee@microsoft.com): if GPU process is lost, wait for the GPU

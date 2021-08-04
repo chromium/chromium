@@ -28,8 +28,7 @@ class WireClient;
 namespace gpu {
 namespace webgpu {
 
-class DawnClientMemoryTransferService;
-class DawnClientSerializer;
+class DawnWireServices;
 
 class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
                                                  public ImplementationBase {
@@ -115,11 +114,10 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   // WebGPUInterface implementation
-  const DawnProcTable& GetProcs() const override;
   void FlushCommands() override;
   void EnsureAwaitingFlush(bool* needs_flush) override;
   void FlushAwaitingCommands() override;
-  void DisconnectContextAndDestroyServer() override;
+  scoped_refptr<APIChannel> GetAPIChannel() const override;
   ReservedTexture ReserveTexture(WGPUDevice device) override;
   void RequestAdapterAsync(
       PowerPreference power_preference,
@@ -138,12 +136,11 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void CheckGLError() {}
   DawnRequestAdapterSerial NextRequestAdapterSerial();
   DawnRequestDeviceSerial NextRequestDeviceSerial();
+  void LoseContext();
 
   WebGPUCmdHelper* helper_;
 #if BUILDFLAG(USE_DAWN)
-  std::unique_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
-  std::unique_ptr<DawnClientSerializer> wire_serializer_;
-  std::unique_ptr<dawn_wire::WireClient> wire_client_;
+  scoped_refptr<DawnWireServices> dawn_wire_;
 #endif
   WGPUDevice deprecated_default_device_ = nullptr;
 

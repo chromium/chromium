@@ -91,11 +91,12 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
-void GPUAdapter::OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
+void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
+                                         ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
                                          WGPUDevice dawn_device) {
   if (dawn_device) {
-    ExecutionContext* execution_context = resolver->GetExecutionContext();
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
     auto* device = MakeGarbageCollected<GPUDevice>(execution_context,
                                                    GetDawnControlClient(), this,
                                                    dawn_device, descriptor);
@@ -181,7 +182,8 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
     context_provider->ContextProvider()->WebGPUInterface()->RequestDeviceAsync(
         adapter_service_id_, requested_device_properties,
         WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                  WrapPersistent(resolver), WrapPersistent(descriptor)));
+                  WrapPersistent(script_state), WrapPersistent(resolver),
+                  WrapPersistent(descriptor)));
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError, "WebGPU context lost"));
