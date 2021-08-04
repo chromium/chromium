@@ -1287,7 +1287,7 @@ try_.chromium_linux_builder(
     properties = {
         "compilator": "linux-rel-compilator",
     },
-    service_account = "chromium-mini-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     tryjob = try_.job(
         experiment_percentage = 100,
     ),
