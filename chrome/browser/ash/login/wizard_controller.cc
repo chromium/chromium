@@ -98,7 +98,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -424,7 +424,7 @@ void WizardController::Init(OobeScreenId first_screen) {
   is_initialized_ = true;
 
   prescribed_enrollment_config_ = g_browser_process->platform_part()
-                                      ->browser_policy_connector_chromeos()
+                                      ->browser_policy_connector_ash()
                                       ->GetPrescribedEnrollmentConfig();
 
   VLOG(1) << "Starting OOBE wizard with screen: " << first_screen;
@@ -443,8 +443,8 @@ void WizardController::Init(OobeScreenId first_screen) {
   //
   // TODO (ygorshenin@): implement handling of the local state
   // corruption in the case of asynchronious loading.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   if (!is_enterprise_managed) {
     const PrefService::PrefInitializationStatus status =
@@ -812,7 +812,7 @@ void WizardController::ShowEulaScreen() {
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
   prescribed_enrollment_config_ = g_browser_process->platform_part()
-                                      ->browser_policy_connector_chromeos()
+                                      ->browser_policy_connector_ash()
                                       ->GetPrescribedEnrollmentConfig();
   StartEnrollmentScreen(false);
 }
@@ -1100,7 +1100,7 @@ void WizardController::OnScreenExit(OobeScreenId screen,
 
 void WizardController::AdvanceToSigninScreen() {
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
     AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
   } else {
@@ -1340,7 +1340,7 @@ void WizardController::OnEnrollmentDone() {
   } else if (ArcKioskAppManager::Get()->GetAutoLaunchAccountId().is_valid()) {
     AutoLaunchKioskApp(KioskAppType::kArcApp);
   } else if (g_browser_process->platform_part()
-                 ->browser_policy_connector_chromeos()
+                 ->browser_policy_connector_ash()
                  ->IsDeviceEnterpriseManaged()) {
     // Could be not managed in tests.
     DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
@@ -1638,7 +1638,7 @@ void WizardController::OnOobeFlowFinished() {
 
 void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
   prescribed_enrollment_config_ = g_browser_process->platform_part()
-                                      ->browser_policy_connector_chromeos()
+                                      ->browser_policy_connector_ash()
                                       ->GetPrescribedEnrollmentConfig();
 
   bool configuration_forced_enrollment = false;
@@ -2191,8 +2191,8 @@ void WizardController::OnTimezoneResolved(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (connector->IsDeviceEnterpriseManaged()) {
     std::string policy_timezone;
     if (CrosSettings::Get()->GetString(kSystemTimezonePolicy,
@@ -2286,8 +2286,8 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
 }
 
 void WizardController::ShowEnrollmentScreenIfEligible() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   const bool enterprise_managed = connector->IsDeviceEnterpriseManaged();
   const bool has_users = !user_manager::UserManager::Get()->GetUsers().empty();
   if (!has_users && !enterprise_managed) {

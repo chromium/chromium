@@ -26,7 +26,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/grit/chromium_strings.h"
@@ -165,8 +165,8 @@ base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
 // static
 std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
   if (!connector->IsDeviceEnterpriseManaged() &&
       !profile->GetProfilePolicyConnector()->IsManaged()) {

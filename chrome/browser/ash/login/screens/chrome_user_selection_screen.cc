@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
@@ -40,7 +40,7 @@ ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     : UserSelectionScreen(display_type) {
   device_local_account_policy_service_ =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService();
   if (device_local_account_policy_service_) {
     device_local_account_policy_service_->AddObserver(this);

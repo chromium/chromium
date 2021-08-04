@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -167,7 +167,7 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
     return false;
 
   const bool is_enterprise_enrolled = g_browser_process->platform_part()
-                                          ->browser_policy_connector_chromeos()
+                                          ->browser_policy_connector_ash()
                                           ->IsDeviceEnterpriseManaged();
 
   // Do not show survey if this is a non dogfood enterprise enrolled device.

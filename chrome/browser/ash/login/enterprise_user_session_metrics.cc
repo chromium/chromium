@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
@@ -24,7 +24,7 @@ namespace {
 // Returns true if the device is enterprise managed, false otherwise.
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->IsDeviceEnterpriseManaged();
 }
 

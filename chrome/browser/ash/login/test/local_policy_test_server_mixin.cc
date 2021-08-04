@@ -8,7 +8,7 @@
 
 #include "base/guid.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -146,7 +146,7 @@ bool LocalPolicyTestServerMixin::UpdateUserPolicy(
 
 void LocalPolicyTestServerMixin::SetFakeAttestationFlow() {
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetDeviceCloudPolicyInitializer()
       ->SetAttestationFlowForTesting(
           std::make_unique<chromeos::attestation::FakeAttestationFlow>());

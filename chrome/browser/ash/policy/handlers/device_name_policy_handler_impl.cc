@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -129,15 +129,15 @@ std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
                                  ->GetEnterpriseMachineID();
 
   const std::string asset_id = g_browser_process->platform_part()
-                                   ->browser_policy_connector_chromeos()
+                                   ->browser_policy_connector_ash()
                                    ->GetDeviceAssetID();
 
   const std::string machine_name = g_browser_process->platform_part()
-                                       ->browser_policy_connector_chromeos()
+                                       ->browser_policy_connector_ash()
                                        ->GetMachineName();
 
   const std::string location = g_browser_process->platform_part()
-                                   ->browser_policy_connector_chromeos()
+                                   ->browser_policy_connector_ash()
                                    ->GetDeviceAnnotatedLocation();
   std::string mac = "MAC_unknown";
   const chromeos::NetworkState* network = handler_->DefaultNetwork();

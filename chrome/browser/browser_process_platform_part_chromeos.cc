@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
@@ -335,9 +335,9 @@ ash::ProfileHelper* BrowserProcessPlatformPart::profile_helper() {
   return profile_helper_.get();
 }
 
-policy::BrowserPolicyConnectorChromeOS*
-BrowserProcessPlatformPart::browser_policy_connector_chromeos() {
-  return static_cast<policy::BrowserPolicyConnectorChromeOS*>(
+policy::BrowserPolicyConnectorAsh*
+BrowserProcessPlatformPart::browser_policy_connector_ash() {
+  return static_cast<policy::BrowserPolicyConnectorAsh*>(
       g_browser_process->browser_policy_connector());
 }
 

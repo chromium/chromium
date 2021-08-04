@@ -32,7 +32,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -309,8 +309,8 @@ void KioskAppManager::EnableConsumerKioskAutoLaunch(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   connector->GetInstallAttributes()->LockDevice(
       policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
       std::string(),  // domain
@@ -328,16 +328,16 @@ void KioskAppManager::GetConsumerKioskAutoLaunchStatus(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   connector->GetInstallAttributes()->ReadImmutableAttributes(
       base::BindOnce(&KioskAppManager::OnReadImmutableAttributes,
                      base::Unretained(this), std::move(callback)));
 }
 
 bool KioskAppManager::IsConsumerKioskDeviceWithAutoLaunch() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetInstallAttributes() &&
          connector->GetInstallAttributes()
              ->IsConsumerKioskDeviceWithAutoLaunch();
@@ -375,8 +375,8 @@ void KioskAppManager::OnReadImmutableAttributes(
 
   ConsumerKioskAutoLaunchStatus status =
       ConsumerKioskAutoLaunchStatus::kDisabled;
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   InstallAttributes* attributes = connector->GetInstallAttributes();
   switch (attributes->GetMode()) {
     case policy::DEVICE_MODE_NOT_SET: {
@@ -415,8 +415,8 @@ bool KioskAppManager::IsAutoLaunchRequested() const {
 
   // Apps that were installed by the policy don't require machine owner
   // consent through UI.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (connector->IsDeviceEnterpriseManaged())
     return false;
 
@@ -429,8 +429,8 @@ bool KioskAppManager::IsAutoLaunchEnabled() const {
 
   // Apps that were installed by the policy don't require machine owner
   // consent through UI.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (connector->IsDeviceEnterpriseManaged())
     return true;
 

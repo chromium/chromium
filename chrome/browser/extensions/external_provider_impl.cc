@@ -58,7 +58,7 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -630,8 +630,8 @@ void ExternalProviderImpl::CreateExternalProviders(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_chrome_os_public_session = false;
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
@@ -684,9 +684,8 @@ void ExternalProviderImpl::CreateExternalProviders(
       // Kiosk primary app external provider.
       // For enterprise managed kiosk apps, change the location to
       // "force-installed by policy".
-      policy::BrowserPolicyConnectorChromeOS* const connector =
-          g_browser_process->platform_part()
-              ->browser_policy_connector_chromeos();
+      policy::BrowserPolicyConnectorAsh* const connector =
+          g_browser_process->platform_part()->browser_policy_connector_ash();
       ManifestLocation location = ManifestLocation::kExternalPref;
       if (connector && connector->IsDeviceEnterpriseManaged())
         location = ManifestLocation::kExternalPolicy;

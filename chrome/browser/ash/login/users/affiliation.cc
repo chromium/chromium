@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -25,8 +25,8 @@ std::string GetDeviceDMTokenIfAffiliated(
     const std::vector<std::string>& user_affiliation_ids) {
   const AffiliationIDSet set_of_user_affiliation_ids(
       user_affiliation_ids.begin(), user_affiliation_ids.end());
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DCHECK(connector);
   const bool is_affiliated = IsUserAffiliated(
       set_of_user_affiliation_ids, connector->GetDeviceAffiliationIDs(),

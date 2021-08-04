@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/ui/webui_accelerator_mapping.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -230,8 +230,8 @@ void LoginDisplayHostCommon::StartSignInScreen() {
   }
 
   // Initiate device policy fetching.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   connector->ScheduleServiceInitialization(
       kPolicyServiceInitializationDelayMilliseconds);
 
@@ -296,8 +296,8 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
 }
 
 void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged() &&
       KioskAppManager::IsConsumerKioskEnabled()) {
     ShowEnableConsumerKioskScreen();

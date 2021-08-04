@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -36,7 +36,7 @@ EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction::Run() {
   if (crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
           profile)) {
     device_id = g_browser_process->platform_part()
-                    ->browser_policy_connector_chromeos()
+                    ->browser_policy_connector_ash()
                     ->GetDirectoryApiID();
   }
   return RespondNow(ArgumentList(
@@ -77,7 +77,7 @@ EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
   if (crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
           profile)) {
     asset_id = g_browser_process->platform_part()
-                   ->browser_policy_connector_chromeos()
+                   ->browser_policy_connector_ash()
                    ->GetDeviceAssetID();
   }
   return RespondNow(ArgumentList(
@@ -98,7 +98,7 @@ EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction::Run() {
   if (crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
           profile)) {
     annotated_location = g_browser_process->platform_part()
-                             ->browser_policy_connector_chromeos()
+                             ->browser_policy_connector_ash()
                              ->GetDeviceAnnotatedLocation();
   }
   return RespondNow(ArgumentList(
@@ -121,7 +121,7 @@ EnterpriseDeviceAttributesGetDeviceHostnameFunction::Run() {
           profile)) {
     absl::optional<std::string> hostname_chosen_by_admin =
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceNamePolicyHandler()
             ->GetHostnameChosenByAdministrator();
     if (hostname_chosen_by_admin)

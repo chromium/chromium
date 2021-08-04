@@ -48,7 +48,7 @@
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager_impl.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/print_servers_external_data_handler.h"
 #include "chrome/browser/ash/policy/external_data/handlers/printers_external_data_handler.h"
@@ -198,7 +198,7 @@ void SetPublicAccountDelegates() {
 
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
 }
 
@@ -370,7 +370,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService();
 
   if (GetMinimumVersionPolicyHandler()) {
@@ -472,8 +472,8 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   }
 
   // Multiprofile mode is not allowed on the Active Directory managed devices.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (connector->IsActiveDirectoryManaged())
     return user_manager::UserList();
 
@@ -607,8 +607,8 @@ void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {
   if (!device_local_account_policy_service_) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     device_local_account_policy_service_ =
         connector->GetDeviceLocalAccountPolicyService();
     if (device_local_account_policy_service_)
@@ -653,8 +653,8 @@ bool ChromeUserManagerImpl::IsUserNonCryptohomeDataEphemeral(
 }
 
 bool ChromeUserManagerImpl::AreEphemeralUsersEnabled() const {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return GetEphemeralUsersEnabled() &&
          (connector->IsDeviceEnterpriseManaged() ||
           GetOwnerAccountId().is_valid());
@@ -673,8 +673,8 @@ PrefService* ChromeUserManagerImpl::GetLocalState() const {
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsDeviceEnterpriseManaged();
 }
 
@@ -1243,8 +1243,8 @@ void ChromeUserManagerImpl::SetUserAffiliation(
   user_manager::User* user = FindUserAndModify(account_id);
 
   if (user) {
-    policy::BrowserPolicyConnectorChromeOS const* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh const* const connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     const bool is_affiliated = IsUserAffiliated(
         user_affiliation_ids, connector->GetDeviceAffiliationIDs(),
         account_id.GetUserEmail());
@@ -1275,7 +1275,7 @@ bool ChromeUserManagerImpl::IsManagedSessionEnabledForUser(
     const user_manager::User& active_user) const {
   policy::DeviceLocalAccountPolicyService* service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService();
   if (!service)
     return kManagedSessionEnabledByDefault;
@@ -1352,8 +1352,8 @@ bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
 
 bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   // Supervised accounts are not allowed on the Active Directory devices. It
   // also makes sure "locally-managed.localhost" would work properly and would
   // not be detected as supervised users.

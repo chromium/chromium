@@ -44,7 +44,7 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager_factory.h"
@@ -531,8 +531,8 @@ ManagementUIHandler::GetDeviceCloudPolicyManager() const {
   if (!device_managed_)
     return nullptr;
 
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetDeviceCloudPolicyManager();
 }
 
@@ -637,8 +637,8 @@ void ManagementUIHandler::AddDeviceReportingInfo(
 }
 
 bool ManagementUIHandler::IsUpdateRequiredEol() const {
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::MinimumVersionPolicyHandler* handler =
       connector->GetMinimumVersionPolicyHandler();
   return handler && handler->ShouldShowUpdateRequiredEolBanner();
@@ -859,8 +859,8 @@ policy::PolicyService* ManagementUIHandler::GetPolicyService() {
 
 void ManagementUIHandler::AsyncUpdateLogo() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   const auto url = connector->GetCustomerLogoURL();
   if (!url.empty() && GURL(url) != logo_url_) {
     icon_fetcher_ = std::make_unique<BitmapFetcher>(
@@ -919,8 +919,8 @@ void AddStatusOverviewManagedDeviceAndAccount(
 
 const std::string ManagementUIHandler::GetDeviceManager() const {
   std::string device_domain;
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (device_managed_)
     device_domain = connector->GetEnterpriseDomainManager();
   if (device_domain.empty() && connector->IsActiveDirectoryManaged())

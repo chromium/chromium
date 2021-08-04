@@ -42,7 +42,7 @@ class TimeZoneResolver;
 }  // namespace chromeos
 
 namespace policy {
-class BrowserPolicyConnectorChromeOS;
+class BrowserPolicyConnectorAsh;
 }
 
 class ScopedKeepAlive;
@@ -96,7 +96,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return automatic_reboot_manager_.get();
   }
 
-  policy::BrowserPolicyConnectorChromeOS* browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash();
 
   ash::ChromeSessionManager* session_manager() {
     return session_manager_.get();

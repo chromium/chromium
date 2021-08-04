@@ -8,7 +8,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
@@ -66,10 +66,9 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 
 void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRecommendedTitle(bool past_deadline) {
-  std::string enterprise_domain_manager =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetEnterpriseDomainManager();
+  std::string enterprise_domain_manager = g_browser_process->platform_part()
+                                              ->browser_policy_connector_ash()
+                                              ->GetEnterpriseDomainManager();
   if (past_deadline) {
     SystemTrayClientImpl::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRecommended,
@@ -96,8 +95,8 @@ void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRequiredTitle() {
   // SystemTrayClientImpl may not exist in unit tests.
   if (SystemTrayClientImpl::Get()) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     SystemTrayClientImpl::Get()->SetUpdateNotificationState(
         ash::NotificationStyle::kAdminRequired,
         relaunch_required_timer_->GetWindowTitle(),

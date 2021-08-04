@@ -69,7 +69,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
@@ -233,7 +233,7 @@ TestingBrowserProcess::browser_policy_connector() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     browser_policy_connector_ =
-        std::make_unique<policy::BrowserPolicyConnectorChromeOS>();
+        std::make_unique<policy::BrowserPolicyConnectorAsh>();
 #else
     browser_policy_connector_ =
         std::make_unique<policy::ChromeBrowserPolicyConnector>();

@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -79,7 +79,7 @@ enum KioskLaunchType {
 
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->IsDeviceEnterpriseManaged();
 }
 
@@ -112,10 +112,9 @@ extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
 }
 
 bool IsExtensionInstallForcelistPolicyValid() {
-  policy::PolicyService* policy_service =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetPolicyService();
+  policy::PolicyService* policy_service = g_browser_process->platform_part()
+                                              ->browser_policy_connector_ash()
+                                              ->GetPolicyService();
   DCHECK(policy_service);
 
   const policy::PolicyMap& map =

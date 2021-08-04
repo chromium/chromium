@@ -20,7 +20,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -246,8 +246,8 @@ bool IsEnterpriseKiosk() {
   if (!chrome::IsRunningInForcedAppMode())
     return false;
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsDeviceEnterpriseManaged();
 }
 
@@ -359,8 +359,8 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertyManagedDeviceStatus) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     if (connector->IsDeviceEnterpriseManaged()) {
       return std::make_unique<base::Value>(kManagedDeviceStatusManaged);
     }

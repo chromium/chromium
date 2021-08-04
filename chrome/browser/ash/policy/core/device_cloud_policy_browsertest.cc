@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -78,8 +78,8 @@ class DeviceCloudPolicyBrowserTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DeviceCloudPolicyBrowserTest, Initializer) {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   // Initializer exists at first.
   EXPECT_TRUE(connector->GetDeviceCloudPolicyInitializer());
 
@@ -143,7 +143,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
 
   void StartDevicePolicyRefresh() {
     g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
         ->RefreshPolicies();
   }
@@ -154,7 +154,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
 
   int GetInstalledPolicyKeyVersion() const {
     return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceCloudPolicyManager()
         ->device_store()
         ->policy()
@@ -162,10 +162,9 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   }
 
   int GetInstalledPolicyValue() {
-    PolicyService* const policy_service =
-        g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
-            ->GetPolicyService();
+    PolicyService* const policy_service = g_browser_process->platform_part()
+                                              ->browser_policy_connector_ash()
+                                              ->GetPolicyService();
     const base::Value* policy_value =
         policy_service
             ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME,
@@ -201,7 +200,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   void StartObservingTestPolicy() {
     policy_change_registrar_ = std::make_unique<PolicyChangeRegistrar>(
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetPolicyService(),
         PolicyNamespace(POLICY_DOMAIN_CHROME,
                         std::string() /* component_id */));
@@ -315,8 +314,8 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   void SetUpOnMainThread() override {
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
-    BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->device_management_service()->ScheduleInitialization(0);
   }
 

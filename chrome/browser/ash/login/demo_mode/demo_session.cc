@@ -32,7 +32,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -232,8 +232,8 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
   if (g_force_demo_config.has_value())
     return *g_force_demo_config;
 
-  const policy::BrowserPolicyConnectorChromeOS* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_demo_device_mode = connector->GetInstallAttributes()->GetMode() ==
                              policy::DeviceMode::DEVICE_MODE_DEMO;
   bool is_demo_device_domain =

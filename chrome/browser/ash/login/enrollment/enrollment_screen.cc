@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
@@ -70,9 +70,9 @@ bool ShouldAttemptRestart() {
   // Restart browser to switch from DeviceCloudPolicyManagerAsh to
   // DeviceActiveDirectoryPolicyManager.
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsActiveDirectoryManaged()) {
-    // TODO(tnagel): Refactor BrowserPolicyConnectorChromeOS so that device
+    // TODO(tnagel): Refactor BrowserPolicyConnectorAsh so that device
     // policy providers are only registered after enrollment has finished and
     // thus the correct one can be picked without restarting the browser.
     return true;
@@ -84,8 +84,8 @@ bool ShouldAttemptRestart() {
 // Returns the manager of the domain (either the domain name or the email of the
 // admin of the domain) after enrollment, or an empty string.
 std::string GetEnterpriseDomainManager() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDomainManager();
 }
 
@@ -404,7 +404,7 @@ void EnrollmentScreen::OnDeviceEnrolled() {
   // Evaluates device policy TPMFirmwareUpdateSettings and updates the TPM if
   // the policy is set to auto-update vulnerable TPM firmware at enrollment.
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetTPMAutoUpdateModePolicyHandler()
       ->UpdateOnEnrollmentIfNeeded();
 }
@@ -480,8 +480,8 @@ void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
 void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
   if (success) {
     // If the device attributes have been successfully uploaded, fetch policy.
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon();
     view_->ShowEnrollmentStatus(
         policy::EnrollmentStatus::ForStatus(policy::EnrollmentStatus::SUCCESS));
@@ -492,8 +492,8 @@ void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
 }
 
 void EnrollmentScreen::ShowAttributePromptScreen() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
 

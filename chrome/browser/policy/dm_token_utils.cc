@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -50,8 +50,8 @@ DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
   CloudPolicyManager* policy_manager;
   if (user->IsDeviceLocalAccount()) {
     // Policy Manager for Device DM Token (Kiosk and Managed Guest Session).
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     DCHECK(connector);
     policy_manager = connector->GetDeviceCloudPolicyManager();
   } else {

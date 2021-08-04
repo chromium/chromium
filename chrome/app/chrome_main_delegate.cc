@@ -534,7 +534,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // which depends on policy from an OS service. So, initialize it at this
   // timing.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // The feature list depends on BrowserPolicyConnectorChromeOS which depends
+  // The feature list depends on BrowserPolicyConnectorAsh which depends
   // on DBus, so initialize it here. Some D-Bus clients may depend on feature
   // list, so initialize them separately later at the end of this function.
   ash::InitializeDBus();

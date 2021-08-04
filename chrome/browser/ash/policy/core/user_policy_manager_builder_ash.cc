@@ -20,7 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/external_data/user_cloud_external_data_manager.h"
@@ -125,8 +125,8 @@ void CreateConfigurationPolicyProvider(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_active_directory = false;
   switch (account_id.GetAccountType()) {
     case AccountType::UNKNOWN:

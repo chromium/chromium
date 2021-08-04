@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -820,7 +820,7 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
   DCHECK(controller_);
   if (active_directory_join_type_ != ActiveDirectoryDomainJoinType::COUNT) {
     DCHECK(g_browser_process->platform_part()
-               ->browser_policy_connector_chromeos()
+               ->browser_policy_connector_ash()
                ->IsActiveDirectoryManaged());
     // Record Active Directory join type in case of successful enrollment and
     // domain join.

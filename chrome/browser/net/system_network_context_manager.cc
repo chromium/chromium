@@ -75,7 +75,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/net/dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -165,8 +165,8 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO: Use KerberosCredentialsManager to determine whether Kerberos is
   // enabled instead of relying directly on the preference.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   auth_dynamic_params->allow_gssapi_library_load =
       connector->IsActiveDirectoryManaged() ||
       local_state->GetBoolean(prefs::kKerberosEnabled);

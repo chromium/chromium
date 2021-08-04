@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 
 namespace policy {
-class BrowserPolicyConnectorChromeOS;
+class BrowserPolicyConnectorAsh;
 }
 
 namespace user_manager {
@@ -124,7 +124,7 @@ class DeviceDisablingManager {
   void UpdateFromCrosSettings();
 
   Delegate* delegate_;
-  policy::BrowserPolicyConnectorChromeOS* browser_policy_connector_;
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_;
   CrosSettings* cros_settings_;
   user_manager::UserManager* user_manager_;
 

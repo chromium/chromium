@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -99,7 +99,7 @@ const int kAutoLoginLoginDelayMilliseconds = 500000;
 
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
 }
 

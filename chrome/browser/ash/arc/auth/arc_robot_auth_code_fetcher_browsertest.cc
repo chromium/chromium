@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/arc/auth/arc_robot_auth_code_fetcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -93,8 +93,8 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
     if (cloud_policy_client_setup_ == CloudPolicyClientSetup::kSkip)
       return;
 
-    policy::BrowserPolicyConnectorChromeOS* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* const connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     policy::DeviceCloudPolicyManagerAsh* const cloud_policy_manager =
         connector->GetDeviceCloudPolicyManager();
 

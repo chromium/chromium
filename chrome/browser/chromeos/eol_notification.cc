@@ -9,7 +9,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -53,7 +53,7 @@ bool EolNotification::ShouldShowEolNotification() {
   // Do not show end of life notification if this device is managed by
   // enterprise user.
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged()) {
     return false;
   }

@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #else
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -52,7 +52,7 @@ void GetCloudPolicyClient(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::CloudPolicyManager* const cloud_policy_manager =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceCloudPolicyManager();
 #elif defined(OS_ANDROID)
   // Android doesn't have access to a device level CloudPolicyClient, so get the

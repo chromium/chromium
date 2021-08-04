@@ -92,7 +92,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -251,7 +251,7 @@ class DeviceCloudPolicyStatusProviderChromeOS
     : public CloudPolicyCoreStatusProvider {
  public:
   explicit DeviceCloudPolicyStatusProviderChromeOS(
-      policy::BrowserPolicyConnectorChromeOS* connector);
+      policy::BrowserPolicyConnectorAsh* connector);
   ~DeviceCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
@@ -416,7 +416,7 @@ void UserCloudPolicyStatusProviderChromeOS::GetStatus(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(
-        policy::BrowserPolicyConnectorChromeOS* connector)
+        policy::BrowserPolicyConnectorAsh* connector)
     : CloudPolicyCoreStatusProvider(
           connector->GetDeviceCloudPolicyManager()->core()) {
   enterprise_domain_manager_ = connector->GetEnterpriseDomainManager();
@@ -663,8 +663,8 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
 void PolicyUIHandler::RegisterMessages() {
   Profile* profile = Profile::FromWebUI(web_ui());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (connector->IsDeviceEnterpriseManaged()) {
     if (connector->GetDeviceActiveDirectoryPolicyManager()) {
       device_status_provider_ =
@@ -1043,7 +1043,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue* args) {
   // the invalidation service is not working properly.
   policy::CloudPolicyManager* const device_manager =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceCloudPolicyManager();
   Profile* const profile = Profile::FromWebUI(web_ui());
   policy::CloudPolicyManager* const user_manager =

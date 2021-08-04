@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -306,7 +306,7 @@ void CrostiniFeatures::CanChangeAdbSideloading(
 
   // Check the managed device and/or user case
   auto* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_device_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   bool is_profile_enterprise_managed =
       profile->GetProfilePolicyConnector()->IsManaged();

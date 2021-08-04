@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -29,8 +29,8 @@ constexpr base::TimeDelta kRetryDelayMin = base::TimeDelta::FromSeconds(10);
 constexpr base::TimeDelta kRetryDelayMax = base::TimeDelta::FromHours(1);
 
 policy::DeviceManagementService* GetDeviceManagementService() {
-  policy::BrowserPolicyConnectorChromeOS* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->device_management_service();
 }
 

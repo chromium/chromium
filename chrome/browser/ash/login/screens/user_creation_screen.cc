@@ -7,7 +7,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -68,7 +68,7 @@ void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
 
 bool UserCreationScreen::MaybeSkip(WizardContext* context) {
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged() ||
       context->skip_to_login_for_tests) {
     context->is_user_creation_enabled = false;

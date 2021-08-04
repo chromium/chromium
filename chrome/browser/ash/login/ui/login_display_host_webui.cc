@@ -48,7 +48,7 @@
 #include "chrome/browser/ash/login/ui/webui_accelerator_mapping.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -175,8 +175,8 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
 // Even if oobe is complete we may still want to show it, for example, if there
 // are no users registered then the user may want to enterprise enroll.
 bool IsOobeComplete() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return chromeos::StartupUtils::IsOobeCompleted() &&
@@ -1165,7 +1165,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   // Check whether we need to execute OOBE flow.
   const policy::EnrollmentConfig enrollment_config =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetPrescribedEnrollmentConfig();
   if (enrollment_config.should_enroll() &&
       first_screen == OobeScreen::SCREEN_UNKNOWN) {

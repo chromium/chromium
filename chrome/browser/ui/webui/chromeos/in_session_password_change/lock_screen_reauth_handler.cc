@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_features.h"
@@ -178,7 +178,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 
   std::string enterprise_enrollment_domain(
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetEnterpriseEnrollmentDomain());
 
   if (enterprise_enrollment_domain.empty()) {

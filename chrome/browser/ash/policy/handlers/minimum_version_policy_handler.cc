@@ -20,7 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/notifications/update_required_notification.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -72,7 +72,7 @@ void OpenEnterpriseInfoPage() {
 
 std::string GetEnterpriseManager() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetEnterpriseDomainManager();
 }
 

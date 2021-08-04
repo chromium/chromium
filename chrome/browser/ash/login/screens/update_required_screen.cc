@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
@@ -81,8 +81,8 @@ void UpdateRequiredScreen::OnViewDestroyed(UpdateRequiredView* view) {
 
 void UpdateRequiredScreen::ShowImpl() {
   LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDisplayDomain(),
                                     ui::GetChromeOSDeviceName());
 

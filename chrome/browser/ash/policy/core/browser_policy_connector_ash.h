@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_
 
 #include <memory>
 #include <set>
@@ -63,13 +63,12 @@ class SystemProxyHandler;
 class DeviceScheduledRebootHandler;
 
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
-class BrowserPolicyConnectorChromeOS
-    : public ChromeBrowserPolicyConnector,
-      public DeviceCloudPolicyManagerAsh::Observer {
+class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
+                                  public DeviceCloudPolicyManagerAsh::Observer {
  public:
-  BrowserPolicyConnectorChromeOS();
+  BrowserPolicyConnectorAsh();
 
-  ~BrowserPolicyConnectorChromeOS() override;
+  ~BrowserPolicyConnectorAsh() override;
 
   // ChromeBrowserPolicyConnector:
   void Init(PrefService* local_state,
@@ -326,11 +325,11 @@ class BrowserPolicyConnectorChromeOS
   std::unique_ptr<ash::cert_provisioning::CertProvisioningScheduler>
       device_cert_provisioning_scheduler_;
 
-  base::WeakPtrFactory<BrowserPolicyConnectorChromeOS> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BrowserPolicyConnectorAsh> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_CORE_BROWSER_POLICY_CONNECTOR_ASH_H_

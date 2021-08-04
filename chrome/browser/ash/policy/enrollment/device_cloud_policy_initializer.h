@@ -150,7 +150,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
 
   // TODO(crbug.com/705758) When DeviceCloudPolicyInitializer starts connection,
   // that means it will be deleted soon by
-  // |BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected|.
+  // |BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected|.
   // Sometimes this happens before |EnterpriseEnrollmentHelperImpl::DoEnroll|
   // initiates |StartConnection| and leads to a crash. Track the reason of
   // |StartConnection| call to find who initiates removal. Remove once the crash

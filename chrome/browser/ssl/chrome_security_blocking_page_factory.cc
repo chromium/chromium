@@ -32,7 +32,7 @@
 #if defined(OS_WIN)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #endif
 
@@ -84,7 +84,7 @@ bool IsEnterpriseManaged() {
     return true;
   }
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (g_browser_process->platform_part()->browser_policy_connector_chromeos()) {
+  if (g_browser_process->platform_part()->browser_policy_connector_ash()) {
     return true;
   }
 #endif  // #if defined OS_WIN
@@ -340,7 +340,7 @@ void ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(
         report->SetIsEnterpriseManaged(base::IsMachineExternallyManaged());
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
         report->SetIsEnterpriseManaged(g_browser_process->platform_part()
-                                           ->browser_policy_connector_chromeos()
+                                           ->browser_policy_connector_ash()
                                            ->IsDeviceEnterpriseManaged());
 #endif
 

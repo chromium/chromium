@@ -45,7 +45,7 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -412,7 +412,7 @@ class ExistingUserControllerPublicSessionTest
     policy::CloudPolicyStore* store =
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceLocalAccountPolicyService()
             ->GetBrokerForUser(public_session_account_id_.GetUserEmail())
             ->core()

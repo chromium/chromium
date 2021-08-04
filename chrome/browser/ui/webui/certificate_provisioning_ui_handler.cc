@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -46,8 +46,8 @@ GetCertProvisioningSchedulerForUser(Profile* user_profile) {
 // affiliation check is done here.
 ash::cert_provisioning::CertProvisioningScheduler*
 GetCertProvisioningSchedulerForDevice() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetDeviceCertProvisioningScheduler();
 }
 

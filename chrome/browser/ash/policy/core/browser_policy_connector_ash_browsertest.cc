@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -25,8 +25,8 @@ const char kMachineName[] = "machine_name";
 const char kCustomManager[] = "user@acme.corp";
 
 void WaitUntilPolicyLoaded() {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceCloudPolicyStoreAsh* store =
       connector->GetDeviceCloudPolicyManager()->device_store();
   if (!store->has_policy()) {
@@ -41,19 +41,19 @@ void WaitUntilPolicyLoaded() {
   }
 }
 
-class BrowserPolicyConnectorChromeOSTest : public DevicePolicyCrosBrowserTest {
+class BrowserPolicyConnectorAshTest : public DevicePolicyCrosBrowserTest {
  public:
-  BrowserPolicyConnectorChromeOSTest() {
+  BrowserPolicyConnectorAshTest() {
     device_state_.set_skip_initial_policy_setup(true);
   }
-  ~BrowserPolicyConnectorChromeOSTest() override = default;
+  ~BrowserPolicyConnectorAshTest() override = default;
 };
 
 // Test that GetEnterpriseEnrollmentDomain and GetEnterpriseDisplayDomain work
 // as expected.
-IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorChromeOSTest, EnterpriseDomains) {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, EnterpriseDomains) {
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   EXPECT_EQ(PolicyBuilder::kFakeDomain,
             connector->GetEnterpriseEnrollmentDomain());
   // Custom display domain not set at this point and policy not loaded yet so
@@ -77,9 +77,9 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorChromeOSTest, EnterpriseDomains) {
             connector->GetEnterpriseEnrollmentDomain());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorChromeOSTest, MarketSegment) {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, MarketSegment) {
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   EXPECT_EQ(MarketSegment::UNKNOWN, connector->GetEnterpriseMarketSegment());
 
   device_policy()->policy_data().set_market_segment(
@@ -91,9 +91,9 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorChromeOSTest, MarketSegment) {
 
 // Test that GetEnterpriseEnrollmentDomain and GetEnterpriseDisplayDomain work
 // as expected.
-IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorChromeOSTest, MachineName) {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, MachineName) {
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   EXPECT_EQ(std::string(), connector->GetMachineName());
   device_policy()->policy_data().set_machine_name(kMachineName);
   RefreshDevicePolicy();

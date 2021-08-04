@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -291,8 +291,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
         std::make_unique<InstallAttributes::LockResult>(
             InstallAttributes::LOCK_NOT_READY);
     base::RunLoop run_loop;
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->GetInstallAttributes()->LockDevice(
         policy::DEVICE_MODE_ENTERPRISE, "domain.com",
         std::string(),  // realm

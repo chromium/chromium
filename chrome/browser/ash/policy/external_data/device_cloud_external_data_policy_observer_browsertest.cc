@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/browser_process.h"
@@ -68,8 +68,8 @@ class DeviceCloudExternalDataPolicyObserverTest
     EXPECT_TRUE(embedded_test_server()->Start());
     DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
-    BrowserPolicyConnectorChromeOS* policy_connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    BrowserPolicyConnectorAsh* policy_connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     ASSERT_TRUE(policy_connector);
     PolicyService* policy_service = policy_connector->GetPolicyService();
     ASSERT_TRUE(policy_service->IsInitializationComplete(POLICY_DOMAIN_CHROME));

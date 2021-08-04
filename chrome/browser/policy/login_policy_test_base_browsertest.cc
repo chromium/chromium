@@ -9,7 +9,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/browser_process.h"
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
                        AvailableInLocalStateEarly) {
   PolicyService* const device_wide_policy_service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetPolicyService();
 
   // Sanity check default state without a policy active.

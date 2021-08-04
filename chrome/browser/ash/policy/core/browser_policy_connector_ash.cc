@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 
 #include <memory>
 #include <string>
@@ -126,7 +126,7 @@ bool IsForcedReEnrollmentEnabled() {
 
 }  // namespace
 
-BrowserPolicyConnectorChromeOS::BrowserPolicyConnectorChromeOS() {
+BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
   DCHECK(chromeos::InstallAttributes::IsInitialized());
 
   // DBusThreadManager or DeviceSettingsService may be
@@ -179,9 +179,9 @@ BrowserPolicyConnectorChromeOS::BrowserPolicyConnectorChromeOS() {
       global_user_cloud_policy_provider_));
 }
 
-BrowserPolicyConnectorChromeOS::~BrowserPolicyConnectorChromeOS() {}
+BrowserPolicyConnectorAsh::~BrowserPolicyConnectorAsh() {}
 
-void BrowserPolicyConnectorChromeOS::Init(
+void BrowserPolicyConnectorAsh::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   local_state_ = local_state;
@@ -322,7 +322,7 @@ void BrowserPolicyConnectorChromeOS::Init(
               DeviceScheduledRebootHandler::kRebootTimerTag));
 }
 
-void BrowserPolicyConnectorChromeOS::PreShutdown() {
+void BrowserPolicyConnectorAsh::PreShutdown() {
   // Let the |affiliated_invalidation_service_provider_| unregister itself as an
   // observer of per-Profile InvalidationServices and the device-global
   // invalidation::TiclInvalidationService it may have created as an observer of
@@ -331,7 +331,7 @@ void BrowserPolicyConnectorChromeOS::PreShutdown() {
     affiliated_invalidation_service_provider_->Shutdown();
 }
 
-void BrowserPolicyConnectorChromeOS::Shutdown() {
+void BrowserPolicyConnectorAsh::Shutdown() {
   device_cert_provisioning_scheduler_.reset();
   system_proxy_handler_.reset();
 
@@ -357,7 +357,7 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
   device_scheduled_update_checker_.reset();
 
   // The policy handler is registered as an observer to BuildState which gets
-  // destructed before BrowserPolicyConnectorChromeOS. So destruct the policy
+  // destructed before BrowserPolicyConnectorAsh. So destruct the policy
   // handler here so that it can de-register itself as an observer.
   minimum_version_policy_handler_.reset();
 
@@ -374,98 +374,97 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
   ChromeBrowserPolicyConnector::Shutdown();
 }
 
-bool BrowserPolicyConnectorChromeOS::IsDeviceEnterpriseManaged() const {
+bool BrowserPolicyConnectorAsh::IsDeviceEnterpriseManaged() const {
   return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
-bool BrowserPolicyConnectorChromeOS::HasMachineLevelPolicies() {
+bool BrowserPolicyConnectorAsh::HasMachineLevelPolicies() {
   NOTREACHED() << "This method is only defined for desktop Chrome";
   return false;
 }
 
-bool BrowserPolicyConnectorChromeOS::IsCloudManaged() const {
+bool BrowserPolicyConnectorAsh::IsCloudManaged() const {
   return chromeos::InstallAttributes::Get()->IsCloudManaged();
 }
 
-bool BrowserPolicyConnectorChromeOS::IsActiveDirectoryManaged() const {
+bool BrowserPolicyConnectorAsh::IsActiveDirectoryManaged() const {
   return chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetEnterpriseEnrollmentDomain()
-    const {
+std::string BrowserPolicyConnectorAsh::GetEnterpriseEnrollmentDomain() const {
   return chromeos::InstallAttributes::Get()->GetDomain();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetEnterpriseDisplayDomain() const {
+std::string BrowserPolicyConnectorAsh::GetEnterpriseDisplayDomain() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_display_domain())
     return policy->display_domain();
   return GetEnterpriseEnrollmentDomain();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetEnterpriseDomainManager() const {
+std::string BrowserPolicyConnectorAsh::GetEnterpriseDomainManager() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_managed_by())
     return policy->managed_by();
   return GetEnterpriseDisplayDomain();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetSSOProfile() const {
+std::string BrowserPolicyConnectorAsh::GetSSOProfile() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_sso_profile())
     return policy->sso_profile();
   return std::string();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetRealm() const {
+std::string BrowserPolicyConnectorAsh::GetRealm() const {
   return chromeos::InstallAttributes::Get()->GetRealm();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetDeviceAssetID() const {
+std::string BrowserPolicyConnectorAsh::GetDeviceAssetID() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_annotated_asset_id())
     return policy->annotated_asset_id();
   return std::string();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetMachineName() const {
+std::string BrowserPolicyConnectorAsh::GetMachineName() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_machine_name())
     return policy->machine_name();
   return std::string();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetDeviceAnnotatedLocation() const {
+std::string BrowserPolicyConnectorAsh::GetDeviceAnnotatedLocation() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_annotated_location())
     return policy->annotated_location();
   return std::string();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetDirectoryApiID() const {
+std::string BrowserPolicyConnectorAsh::GetDirectoryApiID() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_directory_api_id())
     return policy->directory_api_id();
   return std::string();
 }
 
-std::string BrowserPolicyConnectorChromeOS::GetCustomerLogoURL() const {
+std::string BrowserPolicyConnectorAsh::GetCustomerLogoURL() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_customer_logo())
     return policy->customer_logo().logo_url();
   return std::string();
 }
 
-DeviceMode BrowserPolicyConnectorChromeOS::GetDeviceMode() const {
+DeviceMode BrowserPolicyConnectorAsh::GetDeviceMode() const {
   return chromeos::InstallAttributes::Get()->GetMode();
 }
 
-chromeos::InstallAttributes*
-BrowserPolicyConnectorChromeOS::GetInstallAttributes() const {
+chromeos::InstallAttributes* BrowserPolicyConnectorAsh::GetInstallAttributes()
+    const {
   return chromeos::InstallAttributes::Get();
 }
 
-EnrollmentConfig BrowserPolicyConnectorChromeOS::GetPrescribedEnrollmentConfig()
+EnrollmentConfig BrowserPolicyConnectorAsh::GetPrescribedEnrollmentConfig()
     const {
   if (device_cloud_policy_initializer_)
     return device_cloud_policy_initializer_->GetPrescribedEnrollmentConfig();
@@ -473,8 +472,7 @@ EnrollmentConfig BrowserPolicyConnectorChromeOS::GetPrescribedEnrollmentConfig()
   return EnrollmentConfig();
 }
 
-MarketSegment BrowserPolicyConnectorChromeOS::GetEnterpriseMarketSegment()
-    const {
+MarketSegment BrowserPolicyConnectorAsh::GetEnterpriseMarketSegment() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_market_segment())
     return TranslateMarketSegment(policy->market_segment());
@@ -482,24 +480,23 @@ MarketSegment BrowserPolicyConnectorChromeOS::GetEnterpriseMarketSegment()
 }
 
 ProxyPolicyProvider*
-BrowserPolicyConnectorChromeOS::GetGlobalUserCloudPolicyProvider() {
+BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
   return global_user_cloud_policy_provider_;
 }
 
-void BrowserPolicyConnectorChromeOS::SetDeviceCloudPolicyInitializerForTesting(
+void BrowserPolicyConnectorAsh::SetDeviceCloudPolicyInitializerForTesting(
     std::unique_ptr<DeviceCloudPolicyInitializer> initializer) {
   device_cloud_policy_initializer_ = std::move(initializer);
 }
 
 // static
-void BrowserPolicyConnectorChromeOS::RegisterPrefs(
-    PrefRegistrySimple* registry) {
+void BrowserPolicyConnectorAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDevicePolicyRefreshRate,
       CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 }
 
-void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected() {
+void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected() {
   CHECK(device_cloud_policy_initializer_);
 
   // DeviceCloudPolicyInitializer might still be on the call stack, so we
@@ -526,18 +523,18 @@ void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected() {
   }
 }
 
-void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerDisconnected() {
+void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerDisconnected() {
   DCHECK(!device_cloud_policy_initializer_);
 
   RestartDeviceCloudPolicyInitializer();
 }
 
-bool BrowserPolicyConnectorChromeOS::IsCommandLineSwitchSupported() const {
+bool BrowserPolicyConnectorAsh::IsCommandLineSwitchSupported() const {
   return true;
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
-BrowserPolicyConnectorChromeOS::CreatePolicyProviders() {
+BrowserPolicyConnectorAsh::CreatePolicyProviders() {
   auto providers = ChromeBrowserPolicyConnector::CreatePolicyProviders();
   for (auto& provider_ptr : providers_for_init_)
     providers.push_back(std::move(provider_ptr));
@@ -545,11 +542,11 @@ BrowserPolicyConnectorChromeOS::CreatePolicyProviders() {
   return providers;
 }
 
-void BrowserPolicyConnectorChromeOS::SetTimezoneIfPolicyAvailable() {
+void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
   typedef chromeos::CrosSettingsProvider Provider;
   Provider::TrustedStatus result =
       ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
-          &BrowserPolicyConnectorChromeOS::SetTimezoneIfPolicyAvailable,
+          &BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable,
           weak_ptr_factory_.GetWeakPtr()));
 
   if (result != Provider::TRUSTED)
@@ -563,7 +560,7 @@ void BrowserPolicyConnectorChromeOS::SetTimezoneIfPolicyAvailable() {
   }
 }
 
-void BrowserPolicyConnectorChromeOS::RestartDeviceCloudPolicyInitializer() {
+void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
   device_cloud_policy_initializer_ =
       std::make_unique<DeviceCloudPolicyInitializer>(
           local_state_, device_management_service(), GetBackgroundTaskRunner(),
@@ -575,13 +572,13 @@ void BrowserPolicyConnectorChromeOS::RestartDeviceCloudPolicyInitializer() {
 }
 
 std::unique_ptr<chromeos::attestation::AttestationFlow>
-BrowserPolicyConnectorChromeOS::CreateAttestationFlow() {
+BrowserPolicyConnectorAsh::CreateAttestationFlow() {
   return std::make_unique<chromeos::attestation::AttestationFlowAdaptive>(
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
-base::flat_set<std::string>
-BrowserPolicyConnectorChromeOS::device_affiliation_ids() const {
+base::flat_set<std::string> BrowserPolicyConnectorAsh::device_affiliation_ids()
+    const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy) {
     const auto& ids = policy->device_affiliation_ids();
@@ -590,13 +587,13 @@ BrowserPolicyConnectorChromeOS::device_affiliation_ids() const {
   return {};
 }
 
-ash::AffiliationIDSet BrowserPolicyConnectorChromeOS::GetDeviceAffiliationIDs()
+ash::AffiliationIDSet BrowserPolicyConnectorAsh::GetDeviceAffiliationIDs()
     const {
   base::flat_set<std::string> affiliation_ids = device_affiliation_ids();
   return {affiliation_ids.begin(), affiliation_ids.end()};
 }
 
-const em::PolicyData* BrowserPolicyConnectorChromeOS::GetDevicePolicy() const {
+const em::PolicyData* BrowserPolicyConnectorAsh::GetDevicePolicy() const {
   if (device_cloud_policy_manager_)
     return device_cloud_policy_manager_->device_store()->policy();
 

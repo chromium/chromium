@@ -76,7 +76,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
@@ -414,7 +414,7 @@ bool IsNewProfile(Profile* profile) {
 
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetMinimumVersionPolicyHandler();
 }
 
@@ -1955,7 +1955,7 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
   }
 
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetTPMAutoUpdateModePolicyHandler()
       ->ShowTPMAutoUpdateNotificationIfNeeded();
 
@@ -1963,7 +1963,7 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
 
   // Show a notification about ADB sideloading policy change if applicable.
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetAdbSideloadingAllowanceModePolicyHandler()
       ->ShowAdbSideloadingPolicyChangeNotificationIfNeeded();
 }

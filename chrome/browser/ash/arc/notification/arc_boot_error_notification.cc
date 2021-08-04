@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -45,7 +45,7 @@ void ShowLowDiskSpaceErrorNotification(content::BrowserContext* context) {
   // We suppress the low-disk notification when there are multiple users on an
   // enterprise managed device. crbug.com/656788.
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged() &&
       user_manager::UserManager::Get()->GetUsers().size() > 1) {
     LOG(WARNING) << "ARC booting is aborted due to low disk space, but the "

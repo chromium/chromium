@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_supervised_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -354,8 +354,8 @@ bool FakeChromeUserManager::IsStubAccountId(const AccountId& account_id) const {
 
 bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   // Supervised accounts are not allowed on the Active Directory devices. It
   // also makes sure "locally-managed.localhost" would work properly and would
   // not be detected as supervised users.

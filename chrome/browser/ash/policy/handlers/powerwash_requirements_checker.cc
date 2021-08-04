@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -56,8 +56,8 @@ const char kNotificationLearnMoreLink[] =
     "https://support.google.com/chromebook?p=factory_reset";
 
 std::u16string GetEnterpriseManager() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
 }
 

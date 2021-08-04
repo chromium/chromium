@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -179,8 +179,8 @@ bool IsGoogleBrandedChrome() {
 // Schedules immediate initialization of the `DeviceManagementService` and
 // returns it.
 policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceManagementService* service =
       connector->device_management_service();
   service->ScheduleInitialization(0);
@@ -643,7 +643,7 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
           g_browser_process->platform_part()
-              ->browser_policy_connector_chromeos()
+              ->browser_policy_connector_ash()
               ->GetStateKeysBroker()
               ->RequestStateKeys(
                   base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
@@ -686,7 +686,7 @@ void AutoEnrollmentController::StartClientForFRE(
       // Retry to fetch the state keys. For devices where FRE is required to be
       // checked, we can't proceed with empty state keys.
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetStateKeysBroker()
           ->RequestStateKeys(
               base::BindOnce(&AutoEnrollmentController::StartClientForFRE,

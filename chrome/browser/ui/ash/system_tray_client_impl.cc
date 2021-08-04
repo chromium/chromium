@@ -17,7 +17,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -222,8 +222,8 @@ SystemTrayClientImpl::SystemTrayClientImpl()
     HandleUpdateAvailable(ash::UpdateType::kSystem);
 
   // If the device is enterprise managed then send ash the enterprise domain.
-  policy::BrowserPolicyConnectorChromeOS* policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       policy_connector->GetDeviceCloudPolicyManager();
   if (policy_manager)
@@ -243,8 +243,8 @@ SystemTrayClientImpl::~SystemTrayClientImpl() {
 
   system_tray_->SetClient(nullptr);
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   if (policy_manager)
@@ -675,8 +675,8 @@ void SystemTrayClientImpl::OnStoreError(policy::CloudPolicyStore* store) {
 }
 
 void SystemTrayClientImpl::UpdateEnterpriseDomainInfo() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   const std::string enterprise_domain_manager =
       connector->GetEnterpriseDomainManager();
   const bool active_directory_managed = connector->IsActiveDirectoryManaged();

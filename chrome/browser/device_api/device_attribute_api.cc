@@ -7,7 +7,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -67,7 +67,7 @@ void ReportNotAllowedError(
 void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDirectoryApiID();
   if (attribute.empty())
     std::move(callback).Run(
@@ -89,7 +89,7 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const absl::optional<std::string> attribute =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceNamePolicyHandler()
           ->GetHostnameChosenByAdministrator();
   std::move(callback).Run(Result::NewAttribute(attribute));
@@ -129,7 +129,7 @@ void GetAnnotatedAssetId(
     DeviceAPIService::GetAnnotatedAssetIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDeviceAssetID();
   if (attribute.empty())
     std::move(callback).Run(
@@ -151,7 +151,7 @@ void GetAnnotatedLocation(
     DeviceAPIService::GetAnnotatedLocationCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDeviceAnnotatedLocation();
   if (attribute.empty())
     std::move(callback).Run(

@@ -16,7 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -169,8 +169,8 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   VLOG(1) << "Enroll with token type: "
           << static_cast<int>(auth_data.token_type());
   auth_data_ = std::move(auth_data);
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   // Re-enrollment is not implemented for Active Directory.
   // If an enrollment domain is already fixed in install attributes and
   // re-enrollment happens via login, domains need to be equal.
@@ -215,8 +215,8 @@ void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   // Don't update device attributes for Active Directory management.
   if (connector->IsActiveDirectoryManaged()) {
     OnDeviceAttributeUpdatePermission(false);
@@ -237,8 +237,8 @@ void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
     const std::string& asset_id,
     const std::string& location) {
   DCHECK(!auth_data_.empty());
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();

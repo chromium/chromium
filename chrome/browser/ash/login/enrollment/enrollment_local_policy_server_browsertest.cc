@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
@@ -197,7 +197,7 @@ class AutoEnrollmentLocalPolicyServer : public EnrollmentLocalPolicyServerBase {
 
   policy::ServerBackedStateKeysBroker* state_keys_broker() {
     return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetStateKeysBroker();
   }
 

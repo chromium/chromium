@@ -46,7 +46,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -823,7 +823,7 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT: {
       policy::DeviceLocalAccountPolicyBroker* broker =
           g_browser_process->platform_part()
-              ->browser_policy_connector_chromeos()
+              ->browser_policy_connector_ash()
               ->GetDeviceLocalAccountPolicyService()
               ->GetBrokerForUser(user->GetAccountId().GetUserEmail());
       return broker ? broker->core()->store() : nullptr;

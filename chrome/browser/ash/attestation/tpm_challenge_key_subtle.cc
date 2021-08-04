@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -130,7 +130,7 @@ TpmChallengeKeySubtleImpl::TpmChallengeKeySubtleImpl()
       attestation_flow_(default_attestation_flow_.get()) {
   policy::DeviceCloudPolicyManagerAsh* manager =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceCloudPolicyManager();
   if (manager) {
     machine_certificate_uploader_ = manager->GetMachineCertificateUploader();

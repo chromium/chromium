@@ -51,7 +51,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -181,32 +181,32 @@ GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email) {
 }
 
 std::string GetEnterpriseDomainManager() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDomainManager();
 }
 
 std::string GetEnterpriseDisplayDomain() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDisplayDomain();
 }
 
 std::string GetEnterpriseEnrollmentDomain() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseEnrollmentDomain();
 }
 
 std::string GetSSOProfile() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetSSOProfile();
 }
 
 std::string GetRealm() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetRealm();
 }
 
@@ -444,7 +444,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   }
   params.SetBoolean("enterpriseManagedDevice",
                     g_browser_process->platform_part()
-                        ->browser_policy_connector_chromeos()
+                        ->browser_policy_connector_ash()
                         ->IsDeviceEnterpriseManaged());
   const AccountId& owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
@@ -1296,7 +1296,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
     untrusted_authority_certs_cache_ =
         std::make_unique<network::NSSTempCertsCacheChromeOS>(
             g_browser_process->platform_part()
-                ->browser_policy_connector_chromeos()
+                ->browser_policy_connector_ash()
                 ->GetDeviceNetworkConfigurationUpdater()
                 ->GetAllAuthorityCertificates(
                     chromeos::onc::CertificateScope::Default()));
@@ -1324,10 +1324,9 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
 
 void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
   base::DictionaryValue params;
-  params.SetBoolean("enterpriseManaged",
-                    g_browser_process->platform_part()
-                        ->browser_policy_connector_chromeos()
-                        ->IsDeviceEnterpriseManaged());
+  params.SetBoolean("enterpriseManaged", g_browser_process->platform_part()
+                                             ->browser_policy_connector_ash()
+                                             ->IsDeviceEnterpriseManaged());
 
   bool family_link_allowed = false;
   CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,

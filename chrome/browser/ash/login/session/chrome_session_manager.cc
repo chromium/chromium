@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -82,8 +82,8 @@ void StartLoginOobeSession() {
   ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
 
   // Reset reboot after update flag when login screen is shown.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged()) {
     PrefService* local_state = g_browser_process->local_state();
     local_state->ClearPref(prefs::kRebootAfterUpdate);

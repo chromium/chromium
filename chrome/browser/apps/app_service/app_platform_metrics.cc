@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -350,8 +350,8 @@ int GetUserTypeByDeviceTypeMetrics() {
   UserTypeByDeviceTypeMetricsProvider::UserSegment user_segment =
       UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile);
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::MarketSegment device_segment =
       connector->GetEnterpriseMarketSegment();
 

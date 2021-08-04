@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/idle_detector.h"
@@ -77,10 +77,9 @@ bool IsLegacyDemoRetailModeSession(const user_manager::User* user) {
   if (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
     return false;
 
-  const std::string enrollment_domain =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetEnterpriseEnrollmentDomain();
+  const std::string enrollment_domain = g_browser_process->platform_part()
+                                            ->browser_policy_connector_ash()
+                                            ->GetEnterpriseEnrollmentDomain();
   return DemoModeResourcesRemover::IsLegacyDemoRetailModeDomain(
       enrollment_domain);
 }
@@ -153,7 +152,7 @@ void DemoModeResourcesRemover::ActiveUserChanged(user_manager::User* user) {
   // Attempt resources removal if the device is managed, and not in a retail
   // mode domain.
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged()) {
     if (!IsLegacyDemoRetailModeSession(user))
       AttemptRemoval(RemovalReason::kEnterpriseEnrolled, RemovalCallback());

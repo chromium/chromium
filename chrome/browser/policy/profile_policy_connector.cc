@@ -35,7 +35,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_provider.h"
@@ -123,16 +123,16 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
 namespace {
 // Returns the PolicyService that holds device-wide policies.
 PolicyService* GetDeviceWidePolicyService() {
-  BrowserPolicyConnectorChromeOS* browser_policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* browser_policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return browser_policy_connector->GetPolicyService();
 }
 
 // Returns the ProxyPolicyProvider which is used to forward primary Profile
 // policies into the device-wide PolicyService.
 ProxyPolicyProvider* GetProxyPolicyProvider() {
-  BrowserPolicyConnectorChromeOS* browser_policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* browser_policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return browser_policy_connector->GetGlobalUserCloudPolicyProvider();
 }
 }  // namespace
@@ -155,7 +155,7 @@ void ProfilePolicyConnector::Init(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* browser_policy_connector =
-      static_cast<BrowserPolicyConnectorChromeOS*>(connector);
+      static_cast<BrowserPolicyConnectorAsh*>(connector);
 #else
   DCHECK_EQ(nullptr, user);
 #endif
@@ -327,7 +327,7 @@ const CloudPolicyStore* ProfilePolicyConnector::GetActualPolicyStore() const {
     // for the login profile, and the lock screen app profile.
     const DeviceCloudPolicyManagerAsh* const device_cloud_policy_manager =
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceCloudPolicyManager();
     // The device_cloud_policy_manager can be a nullptr in unit tests.
     if (device_cloud_policy_manager)

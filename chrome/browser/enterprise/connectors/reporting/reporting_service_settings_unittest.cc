@@ -79,7 +79,7 @@ class ReportingServiceSettingsTest : public testing::TestWithParam<TestParam> {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // This is necessary so the URL flag code works on CrOS. If it's absent, a
   // CrOS DCHECK fails when trying to access the
-  // BrowserPolicyConnectorChromeOS as it is not completely initialized.
+  // BrowserPolicyConnectorAsh as it is not completely initialized.
   ash::ScopedCrosSettingsTestHelper cros_settings_;
 #endif
 };

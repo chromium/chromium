@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
@@ -119,7 +119,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback) {
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged()) {
     // Powerwash is allowed by default, if the policy is loaded. Admin can
     // explicitly forbid powerwash. If the policy is not loaded yet, we
@@ -438,8 +438,8 @@ void ResetScreen::UpdateStatusChanged(
 // Invoked from call to CanRollbackCheck upon completion of the DBus call.
 void ResetScreen::OnRollbackCheck(bool can_rollback) {
   VLOG(1) << "Callback from CanRollbackCheck, result " << can_rollback;
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   const bool rollback_available =
       !connector->IsDeviceEnterpriseManaged() && can_rollback;

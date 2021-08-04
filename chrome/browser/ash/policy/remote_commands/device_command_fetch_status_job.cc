@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
@@ -32,8 +32,8 @@ DeviceCommandFetchStatusJob::GetType() const {
 void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult succeeded_callback,
                                           CallbackWithResult failed_callback) {
   SYSLOG(INFO) << "Fetching device status";
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceCloudPolicyManagerAsh* manager =
       connector->GetDeviceCloudPolicyManager();
   // DeviceCloudPolicyManagerAsh, StatusUploader and SystemLogUploader can

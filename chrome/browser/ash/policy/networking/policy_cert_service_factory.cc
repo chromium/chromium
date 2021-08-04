@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/ash/policy/networking/policy_cert_service.h"
 #include "chrome/browser/ash/policy/networking/user_network_configuration_updater.h"
@@ -33,7 +33,7 @@ chromeos::PolicyCertificateProvider* GetPolicyCertificateProvider(
     Profile* profile) {
   if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceNetworkConfigurationUpdater();
   }
 

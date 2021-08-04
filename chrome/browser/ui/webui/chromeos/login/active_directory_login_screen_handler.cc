@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
@@ -60,7 +60,7 @@ void ActiveDirectoryLoginScreenHandler::Show() {
 
   base::DictionaryValue screen_data;
   screen_data.SetString("realm", g_browser_process->platform_part()
-                                     ->browser_policy_connector_chromeos()
+                                     ->browser_policy_connector_ash()
                                      ->GetRealm());
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,

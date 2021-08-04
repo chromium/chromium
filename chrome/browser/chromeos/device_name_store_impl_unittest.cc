@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"

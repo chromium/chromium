@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
@@ -118,8 +118,8 @@ void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type) {
 }
 
 EnrollmentStatus ChromeOSMetricsProvider::GetEnrollmentStatus() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector)
     return EnrollmentStatus::kErrorGettingStatus;
 

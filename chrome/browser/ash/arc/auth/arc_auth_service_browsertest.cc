@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -877,8 +877,8 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
 
  private:
   void SetUpPolicyClient() {
-    policy::BrowserPolicyConnectorChromeOS* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* const connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     policy::DeviceCloudPolicyManagerAsh* const cloud_policy_manager =
         connector->GetDeviceCloudPolicyManager();
 

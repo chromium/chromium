@@ -98,7 +98,7 @@
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/handlers/lock_to_single_user_manager.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/controller.h"
@@ -815,7 +815,7 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Initialize(g_browser_process->local_state(),
                                 g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
+                                    ->browser_policy_connector_ash()
                                     ->GetDeviceNamePolicyHandler());
   }
 
@@ -1320,11 +1320,11 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   if (pre_profile_init_called_)
     UserSessionManager::GetInstance()->Shutdown();
 
-  // Give BrowserPolicyConnectorChromeOS a chance to unregister any observers
+  // Give BrowserPolicyConnectorAsh a chance to unregister any observers
   // on services that are going to be deleted later but before its Shutdown()
   // is called.
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->PreShutdown();
 
   // Shutdown the virtual keyboard UI before destroying ash::Shell or the

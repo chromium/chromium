@@ -56,7 +56,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #endif
 
@@ -329,8 +329,8 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   if (connector->IsDeviceEnterpriseManaged()) {
     localized_strings.SetString("enterpriseInfoVisible", "true");

@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_onc_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/dbus/shill/shill_service_client.h"

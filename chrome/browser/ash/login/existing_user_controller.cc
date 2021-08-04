@@ -51,7 +51,7 @@
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -225,7 +225,7 @@ void RecordPasswordLoginEvent(const UserContext& user_context) {
 bool IsUpdateRequiredDeadlineReached() {
   policy::MinimumVersionPolicyHandler* policy_handler =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetMinimumVersionPolicyHandler();
   return policy_handler && policy_handler->DeadlineReached();
 }
@@ -261,7 +261,7 @@ bool ShouldForceDircrypto(const AccountId& account_id) {
 // according to InstallAttributes (proxied through BrowserPolicyConnector).
 bool IsActiveDirectoryManaged() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->IsActiveDirectoryManaged();
 }
 
@@ -948,7 +948,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   }
 
   const bool is_enterprise_managed = g_browser_process->platform_part()
-                                         ->browser_policy_connector_chromeos()
+                                         ->browser_policy_connector_ash()
                                          ->IsDeviceEnterpriseManaged();
 
   // Mark device will be consumer owned if the device is not managed and this is
@@ -997,7 +997,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
     const std::string& user_id = user_context.GetAccountId().GetUserEmail();
     policy::DeviceLocalAccountPolicyBroker* broker =
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceLocalAccountPolicyService()
             ->GetBrokerForUser(user_id);
     bool privacy_warnings_enabled =
@@ -1015,8 +1015,8 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 }
 
 void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DCHECK(connector->IsDeviceEnterpriseManaged());
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(
@@ -1272,7 +1272,7 @@ void ExistingUserController::LoginAsPublicSession(
   // auto-login timer.
   policy::CloudPolicyStore* policy_store =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService()
           ->GetBrokerForUser(user->GetAccountId().GetUserEmail())
           ->core()
@@ -1306,7 +1306,7 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
     // public session should use the current UI locale.
     const policy::PolicyMap::Entry* entry =
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceLocalAccountPolicyService()
             ->GetBrokerForUser(user_context.GetAccountId().GetUserEmail())
             ->core()

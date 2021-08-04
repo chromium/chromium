@@ -67,7 +67,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
@@ -1157,8 +1157,8 @@ bool PrefsUtil::IsPrefTypeURL(const std::string& pref_name) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrefsUtil::IsPrefEnterpriseManaged(const std::string& pref_name) {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged())
     return false;
   if (IsPrivilegedCrosSetting(pref_name))

@@ -66,7 +66,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -911,8 +911,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DisplayName) {
   device_local_account_policy_.payload().mutable_userdisplayname()->set_value(
       kDisplayName2);
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
           account_id_1_.GetUserEmail());
@@ -1111,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
   // after the installation failure.
   DeviceLocalAccountPolicyBroker* broker =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService()
           ->GetBrokerForUser(account_id_1_.GetUserEmail());
   ASSERT_TRUE(broker);
@@ -1193,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
   // Verify that the extension was removed from the account's extension cache.
   DeviceLocalAccountPolicyBroker* broker =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetDeviceLocalAccountPolicyService()
           ->GetBrokerForUser(account_id_1_.GetUserEmail());
   ASSERT_TRUE(broker);
@@ -1372,8 +1372,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
       policy);
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
           account_id_1_.GetUserEmail());
@@ -1463,8 +1463,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
       policy);
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
           account_id_1_.GetUserEmail());
@@ -1846,8 +1846,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   SetRecommendedLocales(kRecommendedLocales2, base::size(kRecommendedLocales2));
 
   UploadAndInstallDeviceLocalAccountPolicy();
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceLocalAccountPolicyBroker* broker =
       connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
           account_id_1_.GetUserEmail());
@@ -2309,7 +2309,7 @@ class ManagedSessionsTest : public DeviceLocalAccountTest {
 
   DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker() {
     return g_browser_process->platform_part()
-        ->browser_policy_connector_chromeos()
+        ->browser_policy_connector_ash()
         ->GetDeviceLocalAccountPolicyService()
         ->GetBrokerForUser(account_id_1_.GetUserEmail());
   }
@@ -2341,7 +2341,7 @@ class ManagedSessionsTest : public DeviceLocalAccountTest {
   void WaitForCertificateUpdate() {
     policy::DeviceNetworkConfigurationUpdater* updater =
         g_browser_process->platform_part()
-            ->browser_policy_connector_chromeos()
+            ->browser_policy_connector_ash()
             ->GetDeviceNetworkConfigurationUpdater();
     base::RunLoop run_loop;
     auto observer = std::make_unique<CertsObserver>(run_loop.QuitClosure());

@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
@@ -28,8 +28,8 @@ ScreenshotDelegate::ScreenshotDelegate() {}
 ScreenshotDelegate::~ScreenshotDelegate() {}
 
 bool ScreenshotDelegate::IsScreenshotAllowed() {
-  BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   DeviceCloudPolicyManagerAsh* manager =
       connector->GetDeviceCloudPolicyManager();
   // DeviceCloudPolicyManagerAsh and StatusUploader can be null during
