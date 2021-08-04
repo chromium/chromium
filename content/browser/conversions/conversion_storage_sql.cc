@@ -109,26 +109,6 @@ void RecordReportsDeleted(int count) {
                             count);
 }
 
-WARN_UNUSED_RESULT bool ShouldReplaceImpressionToAttribute(
-    const absl::optional<StorableImpression>& impression_to_attribute,
-    int64_t candidate_priority,
-    base::Time candidate_impression_time) {
-  if (!impression_to_attribute.has_value())
-    return true;
-
-  // Chooses the impression with the largest priority value. In the case of
-  // ties, most recent impression_time is used to tie break.
-  //
-  // Note that impressions which do not get a priority get defaulted to 0,
-  // meaning they can be attributed over impressions which set a negative
-  // priority.
-  if (impression_to_attribute->priority() < candidate_priority)
-    return true;
-  if (impression_to_attribute->priority() > candidate_priority)
-    return false;
-  return impression_to_attribute->impression_time() < candidate_impression_time;
-}
-
 WARN_UNUSED_RESULT int SerializeAttributionLogic(
     StorableImpression::AttributionLogic val) {
   return static_cast<int>(val);
@@ -162,6 +142,70 @@ DeserializeSourceType(int val) {
     default:
       return absl::nullopt;
   }
+}
+
+struct ImpressionToAttribute {
+  StorableImpression impression;
+  StorableImpression::AttributionLogic attribution_logic;
+  int num_conversions;
+};
+
+WARN_UNUSED_RESULT absl::optional<ImpressionToAttribute>
+ReadImpressionToAttribute(sql::Database* db,
+                          int64_t impression_id,
+                          const url::Origin& reporting_origin) {
+  static constexpr char kReadImpressionToAttributeSql[] =
+      "SELECT impression_origin,impression_time,priority,"
+      "conversion_origin,attributed_truthfully,source_type,num_conversions,"
+      "impression_data,expiry_time "
+      "FROM impressions "
+      "WHERE impression_id = ?";
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kReadImpressionToAttributeSql));
+  statement.BindInt64(0, impression_id);
+  if (!statement.Step())
+    return absl::nullopt;
+
+  url::Origin impression_origin = DeserializeOrigin(statement.ColumnString(0));
+  if (impression_origin.opaque())
+    return absl::nullopt;
+
+  base::Time impression_time = statement.ColumnTime(1);
+  int64_t priority = statement.ColumnInt64(2);
+
+  url::Origin conversion_origin = DeserializeOrigin(statement.ColumnString(3));
+  if (conversion_origin.opaque())
+    return absl::nullopt;
+
+  absl::optional<StorableImpression::AttributionLogic> attribution_logic =
+      DeserializeAttributionLogic(statement.ColumnInt(4));
+  // There should never be an unattributed impression with `kFalsely`.
+  if (!attribution_logic.has_value() ||
+      attribution_logic == StorableImpression::AttributionLogic::kFalsely) {
+    return absl::nullopt;
+  }
+
+  absl::optional<StorableImpression::SourceType> source_type =
+      DeserializeSourceType(statement.ColumnInt(5));
+  if (!source_type.has_value())
+    return absl::nullopt;
+
+  int num_conversions = statement.ColumnInt(6);
+  if (num_conversions < 0)
+    return absl::nullopt;
+
+  uint64_t impression_data =
+      DeserializeImpressionOrConversionData(statement.ColumnInt64(7));
+  base::Time expiry_time = statement.ColumnTime(8);
+
+  return ImpressionToAttribute{
+      .impression = StorableImpression(
+          impression_data, std::move(impression_origin),
+          std::move(conversion_origin), reporting_origin, impression_time,
+          expiry_time, *source_type, priority, impression_id),
+      .attribution_logic = *attribution_logic,
+      .num_conversions = num_conversions,
+  };
 }
 
 }  // namespace
@@ -405,97 +449,58 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   // Get all impressions that match this <reporting_origin,
   // conversion_destination> pair. Only get impressions that are active and not
-  // past their expiry time.
+  // past their expiry time. The impressions are fetched in order so that the
+  // first one is the one that will be attributed; the others will be deleted.
   static constexpr char kGetMatchingImpressionsSql[] =
-      "SELECT impression_origin,impression_id,impression_time,priority,"
-      "conversion_origin,attributed_truthfully,source_type,num_conversions,"
-      "impression_data,expiry_time "
+      "SELECT impression_id "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
       "AND active = 1 AND expiry_time > ? "
-      "ORDER BY impression_time DESC";
+      "ORDER BY priority DESC,impression_time DESC";
 
-  sql::Statement statement(
+  sql::Statement matching_impressions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetMatchingImpressionsSql));
-  statement.BindString(0, serialized_conversion_destination);
-  statement.BindString(1, SerializeOrigin(reporting_origin));
-  statement.BindTime(2, current_time);
+  matching_impressions_statement.BindString(0,
+                                            serialized_conversion_destination);
+  matching_impressions_statement.BindString(1,
+                                            SerializeOrigin(reporting_origin));
+  matching_impressions_statement.BindTime(2, current_time);
 
-  absl::optional<StorableImpression> impression_to_attribute;
-  StorableImpression::AttributionLogic attribution_logic =
-      StorableImpression::AttributionLogic::kNever;
-  int num_conversions = 0;
+  // If there are no matching impressions, return early.
+  if (!matching_impressions_statement.Step())
+    return false;
+  // The first one returned will be attributed; it has the highest priority.
+  int64_t impression_id_to_attribute =
+      matching_impressions_statement.ColumnInt64(0);
+
+  // Any others will be deleted.
   std::vector<int64_t> impression_ids_to_delete;
-
-  while (statement.Step()) {
-    url::Origin impression_origin =
-        DeserializeOrigin(statement.ColumnString(0));
-
-    int64_t impression_id = statement.ColumnInt64(1);
-    base::Time impression_time = statement.ColumnTime(2);
-    int64_t attribution_source_priority = statement.ColumnInt64(3);
-
-    url::Origin conversion_origin =
-        DeserializeOrigin(statement.ColumnString(4));
-    absl::optional<StorableImpression::AttributionLogic> attribution_logic_opt =
-        DeserializeAttributionLogic(statement.ColumnInt(5));
-    absl::optional<StorableImpression::SourceType> source_type =
-        DeserializeSourceType(statement.ColumnInt(6));
-    int num_conversions_maybe_invalid = statement.ColumnInt(7);
-
-    // Skip the report if any of the columns are invalid. This should only
-    // happen if there is some sort of database corruption.
-    // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
-    if (impression_origin.opaque() || conversion_origin.opaque() ||
-        !attribution_logic_opt.has_value() ||
-        // There should never be an unattributed impression with `kFalsely`.
-        attribution_logic_opt ==
-            StorableImpression::AttributionLogic::kFalsely ||
-        !source_type.has_value() || num_conversions_maybe_invalid < 0) {
-      continue;
-    }
-
-    // Select the row to attribute to the conversion. All other matching rows
-    // will be deleted by the attribution logic.
-    if (ShouldReplaceImpressionToAttribute(impression_to_attribute,
-                                           attribution_source_priority,
-                                           impression_time)) {
-      if (impression_to_attribute.has_value()) {
-        impression_ids_to_delete.push_back(
-            *impression_to_attribute->impression_id());
-      }
-
-      uint64_t impression_data =
-          DeserializeImpressionOrConversionData(statement.ColumnInt64(8));
-      base::Time expiry_time = statement.ColumnTime(9);
-
-      impression_to_attribute =
-          StorableImpression(impression_data, std::move(impression_origin),
-                             std::move(conversion_origin), reporting_origin,
-                             impression_time, expiry_time, *source_type,
-                             attribution_source_priority, impression_id);
-      attribution_logic = *attribution_logic_opt;
-      num_conversions = num_conversions_maybe_invalid;
-    } else
-      impression_ids_to_delete.push_back(impression_id);
+  while (matching_impressions_statement.Step()) {
+    int64_t impression_id = matching_impressions_statement.ColumnInt64(0);
+    impression_ids_to_delete.push_back(impression_id);
   }
-
-  // Exit early if the last statement wasn't valid or if we have no impressions.
-  if (!statement.Succeeded() || !impression_to_attribute.has_value())
+  // Exit early if the last statement wasn't valid.
+  if (!matching_impressions_statement.Succeeded())
     return false;
 
-  if (IsReportAlreadyStored(*impression_to_attribute->impression_id(),
-                            conversion.dedup_key())) {
+  if (IsReportAlreadyStored(impression_id_to_attribute, conversion.dedup_key()))
     return false;
-  }
+
+  absl::optional<ImpressionToAttribute> impression_to_attribute =
+      ReadImpressionToAttribute(db_.get(), impression_id_to_attribute,
+                                reporting_origin);
+  // This is only possible if there is a corrupt DB.
+  if (!impression_to_attribute.has_value())
+    return false;
 
   const uint64_t conversion_data =
-      impression_to_attribute->source_type() ==
+      impression_to_attribute->impression.source_type() ==
               StorableImpression::SourceType::kEvent
           ? conversion.event_source_trigger_data()
           : conversion.conversion_data();
 
-  ConversionReport report(std::move(*impression_to_attribute), conversion_data,
+  ConversionReport report(std::move(impression_to_attribute->impression),
+                          conversion_data,
                           /*conversion_time=*/current_time,
                           /*report_time=*/current_time,
                           /*conversion_id=*/absl::nullopt);
@@ -510,9 +515,9 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     return false;
 
   const auto maybe_replace_lower_priority_report_result =
-      MaybeReplaceLowerPriorityReport(report.impression, num_conversions,
-                                      conversion.priority(),
-                                      report.report_time);
+      MaybeReplaceLowerPriorityReport(
+          report.impression, impression_to_attribute->num_conversions,
+          conversion.priority(), report.report_time);
   if (maybe_replace_lower_priority_report_result ==
       ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::kError) {
     return false;
@@ -528,8 +533,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // Reports with `AttributionLogic::kNever` should be included in all
   // attribution operations and matching, but only `kTruthfully` should generate
   // reports that get sent.
-  const bool create_report =
-      attribution_logic == StorableImpression::AttributionLogic::kTruthfully;
+  const bool create_report = impression_to_attribute->attribution_logic ==
+                             StorableImpression::AttributionLogic::kTruthfully;
 
   if (create_report) {
     DCHECK(report.impression.impression_id().has_value());
