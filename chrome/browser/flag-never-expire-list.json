@@ -76,6 +76,7 @@
   "ios-breadcrumbs",
   "list-all-display-modes",
   "lite-video-force-override-decision",
+  "load-media-router-component-extension",
   "media-router-cast-allow-all-ips",
   "memlog",
   "memlog-sampling-rate",

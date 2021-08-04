@@ -936,7 +936,7 @@ void MediaRouterMojoImpl::GetMirroringServiceHostForDesktop(
     int32_t initiator_tab_id,
     const std::string& desktop_stream_id,
     mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost> receiver) {
-  if (!pending_stream_request_ ||
+  if (!CastMediaRouteProviderEnabled() || !pending_stream_request_ ||
       pending_stream_request_->stream_id != desktop_stream_id) {
     return;
   }

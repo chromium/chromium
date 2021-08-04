@@ -2147,6 +2147,9 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kEnableAccessibilityLiveCaptionSodaName[];
 extern const char kEnableAccessibilityLiveCaptionSodaDescription[];
 
+extern const char kCastMediaRouteProviderName[];
+extern const char kCastMediaRouteProviderDescription[];
+
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 
