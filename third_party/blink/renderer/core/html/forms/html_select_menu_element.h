@@ -44,6 +44,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
   Element* FirstValidButtonPart() const;
   Element* FirstValidListboxPart() const;
   Element* FirstValidSelectedValuePart() const;
+  HTMLSlotElement* ButtonSlot() const;
+  HTMLSlotElement* ListboxSlot() const;
   void EnsureSelectedOptionIsValid();
   Element* SelectedOption();
   void SetSelectedOption(Element* selected_option);
@@ -51,10 +53,13 @@ class HTMLSelectMenuElement final : public HTMLElement {
 
   void ButtonPartInserted(Element*);
   void ButtonPartRemoved(Element*);
+  void UpdateButtonPart();
   void SelectedValuePartInserted(Element*);
   void SelectedValuePartRemoved(Element*);
+  void UpdateSelectedValuePart();
   void ListboxPartInserted(Element*);
   void ListboxPartRemoved(Element*);
+  void UpdateListboxPart();
   void OptionPartInserted(Element*);
   void OptionPartRemoved(Element*);
 
@@ -95,6 +100,21 @@ class HTMLSelectMenuElement final : public HTMLElement {
     Member<HTMLSelectMenuElement> select_menu_element_;
   };
 
+  class SlotChangeEventListener : public NativeEventListener {
+   public:
+    explicit SlotChangeEventListener(HTMLSelectMenuElement* select_menu_element)
+        : select_menu_element_(select_menu_element) {}
+    void Invoke(ExecutionContext*, Event*) override;
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(select_menu_element_);
+      NativeEventListener::Trace(visitor);
+    }
+
+   private:
+    Member<HTMLSelectMenuElement> select_menu_element_;
+  };
+
   static constexpr char kButtonPartName[] = "button";
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
@@ -102,6 +122,7 @@ class HTMLSelectMenuElement final : public HTMLElement {
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
+  Member<SlotChangeEventListener> slotchange_listener_;
 
   Member<SelectMutationCallback> select_mutation_callback_;
 
@@ -109,6 +130,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
   Member<Element> selected_value_part_;
   Member<HTMLPopupElement> listbox_part_;
   HeapLinkedHashSet<Member<Element>> option_parts_;
+  Member<HTMLSlotElement> button_slot_;
+  Member<HTMLSlotElement> listbox_slot_;
   Member<Element> selected_option_;
 };
 

@@ -255,8 +255,13 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   // is to get named slots working in UA shadow DOM (crbug.com/1179356), and
   // then we can switch to that and use the -webkit pseudo-id selectors.
 
-  auto* button_slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  button_slot->setAttribute(html_names::kNameAttr, kButtonPartName);
+  button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
+  button_slot_->setAttribute(html_names::kNameAttr, kButtonPartName);
+  slotchange_listener_ =
+      MakeGarbageCollected<HTMLSelectMenuElement::SlotChangeEventListener>(
+          this);
+  button_slot_->addEventListener(event_type_names::kSlotchange,
+                                 slotchange_listener_, /*use_capture=*/false);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
   button_part_->setAttribute(html_names::kPartAttr, kButtonPartName);
@@ -274,7 +279,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       MakeGarbageCollected<HTMLSelectMenuElement::ButtonPartEventListener>(
           this);
   button_part_->addEventListener(event_type_names::kClick,
-                                 button_part_listener_, false);
+                                 button_part_listener_, /*use_capture=*/false);
 
   selected_value_part_ = MakeGarbageCollected<HTMLDivElement>(document);
   selected_value_part_->setAttribute(html_names::kPartAttr,
@@ -302,8 +307,10 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
     width: 1.2em;
     )CSS");
 
-  auto* listbox_slot = MakeGarbageCollected<HTMLSlotElement>(document);
-  listbox_slot->setAttribute(html_names::kNameAttr, kListboxPartName);
+  listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
+  listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
+  listbox_slot_->addEventListener(event_type_names::kSlotchange,
+                                  slotchange_listener_, /*use_capture=*/false);
 
   SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
@@ -313,13 +320,13 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   button_part_->AppendChild(selected_value_part_);
   button_part_->AppendChild(button_icon);
 
-  button_slot->AppendChild(button_part_);
+  button_slot_->AppendChild(button_part_);
 
   listbox_part_->appendChild(options_slot);
-  listbox_slot->appendChild(listbox_part_);
+  listbox_slot_->appendChild(listbox_part_);
 
-  root.AppendChild(button_slot);
-  root.AppendChild(listbox_slot);
+  root.AppendChild(button_slot_);
+  root.AppendChild(listbox_slot_);
 
   option_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::OptionPartEventListener>(
@@ -374,10 +381,18 @@ void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* new_listbox_part) {
     listbox_part_->SetOwnerSelectMenuElement(nullptr);
     listbox_part_->SetNeedsRepositioningForSelectMenu(false);
   }
-  // TODO(crbug.com/1234899) Emit console warning if new_listbox_part is null
+
   if (new_listbox_part) {
     new_listbox_part->SetOwnerSelectMenuElement(this);
+  } else {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "<selectmenu>'s default listbox was removed by an element labeled "
+        "slot=\"listbox\", and a new one was not provided. This <selectmenu> "
+        "will not be fully functional."));
   }
+
   listbox_part_ = new_listbox_part;
 }
 
@@ -465,11 +480,19 @@ void HTMLSelectMenuElement::SetButtonPart(Element* new_button_part) {
     button_part_->removeEventListener(event_type_names::kClick,
                                       button_part_listener_, false);
   }
-  // TODO(crbug.com/1234899) Emit console warning if new_button_part is null
+
   if (new_button_part) {
-    new_button_part->addEventListener(event_type_names::kClick,
-                                      button_part_listener_, false);
+    new_button_part->addEventListener(
+        event_type_names::kClick, button_part_listener_, /*use_capture=*/false);
+  } else {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "<selectmenu>'s default button was removed by an element labeled "
+        "slot=\"button\", and a new one was not provided. This <selectmenu> "
+        "will not be fully functional."));
   }
+
   button_part_ = new_button_part;
 }
 
@@ -478,7 +501,7 @@ void HTMLSelectMenuElement::ButtonPartInserted(Element* new_button_part) {
     return;
   }
 
-  SetButtonPart(FirstValidButtonPart());
+  UpdateButtonPart();
 }
 
 void HTMLSelectMenuElement::ButtonPartRemoved(Element* button_part) {
@@ -486,6 +509,10 @@ void HTMLSelectMenuElement::ButtonPartRemoved(Element* button_part) {
     return;
   }
 
+  UpdateButtonPart();
+}
+
+void HTMLSelectMenuElement::UpdateButtonPart() {
   SetButtonPart(FirstValidButtonPart());
 }
 
@@ -505,13 +532,28 @@ Element* HTMLSelectMenuElement::FirstValidSelectedValuePart() const {
   return nullptr;
 }
 
+HTMLSlotElement* HTMLSelectMenuElement::ButtonSlot() const {
+  return button_slot_;
+}
+
+HTMLSlotElement* HTMLSelectMenuElement::ListboxSlot() const {
+  return listbox_slot_;
+}
+
 void HTMLSelectMenuElement::SelectedValuePartInserted(
     Element* new_selected_value_part) {
-  selected_value_part_ = FirstValidSelectedValuePart();
+  UpdateSelectedValuePart();
 }
 
 void HTMLSelectMenuElement::SelectedValuePartRemoved(
     Element* selected_value_part) {
+  if (selected_value_part != selected_value_part_) {
+    return;
+  }
+  UpdateSelectedValuePart();
+}
+
+void HTMLSelectMenuElement::UpdateSelectedValuePart() {
   selected_value_part_ = FirstValidSelectedValuePart();
 }
 
@@ -536,8 +578,7 @@ void HTMLSelectMenuElement::ListboxPartInserted(Element* new_listbox_part) {
     return;
   }
 
-  SetListboxPart(DynamicTo<HTMLPopupElement>(FirstValidListboxPart()));
-  // TODO(crbug.com/1121840) Should the current option parts be revalidated?
+  UpdateListboxPart();
 }
 
 void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
@@ -545,6 +586,10 @@ void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
     return;
   }
 
+  UpdateListboxPart();
+}
+
+void HTMLSelectMenuElement::UpdateListboxPart() {
   SetListboxPart(DynamicTo<HTMLPopupElement>(FirstValidListboxPart()));
   // TODO(crbug.com/1121840) Should the current option parts be revalidated?
 }
@@ -563,8 +608,8 @@ void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
     new_option_element->OptionInsertedIntoSelectMenuElement();
   }
 
-  new_option_part->addEventListener(event_type_names::kClick,
-                                    option_part_listener_, false);
+  new_option_part->addEventListener(
+      event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
   // TODO(crbug.com/1121840) We don't want to actually change the attribute,
   // and if tabindex is already set we shouldn't override it.  So we need to
   // come up with something else here.
@@ -686,14 +731,28 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
   }
 }
 
+void HTMLSelectMenuElement::SlotChangeEventListener::Invoke(ExecutionContext*,
+                                                            Event* event) {
+  DCHECK_EQ(event->type(), event_type_names::kSlotchange);
+  if (event->target() == select_menu_element_->ListboxSlot()) {
+    select_menu_element_->UpdateListboxPart();
+  } else if (event->target() == select_menu_element_->ButtonSlot()) {
+    select_menu_element_->UpdateButtonPart();
+    select_menu_element_->UpdateSelectedValuePart();
+  }
+}
+
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_part_listener_);
   visitor->Trace(option_part_listener_);
+  visitor->Trace(slotchange_listener_);
   visitor->Trace(select_mutation_callback_);
   visitor->Trace(button_part_);
   visitor->Trace(selected_value_part_);
   visitor->Trace(listbox_part_);
   visitor->Trace(option_parts_);
+  visitor->Trace(button_slot_);
+  visitor->Trace(listbox_slot_);
   visitor->Trace(selected_option_);
   HTMLElement::Trace(visitor);
 }

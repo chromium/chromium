@@ -90,8 +90,6 @@
     const selectMenu2 = document.getElementById("selectMenu2");
     await clickOn(selectMenu2);
     assert_equals(selectMenu2.value, "");
-
-    // TODO(crbug.com/1234899) Fails because listbox pointer isn't cleared when default listbox is swapped out due to initial <slot> replacement
     assert_equals(selectMenu2.open, false);
 
   }, "Clicking a popup with no listbox part does nothing");

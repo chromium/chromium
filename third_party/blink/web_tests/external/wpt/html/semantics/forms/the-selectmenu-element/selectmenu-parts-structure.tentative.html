@@ -61,6 +61,15 @@
   </div>
 </selectmenu>
 
+<selectmenu id="selectMenu5">
+  <div slot="button" id="selectMenu5-button-slot">
+    <div part="button" id="selectMenu5-button0">button0</div>
+    <div part="selected-value" id="selectMenu5-selectedValue0"></div>
+  </div>
+  <option>one</option>
+  <option id="selectMenu5-option0">two</option>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
@@ -175,4 +184,25 @@
     await clickOn(selectMenu4Option2);
     assert_equals(selectMenu4.value, "two", "An option in a listbox should get controller code if its listbox is first in document order, even if another listbox was added dynamically");
 }, "Listbox controller code should be applied in flat tree traversal order regardless of dynamic insertion order");
+
+promise_test(async () => {
+    const selectMenu5 = document.getElementById("selectMenu5");
+    const selectMenu5ButtonSlot = document.getElementById("selectMenu5-button-slot");
+    const selectMenu5Button0 = document.getElementById("selectMenu5-button0");
+    const selectMenu5SelectedValue0 = document.getElementById("selectMenu5-selectedValue0");
+
+    assert_false(selectMenu3.open);
+    assert_equals(selectMenu5SelectedValue0.innerText, "one");
+
+    let selectedValue1 = document.createElement("div");
+    selectMenu5ButtonSlot.appendChild(selectedValue1);
+
+    await clickOn(selectMenu5Button0);
+    assert_true(selectMenu5.open);
+
+    await clickOn(document.getElementById("selectMenu5-option0"));
+    assert_false(selectMenu5.open);
+    assert_equals(selectMenu5SelectedValue0.innerText, "two", "first selected-value part in flat tree order should get controller code");
+    assert_equals(selectedValue1.innerText, "", "Dynamically inserted selected-value part shouldn't get controller code if it's not first in flat tree order");
+  }, "selected-value controller code should be applied in flat tree traversal order regardless of dynamic insertion order");
 </script>
