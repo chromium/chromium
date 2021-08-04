@@ -121,6 +121,9 @@ class InstallFinalizer {
                            bool shortcut_created,
                            content::WebContents* web_contents);
 
+  virtual void SetRemoveSourceCallbackForTesting(
+      base::RepeatingCallback<void(const AppId&)>) = 0;
+
   virtual void Start() {}
   virtual void Shutdown() {}
 

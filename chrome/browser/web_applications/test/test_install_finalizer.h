@@ -56,6 +56,8 @@ class TestInstallFinalizer final : public InstallFinalizer {
   void ReparentTab(const AppId& app_id,
                    bool shortcut_created,
                    content::WebContents* web_contents) override;
+  void SetRemoveSourceCallbackForTesting(
+      base::RepeatingCallback<void(const AppId&)>) override;
 
   void SetNextFinalizeInstallResult(const AppId& app_id,
                                     InstallResultCode code);

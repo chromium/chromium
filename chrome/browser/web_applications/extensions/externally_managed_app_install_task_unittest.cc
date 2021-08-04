@@ -260,6 +260,11 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
     ++num_reparent_tab_calls_;
   }
 
+  void SetRemoveSourceCallbackForTesting(
+      base::RepeatingCallback<void(const AppId&)>) override {
+    NOTIMPLEMENTED();
+  }
+
  private:
   WebAppRegistrarMutable* registrar_ = nullptr;
 

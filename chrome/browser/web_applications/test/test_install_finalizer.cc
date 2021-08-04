@@ -110,6 +110,10 @@ void TestInstallFinalizer::ReparentTab(const AppId& app_id,
                                        content::WebContents* web_contents) {
   ++num_reparent_tab_calls_;
 }
+void TestInstallFinalizer::SetRemoveSourceCallbackForTesting(
+    base::RepeatingCallback<void(const AppId&)>) {
+  NOTIMPLEMENTED();
+}
 
 void TestInstallFinalizer::SetNextFinalizeInstallResult(
     const AppId& app_id,

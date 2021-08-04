@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -353,14 +354,18 @@ void WebAppIntegrationBrowserTestBase::InstallCreateShortcutWindowed(
 void WebAppIntegrationBrowserTestBase::InstallMenuOption(
     const std::string& action_scope) {
   MaybeNavigateTabbedBrowserInScope(action_scope);
-  chrome::SetAutoAcceptWebAppDialogForTesting(
-      /*auto_accept=*/true,
-      /*auto_open_in_window=*/true);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
   WebAppInstallObserver observer(profile());
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   active_app_id_ = observer.AwaitNextInstall();
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  app_loaded_observer.Wait();
+  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
+  auto* browser_list = BrowserList::GetInstance();
+  app_browser_ = browser_list->GetLastActive();
+  DCHECK(AppBrowserController::IsWebApp(app_browser_));
 }
 
 void WebAppIntegrationBrowserTestBase::InstallLocally() {
@@ -578,6 +583,13 @@ void WebAppIntegrationBrowserTestBase::UninstallPolicyApp(
         if (policy_app->id == app_id) {
           run_loop.Quit();
         }
+      }));
+  // If there are still install sources, the app might not be fully uninstalled,
+  // so this will listen for the removal of the policy install source.
+  GetProvider()->install_finalizer().SetRemoveSourceCallbackForTesting(
+      base::BindLambdaForTesting([&](const AppId& app_id) {
+        if (policy_app->id == app_id)
+          run_loop.Quit();
       }));
   {
     ListPrefUpdate update(profile()->GetPrefs(),

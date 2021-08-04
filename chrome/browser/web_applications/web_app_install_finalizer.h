@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -66,6 +67,9 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
   void Start() override;
   void Shutdown() override;
+
+  void SetRemoveSourceCallbackForTesting(
+      base::RepeatingCallback<void(const AppId&)>) override;
 
   Profile* profile() { return profile_; }
 
@@ -140,6 +144,9 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   };
   base::flat_map<AppId, std::unique_ptr<SyncUninstallState>>
       pending_sync_uninstalls_;
+
+  base::RepeatingCallback<void(const AppId& app_id)>
+      install_source_removed_callback_for_testing_;
 
   std::unique_ptr<FileHandlersPermissionHelper> file_handlers_helper_;
 
