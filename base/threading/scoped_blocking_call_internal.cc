@@ -56,7 +56,20 @@ void ClearBlockingObserverForCurrentThread() {
 
 IOJankMonitoringWindow::ScopedMonitoredCall::ScopedMonitoredCall()
     : call_start_(TimeTicks::Now()),
-      assigned_jank_window_(MonitorNextJankWindowIfNecessary(call_start_)) {}
+      assigned_jank_window_(MonitorNextJankWindowIfNecessary(call_start_)) {
+  if (assigned_jank_window_) {
+    // TimeTicks using a monotonic clock and MonitorNextJankWindowIfNecessary
+    // synchronizing via a lock to return |assigned_jank_window_| was initially
+    // believed to guarantee that |call_start_| is either equal or beyond
+    // |assigned_jank_window_->start_time_|. Violating this assumption can
+    // result in negative indexing and OOB-writes in AddJank().
+    // We now know this assumption can be violated. This condition hotfixes
+    // the issue by discarding ScopedMonitoredCalls where it occurs.
+    // TODO(crbug.com/1209622): Implement a proper fix.
+    if (call_start_ < assigned_jank_window_->start_time_)
+      assigned_jank_window_.reset();
+  }
+}
 
 IOJankMonitoringWindow::ScopedMonitoredCall::~ScopedMonitoredCall() {
   if (assigned_jank_window_) {
@@ -187,6 +200,11 @@ IOJankMonitoringWindow::~IOJankMonitoringWindow() NO_THREAD_SAFETY_ANALYSIS {
 
 void IOJankMonitoringWindow::OnBlockingCallCompleted(TimeTicks call_start,
                                                      TimeTicks call_end) {
+  // Confirm we never hit a case of TimeTicks going backwards on the same thread
+  // nor of TimeTicks rolling over the int64_t boundary (which would break
+  // comparison operators).
+  DCHECK_LE(call_start, call_end);
+
   if (call_end - call_start < kIOJankInterval)
     return;
 
@@ -210,6 +228,9 @@ void IOJankMonitoringWindow::OnBlockingCallCompleted(TimeTicks call_start,
 
 void IOJankMonitoringWindow::AddJank(int local_jank_start_index,
                                      int num_janky_intervals) {
+  DCHECK_GE(local_jank_start_index, 0);
+  DCHECK_LT(local_jank_start_index, kNumIntervals);
+
   // Increment jank counts for intervals in this window. If
   // |num_janky_intervals| lands beyond kNumIntervals, the additional intervals
   // will be reported to |next_|.
