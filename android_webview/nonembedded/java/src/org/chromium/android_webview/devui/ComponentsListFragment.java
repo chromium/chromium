@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.devui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -14,16 +15,24 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.WorkerThread;
+
+import org.chromium.android_webview.devui.util.ComponentInfo;
+import org.chromium.android_webview.devui.util.ComponentsInfoLoader;
+import org.chromium.base.task.AsyncTask;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
 /**
  * A fragment to show a list of WebView components.
  * <p>This feature is currently under development and therefore not exposed in the UI.
- * <p>It can be launched via the adb shell by sending an intent with fragment-id = 3
+ * <p>It can be launched via the adb shell by sending an intent with fragment-id = 3.
  */
+@SuppressLint("SetTextI18n")
 public class ComponentsListFragment extends DevUiBaseFragment {
     private Context mContext;
+    private ComponentInfoListAdapter mComponentInfoListAdapter;
 
     @Override
     public void onAttach(Context context) {
@@ -48,17 +57,70 @@ public class ComponentsListFragment extends DevUiBaseFragment {
         Activity activity = (Activity) mContext;
         activity.setTitle("WebView Components");
 
-        ArrayList<String> componentsInfo = new ArrayList<String>();
-
         TextView componentsSummaryView = view.findViewById(R.id.components_summary_textview);
-        componentsSummaryView.setText(
-                String.format(Locale.US, "Components (%d)", componentsInfo.size()));
+        mComponentInfoListAdapter = new ComponentInfoListAdapter(new ArrayList<ComponentInfo>());
+        updateComponentInfoList(componentsSummaryView);
+        ListView componentInfoListView = view.findViewById(R.id.components_list);
+        componentInfoListView.setAdapter(mComponentInfoListAdapter);
+    }
 
-        ListView componentsListView = view.findViewById(R.id.components_list);
+    /**
+     * An ArrayAdapter to show a list of {@code ComponentInfo} objects.
+     * It uses custom item layout {@code R.layout.components_list_item} which has two {@code
+     * TextView}; {@code text1} acts as the component name and {@code text2} as the component
+     * version.
+     */
+    private class ComponentInfoListAdapter extends ArrayAdapter<ComponentInfo> {
+        public ComponentInfoListAdapter(ArrayList<ComponentInfo> items) {
+            super(mContext, R.layout.components_list_item, items);
+        }
 
-        ArrayAdapter<String> componentsInfoAdapter =
-                new ArrayAdapter<>(mContext, R.layout.components_list_item, componentsInfo);
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+            // If the the old view is already created then reuse it, else create a new one by layout
+            // inflation.
+            if (view == null) {
+                view = getLayoutInflater().inflate(R.layout.components_list_item, null, true);
+            }
 
-        componentsListView.setAdapter(componentsInfoAdapter);
+            ComponentInfo item = getItem(position);
+            TextView name = view.findViewById(android.R.id.text1);
+            TextView version = view.findViewById(android.R.id.text2);
+
+            name.setText(item.getComponentName());
+            if (item.getComponentVersion().equals("")) {
+                version.setText("No installed versions.");
+            } else {
+                version.setText("Version: " + item.getComponentVersion());
+            }
+            return view;
+        }
+    }
+
+    /**
+     * Asynchronously load components info on a background thread and then update the UI when the
+     * data is loaded.
+     */
+    private void updateComponentInfoList(TextView componentsSummaryView) {
+        AsyncTask<ArrayList<ComponentInfo>> asyncTask = new AsyncTask<ArrayList<ComponentInfo>>() {
+            @Override
+            @WorkerThread
+            protected ArrayList<ComponentInfo> doInBackground() {
+                ComponentsInfoLoader componentInfoLoader = new ComponentsInfoLoader();
+                ArrayList<ComponentInfo> retrievedComponentInfoList =
+                        componentInfoLoader.getComponentsInfo();
+
+                return retrievedComponentInfoList;
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<ComponentInfo> retrievedComponentInfoList) {
+                mComponentInfoListAdapter.clear();
+                mComponentInfoListAdapter.addAll(retrievedComponentInfoList);
+                componentsSummaryView.setText(String.format(
+                        Locale.US, "Components (%d)", retrievedComponentInfoList.size()));
+            }
+        };
+        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }
