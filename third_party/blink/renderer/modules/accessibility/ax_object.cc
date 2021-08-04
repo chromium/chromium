@@ -490,7 +490,6 @@ int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
 }
 
 // static
-bool AXObject::is_loading_inline_boxes_ = false;
 unsigned AXObject::number_of_live_ax_objects_ = 0;
 
 AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
@@ -583,11 +582,6 @@ void AXObject::Detach() {
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
 #endif
-
-  CHECK(!is_loading_inline_boxes_)
-      << "Should not be attempting to detach object while in the middle of "
-         "recursively loading inline text boxes: "
-      << ToString(true, true);
 
   // Clear any children and call DetachFromParent() on them so that
   // no children are left with dangling pointers to their parent.
@@ -3317,12 +3311,9 @@ AccessibilityOrientation AXObject::Orientation() const {
   return kAccessibilityOrientationUndefined;
 }
 
-void AXObject::LoadInlineTextBoxes() {
-  base::AutoReset<bool> reentrancy_protector(&is_loading_inline_boxes_, true);
-  LoadInlineTextBoxesRecursive();
-}
+void AXObject::LoadInlineTextBoxes() {}
 
-void AXObject::LoadInlineTextBoxesRecursive() {}
+void AXObject::ForceAddInlineTextBoxChildren() {}
 
 AXObject* AXObject::NextOnLine() const {
   return nullptr;
@@ -4301,10 +4292,6 @@ void AXObject::ClearChildren() const {
       << "Should not attempt to simultaneously add and clear children on: "
       << ToString(true, true);
 #endif
-
-  CHECK(!is_loading_inline_boxes_) << "Should not attempt to clear children "
-                                      "while loading inline text boxes: "
-                                   << ToString(true, true);
 
   for (const auto& child : children_) {
     // Check parent first, as the child might be several levels down if there

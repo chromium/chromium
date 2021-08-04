@@ -3509,32 +3509,35 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
 // Inline text boxes.
 //
 
-void AXNodeObject::LoadInlineTextBoxesRecursive() {
-  if (ui::CanHaveInlineTextBoxChildren(RoleValue())) {
-    if (children_.IsEmpty()) {
-      // We only need to add inline textbox children if they aren't present.
-      // Although some platforms (e.g. Android), load inline text boxes
-      // on subtrees that may later be stale, once they are stale, the old
-      // inline text boxes are cleared because SetNeedsToUpdateChildren()
-      // calls ClearChildren().
-      AddInlineTextBoxChildren(/*force*/ true);
-      children_dirty_ = false;  // Avoid adding these children twice.
-    }
-    return;
-  }
+void AXNodeObject::LoadInlineTextBoxes() {
+  std::queue<Member<AXObject>> work_queue;
+  work_queue.push(this);
 
-  for (const auto& child : ChildrenIncludingIgnored()) {
-    // TODO(https://crbug.com/1200244) Downgrade these to DCHECKs.
-    CHECK(child) << "Child has been destroyed before attempted use, parent is: "
-                 << ToString(true, true);
-    CHECK(!child->IsDetached())
-        << "Child has been detached before attempted use, parent is: "
-        << ToString(true, true);
-    CHECK(!IsDetached()) << "Parent was detached while attempting to load "
-                            "child text boxes, parent is: "
-                         << ToString(true, true);
-    child->LoadInlineTextBoxesRecursive();
+  while (!work_queue.empty()) {
+    AXObject* work_obj = work_queue.front();
+    work_queue.pop();
+    if (!work_obj->AccessibilityIsIncludedInTree())
+      continue;
+
+    if (ui::CanHaveInlineTextBoxChildren(work_obj->RoleValue())) {
+      if (work_obj->CachedChildrenIncludingIgnored().IsEmpty()) {
+        // We only need to add inline textbox children if they aren't present.
+        // Although some platforms (e.g. Android), load inline text boxes
+        // on subtrees that may later be stale, once they are stale, the old
+        // inline text boxes are cleared because SetNeedsToUpdateChildren()
+        // calls ClearChildren().
+        work_obj->ForceAddInlineTextBoxChildren();
+      }
+    } else {
+      for (const auto& child : work_obj->ChildrenIncludingIgnored())
+        work_queue.push(child);
+    }
   }
+}
+
+void AXNodeObject::ForceAddInlineTextBoxChildren() {
+  AddInlineTextBoxChildren(true /*force*/);
+  children_dirty_ = false;  // Avoid adding these children twice.
 }
 
 void AXNodeObject::AddInlineTextBoxChildren(bool force) {
