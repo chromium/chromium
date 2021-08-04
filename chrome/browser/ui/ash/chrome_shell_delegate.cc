@@ -388,6 +388,10 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
     app_launch_info->active_tab_index = tab_strip_model->active_index();
   }
+  const std::string* app_name =
+      window->GetProperty(full_restore::kBrowserAppNameKey);
+  if (app_name)
+    app_launch_info->app_name = *app_name;
 
   // Read all other relevant app launching information from
   // |app_restore_data| to |app_launch_info|.

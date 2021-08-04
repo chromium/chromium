@@ -88,6 +88,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   absl::optional<apps::mojom::IntentPtr> intent;
   absl::optional<std::vector<base::FilePath>> file_paths;
   absl::optional<bool> app_type_browser;
+  absl::optional<std::string> app_name;
 
   // Window's information.
   absl::optional<int32_t> activation_index;

@@ -125,34 +125,48 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
 
   const auto& launch_list = restore_data_->app_id_to_launch_list();
   for (const auto& iter : launch_list) {
-    if (iter.first != extension_misc::kChromeAppId)
+    const std::string& app_id = iter.first;
+    if (app_id != extension_misc::kChromeAppId)
       continue;
 
     for (const auto& window_iter : iter.second) {
-      absl::optional<std::vector<GURL>> urls = window_iter.second->urls;
+      const std::unique_ptr<full_restore::AppRestoreData>& app_restore_data =
+          window_iter.second;
+
+      absl::optional<std::vector<GURL>> urls = app_restore_data->urls;
       if (!urls || urls->empty())
         continue;
 
-      Browser::CreateParams create_params = Browser::CreateParams(
-          Browser::TYPE_NORMAL, profile_, /*user_gesture=*/false);
+      const bool app_type_browser =
+          app_restore_data->app_type_browser.value_or(false);
+      const std::string app_name = app_restore_data->app_name.value_or(app_id);
+      const gfx::Rect current_bounds =
+          app_restore_data->current_bounds.value_or(gfx::Rect());
+
+      Browser::CreateParams create_params =
+          app_type_browser
+              ? Browser::CreateParams::CreateForApp(
+                    app_name, /*trusted_source=*/true, current_bounds, profile_,
+                    /*user_gesture=*/false)
+              : Browser::CreateParams(Browser::TYPE_NORMAL, profile_,
+                                      /*user_gesture=*/false);
+
       create_params.restore_id = window_iter.first;
 
       absl::optional<chromeos::WindowStateType> window_state_type(
-          window_iter.second->window_state_type);
+          app_restore_data->window_state_type);
       if (window_state_type) {
         create_params.initial_show_state =
             chromeos::ToWindowShowState(*window_state_type);
       }
 
-      absl::optional<gfx::Rect> current_bounds(
-          window_iter.second->current_bounds);
-      if (current_bounds)
-        create_params.initial_bounds = *current_bounds;
+      if (!current_bounds.IsEmpty())
+        create_params.initial_bounds = current_bounds;
 
       Browser* browser = Browser::Create(create_params);
 
       absl::optional<int32_t> active_tab_index =
-          window_iter.second->active_tab_index;
+          app_restore_data->active_tab_index;
       for (int i = 0; i < urls->size(); i++) {
         chrome::AddTabAt(
             browser, urls->at(i), /*index=*/-1,

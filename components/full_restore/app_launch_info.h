@@ -64,6 +64,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   absl::optional<std::vector<base::FilePath>> file_paths;
   absl::optional<apps::mojom::IntentPtr> intent;
   absl::optional<bool> app_type_browser;
+  absl::optional<std::string> app_name;
 };
 
 }  // namespace full_restore
