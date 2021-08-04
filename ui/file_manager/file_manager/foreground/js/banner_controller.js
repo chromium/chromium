@@ -98,14 +98,14 @@ export class BannerController extends EventTarget {
         this.localStorageCache_[key] = storedValue;
       }
     }
-    this.reconcile();
+    await this.reconcile();
   }
 
   /**
    * Loops through all the banners and checks whether they should be shown or
    * not. If shown, picks the highest priority banner.
    */
-  reconcile() {
+  async reconcile() {
     this.currentVolume_ = this.directoryModel_.getCurrentVolumeInfo();
 
     /** @type {?Banner} */
@@ -127,7 +127,7 @@ export class BannerController extends EventTarget {
     }
 
     if (bannerToShow) {
-      this.showBanner_(bannerToShow);
+      await this.showBanner_(bannerToShow);
     }
   }
 
@@ -143,6 +143,13 @@ export class BannerController extends EventTarget {
       return false;
     }
 
+    const showLimit = banner.showLimit();
+    const timesShown =
+        this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`];
+    if (showLimit && timesShown >= showLimit) {
+      return false;
+    }
+
     return true;
   }
 
@@ -151,9 +158,15 @@ export class BannerController extends EventTarget {
    * @param {!Banner} banner The banner to hide.
    * @private
    */
-  showBanner_(banner) {
+  async showBanner_(banner) {
     if (banner.parentElement !== this.container_) {
       this.container_.appendChild(/** @type {Node} */ (banner));
+
+      // Views are set when the banner is first appended to the DOM. This
+      // denotes a new app session.
+      const localStorageKey = `${banner.tagName}_${VIEW_COUNTER_SUFFIX}`;
+      await this.setLocalStorage_(
+          localStorageKey, this.localStorageCache_[localStorageKey] + 1);
     }
 
     banner.setAttribute('hidden', false);
@@ -197,6 +210,26 @@ export class BannerController extends EventTarget {
     for (const tagName of bannerTagNames) {
       this.educationalBanners_.push(
           /** @type {!Banner} */ (document.createElement(tagName)));
+    }
+  }
+
+  /**
+   * Writes through the localStorage cache to localStorage to ensure values
+   * are immediately available.
+   * @param {string} key The key in localStorage to set.
+   * @param {number} value The value to set the key to in localStorage.
+   * @private
+   */
+  async setLocalStorage_(key, value) {
+    if (!this.localStorageCache_.hasOwnProperty(key)) {
+      console.error(`Key ${key} not found in localStorage cache`);
+      return;
+    }
+    this.localStorageCache_[key] = value;
+    try {
+      await xfm.storage.local.setAsync({[key]: value});
+    } catch (e) {
+      console.warn(e.message);
     }
   }
 

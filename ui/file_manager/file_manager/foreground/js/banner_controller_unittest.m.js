@@ -25,10 +25,11 @@ let bannerContainer;
 
 /**
  * @typedef {{
- *   setAllowedVolumeTypes: function(!Array<!Banner.AllowedVolumeType>),
- *   reset: function(),
- *   tagName: string
- *  }}
+ *    setAllowedVolumeTypes: function(!Array<!Banner.AllowedVolumeType>),
+ *    setShowLimit: function(number),
+ *    reset: function(),
+ *    tagName: string,
+ * }}
  */
 let TestBanner;
 
@@ -61,8 +62,8 @@ const downloadsAllowedVolumeType = {
 /**
  * @type {!Banner.AllowedVolumeType}
  */
-const myFilesAllowedVolumeType = {
-  type: VolumeManagerCommon.VolumeType.MY_FILES,
+const driveAllowedVolumeType = {
+  type: VolumeManagerCommon.VolumeType.DRIVE,
   id: null,
 };
 
@@ -82,9 +83,16 @@ function createTestBanner(tagName) {
   /** @type {!Array<!Banner.AllowedVolumeType>} */
   let allowedVolumeTypes = [];
 
+  /** @type {number|undefined} */
+  let showLimit;
+
   class FakeBanner extends Banner {
     allowedVolumeTypes() {
       return allowedVolumeTypes;
+    }
+
+    showLimit() {
+      return showLimit;
     }
   }
 
@@ -96,6 +104,10 @@ function createTestBanner(tagName) {
     },
     reset: () => {
       allowedVolumeTypes = [];
+      showLimit = undefined;
+    },
+    setShowLimit: (limit) => {
+      showLimit = limit;
     },
     // Element.tagName returns uppercase.
     tagName: tagName.toUpperCase(),
@@ -125,7 +137,6 @@ function assertBannerVisible(banner) {
  * Asserts that all banners on the DOM are hidden.
  */
 function assertNoVisibleBanners() {
-  const elements = bannerContainer.children;
   for (const element of bannerContainer.children) {
     assertEquals(element.getAttribute('hidden'), 'true');
     assertEquals(element.getAttribute('aria-hidden'), 'true');
@@ -257,10 +268,10 @@ export async function testBannersAreHiddenOnVolumeChange() {
 
   // Set the following banners to show:
   //  First Warning Banner shows on Downloads.
-  //  Second Warning Banner shows on My files.
+  //  Second Warning Banner shows on Drive.
   //  First Educational Banner shows on Android Files.
   testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
-  testWarningBanners[1].setAllowedVolumeTypes([myFilesAllowedVolumeType]);
+  testWarningBanners[1].setAllowedVolumeTypes([driveAllowedVolumeType]);
   testEducationalBanners[0].setAllowedVolumeTypes(
       [androidFilesAllowedVolumeType]);
 
@@ -268,16 +279,16 @@ export async function testBannersAreHiddenOnVolumeChange() {
   await controller.initialize();
   assertBannerVisible(testWarningBanners[0]);
 
-  // Change volume to My files and verify the second warning banner is showing.
+  // Change volume to Drives and verify the second warning banner is showing.
   changeCurrentVolume(
-      VolumeManagerCommon.VolumeType.MY_FILES, /* volumeId */ null);
-  controller.reconcile();
+      VolumeManagerCommon.VolumeType.DRIVE, /* volumeId */ null);
+  await controller.reconcile();
   assertBannerVisible(testWarningBanners[1]);
 
   // Change volume to Android files and verify the educational banner is shown.
   changeCurrentVolume(
       VolumeManagerCommon.VolumeType.ANDROID_FILES, /* volumeId */ null);
-  controller.reconcile();
+  await controller.reconcile();
   assertBannerVisible(testEducationalBanners[0]);
 }
 
@@ -294,6 +305,114 @@ export async function testNullVolumeInfoClearsBanners() {
 
   // Change current volume to a null volume type and assert no banner is shown.
   changeCurrentVolume(/* volumeType */ null, /* volumeId */ null);
-  controller.reconcile();
+  await controller.reconcile();
+  assertNoVisibleBanners();
+}
+
+/**
+ * Test that banners that have hit their show limit are not shown again.
+ */
+export async function testBannersChangeAfterShowLimitReached() {
+  // Add 2 educational banners.
+  controller.setEducationalBannersInOrder([
+    testEducationalBanners[0].tagName,
+    testEducationalBanners[1].tagName,
+  ]);
+
+  // Set the showLimit for the educational banners.
+  testEducationalBanners[0].setShowLimit(1);
+  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[1].setShowLimit(3);
+  testEducationalBanners[1].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+
+  // The first reconciliation should increment the counter and append to DOM.
+  await controller.initialize();
+  assertBannerVisible(testEducationalBanners[0]);
+
+  // Clearing the DOM should imitate a new Files app session.
+  bannerContainer.textContent = '';
+  await controller.reconcile();
+
+  // After a new Files app session has started, the previous counter has
+  // exceeded it's show limit, assert the next priority banner is shown.
+  assertBannerVisible(testEducationalBanners[1]);
+}
+
+/**
+ * Test that the show limit is increased only on a per app session.
+ */
+export async function testChangingVolumesDoesntIncreaseShowTimes() {
+  // Add 1 educational banner.
+  controller.setEducationalBannersInOrder([testEducationalBanners[0].tagName]);
+
+  const bannerShowLimit = 3;
+  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setShowLimit(bannerShowLimit);
+
+  await controller.initialize();
+  assertBannerVisible(testEducationalBanners[0]);
+
+  // Change directory one more times than the show limit to verify the show
+  // limit doesn't increase.
+  for (let i = 0; i < bannerShowLimit + 1; i++) {
+    // Change directory and verify no banner shown.
+    changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, null);
+    await controller.reconcile();
+    assertNoVisibleBanners();
+
+    // Change back to DOWNLOADS and verify banner has been shown.
+    changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
+    await controller.reconcile();
+    assertBannerVisible(testEducationalBanners[0]);
+  }
+}
+
+/**
+ * Test that multiple banners with different allowedVolumeTypes and show limits
+ * are show at the right stages. This also asserts that banners that don't
+ * implement showLimit still are shown as expected.
+ */
+export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
+  controller.setWarningBannersInOrder([
+    testWarningBanners[0].tagName,
+  ]);
+  controller.setEducationalBannersInOrder([
+    testEducationalBanners[0].tagName,
+  ]);
+
+  // Set the allowed volume types for the warning banners.
+  testWarningBanners[0].setAllowedVolumeTypes([driveAllowedVolumeType]);
+
+  // Set the showLimit and allowed volume types for the educational banner.
+  testEducationalBanners[0].setShowLimit(2);
+  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+
+  // The first reconciliation should increment the counter and append to DOM.
+  await controller.initialize();
+  assertBannerVisible(testEducationalBanners[0]);
+
+  // Change the directory to Drive.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, null);
+  await controller.reconcile();
+  assertBannerVisible(testWarningBanners[0]);
+
+  // Start a new Files app session (clearing the container emulates this).
+  // Change the directory back Downloads.
+  bannerContainer.textContent = '';
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
+  await controller.reconcile();
+  assertBannerVisible(testEducationalBanners[0]);
+
+  // Change back to Drive, warning banner should still be showing.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, null);
+  await controller.reconcile();
+  assertBannerVisible(testWarningBanners[0]);
+
+  // Emulate starting a new Files app session and change back to Downloads
+  // volume. This time the educational banner should no longer be showing as it
+  // has exceeded it's show limit.
+  bannerContainer.textContent = '';
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
+  await controller.reconcile();
   assertNoVisibleBanners();
 }
