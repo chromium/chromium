@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -722,4 +723,50 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 
   auto* entry = ExpectAndGetEntry(first_url);
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 0);
+}
+
+class PopupTrackerPrerenderBrowserTest : public PopupTrackerBrowserTest {
+ public:
+  PopupTrackerPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&PopupTrackerPrerenderBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~PopupTrackerPrerenderBrowserTest() override = default;
+
+ protected:
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Test that a navigation of the prerender page shouldn't affect recording UKM
+// of PopupTracker.
+IN_PROC_BROWSER_TEST_F(PopupTrackerPrerenderBrowserTest,
+                       DoNotAffectRecordingUKMByPrerender) {
+  const GURL first_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), first_url);
+
+  // Load a prerender url in the popup window.
+  const GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "window.open('/popup_blocker/popup-simple-prerender.html')"));
+  prerender_helper()->WaitForPrerenderLoadCompletion(prerender_url);
+
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  auto* popup_tracker = blocked_content::PopupTracker::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_NE(popup_tracker, nullptr);
+
+  // The PopupTracker should not treat a prerender navigation as a navigation
+  // away from the first document. So, the |first_load_visible_time_| in
+  // PopupTracker should be empty and not be used for the recording UKM.
+  EXPECT_FALSE(popup_tracker->has_first_load_visible_time_for_testing());
 }

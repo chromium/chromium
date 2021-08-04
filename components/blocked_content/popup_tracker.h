@@ -47,6 +47,10 @@ class PopupTracker : public content::WebContentsObserver,
 
   void set_is_trusted(bool is_trusted) { is_trusted_ = is_trusted; }
 
+  bool has_first_load_visible_time_for_testing() const {
+    return first_load_visible_time_.has_value();
+  }
+
  private:
   friend class content::WebContentsUserData<PopupTracker>;
 

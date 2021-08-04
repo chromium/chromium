@@ -109,11 +109,12 @@ void PopupTracker::WebContentsDestroyed() {
 void PopupTracker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
 
-  if (navigation_handle->IsInMainFrame() && !first_navigation_committed_) {
+  if (!first_navigation_committed_) {
     first_navigation_committed_ = true;
     // The last page in the redirect chain is the current page, the number of
     // redirects is one less than the size of the chain.
@@ -160,6 +161,9 @@ void PopupTracker::OnSafeBrowsingChecksComplete(
     const subresource_filter::SubresourceFilterSafeBrowsingClient::CheckResult&
         result) {
   DCHECK(navigation_handle->IsInMainFrame());
+  if (!navigation_handle->IsInPrimaryMainFrame())
+    return;
+
   safe_browsing_status_ = PopupSafeBrowsingStatus::kSafe;
   if (result.threat_type ==
           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING ||
