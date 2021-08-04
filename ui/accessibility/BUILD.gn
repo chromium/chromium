@@ -120,6 +120,8 @@ component("accessibility") {
     "ax_hypertext.h",
     "ax_language_detection.cc",
     "ax_language_detection.h",
+    "ax_live_region_tracker.cc",
+    "ax_live_region_tracker.h",
     "ax_mode_observer.h",
     "ax_node.cc",
     "ax_node.h",
