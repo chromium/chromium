@@ -26,6 +26,7 @@ class TestDeviceNameHandler : public DeviceNameHandler {
   }
 
   // Raise visibility to public.
+  using DeviceNameHandler::HandleAttemptSetDeviceName;
   using DeviceNameHandler::HandleNotifyReadyForDeviceName;
 };
 
@@ -77,6 +78,32 @@ class DeviceNameHandlerTest : public testing::Test {
     int device_name_state;
     returned_data->GetInteger("deviceNameState", &device_name_state);
     EXPECT_EQ(static_cast<int>(expected_device_name_state), device_name_state);
+  }
+
+  void VerifySetDeviceNameResult(
+      const std::string& device_name,
+      DeviceNameStore::SetDeviceNameResult expected_result) {
+    base::Value args(base::Value::Type::LIST);
+    args.Append("callback-id");
+    args.Append(device_name);
+    handler()->HandleAttemptSetDeviceName(&base::Value::AsListValue(args));
+
+    const content::TestWebUI::CallData& call_data =
+        *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+    EXPECT_EQ("callback-id", call_data.arg1()->GetString());
+    EXPECT_TRUE(call_data.arg2()->GetBool());
+
+    EXPECT_EQ(static_cast<int>(expected_result), call_data.arg3()->GetInt());
+  }
+
+  void VerifyValuesInDeviceNameStore(
+      const std::string& expected_name,
+      DeviceNameStore::DeviceNameState expected_state) {
+    DeviceNameStore::DeviceNameMetadata metadata =
+        fake_device_name_store()->GetDeviceNameMetadata();
+    EXPECT_EQ(metadata.device_name, expected_name);
+    EXPECT_EQ(metadata.device_name_state, expected_state);
   }
 
   FakeDeviceNameStore* fake_device_name_store() {
@@ -133,6 +160,48 @@ TEST_F(DeviceNameHandlerTest, DeviceNameMetadata_ChangeState) {
   fake_device_name_store()->SetDeviceNameState(device_name_state);
   VerifyDeviceNameMetadata(FakeDeviceNameStore::kDefaultDeviceName,
                            device_name_state);
+}
+
+// Verify that DeviceNameHandler::HandleAttemptSetDeviceName() works for all
+// possible name update results.
+TEST_F(DeviceNameHandlerTest, SetDeviceName) {
+  // Verify default values in device name store.
+  VerifyValuesInDeviceNameStore(
+      "ChromeOS", DeviceNameStore::DeviceNameState::kCanBeModified);
+
+  // Verify that name update is successful and that the name changes in device
+  // name store.
+  VerifySetDeviceNameResult("TestName",
+                            DeviceNameStore::SetDeviceNameResult::kSuccess);
+  VerifyValuesInDeviceNameStore(
+      "TestName", DeviceNameStore::DeviceNameState::kCanBeModified);
+
+  // Verify that name update is unsuccessful because of invalid name and that
+  // the name does not change in device name store.
+  VerifySetDeviceNameResult("Invalid Name",
+                            DeviceNameStore::SetDeviceNameResult::kInvalidName);
+  VerifyValuesInDeviceNameStore(
+      "TestName", DeviceNameStore::DeviceNameState::kCanBeModified);
+
+  // Verify that name update is unsuccessful because of policy and that the
+  // name does not change in device name store.
+  fake_device_name_store()->SetDeviceNameState(
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
+  VerifySetDeviceNameResult(
+      "TestName", DeviceNameStore::SetDeviceNameResult::kProhibitedByPolicy);
+  VerifyValuesInDeviceNameStore(
+      "TestName",
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
+
+  // Verify that name update is unsuccessful because user is not device owner
+  // and that the name does not change in device name store.
+  fake_device_name_store()->SetDeviceNameState(
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
+  VerifySetDeviceNameResult(
+      "TestName", DeviceNameStore::SetDeviceNameResult::kNotDeviceOwner);
+  VerifyValuesInDeviceNameStore(
+      "TestName",
+      DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
 }
 
 }  // namespace settings

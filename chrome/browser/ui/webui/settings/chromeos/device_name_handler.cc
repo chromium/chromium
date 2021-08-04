@@ -44,6 +44,11 @@ void DeviceNameHandler::RegisterMessages() {
       "notifyReadyForDeviceName",
       base::BindRepeating(&DeviceNameHandler::HandleNotifyReadyForDeviceName,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "attemptSetDeviceName",
+      base::BindRepeating(&DeviceNameHandler::HandleAttemptSetDeviceName,
+                          base::Unretained(this)));
 }
 
 base::Value DeviceNameHandler::GetDeviceNameMetadata() const {
@@ -54,6 +59,21 @@ base::Value DeviceNameHandler::GetDeviceNameMetadata() const {
   metadata.SetIntKey(kMetadataSecondKey,
                      static_cast<int>(device_name_metadata.device_name_state));
   return metadata;
+}
+
+void DeviceNameHandler::HandleAttemptSetDeviceName(
+    const base::ListValue* args) {
+  AllowJavascript();
+
+  DCHECK_EQ(2U, args->GetSize());
+  const base::Value::ConstListView args_list = args->GetList();
+  const std::string callback_id = args_list[0].GetString();
+  const std::string name_from_user = args_list[1].GetString();
+  DeviceNameStore::SetDeviceNameResult result =
+      device_name_store_->SetDeviceName(name_from_user);
+
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(static_cast<int>(result)));
 }
 
 void DeviceNameHandler::HandleNotifyReadyForDeviceName(

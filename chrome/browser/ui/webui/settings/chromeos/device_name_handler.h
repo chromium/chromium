@@ -31,6 +31,7 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  protected:
+  void HandleAttemptSetDeviceName(const base::ListValue* args);
   void HandleNotifyReadyForDeviceName(const base::ListValue* args);
 
  private:
