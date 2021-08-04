@@ -389,8 +389,9 @@ TEST_F(ExtendedMouseWarpControllerTest,
 // Check that the point in the rotated secondary display's warp region is
 // converted correctly from native host coordinates to screen DIP coordinates.
 // (see https://crbug.com/905035)
+// Flaky. https://crbug.com/1217187.
 TEST_F(ExtendedMouseWarpControllerTest,
-       CheckHostPointToScreenInMouseWarpRegion) {
+       DISABLED_CheckHostPointToScreenInMouseWarpRegion) {
   // Zoom factor is needed to trigger rounding error which occured in previous
   // code.
   UpdateDisplay("50+50-200x200@0.8,50+300-300x100/r");
