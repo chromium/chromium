@@ -97,11 +97,13 @@ static void JNI_TranslateBridge_TranslateToLanguage(
   } else {
     // We don't check for source_language_code support because TranslatePage
     // handles that case already.
-    manager->TranslatePage(source_language_code, target_language_code,
-                           /*triggered_from_menu=*/false,
-                           /*translation_type=*/
-                           manager->GetActiveTranslateMetricsLogger()
-                               ->GetNextManualTranslationType());
+    manager->TranslatePage(
+        source_language_code, target_language_code,
+        /*triggered_from_menu=*/false,
+        /*translation_type=*/
+        manager->GetActiveTranslateMetricsLogger()
+            ->GetNextManualTranslationType(
+                /*is_context_menu_initiated_translation=*/false));
   }
 }
 

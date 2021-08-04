@@ -267,7 +267,8 @@ void TranslateInfoBarDelegate::MessageInfoBarButtonPressed() {
   translate_manager_->TranslatePage(
       source_language_code(), target_language_code(), false,
       translate_manager_->GetActiveTranslateMetricsLogger()
-          ->GetNextManualTranslationType());
+          ->GetNextManualTranslationType(
+              /*is_context_menu_initiated_translation=*/false));
 }
 
 bool TranslateInfoBarDelegate::ShouldShowMessageInfoBarButton() {

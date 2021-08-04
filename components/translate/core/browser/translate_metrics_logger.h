@@ -41,29 +41,51 @@ enum class TranslateState {
 // numeric values should never be reused.
 enum class TranslationStatus {
   kUninitialized = 0,
-  kSuccessFromManualTranslation = 1,
+  // kSuccessFromManualTranslation = 1,  // no longer used, split into
+  // kSuccessFromManualUiTranslation and
+  // kSuccessFromManualContextMenuTranslation enum values.
   kSuccessFromAutomaticTranslationByPref = 2,
   kSuccessFromAutomaticTranslationByLink = 3,
-  kRevertedManualTranslation = 4,
+  // kManualTranslation = 4,  // no longer used, split into
+  // kRevertedManualUiTranslation and
+  // kRevertedManualContextMenuTranslation enum values.
   kRevertedAutomaticTranslation = 5,
   kNewTranslation = 6,
   kTranslationAbandoned = 7,
-  kFailedWithNoErrorManualTranslation = 8,
+  // kFailedWithNoErrorManualTranslation = 8,  // no longer used, split into
+  // kFailedWithNoErrorManualUiTranslation and
+  // kFailedWithNoErrorManualContextMenuTranslation enum values.
   kFailedWithNoErrorAutomaticTranslation = 9,
-  kFailedWithErrorManualTranslation = 10,
+  // kFailedWithErrorManualTranslation = 10,  // no longer used, split into
+  // kFailedWithErrorManualUiTranslation and
+  // kFailedWithErrorManualContextMenuTranslation enum values.
   kFailedWithErrorAutomaticTranslation = 11,
-  kMaxValue = kFailedWithErrorAutomaticTranslation,
+  kSuccessFromManualUiTranslation = 12,
+  kRevertedManualUiTranslation = 13,
+  kFailedWithNoErrorManualUiTranslation = 14,
+  kFailedWithErrorManualUiTranslation = 15,
+  kSuccessFromManualContextMenuTranslation = 16,
+  kRevertedManualContextMenuTranslation = 17,
+  kFailedWithNoErrorManualContextMenuTranslation = 18,
+  kFailedWithErrorManualContextMenuTranslation = 19,
+  kMaxValue = kFailedWithErrorManualContextMenuTranslation,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TranslationType {
   kUninitialized = 0,
-  kManualInitialTranslation = 1,
-  kManualReTranslation = 2,
+  // kManualInitialTranslation = 1,  // no longer used, split into
+  // kManualUiInitialTranslation and kManualContextMenuInitialranslation
+  // kManualReTranslation = 2,  // no longer used, split into
+  // kManualUiReTranslation and kManualContextMenuReTranslation
   kAutomaticTranslationByPref = 3,
   kAutomaticTranslationByLink = 4,
-  kMaxValue = kAutomaticTranslationByLink,
+  kManualUiInitialTranslation = 5,
+  kManualUiReTranslation = 6,
+  kManualContextMenuInitialTranslation = 7,
+  kManualContextMenuReTranslation = 8,
+  kMaxValue = kManualContextMenuReTranslation,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -174,7 +196,8 @@ class TranslateMetricsLogger {
   virtual void LogUIInteraction(UIInteraction ui_interaction) = 0;
 
   // Returns the translation type of the next manual translation.
-  virtual TranslationType GetNextManualTranslationType() = 0;
+  virtual TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) = 0;
 
   virtual void SetHasHrefTranslateTarget(bool has_href_translate_target) = 0;
 

@@ -362,7 +362,8 @@ void TranslateManager::ShowTranslateUI(bool auto_translate,
   if (auto_translate && !language_state_.IsPageTranslated()) {
     TranslatePage(
         source_code, target_lang, triggered_from_menu,
-        GetActiveTranslateMetricsLogger()->GetNextManualTranslationType());
+        GetActiveTranslateMetricsLogger()->GetNextManualTranslationType(
+            triggered_from_menu));
     return;
   }
 

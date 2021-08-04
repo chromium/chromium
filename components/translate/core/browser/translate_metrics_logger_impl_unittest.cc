@@ -75,6 +75,113 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
     return test_ukm_recorder_.get();
   }
 
+  void SimulateAndCheckManualTranslation(
+      bool is_context_menu_initiated_translation,
+      bool was_translation_successful,
+      TranslateErrors::Type translate_error_type,
+      TranslationType expected_translation_type,
+      TranslationStatus expected_translation_status) {
+    if (was_translation_successful)
+      EXPECT_EQ(translate_error_type, TranslateErrors::NONE);
+
+    translate_metrics_logger()->LogInitialState();
+
+    translate_metrics_logger()->LogTranslationStarted(
+        translate_metrics_logger()->GetNextManualTranslationType(
+            is_context_menu_initiated_translation));
+    translate_metrics_logger()->LogTranslationFinished(
+        was_translation_successful, translate_error_type);
+
+    translate_metrics_logger()->RecordMetrics(true);
+
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationType,
+                                           expected_translation_type, 1);
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationStatus,
+                                           expected_translation_status, 1);
+
+    CheckTranslateStateHistograms(
+        TranslateState::kNotTranslatedNoUI,
+        (was_translation_successful ? TranslateState::kTranslatedNoUI
+                                    : TranslateState::kNotTranslatedNoUI),
+        (was_translation_successful ? 1 : 0), 0);
+    CheckTranslateErrors(
+        translate_error_type,
+        (translate_error_type != TranslateErrors::NONE ? 1 : 0));
+  }
+
+  void SimulateAndCheckRepeatedManualTranslationsAndReversions(
+      int num_translations_and_reversions,
+      bool is_context_menu_initiated_translation,
+      TranslationType expected_initial_translation_type,
+      TranslationType expected_re_translation_type,
+      TranslationStatus expected_translation_status) {
+    translate_metrics_logger()->LogInitialState();
+    for (int i = 0; i < num_translations_and_reversions; i++) {
+      translate_metrics_logger()->LogTranslationStarted(
+          translate_metrics_logger()->GetNextManualTranslationType(
+              is_context_menu_initiated_translation));
+      translate_metrics_logger()->LogTranslationFinished(true,
+                                                         TranslateErrors::NONE);
+      translate_metrics_logger()->LogReversion();
+    }
+
+    translate_metrics_logger()->RecordMetrics(true);
+
+    histogram_tester()->ExpectTotalCount(kTranslateTranslationType,
+                                         num_translations_and_reversions);
+    histogram_tester()->ExpectBucketCount(kTranslateTranslationType,
+                                          expected_initial_translation_type, 1);
+    histogram_tester()->ExpectBucketCount(kTranslateTranslationType,
+                                          expected_re_translation_type,
+                                          num_translations_and_reversions - 1);
+    histogram_tester()->ExpectUniqueSample(kTranslateTranslationStatus,
+                                           expected_translation_status,
+                                           num_translations_and_reversions);
+
+    CheckTranslateStateHistograms(
+        TranslateState::kNotTranslatedNoUI, TranslateState::kNotTranslatedNoUI,
+        num_translations_and_reversions, num_translations_and_reversions);
+    CheckTranslateErrors(TranslateErrors::NONE, 0);
+  }
+
+  void SimulateAndCheckAutomaticThenManualTranslation(
+      bool is_context_menu_initiated_translation,
+      TranslationType expected_manual_translation_type,
+      TranslationStatus expected_manual_translation_status) {
+    translate_metrics_logger()->LogTranslationStarted(
+        TranslationType::kAutomaticTranslationByPref);
+    translate_metrics_logger()->LogInitialState();
+    translate_metrics_logger()->LogTranslationFinished(true,
+                                                       TranslateErrors::NONE);
+
+    translate_metrics_logger()->LogReversion();
+
+    translate_metrics_logger()->LogTranslationStarted(
+        translate_metrics_logger()->GetNextManualTranslationType(
+            is_context_menu_initiated_translation));
+    translate_metrics_logger()->LogTranslationFinished(true,
+                                                       TranslateErrors::NONE);
+
+    translate_metrics_logger()->RecordMetrics(true);
+
+    histogram_tester()->ExpectTotalCount(kTranslateTranslationType, 2);
+    histogram_tester()->ExpectBucketCount(
+        kTranslateTranslationType, TranslationType::kAutomaticTranslationByPref,
+        1);
+    histogram_tester()->ExpectBucketCount(kTranslateTranslationType,
+                                          expected_manual_translation_type, 1);
+    histogram_tester()->ExpectTotalCount(kTranslateTranslationStatus, 2);
+    histogram_tester()->ExpectBucketCount(
+        kTranslateTranslationStatus,
+        TranslationStatus::kRevertedAutomaticTranslation, 1);
+    histogram_tester()->ExpectBucketCount(
+        kTranslateTranslationStatus, expected_manual_translation_status, 1);
+
+    CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
+                                  TranslateState::kTranslatedNoUI, 2, 1);
+    CheckTranslateErrors(TranslateErrors::NONE, 0);
+  }
+
   void CheckTranslateStateHistograms(TranslateState expected_initial_state,
                                      TranslateState expected_final_state,
                                      int expected_num_translations,
@@ -413,7 +520,8 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   translate_metrics_logger()->LogUIInteraction(UIInteraction::kTranslate);
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   test_clock.Advance(translation_delay1);
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
@@ -441,7 +549,8 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   translate_metrics_logger()->LogUIInteraction(UIInteraction::kTranslate);
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   test_clock.Advance(translation_delay2);
   translate_metrics_logger()->LogTranslationFinished(false,
                                                      TranslateErrors::NETWORK);
@@ -451,7 +560,8 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   translate_metrics_logger()->LogUIInteraction(UIInteraction::kTranslate);
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   test_clock.Advance(translation_delay3);
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
@@ -524,7 +634,8 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
   translate_metrics_logger()->LogInitialState();
   translate_metrics_logger()->LogUIChange(true);
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
   translate_metrics_logger()->LogReversion();
@@ -692,79 +803,62 @@ TEST_F(TranslateMetricsLoggerImplTest,
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
-  // Simulate a page load where the user translates a page and it is successful.
-  translate_metrics_logger()->LogInitialState();
+  // Simulate a page load where the user translates a page via the Translate UI
+  // and it is successful.
+  SimulateAndCheckManualTranslation(
+      false, true, TranslateErrors::NONE,
+      TranslationType::kManualUiInitialTranslation,
+      TranslationStatus::kSuccessFromManualUiTranslation);
 
-  translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
-  translate_metrics_logger()->LogTranslationFinished(true,
-                                                     TranslateErrors::NONE);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kSuccessFromManualTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
-                                TranslateState::kTranslatedNoUI, 1, 0);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
-
-  // Simulate a failed translation with an error.
+  // Simulate a page load where the user translates a page via the Context Menu
+  // and it is successful.
   ResetTest();
-  translate_metrics_logger()->LogInitialState();
+  SimulateAndCheckManualTranslation(
+      true, true, TranslateErrors::NONE,
+      TranslationType::kManualContextMenuInitialTranslation,
+      TranslationStatus::kSuccessFromManualContextMenuTranslation);
 
-  translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
-  translate_metrics_logger()->LogTranslationFinished(false,
-                                                     TranslateErrors::NETWORK);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithErrorManualTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
-                                TranslateState::kNotTranslatedNoUI, 0, 0);
-  CheckTranslateErrors(TranslateErrors::NETWORK, 1);
-
-  // Simulate a failed translation without an error.
+  // Simulate a failed manual translation via the Translate UI with an error.
   ResetTest();
-  translate_metrics_logger()->LogInitialState();
+  SimulateAndCheckManualTranslation(
+      false, false, TranslateErrors::NETWORK,
+      TranslationType::kManualUiInitialTranslation,
+      TranslationStatus::kFailedWithErrorManualUiTranslation);
 
-  translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
-  translate_metrics_logger()->LogTranslationFinished(false,
-                                                     TranslateErrors::NONE);
+  // Simulate a failed manual translation via the Context Menu with an error.
+  ResetTest();
+  SimulateAndCheckManualTranslation(
+      true, false, TranslateErrors::NETWORK,
+      TranslationType::kManualContextMenuInitialTranslation,
+      TranslationStatus::kFailedWithErrorManualContextMenuTranslation);
 
-  translate_metrics_logger()->RecordMetrics(true);
+  // Simulate a failed manualtranslation via the Translate UI without an error.
+  ResetTest();
+  SimulateAndCheckManualTranslation(
+      false, false, TranslateErrors::NONE,
+      TranslationType::kManualUiInitialTranslation,
+      TranslationStatus::kFailedWithNoErrorManualUiTranslation);
 
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithNoErrorManualTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
-                                TranslateState::kNotTranslatedNoUI, 0, 0);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
+  // Simulate a failed manualtranslation via the Context Menu without an error.
+  ResetTest();
+  SimulateAndCheckManualTranslation(
+      true, false, TranslateErrors::NONE,
+      TranslationType::kManualContextMenuInitialTranslation,
+      TranslationStatus::kFailedWithNoErrorManualContextMenuTranslation);
 
   // Simulate a translation that does not finish.
   ResetTest();
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
 
   translate_metrics_logger()->RecordMetrics(true);
 
   histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
+      kTranslateTranslationType, TranslationType::kManualUiInitialTranslation,
+      1);
   histogram_tester()->ExpectUniqueSample(
       kTranslateTranslationStatus, TranslationStatus::kTranslationAbandoned, 1);
 
@@ -778,11 +872,13 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationFinished(false,
                                                      TranslateErrors::NETWORK);
 
@@ -790,15 +886,16 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
 
   histogram_tester()->ExpectTotalCount(kTranslateTranslationType, 2);
   histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
+      kTranslateTranslationType, TranslationType::kManualUiInitialTranslation,
+      1);
   histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualReTranslation, 1);
+      kTranslateTranslationType, TranslationType::kManualUiReTranslation, 1);
   histogram_tester()->ExpectTotalCount(kTranslateTranslationStatus, 2);
   histogram_tester()->ExpectBucketCount(kTranslateTranslationStatus,
                                         TranslationStatus::kNewTranslation, 1);
   histogram_tester()->ExpectBucketCount(
       kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithErrorManualTranslation, 1);
+      TranslationStatus::kFailedWithErrorManualUiTranslation, 1);
 
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kTranslatedNoUI, 1, 0);
@@ -810,9 +907,11 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
 
@@ -820,13 +919,14 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
 
   histogram_tester()->ExpectTotalCount(kTranslateTranslationType, 2);
   histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
+      kTranslateTranslationType, TranslationType::kManualUiInitialTranslation,
+      1);
   histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualReTranslation, 1);
+      kTranslateTranslationType, TranslationType::kManualUiReTranslation, 1);
   histogram_tester()->ExpectTotalCount(kTranslateTranslationStatus, 2);
   histogram_tester()->ExpectBucketCount(
       kTranslateTranslationStatus,
-      TranslationStatus::kSuccessFromManualTranslation, 1);
+      TranslationStatus::kSuccessFromManualUiTranslation, 1);
   histogram_tester()->ExpectBucketCount(kTranslateTranslationStatus,
                                         TranslationStatus::kNewTranslation, 1);
 
@@ -940,39 +1040,21 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
                                 TranslateState::kNotTranslatedNoUI, 0, 0);
   CheckTranslateErrors(TranslateErrors::NONE, 0);
 
-  // Simulate a page that is repeatedly translated and then reverted.
+  // Simulate a page that is repeatedly manually translated via the Translate UI
+  // and then reverted.
   ResetTest();
+  SimulateAndCheckRepeatedManualTranslationsAndReversions(
+      100, false, TranslationType::kManualUiInitialTranslation,
+      TranslationType::kManualUiReTranslation,
+      TranslationStatus::kRevertedManualUiTranslation);
 
-  int num_translations_and_reversions = 100;
-
-  translate_metrics_logger()->LogInitialState();
-
-  for (int i = 0; i < num_translations_and_reversions; i++) {
-    translate_metrics_logger()->LogTranslationStarted(
-        translate_metrics_logger()->GetNextManualTranslationType());
-    translate_metrics_logger()->LogTranslationFinished(true,
-                                                       TranslateErrors::NONE);
-    translate_metrics_logger()->LogReversion();
-  }
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectTotalCount(kTranslateTranslationType,
-                                       num_translations_and_reversions);
-  histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
-  histogram_tester()->ExpectBucketCount(kTranslateTranslationType,
-                                        TranslationType::kManualReTranslation,
-                                        num_translations_and_reversions - 1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslateTranslationStatus,
-      TranslationStatus::kRevertedManualTranslation,
-      num_translations_and_reversions);
-
-  CheckTranslateStateHistograms(
-      TranslateState::kNotTranslatedNoUI, TranslateState::kNotTranslatedNoUI,
-      num_translations_and_reversions, num_translations_and_reversions);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
+  // Simulate a page that is repeatedly manually translated via the Context Menu
+  // and then reverted.
+  ResetTest();
+  SimulateAndCheckRepeatedManualTranslationsAndReversions(
+      100, true, TranslationType::kManualContextMenuInitialTranslation,
+      TranslationType::kManualContextMenuReTranslation,
+      TranslationStatus::kRevertedManualContextMenuTranslation);
 
   // Simulates a page that is automatically translated by pref then reverted.
   ResetTest();
@@ -998,40 +1080,18 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {
   CheckTranslateErrors(TranslateErrors::NONE, 0);
 
   // Simulates a page that is automatically translated, then reverted, and
-  // finally manually translated.
+  // finally manually translated via either the Translate UI.
   ResetTest();
-  translate_metrics_logger()->LogTranslationStarted(
-      TranslationType::kAutomaticTranslationByPref);
-  translate_metrics_logger()->LogInitialState();
-  translate_metrics_logger()->LogTranslationFinished(true,
-                                                     TranslateErrors::NONE);
+  SimulateAndCheckAutomaticThenManualTranslation(
+      false, TranslationType::kManualUiReTranslation,
+      TranslationStatus::kSuccessFromManualUiTranslation);
 
-  translate_metrics_logger()->LogReversion();
-
-  translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
-  translate_metrics_logger()->LogTranslationFinished(true,
-                                                     TranslateErrors::NONE);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectTotalCount(kTranslateTranslationType, 2);
-  histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kAutomaticTranslationByPref,
-      1);
-  histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualReTranslation, 1);
-  histogram_tester()->ExpectTotalCount(kTranslateTranslationStatus, 2);
-  histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationStatus,
-      TranslationStatus::kRevertedAutomaticTranslation, 1);
-  histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationStatus,
-      TranslationStatus::kSuccessFromManualTranslation, 1);
-
-  CheckTranslateStateHistograms(TranslateState::kTranslatedNoUI,
-                                TranslateState::kTranslatedNoUI, 2, 1);
-  CheckTranslateErrors(TranslateErrors::NONE, 0);
+  // Simulates a page that is automatically translated, then reverted, and
+  // finally manually translated via either the Context Menu
+  ResetTest();
+  SimulateAndCheckAutomaticThenManualTranslation(
+      true, TranslationType::kManualContextMenuReTranslation,
+      TranslationStatus::kSuccessFromManualContextMenuTranslation);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTranslationLanguages) {
@@ -1057,7 +1117,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationLanguages) {
 
     for (int i = 0; i < test.num_translations; ++i) {
       translate_metrics_logger()->LogTranslationStarted(
-          translate_metrics_logger()->GetNextManualTranslationType());
+          translate_metrics_logger()->GetNextManualTranslationType(
+              /*is_context_menu_initiated_translation=*/false));
       translate_metrics_logger()->LogTranslationFinished(true,
                                                          TranslateErrors::NONE);
     }
@@ -1119,7 +1180,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateErrors) {
   // Simulates the translations with the predefined errors.
   for (const auto& test : kTests) {
     translate_metrics_logger()->LogTranslationStarted(
-        translate_metrics_logger()->GetNextManualTranslationType());
+        translate_metrics_logger()->GetNextManualTranslationType(
+            /*is_context_menu_initiated_translation=*/false));
     translate_metrics_logger()->LogTranslationFinished(
         test.was_translation_successful, test.error_type);
   }
@@ -1128,22 +1190,23 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateErrors) {
 
   histogram_tester()->ExpectTotalCount(kTranslateTranslationType, 12);
   histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualInitialTranslation, 1);
+      kTranslateTranslationType, TranslationType::kManualUiInitialTranslation,
+      1);
   histogram_tester()->ExpectBucketCount(
-      kTranslateTranslationType, TranslationType::kManualReTranslation, 11);
+      kTranslateTranslationType, TranslationType::kManualUiReTranslation, 11);
 
   histogram_tester()->ExpectTotalCount(kTranslateTranslationStatus, 12);
   histogram_tester()->ExpectBucketCount(
       kTranslateTranslationStatus,
-      TranslationStatus::kSuccessFromManualTranslation, 1);
+      TranslationStatus::kSuccessFromManualUiTranslation, 1);
   histogram_tester()->ExpectBucketCount(kTranslateTranslationStatus,
                                         TranslationStatus::kNewTranslation, 3);
   histogram_tester()->ExpectBucketCount(
       kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithNoErrorManualTranslation, 2);
+      TranslationStatus::kFailedWithNoErrorManualUiTranslation, 2);
   histogram_tester()->ExpectBucketCount(
       kTranslateTranslationStatus,
-      TranslationStatus::kFailedWithErrorManualTranslation, 6);
+      TranslationStatus::kFailedWithErrorManualUiTranslation, 6);
 
   // We expect to capture the first non-NONE value, and the total number of
   // non-NONE errors.
@@ -1163,7 +1226,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslateState) {
   translate_metrics_logger()->LogInitialState();
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
   translate_metrics_logger()->LogUIChange(true);
@@ -1219,7 +1283,8 @@ TEST_F(TranslateMetricsLoggerImplTest, TrackTimeTranslatedAndNotTranslated) {
 
   // Translate the page (while still in the background).
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
 
@@ -1256,7 +1321,8 @@ TEST_F(TranslateMetricsLoggerImplTest,
   // Translation starts, but takes a while. We should count this time while the
   // translation is in progress as "not translated".
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
 
   test_clock.Advance(delay2);
 
@@ -1352,7 +1418,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
   translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   test_clock.Advance(default_delay);
   translate_metrics_logger()->LogTranslationFinished(true,
                                                      TranslateErrors::NONE);
@@ -1367,7 +1434,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
   translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   test_clock.Advance(default_delay);
   translate_metrics_logger()->LogTranslationFinished(false,
                                                      TranslateErrors::NETWORK);
@@ -1382,7 +1450,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
   translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
 
   translate_metrics_logger()->LogTranslationStarted(
-      translate_metrics_logger()->GetNextManualTranslationType());
+      translate_metrics_logger()->GetNextManualTranslationType(
+          /*is_context_menu_initiated_translation=*/false));
   test_clock.Advance(default_delay);
 
   translate_metrics_logger()->RecordMetrics(true);
@@ -1404,7 +1473,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
 
   for (const auto& test : kTests) {
     translate_metrics_logger()->LogTranslationStarted(
-        translate_metrics_logger()->GetNextManualTranslationType());
+        translate_metrics_logger()->GetNextManualTranslationType(
+            /*is_context_menu_initiated_translation=*/false));
     test_clock.Advance(test.time_to_translate);
     translate_metrics_logger()->LogTranslationFinished(
         test.translate_error_type == TranslateErrors::NONE,

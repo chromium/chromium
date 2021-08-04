@@ -81925,25 +81925,59 @@ Full version information for the fingerprint enum values:
 
 <enum name="TranslationStatus">
   <int value="0" label="Uninitialized"/>
-  <int value="1" label="Succeeded, from manual translation"/>
+  <int value="1"
+      label="Deprecated 07/2021. Succeeded, from manual translation"/>
   <int value="2" label="Succeeded, automatic translation by user preference"/>
   <int value="3" label="Succeeded, automatic translation by link"/>
-  <int value="4" label="Reverted by user, manual translation"/>
+  <int value="4"
+      label="Deprecated 07/2021. Reverted by user, manual translation"/>
   <int value="5" label="Reverted by user, automatic translation"/>
   <int value="6" label="New translation requested by user"/>
   <int value="7" label="Abandoned"/>
-  <int value="8" label="Failed with no error, manual translation"/>
+  <int value="8"
+      label="Deprecated 07/2021. Failed with no error, manual translation"/>
   <int value="9" label="Failed with no error, automatic translation"/>
-  <int value="10" label="Failed with an error, manual translation"/>
+  <int value="10"
+      label="Deprecated 07/2021. Failed with an error, manual translation"/>
   <int value="11" label="Failed with an error, automatic translation"/>
+  <int value="12" label="Succeeded, from manual translation from Translate UI"/>
+  <int value="13"
+      label="Reverted by user, manual translation from Translate UI"/>
+  <int value="14"
+      label="Failed with no error, manual translation from Translate UI"/>
+  <int value="15"
+      label="Failed with an error, manual translation from Translate UI"/>
+  <int value="16" label="Succeeded, from manual translation from Context Menu"/>
+  <int value="17"
+      label="Reverted by user, manual translation from Context Menu"/>
+  <int value="18"
+      label="Failed with no error, manual translation from Context Menu"/>
+  <int value="19"
+      label="Failed with an error, manual translation from Context Menu"/>
 </enum>
 
 <enum name="TranslationType">
   <int value="0" label="Uninitialized"/>
-  <int value="1" label="Manual translation, first translation of page load"/>
-  <int value="2" label="Manual translation, after page was already translated"/>
+  <int value="1"
+      label="Deprecated 07/2021. Manual translation, first translation of
+             page load"/>
+  <int value="2"
+      label="Deprecated 07/2021. Manual translation, after page was already
+             translated"/>
   <int value="3" label="Automatic translation by user preference"/>
   <int value="4" label="Automatic translation by link"/>
+  <int value="5"
+      label="Manual translation from Translate UI, first translation of page
+             load"/>
+  <int value="6"
+      label="Manual translation from Translate UI, after page was already
+             translated"/>
+  <int value="7"
+      label="Manual translation from Context Menu, first translation of page
+             load"/>
+  <int value="8"
+      label="Manual translation Context Menu, after page was already
+             translated"/>
 </enum>
 
 <enum name="TrendingTileEvent">
