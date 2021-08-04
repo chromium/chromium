@@ -180,6 +180,11 @@ void SetDefaultFolder(PrefService* prefs,
       folder_name);
 }
 
+void ClearDefaultFolder(PrefService* prefs,
+                        const std::string& service_provider) {
+  SetDefaultFolder(prefs, service_provider, std::string(), std::string());
+}
+
 std::string GetDefaultFolderId(PrefService* prefs,
                                const std::string& service_provider) {
   auto folder_id = prefs->GetString(
@@ -191,13 +196,16 @@ std::string GetDefaultFolderLink(PrefService* prefs,
                                  const std::string& service_provider) {
   auto folder_id = GetDefaultFolderId(prefs, service_provider);
   DCHECK_EQ(service_provider, kFileSystemServiceProviderPrefNameBox);
-  return BoxApiCallFlow::MakeUrlToShowFolder(folder_id).spec();
+  std::string url = BoxApiCallFlow::MakeUrlToShowFolder(folder_id).spec();
+  DCHECK_EQ(url.empty(), folder_id.empty());
+  return url;
 }
 
 std::string GetDefaultFolderName(PrefService* prefs,
                                  const std::string& service_provider) {
-  return prefs->GetString(
+  std::string name = prefs->GetString(
       GetPrefPath(kUploadFolderNamePrefPathTemplate, service_provider));
+  return name.empty() ? kUploadFolderDefaultName : name;
 }
 
 void SetFileSystemAccountInfo(PrefService* prefs,

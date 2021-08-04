@@ -220,6 +220,7 @@ void StartFileSystemConnectorSigninExperienceForSettingsPage(
 // Clear authentication tokens and stored account info.
 bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
                                            PrefService* prefs) {
+  ClearDefaultFolder(prefs, settings.service_provider);
   return ClearFileSystemOAuth2Tokens(prefs, settings.service_provider) &&
          ClearFileSystemAccountInfo(prefs, settings.service_provider);
 }
@@ -247,12 +248,11 @@ absl::optional<AccountInfo> GetFileSystemConnectorLinkedAccountInfo(
   AccountInfo account_info;
   account_info.account_name = *account_name;
   account_info.account_login = *account_login;
-  account_info.folder_link = GetDefaultFolderLink(prefs, provider);
   account_info.folder_name = GetDefaultFolderName(prefs, provider);
+  account_info.folder_link = GetDefaultFolderLink(prefs, provider);
   DCHECK(!account_info.account_name.empty());
   DCHECK(!account_info.account_login.empty());
   DCHECK(!account_info.folder_name.empty());
-  DCHECK(!account_info.folder_link.empty());
   return absl::make_optional<AccountInfo>(std::move(account_info));
 }
 

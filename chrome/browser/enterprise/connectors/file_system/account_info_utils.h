@@ -43,12 +43,14 @@ bool GetFileSystemOAuth2Tokens(PrefService* prefs,
                                std::string* access_token,
                                std::string* refresh_token);
 
-// Stores/retrieves the default folder id and name stored for the given service
-// provider.
+// Stores/retrieves/clears the default folder id and name stored for the given
+// service provider.
 void SetDefaultFolder(PrefService* prefs,
                       const std::string& service_provider,
                       std::string folder_id,
                       std::string folder_name);
+void ClearDefaultFolder(PrefService* prefs,
+                        const std::string& service_provider);
 std::string GetDefaultFolderId(PrefService* prefs,
                                const std::string& service_provider);
 std::string GetDefaultFolderLink(PrefService* prefs,
