@@ -140,7 +140,9 @@ bool AutotestDesksApi::CreateNewDesk() {
   if (!DesksController::Get()->CanCreateDesks())
     return false;
 
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  // Use |kKeyboard| as a source instead of |kButton| so the new desk's name is
+  // set to default.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
   return true;
 }
 

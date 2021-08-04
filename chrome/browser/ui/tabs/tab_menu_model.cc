@@ -87,9 +87,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   if (ExistingWindowSubMenuModel::ShouldShowSubmenu(tab_strip->profile())) {
     // Create submenu with existing windows
-    add_to_existing_window_submenu_ =
-        std::make_unique<ExistingWindowSubMenuModel>(
-            delegate(), tab_menu_model_delegate_, tab_strip, index);
+    add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
+        delegate(), tab_menu_model_delegate_, tab_strip, index);
     AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),

@@ -2250,6 +2250,8 @@ static_library("ui") {
       "web_applications/file_stream_data_pipe_getter.h",
 
       # On chromeos, file manager extension handles the file open/save dialog.
+      "tabs/existing_window_sub_menu_model_chromeos.cc",
+      "tabs/existing_window_sub_menu_model_chromeos.h",
       "views/select_file_dialog_extension.cc",
       "views/select_file_dialog_extension.h",
       "views/select_file_dialog_extension_factory.cc",

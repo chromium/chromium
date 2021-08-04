@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -36,6 +37,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // ui::SimpleMenuModel
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
+  const gfx::FontList* GetLabelFontListAt(int index) const override;
 
   // ui::SimpleMenuModel::Delegate
   bool IsCommandIdChecked(int command_id) const override;
@@ -48,6 +50,10 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
   ~ExistingBaseSubMenuModel() override;
 
+  const base::flat_map<int, int>& command_id_to_target_index_for_testing() {
+    return command_id_to_target_index_;
+  }
+
  protected:
   struct MenuItemInfo {
     explicit MenuItemInfo(const std::u16string menu_text);
@@ -56,12 +62,17 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     ~MenuItemInfo();
 
     // The text for an entry in the sub menu.
-    const std::u16string text;
+    std::u16string text;
 
     // The optional image for an entry in the sub menu.
     absl::optional<ui::ImageModel> image;
 
     bool may_have_mnemonics = true;
+
+    // The target index for this item. E.g. tab group index or browser
+    // index. If this field is not provided then the entry for this item will be
+    // a title and have no corresponding command.
+    absl::optional<int> target_index;
   };
 
   // Helper method to create consistent submenus.|new_text| is the label to add
@@ -69,6 +80,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // a vector of text and optionally images for adding the tab to an existing
   // object model.
   void Build(int new_text, std::vector<MenuItemInfo> menu_item_infos);
+
+  // Clears the MenuModel and |command_id_to_target_index_|.
+  void ClearMenu();
 
   // Helper method for checking if the command is to add a tab to a new object
   // model.
@@ -81,8 +95,8 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   virtual void ExecuteNewCommand(int event_flags);
 
   // Performs the action for adding the tab to an existing object model (e.g.
-  // group or window).
-  virtual void ExecuteExistingCommand(int command_index);
+  // group or window) at |target_index|.
+  virtual void ExecuteExistingCommand(int target_index);
 
   // Maximum number of entries for a submenu.
   static constexpr int max_size = 200;
@@ -94,10 +108,15 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   int GetContextIndex() const;
 
  private:
-  ui::SimpleMenuModel::Delegate* parent_delegate_;
-  TabStripModel* model_;
-  content::WebContents* context_contents_;
-  int min_command_id_;
+  ui::SimpleMenuModel::Delegate* const parent_delegate_;
+  TabStripModel* const model_;
+  const content::WebContents* const context_contents_;
+  const int min_command_id_;
+
+  // Stores a mapping from a menu item's command id to its target index (e.g.
+  // tab-group index or browser index).
+  base::flat_map<int, int> command_id_to_target_index_;
+
   DISALLOW_COPY_AND_ASSIGN(ExistingBaseSubMenuModel);
 };
 
