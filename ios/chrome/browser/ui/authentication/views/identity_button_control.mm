@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 
-#import <MaterialComponents/MaterialRipple.h>
-
 #import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
@@ -33,8 +31,6 @@ const CGFloat kArrowDownMargin = 12.;
 @interface IdentityButtonControl ()
 
 @property(nonatomic, strong) IdentityView* identityView;
-// Ripple effect when the user starts or stop a touch in the view.
-@property(nonatomic, strong) MDCRippleView* rippleView;
 // Image View for the arrow (down or left according to |style|, see the
 // |arrowDirection| property), letting the user know that more profiles can be
 // selected.
@@ -50,14 +46,8 @@ const CGFloat kArrowDownMargin = 12.;
     self.accessibilityIdentifier = kIdentityButtonControlIdentifier;
     self.layer.cornerRadius = kIdentityButtonControlRadius;
     self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    // Adding view elements inside.
-    // Ink view.
-    _rippleView = [[MDCRippleView alloc] initWithFrame:CGRectZero];
-    _rippleView.layer.cornerRadius = kIdentityButtonControlRadius;
-    _rippleView.rippleStyle = MDCRippleStyleBounded;
-    _rippleView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_rippleView];
 
+    // Adding view elements inside.
     // Down or right arrow.
     _arrowImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     _arrowImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -161,24 +151,15 @@ const CGFloat kArrowDownMargin = 12.;
   self.arrowImageView.tintColor = tintColor;
 }
 
-#pragma mark - UIResponder
+- (void)setHighlighted:(BOOL)highlighted {
+  [super setHighlighted:highlighted];
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
-  [super touchesBegan:touches withEvent:event];
-  CGPoint location = [self locationFromTouches:touches];
-  [self.rippleView beginRippleTouchDownAtPoint:location
-                                      animated:YES
-                                    completion:nil];
-}
-
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-  [super touchesEnded:touches withEvent:event];
-  [self.rippleView beginRippleTouchUpAnimated:YES completion:nil];
-}
-
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
-  [super touchesCancelled:touches withEvent:event];
-  [self.rippleView beginRippleTouchUpAnimated:YES completion:nil];
+  if (highlighted) {
+    self.backgroundColor = [UIColor colorNamed:kGrey300Color];
+  } else if (self.identityViewStyle != IdentityViewStyleConsistency) {
+    // Background color for the consistency web sign-in is reset manually.
+    self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  }
 }
 
 @end

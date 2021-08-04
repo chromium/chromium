@@ -80,6 +80,11 @@ constexpr CGFloat kContentSpacing = 16.;
 
 #pragma mark - UIViewController
 
+- (void)viewWillAppear:(BOOL)animated {
+  self.identityButtonControl.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Set the navigation title in the left bar button item to have left
