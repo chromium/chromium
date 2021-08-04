@@ -858,11 +858,12 @@ public class FeedStream implements Stream {
         while (i < newContentList.size()) {
             NtpListContentManager.FeedContent content = newContentList.get(i);
 
-            // If this is an existing content, moves it to new position.
+            // If this is an existing content, moves it to new position, offset by header count.
             if (existingContentMap.containsKey(content.getKey())) {
                 hasContentChange = true;
                 mContentManager.moveContent(
-                        mContentManager.findContentPositionByKey(content.getKey()), i);
+                        mContentManager.findContentPositionByKey(content.getKey()),
+                        i + mHeaderCount);
                 ++i;
                 continue;
             }
