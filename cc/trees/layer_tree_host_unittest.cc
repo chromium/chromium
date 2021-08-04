@@ -8605,8 +8605,9 @@ class LayerTreeHostTestImageAnimationSynchronousSchedulingSoftwareDraw
   }
 };
 
-MULTI_THREAD_TEST_F(
-    LayerTreeHostTestImageAnimationSynchronousSchedulingSoftwareDraw);
+// TODO(crbug.com/1092110): Flaky on TSan bot.
+// MULTI_THREAD_TEST_F(
+//     LayerTreeHostTestImageAnimationSynchronousSchedulingSoftwareDraw);
 
 class LayerTreeHostTestImageDecodingHints : public LayerTreeHostTest {
  public:
