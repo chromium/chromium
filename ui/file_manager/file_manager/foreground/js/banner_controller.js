@@ -280,3 +280,28 @@ export function isAllowedVolume(currentVolume, allowedVolumeTypes) {
   }
   return false;
 }
+
+/**
+ * Checks if the current sizeStats are below the threshold required to trigger
+ * the banner to show.
+ * @param {!Banner.DiskThresholdMinRatio|!Banner.DiskThresholdMinSize|undefined}
+ *     threshold
+ * @param {?chrome.fileManagerPrivate.MountPointSizeStats|undefined} sizeStats
+ * @returns {boolean}
+ */
+export function isBelowThreshold(threshold, sizeStats) {
+  if (!threshold || !sizeStats) {
+    return false;
+  }
+  if (!sizeStats.remainingSize || !sizeStats.totalSize) {
+    return false;
+  }
+  if (threshold.minSize < sizeStats.remainingSize) {
+    return false;
+  }
+  const currentRatio = sizeStats.remainingSize / sizeStats.totalSize;
+  if (threshold.minRatio < currentRatio) {
+    return false;
+  }
+  return true;
+}

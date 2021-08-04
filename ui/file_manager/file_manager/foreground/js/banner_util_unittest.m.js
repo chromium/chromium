@@ -8,7 +8,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
-import {isAllowedVolume} from './banner_controller.js';
+import {isAllowedVolume, isBelowThreshold} from './banner_controller.js';
 
 /** @type {!Array<!Banner.AllowedVolumeType>} */
 let allowedVolumeTypes = [];
@@ -28,6 +28,18 @@ function createAndSetVolumeInfo(volumeType, volumeId) {
   }
 
   return /** @type {!VolumeInfo} */ (new FakeVolumeInfo());
+}
+
+/**
+ * Creates a chrome.fileManagerPrivate.MountPointSizeStats type.
+ * @param {number} remainingSize
+ * @returns {!chrome.fileManagerPrivate.MountPointSizeStats}
+ */
+function createRemainingSizeStats(remainingSize) {
+  return {
+    totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+    remainingSize,
+  };
 }
 
 export function tearDown() {
@@ -115,4 +127,79 @@ export function testMultipleNoAllowedDocumentProviders() {
   ];
 
   assertFalse(isAllowedVolume(currentVolume, allowedVolumeTypes));
+}
+
+/**
+ * Test undefined types return false.
+ */
+export function testUndefinedThresholdAndSizeStats() {
+  const testMinSizeThreshold = {
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  };
+  const testMinRatioThreshold = {
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 0.1,
+  };
+  const testSizeStats = {
+    totalSize: 20 * 1024 * 1024 * 1024,     // 20 GB
+    remainingSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  };
+
+  assertFalse(isBelowThreshold(undefined, undefined));
+  assertFalse(isBelowThreshold(testMinSizeThreshold, undefined));
+  assertFalse(isBelowThreshold(testMinRatioThreshold, undefined));
+  assertFalse(isBelowThreshold(undefined, testSizeStats));
+}
+
+/**
+ * Test that below, equal to and above the minSize threshold returns correct
+ * results.
+ */
+export function testMinSizeReturnsCorrectly() {
+  const createMinSizeThreshold = (minSize) => ({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize,
+  });
+
+  // Remaining Size: 512 KB, Min Size: 1 GB
+  assertTrue(isBelowThreshold(
+      createMinSizeThreshold(1 * 1024 * 1024 * 1024 /* 1 GB */),
+      createRemainingSizeStats(512 * 1024 * 1024 /* 512 KB */)));
+
+  // Remaining Size: 1 GB, Min Size: 1 GB
+  assertTrue(isBelowThreshold(
+      createMinSizeThreshold(1 * 1024 * 1024 * 1024 /* 1 GB */),
+      createRemainingSizeStats(1 * 1024 * 1024 * 1024 /* 1 GB */)));
+
+  // Remaining Size: 2 GB, Min Size: 1 GB
+  assertFalse(isBelowThreshold(
+      createMinSizeThreshold(1 * 1024 * 1024 * 1024 /* 1 GB */),
+      createRemainingSizeStats(2 * 1024 * 1024 * 1024 /* 2 GB */)));
+}
+
+/**
+ * Test that below, equal to and above the minRatio threshold returns correct
+ * results.
+ */
+export function testMinRatioReturnsCorrectly() {
+  const createMinRatioThreshold = (minRatio) => ({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minRatio,
+  });
+
+  // Remaining Size Ratio: 0.1, Threshold: 0.2
+  assertTrue(isBelowThreshold(
+      createMinRatioThreshold(0.2),
+      createRemainingSizeStats(2 * 1024 * 1024 * 1024 /* 2 GB */)));
+
+  // Remaining Size Ratio: 0.1, Threshold: 0.1
+  assertTrue(isBelowThreshold(
+      createMinRatioThreshold(0.1),
+      createRemainingSizeStats(2 * 1024 * 1024 * 1024 /* 2 GB */)));
+
+  // Remaining Size Ratio: 0.1, Threshold: 0.05
+  assertFalse(isBelowThreshold(
+      createMinRatioThreshold(0.05),
+      createRemainingSizeStats(2 * 1024 * 1024 * 1024 /* 2 GB */)));
 }
