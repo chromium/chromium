@@ -330,6 +330,13 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
       {"red or", true, false},
       {"red ora", true, false},
       {"red oran", true, false},
+      // Verify that we can search by URL.
+      {"goog", true, false},
+      // Verify we can search by page title, even mismatching case.
+      {"code", true, true},
+      // Verify that we match if the input query spans cluster keywords,
+      // visit URLs, and visit titles.
+      {"goog code apples", true, false},
   };
 
   for (size_t i = 0; i < base::size(test_data); ++i) {
@@ -360,7 +367,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
             EXPECT_EQ(visits[0].annotated_visit.visit_row.visit_time,
                       GetHardcodedTestVisits()[1].visit_row.visit_time);
             EXPECT_EQ(visits[0].annotated_visit.url_row.title(),
-                      u"Github title");
+                      u"Code Storage Title");
             EXPECT_FALSE(
                 visits[0].annotated_visit.context_annotations.is_new_bookmark);
             EXPECT_TRUE(visits[0]
@@ -373,7 +380,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
             EXPECT_EQ(visits[1].annotated_visit.visit_row.visit_time,
                       GetHardcodedTestVisits()[0].visit_row.visit_time);
             EXPECT_EQ(visits[1].annotated_visit.url_row.title(),
-                      u"Google title");
+                      u"Search Engine Title");
             EXPECT_TRUE(
                 visits[1].annotated_visit.context_annotations.is_new_bookmark);
             EXPECT_FALSE(visits[1]
@@ -396,7 +403,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
             EXPECT_EQ(visits[0].annotated_visit.visit_row.visit_time,
                       GetHardcodedTestVisits()[1].visit_row.visit_time);
             EXPECT_EQ(visits[0].annotated_visit.url_row.title(),
-                      u"Github title");
+                      u"Code Storage Title");
             EXPECT_TRUE(cluster.keywords.empty());
           }
 

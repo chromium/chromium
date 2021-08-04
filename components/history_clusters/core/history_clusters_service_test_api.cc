@@ -19,7 +19,7 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       history::AnnotatedVisit visit;
       visit.url_row.set_id(1);
       visit.url_row.set_url(GURL("https://google.com/"));
-      visit.url_row.set_title(u"Google title");
+      visit.url_row.set_title(u"Search Engine Title");
       visit.visit_row.visit_id = 1;
       // Choose a recent time, as otherwise History will discard the visit.
       visit.visit_row.visit_time =
@@ -34,7 +34,7 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
       history::AnnotatedVisit visit;
       visit.url_row.set_id(2);
       visit.url_row.set_url(GURL("https://github.com/"));
-      visit.url_row.set_title(u"Github title");
+      visit.url_row.set_title(u"Code Storage Title");
       visit.visit_row.visit_id = 2;
       // Choose a recent time, as otherwise History will discard the visit.
       visit.visit_row.visit_time =

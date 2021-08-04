@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -21,9 +22,11 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
+#include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -185,6 +188,44 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   Callback callback_;
 };
 
+// Returns true if `find_nodes` matches `cluster`.
+// This is deliberately meant to closely mirror the History implementation..
+// TODO(tommycli): Merge with `URLDatabase::GetTextMatchesWithAlgorithm()`.
+bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
+                           const history::Cluster& cluster) {
+  query_parser::QueryWordVector find_in_words;
+
+  // All of the cluster's `keyword`s go into `find_in_words`.
+  // Each `keyword` may have multiple terms, so loop over them.
+  for (auto& keyword : cluster.keywords) {
+    query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
+                                                 &find_in_words);
+  }
+
+  // Also extract all of the visits' URLs and titles into `find_in_words`.
+  for (const auto& visit : cluster.scored_annotated_visits) {
+    GURL gurl = visit.annotated_visit.url_row.url();
+
+    std::u16string url_lower =
+        base::i18n::ToLower(base::UTF8ToUTF16(gurl.possibly_invalid_spec()));
+    query_parser::QueryParser::ExtractQueryWords(url_lower, &find_in_words);
+
+    if (gurl.is_valid()) {
+      // Decode punycode to match IDN.
+      std::u16string ascii = base::ASCIIToUTF16(gurl.host());
+      std::u16string utf = url_formatter::IDNToUnicode(gurl.host());
+      if (ascii != utf)
+        query_parser::QueryParser::ExtractQueryWords(utf, &find_in_words);
+    }
+
+    std::u16string title_lower =
+        base::i18n::ToLower(visit.annotated_visit.url_row.title());
+    query_parser::QueryParser::ExtractQueryWords(title_lower, &find_in_words);
+  }
+
+  return query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes);
+}
+
 // Filter `clusters` matching `query`. There are additional filters (e.g.
 // `max_time`) used when requesting `QueryClusters()`, but this function is only
 // responsible for matching `query`.
@@ -195,26 +236,17 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
     return clusters;
 
   // Extract query nodes from the query string.
-  query_parser::QueryNodeVector query_nodes;
+  query_parser::QueryNodeVector find_nodes;
   query_parser::QueryParser::ParseQueryNodes(
       base::UTF8ToUTF16(query),
-      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
+      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &find_nodes);
 
   std::vector<history::Cluster> matching_clusters;
   base::ranges::copy_if(clusters, std::back_inserter(matching_clusters),
-                        [&](const auto& cluster) {
-                          query_parser::QueryWordVector find_in_words;
-                          for (auto& keyword : cluster.keywords) {
-                            // Each `keyword` may itself have multiple terms
-                            // that we need to extract and append to
-                            // `find_in_words`.
-                            query_parser::QueryParser::ExtractQueryWords(
-                                base::i18n::ToLower(keyword), &find_in_words);
-                          }
-
-                          return query_parser::QueryParser::DoesQueryMatch(
-                              find_in_words, query_nodes);
+                        [&find_nodes](const history::Cluster& cluster) {
+                          return DoesQueryMatchCluster(find_nodes, cluster);
                         });
+
   return matching_clusters;
 }
 

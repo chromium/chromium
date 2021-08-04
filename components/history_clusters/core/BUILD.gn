@@ -38,6 +38,7 @@ static_library("core") {
     "//components/history_clusters/core/proto",
     "//components/keyed_service/core",
     "//components/query_parser",
+    "//components/url_formatter",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
