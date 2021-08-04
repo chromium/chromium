@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 
 #include <algorithm>
+#include <cwctype>
 #include <memory>
 #include <string>
 
 #include "base/containers/mru_cache.h"
-#include "base/cxx17_backports.h"
+#include "base/i18n/break_iterator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -40,6 +41,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -143,6 +145,158 @@ class SolidLabel : public views::Label {
 BEGIN_METADATA(SolidLabel, views::Label)
 END_METADATA
 
+// Two-line label that is used to render the title. A standard label except for
+// the addition of a special method used to elide filenames (which requires
+// access to CreateRenderText(), which is protected).
+// TODO(dfried): remove when gfx::RenderText supports multi-line middle
+// elision.
+class TwoLineLabel : public views::Label {
+ public:
+  using Label::Label;
+
+  // Does a multiline middle-elision suitable only for filenames, since
+  // views::Label (and gfx::RenderText) do not yet support middle-elision.
+  std::u16string TruncateFilenameToTwoLines(const std::u16string& text) const {
+    // Create a temporary RenderText to do our calculations with. We'll seed it
+    // with this Label's current style.
+    auto render_text = CreateRenderText();
+    render_text->SetMaxLines(0);
+    render_text->SetMultiline(false);
+    render_text->SetWhitespaceElision(true);
+    gfx::Rect rect = GetContentsBounds();
+    rect.Inset(-gfx::ShadowValue::GetMargin(GetShadows()));
+    render_text->SetText(text);
+    render_text->SetDisplayRect(rect);
+
+    // Set our temporary RenderText to the unelided text and elide the start of
+    // the string to give us the second line of the label.
+    render_text->SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
+    std::u16string second_line = render_text->GetDisplayText();
+
+    // If there is no elision, then the text will fit on a single line and
+    // there's nothing to do.
+    const std::u16string& display_text = render_text->GetDisplayText();
+    if (display_text == text)
+      return text;
+    // If there's not enough space to display even a single character, there is
+    // also nothing to do; the result needs to be empty.
+    if (display_text.empty())
+      return display_text;
+
+    // Since we truncated, expect the string to start with ellipsis.
+    DCHECK_EQ(gfx::kEllipsisUTF16[0], second_line[0]);
+
+    // Calculate the first line by aggressively truncating the text. This may
+    // cut the string somewhere other than a word boundary, but for very long
+    // filenames, it's probably best to fit as much of the name on the card as
+    // possible, even if we sacrifice a small amount of readability.
+    render_text->SetElideBehavior(gfx::ElideBehavior::TRUNCATE);
+    const std::u16string first_line = render_text->GetDisplayText();
+    const size_t total_length = first_line.length() + second_line.length();
+
+    // Let's figure out where to actually start the second line. Skip the
+    // ellipsis (we can't avoid generating one if we elided the line).
+    base::i18n::BreakIterator it(second_line,
+                                 base::i18n::BreakIterator::BREAK_CHARACTER);
+    DCHECK(it.Init());
+    DCHECK(it.Advance());
+
+    // It's possible that we have a substring that overlaps between the lines.
+    // Remove graphemes from the start of the second string until the length of
+    // the combined string is no greater than the original text.
+    //
+    // Note: It's critical that we always try to advance if we're not at a
+    // grapheme boundary so we don't accidentally (for example) remove the skin
+    // tone modifier for an emoji depicting a person. In theory, the first line
+    // should always end at a grapheme boundary, but checking to be safe won't
+    // hurt anything.
+    while ((total_length - it.pos() > text.length() ||
+            !it.IsGraphemeBoundary(it.pos())) &&
+           it.Advance()) {
+      // empty loop
+    }
+    const bool is_whole_string = (total_length - it.pos() == text.length());
+
+    // If we got the whole thing and there is a file extension and the dot
+    // separating the extension from the rest of the filename is in the
+    // overlapped region (i.e. the region that could go on either the first or
+    // second line) then we should preferably put the line break immediately
+    // before the extension. This solves some rendering problems when the
+    // filename is in an RTL language but the extension is in Latin characters.
+    size_t dot_adjustment = 0;
+    if (is_whole_string) {
+      std::u16string overlap = second_line.substr(0, it.pos());
+      // Note that this could theoretically cause a problem if there is a
+      // combining diacritic with the dot that precedes it but that's not how
+      // filenames work.
+      size_t dot_pos = overlap.find_last_of(u'.');
+      if (dot_pos > 0 && dot_pos != std::u16string::npos &&
+          dot_pos <= it.pos()) {
+        DCHECK_LE(dot_pos, first_line.length());
+        dot_adjustment = it.pos() - dot_pos;
+      }
+    }
+
+    // TODO(dfried): possibly handle the case where we chop a section with bidi
+    // delimiters out or split it between lines.
+
+    // If we didn't put the extension on its own line, eliminate whitespace
+    // from the start of the second line (it looks weird).
+    if (!dot_adjustment) {
+      while (std::iswspace(second_line[it.pos()]) && it.Advance()) {
+        // Empty loop.
+      }
+    }
+
+    // Reassemble the string, starting the second line with an ellipsis if we
+    // lost any non-whitespace characters. Again, because the
+    // `break_adjustment` is only nonzero when we've intentionally put the
+    // filename on the second line, we're unlike to accidentally break in the
+    // middle of a grapheme.
+    std::u16string result =
+        first_line.substr(0, first_line.length() - dot_adjustment);
+    result.push_back(u'\n');
+
+    // If we're starting the second line with a file extension hint that the
+    // directionality of the text might change by using an FSI mark. Allowing
+    // the renderer to re-infer RTL-ness produces much better results in text
+    // rendering when an RTL filename has an ASCII extension.
+    //
+    // TODO(dfried): Currently we do put an FSI before an ellipsis; this
+    // results in the ellipsis being placed with the text that immediately
+    // follows it (making the point of elision more obvious). If the text
+    // following the cut is LTR it goes on the left, and if the text is RTL it
+    // goes on the right. Reconsider if/how we should set text direction
+    // following an ellipsis:
+    // - No FSI would cause the ellipsis to align with the preceding rather
+    //   than the following text. It would provide a bit more visual continuity
+    //   between lines, but might be confusing as to where the text picks back
+    //   up (as the next character might be on the opposite side of the line).
+    // - We could preserve elided directionality markers, but they could end up
+    //   aligning the ellipsis with text that is not present at all on the
+    //   label.
+    // - We could also force direction to match the start of the first line for
+    //   consistency but that could result in an ellipsis that matches neither
+    //   the preceding nor following text.
+    //
+    // TODO(dfried): move these declarations to rtl.h alongside e.g.
+    // base::i18n::kRightToLeftMark
+    constexpr char16_t kFirstStrongIsolateMark = u'\u2068';
+    constexpr char16_t kPopDirectionalIsolateMark = u'\u2069';
+    if (dot_adjustment || !is_whole_string)
+      result += kFirstStrongIsolateMark;
+    if (!is_whole_string)
+      result.push_back(gfx::kEllipsisUTF16[0]);
+    // Again, if `dot_adjustment` is nonzero, the resulting position should not
+    // break a grapheme (since it is the start of the extension).
+    result.append(second_line, it.pos() - dot_adjustment);
+    // If we added an FSI, we should bracket it with a PDI.
+    if (dot_adjustment || !is_whole_string)
+      result += kPopDirectionalIsolateMark;
+    return result;
+  }
+};
+
 }  // namespace
 
 // This view overlays and fades out an old version of the text of a label,
@@ -152,7 +306,7 @@ END_METADATA
 class TabHoverCardBubbleView::FadeLabel : public views::View {
  public:
   FadeLabel(int context, int num_lines) {
-    primary_label_ = AddChildView(std::make_unique<views::Label>(
+    primary_label_ = AddChildView(std::make_unique<TwoLineLabel>(
         std::u16string(), context, views::style::STYLE_PRIMARY));
     primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     primary_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
@@ -201,6 +355,12 @@ class TabHoverCardBubbleView::FadeLabel : public views::View {
 
   std::u16string GetText() const { return primary_label_->GetText(); }
 
+  // Returns a version of the text that's middle-elided on two lines; see
+  // TwoLineLabel::TruncateFilenameToTwoLines().
+  std::u16string TruncateFilenameToTwoLines(const std::u16string& text) const {
+    return primary_label_->TruncateFilenameToTwoLines(text);
+  }
+
  protected:
   // views::View:
   gfx::Size GetMaximumSize() const override {
@@ -232,7 +392,7 @@ class TabHoverCardBubbleView::FadeLabel : public views::View {
     }
   }
 
-  views::Label* primary_label_;
+  TwoLineLabel* primary_label_;
   SolidLabel* label_fading_out_;
   absl::optional<bool> was_filename_;
   double percent_ = 1.0;
@@ -620,8 +780,8 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   std::u16string domain;
   bool is_filename = false;
   if (domain_url.SchemeIsFile()) {
-    is_filename = true;
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
+    title = title_label_->TruncateFilenameToTwoLines(title);
   } else {
     if (domain_url.SchemeIsBlob()) {
       domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
