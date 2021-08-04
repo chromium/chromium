@@ -170,7 +170,8 @@ void MemoryCache::Remove(Resource* resource) {
   TRACE_EVENT1("blink", "MemoryCache::evict", "resource",
                resource->Url().GetString().Utf8());
 
-  ResourceMap* resources = resource_maps_.at(resource->CacheIdentifier());
+  ResourceMap* resources =
+      resource_maps_.DeprecatedAtOrEmptyValue(resource->CacheIdentifier());
   if (!resources)
     return;
 
@@ -196,11 +197,12 @@ void MemoryCache::RemoveInternal(ResourceMap* resource_map,
 bool MemoryCache::Contains(const Resource* resource) const {
   if (!resource || resource->Url().IsEmpty())
     return false;
-  const ResourceMap* resources = resource_maps_.at(resource->CacheIdentifier());
+  const ResourceMap* resources =
+      resource_maps_.DeprecatedAtOrEmptyValue(resource->CacheIdentifier());
   if (!resources)
     return false;
   KURL url = RemoveFragmentIdentifierIfNeeded(resource->Url());
-  MemoryCacheEntry* entry = resources->at(url);
+  MemoryCacheEntry* entry = resources->DeprecatedAtOrEmptyValue(url);
   return entry && resource == entry->GetResource();
 }
 
@@ -214,11 +216,12 @@ Resource* MemoryCache::ResourceForURL(const KURL& resource_url,
   if (!resource_url.IsValid() || resource_url.IsNull())
     return nullptr;
   DCHECK(!cache_identifier.IsNull());
-  const ResourceMap* resources = resource_maps_.at(cache_identifier);
+  const ResourceMap* resources =
+      resource_maps_.DeprecatedAtOrEmptyValue(cache_identifier);
   if (!resources)
     return nullptr;
-  MemoryCacheEntry* entry =
-      resources->at(RemoveFragmentIdentifierIfNeeded(resource_url));
+  MemoryCacheEntry* entry = resources->DeprecatedAtOrEmptyValue(
+      RemoveFragmentIdentifierIfNeeded(resource_url));
   if (!entry)
     return nullptr;
   return entry->GetResource();
