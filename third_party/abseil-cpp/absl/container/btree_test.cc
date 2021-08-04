@@ -595,7 +595,7 @@ void BtreeTest() {
   using V = typename remove_pair_const<typename T::value_type>::type;
   const std::vector<V> random_values = GenerateValuesWithSeed<V>(
       absl::GetFlag(FLAGS_test_values), 4 * absl::GetFlag(FLAGS_test_values),
-      testing::GTEST_FLAG(random_seed));
+      GTEST_FLAG_GET(random_seed));
 
   unique_checker<T, C> container;
 
@@ -619,7 +619,7 @@ void BtreeMultiTest() {
   using V = typename remove_pair_const<typename T::value_type>::type;
   const std::vector<V> random_values = GenerateValuesWithSeed<V>(
       absl::GetFlag(FLAGS_test_values), 4 * absl::GetFlag(FLAGS_test_values),
-      testing::GTEST_FLAG(random_seed));
+      GTEST_FLAG_GET(random_seed));
 
   multi_checker<T, C> container;
 

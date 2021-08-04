@@ -64,6 +64,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::base
     absl::status
     absl::core_headers
     absl::raw_logging_internal

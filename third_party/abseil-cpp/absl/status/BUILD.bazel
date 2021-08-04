@@ -78,6 +78,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     deps = [
         ":status",
+        "//absl/base",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "//absl/meta:type_traits",
@@ -96,6 +97,7 @@ cc_test(
         ":statusor",
         "//absl/base",
         "//absl/memory",
+        "//absl/strings",
         "//absl/types:any",
         "//absl/utility",
         "@com_google_googletest//:gtest_main",

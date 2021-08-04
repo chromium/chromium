@@ -361,7 +361,7 @@ TEST(Cord, StartsEndsWith) {
 }
 
 TEST(Cord, Subcord) {
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   const std::string s = RandomLowercaseString(&rng, 1024);
 
   absl::Cord a;
@@ -570,7 +570,7 @@ TEST(Cord, Flatten) {
   VerifyFlatten(absl::MakeFragmentedCord({"small ", "fragmented ", "cord"}));
 
   // Test with a cord that is longer than the largest flat buffer
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   VerifyFlatten(absl::Cord(RandomLowercaseString(&rng, 8192)));
 }
 
@@ -937,7 +937,7 @@ static void TestCompare(const absl::Cord& c, const absl::Cord& d,
 }
 
 TEST(Compare, ComparisonIsUnsigned) {
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   std::uniform_int_distribution<uint32_t> uniform_uint8(0, 255);
   char x = static_cast<char>(uniform_uint8(rng));
   TestCompare(
@@ -947,7 +947,7 @@ TEST(Compare, ComparisonIsUnsigned) {
 
 TEST(Compare, RandomComparisons) {
   const int kIters = 5000;
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
 
   int n = GetUniformRandomUpTo(&rng, 5000);
   absl::Cord a[] = {MakeExternalCord(n),
@@ -1082,7 +1082,7 @@ TEST(ConstructFromExternal, ReleaserInvoked) {
 }
 
 TEST(ConstructFromExternal, CompareContents) {
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
 
   for (int length = 1; length <= 2048; length *= 2) {
     std::string data = RandomLowercaseString(&rng, length);
@@ -1098,7 +1098,7 @@ TEST(ConstructFromExternal, CompareContents) {
 }
 
 TEST(ConstructFromExternal, LargeReleaser) {
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   constexpr size_t kLength = 256;
   std::string data = RandomLowercaseString(&rng, kLength);
   std::array<char, kLength> data_array;
@@ -1323,7 +1323,7 @@ TEST(Cord, DiabolicalGrowth) {
   // resulting cord.
   // TODO(b/183983616): Apply some minimum compaction when copying a shared
   // source cord into a mutable copy for updates in CordRepRing.
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   const std::string expected = RandomLowercaseString(&rng, 5000);
   absl::Cord cord;
   for (char c : expected) {
@@ -1483,7 +1483,7 @@ TEST(CordChunkIterator, Operations) {
     VerifyChunkIterator(reused_nodes_cord, expected_chunks);
   }
 
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   absl::Cord flat_cord(RandomLowercaseString(&rng, 256));
   absl::Cord subcords;
   for (int i = 0; i < 128; ++i) subcords.Prepend(flat_cord.Subcord(i, 128));
@@ -1621,7 +1621,7 @@ TEST(CordCharIterator, Operations) {
     VerifyCharIterator(reused_nodes_cord);
   }
 
-  RandomEngine rng(testing::GTEST_FLAG(random_seed));
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
   absl::Cord flat_cord(RandomLowercaseString(&rng, 256));
   absl::Cord subcords;
   for (int i = 0; i < 4; ++i) subcords.Prepend(flat_cord.Subcord(16 * i, 128));

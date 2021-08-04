@@ -43,6 +43,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "absl/base/config.h"
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
@@ -576,14 +577,17 @@ bool TimeZoneInfo::Load(ZoneInfoSource* zip) {
 
 namespace {
 
+using FilePtr = std::unique_ptr<FILE, int (*)(FILE*)>;
+
 // fopen(3) adaptor.
-inline FILE* FOpen(const char* path, const char* mode) {
+inline FilePtr FOpen(const char* path, const char* mode) {
 #if defined(_MSC_VER)
   FILE* fp;
   if (fopen_s(&fp, path, mode) != 0) fp = nullptr;
-  return fp;
+  return FilePtr(fp, fclose);
 #else
-  return fopen(path, mode);  // TODO: Enable the close-on-exec flag.
+  // TODO: Enable the close-on-exec flag.
+  return FilePtr(fopen(path, mode), fclose);
 #endif
 }
 
@@ -611,11 +615,11 @@ class FileZoneInfoSource : public ZoneInfoSource {
 
  protected:
   explicit FileZoneInfoSource(
-      FILE* fp, std::size_t len = std::numeric_limits<std::size_t>::max())
-      : fp_(fp, fclose), len_(len) {}
+      FilePtr fp, std::size_t len = std::numeric_limits<std::size_t>::max())
+      : fp_(std::move(fp)), len_(len) {}
 
  private:
-  std::unique_ptr<FILE, int (*)(FILE*)> fp_;
+  FilePtr fp_;
   std::size_t len_;
 };
 
@@ -644,17 +648,9 @@ std::unique_ptr<ZoneInfoSource> FileZoneInfoSource::Open(
   path.append(name, pos, std::string::npos);
 
   // Open the zoneinfo file.
-  FILE* fp = FOpen(path.c_str(), "rb");
-  if (fp == nullptr) return nullptr;
-  std::size_t length = 0;
-  if (fseek(fp, 0, SEEK_END) == 0) {
-    long offset = ftell(fp);
-    if (offset >= 0) {
-      length = static_cast<std::size_t>(offset);
-    }
-    rewind(fp);
-  }
-  return std::unique_ptr<ZoneInfoSource>(new FileZoneInfoSource(fp, length));
+  auto fp = FOpen(path.c_str(), "rb");
+  if (fp.get() == nullptr) return nullptr;
+  return std::unique_ptr<ZoneInfoSource>(new FileZoneInfoSource(std::move(fp)));
 }
 
 class AndroidZoneInfoSource : public FileZoneInfoSource {
@@ -663,8 +659,9 @@ class AndroidZoneInfoSource : public FileZoneInfoSource {
   std::string Version() const override { return version_; }
 
  private:
-  explicit AndroidZoneInfoSource(FILE* fp, std::size_t len, const char* vers)
-      : FileZoneInfoSource(fp, len), version_(vers) {}
+  explicit AndroidZoneInfoSource(FilePtr fp, std::size_t len,
+                                 std::string version)
+      : FileZoneInfoSource(std::move(fp), len), version_(std::move(version)) {}
   std::string version_;
 };
 
@@ -676,7 +673,7 @@ std::unique_ptr<ZoneInfoSource> AndroidZoneInfoSource::Open(
   // See Android's libc/tzcode/bionic.cpp for additional information.
   for (const char* tzdata : {"/data/misc/zoneinfo/current/tzdata",
                              "/system/usr/share/zoneinfo/tzdata"}) {
-    std::unique_ptr<FILE, int (*)(FILE*)> fp(FOpen(tzdata, "rb"), fclose);
+    auto fp = FOpen(tzdata, "rb");
     if (fp.get() == nullptr) continue;
 
     char hbuf[24];  // covers header.zonetab_offset too
@@ -703,7 +700,7 @@ std::unique_ptr<ZoneInfoSource> AndroidZoneInfoSource::Open(
       if (strcmp(name.c_str() + pos, ebuf) == 0) {
         if (fseek(fp.get(), static_cast<long>(start), SEEK_SET) != 0) break;
         return std::unique_ptr<ZoneInfoSource>(new AndroidZoneInfoSource(
-            fp.release(), static_cast<std::size_t>(length), vers));
+            std::move(fp), static_cast<std::size_t>(length), vers));
       }
     }
   }
