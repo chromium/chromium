@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,6 +55,7 @@ public class PermissionNavigationTest {
     @Test
     @MediumTest
     @Feature({"Permissions"})
+    @FlakyTest(message = "https://crbug.com/1236419")
     public void testNavigationDismissesModalPermissionPrompt() throws Exception {
         mPermissionRule.setUpUrl(TEST_FILE);
         mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
