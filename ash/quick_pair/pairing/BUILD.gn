@@ -15,6 +15,8 @@ source_set("pairing") {
     "fast_pair/decrypted_response.h",
     "fast_pair/fake_fast_pair_gatt_service_client.cc",
     "fast_pair/fake_fast_pair_gatt_service_client.h",
+    "fast_pair/fast_pair_data_encryptor.cc",
+    "fast_pair/fast_pair_data_encryptor.h",
     "fast_pair/fast_pair_data_parser.cc",
     "fast_pair/fast_pair_data_parser.h",
     "fast_pair/fast_pair_encryption.cc",
@@ -60,6 +62,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_pair/fast_pair_data_encryptor_unittest.cc",
     "fast_pair/fast_pair_data_parser_unittest.cc",
     "fast_pair/fast_pair_gatt_service_client_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
