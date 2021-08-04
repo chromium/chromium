@@ -8,13 +8,8 @@ namespace autofill {
 
 CreditCardArtImage::CreditCardArtImage() = default;
 
-CreditCardArtImage::CreditCardArtImage(const std::string& id,
-                                       int64_t instrument_id,
-                                       std::vector<uint8_t> card_art_image) {
-  this->id = id;
-  this->instrument_id = instrument_id;
-  this->card_art_image = std::move(card_art_image);
-}
+CreditCardArtImage::CreditCardArtImage(const CreditCardArtImage& other) =
+    default;
 
 CreditCardArtImage::~CreditCardArtImage() = default;
 
