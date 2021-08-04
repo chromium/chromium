@@ -48,6 +48,8 @@ class ArcPowerBridge : public KeyedService,
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcPowerBridge* GetForBrowserContext(content::BrowserContext* context);
+  static ArcPowerBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcPowerBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);

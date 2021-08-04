@@ -34,6 +34,10 @@ const base::Feature kEnableChildToRegularTransitionFeature{
 const base::Feature kEnableRegularToChildTransitionFeature{
     "ArcEnableRegularToChildTransition", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to pass throttling notifications to Android side.
+const base::Feature kEnableThrottlingNotification{
+    "ArcEnableThrottlingNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 const base::Feature kEnableUnifiedAudioFocusFeature{
     "ArcEnableUnifiedAudioFocus", base::FEATURE_ENABLED_BY_DEFAULT};

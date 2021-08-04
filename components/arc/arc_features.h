@@ -18,6 +18,7 @@ extern const base::Feature kCustomTabsExperimentFeature;
 extern const base::Feature kDocumentsProviderUnknownSizeFeature;
 extern const base::Feature kEnableChildToRegularTransitionFeature;
 extern const base::Feature kEnableRegularToChildTransitionFeature;
+extern const base::Feature kEnableThrottlingNotification;
 extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
