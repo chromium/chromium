@@ -159,7 +159,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
     DCHECK(bubble_view_);
 
     if (slider_type_ != slider_type) {
-      bubble_view_->RemoveAllChildViews(true);
+      bubble_view_->RemoveAllChildViews();
 
       slider_type_ = slider_type;
       CreateSliderController();

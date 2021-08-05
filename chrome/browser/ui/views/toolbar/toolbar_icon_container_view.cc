@@ -129,7 +129,7 @@ ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
 ToolbarIconContainerView::~ToolbarIconContainerView() {
   // As childred might be Observers of |this|, we need to destroy them before
   // destroying |observers_|.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void ToolbarIconContainerView::AddMainButton(views::Button* main_button) {

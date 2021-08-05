@@ -126,7 +126,7 @@ void MediaGalleriesDialogViews::AcceptDialogForTesting() {
 
 void MediaGalleriesDialogViews::InitChildViews() {
   // Outer dialog layout.
-  contents_->RemoveAllChildViews(true);
+  contents_->RemoveAllChildViews();
   checkbox_map_.clear();
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

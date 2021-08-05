@@ -117,7 +117,7 @@ void StatusAreaWidgetDelegate::Shutdown() {
   // TODO(pbos): Investigate if this is necessary. This is a bit defensive but
   // it's done to make sure that StatusAreaWidget isn't accessed by the View
   // hierarchy during its destruction.
-  RemoveAllChildViews(/*delete=*/true);
+  RemoveAllChildViews();
   // StatusAreaWidgetDelegate uses a GridLayout which unfortunately doesn't
   // handle child add/removal. Remove the LayoutManager early to prevent UAFs
   // during Widget destruction.

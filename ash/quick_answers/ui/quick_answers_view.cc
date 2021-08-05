@@ -551,7 +551,7 @@ void QuickAnswersView::AddGoogleIcon() {
 }
 
 void QuickAnswersView::ResetContentView() {
-  content_view_->RemoveAllChildViews(true);
+  content_view_->RemoveAllChildViews();
   first_answer_label_ = nullptr;
 }
 

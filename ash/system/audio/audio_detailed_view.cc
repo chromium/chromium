@@ -152,7 +152,7 @@ void AudioDetailedView::UpdateAudioDevices() {
 }
 
 void AudioDetailedView::UpdateScrollableList() {
-  scroll_content()->RemoveAllChildViews(true);
+  scroll_content()->RemoveAllChildViews();
   device_map_.clear();
 
   // Add audio output devices.

@@ -308,7 +308,7 @@ void HoldingSpaceItemViewsSection::RemoveAllHoldingSpaceItemViews() {
   // not visible to the user.
   DCHECK(!IsDrawn() || !container_->IsDrawn() ||
          container_->layer()->opacity() == 0.f);
-  container_->RemoveAllChildViews(/*delete_children=*/true);
+  container_->RemoveAllChildViews();
   views_by_item_id_.clear();
 }
 

@@ -108,7 +108,7 @@ MediaNotificationFooterView::MediaNotificationFooterView(
 
 void MediaNotificationFooterView::OnMediaNotificationDeviceSelectorUpdated(
     const std::map<int, DeviceEntryUI*>& device_entries_map) {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   for (const auto& entry : device_entries_map) {
     int tag = entry.first;

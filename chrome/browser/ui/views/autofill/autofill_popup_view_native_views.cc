@@ -1229,7 +1229,7 @@ absl::optional<int32_t> AutofillPopupViewNativeViews::GetAxUniqueId() {
 }
 
 void AutofillPopupViewNativeViews::CreateChildViews() {
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
   rows_.clear();
   scroll_view_ = nullptr;
   body_container_ = nullptr;

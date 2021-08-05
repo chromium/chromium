@@ -330,7 +330,7 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 void StatusAreaWidget::HandleLocaleChange() {
   // Here we force the layer's bounds to be updated for text direction (if
   // needed).
-  status_area_widget_delegate_->RemoveAllChildViews(/*delete_children=*/false);
+  status_area_widget_delegate_->RemoveAllChildViewsWithoutDeleting();
 
   // The layout manager will be updated when shelf layout gets updated, which is
   // done by the shelf layout manager after `HandleLocaleChange()` gets called.

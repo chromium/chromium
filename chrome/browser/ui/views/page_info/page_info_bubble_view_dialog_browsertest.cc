@@ -245,13 +245,13 @@ class PageInfoBubbleViewDialogBrowserTest
       if (is_page_info_v2_enabled()) {
         auto* main_page = static_cast<PageInfoMainView*>(current_ui);
         main_page->selector_rows_.clear();
-        main_page->permissions_view_->RemoveAllChildViews(true);
+        main_page->permissions_view_->RemoveAllChildViews();
 
       } else {
         auto* page_info_bubble_view =
             static_cast<PageInfoBubbleView*>(bubble_view);
         page_info_bubble_view->selector_rows_.clear();
-        page_info_bubble_view->permissions_view_->RemoveAllChildViews(true);
+        page_info_bubble_view->permissions_view_->RemoveAllChildViews();
       }
 
       current_ui->SetPermissionInfo(permissions_list,

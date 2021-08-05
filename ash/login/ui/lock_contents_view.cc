@@ -900,7 +900,7 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
   // so there is not stale-pointer usage. See crbug.com/884402.
   // TODO(crbug.com/1222096): We should figure out a better way of handling
   // user info changes such as avatar changes. They should not cause view re-layouting.
-  main_view_->RemoveAllChildViews(true /*delete_children*/);
+  main_view_->RemoveAllChildViews();
 
   // Build user state list. Preserve previous state if the user already exists.
   std::vector<UserState> new_users;

@@ -160,7 +160,7 @@ void PageInfoMainView::SetPermissionInfo(
     const PermissionInfoList& permission_info_list,
     ChosenObjectInfoList chosen_object_info_list) {
   if (permission_info_list.empty() && chosen_object_info_list.empty()) {
-    permissions_view_->RemoveAllChildViews(true);
+    permissions_view_->RemoveAllChildViews();
     return;
   }
 
@@ -300,7 +300,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
   title_->SetText(base::UTF8ToUTF16(identity_info.site_identity));
 
-  security_container_view_->RemoveAllChildViews(true);
+  security_container_view_->RemoveAllChildViews();
   if (security_description->summary_style == SecuritySummaryColor::GREEN) {
     // base::Unretained(navigation_handler_) is safe because navigation_handler_
     // is the bubble view which is the owner of this view and therefore will

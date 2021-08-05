@@ -141,7 +141,7 @@ const char* PhoneHubRecentAppsView::RecentAppButtonsView::GetClassName() const {
 }
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
 void PhoneHubRecentAppsView::Update() {

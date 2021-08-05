@@ -624,7 +624,7 @@ void ProfilePickerView::CancelSignIn() {
       ShowScreenInSystemContents(GURL(), /*show_toolbar=*/false);
       // Reset the sign-in flow.
       sign_in_.reset();
-      toolbar_->RemoveAllChildViews(/*delete_children=*/true);
+      toolbar_->RemoveAllChildViews();
       return;
     }
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {

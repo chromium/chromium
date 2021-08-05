@@ -323,7 +323,7 @@ AppsGridView::~AppsGridView() {
   bounds_animator_->Cancel();
 
   view_model_.Clear();
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void AppsGridView::SetLayout(int cols, int rows_per_page) {

@@ -512,7 +512,7 @@ void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
   if (!should_show_search_results) {
     // Remove all child views, including horizontal separator lines, to prepare
     // for showing search results next time.
-    search_results_container_->RemoveAllChildViews(true);
+    search_results_container_->RemoveAllChildViews();
     if (!categories_tabbed_pane_->GetVisible()) {
       // Repopulate |categories_tabbed_pane_| child views, which were removed
       // when they were added to |search_results_container_|.
@@ -528,7 +528,7 @@ void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
 
 void KeyboardShortcutView::ShowSearchResults(
     const std::u16string& search_query) {
-  search_results_container_->RemoveAllChildViews(true);
+  search_results_container_->RemoveAllChildViews();
   auto* search_container_content_view = search_no_result_view_.get();
   auto found_items_list_view = std::make_unique<KeyboardShortcutItemListView>();
   base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents finder(

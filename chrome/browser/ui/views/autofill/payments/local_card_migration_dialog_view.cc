@@ -489,7 +489,7 @@ void LocalCardMigrationDialogView::ConstructView() {
              LocalCardMigrationDialogState::kOffered ||
          children().empty());
 
-  RemoveAllChildViews(/*delete_children=*/true);
+  RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),

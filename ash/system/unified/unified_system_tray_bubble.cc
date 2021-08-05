@@ -123,7 +123,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Unified view children depend on `controller_` which is about to go away.
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
-  bubble_view_->RemoveAllChildViews(true);
+  bubble_view_->RemoveAllChildViews();
   bubble_view_->ResetDelegate();
 
   if (bubble_widget_) {

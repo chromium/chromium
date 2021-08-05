@@ -742,7 +742,7 @@ BrowserView::~BrowserView() {
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 // static

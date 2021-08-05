@@ -111,7 +111,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
 ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
   // The child views hold pointers to the |actions_|, and thus need to be
   // destroyed before them.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   // Create a copy of the anchored widgets, since |anchored_widgets_| will
   // be modified by closing them.

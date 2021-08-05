@@ -644,7 +644,7 @@ AppListView::~AppListView() {
   a11y_announcer_->Shutdown();
 
   // Remove child views first to ensure no remaining dependencies on delegate_.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 // static

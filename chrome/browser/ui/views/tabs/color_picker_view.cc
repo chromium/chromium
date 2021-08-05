@@ -253,7 +253,7 @@ ColorPickerView::ColorPickerView(
 ColorPickerView::~ColorPickerView() {
   // Remove child views early since they have references to us through a
   // callback.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 absl::optional<int> ColorPickerView::GetSelectedElement() const {

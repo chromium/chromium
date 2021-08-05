@@ -84,7 +84,7 @@ bool VirtualCardSelectionDialogViewImpl::IsDialogButtonEnabled(
 }
 
 views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
-  RemoveAllChildViews(/*delete_children=*/true);
+  RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),

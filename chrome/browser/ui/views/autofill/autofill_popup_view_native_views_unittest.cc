@@ -247,7 +247,7 @@ TEST_P(AutofillPopupViewNativeViewsForEveryTypeTest, ShowClickTest) {
 
   generator_->set_current_screen_location(center);
   generator_->ClickLeftButton();
-  view()->RemoveAllChildViews(true /* delete_children */);
+  view()->RemoveAllChildViews();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

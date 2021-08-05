@@ -179,7 +179,7 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
 }
 
 void AddressEditorView::UpdateEditorView() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   CreateEditorView();
   PreferredSizeChanged();
 

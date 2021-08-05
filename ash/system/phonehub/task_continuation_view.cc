@@ -141,7 +141,7 @@ const char* TaskContinuationView::TaskChipsView::GetClassName() const {
 
 void TaskContinuationView::TaskChipsView::Reset() {
   task_chips_.Clear();
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
 gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {

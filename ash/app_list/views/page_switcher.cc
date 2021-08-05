@@ -281,7 +281,7 @@ void PageSwitcher::TotalPagesChanged(int previous_page_count,
   if (!model_)
     return;
 
-  buttons_->RemoveAllChildViews(true);
+  buttons_->RemoveAllChildViews();
   for (int i = 0; i < model_->total_pages(); ++i) {
     PageSwitcherButton* button =
         buttons_->AddChildView(std::make_unique<PageSwitcherButton>(

@@ -522,7 +522,7 @@ void StackedNotificationBar::UpdateVisibility() {
 void StackedNotificationBar::OnNotificationAdded(const std::string& id) {
   // Reset the stacked icons bar if a notification is added since we don't
   // know the position where it may have been added.
-  notification_icons_container_->RemoveAllChildViews(true);
+  notification_icons_container_->RemoveAllChildViews();
   stacked_notification_count_ = 0;
   UpdateStackedNotifications(message_center_view_->GetStackedNotifications());
 }

@@ -359,7 +359,7 @@ void VPNListView::OnGetNetworkStateList(NetworkStateList networks) {
   }
 
   // Clear the list.
-  scroll_content()->RemoveAllChildViews(true);
+  scroll_content()->RemoveAllChildViews();
   provider_view_map_.clear();
   network_view_guid_map_.clear();
   list_empty_ = true;

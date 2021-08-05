@@ -578,7 +578,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     target_window_ = nullptr;
     current_window_ = nullptr;
     defer_widget_bounds_update_ = false;
-    RemoveAllChildViews(true);
+    RemoveAllChildViews();
     OnFlingEnd();
   }
 

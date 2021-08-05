@@ -84,7 +84,7 @@ class StackedTabStripLayoutTest : public testing::Test {
 
   void PrepareChildViews(int count) {
     view_model_.Clear();
-    view_.RemoveAllChildViews(true);
+    view_.RemoveAllChildViews();
     for (int i = 0; i < count; ++i)
       AddViewToViewModel(i);
   }

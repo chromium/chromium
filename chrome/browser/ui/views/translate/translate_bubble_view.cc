@@ -141,7 +141,7 @@ TranslateBubbleView::~TranslateBubbleView() {
   // the child view is destructed. For example, |source_language_combobx_model_|
   // is referred by Combobox's destructor. Before destroying the models,
   // removing the child views is needed.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);

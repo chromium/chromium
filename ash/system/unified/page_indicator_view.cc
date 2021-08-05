@@ -210,7 +210,7 @@ void PageIndicatorView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
   DCHECK(model_);
 
-  buttons_container_->RemoveAllChildViews(true);
+  buttons_container_->RemoveAllChildViews();
   for (int i = 0; i < model_->total_pages(); ++i) {
     PageIndicatorButton* button = new PageIndicatorButton(controller_, i);
     button->SetAccessibleName(l10n_util::GetStringFUTF16(

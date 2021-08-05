@@ -208,7 +208,7 @@ void EnterpriseStartupDialogView::ResetDialog(bool show_accept_button) {
   DCHECK(GetOkButton());
 
   GetOkButton()->SetVisible(show_accept_button);
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void EnterpriseStartupDialogView::SetupLayout(

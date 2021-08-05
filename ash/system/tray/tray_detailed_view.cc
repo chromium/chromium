@@ -408,7 +408,7 @@ TriView* TrayDetailedView::AddScrollListSubHeader(int text_id) {
 }
 
 void TrayDetailedView::Reset() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   scroller_ = nullptr;
   scroll_content_ = nullptr;
   progress_bar_ = nullptr;

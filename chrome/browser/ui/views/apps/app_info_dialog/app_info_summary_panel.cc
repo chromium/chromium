@@ -109,7 +109,7 @@ AppInfoSummaryPanel::AppInfoSummaryPanel(Profile* profile,
 
 AppInfoSummaryPanel::~AppInfoSummaryPanel() {
   // Destroy view children before their models.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void AppInfoSummaryPanel::AddDescriptionAndLinksControl(

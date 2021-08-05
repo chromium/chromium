@@ -388,7 +388,7 @@ void CandidateWindowView::MaybeInitializeCandidateViews(
 
   // Reset all candidate_views_ when orientation changes.
   if (orientation != candidate_window_.orientation()) {
-    candidate_area_->RemoveAllChildViews(true);
+    candidate_area_->RemoveAllChildViews();
     candidate_views_.clear();
   }
 

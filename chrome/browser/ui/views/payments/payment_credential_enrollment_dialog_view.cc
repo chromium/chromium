@@ -172,7 +172,7 @@ PaymentCredentialEnrollmentDialogView::GetWeakPtr() {
 }
 
 void PaymentCredentialEnrollmentDialogView::InitChildViews() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));

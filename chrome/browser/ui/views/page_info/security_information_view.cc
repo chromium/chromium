@@ -141,7 +141,7 @@ void SecurityInformationView::AddResetDecisionsLabel(
     base::RepeatingClosure reset_decisions_callback) {
   if (!reset_decisions_label_container_->children().empty()) {
     // Ensure all old content is removed from the container before re-adding it.
-    reset_decisions_label_container_->RemoveAllChildViews(true);
+    reset_decisions_label_container_->RemoveAllChildViews();
   }
 
   std::vector<std::u16string> subst;
@@ -192,7 +192,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
     views::Button::PressedCallback password_reuse_callback) {
   if (!password_reuse_button_container_->children().empty()) {
     // Ensure all old content is removed from the container before re-adding it.
-    password_reuse_button_container_->RemoveAllChildViews(true /* delete */);
+    password_reuse_button_container_->RemoveAllChildViews();
   }
 
   int change_password_template = 0;

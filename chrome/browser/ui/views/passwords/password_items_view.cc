@@ -308,7 +308,7 @@ void PasswordItemsView::RecreateLayout() {
   // recreated.
   DCHECK(!controller_.local_credentials().empty());
 
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   views::GridLayout* grid_layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());

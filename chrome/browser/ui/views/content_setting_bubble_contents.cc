@@ -414,7 +414,7 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
 ContentSettingBubbleContents::~ContentSettingBubbleContents() {
   // Must remove the children here so the comboboxes get destroyed before
   // their associated models.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void ContentSettingBubbleContents::WindowClosing() {

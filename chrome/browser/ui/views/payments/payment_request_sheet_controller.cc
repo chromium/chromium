@@ -301,7 +301,7 @@ void PaymentRequestSheetController::UpdateContentView() {
   if (!is_active_)
     return;
 
-  content_view_->RemoveAllChildViews(true);
+  content_view_->RemoveAllChildViews();
   FillContentView(content_view_);
   RelayoutPane();
 }
@@ -311,7 +311,7 @@ void PaymentRequestSheetController::UpdateHeaderView() {
   if (!is_active_)
     return;
 
-  header_view_->RemoveAllChildViews(true);
+  header_view_->RemoveAllChildViews();
   PopulateSheetHeaderView(
       ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
       base::BindRepeating(&PaymentRequestSheetController::BackButtonPressed,

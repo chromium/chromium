@@ -49,7 +49,7 @@ AuthenticatorRequestSheetView::AuthenticatorRequestSheetView(
 AuthenticatorRequestSheetView::~AuthenticatorRequestSheetView() = default;
 
 void AuthenticatorRequestSheetView::ReInitChildViews() {
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 
   // No need to add further spacing between the upper and lower half. The image
   // is designed to fill the dialog's top half without any border/margins, and

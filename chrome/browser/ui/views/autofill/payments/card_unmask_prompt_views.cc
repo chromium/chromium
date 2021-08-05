@@ -139,7 +139,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
       SetRetriableErrorMessage(std::u16string());
 
       // Rows cannot be replaced in GridLayout, so we reset it.
-      overlay_->RemoveAllChildViews(/*delete_children=*/true);
+      overlay_->RemoveAllChildViews();
       views::GridLayout* layout = ResetOverlayLayout(overlay_);
 
       // The label of the overlay will now show the error in red.

@@ -164,7 +164,7 @@ void HoverHighlightView::SetAccessibilityState(
 }
 
 void HoverHighlightView::Reset() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   text_label_ = nullptr;
   sub_text_label_ = nullptr;
   left_icon_ = nullptr;

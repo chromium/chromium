@@ -115,7 +115,7 @@ SwitchAccessMenuView::SwitchAccessMenuView() = default;
 SwitchAccessMenuView::~SwitchAccessMenuView() = default;
 
 void SwitchAccessMenuView::SetActions(std::vector<std::string> actions) {
-  RemoveAllChildViews(/*delete_children=*/true);
+  RemoveAllChildViews();
 
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());

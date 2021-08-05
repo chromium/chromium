@@ -496,7 +496,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
   DCHECK(label_view_it != error_labels_.end());
 
   if (error_message.empty()) {
-    label_view_it->second->RemoveAllChildViews(/*delete_children=*/true);
+    label_view_it->second->RemoveAllChildViews();
   } else {
     if (label_view_it->second->children().empty()) {
       // If there was no error label view, add it.

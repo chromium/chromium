@@ -285,7 +285,7 @@ void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
   auto system_tray_size = system_tray_container_->GetPreferredSize();
   system_tray_container_->SetVisible(false);
 
-  detailed_view_container_->RemoveAllChildViews(true /* delete_children */);
+  detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->AddChildView(detailed_view);
   detailed_view_container_->SetVisible(true);
   detailed_view_container_->SetPreferredSize(system_tray_size);
@@ -294,7 +294,7 @@ void UnifiedSystemTrayView::SetDetailedView(views::View* detailed_view) {
 }
 
 void UnifiedSystemTrayView::ResetDetailedView() {
-  detailed_view_container_->RemoveAllChildViews(true /* delete_children */);
+  detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->SetVisible(false);
   if (media_controls_container_)
     media_controls_container_->MaybeShowMediaControls();

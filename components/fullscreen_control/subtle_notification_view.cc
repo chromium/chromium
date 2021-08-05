@@ -95,7 +95,7 @@ void SubtleNotificationView::InstructionView::SetText(
   if (text == text_)
     return;
 
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   // Parse |text|, looking for pipe-delimited segment.
   std::vector<std::u16string> segments = base::SplitString(
