@@ -92,7 +92,7 @@ public abstract class ChromeFeatureList {
      * Returns whether the specified feature is enabled or not.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/android/chrome_feature_list.cc
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      *
      * Calling this has the side effect of bucketing this client, which may cause an experiment to
      * be marked as active.
@@ -115,7 +115,7 @@ public abstract class ChromeFeatureList {
      * Returns a field trial param for the specified feature.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/android/chrome_feature_list.cc
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      *
      * @param featureName The name of the feature to retrieve a param for.
      * @param paramName The name of the param for which to get as an integer.
@@ -134,7 +134,7 @@ public abstract class ChromeFeatureList {
      * Returns a field trial param as an int for the specified feature.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/android/chrome_feature_list.cc
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      *
      * @param featureName The name of the feature to retrieve a param for.
      * @param paramName The name of the param for which to get as an integer.
@@ -156,7 +156,7 @@ public abstract class ChromeFeatureList {
      * Returns a field trial param as a double for the specified feature.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/android/chrome_feature_list.cc
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      *
      * @param featureName The name of the feature to retrieve a param for.
      * @param paramName The name of the param for which to get as an integer.
@@ -192,7 +192,7 @@ public abstract class ChromeFeatureList {
      * Returns a field trial param as a boolean for the specified feature.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in chrome/browser/android/chrome_feature_list.cc
+     * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
      *
      * @param featureName The name of the feature to retrieve a param for.
      * @param paramName The name of the param for which to get as an integer.
