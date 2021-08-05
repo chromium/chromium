@@ -8,12 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
-#include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/device_account_initializer.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
@@ -42,6 +43,7 @@ namespace policy {
 class ActiveDirectoryJoinDelegate;
 class DeviceCloudPolicyStoreAsh;
 class DMTokenStorage;
+class EnrollmentStatus;
 class ServerBackedStateKeysBroker;
 class SigningService;
 
@@ -60,7 +62,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
                           public CloudPolicyStore::Observer,
                           public DeviceAccountInitializer::Delegate {
  public:
-  using EnrollmentCallback = DeviceCloudPolicyInitializer::EnrollmentCallback;
+  using EnrollmentCallback = base::OnceCallback<void(EnrollmentStatus)>;
 
   // |store| and |install_attributes| must remain valid for the life time of the
   // enrollment handler.

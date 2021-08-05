@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;
@@ -30,9 +29,6 @@ namespace ash {
 // that are not longer needed.
 class EnterpriseEnrollmentHelper {
  public:
-  using EnrollmentCallback =
-      policy::DeviceCloudPolicyInitializer::EnrollmentCallback;
-
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
   enum OtherError {
