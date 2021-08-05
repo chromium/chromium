@@ -53,9 +53,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -126,6 +123,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -245,7 +243,7 @@ public class TabListMediatorUnitTest {
     @Mock
     TabListMediator.GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     @Mock
-    Drawable mFaviconDrawable;
+    TabFavicon mFavicon;
     @Mock
     Bitmap mFaviconBitmap;
     @Mock
@@ -280,7 +278,7 @@ public class TabListMediatorUnitTest {
     @Captor
     ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor
-    ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
+    ArgumentCaptor<Callback<TabFavicon>> mCallbackCaptor;
     @Captor
     ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverCaptor;
     @Captor
@@ -366,9 +364,7 @@ public class TabListMediatorUnitTest {
         doNothing()
                 .when(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(anyObject(), anyBoolean(), mCallbackCaptor.capture());
-        doReturn(mFaviconDrawable)
-                .when(mTabListFaviconProvider)
-                .getFaviconForUrlSync(any(Bitmap.class));
+        doReturn(mFavicon).when(mTabListFaviconProvider).getFaviconFromBitmap(any(Bitmap.class));
         doReturn(mTab1).when(mTabModelSelector).getTabById(TAB1_ID);
         doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -531,9 +527,9 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.indexFromId(TAB2_ID), equalTo(0));
 
         // Start to execute callback.
-        mCallbackCaptor.getValue().onResult(mFaviconDrawable);
+        mCallbackCaptor.getValue().onResult(mFavicon);
 
-        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
+        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFavicon));
     }
 
     @Test
@@ -2622,8 +2618,8 @@ public class TabListMediatorUnitTest {
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
         List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
         verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
-        mCallbackCaptor.getValue().onResult(mFaviconDrawable);
-        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
+        mCallbackCaptor.getValue().onResult(mFavicon);
+        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFavicon));
 
         // Test a group of five.
         mModel.get(1).model.set(TabProperties.FAVICON, null);
@@ -2635,8 +2631,8 @@ public class TabListMediatorUnitTest {
         urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
 
         verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
-        mCallbackCaptor.getValue().onResult(mFaviconDrawable);
-        assertThat(mModel.get(1).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
+        mCallbackCaptor.getValue().onResult(mFavicon);
+        assertThat(mModel.get(1).model.get(TabProperties.FAVICON), equalTo(mFavicon));
     }
 
     @Test
@@ -2660,7 +2656,7 @@ public class TabListMediatorUnitTest {
         // Simulate selecting another Tab within TabGroup before callback in
         // getComposedFaviconImageAsync triggers
         mModel.get(1).model.set(TabProperties.TAB_ID, TAB3_ID);
-        mCallbackCaptor.getValue().onResult(mFaviconDrawable);
+        mCallbackCaptor.getValue().onResult(mFavicon);
 
         assertNotEquals(1, mModel.indexFromId(TAB2_ID));
         assertNull(mModel.get(1).model.get(TabProperties.FAVICON));
@@ -2687,10 +2683,10 @@ public class TabListMediatorUnitTest {
         // Simulate closing mTab1 at index 0 before callback in getComposedFaviconImageAsync
         // triggers.
         mModel.removeAt(0);
-        mCallbackCaptor.getValue().onResult(mFaviconDrawable);
+        mCallbackCaptor.getValue().onResult(mFavicon);
 
         assertEquals(0, mModel.indexFromId(TAB2_ID));
-        assertEquals(mFaviconDrawable, mModel.get(0).model.get(TabProperties.FAVICON));
+        assertEquals(mFavicon, mModel.get(0).model.get(TabProperties.FAVICON));
     }
 
     @Test
@@ -2714,7 +2710,7 @@ public class TabListMediatorUnitTest {
         // Simulate TabListMediator reset with null before callback in getComposedFaviconImageAsync
         // triggers.
         mModel.set(new ArrayList<>());
-        mCallbackCaptor.getValue().onResult(mFaviconDrawable);
+        mCallbackCaptor.getValue().onResult(mFavicon);
     }
 
     @Test(expected = AssertionError.class)
@@ -2854,8 +2850,8 @@ public class TabListMediatorUnitTest {
             tabs.add(mTabModel.getTabAt(i));
         }
         mediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
-        for (Callback<Drawable> callback : mCallbackCaptor.getAllValues()) {
-            callback.onResult(new ColorDrawable(Color.RED));
+        for (Callback<TabFavicon> callback : mCallbackCaptor.getAllValues()) {
+            callback.onResult(mFavicon);
         }
 
         assertThat(mModel.size(), equalTo(2));
@@ -2866,8 +2862,8 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
 
-        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), instanceOf(Drawable.class));
-        assertThat(mModel.get(1).model.get(TabProperties.FAVICON), instanceOf(Drawable.class));
+        assertThat(mModel.get(0).model.get(TabProperties.FAVICON), instanceOf(TabFavicon.class));
+        assertThat(mModel.get(1).model.get(TabProperties.FAVICON), instanceOf(TabFavicon.class));
 
         assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));

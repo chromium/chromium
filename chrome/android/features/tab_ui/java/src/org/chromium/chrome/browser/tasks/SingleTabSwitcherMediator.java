@@ -136,7 +136,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     private void updateFavicon(Tab tab) {
         assert mTabListFaviconProvider.isInitialized();
-        mTabListFaviconProvider.getFaviconForUrlAsync(tab.getUrl(), false,
+        mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
     }
 
@@ -255,7 +255,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     private void updateSelectedTab(Tab tab) {
         mPropertyModel.set(TITLE, tab.getTitle());
-        mTabListFaviconProvider.getFaviconForUrlAsync(tab.getUrl(), false,
+        mTabListFaviconProvider.getFaviconDrawableForUrlAsync(tab.getUrl(), false,
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
     }
 

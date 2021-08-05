@@ -115,6 +115,7 @@ class TabGridViewBinder {
                 updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                         model.get(TabProperties.IS_SELECTED));
                 updateThumbnail(view, model);
+                updateFavicon(view, model);
             } else {
                 int selectedTabBackground =
                         model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
@@ -147,13 +148,8 @@ class TabGridViewBinder {
                 pageInfoButton.setSelected(false);
             }
         } else if (TabProperties.FAVICON == propertyKey) {
-            Drawable favicon = model.get(TabProperties.FAVICON);
-            ImageView faviconView = (ImageView) view.fastFindViewById(R.id.tab_favicon);
-            faviconView.setImageDrawable(favicon);
-            int padding = favicon == null
-                    ? 0
-                    : (int) TabUiThemeProvider.getTabCardTopFaviconPadding(view.getContext());
-            faviconView.setPadding(padding, padding, padding, padding);
+            TabListFaviconProvider.TabFavicon favicon = model.get(TabProperties.FAVICON);
+            updateFavicon(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
         } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
@@ -378,6 +374,28 @@ class TabGridViewBinder {
             thumbnail.setImageDrawable(null);
             thumbnail.setMinimumHeight(thumbnail.getWidth());
         }
+    }
+
+    /**
+     * Update the favicon drawable to use from {@link TabListFaviconProvider.TabFavicon}, and the
+     * padding around it. The color work is already handled when favicon is bind in {@link
+     * #bindCommonProperties}.
+     */
+    private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
+        TabListFaviconProvider.TabFavicon favicon = model.get(TabProperties.FAVICON);
+        ImageView faviconView = (ImageView) rootView.fastFindViewById(R.id.tab_favicon);
+        if (favicon == null) {
+            faviconView.setImageDrawable(null);
+            faviconView.setPadding(0, 0, 0, 0);
+            return;
+        }
+
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        faviconView.setImageDrawable(
+                isSelected ? favicon.getSelectedDrawable() : favicon.getDefaultDrawable());
+        int padding =
+                (int) TabUiThemeProvider.getTabCardTopFaviconPadding(faviconView.getContext());
+        faviconView.setPadding(padding, padding, padding, padding);
     }
 
     private static void updateColor(

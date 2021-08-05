@@ -318,6 +318,24 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the tint color for Chrome owned favicon based on the incognito mode or selected.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isTabSelected Whether the tab is currently selected.
+     * @return The tint color for Chrome owned favicon.
+     */
+    @ColorInt
+    public static int getChromeOwnedFaviconTintColor(
+            Context context, boolean isIncognito, boolean isTabSelected) {
+        if (!themeRefactorEnabled()) {
+            return ApiCompatibilityUtils.getColor(context.getResources(),
+                    isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
+        }
+        return getTitleTextColor(context, isIncognito, isTabSelected);
+    }
+
+    /**
      * Returns the {@link ColorStateList} for background view when a tab grid card is hovered by
      * another card based on the incognito mode.
      *
