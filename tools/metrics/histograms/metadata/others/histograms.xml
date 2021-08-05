@@ -4030,7 +4030,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrashReport.BreakpadIOSUploadOutcome"
-    enum="FoundationPopularErrorCode" expires_after="2021-09-01">
+    enum="FoundationPopularErrorCode" expires_after="2022-09-12">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -6472,7 +6472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstUserAction.BackgroundTime" units="minutes"
-    expires_after="2021-08-22">
+    expires_after="2022-09-12">
 <!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->
 
   <owner>justincohen@chromium.org</owner>
@@ -6504,7 +6504,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstUserAction.TabletUserActionType"
-    enum="FirstUserActionType" expires_after="2021-08-22">
+    enum="FirstUserActionType" expires_after="2022-09-12">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
