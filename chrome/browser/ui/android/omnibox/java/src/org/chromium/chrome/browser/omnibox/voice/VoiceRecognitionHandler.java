@@ -546,11 +546,13 @@ public class VoiceRecognitionHandler {
                 }
             }
 
-            AutocompleteMatch match =
-                    AutocompleteCoordinator.classify(mProfileSupplier.get(), topResultQuery);
+            AutocompleteMatch match = null;
+            if (mProfileSupplier.hasValue()) {
+                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), topResultQuery);
+            }
 
-            String url = match.getUrl().getSpec();
-            if (match.isSearchSuggestion()) {
+            String url;
+            if (match == null || match.isSearchSuggestion()) {
                 url = TemplateUrlServiceFactory.get()
                               .getUrlForVoiceSearchQuery(topResultQuery)
                               .getSpec();
@@ -563,6 +565,8 @@ public class VoiceRecognitionHandler {
                     assert !url.contains("#") : "URL must not contain a fragment.";
                     url += "&hl=" + topResult.getLanguage();
                 }
+            } else {
+                url = match.getUrl().getSpec();
             }
 
             mDelegate.loadUrlFromVoice(url);
@@ -688,12 +692,21 @@ public class VoiceRecognitionHandler {
             // If the string appears to be a URL, then use it instead of the string returned from
             // the voice engine.
             String culledString = strings.get(i).replaceAll(" ", "");
-            AutocompleteMatch match =
-                    AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
-            String url = match.isSearchSuggestion() ? null : match.getUrl().getSpec();
+
+            AutocompleteMatch match = null;
+            if (mProfileSupplier.hasValue()) {
+                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+            }
+
+            String urlOrSearchQuery;
+            if (match == null || match.isSearchSuggestion()) {
+                urlOrSearchQuery = strings.get(i);
+            } else {
+                urlOrSearchQuery = culledString;
+            }
+
             String language = languages == null ? null : languages.get(i);
-            results.add(new VoiceResult(
-                    url == null ? strings.get(i) : culledString, confidences[i], language));
+            results.add(new VoiceResult(urlOrSearchQuery, confidences[i], language));
         }
         return results;
     }

@@ -379,7 +379,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      *         match built with the user's default search engine, or a NAVIGATION match.
      */
     @Deprecated
-    public static AutocompleteMatch classify(Profile profile, String query) {
+    public static AutocompleteMatch classify(@NonNull Profile profile, @NonNull String query) {
         return AutocompleteController.getForProfile(profile).classify(query, false);
     }
 

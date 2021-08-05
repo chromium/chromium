@@ -297,6 +297,8 @@ public class AutocompleteController {
      *         AutocompleteController associated with the supplied profile.
      */
     static AutocompleteController getForProfile(Profile profile) {
+        assert profile != null : "AutocompleteController cannot be created for null profile";
+        if (profile == null) return null;
         return AutocompleteControllerJni.get().getForProfile(profile);
     }
 
