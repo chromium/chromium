@@ -260,7 +260,8 @@ class PermissionPromptBubbleViewBrowserTest
       ASSERT_TRUE(chip);
 
       EXPECT_TRUE(chip->should_expand_for_testing());
-      EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
+      // TODO(crbug.com/1232460): Verify that OmniboxChipButton::is_animating is
+      // true. Right now the value is flaky.
       EXPECT_EQ(OmniboxChipButton::Theme::kBlue,
                 chip->get_chip_button_for_testing()->get_theme_for_testing());
 
@@ -760,9 +761,8 @@ IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleViewBrowserTest,
           : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
 }
 
-// TODO(crbug.com/1232460): Flaky
 IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleViewBrowserTest,
-                       DISABLED_QuietChipIsShownForAbusiveRequests) {
+                       QuietChipIsShownForAbusiveRequests) {
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
