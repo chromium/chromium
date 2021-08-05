@@ -465,6 +465,13 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // The list of extensions allowed to use the platformKeys API for remote
 // attestation.
 const char kAttestationExtensionAllowlist[] = "attestation.extension_allowlist";
+
+// The list of extensions allowed to skip print job confirmation dialog when
+// they use the chrome.printing.submitJob() function. Note that this used to be
+// `kPrintingAPIExtensionsWhitelist`, hence the difference between the variable
+// name and the string value.
+const char kPrintingAPIExtensionsAllowlist[] =
+    "printing.printing_api_extensions_whitelist";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1427,13 +1434,6 @@ const char kPrintingMaxSheetsAllowed[] = "printing.max_sheets_allowed";
 // Indicates how long print jobs metadata is stored on the device, in days.
 const char kPrintJobHistoryExpirationPeriod[] =
     "printing.print_job_history_expiration_period";
-
-// The list of extensions allowed to skip print job confirmation dialog when
-// they use the chrome.printing.submitJob() function. Note that this used to be
-// `kPrintingAPIExtensionsWhitelist`, hence the difference between the variable
-// name and the string value.
-const char kPrintingAPIExtensionsAllowlist[] =
-    "printing.printing_api_extensions_whitelist";
 
 // Boolean flag which represents whether the user's print job history can be
 // deleted.

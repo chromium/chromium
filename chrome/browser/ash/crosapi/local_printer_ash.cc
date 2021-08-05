@@ -92,9 +92,16 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
 
 }  // namespace
 
-LocalPrinterAsh::LocalPrinterAsh() = default;
+LocalPrinterAsh::LocalPrinterAsh()
+    : profile_manager_(g_browser_process->profile_manager()) {
+  if (profile_manager_)
+    profile_manager_->AddObserver(this);
+}
 
-LocalPrinterAsh::~LocalPrinterAsh() = default;
+LocalPrinterAsh::~LocalPrinterAsh() {
+  if (profile_manager_)
+    profile_manager_->RemoveObserver(this);
+}
 
 // static
 mojom::PrintServersConfigPtr LocalPrinterAsh::ConfigToMojom(
@@ -135,6 +142,43 @@ mojom::PrinterStatusPtr LocalPrinterAsh::StatusToMojom(
 void LocalPrinterAsh::BindReceiver(
     mojo::PendingReceiver<mojom::LocalPrinter> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
+}
+
+void LocalPrinterAsh::OnProfileAdded(Profile*) {
+  if (observers_registered_)
+    return;
+  Profile* profile = GetProfile();
+  if (!profile)
+    return;
+  auto* printers_manager_factory =
+      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  // In unit tests, `printers_manager_factory` can be null.
+  if (!printers_manager_factory) {
+    LOG(ERROR) << "CupsPrintersManagerFactory object not found";
+    return;
+  }
+  observers_registered_ = true;
+  // RemoveObserver() is not called since this object outlasts the
+  // BrowserContextKeyedServices it's observing -
+  // BrowserContextKeyedServices are destroyed in
+  // ChromeBrowserMainParts::PostMainMessageLoopRun() while this object is
+  // destroyed in ~ChromeBrowserMainParts().
+  auto* print_servers_manager =
+      printers_manager_factory->GetPrintServersManager();
+  if (print_servers_manager) {
+    print_servers_manager->AddObserver(this);
+  } else {
+    // This can occur during browser tests.
+    LOG(ERROR) << "PrintServersManager object not found";
+  }
+  auto* print_job_manager =
+      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  print_job_manager->AddObserver(this);
+}
+
+void LocalPrinterAsh::OnProfileManagerDestroying() {
+  profile_manager_->RemoveObserver(this);
+  profile_manager_ = nullptr;
 }
 
 void LocalPrinterAsh::OnPrintJobCreated(
@@ -204,32 +248,11 @@ void LocalPrinterAsh::OnServerPrintersChanged(
     remote->OnServerPrintersChanged();
 }
 
-void LocalPrinterAsh::RegisterObservers() {
-  if (observers_registered_)
-    return;
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
-  observers_registered_ = true;
-  auto* print_servers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile)
-          ->GetPrintServersManager();
-  if (print_servers_manager) {
-    print_servers_manager->AddObserver(this);
-  } else {
-    // This can occur during browser tests.
-    LOG(ERROR) << "PrintServersManager object not found";
-  }
-  auto* print_job_manager =
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
-  print_job_manager->AddObserver(this);
-}
-
 void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
   // Printing is not allowed during OOBE.
-  DCHECK(!chromeos::ProfileHelper::IsSigninProfile(profile));
+  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
   chromeos::CupsPrintersManager* printers_manager =
       chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   std::vector<mojom::LocalDestinationInfoPtr> printers;
@@ -371,7 +394,6 @@ void LocalPrinterAsh::ChoosePrintServers(
 void LocalPrinterAsh::AddPrintServerObserver(
     mojo::PendingRemote<mojom::PrintServerObserver> remote,
     AddPrintServerObserverCallback callback) {
-  RegisterObservers();
   print_server_remotes_.Add(std::move(remote));
   std::move(callback).Run();
 }
@@ -439,9 +461,8 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
 void LocalPrinterAsh::GetUsernamePerPolicy(
     GetUsernamePerPolicyCallback callback) {
   Profile* profile = GetProfile();
-  const std::string username = chromeos::ProfileHelper::Get()
-                                   ->GetUserByProfile(profile)
-                                   ->display_email();
+  const std::string username =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile)->display_email();
   std::move(callback).Run(profile->GetPrefs()->GetBoolean(
                               prefs::kPrintingSendUsernameAndFilenameEnabled)
                               ? absl::make_optional(username)
@@ -489,8 +510,10 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
 }
 
 Profile* LocalPrinterAsh::GetProfile() {
-  DCHECK(user_manager::UserManager::IsInitialized());
-  DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+  if (!user_manager::UserManager::IsInitialized() ||
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    return nullptr;
+  }
   return ProfileManager::GetPrimaryUserProfile();
 }
 
@@ -498,7 +521,6 @@ void LocalPrinterAsh::AddPrintJobObserver(
     mojo::PendingRemote<mojom::PrintJobObserver> remote,
     mojom::PrintJobSource source,
     AddPrintJobObserverCallback callback) {
-  RegisterObservers();
   if (source == mojom::PrintJobSource::kExtension)
     extension_print_job_remotes_.Add(std::move(remote));
   if (source == mojom::PrintJobSource::kAny)

@@ -208,6 +208,7 @@ extern const char kPreinstalledAppsInstallState[];
 extern const char kHideWebStoreIcon[];
 #if defined(OS_CHROMEOS)
 extern const char kAttestationExtensionAllowlist[];
+extern const char kPrintingAPIExtensionsAllowlist[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kAccountManagerNumTimesMigrationRanSuccessfully[];
@@ -465,7 +466,6 @@ extern const char kPrintingPinDefault[];
 extern const char kPrintingSendUsernameAndFilenameEnabled[];
 extern const char kPrintingMaxSheetsAllowed[];
 extern const char kPrintJobHistoryExpirationPeriod[];
-extern const char kPrintingAPIExtensionsAllowlist[];
 extern const char kDeletePrintJobHistoryAllowed[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

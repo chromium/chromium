@@ -6698,6 +6698,16 @@ static_library("browser") {
 
   if (use_cups) {
     configs += [ "//printing:cups" ]
+    if (is_chromeos) {
+      sources += [
+        "chromeos/printing/cups_wrapper.cc",
+        "chromeos/printing/cups_wrapper.h",
+        "chromeos/printing/cups_wrapper_impl.cc",
+        "chromeos/printing/printer_error_codes.cc",
+        "chromeos/printing/printer_error_codes.h",
+      ]
+      deps += [ "//chromeos/components/print_management/mojom" ]
+    }
     if (is_chromeos_ash) {
       deps += [
         "//chrome/services/cups_proxy",

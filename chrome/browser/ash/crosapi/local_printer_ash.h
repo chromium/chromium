@@ -13,12 +13,14 @@
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/print_servers_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
+class ProfileManager;
 
 namespace chromeos {
 class CupsPrinterStatus;
@@ -33,6 +35,7 @@ namespace crosapi {
 // Implements the crosapi interface for LocalPrinter. Lives in Ash-Chrome on the
 // UI thread.
 class LocalPrinterAsh : public mojom::LocalPrinter,
+                        public ProfileManagerObserver,
                         public chromeos::CupsPrintJobManager::Observer,
                         public chromeos::PrintServersManager::Observer {
  public:
@@ -63,6 +66,10 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
       const chromeos::CupsPrinterStatus& status);
 
   void BindReceiver(mojo::PendingReceiver<mojom::LocalPrinter> receiver);
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // chromeos::CupsPrintJobManager::Observer:
   void OnPrintJobCreated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
@@ -119,13 +126,7 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   virtual std::unique_ptr<chromeos::PrinterConfigurer> CreatePrinterConfigurer(
       Profile* profile);
 
-  // Registers observers via AddObserver(). RemoveObserver() is not called
-  // since this object outlasts the BrowserContextKeyedServices it's
-  // observing - BrowserContextKeyedServices are destroyed in
-  // ChromeBrowserMainParts::PostMainMessageLoopRun() while this object is
-  // destroyed in ~ChromeBrowserMainParts().
-  // Does nothing if observers have already been registered.
-  void RegisterObservers();
+  ProfileManager* profile_manager_ = nullptr;
 
   bool observers_registered_ = false;
 

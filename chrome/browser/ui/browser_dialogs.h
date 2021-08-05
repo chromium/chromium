@@ -226,7 +226,7 @@ void ShowPWAInstallBubble(
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
 // for the extension.
@@ -241,7 +241,7 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const std::u16string& printer_name,
                                     base::OnceCallback<void(bool)> callback);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_MAC)
 

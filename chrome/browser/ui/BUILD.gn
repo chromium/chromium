@@ -2229,8 +2229,6 @@ static_library("ui") {
       "views/crostini/crostini_update_component_view.h",
       "views/crostini/crostini_update_filesystem_view.cc",
       "views/crostini/crostini_update_filesystem_view.h",
-      "views/extensions/print_job_confirmation_dialog_view.cc",
-      "views/extensions/print_job_confirmation_dialog_view.h",
       "views/extensions/request_file_system_dialog_view.cc",
       "views/extensions/request_file_system_dialog_view.h",
       "views/frame/browser_frame_ash.cc",
@@ -2952,9 +2950,11 @@ static_library("ui") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "platform_keys_certificate_selector_chromeos.h",
+      "views/extensions/print_job_confirmation_dialog_view.cc",
+      "views/extensions/print_job_confirmation_dialog_view.h",
       "views/frame/browser_frame_header_chromeos.cc",
       "views/frame/browser_frame_header_chromeos.h",
       "views/frame/browser_non_client_frame_view_chromeos.cc",
