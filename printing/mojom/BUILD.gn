@@ -24,6 +24,10 @@ mojom("printing_context") {
           mojom = "printing.mojom.PageSetup"
           cpp = "::printing::PageSetup"
         },
+        {
+          mojom = "printing.mojom.PageRange"
+          cpp = "::printing::PageRange"
+        },
       ]
       traits_sources = [ "printing_context_mojom_traits.cc" ]
       traits_headers = [ "printing_context_mojom_traits.h" ]

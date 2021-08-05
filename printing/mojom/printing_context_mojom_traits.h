@@ -6,6 +6,7 @@
 #define PRINTING_MOJOM_PRINTING_CONTEXT_MOJOM_TRAITS_H_
 
 #include "printing/mojom/printing_context.mojom-shared.h"
+#include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -56,6 +57,15 @@ struct StructTraits<printing::mojom::PageSetupDataView, printing::PageSetup> {
 
   static bool Read(printing::mojom::PageSetupDataView data,
                    printing::PageSetup* out);
+};
+
+template <>
+struct StructTraits<printing::mojom::PageRangeDataView, printing::PageRange> {
+  static uint32_t from(const printing::PageRange& r) { return r.from; }
+  static uint32_t to(const printing::PageRange& r) { return r.to; }
+
+  static bool Read(printing::mojom::PageRangeDataView data,
+                   printing::PageRange* out);
 };
 
 }  // namespace mojo

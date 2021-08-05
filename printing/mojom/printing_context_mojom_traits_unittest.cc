@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "printing/mojom/printing_context.mojom.h"
+#include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -164,6 +165,47 @@ TEST(PrintingContextMojomTraitsTest,
       output.requested_margins()));
   EXPECT_EQ(kPageSetupForcedMargins.forced_margins(), output.forced_margins());
   EXPECT_EQ(kPageSetupForcedMargins.text_height(), output.text_height());
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePageRangeMultiPage) {
+  PageRange input;
+  PageRange output;
+
+  input.from = 0u;
+  input.to = 5u;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PageRange>(input, output));
+
+  EXPECT_EQ(0u, output.from);
+  EXPECT_EQ(5u, output.to);
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePageRangeSinglePage) {
+  PageRange input;
+  PageRange output;
+
+  input.from = 1u;
+  input.to = 1u;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PageRange>(input, output));
+
+  EXPECT_EQ(1u, output.from);
+  EXPECT_EQ(1u, output.to);
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePageRangeReverseRange) {
+  PageRange input;
+  PageRange output;
+
+  // Verify that reverse ranges are not allowed (e.g., not a mechanism to print
+  // the range backwards).
+  input.from = 5u;
+  input.to = 1u;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PageRange>(input, output));
 }
 
 }  // namespace printing
