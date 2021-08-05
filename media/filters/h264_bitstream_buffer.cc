@@ -50,7 +50,7 @@ void H264BitstreamBuffer::FlushReg() {
   reg_ = base::HostToNet64(reg_);
 
   // Make sure we have enough space. Grow() will CHECK() on allocation failure.
-  if (pos_ + bytes_in_reg < capacity_)
+  if (pos_ + bytes_in_reg > capacity_)
     Grow();
 
   memcpy(data_ + pos_, &reg_, bytes_in_reg);
