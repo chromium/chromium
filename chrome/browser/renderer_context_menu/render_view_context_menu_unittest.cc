@@ -722,6 +722,19 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
 }
 
 // Verify that the Lens Region Search menu item is disabled when the user's
+// enterprise policy for Lens Region Search is disabled.
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensRegionSearchEnterprisePoicyDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensRegionSearch);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com");
+  // Set enterprise policy to false.
+  profile()->GetPrefs()->SetBoolean(prefs::kLensRegionSearchEnabled, false);
+  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+// Verify that the Lens Region Search menu item is disabled when the user's
 // default browser is not Google.
 TEST_F(RenderViewContextMenuPrefsTest,
        LensRegionSearchNonGoogleDefaultSearchEngine) {

@@ -25939,6 +25939,7 @@ Called by update_document_policy_enum.py.-->
   <int value="883" label="TabCaptureAllowedByOrigins"/>
   <int value="884" label="SameOriginTabCaptureAllowedByOrigins"/>
   <int value="885" label="AssistantVoiceMatchEnabledDuringOobe"/>
+  <int value="886" label="LensRegionSearchEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

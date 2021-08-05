@@ -1168,6 +1168,10 @@ extern const char kDesktopSharingHubEnabled[];
 extern const char kLastWhatsNewVersion[];
 #endif
 
+#if !defined(OS_ANDROID)
+extern const char kLensRegionSearchEnabled[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

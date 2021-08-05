@@ -3278,6 +3278,9 @@ const char kDesktopSharingHubEnabled[] =
 // Pref name for the last major version where the What's New page was
 // successfully shown.
 const char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
+// A boolean indicating whether the Lens Region search feature should be enabled
+// if supported.
+const char kLensRegionSearchEnabled[] = "policy.lens_region_search_enabled";
 #endif
 
 }  // namespace prefs

@@ -3004,7 +3004,9 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 
 bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
-         search::DefaultSearchProviderIsGoogle(GetProfile());
+         search::DefaultSearchProviderIsGoogle(GetProfile()) &&
+         GetPrefs(browser_context_)
+             ->GetBoolean(prefs::kLensRegionSearchEnabled);
 }
 
 void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,

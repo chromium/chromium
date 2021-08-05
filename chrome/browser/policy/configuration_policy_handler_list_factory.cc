@@ -1416,6 +1416,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kTargetBlankImpliesNoOpener,
     policy::policy_prefs::kTargetBlankImpliesNoOpener,
     base::Value::Type::BOOLEAN },
+#if !defined(OS_ANDROID)
+  { key::kLensRegionSearchEnabled,
+    prefs::kLensRegionSearchEnabled,
+    base::Value::Type::BOOLEAN },
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kLacrosAllowed,

@@ -1352,6 +1352,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RegisterBrowserViewProfilePrefs(registry);
 #endif
 
+#if !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(
+      prefs::kLensRegionSearchEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif
+
   RegisterProfilePrefsForMigration(registry);
 }
 
