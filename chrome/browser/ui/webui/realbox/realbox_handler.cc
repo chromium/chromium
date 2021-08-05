@@ -162,7 +162,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         RealboxHandler::AutocompleteMatchVectorIconToResourceName(
             match.GetVectorIcon(is_bookmarked));
     mojom_match->image_dominant_color = match.image_dominant_color;
-    mojom_match->image_url = match.ImageUrl().spec();
+    mojom_match->image_url = match.image_url.spec();
     mojom_match->fill_into_edit = match.fill_into_edit;
     mojom_match->inline_autocompletion = match.inline_autocompletion;
     mojom_match->is_search_type = AutocompleteMatch::IsSearchType(match.type);
@@ -179,9 +179,10 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                                 {match.contents, additional_text.value()}, u" ")
                           : match.contents,
           ImageLineToString16(match.answer->second_line()));
+      mojom_match->image_url = match.ImageUrl().spec();
     }
     mojom_match->is_rich_suggestion =
-        !match.ImageUrl().is_empty() ||
+        !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value() &&
          base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
