@@ -631,7 +631,7 @@
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> файлының <ph name="PROGRESS" />%-ы жүктеп алынды. Шамамен <ph name="TIME" /> <ph name="UNITS" /> қалды.</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5402367795255837559">Брайль</translation>
-<translation id="5402791055281059602">Модальді терезедегі ескерту</translation>
+<translation id="5402791055281059602">Модальдық ескерту</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{нүктелі үтір}other{# нүктелі үтір}}</translation>
 <translation id="5420259671171615858">Мәзірлерден іздеу</translation>
 <translation id="5435274640623994081">Earcon журналын қосу</translation>
@@ -795,7 +795,7 @@
 <translation id="6657128831881431364">Орындалу жолағы</translation>
 <translation id="6660819301598582123">аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя</translation>
 <translation id="667999046851023355">Құжат</translation>
-<translation id="6688209025607531203">Модальді емес терезедегі ескерту</translation>
+<translation id="6688209025607531203">Модальдық емес ескерту</translation>
 <translation id="6689672606256159458">Қоңырқай қызғылт</translation>
 <translation id="669617842401078250"><ph name="FILE_NAME" /> файлын жүктеп алу кідіртілді</translation>
 <translation id="6696967141280706829">Алғысөз</translation>
