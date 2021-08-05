@@ -131,9 +131,28 @@
   <div id="scannedImages" hidden$="[[!showScannedImages_]]" aria-hidden="true">
     <action-toolbar hidden$="[[!showActionToolbar_]]"
         num-total-pages="[[objectUrls.length]]"
-        current-page-in-view="[[currentPageInView_]]"></action-toolbar>
+        current-page-in-view="[[currentPageInView_]]"
+        on-show-remove-page-dialog="onShowRemovePageDialog_"
+        on-show-rescan-page-dialog="onShowRescanPageDialog_">
+    </action-toolbar>
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]" on-load="onScannedImagesLoaded_">
     </template>
   </div>
 </div>
+<cr-dialog id="scanPreviewDialog">
+  <div id="dialogTitle" slot="title">
+    [[dialogText_]]
+  </div>
+  <div id="dialogConfirmationText" slot="body">
+    [[dialogConfirmationText_]]
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button">
+      [[i18n('cancelButtonText')]]
+    </cr-button>
+    <cr-button id="actionButton" class="action-button">
+      [[dialogText_]]
+    </cr-button>
+  </div>
+</cr-dialog>

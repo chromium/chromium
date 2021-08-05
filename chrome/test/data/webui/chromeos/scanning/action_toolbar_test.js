@@ -5,6 +5,7 @@
 import 'chrome://scanning/action_toolbar.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function actionToolbarTest() {
   /** @type {?ActionToolbarElement} */
@@ -39,5 +40,39 @@ export function actionToolbarTest() {
     actionToolbar.numTotalPages = 4;
     actionToolbar.currentPageInView = 2;
     assertEquals('2 of 4', actionToolbar.$$('#pageNumbers').textContent.trim());
+  });
+
+  // Verify clicking the remove page button fires the 'show-remove-page-dialog'
+  // event with the correct page number.
+  test('removePageClick', () => {
+    const expectedPageNumber = 5;
+    let pageNumberFromEvent = -1;
+
+    actionToolbar.currentPageInView = expectedPageNumber;
+    actionToolbar.addEventListener('show-remove-page-dialog', (e) => {
+      pageNumberFromEvent = e.detail;
+    });
+
+    actionToolbar.$$('#removePageIcon').click();
+    return flushTasks().then(() => {
+      assertEquals(expectedPageNumber, pageNumberFromEvent);
+    });
+  });
+
+  // Verify clicking the rescan page button fires the 'show-rescan-page-dialog'
+  // event with the correct page number.
+  test('rescanPageClick', () => {
+    const expectedPageNumber = 5;
+    let pageNumberFromEvent = -1;
+
+    actionToolbar.currentPageInView = expectedPageNumber;
+    actionToolbar.addEventListener('show-rescan-page-dialog', (e) => {
+      pageNumberFromEvent = e.detail;
+    });
+
+    actionToolbar.$$('#rescanPageIcon').click();
+    return flushTasks().then(() => {
+      assertEquals(expectedPageNumber, pageNumberFromEvent);
+    });
   });
 }

@@ -41,6 +41,15 @@
       border-radius: 4px;
     }
 
+    cr-dialog::part(dialog) {
+      width: 340px;
+    }
+
+    cr-dialog [slot=title] {
+      font-weight: 500;
+      padding-bottom: 12px;
+    }
+
     @media (min-width: 600px) {
       :host {
         --container-width: 600px;

@@ -47,7 +47,11 @@
   <div id="pageNumbers">[[pageNumberText_]]</div>
   <div class="separator"></div>
   <div>
-    <cr-icon-button id="removePageIcon" title="[[removeButtonTooltip_]]"></cr-icon-button>
-    <cr-icon-button id="rescanPageIcon" title="[[rescanButtonTooltip_]]"></cr-icon-button>
+    <cr-icon-button id="removePageIcon" title="[[removeButtonTooltip_]]"
+        on-click="onRemovePageIconClick_">
+    </cr-icon-button>
+    <cr-icon-button id="rescanPageIcon" title="[[rescanButtonTooltip_]]"
+        on-click="onRescanPageIconClick_">
+    </cr-icon-button>
   </div>
 </div>

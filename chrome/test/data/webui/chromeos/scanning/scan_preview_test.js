@@ -4,11 +4,15 @@
 
 import 'chrome://scanning/scan_preview.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
+import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
+
+import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
 export function scanPreviewTest() {
   /** @type {?ScanPreviewElement} */
@@ -30,6 +34,7 @@ export function scanPreviewTest() {
     scanPreview = /** @type {!ScanPreviewElement} */ (
         document.createElement('scan-preview'));
     assertTrue(!!scanPreview);
+    ScanningBrowserProxyImpl.instance_ = new TestScanningBrowserProxy();
     document.body.appendChild(scanPreview);
 
     helpOrProgress =
@@ -197,5 +202,49 @@ export function scanPreviewTest() {
           assertNotEquals(
               '', scanPreview.style.getPropertyValue('--action-toolbar-left'));
         });
+  });
+
+  // Tests that the remove page dialog opens and shows the correct page number.
+  test('removePageDialog', () => {
+    const pageNum = 5;
+    assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+    scanPreview.$$('action-toolbar')
+        .dispatchEvent(
+            new CustomEvent('show-remove-page-dialog', {detail: pageNum}));
+
+    return flushTasks().then(() => {
+      assertTrue(scanPreview.$$('#scanPreviewDialog').open);
+      assertEquals(
+          'Remove page ' + pageNum,
+          scanPreview.$$('#dialogTitle').textContent.trim());
+      assertEquals(
+          'Remove page ' + pageNum,
+          scanPreview.$$('#actionButton').textContent.trim());
+      assertEquals(
+          loadTimeData.getStringF('removePageConfirmationText', pageNum),
+          scanPreview.$$('#dialogConfirmationText').textContent.trim());
+    });
+  });
+
+  // Tests that the rescan page dialog opens and shows the correct page number.
+  test('rescanPageDialog', () => {
+    const pageNum = 6;
+    assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+    scanPreview.$$('action-toolbar')
+        .dispatchEvent(
+            new CustomEvent('show-rescan-page-dialog', {detail: pageNum}));
+
+    return flushTasks().then(() => {
+      assertTrue(scanPreview.$$('#scanPreviewDialog').open);
+      assertEquals(
+          'Rescan page ' + pageNum,
+          scanPreview.$$('#dialogTitle').textContent.trim());
+      assertEquals(
+          'Rescan page ' + pageNum,
+          scanPreview.$$('#actionButton').textContent.trim());
+      assertEquals(
+          loadTimeData.getStringF('rescanPageConfirmationText', pageNum),
+          scanPreview.$$('#dialogConfirmationText').textContent.trim());
+    });
   });
 }

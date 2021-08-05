@@ -708,6 +708,12 @@ Try tapping the mic to ask me anything.
         =1 {Rescan page {PAGE_NUMBER}}
         other {Rescan page {PAGE_NUMBER}}}
       </message>
+      <message name="IDS_SCANNING_APP_REMOVE_PAGE_CONFIRMATION_TEXT" desc="The text to confirm to the user they want to remove a page from their current multi-page scan session.">
+        Are you sure you want to remove page <ph name="CURRENT_PAGE">$1<ex>2</ex></ph>?
+      </message>
+      <message name="IDS_SCANNING_APP_RESCAN_PAGE_CONFIRMATION_TEXT" desc="The text to confirm to the user they want to rescan a page from their current multi-page scan session.">
+        Place your document on the scanner and select Rescan to scan and replace page <ph name="CURRENT_PAGE">$1<ex>2</ex></ph>.
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

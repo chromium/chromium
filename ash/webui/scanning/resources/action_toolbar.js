@@ -73,4 +73,14 @@ Polymer({
         'actionToolbarPageCountText', this.currentPageInView,
         this.numTotalPages);
   },
+
+  /** @private */
+  onRemovePageIconClick_() {
+    this.fire('show-remove-page-dialog', this.currentPageInView);
+  },
+
+  /** @private */
+  onRescanPageIconClick_() {
+    this.fire('show-rescan-page-dialog', this.currentPageInView);
+  },
 });

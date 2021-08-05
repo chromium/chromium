@@ -5,6 +5,7 @@
 import './action_toolbar.js';
 import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -135,6 +136,12 @@ Polymer({
       type: Boolean,
       computed: 'computeShowActionToolbar_(appState, multiPageScanChecked)',
     },
+
+    /** @private {string} */
+    dialogText_: String,
+
+    /** @private {string} */
+    dialogConfirmationText_: String,
   },
 
   observers: [
@@ -355,5 +362,50 @@ Polymer({
     assert(!this.multiPageScanChecked || this.scanAppMultiPageScanEnabled_);
     return this.multiPageScanChecked &&
         this.appState == AppState.MULTI_PAGE_NEXT_ACTION;
+  },
+
+  /**
+   * Called when the "show-remove-page-dialog" event fires from the action
+   * toolbar button click.
+   * @param {Event} e
+   * @private
+   */
+  onShowRemovePageDialog_(e) {
+    this.showRemoveOrRescanDialog_(/* isRemovePageDialog */ true, e.detail);
+  },
+
+  /**
+   * Called when the "show-rescan-page-dialog" event fires from the action
+   * toolbar button click.
+   * @param {Event} e
+   * @private
+   */
+  onShowRescanPageDialog_(e) {
+    this.showRemoveOrRescanDialog_(/* isRemovePageDialog */ false, e.detail);
+  },
+
+  /**
+   * @param {boolean} isRemovePageDialog Determines whether to show the
+   *     'Remove Page' or 'Rescan Page' dialog.
+   * @param {number} pageNumber
+   * @private
+   */
+  showRemoveOrRescanDialog_(isRemovePageDialog, pageNumber) {
+    // Configure the dialog strings for the requested mode (Remove or Rescan).
+    const buttonLabelKey =
+        isRemovePageDialog ? 'removePageButtonLabel' : 'rescanPageButtonLabel';
+    const confirmationTextKey = isRemovePageDialog ?
+        'removePageConfirmationText' :
+        'rescanPageConfirmationText';
+    this.browserProxy_.getPluralString(buttonLabelKey, pageNumber)
+        .then(
+            /* @type {string} */ (pluralString) => {
+              this.dialogText_ = pluralString;
+              this.dialogConfirmationText_ =
+                  this.i18n(confirmationTextKey, pageNumber);
+
+              // Once strings are loaded, open the dialog.
+              this.$$('#scanPreviewDialog').showModal();
+            });
   },
 });
