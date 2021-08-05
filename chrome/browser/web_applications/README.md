@@ -191,7 +191,7 @@ Installation comes in many different forms from a simple "here's all the
 manifest data it specifies" with a few inbetweens.
 
 
-### [`ExternallyManagedAppManager`](components/externally_managed_app_manager.h)
+### [`ExternallyManagedAppManager`](externally_managed_app_manager.h)
 
 This is for all installs that are not initiated by the user. This includes
 [preinstalled apps](preinstalled_web_app_manager.h),
