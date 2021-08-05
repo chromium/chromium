@@ -132,8 +132,11 @@ GPUExternalTexture::GPUExternalTexture(
       mailbox_texture_(mailbox_texture) {}
 
 void GPUExternalTexture::Destroy() {
-  GetProcs().textureDestroy(mailbox_texture_->GetTexture());
+  WGPUTexture texture = mailbox_texture_->GetTexture();
+  GetProcs().textureReference(texture);
   mailbox_texture_.reset();
+  GetProcs().textureDestroy(texture);
+  GetProcs().textureRelease(texture);
 }
 
 }  // namespace blink
