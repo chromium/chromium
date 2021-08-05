@@ -663,8 +663,6 @@ class BluetoothTestBase : public testing::Test {
   BluetoothAdapter::ErrorCallback GetErrorCallback(Call expected);
   BluetoothAdapter::AdvertisementErrorCallback GetAdvertisementErrorCallback(
       Call expected);
-  BluetoothDevice::ConnectCallback GetConnectCallback(Call expected,
-                                                      Result expected_result);
   base::OnceCallback<void(BluetoothGattService::GattErrorCode)>
   GetGattErrorCallback(Call expected);
   BluetoothRemoteGattCharacteristic::NotifySessionCallback

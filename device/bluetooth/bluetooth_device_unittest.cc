@@ -17,8 +17,8 @@
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+#include "device/bluetooth/test/mock_pairing_delegate.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
-#include "device/bluetooth/test/test_pairing_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
@@ -40,6 +40,9 @@ namespace device {
 
 namespace {
 
+using ::testing::_;
+using ::testing::StrictMock;
+
 int8_t ToInt8(BluetoothTest::TestRSSI rssi) {
   return static_cast<int8_t>(rssi);
 }
@@ -47,6 +50,20 @@ int8_t ToInt8(BluetoothTest::TestRSSI rssi) {
 int8_t ToInt8(BluetoothTest::TestTxPower tx_power) {
   return static_cast<int8_t>(tx_power);
 }
+
+#if defined(OS_WIN)
+void ScheduleAsynchronousCancelPairing(BluetoothDevice* device) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothDevice::CancelPairing,
+                                base::Unretained(device)));
+}
+
+void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothDevice::RejectPairing,
+                                base::Unretained(device)));
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -148,17 +165,22 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeCorrect) {
   EXPECT_FALSE(device->ExpectingPinCode());
 
   SimulatePairingPinCode(device, "123456");
-  TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate,
-               GetConnectCallback(Call::EXPECTED, Result::SUCCESS));
-  base::RunLoop().RunUntilIdle();
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->SetPinCode("123456");
+      });
 
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->ExpectingPinCode());
-
-  device->SetPinCode("123456");
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  device->Pair(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&](absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+            EXPECT_FALSE(error_code.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_TRUE(device->IsPaired());
   EXPECT_FALSE(device->ExpectingPinCode());
@@ -179,21 +201,24 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeWrong) {
   EXPECT_FALSE(device->ExpectingPinCode());
 
   SimulatePairingPinCode(device, "123456");
-  TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate,
-               GetConnectCallback(Call::EXPECTED, Result::FAILURE));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->ExpectingPinCode());
-
-  device->SetPinCode("000000");
-  base::RunLoop().RunUntilIdle();
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->SetPinCode("000000");
+      });
+  base::RunLoop run_loop;
+  device->Pair(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&](absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+            EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error_code);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_FALSE(device->IsPaired());
   EXPECT_FALSE(device->ExpectingPinCode());
-  EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_code_);
 }
 
 // Tests that rejecting the pairing does not result in a paired device.
@@ -211,21 +236,25 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeRejectPairing) {
   EXPECT_FALSE(device->ExpectingPinCode());
 
   SimulatePairingPinCode(device, "123456");
-  TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate,
-               GetConnectCallback(Call::EXPECTED, Result::FAILURE));
-  base::RunLoop().RunUntilIdle();
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousRejectPairing(device);
+      });
 
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->ExpectingPinCode());
-
-  device->RejectPairing();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  device->Pair(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&](absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error_code);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_FALSE(device->IsPaired());
   EXPECT_FALSE(device->ExpectingPinCode());
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, last_connect_error_code_);
 }
 
 // Tests that cancelling the pairing does not result in a paired device.
@@ -243,23 +272,28 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeCancelPairing) {
   EXPECT_FALSE(device->ExpectingPinCode());
 
   SimulatePairingPinCode(device, "123456");
-  TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate,
-               GetConnectCallback(Call::EXPECTED, Result::FAILURE));
-  base::RunLoop().RunUntilIdle();
+  StrictMock<MockPairingDelegate> pairing_delegate;
 
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->ExpectingPinCode());
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousCancelPairing(device);
+      });
 
-  device->CancelPairing();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  device->Pair(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&](absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error_code);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_FALSE(device->IsPaired());
   EXPECT_FALSE(device->ExpectingPinCode());
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, last_connect_error_code_);
 }
-#endif
+#endif  // defined(OS_WIN)
 
 // Verifies basic device properties, e.g. GetAddress, GetName, ...
 #if defined(OS_WIN)
@@ -1714,10 +1748,9 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_ErrorAfterConnection) {
 
   EXPECT_EQ(1, gatt_connection_attempts_);
 #if defined(OS_ANDROID) || defined(OS_WIN)
-  // TODO: Change to ERROR_AUTH_FAILED. We should be getting a callback
-  // only with the first error, but our android framework doesn't yet
+  // TODO(crbug.com/578191): Change to ERROR_AUTH_FAILED. We should be getting a
+  // callback only with the first error, but our android framework doesn't yet
   // support sending different errors.
-  // http://crbug.com/578191
   // On Windows, any GattConnectionError will result in ERROR_FAILED.
   EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_code_);
 #else

@@ -384,37 +384,6 @@ void BluetoothTestBase::AdvertisementErrorCallback(
     unexpected_error_callback_ = true;
 }
 
-void BluetoothTestBase::OnConnectCallback(
-    Call expected,
-    Result expected_result,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
-  Result actual_result;
-  if (error_code) {
-    ++error_callback_count_;
-    ++actual_error_callback_calls_;
-    last_connect_error_code_ = error_code.value();
-    actual_result = Result::FAILURE;
-  } else {
-    ++callback_count_;
-    ++actual_success_callback_calls_;
-    actual_result = Result::SUCCESS;
-  }
-
-  if (expected == Call::EXPECTED) {
-    if (actual_result != expected_result) {
-      if (actual_result == Result::SUCCESS)
-        unexpected_success_callback_ = true;
-      else
-        unexpected_error_callback_ = true;
-    }
-  } else {
-    if (actual_result == Result::SUCCESS)
-      unexpected_success_callback_ = true;
-    else
-      unexpected_error_callback_ = true;
-  }
-}
-
 void BluetoothTestBase::GattErrorCallback(
     Call expected,
     BluetoothGattService::GattErrorCode error_code) {
@@ -560,19 +529,6 @@ BluetoothTestBase::GetAdvertisementErrorCallback(Call expected) {
     ++expected_error_callback_calls_;
   return base::BindOnce(&BluetoothTestBase::AdvertisementErrorCallback,
                         weak_factory_.GetWeakPtr(), expected);
-}
-
-BluetoothDevice::ConnectCallback BluetoothTestBase::GetConnectCallback(
-    Call expected,
-    Result expected_result) {
-  if (expected == Call::EXPECTED) {
-    if (expected_result == Result::SUCCESS)
-      ++expected_success_callback_calls_;
-    else
-      ++expected_error_callback_calls_;
-  }
-  return base::BindOnce(&BluetoothTestBase::OnConnectCallback,
-                        weak_factory_.GetWeakPtr(), expected, expected_result);
 }
 
 base::OnceCallback<void(BluetoothGattService::GattErrorCode)>
