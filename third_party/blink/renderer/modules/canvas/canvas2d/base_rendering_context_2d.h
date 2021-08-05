@@ -30,8 +30,7 @@ class V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString;
 class V8UnionCanvasFilterOrString;
 using cc::UsePaintCache;
 
-class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
-                                              public CanvasPath {
+class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
   ~BaseRenderingContext2D() override;
 
@@ -498,7 +497,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   bool context_restorable_{true};
   CanvasRenderingContext::LostContextMode context_lost_mode_{
       CanvasRenderingContext::kNotLostContext};
-  IdentifiabilityStudyHelper identifiability_study_helper_;
 
  private:
   // Pops from the top of the state stack, inverts transform, restores the
@@ -590,7 +588,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                            float height,
                            base::TimeTicks start_time);
 
-  void IdentifiabilityMaybeUpdateForStyleUnion(
+  // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
+  // true.
+  void IdentifiabilityUpdateForStyleUnion(
       const V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString* style);
 
   RespectImageOrientationEnum RespectImageOrientationInternal(

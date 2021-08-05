@@ -241,6 +241,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void SendContextLostEventIfNeeded() override;
 
+  bool IdentifiabilityEncounteredPartiallyDigestedImage() const override {
+    return identifiability_study_helper_.encountered_partially_digested_image();
+  }
+
  protected:
   // This reports CanvasColorParams to the CanvasRenderingContext interface.
   CanvasColorParams CanvasRenderingContextColorParams() const override {
@@ -273,7 +277,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   const Font& AccessFont();
 
-  void DrawFocusIfNeededInternal(const Path&, Element*);
+  void DrawFocusIfNeededInternal(
+      const Path&,
+      Element*,
+      IdentifiableToken path_hash = IdentifiableToken());
   bool FocusRingCallIsValid(const Path&, Element*);
   void DrawFocusRing(const Path&, Element*);
   void UpdateElementAccessibility(const Path&, Element*);

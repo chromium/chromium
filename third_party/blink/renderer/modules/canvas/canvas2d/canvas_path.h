@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATH_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -42,7 +43,8 @@ namespace blink {
 
 class ExceptionState;
 
-class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
+class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
+                                  public NoAllocDirectCallHost {
   DISALLOW_NEW();
 
  public:
@@ -102,6 +104,12 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
     return TransformationMatrix();
   }
 
+  IdentifiableToken GetIdentifiableToken() const {
+    return identifiability_study_helper_.GetToken();
+  }
+
+  void Trace(Visitor*) const override;
+
  protected:
   CanvasPath() { path_.SetIsVolatile(true); }
   explicit CanvasPath(const Path& path) : path_(path) {
@@ -118,6 +126,8 @@ class MODULES_EXPORT CanvasPath : public NoAllocDirectCallHost {
   // GetTransform() remains virtual, which is okay because it is only called in
   // code paths that handle non-invertible transforms.
   bool is_transform_invertible_ = true;
+
+  IdentifiabilityStudyHelper identifiability_study_helper_;
 };
 
 ALWAYS_INLINE bool CanvasPath::IsTransformInvertible() const {

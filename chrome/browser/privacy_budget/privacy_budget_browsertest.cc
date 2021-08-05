@@ -313,18 +313,27 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
   // adjust this test to deal.
   ASSERT_EQ(1u, merged_entries.size());
 
+  auto& metrics = merged_entries.begin()->second->metrics;
+
   // (kCanvasReadback | input_digest << kTypeBits) = one of the merged_entries
   // If the value of the relevant merged entry changes, input_digest needs to
   // change. The new input_digest can be calculated by:
   // new_input_digest = new_ukm_entry >> kTypeBits
-  constexpr uint64_t input_digest = UINT64_C(61919955620835840);
-  EXPECT_THAT(merged_entries.begin()->second->metrics,
+  constexpr uint64_t input_digest = UINT64_C(33457614533296512);
+  EXPECT_THAT(metrics,
               IsSupersetOf({
                   Key(blink::IdentifiableSurface::FromTypeAndToken(
                           blink::IdentifiableSurface::Type::kCanvasReadback,
                           input_digest)
                           .ToUkmMetricHash()),
               }));
+
+  for (auto& metric : metrics) {
+    auto surface(blink::IdentifiableSurface::FromMetricHash(metric.first));
+    LOG(INFO) << "surface type " << static_cast<uint64_t>(surface.GetType())
+              << " surface input hash " << surface.GetInputHash() << " value "
+              << metric.second;
+  }
 }
 
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)

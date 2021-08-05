@@ -58,6 +58,11 @@ class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
 
   IdentifiableToken GetIdentifiableToken() const;
 
+  // Sets on internal IdentifiabilityStudyHelper.
+  void SetExecutionContext(ExecutionContext*);
+
+  void Trace(Visitor* visitor) const override;
+
  private:
   scoped_refptr<Gradient> gradient_;
   IdentifiabilityStudyHelper identifiability_study_helper_;

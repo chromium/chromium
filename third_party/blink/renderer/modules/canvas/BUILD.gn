@@ -37,6 +37,7 @@ blink_modules_sources("canvas") {
     "canvas2d/hit_region.h",
     "canvas2d/identifiability_study_helper.cc",
     "canvas2d/identifiability_study_helper.h",
+    "canvas2d/path_2d.cc",
     "canvas2d/path_2d.h",
     "htmlcanvas/canvas_context_creation_attributes_helpers.cc",
     "htmlcanvas/canvas_context_creation_attributes_helpers.h",

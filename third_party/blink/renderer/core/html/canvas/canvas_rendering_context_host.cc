@@ -393,31 +393,19 @@ IdentifiableToken CanvasRenderingContextHost::IdentifiabilityInputDigest(
     const CanvasRenderingContext* const context) const {
   const uint64_t context_digest =
       context ? context->IdentifiableTextToken().ToUkmMetricValue() : 0;
-  const IdentifiabilityPaintOpDigest* const identifiability_paintop_digest =
-      ResourceProvider()
-          ? &(ResourceProvider()->GetIdentifiablityPaintOpDigest())
-          : nullptr;
-  const uint64_t canvas_digest =
-      identifiability_paintop_digest
-          ? identifiability_paintop_digest->GetToken().ToUkmMetricValue()
-          : 0;
   const uint64_t context_type =
       context ? context->GetContextType()
               : CanvasRenderingContext::kContextTypeUnknown;
   const bool encountered_skipped_ops =
-      (context && context->IdentifiabilityEncounteredSkippedOps()) ||
-      (identifiability_paintop_digest &&
-       identifiability_paintop_digest->encountered_skipped_ops());
+      context && context->IdentifiabilityEncounteredSkippedOps();
   const bool encountered_sensitive_ops =
       context && context->IdentifiabilityEncounteredSensitiveOps();
   const bool encountered_partially_digested_image =
-      identifiability_paintop_digest &&
-      identifiability_paintop_digest->encountered_partially_digested_image();
+      context && context->IdentifiabilityEncounteredPartiallyDigestedImage();
   // Bits [0-3] are the context type, bits [4-6] are skipped ops, sensitive
   // ops, and partial image ops bits, respectively. The remaining bits are
   // for the canvas digest.
-  uint64_t final_digest =
-      ((context_digest ^ canvas_digest) << 7) | context_type;
+  uint64_t final_digest = (context_digest << 7) | context_type;
   if (encountered_skipped_ops)
     final_digest |= IdentifiableSurface::CanvasTaintBit::kSkipped;
   if (encountered_sensitive_ops)

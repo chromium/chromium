@@ -58,9 +58,11 @@ CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
                              bool origin_clean)
     : pattern_(Pattern::CreateImagePattern(std::move(image), repeat)),
       origin_clean_(origin_clean) {
-  identifiability_study_helper_.MaybeUpdateBuilder(
-      CanvasOps::kCreatePattern, image ? image->width() : 0,
-      image ? image->height() : 0, repeat);
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kCreatePattern, image ? image->width() : 0,
+        image ? image->height() : 0, repeat);
+  }
 }
 
 void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
@@ -71,14 +73,25 @@ void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
   if (!m) {
     return;
   }
-  identifiability_study_helper_.MaybeUpdateBuilder(
-      m->m11(), m->m12(), m->m21(), m->m22(), m->m41(), m->m42());
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(m->m11(), m->m12(), m->m21(),
+                                                m->m22(), m->m41(), m->m42());
+  }
 
   pattern_transform_ = m->GetAffineTransform();
 }
 
 IdentifiableToken CanvasPattern::GetIdentifiableToken() const {
   return identifiability_study_helper_.GetToken();
+}
+
+void CanvasPattern::SetExecutionContext(ExecutionContext* context) {
+  identifiability_study_helper_.SetExecutionContext(context);
+}
+
+void CanvasPattern::Trace(Visitor* visitor) const {
+  visitor->Trace(identifiability_study_helper_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

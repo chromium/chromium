@@ -279,6 +279,10 @@ class CORE_EXPORT CanvasRenderingContext
 
   static CanvasPerformanceMonitor& GetCanvasPerformanceMonitor();
 
+  virtual bool IdentifiabilityEncounteredPartiallyDigestedImage() const {
+    return false;
+  }
+
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,
                          const CanvasContextCreationAttributesCore&,

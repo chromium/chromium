@@ -11,4 +11,8 @@ namespace blink {
 // IdentifiabilityStudyHelper::ScopedMaxOperationsSetter.
 /*static*/ int IdentifiabilityStudyHelper::max_operations_ = 1 << 20;
 
+void IdentifiabilityStudyHelper::Trace(Visitor* visitor) const {
+  visitor->Trace(execution_context_);
+}
+
 }  // namespace blink

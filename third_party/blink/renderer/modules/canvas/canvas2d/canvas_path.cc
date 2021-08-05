@@ -36,7 +36,9 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -50,6 +52,9 @@ namespace blink {
 void CanvasPath::closePath() {
   if (UNLIKELY(path_.IsEmpty()))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
+  }
   path_.CloseSubpath();
 }
 
@@ -58,6 +63,10 @@ void CanvasPath::moveTo(double double_x, double double_y) {
   float y = base::saturated_cast<float>(double_y);
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kMoveTo, double_x,
+                                                double_y);
+  }
   if (UNLIKELY(!IsTransformInvertible())) {
     path_.MoveTo(GetTransform().MapPoint(FloatPoint(x, y)));
     return;
@@ -70,6 +79,10 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   float y = base::saturated_cast<float>(double_y);
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kLineTo, double_x,
+                                                double_y);
+  }
   FloatPoint p1 = FloatPoint(x, y);
 
   if (UNLIKELY(!IsTransformInvertible())) {
@@ -94,6 +107,11 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   if (UNLIKELY(!std::isfinite(cpx) || !std::isfinite(cpy) ||
                !std::isfinite(x) || !std::isfinite(y)))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kQuadradicCurveTo,
+                                                double_cpx, double_cpy,
+                                                double_x, double_y);
+  }
   FloatPoint p1 = FloatPoint(x, y);
   FloatPoint cp = FloatPoint(cpx, cpy);
 
@@ -124,6 +142,11 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
                !std::isfinite(cp2x) || !std::isfinite(cp2y) ||
                !std::isfinite(x) || !std::isfinite(y)))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kBezierCurveTo, double_cp1x, double_cp1y, double_cp2x,
+        double_cp2y, double_x, double_y);
+  }
 
   FloatPoint p1 = FloatPoint(x, y);
   FloatPoint cp1 = FloatPoint(cp1x, cp1y);
@@ -160,6 +183,11 @@ void CanvasPath::arcTo(double double_x1,
         DOMExceptionCode::kIndexSizeError,
         "The radius provided (" + String::Number(r) + ") is negative.");
     return;
+  }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kArcTo, double_x1,
+                                                double_y1, double_x2, double_y2,
+                                                double_r);
   }
 
   FloatPoint p1 = FloatPoint(x1, y1);
@@ -365,6 +393,11 @@ void CanvasPath::arc(double double_x,
 
   if (UNLIKELY(!IsTransformInvertible()))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
+        double_end_angle, anticlockwise);
+  }
 
   if (UNLIKELY(!radius || start_angle == end_angle)) {
     // The arc is empty but we still need to draw the connecting line.
@@ -416,6 +449,12 @@ void CanvasPath::ellipse(double double_x,
 
   if (UNLIKELY(!IsTransformInvertible()))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kEllipse, double_x, double_y, double_radius_x,
+        double_radius_y, double_rotation, double_start_angle, double_end_angle,
+        anticlockwise);
+  }
 
   CanonicalizeAngle(&start_angle, &end_angle);
   float adjusted_end_angle =
@@ -446,6 +485,10 @@ void CanvasPath::rect(double double_x,
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
                !std::isfinite(width) || !std::isfinite(height)))
     return;
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kRect, double_x, double_y, double_width, double_height);
+  }
 
   path_.AddRect(FloatRect(x, y, width, height));
 }
@@ -474,6 +517,8 @@ void CanvasPath::roundRect(
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
                !std::isfinite(width) || !std::isfinite(height)))
     return;
+  // TODO(crbug.com/1234113): Instrument new canvas APIs.
+  identifiability_study_helper_.set_encountered_skipped_ops();
 
   FloatSize r[num_radii];
   for (int i = 0; i < num_radii; ++i) {
@@ -575,4 +620,7 @@ void CanvasPath::roundRect(
   path_.MoveTo(FloatPoint(x, y));
 }
 
+void CanvasPath::Trace(Visitor* visitor) const {
+  visitor->Trace(identifiability_study_helper_);
+}
 }  // namespace blink
