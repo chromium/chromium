@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "content/common/content_export.h"
@@ -80,15 +79,15 @@ class CONTENT_EXPORT MediaPlayerRendererClient
 
   // The underlying type should always be a MediaUrlDemuxer, but we only use
   // methods from the MediaResource interface.
-  CheckedPtr<media::MediaResource> media_resource_;
+  media::MediaResource* media_resource_;
 
   // Owns the StreamTexture whose surface is used by MediaPlayerRenderer.
   // Provides the VideoFrames to |sink_|.
   media::ScopedStreamTextureWrapper stream_texture_wrapper_;
 
-  CheckedPtr<media::RendererClient> client_;
+  media::RendererClient* client_;
 
-  CheckedPtr<media::VideoRendererSink> sink_;
+  media::VideoRendererSink* sink_;
 
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 

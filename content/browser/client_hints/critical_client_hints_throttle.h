@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_CLIENT_HINTS_CRITICAL_CLIENT_HINTS_THROTTLE_H_
 #define CONTENT_BROWSER_CLIENT_HINTS_CRITICAL_CLIENT_HINTS_THROTTLE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -64,8 +63,8 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
       const std::vector<network::mojom::WebClientHintsType>& hints,
       net::HttpRequestHeaders& modified_headers);
 
-  CheckedPtr<BrowserContext> context_;
-  CheckedPtr<ClientHintsControllerDelegate> client_hint_delegate_;
+  BrowserContext* context_;
+  ClientHintsControllerDelegate* client_hint_delegate_;
   int frame_tree_node_id_;
 
   // The ACCEPT_CH frame should only restart a navigation once. Once a redirect

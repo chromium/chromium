@@ -12,7 +12,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -262,7 +261,7 @@ class PermissionManager::PermissionResponseCallback {
   }
 
  private:
-  CheckedPtr<PermissionManager> permission_manager_;
+  PermissionManager* permission_manager_;
   PendingRequestLocalId request_local_id_;
   int permission_id_;
   bool request_answered_;

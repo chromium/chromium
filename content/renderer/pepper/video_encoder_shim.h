@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
@@ -64,7 +63,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
 
   std::unique_ptr<EncoderImpl> encoder_impl_;
 
-  CheckedPtr<PepperVideoEncoderHost> host_;
+  PepperVideoEncoderHost* host_;
 
   // Task doing the encoding.
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;

@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class Profile;
 
@@ -68,7 +67,7 @@ class MostVisitedSitesBridge {
   std::unique_ptr<JavaObserver> java_observer_;
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(MostVisitedSitesBridge);
 };

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "gin/arguments.h"
 #include "gin/wrappable.h"
@@ -69,13 +68,13 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
   // For set jsObject.onmessage.
   void SetOnMessage(v8::Isolate* isolate, v8::Local<v8::Value> value);
 
-  CheckedPtr<content::RenderFrame> render_frame_;
+  content::RenderFrame* render_frame_;
   std::u16string js_object_name_;
   v8::Global<v8::Function> on_message_;
   std::vector<v8::Global<v8::Function>> listeners_;
   // |js_java_configurator| owns JsBinding objects, so it will out live
   // JsBinding's life cycle, it is safe to access it.
-  CheckedPtr<JsCommunication> js_java_configurator_;
+  JsCommunication* js_java_configurator_;
 
   mojo::AssociatedReceiver<mojom::BrowserToJsMessaging> receiver_{this};
 

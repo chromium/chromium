@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/blob/scoped_file.h"
@@ -195,7 +194,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
   scoped_refptr<FileSystemContext> file_system_context_;
 
   std::unique_ptr<FileSystemOperationContext> operation_context_;
-  CheckedPtr<AsyncFileUtil> async_file_util_;  // Not owned.
+  AsyncFileUtil* async_file_util_;  // Not owned.
 
   std::unique_ptr<FileWriterDelegate> file_writer_delegate_;
   std::unique_ptr<RecursiveOperationDelegate> recursive_operation_delegate_;

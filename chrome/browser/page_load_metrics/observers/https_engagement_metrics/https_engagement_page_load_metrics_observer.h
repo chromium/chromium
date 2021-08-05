@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HTTPS_ENGAGEMENT_METRICS_HTTPS_ENGAGEMENT_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "url/gurl.h"
@@ -31,7 +30,7 @@ class HttpsEngagementPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
-  CheckedPtr<HttpsEngagementService> engagement_service_;
+  HttpsEngagementService* engagement_service_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpsEngagementPageLoadMetricsObserver);
 };

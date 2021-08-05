@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -111,7 +110,7 @@ class AndroidAutofillManager : public AutofillManager {
   AutofillProvider* GetAutofillProvider();
 
   bool has_server_prediction_ = false;
-  CheckedPtr<AutofillProvider> autofill_provider_for_testing_ = nullptr;
+  AutofillProvider* autofill_provider_for_testing_ = nullptr;
   base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidAutofillManager);

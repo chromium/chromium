@@ -13,7 +13,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/download/internal/background_service/controller.h"
@@ -249,8 +248,8 @@ class ControllerImpl : public Controller,
   // received upload data from their respective clients.
   void KillTimedOutUploads();
 
-  CheckedPtr<Configuration> config_;
-  CheckedPtr<LogSink> log_sink_;
+  Configuration* config_;
+  LogSink* log_sink_;
 
   // The directory in which the downloaded files are stored.
   const base::FilePath download_file_dir_;
@@ -260,7 +259,7 @@ class ControllerImpl : public Controller,
   std::unique_ptr<DownloadDriver> driver_;
   std::unique_ptr<Model> model_;
   std::unique_ptr<DeviceStatusListener> device_status_listener_;
-  CheckedPtr<NavigationMonitor> navigation_monitor_;
+  NavigationMonitor* navigation_monitor_;
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TaskScheduler> task_scheduler_;
   std::unique_ptr<FileMonitor> file_monitor_;

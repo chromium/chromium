@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -145,7 +144,7 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
 
   Browser* browser() { return net_internals_test_->browser(); }
 
-  CheckedPtr<NetInternalsTest> net_internals_test_;
+  NetInternalsTest* net_internals_test_;
 
   // Single NetworkIsolationKey used for all DNS lookups, so repeated lookups
   // use the same cache key.

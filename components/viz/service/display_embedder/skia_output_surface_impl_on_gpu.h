@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -299,16 +298,15 @@ class SkiaOutputSurfaceImplOnGpu
   // dtors are called first.
   absl::optional<ReleaseCurrent> release_current_last_;
 
-  const CheckedPtr<SkiaOutputSurfaceDependency> dependency_;
-  CheckedPtr<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>
-      shared_gpu_deps_;
+  SkiaOutputSurfaceDependency* const dependency_;
+  gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps_;
   scoped_refptr<gpu::gles2::FeatureInfo> feature_info_;
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
-  const CheckedPtr<VulkanContextProvider> vulkan_context_provider_;
-  const CheckedPtr<DawnContextProvider> dawn_context_provider_;
+  VulkanContextProvider* const vulkan_context_provider_;
+  DawnContextProvider* const dawn_context_provider_;
   const RendererSettings renderer_settings_;
 
   // Should only be run on the client thread with PostTaskToClientThread().
@@ -343,7 +341,7 @@ class SkiaOutputSurfaceImplOnGpu
     void EndAccess();
 
    private:
-    const CheckedPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
+    SkiaOutputSurfaceImplOnGpu* const impl_on_gpu_;
     base::flat_set<ImageContextImpl*> image_contexts_;
 
     DISALLOW_COPY_AND_ASSIGN(PromiseImageAccessHelper);

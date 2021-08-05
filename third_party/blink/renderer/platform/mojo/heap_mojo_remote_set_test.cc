@@ -7,7 +7,6 @@
 #include <utility>
 
 #include <string>
-#include "base/memory/checked_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -45,7 +44,7 @@ class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
 
  private:
   HeapMojoRemoteSet<sample::blink::Service, Mode> remote_set_;
-  CheckedPtr<HeapMojoRemoteSetGCBaseTest<Mode>> test_;
+  HeapMojoRemoteSetGCBaseTest<Mode>* test_;
 };
 
 template <HeapMojoWrapperMode Mode>

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PREF_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
 #define CHROME_BROWSER_PERMISSIONS_PREF_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/permissions/permission_ui_selector.h"
 
 class Profile;
@@ -44,7 +43,7 @@ class PrefNotificationPermissionUiSelector
       permissions::RequestType request_type) override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PREF_NOTIFICATION_PERMISSION_UI_SELECTOR_H_

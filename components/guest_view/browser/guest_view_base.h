@@ -9,7 +9,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/guest_view/common/guest_view_constants.h"
@@ -126,7 +125,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   bool initialized() const { return initialized_; }
 
   content::WebContents* embedder_web_contents() const {
-    return attached() ? owner_web_contents_.get() : nullptr;
+    return attached() ? owner_web_contents_ : nullptr;
   }
 
   content::WebContents* owner_web_contents() const {
@@ -403,9 +402,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // This guest tracks the lifetime of the WebContents specified by
   // |owner_web_contents_|. If |owner_web_contents_| is destroyed then this
   // guest will also self-destruct.
-  CheckedPtr<content::WebContents> owner_web_contents_;
+  content::WebContents* owner_web_contents_;
   std::string owner_host_;
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // |guest_instance_id_| is a profile-wide unique identifier for a guest
   // WebContents.
@@ -459,7 +458,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   gfx::Size guest_size_;
 
   // A pointer to the guest_host.
-  CheckedPtr<content::GuestHost> guest_host_;
+  content::GuestHost* guest_host_;
 
   // Indicates whether autosize mode is enabled or not.
   bool auto_size_enabled_;

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -340,7 +339,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // can null out its pointer.
   void RenderFrameGone();
 
-  CheckedPtr<RenderFrame> render_frame_;
+  RenderFrame* render_frame_;
   // The routing ID of the associated RenderFrame.
   int routing_id_;
 

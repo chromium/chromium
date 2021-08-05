@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -112,9 +111,9 @@ class TabHoverCardController : public views::ViewObserver,
 
   base::OneShotTimer delayed_show_timer_;
 
-  CheckedPtr<Tab> target_tab_ = nullptr;
-  const CheckedPtr<TabStrip> tab_strip_;
-  CheckedPtr<TabHoverCardBubbleView> hover_card_ = nullptr;
+  Tab* target_tab_ = nullptr;
+  TabStrip* const tab_strip_;
+  TabHoverCardBubbleView* hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       hover_card_observation_{this};
   base::ScopedObservation<views::View, views::ViewObserver>

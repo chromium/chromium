@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -68,7 +67,7 @@ class CloseListener : public WebSocketListener {
   }
 
  private:
-  CheckedPtr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 };
 
 class WebSocketTest : public testing::Test {

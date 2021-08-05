@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/process_mitigations.h"
 
 #include <windows.h>
@@ -237,7 +236,7 @@ class DynamicCodeOptOutThread {
   HANDLE thread_;
   bool opt_out_;
   DynCodeAPI which_api_test_;
-  CheckedPtr<wchar_t> file_path_;
+  wchar_t* file_path_;
   int return_code_;
 
   DISALLOW_COPY_AND_ASSIGN(DynamicCodeOptOutThread);

@@ -17,7 +17,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -374,7 +373,7 @@ class OverflowButton : public BookmarkMenuButtonBase {
   }
 
  private:
-  CheckedPtr<BookmarkBarView> owner_;
+  BookmarkBarView* owner_;
 };
 
 void RecordAppLaunch(Profile* profile, const GURL& url) {

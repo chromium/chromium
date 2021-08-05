@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
@@ -94,8 +93,8 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   void RemoveGlobalError();
 
-  CheckedPtr<ExtensionService> service_;
-  CheckedPtr<const Extension> extension_;
+  ExtensionService* service_;
+  const Extension* extension_;
   bool is_remote_install_;
 
   // How the user responded to the error; used for metrics.
@@ -246,8 +245,7 @@ void ExtensionDisabledGlobalError::BubbleViewAcceptButtonPressed(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExtensionService::GrantPermissionsAndEnableExtension,
-                     service_->AsWeakPtr(),
-                     base::RetainedRef(extension_.get())));
+                     service_->AsWeakPtr(), base::RetainedRef(extension_)));
 }
 
 void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(
@@ -260,7 +258,7 @@ void ExtensionDisabledGlobalError::BubbleViewCancelButtonPressed(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&ExtensionUninstallDialog::ConfirmUninstall,
                                 uninstall_dialog_->AsWeakPtr(),
-                                base::RetainedRef(extension_.get()),
+                                base::RetainedRef(extension_),
                                 UNINSTALL_REASON_EXTENSION_DISABLED,
                                 UNINSTALL_SOURCE_PERMISSIONS_INCREASE));
 }

@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -285,9 +284,9 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
 
   // The following fields are used only on the IO thread.
   // Non-owning ptr.
-  CheckedPtr<BrowserPpapiHostImpl> host_;
+  BrowserPpapiHostImpl* host_;
   // Non-owning ptr.
-  CheckedPtr<ContentBrowserPepperHostFactory> factory_;
+  ContentBrowserPepperHostFactory* factory_;
   PP_Instance instance_;
 
   // The following fields are used only on the UI thread.

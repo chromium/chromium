@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -220,7 +219,7 @@ class SignedExchangeRequestHandlerBrowserTestBase
   MockContentBrowserClient client_;
 
  private:
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_;
   SignedExchangeBrowserTestHelper sxg_test_helper_;
@@ -703,7 +702,7 @@ class SignedExchangeRequestHandlerDownloadBrowserTest
     }
 
    private:
-    CheckedPtr<DownloadManager> manager_;
+    DownloadManager* manager_;
     base::RunLoop run_loop_;
     GURL url_;
     std::string content_disposition_;

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
@@ -204,7 +203,7 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   invalidation::FakeInvalidationService invalidation_service_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
-  CheckedPtr<MockCloudPolicyClient> client_;
+  MockCloudPolicyClient* client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SimpleTestClock clock_;
 

@@ -19,7 +19,6 @@
 #include "base/containers/queue.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
@@ -488,10 +487,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // Specifies whether touch selection handles are hidden due to text selection.
   bool handles_hidden_by_selection_ui_ = false;
 
-  CheckedPtr<ImeAdapterAndroid> ime_adapter_android_;
-  CheckedPtr<SelectionPopupController> selection_popup_controller_;
-  CheckedPtr<TextSuggestionHostAndroid> text_suggestion_host_;
-  CheckedPtr<GestureListenerManager> gesture_listener_manager_;
+  ImeAdapterAndroid* ime_adapter_android_;
+  SelectionPopupController* selection_popup_controller_;
+  TextSuggestionHostAndroid* text_suggestion_host_;
+  GestureListenerManager* gesture_listener_manager_;
 
   mutable ui::ViewAndroid view_;
 
@@ -534,7 +533,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   std::unique_ptr<SynchronousCompositorHost> sync_compositor_;
   uint32_t sync_compositor_last_frame_token_ = 0u;
 
-  CheckedPtr<SynchronousCompositorClient> synchronous_compositor_client_;
+
+  SynchronousCompositorClient* synchronous_compositor_client_;
 
   bool observing_root_window_;
 
@@ -593,8 +593,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // A cached copy of the most up to date RenderFrameMetadata.
   absl::optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
-  CheckedPtr<WebContentsAccessibilityAndroid> web_contents_accessibility_ =
-      nullptr;
+  WebContentsAccessibilityAndroid* web_contents_accessibility_ = nullptr;
 
   SurfaceIdChangedCallbackList surface_id_changed_callbacks_;
 

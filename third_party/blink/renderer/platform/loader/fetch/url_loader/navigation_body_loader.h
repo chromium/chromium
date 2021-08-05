@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -127,7 +126,7 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   mojo::Remote<network::mojom::URLLoader> url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_{
       this};
-  CheckedPtr<WebNavigationBodyLoader::Client> client_ = nullptr;
+  WebNavigationBodyLoader::Client* client_ = nullptr;
 
   // The handle and watcher are live while loading the body.
   mojo::ScopedDataPipeConsumerHandle handle_;

@@ -10,7 +10,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/renderer/pepper/v8_var_converter.h"
 #include "gin/handle.h"
@@ -149,7 +148,7 @@ class MessageChannel :
       const std::string& name,
       void (MessageChannel::*memberFuncPtr)(gin::Arguments* args));
 
-  CheckedPtr<PepperPluginInstanceImpl> instance_;
+  PepperPluginInstanceImpl* instance_;
 
   // We pass all non-postMessage calls through to the passthrough_object_.
   // This way, a plugin can use PPB_Class or PPP_Class_Deprecated and also

@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -99,11 +98,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceAndroid
 
   // The adapter associated with this service. It's ok to store a raw pointer
   // here since |adapter_| indirectly owns this instance.
-  CheckedPtr<BluetoothAdapterAndroid> adapter_;
+  BluetoothAdapterAndroid* adapter_;
 
   // The device this GATT service belongs to. It's ok to store a raw pointer
   // here since |device_| owns this instance.
-  CheckedPtr<BluetoothDeviceAndroid> device_;
+  BluetoothDeviceAndroid* device_;
 
   // Adapter unique instance ID.
   std::string instance_id_;

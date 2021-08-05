@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_CLEAR_ACTIVITIES_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_CLEAR_ACTIVITIES_TASK_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
@@ -31,7 +30,7 @@ class ClearActivitiesTask : public Task {
 
   void DoneExecuting(bool result);
 
-  CheckedPtr<ExploreSitesStore> store_;  // outlives this class.
+  ExploreSitesStore* store_;  // outlives this class.
   base::Time begin_;
   base::Time end_;
   BooleanCallback callback_;

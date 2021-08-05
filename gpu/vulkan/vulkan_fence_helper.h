@@ -16,7 +16,6 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/vulkan/vma_wrapper.h"
 
@@ -122,7 +121,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
  private:
   void PerformImmediateCleanup();
 
-  const CheckedPtr<VulkanDeviceQueue> device_queue_;
+  VulkanDeviceQueue* const device_queue_;
 
   std::vector<CleanupTask> tasks_pending_fence_;
   uint64_t next_generation_ = 1;

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/common/content_export.h"
@@ -68,7 +67,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
   const std::string device_id_;
   media::AudioParameters params_;
   const uint32_t shared_memory_count_;
-  const CheckedPtr<media::UserInputMonitorBase> user_input_monitor_;
+  media::UserInputMonitorBase* const user_input_monitor_;
   const bool enable_agc_;
 
   // Indicates that CreateStream has been called, but not StreamCreated.

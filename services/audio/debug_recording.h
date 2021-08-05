@@ -6,7 +6,6 @@
 #define SERVICES_AUDIO_DEBUG_RECORDING_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -44,7 +43,7 @@ class DebugRecording : public mojom::DebugRecording {
       mojom::DebugRecordingFileProvider::CreateWavFileCallback reply_callback);
   bool IsEnabled();
 
-  const CheckedPtr<media::AudioManager> audio_manager_;
+  media::AudioManager* const audio_manager_;
   mojo::Receiver<mojom::DebugRecording> receiver_;
   mojo::Remote<mojom::DebugRecordingFileProvider> file_provider_;
 

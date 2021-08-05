@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
@@ -401,53 +400,53 @@ class BookmarkBarView : public views::AccessiblePaneView,
   PrefChangeRegistrar profile_pref_registrar_;
 
   // Used for opening urls.
-  CheckedPtr<content::PageNavigator> page_navigator_ = nullptr;
+  content::PageNavigator* page_navigator_ = nullptr;
 
   // BookmarkModel that owns the entries and folders that are shown in this
   // view. This is owned by the Profile.
-  CheckedPtr<bookmarks::BookmarkModel> model_ = nullptr;
+  bookmarks::BookmarkModel* model_ = nullptr;
 
   // ManagedBookmarkService. This is owned by the Profile.
-  CheckedPtr<bookmarks::ManagedBookmarkService> managed_ = nullptr;
+  bookmarks::ManagedBookmarkService* managed_ = nullptr;
 
   // Used to manage showing a Menu, either for the most recently bookmarked
   // entries, or for the starred folder.
-  CheckedPtr<BookmarkMenuController> bookmark_menu_ = nullptr;
+  BookmarkMenuController* bookmark_menu_ = nullptr;
 
   // Used when showing a menu for drag and drop. That is, if the user drags
   // over a folder this becomes non-null and manages the menu showing the
   // contents of the node.
-  CheckedPtr<BookmarkMenuController> bookmark_drop_menu_ = nullptr;
+  BookmarkMenuController* bookmark_drop_menu_ = nullptr;
 
   // If non-NULL we're showing a context menu for one of the items on the
   // bookmark bar.
   std::unique_ptr<BookmarkContextMenu> context_menu_;
 
   // Shows the "Other Bookmarks" folder button.
-  CheckedPtr<views::MenuButton> other_bookmarks_button_ = nullptr;
+  views::MenuButton* other_bookmarks_button_ = nullptr;
 
   // Shows the managed bookmarks entries.
-  CheckedPtr<views::MenuButton> managed_bookmarks_button_ = nullptr;
+  views::MenuButton* managed_bookmarks_button_ = nullptr;
 
   // Shows the Apps page shortcut.
-  CheckedPtr<views::LabelButton> apps_page_shortcut_ = nullptr;
+  views::LabelButton* apps_page_shortcut_ = nullptr;
 
   // Used to track drops on the bookmark bar view.
   std::unique_ptr<DropInfo> drop_info_;
 
   // Visible if not all the bookmark buttons fit.
-  CheckedPtr<views::MenuButton> overflow_button_ = nullptr;
+  views::MenuButton* overflow_button_ = nullptr;
 
   // The individual bookmark buttons.
   std::vector<views::LabelButton*> bookmark_buttons_;
 
-  CheckedPtr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
+  ButtonSeparatorView* bookmarks_separator_view_ = nullptr;
 
-  CheckedPtr<ReadLaterButton> read_later_button_ = nullptr;
-  CheckedPtr<ButtonSeparatorView> read_later_separator_view_ = nullptr;
+  ReadLaterButton* read_later_button_ = nullptr;
+  ButtonSeparatorView* read_later_separator_view_ = nullptr;
 
-  const CheckedPtr<Browser> browser_;
-  CheckedPtr<BrowserView> browser_view_;
+  Browser* const browser_;
+  BrowserView* browser_view_;
 
   // True if the owning browser is showing an infobar.
   bool infobar_visible_ = false;
@@ -458,7 +457,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // If the bookmark bubble is showing, this is the visible ancestor of the URL.
   // The visible ancestor is either the |other_bookmarks_button_|,
   // |overflow_button_| or a button on the bar.
-  CheckedPtr<views::Button> throbbing_view_ = nullptr;
+  views::Button* throbbing_view_ = nullptr;
 
   BookmarkBar::State bookmark_bar_state_ = BookmarkBar::SHOW;
 

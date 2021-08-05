@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/sync_engine.h"
@@ -106,7 +105,7 @@ class FakeSyncEngine : public SyncEngine,
   const bool allow_init_completion_;
   const bool is_first_time_sync_configure_;
   const base::RepeatingClosure sync_transport_data_cleared_cb_;
-  CheckedPtr<SyncEngineHost> host_ = nullptr;
+  SyncEngineHost* host_ = nullptr;
   bool initialized_ = false;
   const SyncStatus default_sync_status_;
   CoreAccountId authenticated_account_id_;

@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_THEMED_VECTOR_ICON_H_
 #define UI_NATIVE_THEME_THEMED_VECTOR_ICON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
@@ -50,10 +49,10 @@ class NATIVE_THEME_EXPORT ThemedVectorIcon {
   SkColor GetColor(const NativeTheme* theme) const;
   gfx::ImageSkia GetImageSkia(SkColor color, int icon_size) const;
 
-  CheckedPtr<const gfx::VectorIcon> icon_ = nullptr;
+  const gfx::VectorIcon* icon_ = nullptr;
   int icon_size_ = 0;
   absl::variant<int, SkColor> color_ = gfx::kPlaceholderColor;
-  CheckedPtr<const gfx::VectorIcon> badge_ = nullptr;
+  const gfx::VectorIcon* badge_ = nullptr;
 };
 
 }  // namespace ui

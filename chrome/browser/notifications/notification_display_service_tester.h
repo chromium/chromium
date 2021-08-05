@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -91,8 +90,8 @@ class NotificationDisplayServiceTester {
  private:
   void OnProfileShutdown();
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<StubNotificationDisplayService> display_service_;
+  Profile* profile_;
+  StubNotificationDisplayService* display_service_;
   base::CallbackListSubscription profile_shutdown_subscription_;
 };
 

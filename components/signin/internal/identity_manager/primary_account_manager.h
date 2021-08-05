@@ -21,7 +21,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
@@ -172,12 +171,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     return primary_account_info_;
   }
 
-  CheckedPtr<SigninClient> client_;
+  SigninClient* client_;
 
   // The ProfileOAuth2TokenService instance associated with this object. Must
   // outlive this object.
-  CheckedPtr<ProfileOAuth2TokenService> token_service_ = nullptr;
-  CheckedPtr<AccountTrackerService> account_tracker_service_ = nullptr;
+  ProfileOAuth2TokenService* token_service_ = nullptr;
+  AccountTrackerService* account_tracker_service_ = nullptr;
 
   bool initialized_ = false;
 

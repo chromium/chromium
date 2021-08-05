@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
@@ -139,7 +138,7 @@ class BackgroundTaskCoordinatorTest : public testing::Test {
   test::FakeClock clock_;
   SchedulerConfig config_;
   std::unique_ptr<BackgroundTaskCoordinator> coordinator_;
-  CheckedPtr<test::MockNotificationBackgroundTaskScheduler> background_task_;
+  test::MockNotificationBackgroundTaskScheduler* background_task_;
   TestData test_data_;
   std::map<SchedulerClientType, std::unique_ptr<ClientState>> client_states_;
 };

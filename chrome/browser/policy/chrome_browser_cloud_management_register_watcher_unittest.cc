@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
@@ -133,7 +132,7 @@ class ChromeBrowserCloudManagementRegisterWatcherTest : public ::testing::Test {
   ChromeBrowserCloudManagementRegisterWatcher watcher_;
   FakeBrowserDMTokenStorage storage_;
   std::unique_ptr<MockEnterpriseStartupDialog> dialog_;
-  CheckedPtr<MockEnterpriseStartupDialog> dialog_ptr_;
+  MockEnterpriseStartupDialog* dialog_ptr_;
 };
 
 TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,

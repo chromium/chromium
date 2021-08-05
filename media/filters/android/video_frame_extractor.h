@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_demuxer.h"
@@ -62,14 +61,14 @@ class MEDIA_EXPORT VideoFrameExtractor {
   void OnError();
 
   // Objects to read video data.
-  CheckedPtr<DataSource> data_source_;
+  DataSource* data_source_;
   std::unique_ptr<BlockingUrlProtocol> protocol_;
   std::unique_ptr<FFmpegGlue> glue_;
 
   // FFMPEG related objects to prepare video frame to decode.
   ScopedAVPacket packet_;
   int video_stream_index_;
-  CheckedPtr<AVStream> video_stream_ = nullptr;
+  AVStream* video_stream_ = nullptr;
   VideoDecoderConfig video_config_;
   std::unique_ptr<FFmpegBitstreamConverter> bitstream_converter_;
 

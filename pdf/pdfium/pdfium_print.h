@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -74,7 +73,7 @@ class PDFiumPrint {
   ScopedFPDFDocument CreateSinglePageRasterPdf(FPDF_PAGE page_to_print,
                                                int dpi);
 
-  const CheckedPtr<PDFiumEngine> engine_;
+  PDFiumEngine* const engine_;
 };
 
 }  // namespace chrome_pdf

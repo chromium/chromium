@@ -11,7 +11,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -135,7 +134,7 @@ class TableViewTestHelper {
   }
 
  private:
-  CheckedPtr<TableView> table_;
+  TableView* table_;
 
   DISALLOW_COPY_AND_ASSIGN(TableViewTestHelper);
 };
@@ -194,7 +193,7 @@ class TestTableModel2 : public ui::TableModel {
   int CompareValues(int row1, int row2, int column_id) override;
 
  private:
-  CheckedPtr<ui::TableModelObserver> observer_ = nullptr;
+  ui::TableModelObserver* observer_ = nullptr;
 
   absl::optional<std::u16string> tooltip_;
 
@@ -604,7 +603,7 @@ class TableViewTest : public ViewsTestBase,
   std::unique_ptr<TestTableModel2> model_;
 
   // Owned by |parent_|.
-  CheckedPtr<TableView> table_ = nullptr;
+  TableView* table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -2121,7 +2120,7 @@ class RemoveFocusChangeListenerDelegate : public WidgetDelegate {
   void SetFocusChangeListener(FocusChangeListener* listener);
 
  private:
-  CheckedPtr<FocusChangeListener> listener_;
+  FocusChangeListener* listener_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveFocusChangeListenerDelegate);
 };

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -58,13 +57,13 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   // PermissionPromptAndroid is owned by PermissionRequestManager, so it should
   // be safe to hold a raw WebContents pointer here because this class is
   // destroyed before the WebContents.
-  const CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* const web_contents_;
   // |delegate_| is the PermissionRequestManager, which owns this object.
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // The infobar used to display the permission request, if displayed in that
   // format. Never assume that this pointer is currently alive.
-  CheckedPtr<infobars::InfoBar> permission_infobar_;
+  infobars::InfoBar* permission_infobar_;
 
   base::WeakPtrFactory<PermissionPromptAndroid> weak_factory_{this};
 

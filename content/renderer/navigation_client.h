@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 #define CONTENT_RENDERER_NAVIGATION_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/navigation_client.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -68,7 +67,7 @@ class NavigationClient : mojom::NavigationClient {
 
   mojo::AssociatedReceiver<mojom::NavigationClient> navigation_client_receiver_{
       this};
-  CheckedPtr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
   bool was_initiated_in_this_frame_ = false;
 };
 

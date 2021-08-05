@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -264,7 +263,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
     PendingTask(PendingTask&&);
     ~PendingTask();
 
-    CheckedPtr<const WebAppInstallTask> task = nullptr;
+    const WebAppInstallTask* task = nullptr;
     base::OnceClosure start;
   };
 
@@ -273,12 +272,12 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   DataRetrieverFactory data_retriever_factory_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
-  CheckedPtr<WebAppRegistrar> registrar_ = nullptr;
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
-  CheckedPtr<InstallFinalizer> finalizer_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
+  InstallFinalizer* finalizer_ = nullptr;
 
   bool disable_web_app_sync_install_for_testing_ = false;
 
@@ -289,7 +288,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   using TaskQueue = base::queue<PendingTask>;
   TaskQueue task_queue_;
-  CheckedPtr<const WebAppInstallTask> current_queued_task_ = nullptr;
+  const WebAppInstallTask* current_queued_task_ = nullptr;
 
   // A single WebContents, shared between tasks in |task_queue_|.
   std::unique_ptr<content::WebContents> web_contents_;

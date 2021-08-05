@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -174,7 +173,7 @@ class WorkerStateObserver
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
   base::RunLoop run_loop_;
-  CheckedPtr<ServiceWorkerContextWrapper> context_;
+  ServiceWorkerContextWrapper* context_;
   const ServiceWorkerVersion::Status target_;
   DISALLOW_COPY_AND_ASSIGN(WorkerStateObserver);
 };
@@ -2421,7 +2420,7 @@ class CodeCacheHostInterceptor
   // These can be held as raw pointers since we use the
   // RenderFrameHostObserver interface to clear them before they are
   // destroyed.
-  CheckedPtr<CodeCacheHostImpl> code_cache_host_impl_;
+  CodeCacheHostImpl* code_cache_host_impl_;
 };
 
 class CacheStorageControlForBadOrigin

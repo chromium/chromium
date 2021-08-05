@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_FIND_IN_PAGE_BUDGET_POOL_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_FIND_IN_PAGE_BUDGET_POOL_CONTROLLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
@@ -36,7 +35,7 @@ class PLATFORM_EXPORT FindInPageBudgetPoolController {
   QueuePriority CurrentTaskPriority() { return task_priority_; }
 
  private:
-  CheckedPtr<MainThreadSchedulerImpl> scheduler_;  // Not owned.
+  MainThreadSchedulerImpl* scheduler_;  // Not owned.
   std::unique_ptr<CPUTimeBudgetPool> find_in_page_budget_pool_;
   QueuePriority task_priority_;
   const bool best_effort_budget_experiment_enabled_;

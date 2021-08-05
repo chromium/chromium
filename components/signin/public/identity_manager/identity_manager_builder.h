@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -66,11 +65,11 @@ struct IdentityManagerBuildParams {
   AccountConsistencyMethod account_consistency =
       AccountConsistencyMethod::kDisabled;
   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder;
-  CheckedPtr<PrefService> local_state = nullptr;
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker;
-  CheckedPtr<PrefService> pref_service = nullptr;
+  PrefService* local_state = nullptr;
+  network::NetworkConnectionTracker* network_connection_tracker;
+  PrefService* pref_service = nullptr;
   base::FilePath profile_path;
-  CheckedPtr<SigninClient> signin_client = nullptr;
+  SigninClient* signin_client = nullptr;
 
 #if !defined(OS_ANDROID)
   bool delete_signin_cookies_on_exit = false;

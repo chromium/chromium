@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -81,9 +80,9 @@ class PasswordsPrivateEventRouter : public KeyedService {
   void SendSavedPasswordListToListeners();
   void SendPasswordExceptionListToListeners();
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
-  CheckedPtr<EventRouter> event_router_;
+  EventRouter* event_router_;
 
   // Cached parameters which are saved so that when new listeners are added, the
   // most up-to-date lists can be sent to them immediately.

@@ -9,7 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -87,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void Dispose();
 
   const std::unique_ptr<net::WebTransportClient> transport_;
-  const CheckedPtr<NetworkContext> context_;  // outlives |this|.
+  NetworkContext* const context_;  // outlives |this|.
 
   std::map<uint32_t, std::unique_ptr<Stream>> streams_;
 

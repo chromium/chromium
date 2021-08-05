@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/content_renderer_pepper_host_factory.h"
 #include "ppapi/host/ppapi_host.h"
@@ -66,8 +65,8 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   ppapi::proxy::ResourceMessageTestSink sink_;
   ppapi::host::PpapiHost ppapi_host_;
 
-  CheckedPtr<RenderView> render_view_;
-  CheckedPtr<RenderFrame> render_frame_;
+  RenderView* render_view_;
+  RenderFrame* render_frame_;
   PP_Instance pp_instance_;
 
   bool has_user_gesture_;

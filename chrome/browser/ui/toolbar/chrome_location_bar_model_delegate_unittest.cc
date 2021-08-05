@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -50,7 +49,7 @@ class TestChromeLocationBarModelDelegate
   }
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
   net::CertStatus cert_status_ = 0;
 };
 

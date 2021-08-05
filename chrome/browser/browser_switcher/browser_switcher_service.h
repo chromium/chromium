@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -96,7 +95,7 @@ class XmlDownloader {
   scoped_refptr<network::SharedURLLoaderFactory> other_url_factory_;
 
   // This |BrowserSwitcherService| owns this object.
-  CheckedPtr<BrowserSwitcherService> service_;
+  BrowserSwitcherService* service_;
 
   std::vector<RulesetSource> sources_;
 
@@ -190,7 +189,7 @@ class BrowserSwitcherService : public KeyedService {
 
   std::unique_ptr<XmlDownloader> sitelist_downloader_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   BrowserSwitcherPrefs prefs_;
   base::CallbackListSubscription prefs_subscription_;
 

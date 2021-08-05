@@ -34,7 +34,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom-blink.h"
@@ -148,12 +147,12 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
 
   // Non-null until the WebEmbeddedWorkerImpl explicitly detach()es
   // as part of its finalization.
-  CheckedPtr<WebEmbeddedWorkerImpl> embedded_worker_;
+  WebEmbeddedWorkerImpl* embedded_worker_;
 
   scoped_refptr<base::SingleThreadTaskRunner>
       parent_thread_default_task_runner_;
 
-  CheckedPtr<WebServiceWorkerContextClient> client_;
+  WebServiceWorkerContextClient* client_;
 
   CrossThreadPersistent<ServiceWorkerGlobalScope> worker_global_scope_;
 

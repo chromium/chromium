@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -81,10 +80,10 @@ class BulkLeakCheckImpl : public BulkLeakCheck {
                           AnalyzeResponseResult result);
 
   // Delegate for the instance. Should outlive |this|.
-  const CheckedPtr<BulkLeakCheckDelegateInterface> delegate_;
+  BulkLeakCheckDelegateInterface* const delegate_;
 
   // Identity manager for the profile.
-  const CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* const identity_manager_;
 
   // URL loader factory required for the network request to the identity
   // endpoint.

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -235,8 +234,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   bool CreateSharedImageStub();
 
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
-  CheckedPtr<IPC::Sender>
-      channel_;  // Same as sync_channel_.get() except in tests.
+  IPC::Sender* channel_;  // Same as sync_channel_.get() except in tests.
 
   base::ProcessId client_pid_ = base::kNullProcessId;
 
@@ -253,13 +251,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // The lifetime of objects of this class is managed by a GpuChannelManager.
   // The GpuChannelManager destroy all the GpuChannels that they own when they
   // are destroyed. So a raw pointer is safe.
-  const CheckedPtr<GpuChannelManager> gpu_channel_manager_;
+  GpuChannelManager* const gpu_channel_manager_;
 
-  const CheckedPtr<Scheduler> scheduler_;
+  Scheduler* const scheduler_;
 
   // Sync point manager. Outlives the channel and is guaranteed to outlive the
   // message loop.
-  const CheckedPtr<SyncPointManager> sync_point_manager_;
+  SyncPointManager* const sync_point_manager_;
 
   // The id of the client who is on the other side of the channel.
   const int32_t client_id_;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_URL_HANDLERS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_URL_HANDLERS_HANDLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class PrefChangeRegistrar;
@@ -64,9 +63,9 @@ class UrlHandlersHandler : public SettingsPageUIHandler {
   base::Value GetDisabledHandlersList();
 
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
-  CheckedPtr<PrefService> local_state_ = nullptr;
-  CheckedPtr<Profile> profile_ = nullptr;
-  CheckedPtr<web_app::WebAppRegistrar> web_app_registrar_ = nullptr;
+  PrefService* local_state_ = nullptr;
+  Profile* profile_ = nullptr;
+  web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
 };
 
 }  // namespace settings

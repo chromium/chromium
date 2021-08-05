@@ -4,7 +4,6 @@
 
 #include "chrome/browser/cart/cart_service.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -306,7 +305,7 @@ class CartServiceTest : public testing::Test {
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  CheckedPtr<CartService> service_;
+  CartService* service_;
 };
 
 // Verifies the hide status is flipped by hiding and restoring.

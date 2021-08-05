@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -327,10 +326,10 @@ class RTCVideoEncoderTest
   }
 
  protected:
-  CheckedPtr<media::MockVideoEncodeAccelerator> mock_vea_;
+  media::MockVideoEncodeAccelerator* mock_vea_;
   std::unique_ptr<RTCVideoEncoder> rtc_encoder_;
   absl::optional<media::VideoEncodeAccelerator::Config> config_;
-  CheckedPtr<media::VideoEncodeAccelerator::Client> client_;
+  media::VideoEncodeAccelerator::Client* client_;
   base::Thread encoder_thread_;
 
  private:
@@ -398,7 +397,7 @@ TEST_F(RTCVideoEncoderTest, SoftwareFallbackAfterError) {
             FROM_HERE,
             base::BindOnce(
                 &media::VideoEncodeAccelerator::Client::NotifyError,
-                base::Unretained(client_.get()),
+                base::Unretained(client_),
                 media::VideoEncodeAccelerator::kPlatformFailureError));
       }));
 

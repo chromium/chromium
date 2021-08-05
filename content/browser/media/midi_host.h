@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
@@ -95,7 +94,7 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
 
   // |midi_service_| manages a MidiManager instance that talks to
   // platform-specific MIDI APIs.  It can be nullptr after detached.
-  CheckedPtr<midi::MidiService> midi_service_;
+  midi::MidiService* midi_service_;
 
   // Buffers where data sent from each MIDI input port is stored.
   std::vector<std::unique_ptr<midi::MidiMessageQueue>> received_messages_queues_

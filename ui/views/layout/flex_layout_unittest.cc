@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -178,7 +177,7 @@ class FlexLayoutTest : public testing::Test {
   static const FlexSpecification kCustomFlexSnapToZero;
 
   std::unique_ptr<View> host_;
-  CheckedPtr<FlexLayout> layout_;
+  FlexLayout* layout_;
 };
 
 // static

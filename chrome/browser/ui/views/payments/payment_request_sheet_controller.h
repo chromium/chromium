@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "ui/views/controls/button/button.h"
@@ -184,19 +183,19 @@ class PaymentRequestSheetController {
   base::WeakPtr<PaymentRequestDialogView> const dialog_;
 
   // This view is owned by its encompassing ScrollView.
-  CheckedPtr<views::View> pane_ = nullptr;
-  CheckedPtr<views::View> content_view_ = nullptr;
+  views::View* pane_ = nullptr;
+  views::View* content_view_ = nullptr;
 
   // Hold on to the ScrollView because it must be explicitly laid out in some
   // cases.
-  CheckedPtr<views::ScrollView> scroll_ = nullptr;
+  views::ScrollView* scroll_ = nullptr;
 
   // Hold on to the primary and secondary buttons to use them as initial focus
   // targets when subclasses don't want to focus anything else.
-  CheckedPtr<views::MdTextButton> primary_button_ = nullptr;
-  CheckedPtr<views::Button> secondary_button_ = nullptr;
-  CheckedPtr<views::View> header_view_ = nullptr;
-  CheckedPtr<views::View> header_content_separator_container_ = nullptr;
+  views::MdTextButton* primary_button_ = nullptr;
+  views::Button* secondary_button_ = nullptr;
+  views::View* header_view_ = nullptr;
+  views::View* header_content_separator_container_ = nullptr;
 
   // Whether the controller should be controlling the UI.
   bool is_active_ = true;

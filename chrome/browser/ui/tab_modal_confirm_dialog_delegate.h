@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
@@ -131,7 +130,7 @@ class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
   // Close the dialog.
   void CloseDialog();
 
-  CheckedPtr<TabModalConfirmDialogCloseDelegate> close_delegate_;
+  TabModalConfirmDialogCloseDelegate* close_delegate_;
 
   // True iff we are in the process of closing, to avoid running callbacks
   // multiple times.

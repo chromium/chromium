@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/snap_fling_controller.h"
 #include "cc/paint/element_id.h"
@@ -288,14 +287,14 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
     event_attribution_enabled_ = enabled;
   }
 
-  CheckedPtr<InputHandlerProxyClient> client_;
+  InputHandlerProxyClient* client_;
 
   // The input handler object is owned by the compositor delegate. The input
   // handler must call WillShutdown() on this class before it is deleted at
   // which point this pointer will be cleared.
-  CheckedPtr<cc::InputHandler> input_handler_;
+  cc::InputHandler* input_handler_;
 
-  CheckedPtr<SynchronousInputHandler> synchronous_input_handler_;
+  SynchronousInputHandler* synchronous_input_handler_;
 
   // This should be true when a pinch is in progress. The sequence of events is
   // as follows: GSB GPB GSU GPU ... GPE GSE.
@@ -343,7 +342,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   // latency component should be added for injected GestureScrollUpdates.
   bool last_injected_gesture_was_begin_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   std::unique_ptr<cc::SnapFlingController> snap_fling_controller_;
 

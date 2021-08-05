@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_H_
 
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -83,7 +82,7 @@ class MODULES_EXPORT MediaSession final
   // Returns null if the associated window is detached.
   mojom::blink::MediaSessionService* GetService();
 
-  CheckedPtr<const base::TickClock> clock_ = nullptr;
+  const base::TickClock* clock_ = nullptr;
 
   mojom::blink::MediaSessionPlaybackState playback_state_;
   media_session::mojom::blink::MediaPositionPtr position_state_;

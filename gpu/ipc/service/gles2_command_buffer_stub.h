@@ -6,7 +6,6 @@
 #define GPU_IPC_SERVICE_GLES2_COMMAND_BUFFER_STUB_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -75,7 +74,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
 
   // Keep a more specifically typed reference to the decoder to avoid
   // unnecessary casts. Owned by parent class.
-  CheckedPtr<gles2::GLES2Decoder> gles2_decoder_;
+  gles2::GLES2Decoder* gles2_decoder_;
 
   // Params pushed each time we call OnSwapBuffers, and popped when a buffer
   // is presented or a swap completed.

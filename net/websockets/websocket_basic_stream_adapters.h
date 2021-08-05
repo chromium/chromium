@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -123,14 +122,14 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // The error code with which SpdyStream was closed.
   int stream_error_;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Buffer data pushed by SpdyStream until read through Read().
   SpdyReadQueue read_data_;
 
   // Read buffer and length used for both synchronous and asynchronous
   // read operations.
-  CheckedPtr<IOBuffer> read_buffer_;
+  IOBuffer* read_buffer_;
   size_t read_length_;
 
   // Read callback saved for asynchronous reads.

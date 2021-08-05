@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -32,7 +31,7 @@ namespace blink {
 struct SameSizeAsBidiContext
     : public ThreadSafeRefCounted<SameSizeAsBidiContext> {
   uint32_t bitfields : 16;
-  CheckedPtr<void> parent;
+  void* parent;
 };
 
 ASSERT_SIZE(BidiContext, SameSizeAsBidiContext);

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -370,7 +369,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   // Non-owning pointer.
-  CheckedPtr<TestLocationBarModel> test_location_bar_model_ = nullptr;
+  TestLocationBarModel* test_location_bar_model_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxViewTest);
 };

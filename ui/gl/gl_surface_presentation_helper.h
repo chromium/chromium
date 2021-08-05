@@ -7,7 +7,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/swap_result.h"
@@ -42,7 +41,7 @@ class GL_EXPORT GLSurfacePresentationHelper {
     gfx::SwapResult result() const { return result_; }
 
    private:
-    const CheckedPtr<GLSurfacePresentationHelper> helper_;
+    GLSurfacePresentationHelper* const helper_;
     gfx::SwapResult result_ = gfx::SwapResult::SWAP_ACK;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedSwapBuffers);
@@ -99,16 +98,16 @@ class GL_EXPORT GLSurfacePresentationHelper {
 
   void ScheduleCheckPendingFrames(bool align_with_next_vsync);
 
-  const CheckedPtr<gfx::VSyncProvider> vsync_provider_;
+  gfx::VSyncProvider* const vsync_provider_;
   scoped_refptr<GLContext> gl_context_;
-  CheckedPtr<GLSurface> surface_ = nullptr;
+  GLSurface* surface_ = nullptr;
   scoped_refptr<GPUTimingClient> gpu_timing_client_;
   base::circular_deque<Frame> pending_frames_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
   bool check_pending_frame_scheduled_ = false;
   bool gl_fence_supported_ = false;
-  CheckedPtr<EGLTimestampClient> egl_timestamp_client_ = nullptr;
+  EGLTimestampClient* egl_timestamp_client_ = nullptr;
   bool update_vsync_pending_ = false;
 
   base::WeakPtrFactory<GLSurfacePresentationHelper> weak_ptr_factory_{this};

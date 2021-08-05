@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -63,7 +62,7 @@ class APIResponseValidator {
 
  private:
   // The type reference map; guaranteed to outlive this object.
-  CheckedPtr<const APITypeReferenceMap> type_refs_;
+  const APITypeReferenceMap* type_refs_;
 
   DISALLOW_COPY_AND_ASSIGN(APIResponseValidator);
 };

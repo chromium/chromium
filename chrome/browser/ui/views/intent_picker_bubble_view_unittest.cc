@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -135,8 +134,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                       apps::IntentPickerCloseReason close_reason,
                       bool should_persist) {}
 
-  CheckedPtr<IntentPickerBubbleView> bubble_;
-  CheckedPtr<views::View> anchor_view_;
+  IntentPickerBubbleView* bubble_;
+  views::View* anchor_view_;
   std::vector<AppInfo> app_info_;
 
  private:

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/gamepad_id_list.h"
@@ -398,7 +397,7 @@ class NintendoController final : public AbstractHapticGamepad {
   GamepadId gamepad_id_;
 
   // HID service manager.
-  const CheckedPtr<mojom::HidManager> hid_manager_;
+  mojom::HidManager* const hid_manager_;
 
   // The open connection to the underlying HID device.
   mojo::Remote<mojom::HidConnection> connection_;

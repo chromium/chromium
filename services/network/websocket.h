@@ -15,7 +15,6 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -122,7 +121,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
     WebSocket* get() const { return pointer_; }
 
    private:
-    const CheckedPtr<WebSocket> pointer_;
+    WebSocket* const pointer_;
 
     DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
@@ -180,7 +179,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   void ResumeDataPipeReading();
 
   // |factory_| owns |this|.
-  const CheckedPtr<WebSocketFactory> factory_;
+  WebSocketFactory* const factory_;
   mojo::Receiver<mojom::WebSocket> receiver_{this};
 
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>

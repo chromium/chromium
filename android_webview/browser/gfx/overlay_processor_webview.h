@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_OVERLAY_PROCESSOR_WEBVIEW_H_
 
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
@@ -116,11 +115,11 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   const gpu::CommandBufferId command_buffer_id_;
   uint64_t sync_fence_release_ = 0;
 
-  CheckedPtr<gpu::GpuTaskSchedulerHelper> render_thread_sequence_;
+  gpu::GpuTaskSchedulerHelper* render_thread_sequence_;
   std::unique_ptr<gpu::SingleTaskSequence> gpu_thread_sequence_;
 
-  CheckedPtr<viz::DisplayResourceProvider> resource_provider_ = nullptr;
-  const CheckedPtr<viz::FrameSinkManagerImpl> frame_sink_manager_;
+  viz::DisplayResourceProvider* resource_provider_ = nullptr;
+  viz::FrameSinkManagerImpl* const frame_sink_manager_;
 
   scoped_refptr<Manager> manager_;
 

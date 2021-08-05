@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/host_port_pair.h"
@@ -204,7 +203,7 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
 
   size_t max_server_configs_stored_in_properties_;
 
-  CheckedPtr<const base::TickClock> clock_;  // Unowned
+  const base::TickClock* clock_;  // Unowned
 
   const NetLogWithSource net_log_;
 

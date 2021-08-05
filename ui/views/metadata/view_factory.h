@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"
@@ -32,7 +31,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename View>
   Builder& CopyAddressTo(View** view_address) & {
-    *view_address = view_ ? view_.get() : root_view_.get();
+    *view_address = view_ ? view_.get() : root_view_;
     return *static_cast<Builder*>(this);
   }
 
@@ -158,7 +157,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   // Unowned root view. Used for creating a builder with an existing root
   // instance.
-  CheckedPtr<ViewClass_> root_view_ = nullptr;
+  ViewClass_* root_view_ = nullptr;
 };
 
 }  // namespace views

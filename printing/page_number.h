@@ -7,7 +7,6 @@
 
 #include <ostream>
 
-#include "base/memory/checked_ptr.h"
 #include "printing/page_range.h"
 
 namespace printing {
@@ -46,7 +45,7 @@ class COMPONENT_EXPORT(PRINTING) PageNumber {
 
  private:
   // The page range to follow.
-  CheckedPtr<const PageRanges> ranges_;
+  const PageRanges* ranges_;
 
   // The next page to be printed. `kInvalidPageIndex` when not printing.
   uint32_t page_number_;

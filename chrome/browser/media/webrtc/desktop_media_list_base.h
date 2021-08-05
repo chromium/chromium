@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -93,7 +92,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   std::vector<Source> sources_;
 
   // The observer passed to StartUpdating().
-  CheckedPtr<DesktopMediaListObserver> observer_ = nullptr;
+  DesktopMediaListObserver* observer_ = nullptr;
 
   // Called when a refresh operation completes.
   RefreshCallback refresh_callback_;

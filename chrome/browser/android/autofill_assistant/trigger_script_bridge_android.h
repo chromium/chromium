@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -58,7 +57,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   // Pointer to the native coordinator. Only set while attached.
-  CheckedPtr<TriggerScriptCoordinator> trigger_script_coordinator_ = nullptr;
+  TriggerScriptCoordinator* trigger_script_coordinator_ = nullptr;
 };
 
 }  // namespace autofill_assistant

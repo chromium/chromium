@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -134,7 +133,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       worker_hosts_;
 
   // |storage_partition_| owns |this|.
-  const CheckedPtr<StoragePartitionImpl> storage_partition_;
+  StoragePartitionImpl* const storage_partition_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   // |appcache_service_| may be null.
   scoped_refptr<ChromeAppCacheService> appcache_service_;

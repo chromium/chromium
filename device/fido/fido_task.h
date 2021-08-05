@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device.h"
 
@@ -43,7 +42,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTask {
   }
 
  private:
-  const CheckedPtr<FidoDevice> device_;
+  FidoDevice* const device_;
   base::WeakPtrFactory<FidoTask> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoTask);

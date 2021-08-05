@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -46,7 +45,7 @@ class ScopedElapsedTimer {
  private:
   // Some total amount of time we should add our elapsed time to at
   // destruction.
-  CheckedPtr<base::TimeDelta> total_;
+  base::TimeDelta* total_;
 
   // A timer for how long this object has been alive.
   base::ElapsedTimer timer;

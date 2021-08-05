@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
@@ -127,7 +126,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
 
   // Clock used for calculating when players have become stale. May be
   // overridden for testing.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Players with a video track.
   base::flat_set<int> players_with_video_;

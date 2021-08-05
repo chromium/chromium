@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -97,8 +96,8 @@ class AvatarToolbarButton : public ToolbarButton,
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<ToolbarIconContainerView> parent_;
+  Browser* const browser_;
+  ToolbarIconContainerView* const parent_;
 
   // Time when this object was created.
   const base::TimeTicks creation_time_;
@@ -107,7 +106,7 @@ class AvatarToolbarButton : public ToolbarButton,
   // separate animation.
   static base::TimeDelta g_iph_min_delay_after_creation;
 
-  const CheckedPtr<FeaturePromoControllerViews> feature_promo_controller_;
+  FeaturePromoControllerViews* const feature_promo_controller_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

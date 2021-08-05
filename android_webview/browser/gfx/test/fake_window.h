@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/gfx/hardware_renderer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -78,8 +77,8 @@ class FakeWindow {
   void CheckCurrentlyOnRT();
 
   // const so can be used on both threads.
-  const CheckedPtr<BrowserViewRenderer> view_;
-  const CheckedPtr<WindowHooks> hooks_;
+  BrowserViewRenderer* const view_;
+  WindowHooks* const hooks_;
   const gfx::Size surface_size_;
 
   // UI thread members.
@@ -119,7 +118,7 @@ class FakeFunctor {
   bool RequestInvokeGL(bool wait_for_completion);
   void ReleaseOnRT(base::OnceClosure callback);
 
-  CheckedPtr<FakeWindow> window_;
+  FakeWindow* window_;
   std::unique_ptr<RenderThreadManager> render_thread_manager_;
   gfx::Rect committed_location_;
 };

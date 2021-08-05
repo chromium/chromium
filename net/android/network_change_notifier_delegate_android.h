@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/android/jni_android.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -166,7 +165,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   THREAD_CHECKER(thread_checker_);
 
   base::Lock observer_lock_;
-  CheckedPtr<Observer> observer_ GUARDED_BY(observer_lock_) = nullptr;
+  Observer* observer_ GUARDED_BY(observer_lock_) = nullptr;
 
   const base::android::ScopedJavaGlobalRef<jobject>
       java_network_change_notifier_;

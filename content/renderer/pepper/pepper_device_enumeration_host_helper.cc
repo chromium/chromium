@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -118,7 +117,7 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
   bool requested() const { return requested_; }
 
  private:
-  const CheckedPtr<PepperDeviceEnumerationHostHelper> owner_;
+  PepperDeviceEnumerationHostHelper* const owner_;
   PepperDeviceEnumerationHostHelper::Delegate::DevicesCallback callback_;
   bool requested_;
   size_t subscription_id_;

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
@@ -80,7 +79,7 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   bool auto_advance_ = true;
 
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
-  CheckedPtr<base::sequence_manager::SequenceManager>
+  base::sequence_manager::SequenceManager*
       sequence_manager_;  // Owned by scheduler_.
   std::unique_ptr<ScopedMainThreadOverrider> main_thread_overrider_;
 };

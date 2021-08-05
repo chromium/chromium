@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -122,7 +121,7 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
   // Used to make sure that the metrics are reported properly.
   base::HistogramTester histogram_tester_;
 
-  CheckedPtr<TabStatsTracker> tab_stats_tracker_{nullptr};
+  TabStatsTracker* tab_stats_tracker_{nullptr};
   std::vector<std::unique_ptr<TestTabStatsObserver>> test_tab_stats_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(TabStatsTrackerBrowserTest);

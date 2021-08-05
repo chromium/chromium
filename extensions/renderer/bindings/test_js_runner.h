@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/bindings/js_runner.h"
 
 namespace extensions {
@@ -39,7 +38,7 @@ class TestJSRunner : public JSRunner {
 
    private:
     std::unique_ptr<JSRunner> runner_;
-    CheckedPtr<JSRunner> old_runner_;
+    JSRunner* old_runner_;
 
     DISALLOW_COPY_AND_ASSIGN(Scope);
   };

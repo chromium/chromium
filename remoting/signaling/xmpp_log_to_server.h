@@ -10,7 +10,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -54,7 +53,7 @@ class XmppLogToServer : public LogToServer, public SignalStrategy::Listener {
   void SendPendingEntries();
 
   ServerLogEntry::Mode mode_;
-  CheckedPtr<SignalStrategy> signal_strategy_;
+  SignalStrategy* signal_strategy_;
   std::unique_ptr<IqSender> iq_sender_;
   std::string directory_bot_jid_;
 

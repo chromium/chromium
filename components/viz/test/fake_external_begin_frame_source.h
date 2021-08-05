@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -58,7 +57,7 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   const bool tick_automatically_;
   const double milliseconds_per_frame_;
-  CheckedPtr<Client> client_ = nullptr;
+  Client* client_ = nullptr;
   bool paused_ = false;
   BeginFrameArgs current_args_;
   uint64_t next_begin_frame_number_ = BeginFrameArgs::kStartingFrameNumber;

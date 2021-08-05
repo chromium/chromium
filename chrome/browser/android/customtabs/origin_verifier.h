@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_fetcher_delegate.h"
@@ -55,7 +54,7 @@ class OriginVerifier {
       digital_asset_links::RelationshipCheckResult result);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
 

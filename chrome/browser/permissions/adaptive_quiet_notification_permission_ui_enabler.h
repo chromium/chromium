@@ -8,7 +8,6 @@
 #include <memory>
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -65,7 +64,7 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   // before M88.
   void BackfillEnablingMethodIfMissing();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   bool is_enabling_adaptively_ = false;
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -61,7 +60,7 @@ class MutedNotificationHandler : public NotificationHandler {
   Delegate* get_delegate_for_testing() const { return delegate_; }
 
  private:
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MUTED_NOTIFICATION_HANDLER_H_

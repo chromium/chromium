@@ -5,7 +5,6 @@
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -307,7 +306,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       request->url = modify_url_in_will_start_;
 
     if (will_start_request_callback_)
-      will_start_request_callback_.Run(delegate_.get(), defer);
+      will_start_request_callback_.Run(delegate_, defer);
   }
 
   void WillRedirectRequest(
@@ -320,7 +319,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
     will_redirect_request_called_++;
     if (will_redirect_request_callback_) {
       std::move(will_redirect_request_callback_)
-          .Run(delegate_.get(), defer, removed_headers, modified_headers,
+          .Run(delegate_, defer, removed_headers, modified_headers,
                modified_cors_exempt_headers);
     }
   }
@@ -330,7 +329,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override {
     will_process_response_called_++;
     if (will_process_response_callback_)
-      will_process_response_callback_.Run(delegate_.get(), defer);
+      will_process_response_callback_.Run(delegate_, defer);
     response_url_ = response_url;
   }
 
@@ -340,7 +339,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       bool* defer) override {
     before_will_process_response_called_++;
     if (before_will_process_response_callback_)
-      before_will_process_response_callback_.Run(delegate_.get(), defer);
+      before_will_process_response_callback_.Run(delegate_, defer);
   }
 
   size_t will_start_request_called_ = 0;
@@ -406,7 +405,7 @@ class ThrottlingURLLoaderTest : public testing::Test {
   TestURLLoaderClient client_;
 
   // Owned by |throttles_| or |loader_|.
-  CheckedPtr<TestURLLoaderThrottle> throttle_ = nullptr;
+  TestURLLoaderThrottle* throttle_ = nullptr;
 
   base::WeakPtrFactory<ThrottlingURLLoaderTest> weak_factory_{this};
 };
@@ -1270,7 +1269,7 @@ TEST_F(ThrottlingURLLoaderTest,
   EXPECT_NE(nullptr, throttle_);
 
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(nullptr, throttle_.get());
+  EXPECT_EQ(nullptr, throttle_);
 }
 
 // Regression test for crbug.com/833292.
@@ -1322,7 +1321,7 @@ TEST_F(ThrottlingURLLoaderTest,
   EXPECT_NE(nullptr, throttle_);
 
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(nullptr, throttle_.get());
+  EXPECT_EQ(nullptr, throttle_);
 }
 
 // Call RestartWithFlags() from a single throttle while processing

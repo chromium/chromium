@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -293,7 +292,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       child_preference_watchers_;
 
   // This is owned by ThreadedMessagingProxyBase on the main thread.
-  CheckedPtr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 
   // The WebURLLoaderFactory which was created and passed to
   // Blink by GetURLLoaderFactory().
@@ -317,7 +316,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
 
-  CheckedPtr<AcceptLanguagesWatcher> accept_languages_watcher_ = nullptr;
+  AcceptLanguagesWatcher* accept_languages_watcher_ = nullptr;
 
   // Contains pending receivers whose corresponding requests are still
   // in-flight. The pending receivers are taken by

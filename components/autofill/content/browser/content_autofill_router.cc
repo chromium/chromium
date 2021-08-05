@@ -61,7 +61,7 @@ ContentAutofillDriver* ContentAutofillRouter::DriverOfFrame(
   DCHECK(base::FeatureList::IsEnabled(features::kAutofillAcrossIframes));
   const auto& frames = form_forest_.frame_datas();
   auto it = frames.find(frame);
-  return it != frames.end() ? (*it)->driver.get() : nullptr;
+  return it != frames.end() ? (*it)->driver : nullptr;
 }
 
 void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {

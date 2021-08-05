@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -318,16 +317,16 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // IMPORTANT: Because NavigationSimulator is used outside content/ where we
   // sometimes use WebContentsImpl and not TestWebContents, this cannot be
   // assumed to cast properly to TestWebContents.
-  CheckedPtr<WebContentsImpl> web_contents_;
+  WebContentsImpl* web_contents_;
 
   // The renderer associated with this navigation.
   // Note: this can initially be null for browser-initiated navigations.
-  CheckedPtr<TestRenderFrameHost> render_frame_host_;
+  TestRenderFrameHost* render_frame_host_;
 
-  CheckedPtr<FrameTreeNode> frame_tree_node_;
+  FrameTreeNode* frame_tree_node_;
 
   // The NavigationRequest associated with this navigation.
-  CheckedPtr<NavigationRequest> request_;
+  NavigationRequest* request_;
 
   // Note: additional parameters to modify the navigation should be properly
   // initialized (if needed) in InitializeFromStartedRequest.
@@ -342,7 +341,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   TestRenderFrameHost::LoadingScenario loading_scenario_ =
       TestRenderFrameHost::LoadingScenario::kOther;
   blink::mojom::ReferrerPtr referrer_;
-  CheckedPtr<RenderFrameHost> initiator_frame_host_ = nullptr;
+  RenderFrameHost* initiator_frame_host_ = nullptr;
   ui::PageTransition transition_;
   ReloadType reload_type_ = ReloadType::NONE;
   int session_history_offset_ = 0;
@@ -388,7 +387,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Generic params structure used for fully customized browser initiated
   // navigation requests. Only valid if explicitely provided.
-  CheckedPtr<NavigationController::LoadURLParams> load_url_params_;
+  NavigationController::LoadURLParams* load_url_params_;
 
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;

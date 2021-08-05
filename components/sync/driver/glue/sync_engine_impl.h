@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -198,16 +197,16 @@ class SyncEngineImpl : public SyncEngine,
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
-  CheckedPtr<SyncEngineHost> host_ = nullptr;
+  SyncEngineHost* host_ = nullptr;
 
-  CheckedPtr<invalidation::InvalidationService> invalidator_ = nullptr;
+  invalidation::InvalidationService* invalidator_ = nullptr;
   bool invalidation_handler_registered_ = false;
 
   // Sync invalidation service, it may be nullptr if sync invalidations are
   // disabled or not supported. It doesn't need to have the same as
   // |invalidation_handler_registered_| flag as the service doesn't have topics
   // to unsibscribe.
-  CheckedPtr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
+  SyncInvalidationsService* sync_invalidations_service_ = nullptr;
 
   ModelTypeSet last_enabled_types_;
   bool sessions_invalidation_enabled_;

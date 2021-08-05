@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
@@ -62,7 +61,7 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   double memory_threshold_mb_;
   base::TimeDelta minimum_interval_;
   TaskRunnerTimer<UserLevelMemoryPressureSignalGenerator> delayed_report_timer_;
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 };
 
 }  // namespace blink

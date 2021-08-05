@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -129,7 +128,7 @@ class TouchToFillControllerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  CheckedPtr<MockTouchToFillView> mock_view_ = nullptr;
+  MockTouchToFillView* mock_view_ = nullptr;
   scoped_refptr<MockBiometricAuthenticator> authenticator_ =
       base::MakeRefCounted<MockBiometricAuthenticator>();
   MockPasswordManagerDriver driver_;

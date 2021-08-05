@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -98,7 +97,7 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
   }
 
  private:
-  CheckedPtr<const Extension> extension_;
+  const Extension* extension_;
 };
 
 class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest

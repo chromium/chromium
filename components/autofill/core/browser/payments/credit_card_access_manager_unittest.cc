@@ -16,7 +16,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
@@ -424,7 +423,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  CheckedPtr<payments::TestPaymentsClient> payments_client_;
+  payments::TestPaymentsClient* payments_client_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   scoped_refptr<AutofillWebDataService> database_;
@@ -432,7 +431,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
-  CheckedPtr<CreditCardAccessManager> credit_card_access_manager_;
+  CreditCardAccessManager* credit_card_access_manager_;
 };
 
 // Ensures GetCreditCard() successfully retrieves Card.

@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -175,7 +174,7 @@ class DragDownloadFile::DragDownloadFileUI
   std::string referrer_encoding_;
   int render_process_id_;
   int render_frame_id_;
-  CheckedPtr<download::DownloadItem> download_item_ = nullptr;
+  download::DownloadItem* download_item_ = nullptr;
 
   // Only used in the callback from DownloadManager::DownloadUrl().
   base::WeakPtrFactory<DragDownloadFileUI> weak_ptr_factory_{this};
@@ -208,8 +207,8 @@ DragDownloadFile::~DragDownloadFile() {
   // that this task will run after the InitiateDownload task runs on the UI
   // thread.
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DragDownloadFileUI::Delete,
-                                base::Unretained(drag_ui_.get())));
+      FROM_HERE,
+      base::BindOnce(&DragDownloadFileUI::Delete, base::Unretained(drag_ui_)));
   drag_ui_ = nullptr;
 }
 
@@ -225,9 +224,9 @@ void DragDownloadFile::Start(ui::DownloadFileObserver* observer) {
   DCHECK(observer_.get());
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DragDownloadFileUI::InitiateDownload,
-                                base::Unretained(drag_ui_.get()),
-                                std::move(file_), file_path_));
+      FROM_HERE,
+      base::BindOnce(&DragDownloadFileUI::InitiateDownload,
+                     base::Unretained(drag_ui_), std::move(file_), file_path_));
 }
 
 bool DragDownloadFile::Wait() {
@@ -244,7 +243,7 @@ void DragDownloadFile::Stop() {
   if (drag_ui_) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&DragDownloadFileUI::Cancel,
-                                  base::Unretained(drag_ui_.get())));
+                                  base::Unretained(drag_ui_)));
   }
 }
 

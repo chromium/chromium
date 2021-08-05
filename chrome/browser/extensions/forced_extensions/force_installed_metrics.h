@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_METRICS_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_METRICS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -88,9 +87,9 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
   // for use.
   void ReportMetricsOnExtensionsReady();
 
-  const CheckedPtr<ExtensionRegistry> registry_;
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<ForceInstalledTracker> tracker_;
+  ExtensionRegistry* const registry_;
+  Profile* const profile_;
+  ForceInstalledTracker* const tracker_;
 
   // Tracks the moment when the class was initialized and used as timer start
   // for reporting metrics related to extensions not loaded after 5 minutes.

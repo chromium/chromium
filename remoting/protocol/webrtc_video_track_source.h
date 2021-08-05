@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -52,7 +51,7 @@ class WebrtcVideoTrackSource
       std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
 
  private:
-  CheckedPtr<rtc::VideoSinkInterface<webrtc::VideoFrame>> sink_ = nullptr;
+  rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_ = nullptr;
   base::RepeatingClosure add_sink_callback_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 

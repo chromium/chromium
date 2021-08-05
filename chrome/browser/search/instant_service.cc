@@ -176,10 +176,10 @@ InstantService::InstantService(Profile* profile)
       base::BindRepeating(&InstantService::UpdateBackgroundFromSync,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  theme_observation_.Observe(native_theme_.get());
+  theme_observation_.Observe(native_theme_);
 
   if (background_service_)
-    background_service_observation_.Observe(background_service_.get());
+    background_service_observation_.Observe(background_service_);
 }
 
 InstantService::~InstantService() = default;
@@ -325,7 +325,7 @@ NtpTheme* InstantService::GetInitializedNtpTheme() {
 void InstantService::SetNativeThemeForTesting(ui::NativeTheme* theme) {
   theme_observation_.Reset();
   native_theme_ = theme;
-  theme_observation_.Observe(native_theme_.get());
+  theme_observation_.Observe(native_theme_);
 }
 
 void InstantService::Shutdown() {

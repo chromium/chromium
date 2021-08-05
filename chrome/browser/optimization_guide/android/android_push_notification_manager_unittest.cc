@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -192,10 +191,10 @@ class AndroidPushNotificationManagerJavaTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::android::ScopedJavaGlobalRef<jobject> j_test_;
-  CheckedPtr<JNIEnv> env_;
+  JNIEnv* env_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
-  CheckedPtr<OptimizationGuideKeyedService> service_;
+  TestingProfile* profile_;
+  OptimizationGuideKeyedService* service_;
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

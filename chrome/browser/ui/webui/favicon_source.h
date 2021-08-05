@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -64,7 +63,7 @@ class FaviconSource : public content::URLDataSource {
   virtual base::RefCountedMemory* LoadIconBytes(float scale_factor,
                                                 int resource_id);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
  private:
   // Defines the allowed pixel sizes for requested favicons.

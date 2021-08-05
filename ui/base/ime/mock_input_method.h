@@ -5,10 +5,10 @@
 #ifndef UI_BASE_IME_MOCK_INPUT_METHOD_H_
 #define UI_BASE_IME_MOCK_INPUT_METHOD_H_
 
+
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method.h"
@@ -57,9 +57,10 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
-  CheckedPtr<TextInputClient> text_input_client_;
+
+  TextInputClient* text_input_client_;
   base::ObserverList<InputMethodObserver>::Unchecked observer_list_;
-  CheckedPtr<internal::InputMethodDelegate> delegate_;
+  internal::InputMethodDelegate* delegate_;
 
   VirtualKeyboardControllerStub keyboard_controller_;
 

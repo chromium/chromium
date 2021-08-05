@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
@@ -78,8 +77,7 @@ class FileSystemServiceSettings {
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
-  CheckedPtr<const ServiceProviderConfig::ServiceProvider> service_provider_ =
-      nullptr;
+  const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
 
   // The URL matcher created from the patterns set in the analysis policy. The
   // condition set IDs returned after matching against a URL can be used to

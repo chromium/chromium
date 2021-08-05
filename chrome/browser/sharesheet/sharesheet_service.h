@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -150,12 +149,12 @@ class SharesheetService : public KeyedService {
   // Makes |intent| related UMA recordings.
   void RecordShareDataMetrics(const apps::mojom::IntentPtr& intent);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   apps::AppServiceProxyLacros* app_service_proxy_;
 #else
-  CheckedPtr<apps::AppServiceProxyBase> app_service_proxy_;
+  apps::AppServiceProxyBase* app_service_proxy_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Record of all active SharesheetServiceDelegates. These can be retrieved

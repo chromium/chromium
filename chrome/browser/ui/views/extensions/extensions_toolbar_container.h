@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -166,7 +165,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // are associated with. This is used to keep track of icons that are popped
   // out due to a widget showing (or being queued to show).
   struct AnchoredWidget {
-    CheckedPtr<views::Widget> widget;
+    views::Widget* widget;
     std::string extension_id;
   };
 
@@ -248,11 +247,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void DragDropCleanup(
       const ToolbarActionsModel::ActionId& dragged_extension_id);
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<ToolbarActionsModel> model_;
+  Browser* const browser_;
+  ToolbarActionsModel* const model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
-  const CheckedPtr<ExtensionsToolbarButton> extensions_button_;
+  ExtensionsToolbarButton* const extensions_button_;
   DisplayMode display_mode_;
 
   // TODO(pbos): Create actions and icons only for pinned pinned / popped out
@@ -263,9 +262,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
   // Popped-out extension, if any.
-  CheckedPtr<ToolbarActionViewController> popped_out_action_ = nullptr;
+  ToolbarActionViewController* popped_out_action_ = nullptr;
   // The action that triggered the current popup, if any.
-  CheckedPtr<ToolbarActionViewController> popup_owner_ = nullptr;
+  ToolbarActionViewController* popup_owner_ = nullptr;
   // Extension with an open context menu, if any.
   absl::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
 

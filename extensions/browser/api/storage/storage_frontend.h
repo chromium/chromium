@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
@@ -82,7 +81,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   void Init(scoped_refptr<ValueStoreFactory> storage_factory);
 
   // The (non-incognito) browser context this Frontend belongs to.
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // List of observers to settings changes.
   scoped_refptr<SettingsObserverList> observers_;

@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -70,7 +69,7 @@ class BiometricAuthenticatorAndroidTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // This is owned by the authenticator.
-  CheckedPtr<MockBiometricAuthenticatorBridge> bridge_ = nullptr;
+  MockBiometricAuthenticatorBridge* bridge_ = nullptr;
 };
 
 TEST_F(BiometricAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {

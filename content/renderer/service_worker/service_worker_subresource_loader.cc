@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -146,7 +145,7 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
   void OnAborted() override { owner_->OnBodyReadingComplete(net::ERR_ABORTED); }
 
  private:
-  CheckedPtr<ServiceWorkerSubresourceLoader> owner_;
+  ServiceWorkerSubresourceLoader* owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(StreamWaiter);

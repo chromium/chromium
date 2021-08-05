@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -157,7 +156,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
     ~ObserverNotifier();
 
    private:
-    CheckedPtr<WindowEventDispatcher> dispatcher_;
+    WindowEventDispatcher* dispatcher_;
 
     DISALLOW_COPY_AND_ASSIGN(ObserverNotifier);
   };
@@ -285,13 +284,13 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   ui::EventDispatchDetails PreDispatchKeyEvent(Window* target,
                                                ui::KeyEvent* event);
 
-  CheckedPtr<WindowTreeHost> host_;
+  WindowTreeHost* host_;
 
-  CheckedPtr<Window> mouse_pressed_handler_ = nullptr;
-  CheckedPtr<Window> mouse_moved_handler_ = nullptr;
-  CheckedPtr<Window> touchpad_pinch_handler_ = nullptr;
-  CheckedPtr<Window> event_dispatch_target_ = nullptr;
-  CheckedPtr<Window> old_dispatch_target_ = nullptr;
+  Window* mouse_pressed_handler_ = nullptr;
+  Window* mouse_moved_handler_ = nullptr;
+  Window* touchpad_pinch_handler_ = nullptr;
+  Window* event_dispatch_target_ = nullptr;
+  Window* old_dispatch_target_ = nullptr;
 
   ui::FractionOfTimeWithoutUserInputRecorder
       fraction_of_time_without_user_input_recorder_;
@@ -312,7 +311,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   std::unique_ptr<ui::LocatedEvent> held_repostable_event_;
 
   // Set when dispatching a held event.
-  CheckedPtr<ui::LocatedEvent> dispatching_held_event_ = nullptr;
+  ui::LocatedEvent* dispatching_held_event_ = nullptr;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observation_manager_{this};

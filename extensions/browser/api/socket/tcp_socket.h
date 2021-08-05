@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "extensions/browser/api/socket/socket.h"
@@ -137,7 +136,7 @@ class TCPSocket : public Socket {
 
   // |this| doesn't outlive |browser_context_| because |this| is owned by
   // ApiResourceManager which is a BrowserContextKeyedAPI.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   SocketMode socket_mode_;
 
@@ -157,7 +156,7 @@ class TCPSocket : public Socket {
   absl::optional<net::IPEndPoint> peer_addr_;
 
   // Only used in tests.
-  CheckedPtr<content::StoragePartition> storage_partition_ = nullptr;
+  content::StoragePartition* storage_partition_ = nullptr;
 
   // WeakPtr is used when posting tasks to |task_runner_| which might outlive
   // |this|.

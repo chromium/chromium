@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -57,7 +56,7 @@ class RefCounter {
   ~RefCounter() { (*counter_)--; }
 
  private:
-  CheckedPtr<size_t> counter_;
+  size_t* counter_;
 };
 
 // Empty callback for implementation of ErrorCallbackSetHelper().

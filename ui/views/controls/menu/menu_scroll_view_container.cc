@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -137,7 +136,7 @@ class MenuScrollButton : public View {
 
  private:
   // SubmenuView we were created for.
-  CheckedPtr<SubmenuView> host_;
+  SubmenuView* host_;
 
   // Direction of the button.
   bool is_up_;
@@ -215,7 +214,7 @@ class MenuScrollViewContainer::MenuScrollView : public View {
   const View* GetContents() const { return children().front(); }
 
  private:
-  CheckedPtr<MenuScrollViewContainer> owner_;
+  MenuScrollViewContainer* owner_;
 };
 
 BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)

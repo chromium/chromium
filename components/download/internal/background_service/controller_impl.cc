@@ -662,7 +662,7 @@ void ControllerImpl::AttemptToFinalizeSetup() {
 
   // Always notify the LogSink no matter what path this function takes.
   base::ScopedClosureRunner state_notifier(base::BindOnce(
-      &LogSink::OnServiceStatusChanged, base::Unretained(log_sink_.get())));
+      &LogSink::OnServiceStatusChanged, base::Unretained(log_sink_)));
 
   if (!startup_status_.Complete())
     return;

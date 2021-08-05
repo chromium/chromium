@@ -14,7 +14,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -166,10 +165,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
                       const gfx::Image& image,
                       const image_fetcher::RequestMetadata& image_metadata);
 
-  CheckedPtr<AccountTrackerService> account_tracker_service_ =
-      nullptr;                                                     // Not owned.
-  CheckedPtr<ProfileOAuth2TokenService> token_service_ = nullptr;  // Not owned.
-  CheckedPtr<SigninClient> signin_client_ = nullptr;               // Not owned.
+  AccountTrackerService* account_tracker_service_ = nullptr;  // Not owned.
+  ProfileOAuth2TokenService* token_service_ = nullptr;        // Not owned.
+  SigninClient* signin_client_ = nullptr;                     // Not owned.
   bool network_fetches_enabled_ = false;
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;

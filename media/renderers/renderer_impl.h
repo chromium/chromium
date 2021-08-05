@@ -11,7 +11,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -209,8 +208,8 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // Task runner used to execute pipeline tasks.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  CheckedPtr<MediaResource> media_resource_;
-  CheckedPtr<RendererClient> client_;
+  MediaResource* media_resource_;
+  RendererClient* client_;
 
   // Temporary callback used for Initialize() and Flush().
   PipelineStatusCallback init_cb_;
@@ -221,11 +220,11 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   std::unique_ptr<AudioRenderer> audio_renderer_;
   std::unique_ptr<VideoRenderer> video_renderer_;
 
-  CheckedPtr<DemuxerStream> current_audio_stream_;
-  CheckedPtr<DemuxerStream> current_video_stream_;
+  DemuxerStream* current_audio_stream_;
+  DemuxerStream* current_video_stream_;
 
   // Renderer-provided time source used to control playback.
-  CheckedPtr<TimeSource> time_source_;
+  TimeSource* time_source_;
   std::unique_ptr<WallClockTimeSource> wall_clock_time_source_;
   bool time_ticking_;
   double playback_rate_;
@@ -242,7 +241,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   bool audio_playing_;
   bool video_playing_;
 
-  CheckedPtr<CdmContext> cdm_context_;
+  CdmContext* cdm_context_;
 
   bool underflow_disabled_for_testing_;
   bool clockless_video_playback_enabled_for_testing_;

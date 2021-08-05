@@ -29,7 +29,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -209,7 +208,7 @@ class IDBRequestTest : public testing::Test {
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
-  CheckedPtr<WebURLLoaderMockFactory> url_loader_mock_factory_;
+  WebURLLoaderMockFactory* url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
   Persistent<IDBObjectStore> store_;

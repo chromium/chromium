@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 
 namespace autofill {
@@ -29,7 +28,7 @@ class LogManagerImpl : public LogManager {
 
  private:
   // A LogRouter instance obtained on construction. May be null.
-  const CheckedPtr<LogRouter> log_router_;
+  LogRouter* const log_router_;
 
   // True if |this| is registered with some LogRouter which can accept logs.
   bool can_use_log_router_;

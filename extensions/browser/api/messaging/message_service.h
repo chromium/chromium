@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -239,11 +238,11 @@ class MessageService : public BrowserContextKeyedAPI,
   static const bool kServiceIsCreatedWithBrowserContext = false;
   static const bool kServiceIsNULLWhileTesting = true;
 
-  const CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* const context_;
 
   // Delegate for embedder-specific messaging, e.g. for Chrome tabs.
   // Owned by the ExtensionsAPIClient and guaranteed to outlive |this|.
-  CheckedPtr<MessagingDelegate> messaging_delegate_;
+  MessagingDelegate* messaging_delegate_;
 
   MessageChannelMap channels_;
   // A set of channel IDs waiting for user permission to cross the border

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/sequence_checker.h"
@@ -41,8 +40,7 @@ class InterestedDataTypesManager {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-  CheckedPtr<InterestedDataTypesHandler> interested_data_types_handler_ =
-      nullptr;
+  InterestedDataTypesHandler* interested_data_types_handler_ = nullptr;
 
   absl::optional<ModelTypeSet> data_types_;
 };

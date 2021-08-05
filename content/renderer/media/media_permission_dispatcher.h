@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -70,7 +69,7 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   // The |RenderFrameImpl| that owns this MediaPermissionDispatcher.  It's okay
   // to hold a raw pointer here because the lifetime of this object is bounded
   // by the render frame's life (the latter holds a unique pointer to this).
-  const CheckedPtr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* const render_frame_;
 
   // Used to safely post MediaPermission calls for execution on |task_runner_|.
   base::WeakPtr<MediaPermissionDispatcher> weak_ptr_;

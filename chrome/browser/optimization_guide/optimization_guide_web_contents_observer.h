@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
@@ -95,8 +94,7 @@ class OptimizationGuideWebContentsObserver
 
   // Initialized in constructor. It may be null if the
   // OptimizationGuideKeyedService feature is not enabled.
-  CheckedPtr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
-      nullptr;
+  OptimizationGuideKeyedService* optimization_guide_keyed_service_ = nullptr;
 
   // List of predicted URLs to fetch hints for once the page reaches onload.
   optimization_guide::InsertionOrderedSet<GURL> hints_target_urls_;

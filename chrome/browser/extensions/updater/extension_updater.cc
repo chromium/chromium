@@ -775,7 +775,7 @@ void ExtensionUpdater::Observe(int type,
 void ExtensionUpdater::NotifyStarted() {
   content::NotificationService::current()->Notify(
       NOTIFICATION_EXTENSION_UPDATING_STARTED,
-      content::Source<Profile>(profile_.get()),
+      content::Source<Profile>(profile_),
       content::NotificationService::NoDetails());
 }
 

@@ -30,7 +30,6 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -949,7 +948,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
    private:
     bool draft_;
     bool developer_;
-    CheckedPtr<const char* const> prefixes_;
+    const char* const* prefixes_;
   };
 
   template <typename T>

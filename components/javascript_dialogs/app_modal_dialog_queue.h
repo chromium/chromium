@@ -7,7 +7,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 template <typename T>
@@ -82,7 +81,7 @@ class AppModalDialogQueue {
 
   // The currently active app-modal dialog box. nullptr if there is no active
   // app-modal dialog box.
-  CheckedPtr<AppModalDialogController> active_dialog_;
+  AppModalDialogController* active_dialog_;
 
   // Stores if |ShowModalDialog()| is currently being called on an app-modal
   // dialog.

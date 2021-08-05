@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -261,7 +260,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     URLLoader* get() const { return pointer_; }
 
    private:
-    const CheckedPtr<URLLoader> pointer_;
+    URLLoader* const pointer_;
 
     DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
@@ -407,13 +406,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // send or store credentials for no-cors cross-origin request.
   bool CoepAllowCredentials(const GURL& url);
 
-  CheckedPtr<net::URLRequestContext> url_request_context_;
+  net::URLRequestContext* url_request_context_;
 
   // |url_loader_factory_| is guaranteed to outlive URLLoader, so it is safe to
   // store a raw pointer here. It can also be null in tests.
-  const CheckedPtr<URLLoaderFactory> url_loader_factory_;
+  URLLoaderFactory* const url_loader_factory_;
 
-  CheckedPtr<mojom::NetworkContextClient> network_context_client_;
+  mojom::NetworkContextClient* network_context_client_;
   DeleteCallback delete_callback_;
 
   int32_t options_;
@@ -424,9 +423,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // URLLoaderFactory is guaranteed to outlive URLLoader, so it is safe to
   // store a raw pointer to mojom::URLLoaderFactoryParams.
-  const CheckedPtr<const mojom::URLLoaderFactoryParams> factory_params_;
+  const mojom::URLLoaderFactoryParams* const factory_params_;
   // This also belongs to URLLoaderFactory and outlives this loader.
-  const CheckedPtr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  mojom::CrossOriginEmbedderPolicyReporter* const coep_reporter_;
 
   const uint32_t request_id_;
   const int keepalive_request_size_;
@@ -532,7 +531,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
 
   // Will only be set for requests that have |obey_origin_policy| set.
-  CheckedPtr<mojom::OriginPolicyManager> origin_policy_manager_ = nullptr;
+  mojom::OriginPolicyManager* origin_policy_manager_ = nullptr;
 
   // If the request is configured for Trust Tokens
   // (https://github.com/WICG/trust-token-api) protocol operations, annotates

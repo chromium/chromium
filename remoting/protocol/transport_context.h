@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "remoting/protocol/ice_config.h"
@@ -100,11 +99,11 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CheckedPtr<OAuthTokenGetter> oauth_token_getter_ = nullptr;
+  OAuthTokenGetter* oauth_token_getter_ = nullptr;
   NetworkSettings network_settings_;
   TransportRole role_;
 
-  CheckedPtr<rtc::NetworkManager> network_manager_ = nullptr;
+  rtc::NetworkManager* network_manager_ = nullptr;
 
   IceConfig ice_config_;
 

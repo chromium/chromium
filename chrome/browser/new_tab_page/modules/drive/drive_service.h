@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
@@ -64,9 +63,9 @@ class DriveService : public KeyedService {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<GetFilesCallback> callbacks_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   std::string application_locale_;
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   std::unique_ptr<std::string> cached_json_;
   base::Time cached_json_time_;
   std::string cached_json_token_;

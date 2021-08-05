@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
@@ -117,7 +116,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
 
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
 
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 

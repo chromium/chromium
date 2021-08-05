@@ -10,7 +10,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/message_channel.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -73,8 +72,8 @@ class ObjectAccessor {
   V8VarConverter* converter() { return converter_.get(); }
 
  private:
-  CheckedPtr<V8ObjectVar> object_var_;
-  CheckedPtr<PepperPluginInstanceImpl> instance_;
+  V8ObjectVar* object_var_;
+  PepperPluginInstanceImpl* instance_;
   std::unique_ptr<V8VarConverter> converter_;
 };
 

@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -63,8 +62,8 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
   // Helper function to remove a request from token_requests_.
   void EraseRequest(const OAuth2AccessTokenManager::Request* request);
 
-  CheckedPtr<SigninClient> signin_client_;
-  CheckedPtr<ProfileOAuth2TokenService> token_service_;
+  SigninClient* signin_client_;
+  ProfileOAuth2TokenService* token_service_;
   const std::vector<CoreAccountId> account_ids_;
 
   SuccessCallback success_callback_;

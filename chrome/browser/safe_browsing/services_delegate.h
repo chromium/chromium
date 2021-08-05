@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
@@ -121,10 +120,10 @@ class ServicesDelegate {
 
  protected:
   // Unowned pointer
-  const CheckedPtr<SafeBrowsingService> safe_browsing_service_;
+  SafeBrowsingService* const safe_browsing_service_;
 
   // Unowned pointer
-  const CheckedPtr<ServicesCreator> services_creator_;
+  ServicesCreator* const services_creator_;
 };
 
 }  // namespace safe_browsing

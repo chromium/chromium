@@ -30,7 +30,6 @@
 #include <random>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
@@ -219,7 +218,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
     base::TimeDelta cpu_raster_duration;
   };
 
-  CheckedPtr<CanvasResourceHost> resource_host_;
+  CanvasResourceHost* resource_host_;
   viz::TransferableResource previous_frame_resource_;
 
   // For measuring a sample of frames for end-to-end raster time

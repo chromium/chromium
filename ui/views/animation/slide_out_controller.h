@@ -6,7 +6,6 @@
 #define UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/scoped_target_handler.h"
@@ -87,7 +86,7 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler,
   ui::ScopedTargetHandler target_handling_;
 
   // Unowned and outlives this object.
-  CheckedPtr<SlideOutControllerDelegate> delegate_;
+  SlideOutControllerDelegate* delegate_;
 
   // Cumulative scroll amount since the beginning of current slide gesture.
   // Includes the initial shift when swipe control was open at gesture start.

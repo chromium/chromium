@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -298,7 +297,7 @@ class MockMediaDevicesDispatcherHost
  private:
   media::AudioParameters audio_parameters_ =
       media::AudioParameters::UnavailableDeviceParams();
-  CheckedPtr<blink::MediaStreamVideoSource> video_source_ = nullptr;
+  blink::MediaStreamVideoSource* video_source_ = nullptr;
 };
 
 enum RequestState {
@@ -369,7 +368,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       override {
     video_source_ = new MockMediaStreamVideoCapturerSource(
         device, std::move(stop_callback));
-    return base::WrapUnique(video_source_.get());
+    return base::WrapUnique(video_source_);
   }
 
   std::unique_ptr<blink::MediaStreamAudioSource> CreateAudioSource(
@@ -392,7 +391,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       source = std::make_unique<FailedAtLifeAudioSource>();
     } else if (blink::IsDesktopCaptureMediaType(device.type)) {
       local_audio_source_ = new MockLocalMediaStreamAudioSource();
-      source = base::WrapUnique(local_audio_source_.get());
+      source = base::WrapUnique(local_audio_source_);
     } else {
       source = std::make_unique<blink::MediaStreamAudioSource>(
           blink::scheduler::GetSingleThreadTaskRunnerForTesting(), true);
@@ -442,14 +441,14 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   std::unique_ptr<WebMediaStreamDeviceObserver> media_stream_device_observer_;
   mojo::Remote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
-  CheckedPtr<MockMediaStreamVideoCapturerSource> video_source_ = nullptr;
-  CheckedPtr<MockLocalMediaStreamAudioSource> local_audio_source_ = nullptr;
+  MockMediaStreamVideoCapturerSource* video_source_ = nullptr;
+  MockLocalMediaStreamAudioSource* local_audio_source_ = nullptr;
   bool create_source_that_fails_ = false;
   Member<MediaStreamDescriptor> last_generated_descriptor_;
   blink::mojom::blink::MediaStreamRequestResult result_ =
       blink::mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
   String constraint_name_;
-  CheckedPtr<RequestState> state_;
+  RequestState* state_;
 };
 
 class UserMediaClientUnderTest : public UserMediaClient {
@@ -476,7 +475,7 @@ class UserMediaClientUnderTest : public UserMediaClient {
   }
 
  private:
-  CheckedPtr<RequestState> state_;
+  RequestState* state_;
 };
 
 class UserMediaChromeClient : public EmptyChromeClient {

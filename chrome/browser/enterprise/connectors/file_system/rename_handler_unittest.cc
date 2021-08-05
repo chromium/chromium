@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -75,7 +74,7 @@ class RenameHandlerCreateTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 class RenameHandlerCreateTest : public RenameHandlerCreateTestBase,
@@ -365,7 +364,7 @@ class RenameHandlerTestBase {
 
  private:
   std::unique_ptr<RenameHandlerForTest> handler_;
-  CheckedPtr<MockUploader> uploader_;
+  MockUploader* uploader_;
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -453,7 +452,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

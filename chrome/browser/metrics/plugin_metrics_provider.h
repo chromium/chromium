@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
@@ -99,7 +98,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   // Records the delay used internally by RecordCurrentStateWithDelay().
   static base::TimeDelta GetRecordStateDelay();
 
-  CheckedPtr<PrefService> local_state_;
+  PrefService* local_state_;
 
   // The list of plugins which was retrieved on the file thread.
   std::vector<content::WebPluginInfo> plugins_;

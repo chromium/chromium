@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -52,7 +51,7 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
 
  private:
   mutable std::vector<std::unique_ptr<MockRenderProcessHost>> processes_;
-  mutable CheckedPtr<SiteInstance> last_site_instance_used_;
+  mutable SiteInstance* last_site_instance_used_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteInstanceRenderProcessHostFactory);
 };

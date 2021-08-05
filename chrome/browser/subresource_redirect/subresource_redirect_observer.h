@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/render_document_host_user_data.h"
@@ -64,7 +63,7 @@ class ImageCompressionAppliedDocument
   friend class content::RenderDocumentHostUserData<
       ImageCompressionAppliedDocument>;
 
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
 
   // Maintains whether https image compression was attempted for the last
   // navigation. Even though image compression was attempted, it doesn't mean at

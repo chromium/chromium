@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
 #include "base/callback_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -85,8 +84,8 @@ class DeviceTrustService : public KeyedService {
 
   base::RepeatingCallback<bool()> MakePolicyCheck();
 
-  CheckedPtr<PrefService> prefs_;
-  CheckedPtr<Profile> profile_;
+  PrefService* prefs_;
+  Profile* profile_;
 
   // Caches whether the device trust service is enabled or not.  This is used
   // to implement IsEnabled() so the method does not need to access the prefs.

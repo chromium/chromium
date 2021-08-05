@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -190,7 +189,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   void HandleSubscriptionDestroyed(Subscription* subscription);
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // This is a scoped_refptr to immutable data. Once set, the wrapped
   // data must not be modified; it is referenced by other threads.

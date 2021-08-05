@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/signals/client_certificate_fetcher.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -119,7 +118,7 @@ class ClientCertificateFetcherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::vector<scoped_refptr<net::X509Certificate>> client_certs_;

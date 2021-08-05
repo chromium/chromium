@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -69,14 +68,14 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   void OnDialogAccepted();
 
   // Profile in which the shortcuts will be created.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   base::OnceCallback<void(bool)> close_callback_;
 
   // May be null if the platform doesn't support a particular location.
-  CheckedPtr<views::Checkbox> desktop_check_box_ = nullptr;
-  CheckedPtr<views::Checkbox> menu_check_box_ = nullptr;
-  CheckedPtr<views::Checkbox> quick_launch_check_box_ = nullptr;
+  views::Checkbox* desktop_check_box_ = nullptr;
+  views::Checkbox* menu_check_box_ = nullptr;
+  views::Checkbox* quick_launch_check_box_ = nullptr;
 
   // Target shortcut and file handler info.
   std::unique_ptr<web_app::ShortcutInfo> shortcut_info_;

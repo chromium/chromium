@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
@@ -174,7 +173,7 @@ class AuthenticatorRequestDialogModel {
 
     const std::u16string name;
     const std::u16string short_name;
-    const CheckedPtr<const gfx::VectorIcon> icon;
+    const gfx::VectorIcon* const icon;
     const base::RepeatingClosure callback;
     // priority is true if this mechanism should be activated immediately.
     // Only a single Mechanism in a list should have priority.

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -30,8 +29,8 @@ class GetAllUrlsFromHistoryTask : public history::HistoryDBTask {
   ~GetAllUrlsFromHistoryTask() override {}
 
  private:
-  CheckedPtr<std::vector<std::string>> urls_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  std::vector<std::string>* urls_;
+  base::WaitableEvent* wait_event_;
 
   DISALLOW_COPY_AND_ASSIGN(GetAllUrlsFromHistoryTask);
 };

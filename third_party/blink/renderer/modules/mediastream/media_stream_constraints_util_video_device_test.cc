@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -207,15 +206,15 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
   }
 
   VideoDeviceCaptureCapabilities capabilities_;
-  CheckedPtr<const VideoInputDeviceCapabilities> default_device_;
-  CheckedPtr<const VideoInputDeviceCapabilities> low_res_device_;
-  CheckedPtr<const VideoInputDeviceCapabilities> high_res_device_;
-  CheckedPtr<const VideoInputDeviceCapabilities> invalid_frame_rate_device_;
+  const VideoInputDeviceCapabilities* default_device_;
+  const VideoInputDeviceCapabilities* low_res_device_;
+  const VideoInputDeviceCapabilities* high_res_device_;
+  const VideoInputDeviceCapabilities* invalid_frame_rate_device_;
   // Closest formats to the default settings.
-  CheckedPtr<const media::VideoCaptureFormat> default_closest_format_;
-  CheckedPtr<const media::VideoCaptureFormat> low_res_closest_format_;
-  CheckedPtr<const media::VideoCaptureFormat> high_res_closest_format_;
-  CheckedPtr<const media::VideoCaptureFormat> high_res_highest_format_;
+  const media::VideoCaptureFormat* default_closest_format_;
+  const media::VideoCaptureFormat* low_res_closest_format_;
+  const media::VideoCaptureFormat* high_res_closest_format_;
+  const media::VideoCaptureFormat* high_res_highest_format_;
 
   MockConstraintFactory constraint_factory_;
 };

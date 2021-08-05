@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -890,7 +889,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Contextual information used for this request. Cannot be NULL. This contains
   // most of the dependencies which are shared between requests (disk cache,
   // cookie store, socket pool, etc.)
-  CheckedPtr<const URLRequestContext> context_;
+  const URLRequestContext* context_;
 
   // Tracks the time spent in various load states throughout this request.
   NetLogWithSource net_log_;
@@ -936,7 +935,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Never access methods of the |delegate_| directly. Always use the
   // Notify... methods for this.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Current error status of the job, as a net::Error code. When the job is
   // busy, it is ERR_IO_PENDING. When the job is idle (either completed, or

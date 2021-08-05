@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
@@ -69,7 +68,7 @@ class DeviceOperation : public GenericDeviceOperation {
   absl::optional<FidoDevice::CancelToken> token_;
 
  private:
-  const CheckedPtr<FidoDevice> device_ = nullptr;
+  FidoDevice* const device_ = nullptr;
   Request request_;
   DeviceResponseCallback callback_;
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_MEDIA_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
@@ -78,7 +77,7 @@ class CastMediaController : public mojom::MediaController {
   void UpdateMediaStatus(const base::Value& message_value);
 
   const std::string sender_id_;
-  const CheckedPtr<AppActivity> activity_;
+  AppActivity* const activity_;
   mojom::MediaStatus media_status_;
   std::string session_id_;
   int media_session_id_;

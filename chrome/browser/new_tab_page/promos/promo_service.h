@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
@@ -97,7 +96,7 @@ class PromoService : public KeyedService {
   absl::optional<PromoData> promo_data_;
   Status promo_status_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   base::WeakPtrFactory<PromoService> weak_ptr_factory_{this};
 };

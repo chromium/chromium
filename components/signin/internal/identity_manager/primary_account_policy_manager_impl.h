@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
@@ -45,7 +44,7 @@ class PrimaryAccountPolicyManagerImpl : public PrimaryAccountPolicyManager {
   // Returns true if the passed username is allowed by policy.
   bool IsAllowedUsername(const std::string& username) const;
 
-  CheckedPtr<SigninClient> client_;
+  SigninClient* client_;
 
   // Helper object to listen for changes to signin preferences stored in non-
   // profile-specific local prefs (like kGoogleServicesUsernamePattern).

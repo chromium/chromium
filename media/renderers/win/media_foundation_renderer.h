@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -104,7 +103,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // This is used for testing.
   const bool force_dcomp_mode_for_testing_;
 
-  CheckedPtr<RendererClient> renderer_client_;
+  RendererClient* renderer_client_;
 
   Microsoft::WRL::ComPtr<IMFMediaEngine> mf_media_engine_;
   Microsoft::WRL::ComPtr<MediaEngineNotifyImpl> mf_media_engine_notify_;
@@ -140,7 +139,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   base::win::ScopedHandle dcomp_surface_handle_;
 
   bool waiting_for_mf_cdm_ = false;
-  CheckedPtr<CdmContext> cdm_context_ = nullptr;
+  CdmContext* cdm_context_ = nullptr;
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
 
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>

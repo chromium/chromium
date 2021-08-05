@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -69,7 +68,7 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
   void EndPaint() override {}
 
  private:
-  CheckedPtr<SkCanvas*> canvas_;
+  SkCanvas** canvas_;
 };
 
 // This is used with resourceless software draws.

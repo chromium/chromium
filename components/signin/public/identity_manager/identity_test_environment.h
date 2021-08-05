@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -427,17 +426,17 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   std::unique_ptr<IdentityManagerDependenciesOwner> dependencies_owner_;
 
   // Non-owning pointer to the TestURLLoaderFactory.
-  CheckedPtr<network::TestURLLoaderFactory> test_url_loader_factory_ = nullptr;
+  network::TestURLLoaderFactory* test_url_loader_factory_ = nullptr;
 
   // If IdentityTestEnvironment doesn't use TestSigninClient, stores a
   // non-owning pointer to the SigninClient.
-  CheckedPtr<SigninClient> raw_signin_client_ = nullptr;
+  SigninClient* raw_signin_client_ = nullptr;
 
   // Depending on which constructor is used, exactly one of these will be
   // non-null. See the documentation on the constructor wherein IdentityManager
   // is passed in for required lifetime invariants in that case.
   std::unique_ptr<IdentityManager> owned_identity_manager_;
-  CheckedPtr<IdentityManager> raw_identity_manager_ = nullptr;
+  IdentityManager* raw_identity_manager_ = nullptr;
 
   std::unique_ptr<TestIdentityManagerObserver> test_identity_manager_observer_;
 

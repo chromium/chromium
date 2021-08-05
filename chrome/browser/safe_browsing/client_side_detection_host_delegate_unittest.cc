@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,9 +48,8 @@ class ClientSideDetectionDelegateTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  CheckedPtr<SafeBrowsingNavigationObserverManager>
-      navigation_observer_manager_;
-  CheckedPtr<SafeBrowsingNavigationObserver> navigation_observer_;
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
+  SafeBrowsingNavigationObserver* navigation_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:

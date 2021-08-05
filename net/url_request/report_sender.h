@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/transport_security_state.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -62,7 +61,7 @@ class NET_EXPORT ReportSender
   void OnReadCompleted(URLRequest* request, int bytes_read) override;
 
  private:
-  const CheckedPtr<net::URLRequestContext> request_context_;
+  net::URLRequestContext* const request_context_;
   std::map<URLRequest*, std::unique_ptr<URLRequest>> inflight_requests_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 

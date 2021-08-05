@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
@@ -83,8 +82,8 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   const std::unique_ptr<QuicChromiumClientSession::Handle> session_;
   std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
 
-  CheckedPtr<const BidirectionalStreamRequestInfo> request_info_;
-  CheckedPtr<BidirectionalStreamImpl::Delegate> delegate_;
+  const BidirectionalStreamRequestInfo* request_info_;
+  BidirectionalStreamImpl::Delegate* delegate_;
   // Saves the response status if the stream is explicitly closed via OnError
   // or OnClose with an error. Once all buffered data has been returned, this
   // will be used as the final response.

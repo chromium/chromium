@@ -7,7 +7,6 @@
 
 #include <GLES2/gl2.h>
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gpu {
@@ -42,10 +41,10 @@ class ReadbackBufferShadowTracker {
     friend class ReadbackBufferShadowTracker;
 
     GLuint buffer_id_ = 0;
-    CheckedPtr<ReadbackBufferShadowTracker> tracker_;
+    ReadbackBufferShadowTracker* tracker_;
     int32_t shm_id_ = 0;
     uint32_t shm_offset_ = 0;
-    CheckedPtr<void> readback_shm_address_ = nullptr;
+    void* readback_shm_address_ = nullptr;
     uint64_t serial_of_last_write_ = 1;  // will be updated right after creation
     uint64_t serial_of_readback_data_ = 0;
     uint32_t size_ = 0;
@@ -84,8 +83,8 @@ class ReadbackBufferShadowTracker {
   BufferList buffers_written_but_not_fenced_;
   uint64_t buffer_shadow_serial_ = 1;
 
-  CheckedPtr<MappedMemoryManager> mapped_memory_;
-  CheckedPtr<GLES2CmdHelper> helper_;
+  MappedMemoryManager* mapped_memory_;
+  GLES2CmdHelper* helper_;
 
   DISALLOW_COPY_AND_ASSIGN(ReadbackBufferShadowTracker);
 };

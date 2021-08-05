@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -225,7 +224,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // is not |nullptr| while the compositor is actively using this
   // VideoFrameProvider. This will be set to |nullptr| when the compositor stops
   // serving this VideoFrameProvider.
-  CheckedPtr<cc::VideoFrameProvider::Client> video_frame_provider_client_;
+  cc::VideoFrameProvider::Client* video_frame_provider_client_;
 
   // |current_frame_| is updated only on compositor thread. The object it
   // holds can be freed on the compositor thread if it is the last to hold a

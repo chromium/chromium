@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -318,7 +317,7 @@ class VrShell : VoiceResultDelegate,
 
   bool webvr_mode_ = false;
 
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
   bool web_contents_is_native_page_ = false;
   base::android::ScopedJavaGlobalRef<jobject> j_motion_event_synthesizer_;
 
@@ -328,7 +327,7 @@ class VrShell : VoiceResultDelegate,
   // and uses the pointer on GL thread.
   std::unique_ptr<VrInputConnection> vr_input_connection_;
 
-  CheckedPtr<VrShellDelegate> delegate_provider_ = nullptr;
+  VrShellDelegate* delegate_provider_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> j_vr_shell_;
 
   std::unique_ptr<AndroidUiGestureTarget> android_ui_gesture_target_;
@@ -336,7 +335,7 @@ class VrShell : VoiceResultDelegate,
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   std::unique_ptr<VrGLThread> gl_thread_;
-  CheckedPtr<BrowserUiInterface> ui_;
+  BrowserUiInterface* ui_;
 
   // These instances make use of ui_ (provided by gl_thread_), and hence must be
   // destroyed before gl_thread_;
@@ -365,9 +364,9 @@ class VrShell : VoiceResultDelegate,
   gfx::SizeF display_size_meters_;
   gfx::Size display_size_pixels_;
 
-  CheckedPtr<gl::SurfaceTexture> content_surface_texture_ = nullptr;
-  CheckedPtr<gl::SurfaceTexture> overlay_surface_texture_ = nullptr;
-  CheckedPtr<gl::SurfaceTexture> ui_surface_texture_ = nullptr;
+  gl::SurfaceTexture* content_surface_texture_ = nullptr;
+  gl::SurfaceTexture* overlay_surface_texture_ = nullptr;
+  gl::SurfaceTexture* ui_surface_texture_ = nullptr;
 
   base::OneShotTimer waiting_for_assets_component_timer_;
   bool can_load_new_assets_ = false;

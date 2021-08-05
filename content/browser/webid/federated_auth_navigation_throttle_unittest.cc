@@ -7,7 +7,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webid/test/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
@@ -89,7 +88,7 @@ class FederatedAuthNavigationThrottleTest : public RenderViewHostTestHarness {
 
  private:
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 };
 
 // Test that the throttle is only created when the WebID feature is turned on

@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/network_settings.h"
@@ -117,7 +116,7 @@ class IceTransportChannel : public sigslot::has_slots<> {
   scoped_refptr<TransportContext> transport_context_;
 
   std::string name_;
-  CheckedPtr<Delegate> delegate_ = nullptr;
+  Delegate* delegate_ = nullptr;
   ConnectedCallback callback_;
   std::string ice_username_fragment_;
 

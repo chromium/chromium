@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -42,7 +41,7 @@ class IsDirectoryCollector {
  private:
   void OnIsDirectoryCollected(size_t index, bool directory);
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   std::vector<base::FilePath> paths_;
   std::unique_ptr<std::set<base::FilePath>> result_;
   size_t left_;

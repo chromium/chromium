@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -130,7 +129,7 @@ class LabelTest : public test::BaseControlTestWidget {
   Label* label() { return label_; }
 
  private:
-  CheckedPtr<Label> label_ = nullptr;
+  Label* label_ = nullptr;
 };
 
 // Test fixture for text selection related tests.

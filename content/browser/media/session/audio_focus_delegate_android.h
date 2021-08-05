@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 
 namespace media_session {
@@ -63,7 +62,7 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
 
  private:
   // Weak pointer because |this| is owned by |media_session_|.
-  CheckedPtr<MediaSessionImpl> media_session_;
+  MediaSessionImpl* media_session_;
   base::android::ScopedJavaGlobalRef<jobject> j_media_session_delegate_;
   DISALLOW_COPY_AND_ASSIGN(AudioFocusDelegateAndroid);
 };

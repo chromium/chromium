@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -573,7 +572,7 @@ class BluetoothLowEnergyEventRouter
   std::map<std::string, std::vector<std::string>> app_id_to_service_ids_;
 
   // BrowserContext passed during initialization.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

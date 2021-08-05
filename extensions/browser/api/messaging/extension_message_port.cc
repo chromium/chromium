@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -118,7 +117,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       pm_observation_{this};
-  CheckedPtr<ExtensionMessagePort> port_;  // Owns this FrameTracker.
+  ExtensionMessagePort* port_;  // Owns this FrameTracker.
 
   DISALLOW_COPY_AND_ASSIGN(FrameTracker);
 };

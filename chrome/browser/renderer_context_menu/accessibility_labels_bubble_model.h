@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -45,7 +44,7 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel,
   void SetPref(bool enabled);
 
   // Unowned.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Whether to always enable or just enable once.
   bool enable_always_;

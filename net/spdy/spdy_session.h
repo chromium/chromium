@@ -17,7 +17,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -1035,11 +1034,11 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   std::set<SpdySessionKey> pooled_aliases_;
 
   // |pool_| owns us, therefore its lifetime must exceed ours.
-  CheckedPtr<SpdySessionPool> pool_;
-  CheckedPtr<HttpServerProperties> http_server_properties_;
+  SpdySessionPool* pool_;
+  HttpServerProperties* http_server_properties_;
 
-  CheckedPtr<TransportSecurityState> transport_security_state_;
-  CheckedPtr<SSLConfigService> ssl_config_service_;
+  TransportSecurityState* transport_security_state_;
+  SSLConfigService* ssl_config_service_;
 
   // One of these two owns the socket for this session, which is stored in
   // |socket_|. If |client_socket_handle_| is non-null, this session is on top
@@ -1052,7 +1051,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   std::unique_ptr<LoadTimingInfo::ConnectTiming> connect_timing_;
 
   // The socket for this session.
-  CheckedPtr<StreamSocket> socket_;
+  StreamSocket* socket_;
 
   // The read buffer used to read data from the socket.
   // Non-null if there is a Read() pending.
@@ -1082,7 +1081,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
 
   // Not owned. |push_delegate_| outlives the session and handles server pushes
   // received by session.
-  CheckedPtr<ServerPushDelegate> push_delegate_;
+  ServerPushDelegate* push_delegate_;
 
   // Set of all created streams but that have not yet sent any frames.
   //
@@ -1302,7 +1301,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
 
   // Network quality estimator to which the ping RTTs should be reported. May be
   // nullptr.
-  CheckedPtr<NetworkQualityEstimator> network_quality_estimator_;
+  NetworkQualityEstimator* network_quality_estimator_;
 
   // Used for accessing the SpdySession from asynchronous tasks. An asynchronous
   // must check if its WeakPtr<SpdySession> is valid before accessing it, to

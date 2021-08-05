@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/proxy/connection.h"
@@ -80,7 +79,7 @@ class PepperInProcessRouter {
   void DispatchPluginMsg(IPC::Message* msg);
   bool SendToBrowser(IPC::Message* msg);
 
-  CheckedPtr<RendererPpapiHostImpl> host_impl_;
+  RendererPpapiHostImpl* host_impl_;
 
   class Channel;
   std::unique_ptr<Channel> browser_channel_;

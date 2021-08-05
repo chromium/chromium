@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -115,9 +114,9 @@ class TestCastMediaSinkService : public CastMediaSinkService {
   MockCastMediaSinkServiceImpl* mock_impl() { return mock_impl_; }
 
  private:
-  const CheckedPtr<cast_channel::CastSocketService> cast_socket_service_;
-  const CheckedPtr<DiscoveryNetworkMonitor> network_monitor_;
-  CheckedPtr<MockCastMediaSinkServiceImpl> mock_impl_ = nullptr;
+  cast_channel::CastSocketService* const cast_socket_service_;
+  DiscoveryNetworkMonitor* const network_monitor_;
+  MockCastMediaSinkServiceImpl* mock_impl_ = nullptr;
 };
 
 class CastMediaSinkServiceTest : public ::testing::Test {
@@ -166,7 +165,7 @@ class CastMediaSinkServiceTest : public ::testing::Test {
       mock_cast_socket_service_;
 
   std::unique_ptr<TestCastMediaSinkService> media_sink_service_;
-  CheckedPtr<MockCastMediaSinkServiceImpl> mock_impl_ = nullptr;
+  MockCastMediaSinkServiceImpl* mock_impl_ = nullptr;
   MockDnsSdRegistry test_dns_sd_registry_;
 };
 

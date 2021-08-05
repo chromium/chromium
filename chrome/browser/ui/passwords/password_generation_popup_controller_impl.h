@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -122,7 +121,7 @@ class PasswordGenerationPopupControllerImpl
       content::RenderFrameHost* frame);
 
   // Handle to the popup. May be NULL if popup isn't showing.
-  CheckedPtr<PasswordGenerationPopupView> view_;
+  PasswordGenerationPopupView* view_;
 
  private:
   class KeyPressRegistrator;
@@ -160,7 +159,7 @@ class PasswordGenerationPopupControllerImpl
   base::WeakPtr<password_manager::PasswordManagerDriver> const driver_;
 
   // May be NULL.
-  const CheckedPtr<PasswordGenerationPopupObserver> observer_;
+  PasswordGenerationPopupObserver* const observer_;
 
   // Signature of the form for which password generation is triggered.
   const autofill::FormSignature form_signature_;

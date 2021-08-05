@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -356,7 +355,7 @@ class HttpStreamFactory::Job
 
   const CompletionRepeatingCallback io_callback_;
   std::unique_ptr<ClientSocketHandle> connection_;
-  const CheckedPtr<HttpNetworkSession> session_;
+  HttpNetworkSession* const session_;
 
   State next_state_;
 
@@ -381,7 +380,7 @@ class HttpStreamFactory::Job
   const bool enable_ip_based_pooling_;
 
   // Unowned. |this| job is owned by |delegate_|.
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   const JobType job_type_;
 

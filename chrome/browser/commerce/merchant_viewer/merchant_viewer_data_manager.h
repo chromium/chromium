@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_COMMERCE_MERCHANT_VIEWER_MERCHANT_VIEWER_DATA_MANAGER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
@@ -56,8 +55,7 @@ class MerchantViewerDataManager : public KeyedService {
   void ClearAllMerchants();
   bool HasValidDB();
   SEQUENCE_CHECKER(sequence_checker_);
-  CheckedPtr<ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>>
-      proto_db_;
+  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   base::WeakPtrFactory<MerchantViewerDataManager> weak_ptr_factory_{this};
 };
 

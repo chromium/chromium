@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_REQUEST_H_
 
 #include <memory>
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -339,7 +338,7 @@ class WebURLRequest {
   std::unique_ptr<ResourceRequest> owned_resource_request_;
 
   // Should never be null.
-  CheckedPtr<ResourceRequest> resource_request_;
+  ResourceRequest* resource_request_;
 };
 
 }  // namespace blink

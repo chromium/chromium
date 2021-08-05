@@ -14,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/http/bidirectional_stream.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
@@ -161,7 +160,7 @@ class CronetBidirectionalStreamAdapter
       const spdy::Http2HeaderBlock& header_block);
   // Helper method to report metrics to the Java layer.
   void MaybeReportMetrics();
-  const CheckedPtr<CronetURLRequestContextAdapter> context_;
+  CronetURLRequestContextAdapter* const context_;
 
   // Java object that owns this CronetBidirectionalStreamAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

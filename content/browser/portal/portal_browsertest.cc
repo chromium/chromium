@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1527,7 +1526,7 @@ class LocalMainFrameInterceptorBadPortalActivateResult
   }
 
  private:
-  CheckedPtr<RenderFrameHostImpl> frame_host_;
+  RenderFrameHostImpl* frame_host_;
   mojo::AssociatedRemote<blink::mojom::LocalMainFrame> local_main_frame_;
 };
 
@@ -2421,7 +2420,7 @@ class DownloadObserver : public DownloadManager::Observer {
   }
 
  private:
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
   bool dropped_download_ = false;
   GURL download_url_;
   base::OnceClosure quit_closure_;

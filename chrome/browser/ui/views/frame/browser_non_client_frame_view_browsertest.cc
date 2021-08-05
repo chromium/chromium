@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -79,10 +78,10 @@ class BrowserNonClientFrameViewBrowserTest
 
  protected:
   absl::optional<SkColor> app_theme_color_ = SK_ColorBLUE;
-  CheckedPtr<Browser> app_browser_ = nullptr;
-  CheckedPtr<BrowserView> app_browser_view_ = nullptr;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
-  CheckedPtr<BrowserNonClientFrameView> app_frame_view_ = nullptr;
+  Browser* app_browser_ = nullptr;
+  BrowserView* app_browser_view_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
+  BrowserNonClientFrameView* app_frame_view_ = nullptr;
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
@@ -225,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // picked.
     content::ThemeChangeWaiter waiter(web_contents_);
     EXPECT_TRUE(content::ExecJs(
-        web_contents_.get(),
+        web_contents_,
         "document.documentElement.innerHTML = '"
         "<meta id=\"first\"  name=\"theme-color\" content=\"red\">"
         "<meta id=\"second\" name=\"theme-color\" content=\"#00ff00\">'"));
@@ -240,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // Change the color of the first element. The new color should be picked.
     content::ThemeChangeWaiter waiter(web_contents_);
     EXPECT_TRUE(content::ExecJs(
-        web_contents_.get(),
+        web_contents_,
         "document.getElementById('first').setAttribute('content', 'yellow')"));
     waiter.Wait();
 
@@ -251,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // Set a non matching media query to the first element. The second element's
     // color should be picked.
     content::ThemeChangeWaiter waiter(web_contents_);
-    EXPECT_TRUE(content::ExecJs(web_contents_.get(),
+    EXPECT_TRUE(content::ExecJs(web_contents_,
                                 "document.getElementById('first')."
                                 "setAttribute('media', '(max-width: 0px)')"));
     waiter.Wait();
@@ -263,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // Remove the second element. The manifest color should be picked because
     // the first element still does not match.
     content::ThemeChangeWaiter waiter(web_contents_);
-    EXPECT_TRUE(content::ExecJs(web_contents_.get(),
+    EXPECT_TRUE(content::ExecJs(web_contents_,
                                 "document.getElementById('second').remove()"));
     waiter.Wait();
 
@@ -275,9 +274,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // color should be picked.
     content::ThemeChangeWaiter waiter(web_contents_);
     std::string width =
-        content::EvalJs(web_contents_.get(), "outerWidth.toString()")
-            .ExtractString();
-    EXPECT_TRUE(content::ExecJs(web_contents_.get(),
+        content::EvalJs(web_contents_, "outerWidth.toString()").ExtractString();
+    EXPECT_TRUE(content::ExecJs(web_contents_,
                                 "document.getElementById('first')."
                                 "setAttribute('media', '(max-width: " +
                                     width + "px')"));
@@ -290,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
     // Resize the window so that the media query on the first element does not
     // match anymore. The manifest color should be picked.
     content::ThemeChangeWaiter waiter(web_contents_);
-    EXPECT_TRUE(content::ExecJs(web_contents_.get(), "window.resizeBy(24, 0)"));
+    EXPECT_TRUE(content::ExecJs(web_contents_, "window.resizeBy(24, 0)"));
     waiter.Wait();
 
     EXPECT_EQ(app_browser_view_->frame()->GetFrameView()->GetFrameColor(),
@@ -321,7 +319,7 @@ class SaveCardOfferObserver
   void Wait() { run_loop_.Run(); }
 
  private:
-  CheckedPtr<autofill::CreditCardSaveManager> manager_ = nullptr;
+  autofill::CreditCardSaveManager* manager_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -329,11 +327,11 @@ class SaveCardOfferObserver
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
-  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "fill_form.click();"));
+  ASSERT_TRUE(content::ExecJs(web_contents_, "fill_form.click();"));
 
   content::TestNavigationObserver nav_observer(web_contents_);
   SaveCardOfferObserver offer_observer(web_contents_);
-  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "submit.click();"));
+  ASSERT_TRUE(content::ExecJs(web_contents_, "submit.click();"));
   nav_observer.Wait();
   offer_observer.Wait();
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/token.h"
@@ -120,10 +119,10 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   void OnUserDismiss(const base::Feature& iph_feature);
 
   // The browser window this instance is responsible for.
-  const CheckedPtr<BrowserView> browser_view_;
+  BrowserView* const browser_view_;
 
   // The delegate responsible for creating and owning a bubble.
-  const CheckedPtr<FeaturePromoBubbleOwner> bubble_owner_;
+  FeaturePromoBubbleOwner* const bubble_owner_;
 
   // Snooze service that is notified when a user snoozes or dismisses the promo.
   // Ask this service for display permission before |tracker_|.
@@ -131,11 +130,11 @@ class FeaturePromoControllerViews : public FeaturePromoController {
 
   // IPH backend that is notified of user events and decides whether to
   // trigger IPH.
-  const CheckedPtr<feature_engagement::Tracker> tracker_;
+  feature_engagement::Tracker* const tracker_;
 
   // Non-null as long as a promo is showing. Corresponds to an IPH
   // feature registered with |tracker_|.
-  CheckedPtr<const base::Feature> current_iph_feature_ = nullptr;
+  const base::Feature* current_iph_feature_ = nullptr;
 
   // Bubble ID from `bubble_owner_`, if a bubble is showing.
   absl::optional<base::Token> bubble_id_;

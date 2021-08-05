@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_UI_MESSAGE_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/logger.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -43,7 +42,7 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
   // Starts a background download.
   void HandleStartDownload(const base::ListValue* args);
 
-  CheckedPtr<download::BackgroundDownloadService> download_service_;
+  download::BackgroundDownloadService* download_service_;
 
   base::WeakPtrFactory<DownloadInternalsUIMessageHandler> weak_ptr_factory_{
       this};

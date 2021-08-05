@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "weblayer/browser/favicon/favicon_tab_helper.h"
 #include "weblayer/public/favicon_fetcher.h"
 
@@ -33,7 +32,7 @@ class FaviconFetcherImpl : public FaviconFetcher {
   gfx::Image GetFavicon() override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   std::unique_ptr<FaviconTabHelper::ObserverSubscription>
       observer_subscription_;
 };

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/public/browser/background_sync_registration.h"
@@ -53,7 +52,7 @@ class BackgroundSyncRegistrationHelper {
 
  private:
   // |background_sync_context_| (indirectly) owns |this|.
-  const CheckedPtr<BackgroundSyncContextImpl> background_sync_context_;
+  BackgroundSyncContextImpl* const background_sync_context_;
   base::WeakPtrFactory<BackgroundSyncRegistrationHelper> weak_ptr_factory_{
       this};
 

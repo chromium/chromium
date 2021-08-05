@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -73,10 +72,10 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
 
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
-  CheckedPtr<RenderViewContextMenuProxy> proxy_;
+  RenderViewContextMenuProxy* proxy_;
   GURL url_;
   GURL raw_url_;
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
 
   // True when the context menu was opened with text selected.
   bool link_needs_generation_ = false;

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
 #include "ppapi/c/pp_size.h"
@@ -58,7 +57,7 @@ class PepperCameraDeviceHost : public ppapi::host::ResourceHost {
 
   std::unique_ptr<PepperPlatformCameraDevice> platform_camera_device_;
 
-  CheckedPtr<RendererPpapiHostImpl> renderer_ppapi_host_;
+  RendererPpapiHostImpl* renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext open_reply_context_;
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
@@ -40,7 +39,7 @@ class PresentationReceiverWindowFrame final : public views::Widget {
   const ui::ThemeProvider* GetThemeProvider() const final;
 
   // The profile from which we get the theme.
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowFrame);
 };

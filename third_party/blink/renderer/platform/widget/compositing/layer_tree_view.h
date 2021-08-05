@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -145,7 +144,7 @@ class PLATFORM_EXPORT LayerTreeView
       std::unique_ptr<cc::RenderFrameMetadataObserver>
           render_frame_metadata_observer);
 
-  const CheckedPtr<scheduler::WebThreadScheduler> web_main_thread_scheduler_;
+  scheduler::WebThreadScheduler* const web_main_thread_scheduler_;
   const std::unique_ptr<cc::AnimationHost> animation_host_;
   std::unique_ptr<cc::RasterDarkModeFilter> dark_mode_filter_;
 
@@ -153,7 +152,7 @@ class PLATFORM_EXPORT LayerTreeView
   // class should do nothing in calls from the LayerTreeHost, and just wait to
   // be destroyed. It is not expected to be used at all after Disconnect()
   // outside of handling/dropping LayerTreeHost client calls.
-  CheckedPtr<LayerTreeViewDelegate> delegate_;
+  LayerTreeViewDelegate* delegate_;
   std::unique_ptr<cc::LayerTreeHost> layer_tree_host_;
 
   // This class should do nothing and access no pointers once this value becomes

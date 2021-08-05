@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/content_export.h"
@@ -95,9 +94,9 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       const std::vector<NotificationDatabaseData>& notifications);
 
   // The notification context that owns this service instance.
-  CheckedPtr<PlatformNotificationContextImpl> notification_context_;
+  PlatformNotificationContextImpl* notification_context_;
 
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 

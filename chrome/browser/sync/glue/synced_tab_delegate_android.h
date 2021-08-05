@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_GLUE_SYNCED_TAB_DELEGATE_ANDROID_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 
 namespace content {
@@ -38,7 +37,7 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   void ResetWebContents();
 
  private:
-  CheckedPtr<TabAndroid> tab_android_;
+  TabAndroid* tab_android_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncedTabDelegateAndroid);
 };

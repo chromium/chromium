@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/sequence_checker.h"
@@ -107,7 +106,7 @@ class NetworkMetricsProvider
   // It is obtained from the global |g_network_connection_tracker| pointer in
   // //content/public/browser/network_service_instance.cc and points to the same
   // object.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // True if |connection_type_| changed during the lifetime of the log.
   bool connection_type_is_ambiguous_;

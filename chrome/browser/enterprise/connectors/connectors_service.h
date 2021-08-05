@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -136,7 +135,7 @@ class ConnectorsService : public KeyedService {
   // OnSecurityEvent policy value.
   std::unique_ptr<ClientMetadata> BuildClientMetadata();
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 

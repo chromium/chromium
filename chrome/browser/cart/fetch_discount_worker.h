@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
@@ -29,7 +28,7 @@ class CartLoader {
   virtual void LoadAllCarts(CartDB::LoadCallback callback);
 
  private:
-  CheckedPtr<CartService> cart_service_;
+  CartService* cart_service_;
 };
 
 class CartDiscountUpdater {
@@ -41,7 +40,7 @@ class CartDiscountUpdater {
                       const bool is_tester);
 
  private:
-  CheckedPtr<CartService> cart_service_;
+  CartService* cart_service_;
 };
 
 class CartLoaderAndUpdaterFactory {
@@ -53,7 +52,7 @@ class CartLoaderAndUpdaterFactory {
   virtual std::unique_ptr<CartDiscountUpdater> createCartDiscountUpdater();
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 // This is used to fetch discounts for active Carts in cart_db. It starts
@@ -100,7 +99,7 @@ class FetchDiscountWorker {
   // CartDiscountUpdater to update the given cart discount.
   std::unique_ptr<CartLoaderAndUpdaterFactory> cart_loader_and_updater_factory_;
   // This is used to identify whether user is a sync user.
-  const CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* const identity_manager_;
   // This is used to fetch the oauth token.
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;

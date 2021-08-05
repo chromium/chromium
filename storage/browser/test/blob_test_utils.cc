@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "storage/browser/test/blob_test_utils.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 
@@ -24,7 +23,7 @@ class DataPipeDrainerClient : public mojo::DataPipeDrainer::Client {
 
  private:
   base::RunLoop run_loop_;
-  CheckedPtr<std::string> output_;
+  std::string* output_;
 };
 
 }  // namespace

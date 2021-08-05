@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -138,7 +137,7 @@ class ProfileProtoDB : public KeyedService {
 
   // Browser context associated with ProfileProtoDB (ProfileProtoDB are per
   // profile).
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // Status of the database initialization.
   absl::optional<leveldb_proto::Enums::InitStatus> database_status_;

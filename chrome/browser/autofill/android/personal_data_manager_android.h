@@ -10,7 +10,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/geo/subkey_requester.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -404,7 +403,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   JavaObjectWeakGlobalRef weak_java_obj_;
 
   // Pointer to the PersonalDataManager for the main profile.
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   // Used for subkey request.
   SubKeyRequester subkey_requester_;

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -65,7 +64,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   std::string multipart_boundary_;
   gfx::Range byte_range_ = gfx::Range::InvalidRange();
   bool is_multipart_ = false;
-  CheckedPtr<char> buffer_ = nullptr;
+  char* buffer_ = nullptr;
   uint32_t buffer_size_ = 0;
   bool multi_part_processed_ = false;
 

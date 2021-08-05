@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
-#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -68,10 +67,10 @@ class AggregationPointVisitor {
  private:
   struct Enclosing {
     url::Origin origin;
-    CheckedPtr<mojom::WebMemoryBreakdownEntry> aggregation_point;
+    mojom::WebMemoryBreakdownEntry* aggregation_point;
   };
   const url::Origin requesting_origin_;
-  CheckedPtr<const ProcessNode> requesting_process_node_;
+  const ProcessNode* requesting_process_node_;
   const url::Origin main_origin_;
   mojom::WebMemoryMeasurementPtr aggregation_result_ =
       mojom::WebMemoryMeasurement::New();

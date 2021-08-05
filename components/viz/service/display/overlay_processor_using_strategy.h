@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -47,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       // A iterator in the vector of quads.
       QuadList::Iterator quad_iter;
       OverlayCandidate candidate;
-      CheckedPtr<Strategy> strategy = nullptr;
+      Strategy* strategy = nullptr;
 
       // heuristic sort element
       int relative_power_gain = 0;
@@ -175,7 +174,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       const OverlayCandidate& overlay) const;
 
   StrategyList strategies_;
-  CheckedPtr<Strategy> last_successful_strategy_ = nullptr;
+  Strategy* last_successful_strategy_ = nullptr;
 
   gfx::Rect overlay_damage_rect_;
   bool previous_is_underlay = false;

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
@@ -48,7 +47,7 @@ class VIEWS_EXPORT AXAuraObjWrapper {
  protected:
   // The cache associated with this wrapper. Subclasses should initialize this
   // cache on construction.
-  CheckedPtr<AXAuraObjCache> aura_obj_cache_ = nullptr;
+  AXAuraObjCache* aura_obj_cache_ = nullptr;
 };
 
 }  // namespace views

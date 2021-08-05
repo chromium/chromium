@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -177,12 +176,12 @@ class SpellcheckHunspellDictionary
 
   // Used for downloading the dictionary file. SpellcheckHunspellDictionary does
   // not hold a reference, and it is only valid to use it on the UI thread.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // Used for downloading the dictionary file.
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
-  const CheckedPtr<SpellcheckService> spellcheck_service_;
+  SpellcheckService* const spellcheck_service_;
 
   // Observers of Hunspell dictionary events.
   base::ObserverList<Observer>::Unchecked observers_;

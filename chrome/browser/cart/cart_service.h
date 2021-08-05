@@ -5,7 +5,6 @@
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -191,17 +190,16 @@ class CartService : public history::HistoryServiceObserver,
   // A callback to to keep entries of removed carts when deletion.
   void OnDeleteCart(bool success, std::vector<CartDB::KeyAndValue> proto_pairs);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
-  CheckedPtr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
   absl::optional<base::Value> domain_name_mapping_;
   absl::optional<base::Value> domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
-  CheckedPtr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_;
+  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
   std::unique_ptr<CartMetricsTracker> metrics_tracker_;
   std::unique_ptr<DiscountURLLoader> discount_url_loader_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};

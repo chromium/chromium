@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace aura {
 
@@ -35,7 +34,7 @@ class WindowOcclusionTrackerTestApi {
   bool IsPaused() const;
 
  private:
-  const CheckedPtr<WindowOcclusionTracker> tracker_;
+  WindowOcclusionTracker* const tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowOcclusionTrackerTestApi);
 };

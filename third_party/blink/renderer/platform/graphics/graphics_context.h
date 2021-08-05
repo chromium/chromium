@@ -31,7 +31,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
@@ -518,7 +517,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.
-  CheckedPtr<cc::PaintCanvas> canvas_ = nullptr;
+  cc::PaintCanvas* canvas_ = nullptr;
 
   PaintController& paint_controller_;
 
@@ -531,13 +530,12 @@ class PLATFORM_EXPORT GraphicsContext {
   wtf_size_t paint_state_index_ = 0;
 
   // Raw pointer to the current state.
-  CheckedPtr<GraphicsContextState> paint_state_ = nullptr;
+  GraphicsContextState* paint_state_ = nullptr;
 
   PaintRecorder paint_recorder_;
 
-  CheckedPtr<printing::MetafileSkia> printing_metafile_ = nullptr;
-  CheckedPtr<paint_preview::PaintPreviewTracker> paint_preview_tracker_ =
-      nullptr;
+  printing::MetafileSkia* printing_metafile_ = nullptr;
+  paint_preview::PaintPreviewTracker* paint_preview_tracker_ = nullptr;
 
 #if DCHECK_IS_ON()
   int layer_count_ = 0;

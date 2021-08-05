@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -470,7 +469,7 @@ class YUVReadbackTest : public testing::Test {
   }
 
   std::unique_ptr<gpu::GLInProcessContext> context_;
-  CheckedPtr<gpu::gles2::GLES2Interface> gl_;
+  gpu::gles2::GLES2Interface* gl_;
   std::unique_ptr<gpu::GLHelper> helper_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
 };

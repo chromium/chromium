@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/login_detection/password_store_sites.h"
@@ -73,8 +72,8 @@ class LoginDetectionPasswordStoreSitesBrowserTest
 
  protected:
   base::HistogramTester histogram_tester;
-  CheckedPtr<PasswordStoreInterface> profile_password_store_ = nullptr;
-  CheckedPtr<PasswordStoreInterface> account_password_store_ = nullptr;
+  PasswordStoreInterface* profile_password_store_ = nullptr;
+  PasswordStoreInterface* account_password_store_ = nullptr;
 };
 
 // The code under test depends on feature EnablePasswordsAccountStorage which

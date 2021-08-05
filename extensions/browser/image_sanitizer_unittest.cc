@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,7 +62,7 @@ class RefCountedSanitizerCallback
   }
 
   base::OnceClosure done_callback_;
-  CheckedPtr<bool> deleted_;
+  bool* deleted_;
 };
 
 class ImageSanitizerTest : public testing::Test {

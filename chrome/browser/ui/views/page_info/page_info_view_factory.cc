@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -56,7 +55,7 @@ class PageInfoSubpageView : public views::View {
     PreferredSizeChanged();
   }
 
-  CheckedPtr<views::View> content_ = nullptr;
+  views::View* content_ = nullptr;
 };
 
 int GetIconSize() {
@@ -153,7 +152,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
-                          base::Unretained(navigation_handler_.get())),
+                          base::Unretained(navigation_handler_)),
       vector_icons::kArrowBackIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetID(VIEW_ID_BACK_BUTTON);
@@ -179,7 +178,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
-                          base::Unretained(navigation_handler_.get())));
+                          base::Unretained(navigation_handler_)));
   close_button->SetID(VIEW_ID_PAGE_INFO_CLOSE_BUTTON);
   close_button->SetVisible(true);
   close_button->SetProperty(views::kInternalPaddingKey,

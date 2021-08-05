@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -90,7 +89,7 @@ class ProfileAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
-  CheckedPtr<Profile> profile_;  // weak
+  Profile* profile_;  // weak
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 

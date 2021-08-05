@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -265,7 +264,7 @@ class SiteSettingsHandler
   // provides the updated description label for display.
   void SendCookieSettingDescription();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   web_app::WebAppRegistrar& app_registrar_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>

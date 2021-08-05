@@ -6,7 +6,6 @@
 #define CONTENT_WEB_TEST_RENDERER_GC_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/wrappable.h"
 
@@ -49,7 +48,7 @@ class GCController : public gin::Wrappable<GCController> {
   void AsyncCollectAllWithEmptyStack(
       v8::UniquePersistent<v8::Function> callback);
 
-  const CheckedPtr<blink::WebLocalFrame> frame_;
+  blink::WebLocalFrame* const frame_;
   base::WeakPtrFactory<GCController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCController);

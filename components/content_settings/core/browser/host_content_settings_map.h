@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/platform_thread.h"
@@ -434,7 +433,7 @@ class HostContentSettingsMap : public content_settings::Observer,
 #endif
 
   // Weak; owned by the Profile.
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // Whether this settings map is for an incognito or guest session.
   bool is_off_the_record_;
@@ -456,7 +455,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       user_modifiable_providers_;
 
   // content_settings_providers_[PREF_PROVIDER] but specialized.
-  CheckedPtr<content_settings::PrefProvider> pref_provider_ = nullptr;
+  content_settings::PrefProvider* pref_provider_ = nullptr;
 
   base::ThreadChecker thread_checker_;
 

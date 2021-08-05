@@ -9,7 +9,6 @@
 
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
@@ -77,7 +76,7 @@ class FakeDriveUploader : public drive::DriveUploaderInterface {
   void set_make_file_conflict(bool enable) { make_file_conflict_ = enable; }
 
  private:
-  CheckedPtr<FakeDriveServiceWrapper> fake_drive_service_;
+  FakeDriveServiceWrapper* fake_drive_service_;
   bool make_file_conflict_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDriveUploader);

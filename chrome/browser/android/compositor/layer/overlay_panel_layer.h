@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_OVERLAY_PANEL_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_OVERLAY_PANEL_LAYER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 
 namespace cc {
@@ -77,7 +76,7 @@ class OverlayPanelLayer : public Layer {
   virtual scoped_refptr<cc::Layer> GetIconLayer();
   void AddBarTextLayer(scoped_refptr<cc::Layer> text_layer);
 
-  CheckedPtr<ui::ResourceManager> resource_manager_;
+  ui::ResourceManager* resource_manager_;
   scoped_refptr<cc::Layer> layer_;
 
   scoped_refptr<cc::NinePatchLayer> panel_shadow_;

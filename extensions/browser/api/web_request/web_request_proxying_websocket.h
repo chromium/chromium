@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -126,7 +125,7 @@ class WebRequestProxyingWebSocket
   void OnMojoConnectionError();
 
   WebSocketFactory factory_;
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   mojo::Remote<network::mojom::WebSocketHandshakeClient>
       forwarding_handshake_client_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient>
@@ -158,7 +157,7 @@ class WebRequestProxyingWebSocket
   WebRequestInfo info_;
 
   // Owns |this|.
-  const CheckedPtr<WebRequestAPI::ProxySet> proxies_;
+  WebRequestAPI::ProxySet* const proxies_;
 
   // Notifies the proxy that the browser context has been shutdown.
   base::CallbackListSubscription shutdown_notifier_subscription_;

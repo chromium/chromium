@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -503,7 +502,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the
   // BrowserContext is destroyed, |this| will be destroyed too.
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   const base::FilePath partition_path_;
 

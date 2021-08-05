@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -326,7 +325,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
 
   // The manager that owns this cache storage. Only set to null by
   // RemoveManager() when this cache storage is being deleted.
-  CheckedPtr<LegacyCacheStorageManager> cache_storage_manager_;
+  LegacyCacheStorageManager* cache_storage_manager_;
 
   base::CancelableOnceClosure index_write_task_;
   size_t handle_ref_count_ = 0;

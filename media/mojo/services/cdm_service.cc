@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_factory.h"
 #include "media/mojo/services/mojo_cdm_service.h"
@@ -130,7 +129,7 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
   // available.
   MojoCdmServiceContext cdm_service_context_;
 
-  CheckedPtr<CdmService::Client> client_;
+  CdmService::Client* client_;
   mojo::Remote<mojom::FrameInterfaceFactory> interfaces_;
   mojo::UniqueReceiverSet<mojom::ContentDecryptionModule> cdm_receivers_;
   std::unique_ptr<media::CdmFactory> cdm_factory_;

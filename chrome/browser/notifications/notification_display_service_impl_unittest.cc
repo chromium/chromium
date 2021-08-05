@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -162,8 +161,7 @@ class BaseNotificationDisplayServiceImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceImpl> service_;
-  CheckedPtr<TestNotificationPlatformBridgeDelegator> notification_delegator_ =
-      nullptr;
+  TestNotificationPlatformBridgeDelegator* notification_delegator_ = nullptr;
 };
 
 // Test class that uses a FakeNotificationBlocker instead of the real ones.
@@ -190,7 +188,7 @@ class NotificationDisplayServiceImplTest
   }
 
  private:
-  CheckedPtr<FakeNotificationBlocker> notification_blocker_ = nullptr;
+  FakeNotificationBlocker* notification_blocker_ = nullptr;
 };
 
 TEST_F(NotificationDisplayServiceImplTest, DisplayWithoutBlockers) {
@@ -301,8 +299,7 @@ class DesktopNotificationDisplayServiceImplTest
   }
 
  private:
-  CheckedPtr<ScreenCaptureNotificationBlocker> screen_capture_blocker_ =
-      nullptr;
+  ScreenCaptureNotificationBlocker* screen_capture_blocker_ = nullptr;
 };
 
 TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {

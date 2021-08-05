@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -56,7 +55,7 @@ class VIEWS_EXPORT TooltipManagerAura : public TooltipManager {
   // Returns the Window the tooltip text is installed on.
   aura::Window* GetWindow();
 
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
   std::u16string tooltip_text_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipManagerAura);

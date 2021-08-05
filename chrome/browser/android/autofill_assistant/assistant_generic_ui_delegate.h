@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_ASSISTANT_GENERIC_UI_DELEGATE_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 
 namespace autofill_assistant {
 class UiControllerAndroid;
@@ -45,7 +44,7 @@ class AssistantGenericUiDelegate {
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
 
  private:
-  CheckedPtr<UiControllerAndroid> ui_controller_;
+  UiControllerAndroid* ui_controller_;
 
   // Java-side AssistantGenericUiDelegate object.
   base::android::ScopedJavaGlobalRef<jobject>

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -99,7 +98,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   mojo::Receiver<AudioOutputStream> receiver_;
   mojo::AssociatedRemote<media::mojom::AudioOutputStreamObserver> observer_;
   const mojo::SharedRemote<media::mojom::AudioLog> log_;
-  const CheckedPtr<LoopbackCoordinator> coordinator_;
+  LoopbackCoordinator* const coordinator_;
 
   SyncReader reader_;
   OutputController controller_;

@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/timer/timer.h"
@@ -183,7 +182,7 @@ class ChromotingSession::Core : public ClientUserInterface,
 
   // |runtime_| and |logger_| are stored separately from |session_context_| so
   // that they won't be destroyed after the core is invalidated.
-  const CheckedPtr<ChromotingClientRuntime> runtime_;
+  ChromotingClientRuntime* const runtime_;
   std::unique_ptr<ClientTelemetryLogger> logger_;
 
   std::unique_ptr<SessionContext> session_context_;

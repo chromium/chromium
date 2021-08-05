@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -108,8 +107,8 @@ class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
     service_watcher_->Start();
   }
 
-  const CheckedPtr<Delegate> delegate_;
-  const CheckedPtr<ServiceDiscoveryClient> service_discovery_client_;
+  Delegate* const delegate_;
+  ServiceDiscoveryClient* const service_discovery_client_;
   const std::string service_type_;
 
   std::unique_ptr<ServiceWatcher> service_watcher_;

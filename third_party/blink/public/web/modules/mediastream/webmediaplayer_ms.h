@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -255,7 +254,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   const WebTimeRanges buffered_;
 
-  const CheckedPtr<WebMediaPlayerClient> client_;
+  WebMediaPlayerClient* const client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The
@@ -269,7 +268,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // before the frame is destroyed). RenderFrameImpl owns of |delegate_|, and is
   // guaranteed to outlive |this|. It is therefore safe use a raw pointer
   // directly.
-  CheckedPtr<WebMediaPlayerDelegate> delegate_;
+  WebMediaPlayerDelegate* delegate_;
   int delegate_id_;
 
   // Inner class used for transfering frames on compositor thread to
@@ -302,7 +301,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
-  CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   // Used for DCHECKs to ensure methods calls executed in the correct thread.
   THREAD_CHECKER(thread_checker_);

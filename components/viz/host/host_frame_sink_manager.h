@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -204,7 +203,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     }
 
     // The client to be notified of changes to this FrameSink.
-    CheckedPtr<HostFrameSinkClient> client = nullptr;
+    HostFrameSinkClient* client = nullptr;
 
     // Indicates whether or not this client cares to receive
     // FirstSurfaceActivation notifications.
@@ -252,7 +251,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // This will point to |frame_sink_manager_remote_| if using mojo or it may
   // point directly at FrameSinkManagerImpl in tests. Use this to make function
   // calls.
-  CheckedPtr<mojom::FrameSinkManager> frame_sink_manager_ = nullptr;
+  mojom::FrameSinkManager* frame_sink_manager_ = nullptr;
 
   // Connections to/from FrameSinkManagerImpl.
   mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;

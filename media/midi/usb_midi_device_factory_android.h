@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/midi/usb_midi_device.h"
 #include "media/midi/usb_midi_export.h"
@@ -41,7 +40,7 @@ class USB_MIDI_EXPORT UsbMidiDeviceFactoryAndroid
  private:
   base::android::ScopedJavaGlobalRef<jobject> raw_factory_;
   // Not owned.
-  CheckedPtr<UsbMidiDeviceDelegate> delegate_;
+  UsbMidiDeviceDelegate* delegate_;
   Callback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbMidiDeviceFactoryAndroid);

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -131,7 +130,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   bool IsModalDialog() const;
 
   std::unique_ptr<ui::DialogModel> model_;
-  const CheckedPtr<ContentsView> contents_view_;
+  ContentsView* const contents_view_;
 
   std::vector<DialogModelHostField> fields_;
   std::vector<base::CallbackListSubscription> property_changed_subscriptions_;

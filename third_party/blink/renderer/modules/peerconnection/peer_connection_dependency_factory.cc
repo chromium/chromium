@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
@@ -124,7 +123,7 @@ class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
   }
 
  private:
-  CheckedPtr<IpcPacketSocketFactory> ipc_psf_;
+  IpcPacketSocketFactory* ipc_psf_;
 };
 
 // Encapsulates process-wide static dependencies used by

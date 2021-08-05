@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -130,7 +129,7 @@ class OAuth2AccessTokenManager {
    private:
     const CoreAccountId account_id_;
     // |consumer_| to call back when this request completes.
-    const CheckedPtr<Consumer> consumer_;
+    Consumer* const consumer_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };
@@ -333,7 +332,7 @@ class OAuth2AccessTokenManager {
   // List of observers to notify when access token status changes.
   base::ObserverList<DiagnosticsObserver, true>::Unchecked
       diagnostics_observer_list_;
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
   // A map from fetch parameters to a fetcher that is fetching an OAuth2 access
   // token using these parameters.
   std::map<RequestParameters, std::unique_ptr<Fetcher>> pending_fetchers_;

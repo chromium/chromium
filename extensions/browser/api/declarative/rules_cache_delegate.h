@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
@@ -113,7 +112,7 @@ class RulesCacheDelegate {
   void SetDeclarativeRulesStored(const std::string& extension_id,
                                  bool rules_stored);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // Indicates whether the ruleset is non-empty. Valid for both |kEphemeral| and
   // |kPersistent| cache types.
@@ -145,7 +144,7 @@ class RulesCacheDelegate {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  CheckedPtr<const ExtensionRegistry> extension_registry_ = nullptr;
+  const ExtensionRegistry* extension_registry_ = nullptr;
 
   // Use this factory to generate weak pointers bound to the UI thread.
   base::WeakPtrFactory<RulesCacheDelegate> weak_ptr_factory_{this};

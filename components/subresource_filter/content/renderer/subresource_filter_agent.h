@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/mojom/subresource_filter_agent.mojom.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
@@ -135,7 +134,7 @@ class SubresourceFilterAgent
   void OnLargeStickyAdDetected() override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
-  CheckedPtr<UnverifiedRulesetDealer> ruleset_dealer_;
+  UnverifiedRulesetDealer* ruleset_dealer_;
 
   mojom::ActivationState activation_state_for_next_document_;
 

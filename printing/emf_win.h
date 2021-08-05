@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "printing/metafile.h"
 
 namespace base {
@@ -102,10 +101,10 @@ class COMPONENT_EXPORT(PRINTING) Emf : public Metafile {
 struct Emf::EnumerationContext {
   EnumerationContext();
 
-  CheckedPtr<HANDLETABLE> handle_table;
+  HANDLETABLE* handle_table;
   int objects_count;
   HDC hdc;
-  CheckedPtr<const XFORM> base_matrix;
+  const XFORM* base_matrix;
   int dc_on_page_start;
 };
 

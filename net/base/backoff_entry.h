@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -124,9 +123,9 @@ class NET_EXPORT BackoffEntry {
   // Counts request errors; decremented on success.
   int failure_count_;
 
-  const CheckedPtr<const Policy> policy_;  // Not owned.
+  const Policy* const policy_;  // Not owned.
 
-  const CheckedPtr<const base::TickClock> clock_;  // Not owned.
+  const base::TickClock* const clock_;  // Not owned.
 
   THREAD_CHECKER(thread_checker_);
 };

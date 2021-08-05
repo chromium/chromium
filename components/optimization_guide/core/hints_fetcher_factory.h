@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
@@ -48,11 +47,11 @@ class HintsFetcherFactory {
   const GURL optimization_guide_service_url_;
 
   // A reference to the PrefService for this profile. Not owned.
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // A reference to the object that listens for changes in network connection.
   // Not owned. Guaranteed to outlive |this|.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 };
 
 }  // namespace optimization_guide

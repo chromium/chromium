@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/public/browser/notification_service.h"
@@ -50,7 +49,7 @@ class ConstrainedWebDialogDelegateUserData
   ConstrainedWebDialogDelegate* delegate() { return delegate_; }
 
  private:
-  CheckedPtr<ConstrainedWebDialogDelegate> delegate_;  // unowned
+  ConstrainedWebDialogDelegate* delegate_;  // unowned
 };
 
 }  // namespace

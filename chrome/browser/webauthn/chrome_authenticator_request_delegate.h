@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -196,7 +195,7 @@ class ChromeAuthenticatorRequestDelegate
   // |weak_dialog_model_|.
   std::unique_ptr<AuthenticatorRequestDialogModel>
       transient_dialog_model_holder_;
-  CheckedPtr<AuthenticatorRequestDialogModel> weak_dialog_model_ = nullptr;
+  AuthenticatorRequestDialogModel* weak_dialog_model_ = nullptr;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;

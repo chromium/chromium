@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focus_ring.h"
@@ -305,18 +304,18 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
   View* contents_ = nullptr;
-  CheckedPtr<View> contents_viewport_ = nullptr;
+  View* contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
   View* header_ = nullptr;
-  CheckedPtr<View> header_viewport_ = nullptr;
+  View* header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  CheckedPtr<ScrollBar> horiz_sb_;
+  ScrollBar* horiz_sb_;
 
   // Vertical scrollbar.
-  CheckedPtr<ScrollBar> vert_sb_;
+  ScrollBar* vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;
@@ -432,7 +431,7 @@ class VariableRowHeightScrollHelper {
   virtual RowInfo GetRowInfo(int y);
 
  private:
-  CheckedPtr<Controller> controller_;
+  Controller* controller_;
 
   DISALLOW_COPY_AND_ASSIGN(VariableRowHeightScrollHelper);
 };

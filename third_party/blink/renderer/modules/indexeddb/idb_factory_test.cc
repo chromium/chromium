@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -50,7 +49,7 @@ class TestHelperFunction : public ScriptFunction {
     return value;
   }
 
-  CheckedPtr<bool> called_flag_;
+  bool* called_flag_;
 };
 
 class BackendFactoryWithMockedDatabaseInfo : public mojom::blink::IDBFactory {
@@ -105,7 +104,7 @@ class BackendFactoryWithMockedDatabaseInfo : public mojom::blink::IDBFactory {
 
  private:
   mojo::Receiver<mojom::blink::IDBFactory> receiver_;
-  CheckedPtr<mojo::AssociatedRemote<mojom::blink::IDBCallbacks>> callbacks_ptr_;
+  mojo::AssociatedRemote<mojom::blink::IDBCallbacks>* callbacks_ptr_;
 };
 
 class IDBFactoryTest : public testing::Test {

@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "sandbox/win/src/policy_engine_params.h"
 
@@ -361,12 +360,12 @@ class OpcodeFactory {
 
   // Points to the lowest currently available address of the memory
   // used to make the opcodes. This pointer increments as opcodes are made.
-  CheckedPtr<char> memory_top_;
+  char* memory_top_;
 
   // Points to the highest currently available address of the memory
   // used to make the opcodes. This pointer decrements as opcode strings are
   // allocated.
-  CheckedPtr<char> memory_bottom_;
+  char* memory_bottom_;
 
   DISALLOW_COPY_AND_ASSIGN(OpcodeFactory);
 };

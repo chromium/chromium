@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -41,10 +40,10 @@ class StaleEntryFinalizerTask : public Task {
   void OnFinished(Result result);
 
   // Not owned.
-  CheckedPtr<PrefetchDispatcher> prefetch_dispatcher_;
+  PrefetchDispatcher* prefetch_dispatcher_;
 
   // Prefetch store to execute against. Not owned.
-  CheckedPtr<PrefetchStore> prefetch_store_;
+  PrefetchStore* prefetch_store_;
 
   Result final_status_ = Result::NO_MORE_WORK;
 

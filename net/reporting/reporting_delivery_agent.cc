@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -339,7 +338,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
   ReportingCache* cache() { return context_->cache(); }
   ReportingUploader* uploader() { return context_->uploader(); }
 
-  CheckedPtr<ReportingContext> context_;
+  ReportingContext* context_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

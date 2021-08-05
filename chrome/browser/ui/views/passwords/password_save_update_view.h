@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
@@ -100,17 +99,17 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // save bubble.
   const bool is_update_bubble_;
 
-  CheckedPtr<views::Combobox> destination_dropdown_ = nullptr;
+  views::Combobox* destination_dropdown_ = nullptr;
 
-  CheckedPtr<views::EditableCombobox> username_dropdown_ = nullptr;
-  CheckedPtr<views::ToggleImageButton> password_view_button_ = nullptr;
+  views::EditableCombobox* username_dropdown_ = nullptr;
+  views::ToggleImageButton* password_view_button_ = nullptr;
 
   // The view for the password value.
-  CheckedPtr<views::EditableCombobox> password_dropdown_ = nullptr;
+  views::EditableCombobox* password_dropdown_ = nullptr;
   bool are_passwords_revealed_;
 
   // Used to display IPH. May be null in tests.
-  const CheckedPtr<FeaturePromoControllerViews> promo_controller_;
+  FeaturePromoControllerViews* const promo_controller_;
 
   // When showing kReauthFailure IPH, |promo_controller_| gives back an
   // ID. This is used to close the bubble later.
@@ -118,7 +117,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
 
   // Hidden view that will contain status text for immediate output by
   // screen readers when the bubble changes state between Save and Update.
-  CheckedPtr<views::View> accessibility_alert_ = nullptr;
+  views::View* accessibility_alert_ = nullptr;
 
   // Used to add |username_dropdown_| as an observer to the
   // AnimatingLayoutManager. This is needed such that the |username_dropdown_|

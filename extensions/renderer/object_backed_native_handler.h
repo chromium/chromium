@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/native_handler.h"
 #include "v8/include/v8-util.h"
 #include "v8/include/v8.h"
@@ -124,7 +123,7 @@ class ObjectBackedNativeHandler : public NativeHandler {
   typedef v8::PersistentValueVector<v8::Object> RouterData;
   RouterData router_data_;
 
-  CheckedPtr<ScriptContext> context_;
+  ScriptContext* context_;
 
   v8::Global<v8::ObjectTemplate> object_template_;
 

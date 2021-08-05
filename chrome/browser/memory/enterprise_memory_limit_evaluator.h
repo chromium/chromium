@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEMORY_ENTERPRISE_MEMORY_LIMIT_EVALUATOR_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -53,7 +52,7 @@ class EnterpriseMemoryLimitEvaluator {
   // RSS. This is only meant to be used as a key to remove the observer once
   // it's not necessary anymore, do not call functions directly from this
   // pointer.
-  CheckedPtr<GraphObserver> observer_ = nullptr;
+  GraphObserver* observer_ = nullptr;
 
   uint64_t resident_set_limit_mb_ = 0;
 

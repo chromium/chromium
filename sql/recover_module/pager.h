@@ -10,7 +10,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 
 struct sqlite3_file;
@@ -142,7 +141,7 @@ class DatabasePageReader {
   const std::unique_ptr<uint8_t[]> page_data_;
   // Raw pointer usage is acceptable because this instance's owner is expected
   // to ensure that the VirtualTable outlives this.
-  const CheckedPtr<VirtualTable> table_;
+  VirtualTable* const table_;
   int page_size_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);

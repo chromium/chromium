@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -448,7 +447,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   base::CancelableTaskTracker tracker_;
 
   // Unowned object used for getting preference settings.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
@@ -459,7 +458,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
   // Use identity manager to check if account is signed in, before fetching
   // access token.
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   // A boolean indicates whether access token fetch should be attempted or not.
   // Use this to disable token fetches from ios and certain tests.

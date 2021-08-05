@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -132,9 +131,9 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   // The adapter used to get existing devices and start a discovery session.
   scoped_refptr<device::BluetoothAdapter> adapter_;
   // The WebBluetoothServiceImpl that owns this instance.
-  CheckedPtr<WebBluetoothServiceImpl> web_bluetooth_service_;
+  WebBluetoothServiceImpl* web_bluetooth_service_;
   // The RenderFrameHost that owns web_bluetooth_service_.
-  CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
 
   // Contains the filters and optional services used when scanning.
   blink::mojom::WebBluetoothRequestDeviceOptionsPtr options_;

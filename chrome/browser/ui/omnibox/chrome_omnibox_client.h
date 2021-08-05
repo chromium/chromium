@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
@@ -104,8 +103,8 @@ class ChromeOmniboxClient : public OmniboxClient {
                        base::TimeTicks start_time,
                        const SkBitmap& bitmap);
 
-  CheckedPtr<ChromeOmniboxEditController> controller_;
-  CheckedPtr<Profile> profile_;
+  ChromeOmniboxEditController* controller_;
+  Profile* profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;
   FaviconCache favicon_cache_;

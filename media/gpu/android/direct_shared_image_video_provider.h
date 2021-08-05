@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 #define MEDIA_GPU_ANDROID_DIRECT_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -90,7 +89,7 @@ class GpuSharedImageVideoFactory
 
   void OnWillDestroyStub(bool have_context) override;
 
-  CheckedPtr<gpu::CommandBufferStub> stub_ = nullptr;
+  gpu::CommandBufferStub* stub_ = nullptr;
   bool is_vulkan_ = false;
 
   THREAD_CHECKER(thread_checker_);

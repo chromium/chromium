@@ -104,7 +104,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -188,7 +187,7 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   const base::PlatformThreadId creating_thread_id_;
 
   // Our creator, the audio manager needs to be notified when we close.
-  const CheckedPtr<AudioManagerWin> manager_;
+  AudioManagerWin* const manager_;
 
   // Rendering is driven by this thread (which has no message loop).
   // All OnMoreData() callbacks will be called from this thread.
@@ -250,7 +249,7 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   base::TimeDelta largest_glitch_;
 
   // Pointer to the client that will deliver audio samples to be played out.
-  CheckedPtr<AudioSourceCallback> source_;
+  AudioSourceCallback* source_;
 
   // Callback to send log messages to registered clients.
   AudioManager::LogCallback log_callback_;

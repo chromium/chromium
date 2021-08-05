@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ppapi/host/host_factory.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
@@ -33,7 +32,7 @@ class ContentRendererPepperHostFactory : public ppapi::host::HostFactory {
   const ppapi::PpapiPermissions& GetPermissions() const;
 
   // Non-owning pointer.
-  CheckedPtr<RendererPpapiHostImpl> host_;
+  RendererPpapiHostImpl* host_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentRendererPepperHostFactory);
 };

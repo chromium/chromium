@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -98,8 +97,7 @@ class CvcUnmaskViewController
 
   autofill::MonthComboboxModel month_combobox_model_;
   autofill::YearComboboxModel year_combobox_model_;
-  CheckedPtr<views::Textfield>
-      cvc_field_;  // owned by the view hierarchy, outlives this.
+  views::Textfield* cvc_field_;  // owned by the view hierarchy, outlives this.
   autofill::CreditCard credit_card_;
   const content::GlobalRenderFrameHostId frame_routing_id_;
   autofill::payments::PaymentsClient payments_client_;

@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -192,7 +191,7 @@ class CONTENT_EXPORT AppCacheServiceImpl : public AppCacheService {
 
   base::FilePath cache_directory_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-  CheckedPtr<AppCachePolicy> appcache_policy_;
+  AppCachePolicy* appcache_policy_;
   std::unique_ptr<AppCacheStorage> storage_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;

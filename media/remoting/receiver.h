@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -114,7 +113,7 @@ class Receiver final : public Renderer, public RendererClient {
   bool rpc_initialize_received_ = false;
 
   // Owns by the WebMediaPlayerImpl instance.
-  CheckedPtr<MediaResource> demuxer_ = nullptr;
+  MediaResource* demuxer_ = nullptr;
 
   // The handle of |this| for listening RPC messages.
   const int rpc_handle_;
@@ -123,9 +122,8 @@ class Receiver final : public Renderer, public RendererClient {
   // through the ctor or SetRemoteHandle().
   int remote_handle_;
 
-  const CheckedPtr<ReceiverController>
-      receiver_controller_;                 // Outlives this class.
-  const CheckedPtr<RpcBroker> rpc_broker_;  // Outlives this class.
+  ReceiverController* const receiver_controller_;  // Outlives this class.
+  RpcBroker* const rpc_broker_;                    // Outlives this class.
 
   // Calling SendMessageCallback() of |rpc_broker_| should be on main thread.
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

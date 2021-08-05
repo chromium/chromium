@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/containers/mru_cache.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -131,7 +130,7 @@ class FaviconCache : public history::HistoryServiceObserver {
   void OnFaviconsChanged(const std::set<GURL>& page_urls, const GURL& icon_url);
 
   // Non-owning pointer to a KeyedService.
-  CheckedPtr<favicon::FaviconService> favicon_service_;
+  favicon::FaviconService* favicon_service_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

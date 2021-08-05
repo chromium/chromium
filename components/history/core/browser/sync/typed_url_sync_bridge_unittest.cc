@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -522,7 +521,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
   scoped_refptr<TestHistoryBackendForSync> fake_history_backend_;
-  CheckedPtr<TypedURLSyncBridge> typed_url_sync_bridge_ = nullptr;
+  TypedURLSyncBridge* typed_url_sync_bridge_ = nullptr;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 };
 

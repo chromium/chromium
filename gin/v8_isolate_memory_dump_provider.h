@@ -5,7 +5,6 @@
 #ifndef GIN_V8_ISOLATE_MEMORY_DUMP_PROVIDER_H_
 #define GIN_V8_ISOLATE_MEMORY_DUMP_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gin/gin_export.h"
@@ -37,7 +36,7 @@ class V8IsolateMemoryDumpProvider
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* process_memory_dump);
 
-  CheckedPtr<IsolateHolder> isolate_holder_;  // Not owned.
+  IsolateHolder* isolate_holder_;  // Not owned.
 };
 
 }  // namespace gin

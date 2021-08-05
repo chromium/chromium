@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace content {
 
@@ -60,7 +59,7 @@ class PepperAudioController {
 
   // The Pepper instance which this controller is for. Will be null after
   // OnPepperInstanceDeleted() is called.
-  CheckedPtr<PepperPluginInstanceImpl> instance_;
+  PepperPluginInstanceImpl* instance_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperAudioController);
 };

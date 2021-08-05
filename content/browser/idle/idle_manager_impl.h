@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 
 #include "base/containers/linked_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -64,7 +63,7 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   blink::mojom::IdleStatePtr state_override_;
 
   // Raw pointer is safe because this object is owned by |render_frame_host_|.
-  const CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* const render_frame_host_;
 
   // Registered clients.
   mojo::ReceiverSet<blink::mojom::IdleManager> receivers_;

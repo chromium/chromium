@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 namespace win {
@@ -66,7 +65,7 @@ class BASE_EXPORT IATPatchFunction {
 
  private:
   HMODULE module_handle_ = nullptr;
-  CheckedPtr<void> intercept_function_ = nullptr;
+  void* intercept_function_ = nullptr;
   void* original_function_ = nullptr;
   IMAGE_THUNK_DATA* iat_thunk_ = nullptr;
 

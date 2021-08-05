@@ -16,7 +16,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/common/content_export.h"
@@ -204,7 +203,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
 
   const int process_id_;
   const scoped_refptr<storage::FileSystemContext> context_;
-  const CheckedPtr<ChildProcessSecurityPolicyImpl> security_policy_;
+  ChildProcessSecurityPolicyImpl* const security_policy_;
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;
 

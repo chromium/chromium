@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -58,7 +57,7 @@ class DecoderProviderImpl : public mojom::GpuAcceleratedVideoDecoderProvider,
   // gpu::CommandBufferStub::DestructionObserver:
   void OnWillDestroyStub(bool have_context) override { stub_ = nullptr; }
 
-  CheckedPtr<gpu::CommandBufferStub> stub_;
+  gpu::CommandBufferStub* stub_;
   const AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 };
 

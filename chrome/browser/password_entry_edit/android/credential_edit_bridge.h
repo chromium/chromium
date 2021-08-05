@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
@@ -88,14 +87,14 @@ class CredentialEditBridge {
 
   // The backend to route the edit event to. Should be owned by the the owner of
   // the bridge.
-  CheckedPtr<password_manager::SavedPasswordsPresenter>
-      saved_passwords_presenter_ = nullptr;
+  password_manager::SavedPasswordsPresenter* saved_passwords_presenter_ =
+      nullptr;
 
   // The backend to ask for blocked and federated credentials removal.
   // Should be owned by the the owner of the bridge.
   // TODO(crbug.com/1188678): Replace this once `SavedPasswordsPresnter`
   // supports blocked and federated credentials.
-  CheckedPtr<PasswordManagerPresenter> password_manager_presenter_ = nullptr;
+  PasswordManagerPresenter* password_manager_presenter_ = nullptr;
 
   // Callback invoked when the UI is being dismissed from the Java side.
   base::OnceClosure dismissal_callback_;

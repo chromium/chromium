@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/byte_queue.h"
@@ -81,7 +80,7 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
 
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   bool unknown_segment_size_;
 

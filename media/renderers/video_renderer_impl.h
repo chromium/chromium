@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/condition_variable.h"
@@ -207,7 +206,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // might deadlock. Do not call Start() or Stop() on the sink directly, use
   // StartSink() and StopSink() to ensure background rendering is started.  Only
   // access these values on |task_runner_|.
-  const CheckedPtr<VideoRendererSink> sink_;
+  VideoRendererSink* const sink_;
   bool sink_started_;
 
   // Stores the last decoder config that was passed to
@@ -218,7 +217,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // Used for accessing data members.
   base::Lock lock_;
 
-  CheckedPtr<RendererClient> client_;
+  RendererClient* client_;
 
   // Pool of GpuMemoryBuffers and resources used to create hardware frames.
   // Ensure this is destructed after |algorithm_| for optimal memory release
@@ -230,9 +229,9 @@ class MEDIA_EXPORT VideoRendererImpl
   std::unique_ptr<VideoDecoderStream> video_decoder_stream_;
 
   // Passed in during Initialize().
-  CheckedPtr<DemuxerStream> demuxer_stream_;
+  DemuxerStream* demuxer_stream_;
 
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   // Flag indicating low-delay mode.
   bool low_delay_;
@@ -287,7 +286,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // last call to |statistics_cb_|. These must be accessed under lock.
   PipelineStatistics stats_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Algorithm for selecting which frame to render; manages frames and all
   // timing related information. Ensure this is destructed before

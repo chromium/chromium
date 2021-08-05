@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -398,11 +397,11 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 
   // Reference to the browser context that this object belongs to
   // (it knows the path to where the data is stored)
-  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
 
   // Client owns the delegate and is responsible for it being valid through
   // the life time this VisitedLinkWriter.
-  CheckedPtr<VisitedLinkDelegate> delegate_;
+  VisitedLinkDelegate* delegate_;
 
   // VisitedLinkEventListener to handle incoming events.
   std::unique_ptr<Listener> listener_;
@@ -437,7 +436,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // guaranteed to be executed after the opening.
   // The class owns both the |file_| pointer and the pointer pointed
   // by |*file_|.
-  CheckedPtr<FILE*> file_ = nullptr;
+  FILE** file_ = nullptr;
 
   // If true, will try to persist the hash table to disk. Will rebuild from
   // VisitedLinkDelegate::RebuildTable if there are disk corruptions.

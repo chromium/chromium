@@ -19,7 +19,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -303,7 +302,7 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
                               origin, SiteForCookies::FromOrigin(origin));
     event_interface_ = new ConnectTestingEventInterface();
     channel_ = std::make_unique<WebSocketChannel>(
-        base::WrapUnique(event_interface_.get()), &context_);
+        base::WrapUnique(event_interface_), &context_);
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
         isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -311,8 +310,7 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     return !event_interface_->failed();
   }
 
-  CheckedPtr<ConnectTestingEventInterface>
-      event_interface_;  // owned by channel_
+  ConnectTestingEventInterface* event_interface_;  // owned by channel_
   std::unique_ptr<TestProxyDelegateWithProxyInfo> proxy_delegate_;
   TestURLRequestContext context_;
   std::unique_ptr<WebSocketChannel> channel_;

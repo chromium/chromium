@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "services/resource_coordinator/memory_instrumentation/coordinator_impl.h"
 #include "services/resource_coordinator/memory_instrumentation/queued_request.h"
@@ -46,7 +45,7 @@ class QueuedRequestDispatcher {
     ClientInfo(ClientInfo&& other);
     ~ClientInfo();
 
-    const CheckedPtr<mojom::ClientProcess> client;
+    mojom::ClientProcess* const client;
     const base::ProcessId pid;
     const mojom::ProcessType process_type;
     const absl::optional<std::string> service_name;

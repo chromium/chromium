@@ -15,7 +15,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
@@ -165,7 +164,7 @@ class MockModelTypeWorker : public CommitQueue {
   sync_pb::ModelTypeState model_type_state_;
 
   // A pointer to the processor for this mock worker.
-  CheckedPtr<ModelTypeProcessor> processor_;
+  ModelTypeProcessor* processor_;
 
   // A record of past commits requests.
   base::circular_deque<CommitRequestDataList> pending_commits_;

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "extensions/renderer/bindings/argument_spec.h"
@@ -142,7 +141,7 @@ class APIBinding {
   std::map<std::string, std::vector<EnumEntry>> enums_;
 
   // The associated properties of the API, if any.
-  CheckedPtr<const base::DictionaryValue> property_definitions_;
+  const base::DictionaryValue* property_definitions_;
   // The names of all the "root properties" added to the API; i.e., properties
   // exposed on the API object itself.
   base::flat_set<std::string> root_properties_;
@@ -156,18 +155,18 @@ class APIBinding {
   std::unique_ptr<APIBindingHooks> binding_hooks_;
 
   // The reference map for all known types; required to outlive this object.
-  CheckedPtr<APITypeReferenceMap> type_refs_;
+  APITypeReferenceMap* type_refs_;
 
   // The associated request handler, shared between this and other bindings.
   // Required to outlive this object.
-  CheckedPtr<APIRequestHandler> request_handler_;
+  APIRequestHandler* request_handler_;
 
   // The associated event handler, shared between this and other bindings.
   // Required to outlive this object.
-  CheckedPtr<APIEventHandler> event_handler_;
+  APIEventHandler* event_handler_;
 
   // The associated access checker; required to outlive this object.
-  const CheckedPtr<const BindingAccessChecker> access_checker_;
+  const BindingAccessChecker* const access_checker_;
 
   // The template for this API. Note: some methods may only be available in
   // certain contexts, but this template contains all methods. Those that are

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -271,7 +270,7 @@ class MojoURLLoaderClient::BodyBuffer final
     owner_->FlushDeferredMessages();
   }
 
-  const CheckedPtr<MojoURLLoaderClient> owner_;
+  MojoURLLoaderClient* const owner_;
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;

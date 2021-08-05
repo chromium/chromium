@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
@@ -82,7 +81,7 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   gfx::SlideAnimation slide_animation_{this};
-  CheckedPtr<ThumbView> thumb_view_;
+  ThumbView* thumb_view_;
   absl::optional<SkColor> track_on_color_;
   absl::optional<SkColor> track_off_color_;
 

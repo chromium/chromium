@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
@@ -45,7 +44,7 @@ class SessionRestoreDelegate {
     }
 
    private:
-    CheckedPtr<content::WebContents> contents_;
+    content::WebContents* contents_;
     bool is_active_;
     bool is_app_;            // Browser window is an app.
     bool is_internal_page_;  // Internal web UI page, like NTP or Settings.

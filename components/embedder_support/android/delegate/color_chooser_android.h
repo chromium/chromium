@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/color_chooser.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 
@@ -45,7 +44,7 @@ class ColorChooserAndroid : public content::ColorChooser {
 
   // The web contents invoking the color chooser.  No ownership. because it will
   // outlive this class.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ColorChooserAndroid);
 };

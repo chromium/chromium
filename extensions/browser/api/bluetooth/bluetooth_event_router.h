@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -157,7 +156,7 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
       base::OnceClosure callback,
       std::unique_ptr<device::BluetoothDiscoverySession> discovery_session);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
   // Map of listener id -> listener count.

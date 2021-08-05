@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -333,7 +332,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
   // The client which implements embedder-specific PasswordManager operations.
-  CheckedPtr<PasswordManagerClient> client_;
+  PasswordManagerClient* client_;
 
   base::WeakPtr<PasswordManagerDriver> driver_;
 
@@ -363,7 +362,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   std::unique_ptr<FormFetcher> owned_form_fetcher_;
 
   // FormFetcher instance which owns the login data from PasswordStore.
-  CheckedPtr<FormFetcher> form_fetcher_;
+  FormFetcher* form_fetcher_;
 
   std::unique_ptr<PasswordSaveManager> password_save_manager_;
 

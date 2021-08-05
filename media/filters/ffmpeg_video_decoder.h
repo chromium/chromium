@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/base/supported_video_decoder_config.h"
@@ -82,7 +81,7 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const CheckedPtr<MediaLog> media_log_;
+  MediaLog* const media_log_;
 
   DecoderState state_ = kUninitialized;
 

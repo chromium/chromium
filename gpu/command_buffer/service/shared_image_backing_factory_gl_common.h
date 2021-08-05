@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_GL_COMMON_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_GL_COMMON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
@@ -44,7 +43,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
 
     GLenum gl_format = 0;
     GLenum gl_type = 0;
-    CheckedPtr<const gles2::Texture::CompatibilitySwizzle> swizzle = nullptr;
+    const gles2::Texture::CompatibilitySwizzle* swizzle = nullptr;
     GLenum adjusted_format = 0;
 
     // The internalformat portion of the format/type/internalformat triplet
@@ -80,7 +79,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
-  const CheckedPtr<gl::ProgressReporter> progress_reporter_ = nullptr;
+  gl::ProgressReporter* const progress_reporter_ = nullptr;
 };
 
 }  // namespace gpu

@@ -19,7 +19,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
@@ -410,9 +409,9 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   // stop doing anything.
   bool invalid_ = false;
 
-  CheckedPtr<TestRunner> runner_;
-  const CheckedPtr<WebFrameTestProxy> frame_;
-  const CheckedPtr<SpellCheckClient> spell_check_;
+  TestRunner* runner_;
+  WebFrameTestProxy* const frame_;
+  SpellCheckClient* const spell_check_;
   TestPreferences prefs_;
   std::unique_ptr<AppBannerService> app_banner_service_;
 
@@ -2185,7 +2184,7 @@ class TestRunner::MainWindowTracker : public blink::WebViewObserver {
   }
 
  private:
-  const CheckedPtr<TestRunner> test_runner_;
+  TestRunner* const test_runner_;
 };
 
 TestRunner::WorkQueue::WorkQueue(TestRunner* controller)

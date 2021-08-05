@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -649,7 +648,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   void HandleAccessibilityChange();
 
-  CheckedPtr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
   scoped_refptr<PluginModule> module_;
   std::unique_ptr<ppapi::PPP_Instance_Combined> instance_interface_;
   // If this is the NaCl plugin, we create a new module when we switch to the
@@ -665,7 +664,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   float graphics2d_scale_;
 
   // NULL until we have been initialized.
-  CheckedPtr<blink::WebPluginContainer> container_;
+  blink::WebPluginContainer* container_;
   scoped_refptr<cc::TextureLayer> texture_layer_;
   bool layer_is_hardware_;
 
@@ -698,7 +697,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // The current device context for painting in 2D or 3D.
   scoped_refptr<PPB_Graphics3D_Impl> bound_graphics_3d_;
-  CheckedPtr<PepperGraphics2DHost> bound_graphics_2d_platform_;
+  PepperGraphics2DHost* bound_graphics_2d_platform_;
 
   // Whether the plugin has focus or not.
   bool has_webkit_focus_;
@@ -711,12 +710,12 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // The plugin-provided interfaces.
   // When adding PPP interfaces, make sure to reset them in ResetAsProxied.
-  CheckedPtr<const PPP_Find_Private> plugin_find_interface_;
-  CheckedPtr<const PPP_InputEvent> plugin_input_event_interface_;
-  CheckedPtr<const PPP_MouseLock> plugin_mouse_lock_interface_;
-  CheckedPtr<const PPP_Pdf> plugin_pdf_interface_;
-  CheckedPtr<const PPP_Instance_Private> plugin_private_interface_;
-  CheckedPtr<const PPP_TextInput_Dev> plugin_textinput_interface_;
+  const PPP_Find_Private* plugin_find_interface_;
+  const PPP_InputEvent* plugin_input_event_interface_;
+  const PPP_MouseLock* plugin_mouse_lock_interface_;
+  const PPP_Pdf* plugin_pdf_interface_;
+  const PPP_Instance_Private* plugin_private_interface_;
+  const PPP_TextInput_Dev* plugin_textinput_interface_;
 
   // Flags indicating whether we have asked this plugin instance for the
   // corresponding interfaces, so that we can ask only once.
@@ -736,7 +735,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   //
   // The metafile to save into, which is guaranteed to be valid between a
   // successful PrintBegin call and a PrintEnd call.
-  CheckedPtr<printing::MetafileSkia> metafile_;
+  printing::MetafileSkia* metafile_;
   // An array of page ranges.
   std::vector<PP_PrintPageNumberRange_Dev> ranges_;
 
@@ -744,10 +743,10 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   scoped_refptr<ppapi::Resource> uma_private_impl_;
 
   // The plugin print interface.
-  CheckedPtr<const PPP_Printing_Dev> plugin_print_interface_;
+  const PPP_Printing_Dev* plugin_print_interface_;
 
   // The plugin 3D interface.
-  CheckedPtr<const PPP_Graphics3D> plugin_graphics_3d_interface_;
+  const PPP_Graphics3D* plugin_graphics_3d_interface_;
 
   // Contains the cursor if it's set by the plugin.
   std::unique_ptr<ui::Cursor> cursor_ =
@@ -780,7 +779,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // A pointer to the MessageChannel underlying |message_channel_object_|. It is
   // only valid as long as |message_channel_object_| is alive.
-  CheckedPtr<MessageChannel> message_channel_;
+  MessageChannel* message_channel_;
 
   // Bitmap for crashed plugin. Lazily initialized.
   cc::PaintImage sad_plugin_image_;
@@ -814,7 +813,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   std::vector<std::string> argv_;
 
   // Non-owning pointer to the document loader, if any.
-  CheckedPtr<blink::WebAssociatedURLLoaderClient> document_loader_;
+  blink::WebAssociatedURLLoaderClient* document_loader_;
   // State for deferring document loads. Used only by external instances.
   blink::WebURLResponse external_document_response_;
   std::unique_ptr<ExternalDocumentLoader> external_document_loader_;

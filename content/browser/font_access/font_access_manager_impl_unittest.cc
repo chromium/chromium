@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -86,7 +85,7 @@ class FontAccessManagerSync {
   }
 
  private:
-  const CheckedPtr<blink::mojom::FontAccessManager> manager_;
+  blink::mojom::FontAccessManager* const manager_;
 };
 
 class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {

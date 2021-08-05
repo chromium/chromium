@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,7 +65,7 @@ class ExtensionViewViews : public views::WebView,
   void PreferredSizeChanged() override;
   void OnWebContentsAttached() override;
 
-  CheckedPtr<extensions::ExtensionViewHost> host_;
+  extensions::ExtensionViewHost* host_;
 
   // What we should set the preferred width to once the ExtensionViewViews has
   // loaded.

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "v8/include/v8.h"
@@ -100,7 +99,7 @@ class PostMessageSupport {
   // the messages are forwarded to the target frame.
   bool is_active_ = false;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   base::WeakPtrFactory<PostMessageSupport> weak_factory_{this};
 };

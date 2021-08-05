@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -154,7 +153,7 @@ class ChromeBrowserCloudManagementControllerObserver
   bool IsFinished() { return is_finished_; }
 
  private:
-  CheckedPtr<ChromeBrowserCloudManagementBrowserTestDelegate> delegate_;
+  ChromeBrowserCloudManagementBrowserTestDelegate* delegate_;
 
   bool is_finished_ = false;
   bool should_succeed_ = false;
@@ -175,7 +174,7 @@ class ChromeBrowserExtraSetUp : public ChromeBrowserMainExtraParts {
   }
 
  private:
-  CheckedPtr<ChromeBrowserCloudManagementControllerObserver> observer_;
+  ChromeBrowserCloudManagementControllerObserver* observer_;
 };
 
 // Two observers that quit run_loop when policy is fetched and stored or in case
@@ -199,7 +198,7 @@ class PolicyFetchStoreObserver : public CloudPolicyStore::Observer {
   }
 
  private:
-  CheckedPtr<CloudPolicyStore> store_;
+  CloudPolicyStore* store_;
   base::OnceClosure quit_closure_;
 };
 
@@ -226,7 +225,7 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
   void OnRemoteCommandsServiceStarted(CloudPolicyCore* core) override {}
 
  private:
-  CheckedPtr<CloudPolicyCore> core_;
+  CloudPolicyCore* core_;
   base::OnceClosure quit_closure_;
 };
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
@@ -109,7 +108,7 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   void RemoveError();
 
   // The associated BrowserContext.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // The id of the external extension.
   std::string extension_id_;
@@ -121,10 +120,10 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   DefaultDialogButtonSetting default_dialog_button_setting_ = NOT_SPECIFIED;
 
   // The owning ExternalInstallManager.
-  CheckedPtr<ExternalInstallManager> manager_;
+  ExternalInstallManager* manager_;
 
   // The associated GlobalErrorService.
-  CheckedPtr<GlobalErrorService> error_service_;
+  GlobalErrorService* error_service_;
 
   // The UI for showing the error.
   std::unique_ptr<ExtensionInstallPrompt> install_ui_;

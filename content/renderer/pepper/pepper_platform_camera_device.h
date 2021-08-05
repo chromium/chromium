@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
@@ -53,7 +52,7 @@ class PepperPlatformCameraDevice {
   base::UnguessableToken session_id_;
   base::OnceClosure release_device_cb_;
 
-  CheckedPtr<PepperCameraDeviceHost> handler_;
+  PepperCameraDeviceHost* handler_;
 
   // Whether we have a pending request to open a device. We have to make sure
   // there isn't any pending request before this object goes away.

@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -184,7 +183,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
-  CheckedPtr<SafeBrowsingNavigationObserverManager> observer_manager_ = nullptr;
+  SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };

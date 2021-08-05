@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/os_crypt_mocker.h"
@@ -255,8 +254,8 @@ class NigoriSyncBridgeImplTest : public testing::Test {
  private:
   std::unique_ptr<NigoriSyncBridgeImpl> bridge_;
   // Ownership transferred to |bridge_|.
-  CheckedPtr<testing::NiceMock<MockNigoriLocalChangeProcessor>> processor_;
-  CheckedPtr<testing::NiceMock<MockNigoriStorage>> storage_;
+  testing::NiceMock<MockNigoriLocalChangeProcessor>* processor_;
+  testing::NiceMock<MockNigoriStorage>* storage_;
   testing::NiceMock<MockObserver> observer_;
 };
 

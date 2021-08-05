@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -121,7 +120,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   std::unique_ptr<base::RunLoop> loop_runner_;
   base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;
-  CheckedPtr<RenderFrameHostImpl> event_render_frame_host_ = nullptr;
+  RenderFrameHostImpl* event_render_frame_host_ = nullptr;
 
   base::WeakPtrFactory<AccessibilityNotificationWaiter> weak_factory_{this};
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 
 #include "base/bind.h"
@@ -186,7 +185,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
         start_point_(params.start_point),
         do_drag_callback_(std::move(do_drag_callback)),
         drag_data_(std::make_unique<ui::OSExchangeData>()) {
-    observation_.Observe(model_.get());
+    observation_.Observe(model_);
 
     // Set up our OLE machinery.
     bookmarks::BookmarkNodeData bookmark_drag_data(params.nodes);
@@ -270,11 +269,11 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
     OnBookmarkIconLoaded(node, image);
   }
 
-  CheckedPtr<BookmarkModel> model_;
+  BookmarkModel* model_;
 
   int64_t drag_node_id_ = -1;
   int count_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   ui::mojom::DragEventSource source_;
   const gfx::Point start_point_;
   int operation_;

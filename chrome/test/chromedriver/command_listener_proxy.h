@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/command_listener.h"
 
 class CommandListenerProxy : public CommandListener {
@@ -23,7 +22,7 @@ class CommandListenerProxy : public CommandListener {
   Status BeforeCommand(const std::string& command_name) override;
 
  private:
-  const CheckedPtr<CommandListener> command_listener_;
+  CommandListener* const command_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(CommandListenerProxy);
 };

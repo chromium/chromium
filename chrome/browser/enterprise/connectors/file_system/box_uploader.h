@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"
@@ -202,8 +201,7 @@ class BoxUploader {
   // current step is re-attempted.
   std::unique_ptr<OAuth2ApiCallFlow> current_api_call_;
   // PrefService used to store folder_id.
-  CheckedPtr<PrefService> prefs_ =
-      nullptr;  // Must be initialized to nullptr for DCHECKs.
+  PrefService* prefs_ = nullptr;  // Must be initialized to nullptr for DCHECKs.
 
   // Test observers
   base::ObserverList<TestObserver> observers_;

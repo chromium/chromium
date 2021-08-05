@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_BUFFER_SUBMITTER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {
@@ -34,7 +33,7 @@ class LogBufferSubmitter {
   operator LogBuffer&() { return buffer_; }
 
  private:
-  CheckedPtr<LogRouter> destination_;
+  LogRouter* destination_;
   LogBuffer buffer_;
   // If set to false, the destructor does not perform any logging. This is used
   // for move assignment so that the original copy does not trigger logging.

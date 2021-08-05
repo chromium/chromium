@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -46,8 +45,8 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
 
  private:
   bool have_context_ = true;
-  CheckedPtr<Texture> texture_;
-  CheckedPtr<gl::GLApi> api_ = nullptr;
+  Texture* texture_;
+  gl::GLApi* api_ = nullptr;
 };
 
 // Implementation of AbstractTexture which creates gles2::TexturePassthrough on
@@ -77,7 +76,7 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
  private:
   bool have_context_ = true;
   scoped_refptr<TexturePassthrough> texture_;
-  CheckedPtr<gl::GLApi> api_ = nullptr;
+  gl::GLApi* api_ = nullptr;
 };
 
 }  // namespace gles2

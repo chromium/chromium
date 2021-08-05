@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -48,7 +47,7 @@ class RegisterAppTask : public ExclusiveTask {
   MetadataDatabase* metadata_database();
   drive::DriveServiceInterface* drive_service();
 
-  CheckedPtr<SyncEngineContext> sync_context_;  // Not owned.
+  SyncEngineContext* sync_context_;  // Not owned.
 
   int create_folder_retry_count_;
   std::string app_id_;

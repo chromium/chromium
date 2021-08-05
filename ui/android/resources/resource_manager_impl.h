@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/resource_manager.h"
@@ -85,7 +84,7 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   using TintedResourceMap =
       std::unordered_map<SkColor, std::unique_ptr<ResourceMap>>;
 
-  CheckedPtr<cc::UIResourceManager> ui_resource_manager_;
+  cc::UIResourceManager* ui_resource_manager_;
   ResourceMap resources_[ANDROID_RESOURCE_TYPE_COUNT];
   TintedResourceMap tinted_resources_;
 

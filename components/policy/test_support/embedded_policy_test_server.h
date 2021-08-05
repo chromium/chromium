@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -55,8 +54,8 @@ class EmbeddedPolicyTestServer {
     PolicyStorage* policy_storage() { return policy_storage_; }
 
    private:
-    CheckedPtr<ClientStorage> client_storage_;
-    CheckedPtr<PolicyStorage> policy_storage_;
+    ClientStorage* client_storage_;
+    PolicyStorage* policy_storage_;
   };
 
   EmbeddedPolicyTestServer();

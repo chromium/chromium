@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/http/http_status_code.h"
@@ -127,7 +126,7 @@ class HttpServer {
 
   const std::unique_ptr<ServerSocket> server_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
-  const CheckedPtr<HttpServer::Delegate> delegate_;
+  HttpServer::Delegate* const delegate_;
 
   int last_id_;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;

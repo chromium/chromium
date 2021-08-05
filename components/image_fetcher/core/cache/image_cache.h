@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"
@@ -116,10 +115,10 @@ class ImageCache : public base::RefCounted<ImageCache> {
 
   std::unique_ptr<ImageDataStore> data_store_;
   std::unique_ptr<ImageMetadataStore> metadata_store_;
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Owned by the service which instantiates this.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

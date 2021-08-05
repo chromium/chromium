@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_api.h"
@@ -87,7 +86,7 @@ class SchemaRegistryNativeHandler : public ObjectBackedNativeHandler {
   }
 
   std::unique_ptr<ScriptContext> context_;
-  CheckedPtr<V8SchemaRegistry> registry_;
+  V8SchemaRegistry* registry_;
 };
 
 }  // namespace

@@ -173,7 +173,7 @@ void CommanderFrontendViews::Hide() {
   show_requested_ = false;
   browser_ = nullptr;
 
-  web_view_ = widget_->GetRootView()->RemoveChildViewT(web_view_ptr_.get());
+  web_view_ = widget_->GetRootView()->RemoveChildViewT(web_view_ptr_);
   web_view_->SetOwner(nullptr);
 
   widget_delegate_->SetOwnedByWidget(true);

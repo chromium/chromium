@@ -15,7 +15,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -263,14 +262,13 @@ class NET_EXPORT_PRIVATE SimpleIndex
 
   std::unique_ptr<base::android::ApplicationStatusListener>
       owned_app_status_listener_;
-  CheckedPtr<base::android::ApplicationStatusListener> app_status_listener_ =
-      nullptr;
+  base::android::ApplicationStatusListener* app_status_listener_ = nullptr;
 #endif
 
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   // The owner of |this| must ensure the |delegate_| outlives |this|.
-  CheckedPtr<SimpleIndexDelegate> delegate_;
+  SimpleIndexDelegate* delegate_;
 
   EntrySet entries_set_;
 

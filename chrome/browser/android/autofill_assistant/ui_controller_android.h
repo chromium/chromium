@@ -12,7 +12,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/autofill_assistant/assistant_bottom_bar_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_collect_user_data_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_form_delegate.h"
@@ -217,10 +216,10 @@ class UiControllerAndroid : public ControllerObserver {
 
  private:
   // A pointer to the client. nullptr until Attach() is called.
-  CheckedPtr<ClientAndroid> client_ = nullptr;
+  ClientAndroid* client_ = nullptr;
 
   // A pointer to the ui_delegate. nullptr until Attach() is called.
-  CheckedPtr<UiDelegate> ui_delegate_ = nullptr;
+  UiDelegate* ui_delegate_ = nullptr;
   AssistantOverlayDelegate overlay_delegate_;
   AssistantHeaderDelegate header_delegate_;
   AssistantCollectUserDataDelegate collect_user_data_delegate_;

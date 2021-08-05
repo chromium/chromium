@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -115,14 +114,14 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
       const ui::LatencyInfo& original_latency_info,
       const cc::EventMetrics* original_metrics);
 
-  CheckedPtr<WidgetBase> widget_;
+  WidgetBase* widget_;
 
   // Are we currently handling an input event?
   bool handling_input_event_ = false;
 
   // Current state from HandleInputEvent. This variable is stack allocated
   // and is not owned.
-  CheckedPtr<HandlingState> handling_input_state_ = nullptr;
+  HandlingState* handling_input_state_ = nullptr;
 
   // We store the current cursor object so we can avoid spamming SetCursor
   // messages.

@@ -6,7 +6,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -206,7 +205,7 @@ class AndroidBLEAdvert
   }
 
  private:
-  const CheckedPtr<JNIEnv> env_;
+  JNIEnv* const env_;
   const ScopedJavaGlobalRef<jobject> advert_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -366,7 +365,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   }
 
  private:
-  const CheckedPtr<JNIEnv> env_;
+  JNIEnv* const env_;
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
   absl::optional<base::ElapsedTimer> tunnel_server_connect_time_;
 
@@ -420,7 +419,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     }
   }
 
-  const CheckedPtr<JNIEnv> env_;
+  JNIEnv* const env_;
   const ScopedJavaGlobalRef<jobject> usb_device_;
   base::RepeatingCallback<void(Update)> callback_;
   base::WeakPtrFactory<USBTransport> weak_factory_{this};

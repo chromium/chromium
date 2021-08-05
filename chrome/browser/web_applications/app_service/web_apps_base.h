@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
@@ -109,12 +108,12 @@ class WebAppsBase : public apps::PublisherBase,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
-  CheckedPtr<WebAppProvider> provider_ = nullptr;
+  WebAppProvider* provider_ = nullptr;
 
   // app_service_ is owned by the object that owns this object.
-  CheckedPtr<apps::mojom::AppService> app_service_;
+  apps::mojom::AppService* app_service_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.

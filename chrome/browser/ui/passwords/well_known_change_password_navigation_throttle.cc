@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -76,7 +75,7 @@ class WebContentsLifetimeHelper
  private:
   friend class content::WebContentsUserData<WebContentsLifetimeHelper>;
 
-  const CheckedPtr<WebContents> web_contents_;
+  WebContents* const web_contents_;
   base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

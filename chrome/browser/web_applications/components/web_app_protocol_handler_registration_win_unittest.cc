@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -161,7 +160,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,

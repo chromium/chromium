@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "cc/base/features.h"
@@ -176,7 +175,7 @@ class SynchronousCompositorProxyRegistry
   scoped_refptr<base::SingleThreadTaskRunner>
       compositor_thread_default_task_runner_;
   std::unique_ptr<SynchronousCompositorProxy> proxy_;
-  CheckedPtr<SynchronousLayerTreeFrameSink> sink_ = nullptr;
+  SynchronousLayerTreeFrameSink* sink_ = nullptr;
 };
 
 #endif

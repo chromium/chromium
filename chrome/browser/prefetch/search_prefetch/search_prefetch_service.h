@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
@@ -176,7 +175,7 @@ class SearchPrefetchService : public KeyedService,
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       observer_{this};
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // A map of previously handled URLs that allows certain navigations to be
   // served from cache. The value is the prefetch URL in cache and the latest

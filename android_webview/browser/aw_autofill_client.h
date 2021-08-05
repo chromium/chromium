@@ -12,7 +12,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -151,7 +150,7 @@ class AwAutofillClient : public autofill::AutofillClient,
       const std::vector<autofill::Suggestion>& suggestions);
 
   // The web_contents associated with this delegate.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   bool save_form_data_ = false;
   JavaObjectWeakGlobalRef java_ref_;
 

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/model/get_pages_task.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
@@ -38,7 +37,7 @@ class UpdatePublishIdTask : public Task {
   void OnUpdatePublishIdDone(bool result);
 
   // The metadata store used to update the page. Not owned.
-  CheckedPtr<OfflinePageMetadataStore> store_;
+  OfflinePageMetadataStore* store_;
 
   int64_t offline_id_;
   PublishedArchiveId publish_id_;

@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/feed/v2/feed_reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
@@ -119,10 +118,9 @@ class FeedStream : public ::feed::FeedStreamSurface {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-  CheckedPtr<FeedApi> feed_stream_api_;
+  FeedApi* feed_stream_api_;
   bool attached_ = false;
-  CheckedPtr<FeedReliabilityLoggingBridge> reliability_logging_bridge_ =
-      nullptr;
+  FeedReliabilityLoggingBridge* reliability_logging_bridge_ = nullptr;
 };
 
 }  // namespace android

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_manager.h"
@@ -55,7 +54,7 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
   void OnMojoDisconnect();
 
   // |background_sync_context_| owns |this|.
-  CheckedPtr<BackgroundSyncContextImpl> background_sync_context_;
+  BackgroundSyncContextImpl* background_sync_context_;
 
   std::unique_ptr<BackgroundSyncRegistrationHelper> registration_helper_;
   mojo::Receiver<blink::mojom::PeriodicBackgroundSyncService> receiver_;

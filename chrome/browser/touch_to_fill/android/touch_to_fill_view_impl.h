@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 
 namespace gfx {
@@ -44,7 +43,7 @@ class TouchToFillViewImpl : public TouchToFillView {
   // java object whenever Show() is called.
   bool RecreateJavaObject();
 
-  CheckedPtr<TouchToFillController> controller_ = nullptr;
+  TouchToFillController* controller_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 

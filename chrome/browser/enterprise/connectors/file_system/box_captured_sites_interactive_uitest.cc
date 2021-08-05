@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -606,8 +605,8 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   // closure from unexpected dialog shutdown/crash/exits. Before triggering an
   // action to close the dialog, the test class will set this variable to true.
   bool expecting_dialog_shutdown_ = false;
-  CheckedPtr<views::DialogDelegate> signin_confirmation_dlg_ = nullptr;
-  CheckedPtr<views::Widget> sign_in_widget_ = nullptr;
+  views::DialogDelegate* signin_confirmation_dlg_ = nullptr;
+  views::Widget* sign_in_widget_ = nullptr;
   base::OnceClosure stop_waiting_for_signin_confirmation_;
   base::OnceClosure stop_waiting_for_page_load_;
   base::OnceClosure stop_waiting_for_widget_to_show_;
@@ -670,7 +669,7 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
   }
 
  private:
-  CheckedPtr<download::DownloadItem> download_item_ = nullptr;
+  download::DownloadItem* download_item_ = nullptr;
   base::RunLoop run_loop_rename_handler_;
   bool rename_handler_created_ = false;
   std::unique_ptr<BoxSignInObserver> sign_in_observer_;
@@ -726,7 +725,7 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   content::DownloadManager* download_manager() { return download_manager_; }
 
  private:
-  CheckedPtr<content::DownloadManager> download_manager_ = nullptr;
+  content::DownloadManager* download_manager_ = nullptr;
   std::vector<download::DownloadItem*> download_items_;
   base::OnceClosure stop_waiting_for_download_;
 };

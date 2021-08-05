@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
@@ -62,7 +61,7 @@ class AutofillKeyboardAccessoryView
 
  private:
   // Weak reference to owner of this class. Always outlives this view.
-  CheckedPtr<AutofillPopupController> controller_;
+  AutofillPopupController* controller_;
 
   // Call to confirm a requested deletion.
   base::OnceClosure confirm_deletion_;

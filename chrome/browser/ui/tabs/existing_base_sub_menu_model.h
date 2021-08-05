@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -109,9 +108,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   int GetContextIndex() const;
 
  private:
-  const CheckedPtr<ui::SimpleMenuModel::Delegate> parent_delegate_;
-  const CheckedPtr<TabStripModel> model_;
-  const CheckedPtr<content::WebContents> context_contents_;
+  ui::SimpleMenuModel::Delegate* const parent_delegate_;
+  TabStripModel* const model_;
+  const content::WebContents* const context_contents_;
   const int min_command_id_;
 
   // Stores a mapping from a menu item's command id to its target index (e.g.

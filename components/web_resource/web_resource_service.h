@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
@@ -65,7 +64,7 @@ class WebResourceService : public ResourceRequestAllowedNotifier::Observer {
       std::unique_ptr<ResourceRequestAllowedNotifier> notifier);
 
  protected:
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
   bool GetFetchScheduled() const;
 
  private:

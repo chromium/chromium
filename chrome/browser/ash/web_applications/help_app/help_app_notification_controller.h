@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class Profile;
@@ -60,7 +59,7 @@ class HelpAppNotificationController {
   void MaybeShowDiscoverNotification();
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   std::unique_ptr<HelpAppDiscoverTabNotification> discover_tab_notification_;
   std::unique_ptr<ash::ReleaseNotesNotification> release_notes_notification_;
 

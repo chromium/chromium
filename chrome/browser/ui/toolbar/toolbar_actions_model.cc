@@ -148,8 +148,8 @@ void ToolbarActionsModel::OnReady() {
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
-  extension_registry_observation_.Observe(extension_registry_.get());
-  extension_action_observation_.Observe(extension_action_api_.get());
+  extension_registry_observation_.Observe(extension_registry_);
+  extension_action_observation_.Observe(extension_action_api_);
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);

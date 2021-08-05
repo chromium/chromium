@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -127,7 +126,7 @@ class WebAudioSourceProviderImpl::TeeFilter
   bool is_tainted() const { return origin_tainted_.IsSet(); }
 
  private:
-  CheckedPtr<AudioRendererSink::RenderCallback> renderer_ = nullptr;
+  AudioRendererSink::RenderCallback* renderer_ = nullptr;
   int channels_ = 0;
   int sample_rate_ = 0;
 

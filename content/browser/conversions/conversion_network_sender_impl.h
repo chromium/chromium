@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/conversions/conversion_reporter_impl.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -74,7 +73,7 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
   UrlLoaderList loaders_in_progress_;
 
   // Must outlive |this|.
-  CheckedPtr<StoragePartition> storage_partition_;
+  StoragePartition* storage_partition_;
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

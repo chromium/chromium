@@ -9,7 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
@@ -40,7 +39,7 @@ class FakeAffiliationFetcher : public AffiliationFetcherInterface {
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
 
  private:
-  const CheckedPtr<AffiliationFetcherDelegate> delegate_;
+  AffiliationFetcherDelegate* const delegate_;
 
   std::vector<FacetURI> facets_;
 };

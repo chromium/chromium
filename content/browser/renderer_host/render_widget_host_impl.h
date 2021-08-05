@@ -21,7 +21,6 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -1123,7 +1122,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
-  CheckedPtr<FrameTree> frame_tree_;
+  FrameTree* frame_tree_;
 
   // RenderWidgetHost are either:
   // - Owned by RenderViewHostImpl.
@@ -1152,12 +1151,12 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Our delegate, which wants to know mainly about keyboard events.
   // It will remain non-null until DetachDelegate() is called.
-  CheckedPtr<RenderWidgetHostDelegate> delegate_;
+  RenderWidgetHostDelegate* delegate_;
 
   // The delegate of the owner of this object.
   // This member is non-null if and only if this RenderWidgetHost is associated
   // with a main frame RenderWidget.
-  CheckedPtr<RenderWidgetHostOwnerDelegate> owner_delegate_ = nullptr;
+  RenderWidgetHostOwnerDelegate* owner_delegate_ = nullptr;
 
   // AgentSchedulingGroupHost to be used for IPC with the corresponding
   // (renderer-side) AgentSchedulingGroup. Its channel may be nullptr if the
@@ -1168,7 +1167,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   const int routing_id_;
 
   // The clock used; overridable for tests.
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   // Indicates whether a page is loading or not.
   bool is_loading_ = false;

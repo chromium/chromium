@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -69,7 +68,7 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
 
   int32_t alignment_ = POPUP_ALIGNMENT_BOTTOM | POPUP_ALIGNMENT_RIGHT;
   int64_t primary_display_id_ = display::kInvalidDisplayId;
-  CheckedPtr<display::Screen> screen_ = nullptr;
+  display::Screen* screen_ = nullptr;
   absl::optional<display::ScopedDisplayObserver> display_observer_;
   gfx::Rect work_area_;
 

@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -83,7 +82,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
         ClonePolicy clone_policy) const;
 
     // The parent of this node.
-    CheckedPtr<TreeNode> parent;
+    TreeNode* parent;
 
     // Ref counted pointer that keeps the FrameNavigationEntry alive as long as
     // it is needed by this node's NavigationEntry.

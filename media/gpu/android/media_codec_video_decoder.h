@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -272,7 +271,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   std::unique_ptr<CodecWrapper> codec_;
   base::ElapsedTimer idle_timer_;
   base::RepeatingTimer pump_codec_timer_;
-  CheckedPtr<CodecAllocator> codec_allocator_;
+  CodecAllocator* codec_allocator_;
 
   // The current target surface that |codec_| should be rendering to. It
   // reflects the latest surface choice by |surface_chooser_|. If the codec is
@@ -302,7 +301,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // An optional factory callback for creating mojo AndroidOverlays.
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 
-  CheckedPtr<DeviceInfo> device_info_;
+  DeviceInfo* device_info_;
   bool enable_threaded_texture_mailboxes_;
 
   // Most recently cached frame information, so that we can dispatch it without
@@ -313,7 +312,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // CDM related stuff.
 
   // Owned by CDM which is external to this decoder.
-  CheckedPtr<MediaCryptoContext> media_crypto_context_ = nullptr;
+  MediaCryptoContext* media_crypto_context_ = nullptr;
 
   // To keep the CdmContext event callback registered.
   std::unique_ptr<CallbackRegistration> event_cb_registration_;

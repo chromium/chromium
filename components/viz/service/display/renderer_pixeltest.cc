@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/build_config.h"
@@ -1343,8 +1342,8 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
 
   std::unique_ptr<AggregatedRenderPass> render_pass_;
   gfx::Rect viewport_rect_;
-  CheckedPtr<SharedQuadState> front_quad_state_;
-  CheckedPtr<SharedQuadState> back_quad_state_;
+  SharedQuadState* front_quad_state_;
+  SharedQuadState* back_quad_state_;
   gfx::Rect quad_rect_;
   AggregatedRenderPassList pass_list_;
 };

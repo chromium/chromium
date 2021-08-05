@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
@@ -139,9 +138,9 @@ class AppShortcutManager {
 
   bool suppress_shortcuts_for_testing_ = false;
 
-  CheckedPtr<WebAppRegistrar> registrar_ = nullptr;
-  CheckedPtr<AppIconManager> icon_manager_ = nullptr;
-  const CheckedPtr<Profile> profile_;
+  WebAppRegistrar* registrar_ = nullptr;
+  AppIconManager* icon_manager_ = nullptr;
+  Profile* const profile_;
 
   base::WeakPtrFactory<AppShortcutManager> weak_ptr_factory_{this};
 

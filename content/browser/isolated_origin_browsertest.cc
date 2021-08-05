@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -1781,8 +1780,8 @@ class InjectIsolationRequestingNavigation
     return true;
   }
 
-  CheckedPtr<OriginIsolationOptInHeaderTest> test_framework_;
-  CheckedPtr<Shell> tab2_;
+  OriginIsolationOptInHeaderTest* test_framework_;
+  Shell* tab2_;
   const GURL& url_;
   bool was_called_ = false;
 };
@@ -3042,7 +3041,7 @@ class StoragePartitonInterceptor
  private:
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
-  CheckedPtr<blink::mojom::DomStorage> dom_storage_;
+  blink::mojom::DomStorage* dom_storage_;
 
   url::Origin origin_to_inject_;
 };
@@ -4476,8 +4475,7 @@ class BroadcastChannelProviderInterceptor
  private:
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
-  CheckedPtr<blink::mojom::BroadcastChannelProvider>
-      original_broadcast_channel_provider_;
+  blink::mojom::BroadcastChannelProvider* original_broadcast_channel_provider_;
 
   url::Origin origin_to_inject_;
 };
@@ -4974,7 +4972,7 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
   net::EmbeddedTestServer https_server_;
 
   NoSiteIsolationContentBrowserClient browser_client_;
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
 };
 
 // Check that a main frame navigation to a COOP site (with no subsequent user
@@ -5611,7 +5609,7 @@ class JITIsolationTest : public IsolatedOriginTest,
 
    private:
     std::unique_ptr<JitContentBrowserClient> overriden_client_;
-    CheckedPtr<ContentBrowserClient> original_client_;
+    ContentBrowserClient* original_client_;
   };
 };
 

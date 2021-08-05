@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_COMMON_ACTIVITY_FLAGS_H_
 
 #include "base/atomicops.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/gpu_export.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -52,7 +51,7 @@ class GPU_EXPORT GpuProcessActivityFlags : public ActivityFlagsBase {
     ~ScopedSetFlag() { activity_flags_->UnsetFlag(flag_); }
 
    private:
-    CheckedPtr<GpuProcessActivityFlags> activity_flags_;
+    GpuProcessActivityFlags* activity_flags_;
     Flag flag_;
   };
 

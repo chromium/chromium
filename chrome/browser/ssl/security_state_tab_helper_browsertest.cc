@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
@@ -2100,7 +2099,7 @@ class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
   content::WebContents* web_contents() { return web_contents_; }
 
  protected:
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -141,7 +140,7 @@ class InterfaceFactoryImpl final
 
   mojo::UniqueReceiverSet<mojom::Decryptor> decryptor_receivers_;
 
-  CheckedPtr<MojoMediaClient> mojo_media_client_;
+  MojoMediaClient* mojo_media_client_;
   base::OnceClosure destroy_cb_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

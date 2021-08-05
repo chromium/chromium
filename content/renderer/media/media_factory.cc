@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -161,7 +160,7 @@ class FrameFetchContext : public blink::ResourceFetchContext {
   }
 
  private:
-  CheckedPtr<blink::WebLocalFrame> frame_;
+  blink::WebLocalFrame* frame_;
   DISALLOW_COPY_AND_ASSIGN(FrameFetchContext);
 };
 
@@ -537,7 +536,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   auto params = std::make_unique<blink::WebMediaPlayerParams>(
       std::move(media_log),
       base::BindRepeating(&RenderFrameImpl::DeferMediaLoad,
-                          base::Unretained(render_frame_.get()),
+                          base::Unretained(render_frame_),
                           delegate->has_played_media()),
       audio_renderer_sink, media_task_runner,
       render_thread->GetWorkerTaskRunner(),

@@ -18,7 +18,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
@@ -282,7 +281,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   std::vector<ScopedHandle> handles_;
   std::vector<ScopedInterfaceEndpointHandle> associated_endpoint_handles_;
-  CheckedPtr<const ConnectionGroup::Ref> receiver_connection_group_ = nullptr;
+  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
 
   // Indicates whether this Message object is transferable, i.e. can be sent
   // elsewhere. In general this is true unless |handle_| is invalid or

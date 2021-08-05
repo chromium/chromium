@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -85,7 +84,7 @@ class IceTransportHost final : public IceTransportAdapter::Delegate {
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
   std::unique_ptr<IceTransportAdapter> transport_;
   base::WeakPtr<IceTransportProxy> proxy_;
-  CheckedPtr<QuicTransportHost> consumer_host_ = nullptr;
+  QuicTransportHost* consumer_host_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
 };

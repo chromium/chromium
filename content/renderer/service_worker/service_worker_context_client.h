@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -231,7 +230,7 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   // Not owned; |this| is destroyed when |proxy_| becomes invalid.
-  CheckedPtr<blink::WebServiceWorkerContextProxy> proxy_;
+  blink::WebServiceWorkerContextProxy* proxy_;
 
   // These Mojo objects are bound on the worker thread.
   mojo::PendingReceiver<blink::mojom::ServiceWorker>
@@ -254,7 +253,7 @@ class CONTENT_EXPORT ServiceWorkerContextClient
       service_worker_provider_info_;
 
   // Must be accessed on the initiator thread only.
-  CheckedPtr<EmbeddedWorkerInstanceClientImpl> owner_;
+  EmbeddedWorkerInstanceClientImpl* owner_;
 
   // Initialized on the worker thread in WorkerContextStarted and
   // destructed on the worker thread in WillDestroyWorkerContext.

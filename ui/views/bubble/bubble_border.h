@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -266,7 +265,7 @@ class VIEWS_EXPORT BubbleBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
-  CheckedPtr<BubbleBorder> border_;
+  BubbleBorder* border_;
 
   DISALLOW_COPY_AND_ASSIGN(BubbleBackground);
 };

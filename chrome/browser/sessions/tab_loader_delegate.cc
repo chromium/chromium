@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
@@ -91,10 +90,10 @@ class TabLoaderDelegateImpl
   // The policy engine used to implement ShouldLoad. By default this is simply
   // a pointer to |default_policy_|, but it can also point to externally
   // injected policy engine for testing.
-  CheckedPtr<resource_coordinator::SessionRestorePolicy> policy_;
+  resource_coordinator::SessionRestorePolicy* policy_;
 
   // The function to call when the connection type changes.
-  CheckedPtr<TabLoaderCallback> callback_;
+  TabLoaderCallback* callback_;
 
   // The timeouts to use in tab loading.
   base::TimeDelta first_timeout_;

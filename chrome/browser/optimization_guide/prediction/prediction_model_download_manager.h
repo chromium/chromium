@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
@@ -123,7 +122,7 @@ class PredictionModelDownloadManager {
   // The Download Service to schedule model downloads with.
   //
   // Guaranteed to outlive |this|.
-  CheckedPtr<download::BackgroundDownloadService> download_service_;
+  download::BackgroundDownloadService* download_service_;
 
   // The directory to store verified models in.
   absl::optional<base::FilePath> models_dir_;

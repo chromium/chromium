@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
@@ -70,7 +69,7 @@ class LazySize {
   }
 
  private:
-  const CheckedPtr<const View> view_;
+  const View* const view_;
   SizeFunc size_func_;
   mutable absl::optional<gfx::Size> size_;
 };

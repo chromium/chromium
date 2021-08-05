@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/wrappable.h"
 
@@ -50,7 +49,7 @@ class SupervisedUserErrorPageController
 
   base::WeakPtr<SupervisedUserErrorPageControllerDelegate> const delegate_;
 
-  CheckedPtr<content::RenderFrame> render_frame_;
+  content::RenderFrame* render_frame_;
 
   // This weak factory is used to generate weak pointers to the controller that
   // are used for the request permission callback, so messages to no longer

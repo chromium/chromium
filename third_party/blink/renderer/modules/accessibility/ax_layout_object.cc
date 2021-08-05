@@ -135,7 +135,7 @@ ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
   if (!layout_object_ || !layout_object_->IsBox())
     return nullptr;
 
-  auto* box = To<LayoutBox>(layout_object_.get());
+  auto* box = To<LayoutBox>(layout_object_);
 
   // This should possibly use box->CanBeScrolledAndHasScrollableArea() as it
   // used to; however, accessibility must consider any kind of non-visible
@@ -240,7 +240,7 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   if (IsA<HTMLCanvasElement>(node))
     return ax::mojom::blink::Role::kCanvas;
 
-  if (IsA<LayoutView>(layout_object_.get()))
+  if (IsA<LayoutView>(layout_object_))
     return ax::mojom::blink::Role::kRootWebArea;
 
   if (layout_object_->IsSVGImage())
@@ -1037,7 +1037,7 @@ String AXLayoutObject::TextAlternative(
       found_text_alternative = true;
     } else if (layout_object_->IsText() &&
                (!recursive || !layout_object_->IsCounter())) {
-      auto* layout_text = To<LayoutText>(layout_object_.get());
+      auto* layout_text = To<LayoutText>(layout_object_);
       String visible_text = layout_text->PlainText();  // Actual rendered text.
       // If no text boxes we assume this is unrendered end-of-line whitespace.
       // TODO find robust way to deterministically detect end-of-line space.
@@ -1058,7 +1058,7 @@ String AXLayoutObject::TextAlternative(
       found_text_alternative = true;
     } else if (layout_object_->IsListMarkerForNormalContent() && !recursive) {
       text_alternative =
-          To<LayoutListMarker>(layout_object_.get())->TextAlternative();
+          To<LayoutListMarker>(layout_object_)->TextAlternative();
       found_text_alternative = true;
     } else if (!recursive) {
       if (ListMarker* marker = ListMarker::Get(layout_object_)) {
@@ -1098,7 +1098,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
             DocumentLifecycle::kPrePaintClean);
 #endif
 
-  PaintLayer* layer = To<LayoutBox>(layout_object_.get())->Layer();
+  PaintLayer* layer = To<LayoutBox>(layout_object_)->Layer();
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kRetargetForInert);

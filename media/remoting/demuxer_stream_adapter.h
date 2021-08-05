@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
@@ -139,7 +138,7 @@ class DemuxerStreamAdapter {
   const int rpc_handle_;
 
   // Demuxer stream and stream type.
-  const CheckedPtr<DemuxerStream> demuxer_stream_;
+  DemuxerStream* const demuxer_stream_;
   const DemuxerStream::Type type_;
 
   // Run by OnFatalError to propagate StopTriggers back to the

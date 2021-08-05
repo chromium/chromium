@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -149,7 +148,7 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   // Represents the frame widget's text input type.
   blink::WebTextInputType widget_text_input_type_;
 
-  CheckedPtr<PdfViewWebPlugin> web_plugin_;
+  PdfViewWebPlugin* web_plugin_;
 };
 
 }  // namespace
@@ -255,7 +254,7 @@ class PdfViewWebPluginTest : public testing::Test {
         << window_rect.ToString();
   }
 
-  CheckedPtr<FakeContainerWrapper> wrapper_ptr_;
+  FakeContainerWrapper* wrapper_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
 
   // Provides the cc::PaintCanvas for painting.

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -119,7 +118,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                       std::set<std::string> notification_ids,
                       bool supports_synchronization);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // This NotificationPlatformBridgeDelegator delegates to either the native
   // bridge or to the MessageCenter if there is no native bridge or it does not

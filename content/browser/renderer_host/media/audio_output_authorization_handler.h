@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -107,8 +106,8 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
       const std::string& raw_device_id,
       const absl::optional<media::AudioParameters>& params) const;
 
-  const CheckedPtr<media::AudioSystem> audio_system_;
-  const CheckedPtr<MediaStreamManager> media_stream_manager_;
+  media::AudioSystem* const audio_system_;
+  MediaStreamManager* const media_stream_manager_;
   const int render_process_id_;
   bool override_permissions_ = false;
   bool permissions_override_value_ = false;

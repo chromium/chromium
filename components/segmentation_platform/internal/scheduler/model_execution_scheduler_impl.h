@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 #include "base/cancelable_callback.h"
@@ -57,16 +56,16 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // Observer listening to model exeuction events. Required by the segment
   // selection pipeline.
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
 
   // The database storing metadata and results.
-  CheckedPtr<SegmentInfoDatabase> segment_database_;
+  SegmentInfoDatabase* segment_database_;
 
   // Used for confirming if the signals have been collected long enough.
-  CheckedPtr<SignalStorageConfig> signal_storage_config_;
+  SignalStorageConfig* signal_storage_config_;
 
   // The class that executes the models.
-  CheckedPtr<ModelExecutionManager> model_execution_manager_;
+  ModelExecutionManager* model_execution_manager_;
 
   // In-flight model execution requests. Will be killed if we get a model
   // update.

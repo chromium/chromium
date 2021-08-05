@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UPDATES_INTERNAL_UPDATE_NOTIFICATION_SERVICE_IMPL_H_
 #define CHROME_BROWSER_UPDATES_INTERNAL_UPDATE_NOTIFICATION_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/updates/update_notification_service.h"  // nogncheck
 
 #include <memory>
@@ -69,13 +68,13 @@ class UpdateNotificationServiceImpl : public UpdateNotificationService {
 
   // Used to schedule notification to show in the future. Must outlive this
   // class.
-  CheckedPtr<notifications::NotificationScheduleService> schedule_service_;
+  notifications::NotificationScheduleService* schedule_service_;
 
   std::unique_ptr<UpdateNotificationConfig> config_;
 
   std::unique_ptr<UpdateNotificationServiceBridge> bridge_;
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   base::WeakPtrFactory<UpdateNotificationServiceImpl> weak_ptr_factory_{this};
 };

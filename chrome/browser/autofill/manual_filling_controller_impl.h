@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "chrome/browser/autofill/accessory_controller.h"
@@ -137,7 +136,7 @@ class ManualFillingControllerImpl
       autofill::AccessoryAction action) const;
 
   // The tab for which this class is scoped.
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 
   // This set contains sources to be shown to the user.
   base::flat_set<FillingSource> available_sources_;

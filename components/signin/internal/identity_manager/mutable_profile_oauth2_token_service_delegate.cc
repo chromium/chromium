@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -122,7 +121,7 @@ class MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken
   void OnOAuth2RevokeTokenCompleted(
       GaiaAuthConsumer::TokenRevocationStatus status) override;
 
-  CheckedPtr<MutableProfileOAuth2TokenServiceDelegate> token_service_delegate_;
+  MutableProfileOAuth2TokenServiceDelegate* token_service_delegate_;
   GaiaAuthFetcher fetcher_;
   std::string refresh_token_;
   int attempt_;

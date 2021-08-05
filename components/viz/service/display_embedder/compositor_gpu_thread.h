@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -58,7 +57,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   bool Initialize();
 
-  CheckedPtr<gpu::GpuChannelManager> gpu_channel_manager_;
+  gpu::GpuChannelManager* gpu_channel_manager_;
   const bool enable_watchdog_;
   bool init_succeded_ = false;
 

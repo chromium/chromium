@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -388,7 +387,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   const Member<DetachableConsoleLogger> console_logger_;
 
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   int in_flight_important_requests_ = 0;
   // When this is true, the scheduler no longer needs to delay low-priority

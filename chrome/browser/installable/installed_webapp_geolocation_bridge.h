@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -64,7 +63,7 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
   void ReportCurrentPosition();
 
   // Owns this object.
-  CheckedPtr<InstalledWebappGeolocationContext> context_;
+  InstalledWebappGeolocationContext* context_;
 
   // The callback passed to QueryNextPosition.
   QueryNextPositionCallback position_callback_;

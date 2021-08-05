@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -105,7 +104,7 @@ class BackForwardSearchPrefetchURLLoader
   // fallback occurs.
   bool paused_ = false;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 

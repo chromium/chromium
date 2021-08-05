@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -99,8 +98,7 @@ class ExtensionSpecialStoragePolicy::CookieSettingsObserver
   const scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   base::Lock policy_lock_;
-  CheckedPtr<ExtensionSpecialStoragePolicy> weak_policy_
-      GUARDED_BY(policy_lock_);
+  ExtensionSpecialStoragePolicy* weak_policy_ GUARDED_BY(policy_lock_);
 };
 
 ExtensionSpecialStoragePolicy::ExtensionSpecialStoragePolicy(

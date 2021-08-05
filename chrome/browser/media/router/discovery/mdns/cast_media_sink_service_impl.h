@@ -10,7 +10,6 @@
 
 #include "base/containers/small_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -292,11 +291,11 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Raw pointer of leaky singleton CastSocketService, which manages adding and
   // removing Cast channels.
-  const CheckedPtr<cast_channel::CastSocketService> cast_socket_service_;
+  cast_channel::CastSocketService* const cast_socket_service_;
 
   // Raw pointer to DiscoveryNetworkMonitor, which is a global leaky singleton
   // and manages network change notifications.
-  const CheckedPtr<DiscoveryNetworkMonitor> network_monitor_;
+  DiscoveryNetworkMonitor* const network_monitor_;
 
   std::string current_network_id_ = DiscoveryNetworkMonitor::kNetworkIdUnknown;
 
@@ -328,7 +327,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Non-owned pointer to DIAL MediaSinkService. Observed by |this| for dual
   // discovery.
-  const CheckedPtr<MediaSinkServiceBase> dial_media_sink_service_;
+  MediaSinkServiceBase* const dial_media_sink_service_;
 
   // Mojo Remote to the logger owned by the Media Router. The Remote is not
   // bound until |BindLogger()| is called. Always check if |logger_.is_bound()|
@@ -339,7 +338,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // same SequencedTaskRunner as the one used by |cast_socket_service_|.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkServiceImpl> weak_ptr_factory_{this};

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
@@ -86,7 +85,7 @@ class CommitContributionImpl : public CommitContribution {
 
   // Null if |type_| is not encrypted. Otherwise this is used to encrypt the
   // committed entities.
-  const CheckedPtr<Cryptographer> cryptographer_;
+  Cryptographer* const cryptographer_;
 
   const PassphraseType passphrase_type_;
 

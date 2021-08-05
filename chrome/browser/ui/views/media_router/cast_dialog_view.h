@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
@@ -208,15 +207,15 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Contains references to sink buttons in the order they appear.
   std::vector<CastDialogSinkButton*> sink_buttons_;
 
-  CheckedPtr<CastDialogController> controller_;
+  CastDialogController* controller_;
 
   // ScrollView containing the list of sink buttons.
-  CheckedPtr<views::ScrollView> scroll_view_ = nullptr;
+  views::ScrollView* scroll_view_ = nullptr;
 
   // View shown while there are no sinks.
-  CheckedPtr<views::View> no_sinks_view_ = nullptr;
+  views::View* no_sinks_view_ = nullptr;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // How much |scroll_view_| is scrolled downwards in pixels. Whenever the sink
   // list is updated the scroll position gets reset, so we must manually restore
@@ -224,7 +223,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   int scroll_position_ = 0;
 
   // The sources menu allows the user to choose a source to cast.
-  CheckedPtr<views::Button> sources_button_ = nullptr;
+  views::Button* sources_button_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> sources_menu_model_;
   std::unique_ptr<views::MenuRunner> sources_menu_runner_;
 

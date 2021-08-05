@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -387,11 +386,11 @@ class BookmarkModel : public BookmarkUndoProvider,
   // |owned_root_|. Once loading has completed, |owned_root_| is destroyed and
   // this is set to url_index_->root(). |owned_root_| is done as lots of
   // existing code assumes the root is non-null while loading.
-  CheckedPtr<BookmarkNode> root_ = nullptr;
+  BookmarkNode* root_ = nullptr;
 
-  CheckedPtr<BookmarkPermanentNode> bookmark_bar_node_ = nullptr;
-  CheckedPtr<BookmarkPermanentNode> other_node_ = nullptr;
-  CheckedPtr<BookmarkPermanentNode> mobile_node_ = nullptr;
+  BookmarkPermanentNode* bookmark_bar_node_ = nullptr;
+  BookmarkPermanentNode* other_node_ = nullptr;
+  BookmarkPermanentNode* mobile_node_ = nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;
@@ -421,7 +420,7 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   std::set<std::string> non_cloned_keys_;
 
-  CheckedPtr<BookmarkUndoDelegate> undo_delegate_ = nullptr;
+  BookmarkUndoDelegate* undo_delegate_ = nullptr;
   std::unique_ptr<BookmarkUndoDelegate> empty_undo_delegate_;
 
   scoped_refptr<ModelLoader> model_loader_;

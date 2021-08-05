@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -60,7 +59,7 @@ class PepperPlatformVideoCapture {
   base::OnceClosure release_device_cb_;
   base::OnceClosure stop_capture_cb_;
 
-  CheckedPtr<PepperVideoCaptureHost> handler_;
+  PepperVideoCaptureHost* handler_;
 
   // Whether we have a pending request to open a device. We have to make sure
   // there isn't any pending request before this object goes away.

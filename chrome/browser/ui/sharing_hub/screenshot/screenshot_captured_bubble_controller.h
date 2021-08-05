@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class Browser;
@@ -54,7 +53,7 @@ class ScreenshotCapturedBubbleController
   friend class content::WebContentsUserData<ScreenshotCapturedBubbleController>;
 
   // The web_contents associated with this controller.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "weblayer/public/js_communication/web_message_host.h"
 
@@ -40,7 +39,7 @@ class WebMessageReplyProxyImpl : public WebMessageHost {
   void OnBackForwardCacheStateChanged() override;
 
  private:
-  CheckedPtr<WebMessageReplyProxy> reply_proxy_;
+  WebMessageReplyProxy* reply_proxy_;
 
   // The Java WebMessageReplyProxy.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

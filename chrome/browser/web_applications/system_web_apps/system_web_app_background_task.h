@@ -9,7 +9,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
@@ -136,7 +135,7 @@ class SystemAppBackgroundTask {
     void CloseContents(content::WebContents* contents) override;
 
    private:
-    CheckedPtr<SystemAppBackgroundTask> task_;
+    SystemAppBackgroundTask* task_;
   };
   // A state machine to either poll and fail, stop polling and succeed, or stop
   // polling and fail
@@ -148,7 +147,7 @@ class SystemAppBackgroundTask {
 
   void CloseWebContents(content::WebContents* contents);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   SystemAppType app_type_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> web_app_url_loader_;

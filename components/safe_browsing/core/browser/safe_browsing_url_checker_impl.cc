@@ -687,8 +687,7 @@ void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
   ui_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WebUIDelegate::AddToRTLookupPings,
-                     base::Unretained(webui_delegate_.get()), request,
-                     oauth_token),
+                     base::Unretained(webui_delegate_), request, oauth_token),
       base::BindOnce(&SafeBrowsingUrlCheckerImpl::SetWebUIToken,
                      weak_factory_.GetWeakPtr()));
 }
@@ -705,7 +704,7 @@ void SafeBrowsingUrlCheckerImpl::LogRTLookupResponse(
     // chrome://safe-browsing pages.
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&WebUIDelegate::AddToRTLookupResponses,
-                                  base::Unretained(webui_delegate_.get()),
+                                  base::Unretained(webui_delegate_),
                                   url_web_ui_token_, response));
   }
 }

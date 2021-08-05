@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -199,7 +198,7 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
  private:
-  CheckedPtr<TestRenderFrame> frame_;
+  TestRenderFrame* frame_;
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
 };
 
@@ -716,7 +715,7 @@ class ScopedNewFrameInterfaceProviderExerciser {
 
  private:
   void OnFrameCreated(TestRenderFrame* frame) {
-    ASSERT_EQ(nullptr, frame_.get());
+    ASSERT_EQ(nullptr, frame_);
     frame_ = frame;
     frame_commit_waiter_.emplace(frame);
 
@@ -737,8 +736,8 @@ class ScopedNewFrameInterfaceProviderExerciser {
     EXPECT_TRUE(frame->GetWebFrame()->GetCurrentHistoryItem().IsNull());
   }
 
-  CheckedPtr<FrameCreationObservingRendererClient> frame_creation_observer_;
-  CheckedPtr<TestRenderFrame> frame_ = nullptr;
+  FrameCreationObservingRendererClient* frame_creation_observer_;
+  TestRenderFrame* frame_ = nullptr;
   absl::optional<std::string> html_override_for_first_load_;
   GURL first_committed_url_;
 
@@ -827,8 +826,7 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
 
  private:
   // Owned by RenderViewTest.
-  CheckedPtr<FrameCreationObservingRendererClient> frame_creation_observer_ =
-      nullptr;
+  FrameCreationObservingRendererClient* frame_creation_observer_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameRemoteInterfacesTest);

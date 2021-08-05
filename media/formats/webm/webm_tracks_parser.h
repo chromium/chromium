@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_log.h"
@@ -139,7 +138,7 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
   std::set<int64_t> ignored_tracks_;
   std::string audio_encryption_key_id_;
   std::string video_encryption_key_id_;
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   WebMAudioClient audio_client_;
   AudioDecoderConfig audio_decoder_config_;

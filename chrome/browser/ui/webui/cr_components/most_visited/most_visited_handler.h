@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
@@ -77,9 +76,9 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   NTPUserDataLogger logger_;
   base::Time ntp_navigation_start_time_;
   GURL last_blocklisted_;

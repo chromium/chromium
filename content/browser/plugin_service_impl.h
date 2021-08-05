@@ -8,7 +8,6 @@
 #ifndef CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ppapi/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
@@ -137,7 +136,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 
   // Weak pointer; set during the startup on UI thread and must outlive us.
-  CheckedPtr<PluginServiceFilter> filter_;
+  PluginServiceFilter* filter_;
 
   // Used to load plugins from disk.
   scoped_refptr<base::SequencedTaskRunner> plugin_list_task_runner_;

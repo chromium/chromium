@@ -30,7 +30,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
@@ -282,7 +281,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   GraphicsLayerPaintingPhase painting_phase_;
 
   Vector<GraphicsLayer*> children_;
-  CheckedPtr<GraphicsLayer> parent_;
+  GraphicsLayer* parent_;
 
   IntRect contents_rect_;
 

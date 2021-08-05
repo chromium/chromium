@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
@@ -245,7 +244,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   base::Thread media_thread_;
 
   // Owned by |rtc_video_decoder_adapter_|.
-  CheckedPtr<StrictMock<MockVideoDecoder>> video_decoder_ = nullptr;
+  StrictMock<MockVideoDecoder>* video_decoder_ = nullptr;
 
   StrictMock<base::MockCallback<
       base::RepeatingCallback<void(const webrtc::VideoFrame&)>>>

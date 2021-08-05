@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/initialization_task.h"
@@ -217,8 +216,8 @@ class PaymentRequest : public mojom::PaymentRequest,
   DeveloperConsoleLogger log_;
   std::unique_ptr<ContentPaymentRequestDelegate> delegate_;
   // |manager_| owns this PaymentRequest.
-  CheckedPtr<PaymentRequestWebContentsManager> manager_;
-  CheckedPtr<PaymentRequestDisplayManager> display_manager_;
+  PaymentRequestWebContentsManager* manager_;
+  PaymentRequestDisplayManager* display_manager_;
   std::unique_ptr<PaymentRequestDisplayManager::DisplayHandle> display_handle_;
   mojo::Receiver<mojom::PaymentRequest> receiver_{this};
   mojo::Remote<mojom::PaymentRequestClient> client_;
@@ -247,7 +246,7 @@ class PaymentRequest : public mojom::PaymentRequest,
   const url::Origin frame_security_origin_;
 
   // May be null, must outlive this object.
-  CheckedPtr<ObserverForTest> observer_for_testing_;
+  ObserverForTest* observer_for_testing_;
 
   JourneyLogger journey_logger_;
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -139,11 +138,11 @@ class GinPort final : public gin::Wrappable<GinPort> {
   std::string name_;
 
   // The associated APIEventHandler. Guaranteed to outlive this object.
-  const CheckedPtr<APIEventHandler> event_handler_;
+  APIEventHandler* const event_handler_;
 
   // The delegate for handling the message passing between ports. Guaranteed to
   // outlive this object.
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // Whether the `sender` property has been accessed, and thus set on the
   // port JS object.

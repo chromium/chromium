@@ -16,7 +16,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/version_info/version_info.h"
@@ -377,7 +376,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // TODO(bashi): Consider to have a separate class to put this logic?
   struct PendingServiceWorker {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-    CheckedPtr<blink::WebServiceWorkerContextProxy> context_proxy;
+    blink::WebServiceWorkerContextProxy* context_proxy;
 
     PendingServiceWorker(blink::WebServiceWorkerContextProxy* context_proxy);
     ~PendingServiceWorker();

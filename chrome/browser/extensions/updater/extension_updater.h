@@ -15,7 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -291,7 +290,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   bool alive_ = false;
 
   // Pointer back to the service that owns this ExtensionUpdater.
-  CheckedPtr<ExtensionServiceInterface> service_ = nullptr;
+  ExtensionServiceInterface* service_ = nullptr;
 
   // A closure passed into the ExtensionUpdater to teach it how to construct
   // new ExtensionDownloader instances.
@@ -305,16 +304,16 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // created through a |KeyedServiceFactory| singleton, thus |update_service_|
   // will be freed by the same factory singleton before the browser is
   // shutdown.
-  CheckedPtr<UpdateService> update_service_ = nullptr;
+  UpdateService* update_service_ = nullptr;
 
   base::TimeDelta frequency_;
   bool will_check_soon_ = false;
 
-  CheckedPtr<ExtensionPrefs> extension_prefs_ = nullptr;
-  CheckedPtr<PrefService> prefs_ = nullptr;
-  CheckedPtr<Profile> profile_ = nullptr;
+  ExtensionPrefs* extension_prefs_ = nullptr;
+  PrefService* prefs_ = nullptr;
+  Profile* profile_ = nullptr;
 
-  CheckedPtr<ExtensionRegistry> registry_ = nullptr;
+  ExtensionRegistry* registry_ = nullptr;
 
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_ = 0;
@@ -326,7 +325,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // when we receive NOTIFICATION_CRX_INSTALLER_DONE.
   std::map<CrxInstaller*, FetchedCRXFile> running_crx_installs_;
 
-  CheckedPtr<ExtensionCache> extension_cache_ = nullptr;
+  ExtensionCache* extension_cache_ = nullptr;
 
   base::WeakPtrFactory<ExtensionUpdater> weak_ptr_factory_{this};
 };

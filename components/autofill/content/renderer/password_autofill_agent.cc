@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -520,7 +519,7 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
              form_renderer_id, result);
   }
 
-  CheckedPtr<PasswordAutofillAgent> agent_ = nullptr;
+  PasswordAutofillAgent* agent_ = nullptr;
   base::WeakPtrFactory<DeferringPasswordManagerDriver> weak_ptr_factory_{this};
 };
 

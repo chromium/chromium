@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/var.h"
@@ -54,7 +53,7 @@ class CONTENT_EXPORT V8ObjectVar : public Var {
  private:
   ~V8ObjectVar() override;
 
-  CheckedPtr<content::PepperPluginInstanceImpl> instance_;
+  content::PepperPluginInstanceImpl* instance_;
 
   v8::Persistent<v8::Object> v8_object_;
 

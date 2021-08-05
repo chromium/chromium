@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -458,9 +457,9 @@ class ObfuscatedFileUtilTest : public testing::Test,
     }
 
     std::unique_ptr<FileSystemOperationContext> context_;
-    CheckedPtr<SandboxFileSystemTestHelper> sandbox_file_system_;
+    SandboxFileSystemTestHelper* sandbox_file_system_;
     int64_t expected_usage_;
-    const CheckedPtr<ObfuscatedFileUtilTest> test_;
+    ObfuscatedFileUtilTest* const test_;
   };
 
   std::unique_ptr<UsageVerifyHelper> AllowUsageIncrease(

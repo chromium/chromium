@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -102,7 +101,7 @@ class OneShotNavigationObserver : public NavigationObserver {
   void Finish(Navigation* navigation);
 
   base::RunLoop run_loop_;
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
   bool completed_ = false;
   bool is_error_page_ = false;
   bool is_download_ = false;

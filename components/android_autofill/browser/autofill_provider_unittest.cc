@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/test_autofill_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +44,7 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override {}
 
-  CheckedPtr<AndroidAutofillManager> manager_;
+  AndroidAutofillManager* manager_;
 };
 
 class AutofillProviderTest : public testing::Test {

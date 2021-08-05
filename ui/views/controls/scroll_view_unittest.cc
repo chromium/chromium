@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/icu_test_util.h"
@@ -92,7 +91,7 @@ class ScrollViewTestApi {
   }
 
  private:
-  CheckedPtr<ScrollView> scroll_view_;
+  ScrollView* scroll_view_;
 };
 
 class ObserveViewDeletion : public ViewObserver {
@@ -108,7 +107,7 @@ class ObserveViewDeletion : public ViewObserver {
 
  private:
   base::ScopedObservation<View, ViewObserver> observer_{this};
-  CheckedPtr<View> deleted_view_ = nullptr;
+  View* deleted_view_ = nullptr;
 };
 
 }  // namespace test
@@ -386,7 +385,7 @@ class WidgetScrollViewTest : public test::WidgetTest,
     quit_closure_.Reset();
   }
 
-  CheckedPtr<Widget> widget_ = nullptr;
+  Widget* widget_ = nullptr;
 
   // Disable scrollbar hiding (i.e. disable overlay scrollbars) by default.
   bool use_overlay_scrollers_ = false;

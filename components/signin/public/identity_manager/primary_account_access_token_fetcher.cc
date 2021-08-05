@@ -27,7 +27,7 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
       callback_(std::move(callback)),
       mode_(mode),
       consent_(consent) {
-  identity_manager_observation_.Observe(identity_manager_.get());
+  identity_manager_observation_.Observe(identity_manager_);
   if (mode_ == Mode::kImmediate || AreCredentialsAvailable()) {
     StartAccessTokenRequest();
     return;

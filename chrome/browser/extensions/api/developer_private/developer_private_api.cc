@@ -368,7 +368,7 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
                           base::Unretained(this)));
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile_.get()));
+      content::Source<Profile>(profile_));
 }
 
 DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() {

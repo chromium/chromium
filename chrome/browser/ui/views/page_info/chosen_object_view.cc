@@ -68,10 +68,9 @@ ChosenObjectView::ChosenObjectView(
   UpdateIconImage(/*is_deleted=*/false);
   // Set flex rule, defined in `PageInfoRowView`, to wrap the subtitle text but
   // size the parent view to match the content.
-  SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(base::BindRepeating(
-          &PageInfoRowView::FlexRule, base::Unretained(row_view_.get()))));
+  SetProperty(views::kFlexBehaviorKey,
+              views::FlexSpecification(base::BindRepeating(
+                  &PageInfoRowView::FlexRule, base::Unretained(row_view_))));
 }
 
 void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {

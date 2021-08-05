@@ -18,7 +18,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -224,9 +223,9 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
   // Raw pointer is safe because IndexedDBContextImpl owns this object.
-  CheckedPtr<IndexedDBContextImpl> context_;
-  const CheckedPtr<IndexedDBClassFactory> class_factory_;
-  const CheckedPtr<base::Clock> clock_;
+  IndexedDBContextImpl* context_;
+  IndexedDBClassFactory* const class_factory_;
+  base::Clock* const clock_;
   base::Time earliest_sweep_;
   base::Time earliest_compaction_;
 

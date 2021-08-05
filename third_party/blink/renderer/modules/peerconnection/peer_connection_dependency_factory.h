@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_DEPENDENCY_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -187,7 +186,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
 
-  CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -167,8 +166,8 @@ class CourierRenderer final : public Renderer {
   // lock because it can be accessed from both media and render main thread.
   base::Lock time_lock_;
 
-  CheckedPtr<MediaResource> media_resource_;
-  CheckedPtr<RendererClient> client_;
+  MediaResource* media_resource_;
+  RendererClient* client_;
   std::unique_ptr<DemuxerStreamAdapter> audio_demuxer_stream_adapter_;
   std::unique_ptr<DemuxerStreamAdapter> video_demuxer_stream_adapter_;
 
@@ -186,8 +185,7 @@ class CourierRenderer final : public Renderer {
   PipelineStatusCallback init_workflow_done_callback_;
   base::OnceClosure flush_cb_;
 
-  const CheckedPtr<VideoRendererSink>
-      video_renderer_sink_;  // Outlives this class.
+  VideoRendererSink* const video_renderer_sink_;  // Outlives this class.
 
   // Current playback rate.
   double playback_rate_ = 0;
@@ -223,7 +221,7 @@ class CourierRenderer final : public Renderer {
   // Records events and measurements of interest.
   RendererMetricsRecorder metrics_recorder_;
 
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   // A timer that polls the DemuxerStreamAdapters periodically to measure
   // the data flow rates for metrics.

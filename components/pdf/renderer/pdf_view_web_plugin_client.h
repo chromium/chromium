@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_VIEW_WEB_PLUGIN_CLIENT_H_
 #define COMPONENTS_PDF_RENDERER_PDF_VIEW_WEB_PLUGIN_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "pdf/pdf_view_web_plugin.h"
 
 namespace content {
@@ -26,7 +25,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   void RecordComputedAction(const std::string& action) override;
 
  private:
-  const CheckedPtr<content::RenderFrame> render_frame_;
+  content::RenderFrame* const render_frame_;
 };
 
 }  // namespace pdf

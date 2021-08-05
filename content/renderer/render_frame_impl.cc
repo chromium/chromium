@@ -26,7 +26,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -746,7 +745,7 @@ class MHTMLPartsGenerationDelegate
 
  private:
   const mojom::SerializeAsMHTMLParams& params_;
-  CheckedPtr<std::unordered_set<std::string>> serialized_resources_uri_digests_;
+  std::unordered_set<std::string>* serialized_resources_uri_digests_;
 
   DISALLOW_COPY_AND_ASSIGN(MHTMLPartsGenerationDelegate);
 };
@@ -782,22 +781,22 @@ class MHTMLHandleWriterDelegate {
   void WriteContents(std::vector<WebThreadSafeData> mhtml_contents) {
     // Using base::Unretained is safe, as calls to WriteContents() always
     // deletes |handle| upon Finish().
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               base::BindOnce(&MHTMLHandleWriter::WriteContents,
-                                              base::Unretained(handle_.get()),
-                                              std::move(mhtml_contents)));
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&MHTMLHandleWriter::WriteContents,
+                       base::Unretained(handle_), std::move(mhtml_contents)));
   }
 
   // Within the context of the delegate, only for premature write finish.
   void Finish(mojom::MhtmlSaveStatus save_status) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&MHTMLHandleWriter::Finish,
-                       base::Unretained(handle_.get()), save_status));
+        base::BindOnce(&MHTMLHandleWriter::Finish, base::Unretained(handle_),
+                       save_status));
   }
 
  private:
-  CheckedPtr<MHTMLHandleWriter> handle_;
+  MHTMLHandleWriter* handle_;
 
   DISALLOW_COPY_AND_ASSIGN(MHTMLHandleWriterDelegate);
 };
@@ -1296,7 +1295,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
  private:
   // |RenderFrameImpl| owns |this|, so |frame_| is guaranteed to outlive |this|.
   // Will be nulled if |Detach()| has been called.
-  CheckedPtr<RenderFrameImpl> frame_;
+  RenderFrameImpl* frame_;
   bool committing_ = false;
   WebData data_;
   std::unique_ptr<blink::WebNavigationParams> navigation_params_;

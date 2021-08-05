@@ -7,7 +7,6 @@
 #include <thread>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -153,7 +152,7 @@ class CreateAndValidateSharedImageRepresentations {
   Mailbox mailbox() { return mailbox_; }
 
  private:
-  CheckedPtr<gles2::MailboxManagerImpl> mailbox_manager_;
+  gles2::MailboxManagerImpl* mailbox_manager_;
   gfx::Size size_;
   Mailbox mailbox_;
   std::unique_ptr<SharedImageBacking> backing_;

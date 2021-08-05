@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/error_page/common/error.h"
@@ -195,7 +194,7 @@ class NetErrorHelperCore {
 
   void Reload();
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // The last DnsProbeStatus received from the browser.
   error_page::DnsProbeStatus last_probe_status_;

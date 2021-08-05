@@ -318,7 +318,7 @@ void DiskCacheTestWithCache::TrimForTest(bool empty) {
     return;
 
   RunTaskForTest(base::BindOnce(&disk_cache::BackendImpl::TrimForTest,
-                                base::Unretained(cache_impl_.get()), empty));
+                                base::Unretained(cache_impl_), empty));
 }
 
 void DiskCacheTestWithCache::TrimDeletedListForTest(bool empty) {
@@ -327,7 +327,7 @@ void DiskCacheTestWithCache::TrimDeletedListForTest(bool empty) {
 
   RunTaskForTest(
       base::BindOnce(&disk_cache::BackendImpl::TrimDeletedListForTest,
-                     base::Unretained(cache_impl_.get()), empty));
+                     base::Unretained(cache_impl_), empty));
 }
 
 void DiskCacheTestWithCache::AddDelay() {

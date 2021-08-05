@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -171,7 +170,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   std::unique_ptr<IdentifiabilityStudyState> identifiability_study_state_;
 
   // Weak pointer to the MetricsStateManager.
-  const CheckedPtr<metrics::MetricsStateManager> metrics_state_manager_;
+  metrics::MetricsStateManager* const metrics_state_manager_;
 
   // The MetricsService that |this| is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;
@@ -199,7 +198,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 #if BUILDFLAG(ENABLE_PLUGINS)
   // The PluginMetricsProvider instance that was registered with
   // MetricsService. Has the same lifetime as |metrics_service_|.
-  CheckedPtr<PluginMetricsProvider> plugin_metrics_provider_ = nullptr;
+  PluginMetricsProvider* plugin_metrics_provider_ = nullptr;
 #endif
 
   // Subscription for receiving callbacks that a URL was opened from the

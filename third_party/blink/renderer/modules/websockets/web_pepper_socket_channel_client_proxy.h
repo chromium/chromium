@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <memory>
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/modules/websockets/web_pepper_socket_impl.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -64,7 +63,7 @@ class WebPepperSocketChannelClientProxy final
   }
 
  private:
-  CheckedPtr<WebPepperSocketImpl> impl_;
+  WebPepperSocketImpl* impl_;
 };
 
 }  // namespace blink

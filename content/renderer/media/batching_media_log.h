@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -74,7 +73,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // guarantees provided by MediaLog, since SendQueuedMediaEvents must also
   // be synchronized with respect to AddEvent.
   mutable base::Lock lock_;
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
   base::TimeTicks last_ipc_send_time_;
   std::vector<media::MediaLogRecord> queued_media_events_;
 

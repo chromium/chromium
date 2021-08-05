@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "headless/public/devtools/domains/page.h"
@@ -51,9 +50,9 @@ class HeadlessExample : public headless::HeadlessWebContents::Observer,
 
  private:
   // The headless browser instance. Owned by the headless library. See main().
-  CheckedPtr<headless::HeadlessBrowser> browser_;
+  headless::HeadlessBrowser* browser_;
   // Our tab. Owned by |browser_|.
-  CheckedPtr<headless::HeadlessWebContents> web_contents_;
+  headless::HeadlessWebContents* web_contents_;
   // The DevTools client used to control the tab.
   std::unique_ptr<headless::HeadlessDevToolsClient> devtools_client_;
   // A helper for creating weak pointers to this class.

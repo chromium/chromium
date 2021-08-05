@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_STATS_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -85,7 +84,7 @@ class PLATFORM_EXPORT RTCStats {
   // Reference to keep the report that owns |stats_| alive.
   const scoped_refptr<const webrtc::RTCStatsReport> stats_owner_;
   // Pointer to a stats object that is owned by |stats_owner_|.
-  const CheckedPtr<const webrtc::RTCStats> stats_;
+  const webrtc::RTCStats* const stats_;
   // Members of the |stats_| object, equivalent to |stats_->Members()|.
   const std::vector<const webrtc::RTCStatsMemberInterface*> stats_members_;
 };
@@ -121,7 +120,7 @@ class PLATFORM_EXPORT RTCStatsMember {
   // Reference to keep the report that owns |member_|'s stats object alive.
   const scoped_refptr<const webrtc::RTCStatsReport> stats_owner_;
   // Pointer to member of a stats object that is owned by |stats_owner_|.
-  const CheckedPtr<const webrtc::RTCStatsMemberInterface> member_;
+  const webrtc::RTCStatsMemberInterface* const member_;
 };
 
 using RTCStatsReportCallback =

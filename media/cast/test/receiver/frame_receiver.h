@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -143,7 +142,7 @@ class FrameReceiver final : public RtpPayloadFeedback {
   const scoped_refptr<CastEnvironment> cast_environment_;
 
   // Transport used to send data back.
-  const CheckedPtr<CastTransport> transport_;
+  CastTransport* const transport_;
 
   // Deserializes a packet into a RtpHeader + payload bytes.
   RtpParser packet_parser_;

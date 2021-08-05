@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_history.h"
@@ -57,7 +56,7 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
  private:
   std::unique_ptr<DownloadHistory> download_history_;
   std::unique_ptr<ExtensionDownloadsEventRouter> router_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDownloadCoreService);
 };

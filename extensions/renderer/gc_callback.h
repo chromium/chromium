@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -47,7 +46,7 @@ class GCCallback {
   void OnContextInvalidated();
 
   // The context which owns |object_|.
-  CheckedPtr<ScriptContext> context_;
+  ScriptContext* context_;
 
   // A task runner associated with the frame for the context.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

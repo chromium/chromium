@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -66,7 +65,7 @@ class SharedWorkerHelper
  private:
   friend class base::RefCountedThreadSafe<SharedWorkerHelper>;
 
-  CheckedPtr<content::StoragePartition> storage_partition_;
+  content::StoragePartition* storage_partition_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedWorkerHelper);
 };

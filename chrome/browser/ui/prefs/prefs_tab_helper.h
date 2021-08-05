@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -57,8 +56,8 @@ class PrefsTabHelper : public ThemeServiceObserver,
 
   void NotifyWebkitPreferencesChanged(const std::string& pref_name);
 
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<Profile> profile_;
+  content::WebContents* web_contents_;
+  Profile* profile_;
 #if !defined(OS_ANDROID)
   base::CallbackListSubscription default_zoom_level_subscription_;
   FontPrefChangeNotifier::Registrar font_change_registrar_;

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
@@ -49,7 +48,7 @@ class Device {
 
   const std::string serial_;
   std::string active_package_;
-  CheckedPtr<Adb> adb_;
+  Adb* adb_;
   int devtools_port_ = 0;
   base::OnceCallback<void()> release_callback_;
 
@@ -77,7 +76,7 @@ class DeviceManager {
 
   base::Lock devices_lock_;
   std::list<std::string> active_devices_;
-  CheckedPtr<Adb> adb_;
+  Adb* adb_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceManager);
 };

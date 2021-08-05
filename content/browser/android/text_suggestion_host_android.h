@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_ANDROID_H_
 #define CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -103,7 +102,7 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
   double DpToPxIfNeeded(double value);
 
   // Current RenderWidgetHostView connected to this instance. Can be null.
-  CheckedPtr<RenderWidgetHostViewAndroid> rwhva_;
+  RenderWidgetHostViewAndroid* rwhva_;
   JavaObjectWeakGlobalRef java_text_suggestion_host_;
   mojo::Remote<blink::mojom::TextSuggestionBackend> text_suggestion_backend_;
   std::unique_ptr<TextSuggestionHostMojoImplAndroid> text_suggestion_impl_;

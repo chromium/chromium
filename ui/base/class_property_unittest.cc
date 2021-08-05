@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,7 +43,7 @@ class TestCascadingProperty {
   ui::PropertyHandler* handler() { return handler_; }
 
  private:
-  CheckedPtr<ui::PropertyHandler> handler_;
+  ui::PropertyHandler* handler_;
 };
 
 void* TestProperty::last_deleted_ = nullptr;
@@ -110,7 +109,7 @@ class TestPropertyHandler : public PropertyHandler {
 
  private:
   int num_events_ = 0;
-  CheckedPtr<TestPropertyHandler> parent_ = nullptr;
+  TestPropertyHandler* parent_ = nullptr;
 };
 
 const int kDefaultIntValue = -2;

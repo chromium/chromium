@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_DEBUGGABLE_AUCTION_WORKLET_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_DEBUGGABLE_AUCTION_WORKLET_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
@@ -57,10 +56,10 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   // NotifyDestroyed() observers.
   ~DebuggableAuctionWorklet();
 
-  const CheckedPtr<RenderFrameHostImpl> owning_frame_ = nullptr;
+  RenderFrameHostImpl* const owning_frame_ = nullptr;
   const GURL url_;
-  CheckedPtr<auction_worklet::mojom::BidderWorklet> bidder_worklet_ = nullptr;
-  CheckedPtr<auction_worklet::mojom::SellerWorklet> seller_worklet_ = nullptr;
+  auction_worklet::mojom::BidderWorklet* bidder_worklet_ = nullptr;
+  auction_worklet::mojom::SellerWorklet* seller_worklet_ = nullptr;
 };
 
 }  // namespace content

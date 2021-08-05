@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -231,12 +230,12 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
  private:
   void SetInitialFocus(ui::WindowShowState show_state);
 
-  CheckedPtr<internal::NativeWidgetDelegate> delegate_;
+  internal::NativeWidgetDelegate* delegate_;
 
   // WARNING: set to NULL when destroyed. As the Widget is not necessarily
   // destroyed along with |window_| all usage of |window_| should first verify
   // non-NULL.
-  CheckedPtr<aura::Window> window_;
+  aura::Window* window_;
 
   // See class documentation for Widget in widget.h for a note about ownership.
   Widget::InitParams::Ownership ownership_;

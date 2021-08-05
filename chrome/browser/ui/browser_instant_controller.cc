@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -64,7 +63,7 @@ class TabReloader : public content::WebContentsUserData<TabReloader> {
     web_contents_->RemoveUserData(UserDataKey());
   }
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   base::WeakPtrFactory<TabReloader> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

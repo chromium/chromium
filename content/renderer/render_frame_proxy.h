@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_RENDER_FRAME_PROXY_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_canvas.h"
 #include "content/common/content_export.h"
@@ -156,14 +155,14 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   const int routing_id_;
 
   // Stores the WebRemoteFrame we are associated with.
-  CheckedPtr<blink::WebRemoteFrame> web_frame_ = nullptr;
+  blink::WebRemoteFrame* web_frame_ = nullptr;
 
   // Provides the mojo interface to this RenderFrameProxy's
   // RenderFrameProxyHost.
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_;
 
-  CheckedPtr<RenderViewImpl> render_view_ = nullptr;
+  RenderViewImpl* render_view_ = nullptr;
 
   service_manager::BinderRegistry binder_registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

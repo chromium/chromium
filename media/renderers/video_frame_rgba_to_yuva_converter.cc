@@ -5,7 +5,6 @@
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -98,7 +97,7 @@ class ScopedAcceleratedSkImage {
                            sk_sp<SkImage> sk_image)
       : provider_(provider), texture_id_(texture_id), sk_image_(sk_image) {}
 
-  const CheckedPtr<viz::RasterContextProvider> provider_;
+  viz::RasterContextProvider* const provider_;
   uint32_t texture_id_ = 0;
   sk_sp<SkImage> sk_image_;
 };

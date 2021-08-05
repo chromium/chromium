@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -351,7 +350,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // valid during its deletion. (Window's dtor notifies observers that may
   // attempt to reach back up to access this object which will be valid until
   // the end of the dtor).
-  CheckedPtr<Window> window_;  // Owning.
+  Window* window_;  // Owning.
 
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.
@@ -384,7 +383,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // The InputMethod instance used to process key events.
   // If owned it, it is created in GetInputMethod() method;
   // If not owned it, it is passed in through SetSharedInputMethod() method.
-  CheckedPtr<ui::InputMethod> input_method_;
+  ui::InputMethod* input_method_;
 
   // Whether the InputMethod instance is owned by this WindowTreeHost.
   bool owned_input_method_;

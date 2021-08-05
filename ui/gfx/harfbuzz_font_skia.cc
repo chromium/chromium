@@ -14,7 +14,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -38,7 +37,7 @@ struct FontData {
   explicit FontData(GlyphCache* glyph_cache) : glyph_cache_(glyph_cache) {}
 
   SkFont font_;
-  CheckedPtr<GlyphCache> glyph_cache_;
+  GlyphCache* glyph_cache_;
 };
 
 // Deletes the object at the given pointer after casting it to the given type.
@@ -204,7 +203,7 @@ class FontFuncs {
   hb_font_funcs_t* get() { return font_funcs_; }
 
  private:
-  CheckedPtr<hb_font_funcs_t> font_funcs_;
+  hb_font_funcs_t* font_funcs_;
 
   DISALLOW_COPY_AND_ASSIGN(FontFuncs);
 };
@@ -255,7 +254,7 @@ class TypefaceData {
   TypefaceData() = delete;
 
   GlyphCache glyphs_;
-  CheckedPtr<hb_face_t> face_ = nullptr;
+  hb_face_t* face_ = nullptr;
 
   // The skia typeface must outlive |face_| since it's being used by harfbuzz.
   sk_sp<SkTypeface> sk_typeface_;

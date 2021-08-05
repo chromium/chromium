@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -115,7 +114,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // will be posted to the UI thread before the MouseCursorOverlayController
   // deleter task.
 #if !defined(OS_ANDROID)
-  CheckedPtr<MouseCursorOverlayController> cursor_controller_ = nullptr;
+  MouseCursorOverlayController* cursor_controller_ = nullptr;
 #endif
 
   // We may not have a frame sink ID target at all times.

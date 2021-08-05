@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_BLOCK_SITE_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_BLOCK_SITE_TASK_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
@@ -31,7 +30,7 @@ class BlockSiteTask : public Task {
 
   void FinishedExecuting(bool result);
 
-  CheckedPtr<ExploreSitesStore> store_;  // outlives this class.
+  ExploreSitesStore* store_;  // outlives this class.
   std::string url_;
 
   bool complete_ = false;

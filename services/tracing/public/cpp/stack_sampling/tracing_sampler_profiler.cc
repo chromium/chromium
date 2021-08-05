@@ -13,7 +13,6 @@
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
 #include "base/hash/hash.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
@@ -206,7 +205,7 @@ class TracingSamplerProfilerDataSource
  private:
   // TODO(eseckler): Use GUARDED_BY annotations for all members below.
   base::Lock lock_;  // Protects subsequent members.
-  CheckedPtr<tracing::PerfettoProducer> producer_ GUARDED_BY(lock_) = nullptr;
+  tracing::PerfettoProducer* producer_ GUARDED_BY(lock_) = nullptr;
   std::set<TracingSamplerProfiler*> profilers_;
   bool is_startup_tracing_ = false;
   bool is_started_ = false;

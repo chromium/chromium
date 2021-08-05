@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -130,7 +129,7 @@ class ScriptInjection {
   std::unique_ptr<ScriptInjector> injector_;
 
   // The RenderFrame into which this should inject the script.
-  CheckedPtr<content::RenderFrame> render_frame_;
+  content::RenderFrame* render_frame_;
 
   // The associated injection host.
   std::unique_ptr<const InjectionHost> injection_host_;

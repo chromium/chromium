@@ -77,7 +77,7 @@ constexpr char kServiceWorkerContextClientScope[] =
 // worker thread.
 struct ServiceWorkerContextClient::WorkerContextData {
   explicit WorkerContextData(ServiceWorkerContextClient* owner)
-      : weak_factory(owner), proxy_weak_factory(owner->proxy_.get()) {}
+      : weak_factory(owner), proxy_weak_factory(owner->proxy_) {}
 
   ~WorkerContextData() { DCHECK(thread_checker.CalledOnValidThread()); }
 
@@ -336,7 +336,7 @@ void ServiceWorkerContextClient::WorkerContextDestroyed() {
   initiator_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&EmbeddedWorkerInstanceClientImpl::WorkerContextDestroyed,
-                     base::Unretained(owner_.get())));
+                     base::Unretained(owner_)));
 }
 
 void ServiceWorkerContextClient::CountFeature(

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
@@ -72,8 +71,8 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
                           bool access_token_fetched,
                           const std::string& access_token);
 
-  CheckedPtr<content::BrowserContext> context_ = nullptr;
-  CheckedPtr<AccessTokenFetcher> access_token_fetcher_ = nullptr;
+  content::BrowserContext* context_ = nullptr;
+  AccessTokenFetcher* access_token_fetcher_ = nullptr;
   std::unique_ptr<SimpleURLLoaderFactory> loader_factory_;
 
   // API key to add to the URL of unauthenticated requests.

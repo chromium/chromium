@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/network/network_status_listener.h"
 #include "components/download/public/common/download_export.h"
@@ -110,7 +109,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
 
   std::unique_ptr<Config> config_;
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // List of downloads that are auto-resumable. These will be resumed as soon as
   // network conditions becomes favorable.

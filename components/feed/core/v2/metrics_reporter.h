@@ -8,7 +8,6 @@
 #include <climits>
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/enums.h"
@@ -163,8 +162,8 @@ class MetricsReporter {
 
   StreamStats& ForStream(const StreamType& stream_type);
 
-  CheckedPtr<PrefService> profile_prefs_;
-  CheckedPtr<Delegate> delegate_ = nullptr;
+  PrefService* profile_prefs_;
+  Delegate* delegate_ = nullptr;
 
   StreamStats for_you_stats_;
   StreamStats web_feed_stats_;

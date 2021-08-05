@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -69,7 +68,7 @@ class PaintUnderInvalidationChecker {
   // Points to the next new paint chunk which will be checked when it's
   // complete.
   wtf_size_t new_chunk_index_ = kNotFound;
-  CheckedPtr<const DisplayItemClient> subsequence_client_ = nullptr;
+  const DisplayItemClient* subsequence_client_ = nullptr;
 };
 
 }  // namespace blink

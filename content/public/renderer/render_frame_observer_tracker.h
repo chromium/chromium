@@ -30,7 +30,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace content {
 
@@ -52,7 +51,7 @@ class RenderFrameObserverTracker {
   }
 
  private:
-  CheckedPtr<const RenderFrame> render_frame_;
+  const RenderFrame* render_frame_;
 
   static typename base::LazyInstance<
       std::map<const RenderFrame*, RenderFrameObserverTracker<T>*>>::

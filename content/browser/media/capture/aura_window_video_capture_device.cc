@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -171,11 +170,11 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   // Owned by FrameSinkVideoCaptureDevice. This will be valid for the life of
   // WindowTracker because the WindowTracker deleter task will be posted to the
   // UI thread before the MouseCursorOverlayController deleter task.
-  const CheckedPtr<MouseCursorOverlayController> cursor_controller_;
+  MouseCursorOverlayController* const cursor_controller_;
 
   const DesktopMediaID::Type target_type_;
 
-  CheckedPtr<aura::Window> target_window_ = nullptr;
+  aura::Window* target_window_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_visible_;

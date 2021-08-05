@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
@@ -34,7 +33,7 @@ class ScopedWebContentsTestHelper {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebContentsFactory factory_;
-  CheckedPtr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  content::WebContents* web_contents_;  // Weak. Owned by factory_.
 
   DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsTestHelper);
 };
@@ -69,9 +68,8 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
   views::ScopedViewsTestHelper views_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
 
-  CheckedPtr<PageInfoBubbleViewBase> bubble_ = nullptr;
-  CheckedPtr<views::Widget> parent_window_ =
-      nullptr;  // Weak. Owned by the NativeWidget.
+  PageInfoBubbleViewBase* bubble_ = nullptr;
+  views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SafetyTipPageInfoBubbleViewTest);

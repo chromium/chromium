@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
@@ -674,7 +673,7 @@ class RequestSameResourceOnComplete
   String DebugName() const override { return "RequestSameResourceOnComplete"; }
 
  private:
-  CheckedPtr<WebURLLoaderMockFactory> mock_factory_;
+  WebURLLoaderMockFactory* mock_factory_;
   bool notify_finished_called_;
   scoped_refptr<const SecurityOrigin> source_origin_;
 };
@@ -763,7 +762,7 @@ class ServeRequestsOnCompleteClient final
   String DebugName() const override { return "ServeRequestsOnCompleteClient"; }
 
  private:
-  CheckedPtr<WebURLLoaderMockFactory> mock_factory_;
+  WebURLLoaderMockFactory* mock_factory_;
 };
 
 // Regression test for http://crbug.com/594072.

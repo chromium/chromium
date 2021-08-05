@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom-blink.h"
@@ -93,7 +92,7 @@ class MockService : public sample::blink::Service {
   void GetPort(mojo::PendingReceiver<sample::blink::Port> receiver) override {}
 
  private:
-  CheckedPtr<T> test_;
+  T* test_;
 };
 
 }  // namespace

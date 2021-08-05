@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -104,14 +103,14 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
 
   // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // If the cardholder name is missing, request the name from the user before
   // saving the card. If the expiration date is missing, request the missing
   // data from the user before saving the card.
   AutofillClient::SaveCreditCardOptions options_;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // Delegate of a toast style popup showing in the top of the screen.
   std::unique_ptr<messages::MessageWrapper> message_;

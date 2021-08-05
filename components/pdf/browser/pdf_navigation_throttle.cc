@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
@@ -59,7 +58,7 @@ class WebContentsLifetimeHelper
   explicit WebContentsLifetimeHelper(content::WebContents* web_contents)
       : web_contents_(web_contents) {}
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_{this};
 };
 

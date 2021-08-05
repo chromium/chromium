@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
@@ -86,7 +85,7 @@ class TestDelegate : public FeedNetworkImpl::Delegate {
         .gaia;
   }
 
-  CheckedPtr<signin::IdentityTestEnvironment> identity_test_env_;
+  signin::IdentityTestEnvironment* identity_test_env_;
 };
 
 class FeedNetworkTest : public testing::Test {

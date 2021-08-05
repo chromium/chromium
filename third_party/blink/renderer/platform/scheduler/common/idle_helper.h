@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_IDLE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_IDLE_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -188,8 +187,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                                          base::TimeTicks new_deadline,
                                          base::TimeTicks optional_now);
 
-    CheckedPtr<SchedulerHelper> helper_;  // NOT OWNED
-    CheckedPtr<Delegate> delegate_;       // NOT OWNED
+    SchedulerHelper* helper_;  // NOT OWNED
+    Delegate* delegate_;       // NOT OWNED
 
     IdlePeriodState idle_period_state_;
     base::TimeTicks idle_period_deadline_;
@@ -227,8 +226,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   // Returns true if |state| represents being within a long idle period state.
   static bool IsInLongIdlePeriod(IdlePeriodState state);
 
-  CheckedPtr<SchedulerHelper> helper_;  // NOT OWNED
-  CheckedPtr<Delegate> delegate_;       // NOT OWNED
+  SchedulerHelper* helper_;  // NOT OWNED
+  Delegate* delegate_;       // NOT OWNED
   scoped_refptr<base::sequence_manager::TaskQueue> idle_queue_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 

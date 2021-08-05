@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/mru_cache.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -275,7 +274,7 @@ class GPU_GLES2_EXPORT SharedContextState
    private:
     gpu::CommandBufferId command_buffer_id_;
     const uint64_t client_tracing_id_;
-    const CheckedPtr<gpu::MemoryTracker::Observer> observer_;
+    gpu::MemoryTracker::Observer* const observer_;
     uint64_t size_ = 0;
   };
 
@@ -311,10 +310,10 @@ class GPU_GLES2_EXPORT SharedContextState
   MemoryTrackerObserver memory_tracker_observer_;
   MemoryTracker memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
-  const CheckedPtr<viz::VulkanContextProvider> vk_context_provider_;
-  const CheckedPtr<viz::MetalContextProvider> metal_context_provider_;
-  const CheckedPtr<viz::DawnContextProvider> dawn_context_provider_;
-  CheckedPtr<GrDirectContext> gr_context_ = nullptr;
+  viz::VulkanContextProvider* const vk_context_provider_;
+  viz::MetalContextProvider* const metal_context_provider_;
+  viz::DawnContextProvider* const dawn_context_provider_;
+  GrDirectContext* gr_context_ = nullptr;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;
@@ -324,19 +323,19 @@ class GPU_GLES2_EXPORT SharedContextState
   // Most recent surface that this ShareContextState was made current with.
   // Avoids a call to MakeCurrent with a different surface, if we don't
   // care which surface is current.
-  CheckedPtr<gl::GLSurface> last_current_surface_ = nullptr;
+  gl::GLSurface* last_current_surface_ = nullptr;
 
   scoped_refptr<gles2::FeatureInfo> feature_info_;
 
   // raster decoders and display compositor share this context_state_.
   std::unique_ptr<gles2::ContextState> context_state_;
 
-  CheckedPtr<gl::ProgressReporter> progress_reporter_ = nullptr;
+  gl::ProgressReporter* progress_reporter_ = nullptr;
   sk_sp<GrDirectContext> owned_gr_context_;
   std::unique_ptr<ServiceTransferCache> transfer_cache_;
   uint64_t skia_gr_cache_size_ = 0;
   std::vector<uint8_t> scratch_deserialization_buffer_;
-  CheckedPtr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
+  gpu::raster::GrShaderCache* gr_shader_cache_ = nullptr;
 
   // |need_context_state_reset| is set whenever Skia may have altered the
   // driver's GL state.

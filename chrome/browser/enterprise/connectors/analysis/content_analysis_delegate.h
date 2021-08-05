@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
@@ -299,7 +298,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   virtual safe_browsing::BinaryUploadService* GetBinaryUploadService();
 
   // The Profile corresponding to the pending scan request(s).
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // The GURL corresponding to the page where the scan triggered.
   GURL url_;
@@ -332,7 +331,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   CompletionCallback callback_;
 
   // Pointer to UI when enabled.
-  CheckedPtr<ContentAnalysisDialog> dialog_ = nullptr;
+  ContentAnalysisDialog* dialog_ = nullptr;
 
   // Access point to use to record UMA metrics.
   safe_browsing::DeepScanAccessPoint access_point_;

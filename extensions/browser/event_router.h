@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -465,11 +464,11 @@ class EventRouter : public KeyedService,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   // The ExtensionPrefs associated with |browser_context_|. May be NULL in
   // tests.
-  const CheckedPtr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* const extension_prefs_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
@@ -524,7 +523,7 @@ struct Event {
   // If non-null, then the event will not be sent to other BrowserContexts
   // unless the extension has permission (e.g. incognito tab update -> normal
   // tab only works if extension is allowed incognito access).
-  const CheckedPtr<content::BrowserContext> restrict_to_browser_context;
+  content::BrowserContext* const restrict_to_browser_context;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
@@ -595,7 +594,7 @@ struct EventListenerInfo {
   const std::string event_name;
   const std::string extension_id;
   const GURL listener_url;
-  const CheckedPtr<content::BrowserContext> browser_context;
+  content::BrowserContext* const browser_context;
   const int worker_thread_id;
   const int64_t service_worker_version_id;
 };

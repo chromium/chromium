@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_DEMUXER_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_DEMUXER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "media/base/demuxer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -75,14 +74,14 @@ class CastStreamingDemuxer final : public media::Demuxer {
 
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> original_task_runner_;
-  CheckedPtr<media::DemuxerHost> host_ = nullptr;
+  media::DemuxerHost* host_ = nullptr;
   std::unique_ptr<CastStreamingAudioDemuxerStream> audio_stream_;
   std::unique_ptr<CastStreamingVideoDemuxerStream> video_stream_;
 
   // Set to true if the Demuxer was successfully initialized.
   bool was_initialization_successful_ = false;
   media::PipelineStatusCallback initialized_cb_;
-  const CheckedPtr<CastStreamingReceiver> receiver_;
+  CastStreamingReceiver* const receiver_;
 };
 
 }  // namespace cast_streaming

@@ -103,7 +103,7 @@ SaveCardMessageConfirmController::GetOrCreateJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
   return java_object_ = Java_AutofillMessageConfirmFlowBridge_create(
-             env, reinterpret_cast<intptr_t>(delegate_.get()),
+             env, reinterpret_cast<intptr_t>(delegate_),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
 }  // namespace autofill

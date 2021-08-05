@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -106,7 +105,7 @@ class MediaStreamVideoTrackTest
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         false /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_.get()));
+    source_->SetPlatformSource(base::WrapUnique(mock_source_));
   }
 
   // Create a track that's associated with |mock_source_|.
@@ -148,7 +147,7 @@ class MediaStreamVideoTrackTest
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         false /* remote */);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_.get()));
+    source_->SetPlatformSource(base::WrapUnique(mock_source_));
   }
 
   void DepleteIOCallbacks() {
@@ -167,7 +166,7 @@ class MediaStreamVideoTrackTest
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> source_;
   // |mock_source_| is owned by |source_|.
-  CheckedPtr<MockMediaStreamVideoSource> mock_source_;
+  MockMediaStreamVideoSource* mock_source_;
   bool source_started_;
 };
 
@@ -206,7 +205,7 @@ class CheckThreadHelper {
 
  private:
   base::OnceClosure callback_;
-  CheckedPtr<bool> correct_;
+  bool* correct_;
   THREAD_CHECKER(thread_checker_);
 };
 

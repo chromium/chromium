@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
@@ -70,7 +69,7 @@ class DownloadRequestMaker {
   // Callback when the history service has retrieved the tab redirects.
   void OnGotTabRedirects(history::RedirectList redirect_list);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   std::unique_ptr<ClientDownloadRequest> request_;
   const scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   const std::unique_ptr<FileAnalyzer> file_analyzer_ =

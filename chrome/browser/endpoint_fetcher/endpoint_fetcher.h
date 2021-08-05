@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -145,7 +144,7 @@ class EndpointFetcher {
 
   // Members set in constructor
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* const identity_manager_;
   bool sanitize_response_;
 
   // Members set in Fetch

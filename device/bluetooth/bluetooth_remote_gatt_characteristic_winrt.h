@@ -16,7 +16,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -127,7 +126,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
 
   bool RemoveValueChangedHandler();
 
-  CheckedPtr<BluetoothRemoteGattService> service_;
+  BluetoothRemoteGattService* service_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                              GenericAttributeProfile::IGattCharacteristic>
       characteristic_;

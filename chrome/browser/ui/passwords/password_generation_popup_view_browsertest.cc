@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -71,7 +70,7 @@ class PasswordGenerationPopupViewTest : public InProcessBrowserTest {
   }
 
  protected:
-  CheckedPtr<TestPasswordGenerationPopupController> controller_;
+  TestPasswordGenerationPopupController* controller_;
 };
 
 // Regression test for crbug.com/400543. Verifying that moving the mouse in the

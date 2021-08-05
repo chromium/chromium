@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -181,7 +180,7 @@ class WorkerActivatedObserver
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
   base::RunLoop run_loop_;
-  CheckedPtr<ServiceWorkerContextWrapper> context_;
+  ServiceWorkerContextWrapper* context_;
   DISALLOW_COPY_AND_ASSIGN(WorkerActivatedObserver);
 };
 

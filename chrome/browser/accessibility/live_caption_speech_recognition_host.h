@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -72,7 +71,7 @@ class LiveCaptionSpeechRecognitionHost
   // does not exist.
   LiveCaptionController* GetLiveCaptionController();
 
-  CheckedPtr<content::RenderFrameHost> frame_host_;
+  content::RenderFrameHost* frame_host_;
 };
 
 }  // namespace captions

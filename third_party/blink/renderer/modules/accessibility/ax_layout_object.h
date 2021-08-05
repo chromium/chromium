@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_LAYOUT_OBJECT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -59,7 +58,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   Document* GetDocument() const override;
 
  protected:
-  CheckedPtr<LayoutObject> layout_object_;
+  LayoutObject* layout_object_;
 
   //
   // Overridden from AXObject.

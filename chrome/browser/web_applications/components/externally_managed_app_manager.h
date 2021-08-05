@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -185,11 +184,11 @@ class ExternallyManagedAppManager {
                                        bool succeeded);
   void OnAppSynchronized(ExternalInstallSource source, const GURL& app_url);
 
-  CheckedPtr<WebAppRegistrar> registrar_ = nullptr;
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
-  CheckedPtr<WebAppUiManager> ui_manager_ = nullptr;
-  CheckedPtr<InstallFinalizer> finalizer_ = nullptr;
-  CheckedPtr<WebAppInstallManager> install_manager_ = nullptr;
+  WebAppRegistrar* registrar_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
+  WebAppUiManager* ui_manager_ = nullptr;
+  InstallFinalizer* finalizer_ = nullptr;
+  WebAppInstallManager* install_manager_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>
       synchronize_requests_;

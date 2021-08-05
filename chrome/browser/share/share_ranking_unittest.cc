@@ -5,7 +5,6 @@
 #include "chrome/browser/share/share_ranking.h"
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/share/fake_share_history.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,8 +56,7 @@ class ShareRankingTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<ShareRanking> db_;
   leveldb_proto::test::FakeDB<proto::ShareRanking>::EntryMap backing_entries_;
-  CheckedPtr<leveldb_proto::test::FakeDB<proto::ShareRanking>> backing_db_ =
-      nullptr;
+  leveldb_proto::test::FakeDB<proto::ShareRanking>* backing_db_ = nullptr;
 };
 
 // The "easy case": the existing usage counts are the same as the current

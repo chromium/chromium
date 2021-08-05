@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
@@ -275,7 +274,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
   cc::PaintRecorder recorder;
 
   // Valid after SetUp() until SerializeAsSkPicture() is called.
-  CheckedPtr<cc::PaintCanvas> canvas{};
+  cc::PaintCanvas* canvas{};
 
  private:
   base::TestDiscardableMemoryAllocator test_allocator_;

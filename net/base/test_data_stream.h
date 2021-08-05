@@ -8,8 +8,6 @@
 // This is a class for generating an infinite stream of data which can be
 // verified independently to be the correct stream of data.
 
-#include "base/memory/checked_ptr.h"
-
 namespace net {
 
 class TestDataStream {
@@ -37,7 +35,7 @@ class TestDataStream {
   int index_;
   int bytes_remaining_;
   char buffer_[16];
-  CheckedPtr<char> buffer_ptr_;
+  char* buffer_ptr_;
 };
 
 }  // namespace net

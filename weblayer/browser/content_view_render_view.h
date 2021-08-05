@@ -10,7 +10,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "ui/gfx/native_widget_types.h"
@@ -81,7 +80,7 @@ class ContentViewRenderView : public content::CompositorClient {
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   bool use_transparent_background_ = false;
   bool requires_alpha_channel_ = false;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 
   std::unique_ptr<content::Compositor> compositor_;
 

@@ -33,7 +33,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -112,7 +111,7 @@ class IDBTransactionTest : public testing::Test,
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
-  CheckedPtr<WebURLLoaderMockFactory> url_loader_mock_factory_;
+  WebURLLoaderMockFactory* url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
   Persistent<IDBObjectStore> store_;

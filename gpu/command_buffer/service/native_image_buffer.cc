@@ -8,7 +8,6 @@
 
 #include <list>
 
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_image.h"
@@ -45,11 +44,11 @@ class NativeImageBufferEGL : public NativeImageBuffer {
     explicit ClientInfo(gl::GLImage* client);
     ~ClientInfo();
 
-    CheckedPtr<gl::GLImage> client;
+    gl::GLImage* client;
     bool needs_wait_before_read;
   };
   std::list<ClientInfo> client_infos_;
-  CheckedPtr<gl::GLImage> write_client_;
+  gl::GLImage* write_client_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeImageBufferEGL);
 };

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_USB_FRAME_USB_SERVICES_H_
 #define CHROME_BROWSER_USB_FRAME_USB_SERVICES_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/usb/web_usb_service_impl.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -45,7 +44,7 @@ class FrameUsbServices
   std::unique_ptr<WebUsbChooser> usb_chooser_;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
 
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
 
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };

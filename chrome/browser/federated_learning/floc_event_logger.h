@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -69,9 +68,9 @@ class FlocEventLogger {
   void IsSwaaNacAccountEnabled(CanLogEventCallback callback);
 
   // The following raw pointer references are guaranteed to outlive this object.
-  CheckedPtr<syncer::SyncService> sync_service_;
-  CheckedPtr<FlocRemotePermissionService> floc_remote_permission_service_;
-  CheckedPtr<syncer::UserEventService> user_event_service_;
+  syncer::SyncService* sync_service_;
+  FlocRemotePermissionService* floc_remote_permission_service_;
+  syncer::UserEventService* user_event_service_;
 
   base::WeakPtrFactory<FlocEventLogger> weak_ptr_factory_{this};
 };

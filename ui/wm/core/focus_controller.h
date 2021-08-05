@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_piece.h"
@@ -127,8 +126,8 @@ class WM_CORE_EXPORT FocusController : public ActivationClient,
   void WindowFocusedFromInputEvent(aura::Window* window,
                                    const ui::Event* event);
 
-  CheckedPtr<aura::Window> active_window_ = nullptr;
-  CheckedPtr<aura::Window> focused_window_ = nullptr;
+  aura::Window* active_window_ = nullptr;
+  aura::Window* focused_window_ = nullptr;
 
   bool updating_focus_ = false;
 

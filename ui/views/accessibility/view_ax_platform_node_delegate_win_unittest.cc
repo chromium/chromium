@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
@@ -620,8 +619,8 @@ class ViewAXPlatformNodeDelegateWinTableTest
 
  protected:
   std::unique_ptr<TestTableModel> model_;
-  CheckedPtr<Widget> widget_ = nullptr;
-  CheckedPtr<TableView> table_ = nullptr;  // Owned by parent.
+  Widget* widget_ = nullptr;
+  TableView* table_ = nullptr;  // Owned by parent.
 };
 
 TEST_F(ViewAXPlatformNodeDelegateWinTableTest, TableCellAttributes) {

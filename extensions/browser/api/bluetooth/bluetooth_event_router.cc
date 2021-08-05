@@ -60,9 +60,8 @@ BluetoothEventRouter::BluetoothEventRouter(content::BrowserContext* context)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   BLUETOOTH_LOG(USER) << "BluetoothEventRouter()";
   DCHECK(browser_context_);
-  registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::Source<content::BrowserContext>(browser_context_.get()));
+  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
+                 content::Source<content::BrowserContext>(browser_context_));
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
 }

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DRAWING_BUFFER_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DRAWING_BUFFER_TEST_HELPERS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
@@ -503,7 +502,7 @@ class DrawingBufferForTests : public DrawingBuffer {
         ContextProvider()->SharedImageInterface());
   }
 
-  CheckedPtr<bool> live_;
+  bool* live_;
 
   int RecycledBitmapCount() { return recycled_bitmaps_.size(); }
 };

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -268,7 +267,7 @@ class PageInfoBubbleViewBrowserTest
     EXPECT_CALL(*mock_sentiment_service_, PageInfoClosed);
   }
 
-  CheckedPtr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  MockTrustSafetySentimentService* mock_sentiment_service_;
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;

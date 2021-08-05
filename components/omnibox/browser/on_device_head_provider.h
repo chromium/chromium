@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -73,8 +72,8 @@ class OnDeviceHeadProvider : public AutocompleteProvider {
       const size_t provider_max_matches,
       std::unique_ptr<OnDeviceHeadProviderParams> params);
 
-  CheckedPtr<AutocompleteProviderClient> client_;
-  CheckedPtr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderClient* client_;
+  AutocompleteProviderListener* listener_;
 
   // The task runner dedicated for on device head model operations which is
   // added to offload expensive operations out of the UI sequence.

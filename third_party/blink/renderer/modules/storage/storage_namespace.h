@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_NAMESPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_NAMESPACE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom-blink-forward.h"
@@ -130,7 +129,7 @@ class MODULES_EXPORT StorageNamespace final
   HeapHashSet<WeakMember<InspectorDOMStorageAgent>> inspector_agents_;
 
   // Lives globally.
-  CheckedPtr<StorageController> controller_;
+  StorageController* controller_;
   String namespace_id_;
   // |StorageNamespace| is a per-Page object and doesn't have any
   // |ExecutionContext|.

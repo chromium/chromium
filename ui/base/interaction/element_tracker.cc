@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
@@ -123,7 +122,7 @@ class ElementTracker::GarbageCollector {
     void Add(ElementData* data) { gc_->AddCandidate(data); }
 
    private:
-    const CheckedPtr<GarbageCollector> gc_;
+    GarbageCollector* const gc_;
   };
 
   explicit GarbageCollector(ElementTracker* tracker) : tracker_(tracker) {}
@@ -151,7 +150,7 @@ class ElementTracker::GarbageCollector {
     candidates_.clear();
   }
 
-  const CheckedPtr<ElementTracker> tracker_;
+  ElementTracker* const tracker_;
   std::set<ElementData*> candidates_;
   int frame_count_ = 0;
 };

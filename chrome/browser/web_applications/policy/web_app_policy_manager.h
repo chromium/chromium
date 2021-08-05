@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -123,17 +122,16 @@ class WebAppPolicyManager {
   // policy.
   void PopulateDisabledWebAppsIdsLists();
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<PrefService> pref_service_;
+  Profile* profile_;
+  PrefService* pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class
   // (owned by WebAppProvider).
-  CheckedPtr<ExternallyManagedAppManager> externally_managed_app_manager_ =
-      nullptr;
-  CheckedPtr<WebAppRegistrar> app_registrar_ = nullptr;
-  CheckedPtr<AppRegistryController> app_registry_controller_ = nullptr;
-  CheckedPtr<SystemWebAppManager> web_app_manager_ = nullptr;
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
+  WebAppRegistrar* app_registrar_ = nullptr;
+  AppRegistryController* app_registry_controller_ = nullptr;
+  SystemWebAppManager* web_app_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;

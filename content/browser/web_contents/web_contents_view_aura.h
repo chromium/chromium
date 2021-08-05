@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -294,7 +293,7 @@ class CONTENT_EXPORT WebContentsViewAura
   std::unique_ptr<WindowObserver> window_observer_;
 
   // The WebContentsImpl whose contents we display.
-  CheckedPtr<WebContentsImpl> web_contents_;
+  WebContentsImpl* web_contents_;
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
@@ -302,7 +301,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<DropData> current_drop_data_;
 
-  CheckedPtr<WebDragDestDelegate> drag_dest_delegate_;
+  WebDragDestDelegate* drag_dest_delegate_;
 
   // We keep track of the RenderWidgetHost we're dragging over. If it changes
   // during a drag, we need to re-send the DragEnter message.

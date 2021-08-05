@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
@@ -147,9 +146,8 @@ class DeviceStatusListenerTest : public testing::Test {
   // Needed for network change notifier and power monitor.
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedPowerMonitorTestSource power_source_;
-  CheckedPtr<TestBatteryStatusListener> test_battery_listener_;
-  CheckedPtr<network::TestNetworkConnectionTracker>
-      test_network_connection_tracker_;
+  TestBatteryStatusListener* test_battery_listener_;
+  network::TestNetworkConnectionTracker* test_network_connection_tracker_;
 };
 
 // Verifies the initial state that the observer should be notified.

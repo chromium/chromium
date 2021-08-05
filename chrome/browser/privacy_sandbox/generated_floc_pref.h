@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_GENERATED_FLOC_PREF_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_GENERATED_FLOC_PREF_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,7 +30,7 @@ class GeneratedFlocPref : public extensions::settings_private::GeneratedPref {
   void OnSourcePreferencesChanged();
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   PrefChangeRegistrar user_prefs_registrar_;
 };

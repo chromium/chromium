@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -87,11 +86,11 @@ class CONTENT_EXPORT TouchPassthroughManager {
  private:
   // The main frame where touch events should be sent. Touch events
   // that target an iframe will be automatically forwarded.
-  CheckedPtr<RenderFrameHostImpl> rfh_;
+  RenderFrameHostImpl* rfh_;
 
   // Classes needed to generate touch events.
   std::unique_ptr<SyntheticGestureController> gesture_controller_;
-  CheckedPtr<SyntheticGestureTarget> gesture_target_ = nullptr;
+  SyntheticGestureTarget* gesture_target_ = nullptr;
   std::unique_ptr<SyntheticTouchDriver> touch_driver_;
 
   // Keeps track of whether or not touch is down, regardless of whether or

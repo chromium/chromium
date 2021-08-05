@@ -6,7 +6,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -120,7 +119,7 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
     }
   }
 
-  CheckedPtr<favicon::ContentFaviconDriver> driver_;
+  favicon::ContentFaviconDriver* driver_;
   GURL target_favicon_url_;
   base::RepeatingClosure quit_closure_;
 };

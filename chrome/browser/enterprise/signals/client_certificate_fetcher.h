@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/ssl/client_cert_identity.h"
 #include "url/gurl.h"
@@ -46,7 +45,7 @@ class ClientCertificateFetcher {
   void OnGetClientCertsComplete(net::ClientCertIdentityList client_certs);
 
   std::unique_ptr<net::ClientCertStore> client_cert_store_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   GURL requesting_url_;
 

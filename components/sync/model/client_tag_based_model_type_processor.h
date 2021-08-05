@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -243,7 +242,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   // ModelTypeSyncBridge linked to this processor. The bridge owns this
   // processor instance so the pointer should never become invalid.
-  CheckedPtr<ModelTypeSyncBridge> bridge_;
+  ModelTypeSyncBridge* bridge_;
 
   // Function to capture and upload a stack trace when an error occurs.
   const base::RepeatingClosure dump_stack_;

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -105,7 +104,7 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
     web_contents_->Close();
   }
 
-  CheckedPtr<WebContents> web_contents_;
+  WebContents* web_contents_;
   base::WeakPtrFactory<TabCloser> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

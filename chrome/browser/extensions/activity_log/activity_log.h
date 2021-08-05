@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread.h"
@@ -191,12 +190,12 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // The database policy object takes care of recording & looking up data:
   // data summarization, compression, and logging. There should only be a
   // database_policy_ if the Watchdog app is installed or flag is set.
-  CheckedPtr<ActivityLogDatabasePolicy> database_policy_;
+  ActivityLogDatabasePolicy* database_policy_;
   ActivityLogPolicy::PolicyType database_policy_type_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
-  CheckedPtr<ExtensionSystem> extension_system_;
+  ExtensionSystem* extension_system_;
 
   bool db_enabled_;  // Whether logging to disk is currently enabled.
   // testing_mode_ controls which policy is selected.

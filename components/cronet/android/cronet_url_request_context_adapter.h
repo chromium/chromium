@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_url_request_context.h"
@@ -140,7 +139,7 @@ class CronetURLRequestContextAdapter
   friend class TestUtil;
 
   // Native Cronet URL Request Context.
-  CheckedPtr<CronetURLRequestContext> context_;
+  CronetURLRequestContext* context_;
 
   // Java object that owns this CronetURLRequestContextAdapter.
   base::android::ScopedJavaGlobalRef<jobject> jcronet_url_request_context_;

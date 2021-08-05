@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/fetch_discount_worker.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
@@ -269,7 +268,7 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
   void SetExpectedTester(bool is_tester) { expected_tester_ = is_tester; }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::vector<CartDB::KeyAndValue> fake_loader_data_;
   cart_db::ChromeCartContentProto fake_updater_expected_data_;
   bool fake_updater_has_discounts_;

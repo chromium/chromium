@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
@@ -71,7 +70,7 @@ class ElementPositionGetter : public WebControllerWorker {
   // Maximum number of checks to run.
   int max_rounds_;
 
-  CheckedPtr<DevtoolsClient> devtools_client_ = nullptr;
+  DevtoolsClient* devtools_client_ = nullptr;
   std::string object_id_;
   int remaining_rounds_ = 0;
   Callback callback_;

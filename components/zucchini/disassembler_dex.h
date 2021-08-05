@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/type_dex.h"
@@ -239,7 +238,7 @@ class DisassemblerDex : public Disassembler {
 
   bool ParseHeader();
 
-  CheckedPtr<const dex::HeaderItem> header_ = nullptr;
+  const dex::HeaderItem* header_ = nullptr;
   int dex_version_ = 0;
   MapItemMap map_item_map_ = {};
   dex::MapItem string_map_item_ = {};

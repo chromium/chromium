@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -83,7 +82,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceKeepalive {
 
   void OnTimerExpired();
 
-  const CheckedPtr<ServiceReceiver> receiver_;
+  ServiceReceiver* const receiver_;
   const absl::optional<base::TimeDelta> idle_timeout_;
   absl::optional<base::OneShotTimer> idle_timer_;
   base::ObserverList<Observer> observers_;

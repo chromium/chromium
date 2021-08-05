@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_NEW_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_NEW_BUBBLE_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
@@ -56,7 +55,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
   void WebContentsDestroyed() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  CheckedPtr<PageSwitcherView> page_container_ = nullptr;
+  PageSwitcherView* page_container_ = nullptr;
 
   // The presenter that controls the Page Info UI.
   std::unique_ptr<PageInfo> presenter_;

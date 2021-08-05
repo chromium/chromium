@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -614,8 +613,8 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
 
  protected:
   // Weak references, for convenience.
-  CheckedPtr<Extension> app1_;
-  CheckedPtr<Extension> app2_;
+  Extension* app1_;
+  Extension* app2_;
 
  private:
   scoped_refptr<Extension> app1_scoped_;

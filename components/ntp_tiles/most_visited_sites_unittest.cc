@@ -18,7 +18,6 @@
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -354,7 +353,7 @@ class PopularSitesFactoryForTest {
   }
 
  private:
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -479,8 +478,8 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
   StrictMock<MockMostVisitedSitesObserver> mock_other_observer_;
   std::unique_ptr<MostVisitedSites> most_visited_sites_;
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<MockCustomLinksManager> mock_custom_links_;
-  CheckedPtr<MockIconCacher> icon_cacher_;
+  MockCustomLinksManager* mock_custom_links_;
+  MockIconCacher* icon_cacher_;
 };
 
 TEST_P(MostVisitedSitesTest, ShouldStartNoCallInConstructor) {

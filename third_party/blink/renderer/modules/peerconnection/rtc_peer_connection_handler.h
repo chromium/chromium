@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -448,7 +447,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // It is valid for the lifetime of this object, but is cleared when
   // StopAndUnregister() is called, in order to make sure it doesn't
   // interfere with garbage collection of the owner object.
-  CheckedPtr<RTCPeerConnectionHandlerClient> client_ = nullptr;
+  RTCPeerConnectionHandlerClient* client_ = nullptr;
   // True if this PeerConnection has been closed.
   // After the PeerConnection has been closed, this object may no longer
   // forward callbacks to blink.
@@ -465,7 +464,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // it doesn't prevent the factory from being garbage-collected.
   Persistent<PeerConnectionDependencyFactory> dependency_factory_;
 
-  CheckedPtr<blink::WebLocalFrame> frame_ = nullptr;
+  blink::WebLocalFrame* frame_ = nullptr;
 
   // Map and owners of track adapters. Every track that is in use by the peer
   // connection has an associated blink and webrtc layer representation of it.

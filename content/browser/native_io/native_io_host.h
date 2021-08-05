@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -151,8 +150,7 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
 
   // Raw pointer use is safe because NativeIOManager owns this NativeIOHost, and
   // therefore is guaranteed to outlive it.
-  const CheckedPtr<NativeIOManager> manager_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  NativeIOManager* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Schedules all operations involving file I/O done by this NativeIOHost.
   const scoped_refptr<base::TaskRunner> file_task_runner_;

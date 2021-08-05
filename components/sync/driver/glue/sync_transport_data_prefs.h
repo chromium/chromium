@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_member.h"
@@ -68,7 +67,7 @@ class SyncTransportDataPrefs {
 
  private:
   // Never null.
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -122,11 +121,11 @@ class SharingDeviceRegistration {
   std::set<sync_pb::SharingSpecificFields_EnabledFeatures> GetEnabledFeatures(
       bool supports_vapid) const;
 
-  CheckedPtr<PrefService> pref_service_;
-  CheckedPtr<SharingSyncPreference> sharing_sync_preference_;
-  CheckedPtr<VapidKeyManager> vapid_key_manager_;
-  CheckedPtr<instance_id::InstanceIDDriver> instance_id_driver_;
-  CheckedPtr<syncer::SyncService> sync_service_;
+  PrefService* pref_service_;
+  SharingSyncPreference* sharing_sync_preference_;
+  VapidKeyManager* vapid_key_manager_;
+  instance_id::InstanceIDDriver* instance_id_driver_;
+  syncer::SyncService* sync_service_;
   absl::optional<std::set<sync_pb::SharingSpecificFields_EnabledFeatures>>
       enabled_features_testing_value_;
 

@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1358,7 +1357,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     }
 
    private:
-    CheckedPtr<ScriptFailureEmbeddedWorkerInstanceClient> client_;
+    ScriptFailureEmbeddedWorkerInstanceClient* client_;
   };
 
   ServiceWorkerJobCoordinator* job_coordinator() {
@@ -1464,8 +1463,8 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     update_found_ = true;
   }
 
-  CheckedPtr<FakeEmbeddedWorkerInstanceClient>
-      initial_embedded_worker_instance_client_ = nullptr;
+  FakeEmbeddedWorkerInstanceClient* initial_embedded_worker_instance_client_ =
+      nullptr;
   scoped_refptr<ServiceWorkerRegistration> observed_registration_;
   std::vector<AttributeChangeLogEntry> attribute_change_log_;
   std::vector<StateChangeLogEntry> state_change_log_;
@@ -1506,7 +1505,7 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
 
  protected:
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
-  CheckedPtr<UpdateJobTestHelper> update_helper_;
+  UpdateJobTestHelper* update_helper_;
 };
 
 // Make sure that the same registration is used and the update_via_cache value

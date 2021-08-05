@@ -9,7 +9,6 @@
 #include <string.h>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -67,7 +66,7 @@ class AppendHandlerInstaller {
   }
 
  private:
-  CheckedPtr<UConverter> converter_;
+  UConverter* converter_;
 
   UConverterFromUCallback old_callback_;
   const void* old_context_;

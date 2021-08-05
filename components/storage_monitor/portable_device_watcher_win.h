@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -139,7 +138,7 @@ class PortableDeviceWatcherWin {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   // The notifications object to use to signal newly attached devices.
-  CheckedPtr<StorageMonitor::Receiver> storage_notifications_;
+  StorageMonitor::Receiver* storage_notifications_;
 
   // Used by |media_task_runner_| to create cancelable callbacks.
   base::WeakPtrFactory<PortableDeviceWatcherWin> weak_ptr_factory_{this};

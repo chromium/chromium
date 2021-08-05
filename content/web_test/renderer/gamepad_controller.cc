@@ -192,9 +192,9 @@ void GamepadController::MonitorImpl::GamepadStopPolling(
 void GamepadController::MonitorImpl::SetObserver(
     mojo::PendingRemote<device::mojom::GamepadObserver> observer) {
   observer_remote_.Bind(std::move(observer));
-  observer_remote_.set_disconnect_handler(base::BindOnce(
-      &GamepadController::OnConnectionError,
-      base::Unretained(controller_.get()), base::Unretained(this)));
+  observer_remote_.set_disconnect_handler(
+      base::BindOnce(&GamepadController::OnConnectionError,
+                     base::Unretained(controller_), base::Unretained(this)));
 
   // Notify the new observer of any GamepadConnected RPCs that it missed because
   // the SetObserver RPC wasn't processed in time. This happens during layout

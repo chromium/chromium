@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
@@ -135,7 +134,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   const int render_frame_id_;
 
   // The following fields can only be accessed on the IO thread.
-  CheckedPtr<MediaStreamManager> media_stream_manager_;
+  MediaStreamManager* media_stream_manager_;
 
   struct AudioInputCapabilitiesRequest;
   // Queued requests for audio-input capabilities.

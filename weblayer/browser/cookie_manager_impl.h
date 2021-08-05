@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_COOKIE_MANAGER_IMPL_H_
 #define WEBLAYER_BROWSER_COOKIE_MANAGER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -72,7 +71,7 @@ class CookieManagerImpl : public CookieManager {
   void OnCookieSet(SetCookieCallback callback, bool success);
   void OnFlushTimerFired();
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   mojo::ReceiverSet<network::mojom::CookieChangeListener,
                     std::unique_ptr<network::mojom::CookieChangeListener>>
       cookie_change_receivers_;

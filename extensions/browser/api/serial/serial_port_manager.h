@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -74,7 +73,7 @@ class SerialPortManager : public BrowserContextKeyedAPI {
     ReceiveParams(const ReceiveParams& other);
     ~ReceiveParams();
 
-    CheckedPtr<void> browser_context_id;
+    void* browser_context_id;
     std::string extension_id;
     scoped_refptr<ConnectionData> connections;
     int connection_id;
@@ -98,7 +97,7 @@ class SerialPortManager : public BrowserContextKeyedAPI {
   mojo::Remote<device::mojom::SerialPortManager> port_manager_;
   content::BrowserThread::ID thread_id_;
   scoped_refptr<ConnectionData> connections_;
-  const CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* const context_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<SerialPortManager> weak_factory_{this};

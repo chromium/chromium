@@ -38,7 +38,6 @@
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
@@ -117,7 +116,7 @@ class NET_EXPORT TransportSecurityPersister
   void CompleteLoad(const std::string& state);
   void OnWriteFinished(base::OnceClosure callback);
 
-  CheckedPtr<TransportSecurityState> transport_security_state_;
+  TransportSecurityState* transport_security_state_;
 
   // Helper for safely writing the data.
   base::ImportantFileWriter writer_;

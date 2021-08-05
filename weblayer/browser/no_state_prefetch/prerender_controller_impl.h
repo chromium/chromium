@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_CONTROLLER_IMPL_H_
 #define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_CONTROLLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "weblayer/public/prerender_controller.h"
 
@@ -38,7 +37,7 @@ class PrerenderControllerImpl : public PrerenderController {
   void DestroyAllContents() override;
 
  private:
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 }  // namespace weblayer

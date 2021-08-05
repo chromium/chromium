@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
@@ -68,10 +67,10 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   std::unique_ptr<ui::ScopedTargetHandler> target_handler_;
 
   // The host view.
-  const CheckedPtr<View> host_view_;
+  View* const host_view_;
 
   // Delegate used to get the InkDrop, etc.
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // The last user Event to trigger an InkDrop-ripple animation.
   std::unique_ptr<ui::LocatedEvent> last_ripple_triggering_event_;

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
@@ -182,7 +181,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int Init();
   void ExtractClientCert();
 
-  CheckedPtr<SSLServerContextImpl> context_;
+  SSLServerContextImpl* context_;
 
   NetLogWithSource net_log_;
 

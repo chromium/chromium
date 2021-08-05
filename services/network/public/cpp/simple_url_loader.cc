@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -565,7 +564,7 @@ class BodyReader {
   mojo::ScopedDataPipeConsumerHandle body_data_pipe_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   const int64_t max_body_size_;
   int64_t total_bytes_read_ = 0;
@@ -630,7 +629,7 @@ class BodyHandler {
   }
 
  private:
-  const CheckedPtr<SimpleURLLoaderImpl> simple_url_loader_;
+  SimpleURLLoaderImpl* const simple_url_loader_;
   bool const want_download_progress_;
 };
 
@@ -1163,7 +1162,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     body_reader_->Resume();
   }
 
-  CheckedPtr<SimpleURLLoaderStreamConsumer> stream_consumer_;
+  SimpleURLLoaderStreamConsumer* stream_consumer_;
 
   std::unique_ptr<BodyReader> body_reader_;
 

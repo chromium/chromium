@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -161,8 +160,7 @@ class ContentSettingsAgentImpl
   // |RendererContentSettingRules| object is owned by
   // |ChromeRenderThreadObserver|. In the tests it is owned by the caller of
   // |SetContentSettingRules|.
-  CheckedPtr<const RendererContentSettingRules> content_setting_rules_ =
-      nullptr;
+  const RendererContentSettingRules* content_setting_rules_ = nullptr;
 
   // Stores if images, scripts, and plugins have actually been blocked.
   base::flat_set<ContentSettingsType> content_blocked_;

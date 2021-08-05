@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -160,7 +159,7 @@ class MojoIpcServer final : public MojoIpcServerBase {
 
   void UntrackAllMessagePipes() override { receiver_set_.Clear(); }
 
-  CheckedPtr<Interface> interface_impl_;
+  Interface* interface_impl_;
   mojo::ReceiverSet<Interface> receiver_set_;
 };
 

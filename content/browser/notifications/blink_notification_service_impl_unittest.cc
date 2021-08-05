@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,7 +106,7 @@ class NotificationBrowserClient : public TestContentBrowserClient {
   }
 
  private:
-  CheckedPtr<MockPlatformNotificationService> platform_notification_service_;
+  MockPlatformNotificationService* platform_notification_service_;
 };
 
 }  // anonymous namespace

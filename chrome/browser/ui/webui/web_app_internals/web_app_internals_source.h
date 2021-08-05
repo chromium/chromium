@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -30,7 +29,7 @@ class WebAppInternalsSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback) override;
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_SOURCE_H_

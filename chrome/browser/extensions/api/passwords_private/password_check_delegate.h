@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -142,12 +141,12 @@ class PasswordCheckDelegate
       const password_manager::CredentialWithPassword& credential);
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // Used by |insecure_credentials_manager_| to obtain the list of saved
   // passwords.
-  CheckedPtr<password_manager::SavedPasswordsPresenter>
-      saved_passwords_presenter_ = nullptr;
+  password_manager::SavedPasswordsPresenter* saved_passwords_presenter_ =
+      nullptr;
 
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_;

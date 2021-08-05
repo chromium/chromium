@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_MANAGER_IMPL_H_
 #define CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_MANAGER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/video_tutorials/internal/tutorial_manager.h"
 
 #include <deque>
@@ -55,7 +54,7 @@ class TutorialManagerImpl : public TutorialManager {
                              std::vector<Tutorial> tutorials_excluding_summary);
 
   std::unique_ptr<TutorialStore> store_;
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // List of languages for which we have tutorials.
   std::vector<std::string> supported_languages_;

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_NG_TEXT_FRAGMENT_PAINT_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_NG_TEXT_FRAGMENT_PAINT_INFO_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -24,7 +23,7 @@ struct PLATFORM_EXPORT NGTextFragmentPaintInfo {
 
   // The |shape_result| may not contain all characters of the |text|, but is
   // guaranteed to contain |from| to |to|.
-  CheckedPtr<const ShapeResultView> shape_result;
+  const ShapeResultView* shape_result;
 };
 
 }  // namespace blink

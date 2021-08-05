@@ -9,7 +9,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8.h"
@@ -89,7 +88,7 @@ class GuestViewContainer {
   void CallElementResizeCallback(const gfx::Size& new_size);
 
   int element_instance_id_;
-  CheckedPtr<content::RenderFrame> render_frame_;
+  content::RenderFrame* render_frame_;
   std::unique_ptr<RenderFrameLifetimeObserver> render_frame_lifetime_observer_;
 
   bool in_destruction_;

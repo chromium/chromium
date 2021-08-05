@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -129,7 +128,7 @@ class FreezingVoteTokenPMRegistry
 
   VotingChannelsMap voting_channels_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  CheckedPtr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_);
+  Graph* graph_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PROTOCOL_HANDLER_MANAGER_H_
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -66,10 +65,10 @@ class ProtocolHandlerManager {
   void UnregisterOsProtocolHandlers(const AppId& app_id,
                                     base::OnceCallback<void(bool)> callback);
 
-  CheckedPtr<WebAppRegistrar> app_registrar_;
+  WebAppRegistrar* app_registrar_;
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 };
 
 }  // namespace web_app

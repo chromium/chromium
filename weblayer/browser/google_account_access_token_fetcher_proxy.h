@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"
 
 namespace weblayer {
@@ -40,7 +39,7 @@ class GoogleAccountAccessTokenFetcherProxy
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace weblayer

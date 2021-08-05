@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/settings/downloads_handler.h"
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -108,8 +107,7 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   DownloadsHandlerTest()
       : download_manager_(new content::MockDownloadManager()),
         handler_(&profile_) {
-    profile_.SetDownloadManagerForTesting(
-        base::WrapUnique(download_manager_.get()));
+    profile_.SetDownloadManagerForTesting(base::WrapUnique(download_manager_));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(&profile_);
     chrome_download_manager_delegate_ = delegate.get();
@@ -210,10 +208,9 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   content::TestWebUI test_web_ui_;
   TestingProfile profile_;
 
-  CheckedPtr<DownloadCoreService> service_;
-  CheckedPtr<content::MockDownloadManager>
-      download_manager_;  // Owned by |profile_|.
-  CheckedPtr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
+  DownloadCoreService* service_;
+  content::MockDownloadManager* download_manager_;  // Owned by |profile_|.
+  ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
 
   bool policy_enabled_;
   // Experimental flag for downloads connection.

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -234,7 +233,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // media thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Allows tests to disable the background rendering task.
   bool background_rendering_enabled_ = true;
@@ -249,7 +248,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   base::RetainingOneShotTimer force_begin_frames_timer_;
 
   // These values are only set and read on the compositor thread.
-  CheckedPtr<cc::VideoFrameProvider::Client> client_ = nullptr;
+  cc::VideoFrameProvider::Client* client_ = nullptr;
   bool rendering_ = false;
   bool rendered_last_frame_ = false;
   bool is_background_rendering_ = false;
@@ -276,7 +275,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
 
   // These values are updated and read from the media and compositor threads.
   base::Lock callback_lock_;
-  CheckedPtr<media::VideoRendererSink::RenderCallback> callback_
+  media::VideoRendererSink::RenderCallback* callback_
       GUARDED_BY(callback_lock_) = nullptr;
 
   // Assume 60Hz before the first UpdateCurrentFrame() call.

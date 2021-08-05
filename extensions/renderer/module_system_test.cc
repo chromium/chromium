@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -89,7 +88,7 @@ class GetAPINatives : public ObjectBackedNativeHandler {
   }
 
  private:
-  CheckedPtr<NativeExtensionBindingsSystem> bindings_system_ = nullptr;
+  NativeExtensionBindingsSystem* bindings_system_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GetAPINatives);
 };

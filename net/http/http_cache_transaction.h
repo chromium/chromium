@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -576,9 +575,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   State next_state_;
 
   // Initial request with which Start() was invoked.
-  CheckedPtr<const HttpRequestInfo> initial_request_;
+  const HttpRequestInfo* initial_request_;
 
-  CheckedPtr<const HttpRequestInfo> request_;
+  const HttpRequestInfo* request_;
 
   std::string method_;
   RequestPriority priority_;
@@ -589,7 +588,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // |external_validation_| contains the value of those headers.
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
-  CheckedPtr<HttpCache::ActiveEntry> entry_;
+  HttpCache::ActiveEntry* entry_;
   HttpCache::ActiveEntry* new_entry_;
   std::unique_ptr<HttpTransaction> network_trans_;
   CompletionOnceCallback callback_;  // Consumer's callback.
@@ -605,7 +604,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
-  CheckedPtr<const HttpResponseInfo> new_response_;
+  const HttpResponseInfo* new_response_;
   std::string cache_key_;
   Mode mode_;
   bool reading_;  // We are already reading. Never reverts to false once set.
@@ -671,7 +670,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // objects. Only relevant when establishing a WebSocket connection.
   // This is passed to the underlying network transaction. It is stored here in
   // case the transaction does not exist yet.
-  CheckedPtr<WebSocketHandshakeStreamBase::CreateHelper>
+  WebSocketHandshakeStreamBase::CreateHelper*
       websocket_handshake_stream_base_create_helper_;
 
   BeforeNetworkStartCallback before_network_start_callback_;

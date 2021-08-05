@@ -22,7 +22,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -167,7 +166,7 @@ class WrapperTestLauncherDelegate : public base::TestLauncherDelegate {
   void ProcessTestResults(std::vector<base::TestResult>& test_results,
                           base::TimeDelta elapsed_time) override;
 
-  CheckedPtr<content::TestLauncherDelegate> launcher_delegate_;
+  content::TestLauncherDelegate* launcher_delegate_;
 
   bool run_manual_tests_ = false;
 

@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -31,7 +30,7 @@ class LOCKABLE AAudioDestructionHelper {
 
   AAudioOutputStream* GetAndLockStream() EXCLUSIVE_LOCK_FUNCTION() {
     lock_.Acquire();
-    return is_closing_ ? nullptr : output_stream_.get();
+    return is_closing_ ? nullptr : output_stream_;
   }
 
   void UnlockStream() UNLOCK_FUNCTION() { lock_.Release(); }
@@ -46,8 +45,8 @@ class LOCKABLE AAudioDestructionHelper {
 
  private:
   base::Lock lock_;
-  CheckedPtr<AAudioOutputStream> output_stream_ GUARDED_BY(lock_) = nullptr;
-  CheckedPtr<AAudioStream> aaudio_stream_ GUARDED_BY(lock_) = nullptr;
+  AAudioOutputStream* output_stream_ GUARDED_BY(lock_) = nullptr;
+  AAudioStream* aaudio_stream_ GUARDED_BY(lock_) = nullptr;
   bool is_closing_ GUARDED_BY(lock_) = false;
 };
 

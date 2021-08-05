@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
@@ -171,7 +170,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Unowned pointer. Used to notify PassowrdAutofillAgent when values
   // in password fields are updated.
-  CheckedPtr<PasswordAutofillAgent> password_agent_;
+  PasswordAutofillAgent* password_agent_;
 
   mojo::AssociatedRemote<mojom::PasswordGenerationDriver>
       password_generation_client_;

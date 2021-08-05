@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
@@ -71,7 +70,7 @@ class LevelDBState : public base::RefCountedThreadSafe<LevelDBState> {
   ~LevelDBState();
 
   const std::unique_ptr<leveldb::Env> in_memory_env_;
-  CheckedPtr<const leveldb::Comparator> comparator_;
+  const leveldb::Comparator* comparator_;
   const std::unique_ptr<leveldb::DB> db_;
   const base::FilePath database_path_;
   const std::string name_for_tracing_;
@@ -82,7 +81,7 @@ class LevelDBState : public base::RefCountedThreadSafe<LevelDBState> {
   // |signal_on_destruction_| is written only once (when
   // |destruction_requested_| transitions from false to true) and read only once
   // in the destructor, so it is thread-compatible.
-  CheckedPtr<base::WaitableEvent> signal_on_destruction_ = nullptr;
+  base::WaitableEvent* signal_on_destruction_ = nullptr;
 };
 
 }  // namespace content

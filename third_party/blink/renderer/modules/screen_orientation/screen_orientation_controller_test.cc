@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -56,7 +55,7 @@ class MockLockOrientationCallback : public blink::WebLockOrientationCallback {
   }
 
  private:
-  CheckedPtr<LockOrientationResultHolder> results_;
+  LockOrientationResultHolder* results_;
 };
 
 class ScreenOrientationControllerTest : public PageTestBase {

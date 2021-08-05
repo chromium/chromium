@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_type.h"
 #include "url/gurl.h"
@@ -24,7 +23,7 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   LoadCommittedDetails& operator=(const LoadCommittedDetails&);
 
   // The committed entry. This will be the active entry in the controller.
-  CheckedPtr<NavigationEntry> entry;
+  NavigationEntry* entry;
 
   // The type of navigation that just occurred. Note that not all types of
   // navigations in the enum are valid here, since some of them don't actually
@@ -72,7 +71,7 @@ struct CONTENT_EXPORT LoadCommittedDetails {
 // Provides the details for a NOTIFICATION_NAV_ENTRY_CHANGED notification.
 struct EntryChangedDetails {
   // The changed navigation entry after it has been updated.
-  CheckedPtr<NavigationEntry> changed_entry;
+  NavigationEntry* changed_entry;
 
   // Indicates the current index in the back/forward list of the entry.
   int index;

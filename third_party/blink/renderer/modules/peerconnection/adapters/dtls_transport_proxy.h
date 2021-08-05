@@ -4,7 +4,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_DTLS_TRANSPORT_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_DTLS_TRANSPORT_PROXY_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -68,7 +67,7 @@ class DtlsTransportProxy : public webrtc::DtlsTransportObserverInterface {
 
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
-  CheckedPtr<webrtc::DtlsTransportInterface> dtls_transport_;
+  webrtc::DtlsTransportInterface* dtls_transport_;
   CrossThreadPersistent<Delegate> delegate_;
 };
 

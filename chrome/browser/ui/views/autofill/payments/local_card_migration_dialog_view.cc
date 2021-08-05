@@ -12,7 +12,6 @@
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -148,7 +147,7 @@ class TipTextContainer : public views::View {
   }
 
  private:
-  CheckedPtr<views::Label> tip_ = nullptr;
+  views::Label* tip_ = nullptr;
 };
 
 BEGIN_METADATA(TipTextContainer, views::View)
@@ -348,7 +347,7 @@ class LocalCardMigrationOfferView : public views::View {
         controller->GetLegalMessageLines(),
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
-            base::Unretained(controller_.get()))));
+            base::Unretained(controller_))));
     legal_message_container_->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
   }
@@ -372,13 +371,13 @@ class LocalCardMigrationOfferView : public views::View {
  private:
   friend class LocalCardMigrationDialogView;
 
-  CheckedPtr<LocalCardMigrationDialogController> controller_;
+  LocalCardMigrationDialogController* controller_;
 
-  CheckedPtr<views::View> card_list_view_ = nullptr;
+  views::View* card_list_view_ = nullptr;
 
   // The view that contains legal message and handles legal message links
   // clicking.
-  CheckedPtr<LegalMessageView> legal_message_container_ = nullptr;
+  LegalMessageView* legal_message_container_ = nullptr;
 };
 
 BEGIN_METADATA(LocalCardMigrationOfferView, views::View)

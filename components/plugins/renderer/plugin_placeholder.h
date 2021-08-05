@@ -6,7 +6,6 @@
 #define COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/plugins/renderer/webview_plugin.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -53,7 +52,7 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   blink::WebPluginParams plugin_params_;
-  CheckedPtr<WebViewPlugin> plugin_;
+  WebViewPlugin* plugin_;
 
   bool hidden_;
 

@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 
 namespace content {
@@ -50,8 +49,8 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 
-  CheckedPtr<CardNameFixFlowController> controller_;
-  CheckedPtr<content::WebContents> web_contents_;
+  CardNameFixFlowController* controller_;
+  content::WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowViewAndroid);
 };

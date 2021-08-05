@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "net/base/network_isolation_key.h"
@@ -124,7 +123,7 @@ class PrefetchManager {
   void TryToLaunchPrefetchJobs();
 
   base::WeakPtr<Delegate> delegate_;
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // All the jobs that haven't yet started. A job is removed once it starts.
   // Inflight jobs destruct once finished.
@@ -136,7 +135,7 @@ class PrefetchManager {
   // across all main frame URLs.
   size_t inflight_jobs_count_ = 0;
 
-  CheckedPtr<Observer> observer_for_testing_ = nullptr;
+  Observer* observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<PrefetchManager> weak_factory_{this};
 };

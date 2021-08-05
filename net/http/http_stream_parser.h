@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -210,7 +209,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   State io_state_;
 
   // Null when read state machine is invoked.
-  CheckedPtr<const HttpRequestInfo> request_;
+  const HttpRequestInfo* request_;
 
   // The request header data.  May include a merged request body.
   scoped_refptr<DrainableIOBuffer> request_headers_;
@@ -242,7 +241,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // cannot be safely accessed after reading the final set of headers, as the
   // caller of SendRequest may have been destroyed - this happens in the case an
   // HttpResponseBodyDrainer is used.
-  CheckedPtr<HttpResponseInfo> response_;
+  HttpResponseInfo* response_;
 
   // Time at which the first bytes of the first header response including
   // informational responses (1xx) are about to be parsed. This corresponds to
@@ -292,7 +291,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // The underlying socket, owned by the caller. The HttpStreamParser must be
   // destroyed before the caller destroys the socket, or relinquishes ownership
   // of it.
-  const CheckedPtr<StreamSocket> stream_socket_;
+  StreamSocket* const stream_socket_;
 
   // Whether the socket has already been used. Only used in HTTP/0.9 detection
   // logic.

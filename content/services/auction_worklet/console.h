@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "v8/include/v8.h"
 
 namespace auction_worklet {
@@ -50,7 +49,7 @@ class Console {
   void DoConsoleOut(const std::string& prefix,
                     const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  const CheckedPtr<AuctionV8Helper> v8_helper_;
+  AuctionV8Helper* const v8_helper_;
 };
 
 }  // namespace auction_worklet

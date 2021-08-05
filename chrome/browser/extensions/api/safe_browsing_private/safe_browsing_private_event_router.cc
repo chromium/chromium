@@ -979,8 +979,7 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
       now_exploded.month, now_exploded.day_of_month, now_exploded.hour,
       now_exploded.minute, now_exploded.second, now_exploded.millisecond);
 
-  auto* client =
-      settings.per_profile ? profile_client_.get() : browser_client_.get();
+  auto* client = settings.per_profile ? profile_client_ : browser_client_;
   base::Value wrapper(base::Value::Type::DICTIONARY);
   wrapper.SetStringKey("time", now_str);
   wrapper.SetKey(name, std::move(event));

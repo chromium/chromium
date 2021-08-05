@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_items_manager.h"
@@ -165,7 +164,7 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
 
-  CheckedPtr<MediaDialogDelegate> dialog_delegate_ = nullptr;
+  MediaDialogDelegate* dialog_delegate_ = nullptr;
 
   // True if the dialog was opened by |SetDialogDelegateForWebContents()|. The
   // value does not indicate whether the MediaDialogView is opened or not.

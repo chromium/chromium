@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -128,7 +127,7 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   // Whether a new frame is available that we should update to.
   bool has_pending_frame_;
 
-  CheckedPtr<GpuChannel> channel_;
+  GpuChannel* channel_;
   const int32_t route_id_;
   scoped_refptr<SharedContextState> context_state_;
   SequenceId sequence_;

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -166,7 +165,7 @@ class TestManagerProvider : public ConversionManager::Provider {
   ConversionManager* GetManager(WebContents* web_contents) const override;
 
  private:
-  CheckedPtr<ConversionManager> manager_ = nullptr;
+  ConversionManager* manager_ = nullptr;
 };
 
 // Test ConversionManager which can be injected into tests to monitor calls to a

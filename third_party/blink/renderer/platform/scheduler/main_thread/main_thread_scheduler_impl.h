@@ -12,7 +12,6 @@
 #include "base/atomicops.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "base/profiler/sample_metadata.h"
@@ -486,12 +485,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct AgentGroupSchedulerScope {
     std::unique_ptr<base::ThreadTaskRunnerHandleOverride>
         thread_task_runner_handle_override;
-    CheckedPtr<WebAgentGroupScheduler> previous_agent_group_scheduler;
-    CheckedPtr<WebAgentGroupScheduler> current_agent_group_scheduler;
+    WebAgentGroupScheduler* previous_agent_group_scheduler;
+    WebAgentGroupScheduler* current_agent_group_scheduler;
     scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner;
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner;
     const char* trace_event_scope_name;
-    CheckedPtr<void> trace_event_scope_id;
+    void* trace_event_scope_id;
   };
 
   void BeginAgentGroupSchedulerScope(
@@ -601,7 +600,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~RendererPauseHandleImpl() override;
 
    private:
-    CheckedPtr<MainThreadSchedulerImpl> scheduler_;  // NOT OWNED
+    MainThreadSchedulerImpl* scheduler_;  // NOT OWNED
   };
 
   // IdleHelper::Delegate implementation:

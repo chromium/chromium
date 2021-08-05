@@ -6,7 +6,6 @@
 #define COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_RECEIVER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -61,7 +60,7 @@ class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
       cast_streaming_receiver_receiver_{this};
 
   EnableReceiverCallback enable_receiver_callback_;
-  CheckedPtr<CastStreamingDemuxer> demuxer_ = nullptr;
+  CastStreamingDemuxer* demuxer_ = nullptr;
   bool is_demuxer_initialized_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

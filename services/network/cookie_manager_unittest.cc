@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
@@ -295,7 +294,7 @@ class SynchronousCookieManager {
   // No need to wrap Add*Listener and CloneInterface, since their use
   // is purely async.
  private:
-  CheckedPtr<mojom::CookieManager> cookie_service_;
+  mojom::CookieManager* cookie_service_;
   uint32_t callback_counter_;
 
   DISALLOW_COPY_AND_ASSIGN(SynchronousCookieManager);
@@ -2251,7 +2250,7 @@ class CookieChangeListener : public mojom::CookieChangeListener {
   std::vector<net::CookieChangeInfo> observed_changes_;
 
   // Loop to signal on receiving a notification if not null.
-  CheckedPtr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 
   mojo::Receiver<mojom::CookieChangeListener> receiver_;
 };

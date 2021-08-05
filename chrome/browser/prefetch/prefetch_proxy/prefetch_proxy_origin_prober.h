@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_ORIGIN_PROBER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
 #include "net/base/address_list.h"
@@ -82,10 +81,10 @@ class PrefetchProxyOriginProber {
       const absl::optional<net::AddressList>& resolved_addresses);
 
   // The current profile, not owned.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Used for testing to change the url passed to |Probe|. Must outlive |this|.
-  CheckedPtr<ProbeURLOverrideDelegate> override_delegate_ = nullptr;
+  ProbeURLOverrideDelegate* override_delegate_ = nullptr;
 
   // The TLS canary url checker.
   std::unique_ptr<AvailabilityProber> tls_canary_check_;

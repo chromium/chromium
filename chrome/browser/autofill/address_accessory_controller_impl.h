@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -67,7 +66,7 @@ class AddressAccessoryControllerImpl
   base::WeakPtr<ManualFillingController> GetManualFillingController();
 
   // The tab for which this class is scoped.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
@@ -76,7 +75,7 @@ class AddressAccessoryControllerImpl
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The data manager used to retrieve the profiles.
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

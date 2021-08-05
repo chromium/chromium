@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -58,7 +57,7 @@ class AudioPump : public AudioStream {
   base::ThreadChecker thread_checker_;
 
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
-  CheckedPtr<AudioStub> audio_stub_;
+  AudioStub* audio_stub_;
 
   std::unique_ptr<Core> core_;
 

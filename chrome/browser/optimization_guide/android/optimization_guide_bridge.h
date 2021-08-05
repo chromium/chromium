@@ -10,7 +10,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 
@@ -56,7 +55,7 @@ class OptimizationGuideBridge {
       const base::android::JavaRef<jbyteArray>& j_encoded_notification);
 
  private:
-  CheckedPtr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  OptimizationGuideKeyedService* optimization_guide_keyed_service_;
 };
 
 }  // namespace android

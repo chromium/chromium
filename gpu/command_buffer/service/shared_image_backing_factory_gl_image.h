@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_common.h"
@@ -113,7 +112,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLImage
   };
 
   // Factory used to generate GLImages for SCANOUT backings.
-  const CheckedPtr<ImageFactory> image_factory_ = nullptr;
+  ImageFactory* const image_factory_ = nullptr;
 
   BufferFormatInfo buffer_format_info_[viz::RESOURCE_FORMAT_MAX + 1];
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;

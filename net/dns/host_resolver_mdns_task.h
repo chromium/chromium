@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/dns/host_cache.h"
@@ -54,7 +53,7 @@ class HostResolverMdnsTask {
   void CheckCompletion(bool post_needed);
   void Complete(bool post_needed);
 
-  const CheckedPtr<MDnsClient> mdns_client_;
+  MDnsClient* const mdns_client_;
 
   const std::string hostname_;
 

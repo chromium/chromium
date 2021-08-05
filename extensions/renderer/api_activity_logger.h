@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "v8/include/v8.h"
@@ -74,7 +73,7 @@ class APIActivityLogger : public ObjectBackedNativeHandler {
   //
   // Valid to use so long as there's a valid ScriptContext associated with the
   // call-site.
-  CheckedPtr<IPCMessageSender> ipc_sender_ = nullptr;
+  IPCMessageSender* ipc_sender_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(APIActivityLogger);
 };

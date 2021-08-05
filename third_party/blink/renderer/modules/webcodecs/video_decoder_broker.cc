@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "media/base/decoder_factory.h"
@@ -305,7 +304,7 @@ class MediaVideoTaskWrapper {
   base::WeakPtr<CrossThreadVideoDecoderClient> weak_client_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsVideoDecoderSelector> selector_;
   std::unique_ptr<media::DecoderFactory> decoder_factory_;

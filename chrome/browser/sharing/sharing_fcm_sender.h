@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -139,12 +138,12 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   bool SetMessageSenderInfo(SharingMessage* message);
 
   std::unique_ptr<WebPushSender> web_push_sender_;
-  CheckedPtr<SharingMessageBridge> sharing_message_bridge_;
-  CheckedPtr<SharingSyncPreference> sync_preference_;
-  CheckedPtr<VapidKeyManager> vapid_key_manager_;
-  CheckedPtr<gcm::GCMDriver> gcm_driver_;
-  CheckedPtr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
-  CheckedPtr<syncer::SyncService> sync_service_;
+  SharingMessageBridge* sharing_message_bridge_;
+  SharingSyncPreference* sync_preference_;
+  VapidKeyManager* vapid_key_manager_;
+  gcm::GCMDriver* gcm_driver_;
+  syncer::LocalDeviceInfoProvider* local_device_info_provider_;
+  syncer::SyncService* sync_service_;
 
   base::WeakPtrFactory<SharingFCMSender> weak_ptr_factory_{this};
 };

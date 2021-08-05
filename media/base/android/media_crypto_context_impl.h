@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/media_export.h"
 
@@ -32,7 +31,7 @@ class MEDIA_EXPORT MediaCryptoContextImpl final : public MediaCryptoContext {
   void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb) override;
 
  private:
-  const CheckedPtr<MediaDrmBridge> media_drm_bridge_;
+  MediaDrmBridge* const media_drm_bridge_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaCryptoContextImpl);
 };

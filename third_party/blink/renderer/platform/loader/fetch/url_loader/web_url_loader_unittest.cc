@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -411,7 +410,7 @@ class WebURLLoaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle body_handle_;
   std::unique_ptr<TestWebURLLoaderClient> client_;
-  CheckedPtr<MockResourceRequestSender> sender_ = nullptr;
+  MockResourceRequestSender* sender_ = nullptr;
 };
 
 TEST_F(WebURLLoaderTest, Success) {

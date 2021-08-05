@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 
 class RecentTabsPagePrefs {
@@ -42,7 +41,7 @@ class RecentTabsPagePrefs {
  private:
   virtual ~RecentTabsPagePrefs();
 
-  CheckedPtr<Profile> profile_;  // weak
+  Profile* profile_;  // weak
   DISALLOW_COPY_AND_ASSIGN(RecentTabsPagePrefs);
 };
 

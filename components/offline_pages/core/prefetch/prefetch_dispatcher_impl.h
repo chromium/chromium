@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
@@ -139,8 +138,8 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
                             bool is_first_attempt,
                             const std::string& favicon_data);
 
-  CheckedPtr<PrefService> pref_service_;
-  CheckedPtr<PrefetchService> service_;
+  PrefService* pref_service_;
+  PrefetchService* service_;
   TaskQueue task_queue_;
   bool needs_pipeline_processing_ = false;
   bool suspended_ = false;

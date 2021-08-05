@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/resources/ui_resource_client.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
@@ -84,7 +83,7 @@ class LayerTitleCache {
   int spinner_resource_id_;
   int spinner_incognito_resource_id_;
 
-  CheckedPtr<ui::ResourceManager> resource_manager_;
+  ui::ResourceManager* resource_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerTitleCache);
 };

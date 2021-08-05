@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
@@ -184,9 +183,9 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
-  CheckedPtr<ClientSideDetectionService> csd_service_;
+  ClientSideDetectionService* csd_service_;
   // The WebContents that the class is observing.
-  CheckedPtr<content::WebContents> tab_;
+  content::WebContents* tab_;
   // These pointers may be nullptr if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<BaseUIManager> ui_manager_;
@@ -204,12 +203,12 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   std::unique_ptr<Delegate> delegate_;
 
   // Unowned object used for getting preference settings.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;

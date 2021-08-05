@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/time.h"
@@ -128,7 +127,7 @@ class SyncManagerImpl
 
   const std::string name_;
 
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -164,7 +163,7 @@ class SyncManagerImpl
 
   ProtocolEventBuffer protocol_event_buffer_;
 
-  CheckedPtr<SyncEncryptionHandler> sync_encryption_handler_;
+  SyncEncryptionHandler* sync_encryption_handler_;
 
   std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy_;
 

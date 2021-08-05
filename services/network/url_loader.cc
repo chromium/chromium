@@ -17,7 +17,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -733,9 +732,9 @@ class URLLoader::FileOpenerForUpload {
 
   // The paths of files for upload
   const std::vector<base::FilePath> paths_;
-  const CheckedPtr<URLLoader> url_loader_;
+  URLLoader* const url_loader_;
   const int32_t process_id_;
-  const CheckedPtr<mojom::NetworkContextClient> network_context_client_;
+  mojom::NetworkContextClient* const network_context_client_;
   SetUpUploadCallback set_up_upload_callback_;
   // The files opened so far.
   std::vector<base::File> opened_files_;

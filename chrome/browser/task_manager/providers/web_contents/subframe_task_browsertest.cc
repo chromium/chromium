@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -148,7 +147,7 @@ class HungWebContentsTaskManager : public MockWebContentsTaskManager {
   Task* unresponsive_task() { return unresponsive_task_; }
 
  private:
-  CheckedPtr<Task> unresponsive_task_;
+  Task* unresponsive_task_;
 };
 
 // If sites are isolated, makes sure that subframe tasks can react to

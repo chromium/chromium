@@ -13,7 +13,6 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -818,7 +817,7 @@ class BrowserView : public BrowserWindow,
   void MaybeShowWebUITabStripIPH();
 
   // The BrowserFrame that hosts this view.
-  CheckedPtr<BrowserFrame> frame_ = nullptr;
+  BrowserFrame* frame_ = nullptr;
 
   // The Browser object we are associated with.
   std::unique_ptr<Browser> browser_;
@@ -850,16 +849,16 @@ class BrowserView : public BrowserWindow,
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
   // bar. Stacked top in the view hiearachy so it can be used to slide out
   // the top views in immersive fullscreen.
-  CheckedPtr<TopContainerView> top_container_ = nullptr;
+  TopContainerView* top_container_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
-  CheckedPtr<TabStripRegionView> tab_strip_region_view_ = nullptr;
+  TabStripRegionView* tab_strip_region_view_ = nullptr;
 
   // The TabStrip.
-  CheckedPtr<TabStrip> tabstrip_ = nullptr;
+  TabStrip* tabstrip_ = nullptr;
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
-  CheckedPtr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
+  WebUITabStripContainerView* webui_tab_strip_ = nullptr;
 
   // Allows us to react to changes in accessibility mode.
   // TODO(dfried): this is only used to disable WebUI tabstrip (see above) while
@@ -869,51 +868,51 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
 
   // The Toolbar containing the navigation buttons, menus and the address bar.
-  CheckedPtr<ToolbarView> toolbar_ = nullptr;
+  ToolbarView* toolbar_ = nullptr;
 
   // The OverlayView for the widget, which is used to host |top_container_|
   // during immersive reveal.
   std::unique_ptr<views::ViewTargeterDelegate> overlay_view_targeter_;
-  CheckedPtr<views::View> overlay_view_ = nullptr;
+  views::View* overlay_view_ = nullptr;
 
   // The Bookmark Bar View for this window. Lazily created. May be null for
   // non-tabbed browsers like popups. May not be visible.
   std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
 
   // Separator between top container and contents.
-  CheckedPtr<views::View> contents_separator_ = nullptr;
+  views::View* contents_separator_ = nullptr;
 
   // Loading bar (part of top container for / WebUI tab strip).
-  CheckedPtr<TopContainerLoadingBar> loading_bar_ = nullptr;
+  TopContainerLoadingBar* loading_bar_ = nullptr;
 
   // The do-nothing view which controls the z-order of the find bar widget
   // relative to views which paint into layers and views with an associated
   // NativeView.
-  CheckedPtr<View> find_bar_host_view_ = nullptr;
+  View* find_bar_host_view_ = nullptr;
 
   // The download shelf.
-  CheckedPtr<DownloadShelf> download_shelf_ = nullptr;
+  DownloadShelf* download_shelf_ = nullptr;
 
   // The InfoBarContainerView that contains InfoBars for the current tab.
-  CheckedPtr<InfoBarContainerView> infobar_container_ = nullptr;
+  InfoBarContainerView* infobar_container_ = nullptr;
 
   // The view that contains the selected WebContents.
-  CheckedPtr<ContentsWebView> contents_web_view_ = nullptr;
+  ContentsWebView* contents_web_view_ = nullptr;
 
   // The view that contains devtools window for the selected WebContents.
-  CheckedPtr<views::WebView> devtools_web_view_ = nullptr;
+  views::WebView* devtools_web_view_ = nullptr;
 
   // The view managing the devtools and contents positions.
   // Handled by ContentsLayoutManager.
-  CheckedPtr<views::View> contents_container_ = nullptr;
+  views::View* contents_container_ = nullptr;
 
   // The side panel aligned to the right side of the browser window.
-  CheckedPtr<SidePanel> right_aligned_side_panel_ = nullptr;
-  CheckedPtr<views::View> right_aligned_side_panel_separator_ = nullptr;
+  SidePanel* right_aligned_side_panel_ = nullptr;
+  views::View* right_aligned_side_panel_separator_ = nullptr;
 
   // The side panel aligned to the left side of the browser window.
-  CheckedPtr<SidePanel> left_aligned_side_panel_ = nullptr;
-  CheckedPtr<views::View> left_aligned_side_panel_separator_ = nullptr;
+  SidePanel* left_aligned_side_panel_ = nullptr;
+  views::View* left_aligned_side_panel_separator_ = nullptr;
 
   // A controller that handles extensions hosted in the left aligned side panel.
   std::unique_ptr<ExtensionsSidePanelController>
@@ -921,7 +920,7 @@ class BrowserView : public BrowserWindow,
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.
-  CheckedPtr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
+  ToolbarButtonProvider* toolbar_button_provider_ = nullptr;
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;

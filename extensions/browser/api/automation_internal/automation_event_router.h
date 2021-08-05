@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -131,12 +130,12 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   content::NotificationRegistrar registrar_;
   std::vector<AutomationListener> listeners_;
 
-  CheckedPtr<content::BrowserContext> active_context_;
+  content::BrowserContext* active_context_;
 
   // The caller of RegisterRemoteRouter is responsible for ensuring that this
   // pointer is valid. The remote router must be unregistered with
   // RegisterRemoteRouter(nullptr) before it is destroyed.
-  CheckedPtr<AutomationEventRouterInterface> remote_router_ = nullptr;
+  AutomationEventRouterInterface* remote_router_ = nullptr;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

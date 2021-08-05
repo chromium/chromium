@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 
 namespace extensions {
 namespace image_writer {
@@ -77,7 +76,7 @@ class SingleFileTarReader {
   // is used. |length| must greater than 8.
   static uint64_t ReadOctalNumber(const char* buffer, size_t length);
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   uint64_t total_bytes_ = 0;
   uint64_t curr_bytes_ = 0;

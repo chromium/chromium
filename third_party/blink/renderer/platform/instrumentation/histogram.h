@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_HISTOGRAM_H_
 
 #include <stdint.h>
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
@@ -36,7 +35,7 @@ class PLATFORM_EXPORT CustomCountHistogram {
  protected:
   explicit CustomCountHistogram(base::HistogramBase*);
 
-  CheckedPtr<base::HistogramBase> histogram_;
+  base::HistogramBase* histogram_;
 };
 
 template <typename Derived>

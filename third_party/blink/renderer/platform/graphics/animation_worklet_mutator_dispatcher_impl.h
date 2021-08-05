@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -141,7 +140,7 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcherImpl final
 
   // The MutatorClient owns (std::unique_ptr) us, so this pointer is
   // valid as long as this class exists.
-  CheckedPtr<MutatorClient> client_;
+  MutatorClient* client_;
 
   // Map of mutator scope IDs to mutator input. The Mutate methods safeguards
   // against concurrent calls (important once async mutations are introduced) by

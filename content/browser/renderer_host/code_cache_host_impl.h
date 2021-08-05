@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -104,8 +103,8 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   const int render_process_id_;
 
   // Used to override the CacheStorageControl from the RHPI as needed.
-  CheckedPtr<storage::mojom::CacheStorageControl>
-      cache_storage_control_for_testing_ = nullptr;
+  storage::mojom::CacheStorageControl* cache_storage_control_for_testing_ =
+      nullptr;
 
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
 

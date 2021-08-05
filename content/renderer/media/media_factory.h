@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -167,7 +166,7 @@ class MediaFactory {
 
   // The render frame we're helping. RenderFrameImpl owns this factory, so the
   // pointer will always be valid.
-  CheckedPtr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
 
   // The media interface provider attached to this frame, lazily initialized.
   std::unique_ptr<MediaInterfaceFactory> media_interface_factory_;
@@ -178,12 +177,11 @@ class MediaFactory {
   // Handy pointer to RenderFrame's browser interface broker. Null until
   // SetupMojo(). Lifetime matches that of the owning |render_frame_|. Will
   // always be valid once assigned.
-  CheckedPtr<blink::BrowserInterfaceBrokerProxy> interface_broker_ = nullptr;
+  blink::BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
 
   // Manages play, pause notifications for WebMediaPlayer implementations; its
   // lifetime is tied to the RenderFrame via the RenderFrameObserver interface.
-  CheckedPtr<media::RendererWebMediaPlayerDelegate> media_player_delegate_ =
-      nullptr;
+  media::RendererWebMediaPlayerDelegate* media_player_delegate_ = nullptr;
 
   // The CDM and decoder factory attached to this frame, lazily initialized.
   std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
@@ -122,9 +121,9 @@ class CastMediaNotificationItem
   // The notification is shown when active.
   bool is_active_ = true;
 
-  const CheckedPtr<MediaItemsManager> items_manager_;
-  CheckedPtr<media_message_center::MediaNotificationView> view_ = nullptr;
-  const CheckedPtr<Profile> profile_;
+  MediaItemsManager* const items_manager_;
+  media_message_center::MediaNotificationView* view_ = nullptr;
+  Profile* const profile_;
 
   std::unique_ptr<CastMediaSessionController> session_controller_;
   const media_router::MediaRoute::Id media_route_id_;

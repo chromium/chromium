@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_PERMISSION_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_PERMISSION_CONTENT_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/view.h"
 
@@ -46,16 +45,16 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
   void OnRememberSettingPressed();
   void PermissionChanged();
 
-  CheckedPtr<PageInfo> presenter_ = nullptr;
+  PageInfo* presenter_ = nullptr;
   ContentSettingsType type_;
-  CheckedPtr<ChromePageInfoUiDelegate> ui_delegate_ = nullptr;
+  ChromePageInfoUiDelegate* ui_delegate_ = nullptr;
   PageInfo::PermissionInfo permission_;
 
-  CheckedPtr<NonAccessibleImageView> icon_ = nullptr;
-  CheckedPtr<views::Label> title_ = nullptr;
-  CheckedPtr<views::Label> state_label_ = nullptr;
-  CheckedPtr<views::ToggleButton> toggle_button_ = nullptr;
-  CheckedPtr<views::Checkbox> remember_setting_ = nullptr;
+  NonAccessibleImageView* icon_ = nullptr;
+  views::Label* title_ = nullptr;
+  views::Label* state_label_ = nullptr;
+  views::ToggleButton* toggle_button_ = nullptr;
+  views::Checkbox* remember_setting_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_PERMISSION_CONTENT_VIEW_H_

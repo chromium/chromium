@@ -18,7 +18,6 @@
 #include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -524,7 +523,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 #endif
   }
 
-  CheckedPtr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory_;
 #if defined(OS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
 #endif
@@ -2082,7 +2081,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
     EXPECT_TRUE(cert.find(substring) != cert.npos);
   }
 
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorContentBrowserClientTest);
 };
@@ -4115,10 +4114,10 @@ class UVTestAuthenticatorClientDelegate
   void FinishCollectToken() override {}
 
  private:
-  CheckedPtr<bool> collected_pin_;
-  CheckedPtr<uint32_t> min_pin_length_;
+  bool* collected_pin_;
+  uint32_t* min_pin_length_;
   base::OnceClosure bio_callback_;
-  CheckedPtr<bool> did_bio_enrollment_;
+  bool* did_bio_enrollment_;
   bool cancel_bio_enrollment_;
 };
 
@@ -4214,7 +4213,7 @@ class UVAuthenticatorImplTest : public AuthenticatorImplTest {
   UVTestAuthenticatorContentBrowserClient test_client_;
 
  private:
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UVAuthenticatorImplTest);
 };
@@ -4280,7 +4279,7 @@ class PINTestAuthenticatorRequestDelegate
  private:
   const bool supports_pin_;
   std::list<PINExpectation> expected_;
-  const CheckedPtr<absl::optional<InterestingFailureReason>> failure_reason_;
+  absl::optional<InterestingFailureReason>* const failure_reason_;
   DISALLOW_COPY_AND_ASSIGN(PINTestAuthenticatorRequestDelegate);
 };
 
@@ -4373,7 +4372,7 @@ class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
   }
 
  private:
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PINAuthenticatorImplTest);
 };
@@ -5848,7 +5847,7 @@ class BlockingAuthenticatorRequestDelegate
   void Cancel() { std::move(cancel_callback_).Run(); }
 
  private:
-  const CheckedPtr<base::OnceClosure> callback_;
+  base::OnceClosure* const callback_;
   base::OnceClosure cancel_callback_;
 };
 
@@ -5875,8 +5874,8 @@ class BlockingDelegateContentBrowserClient : public ContentBrowserClient {
 
  private:
   TestWebAuthenticationDelegate web_authentication_delegate_;
-  const CheckedPtr<base::OnceClosure> callback_;
-  CheckedPtr<BlockingAuthenticatorRequestDelegate> delegate_ = nullptr;
+  base::OnceClosure* const callback_;
+  BlockingAuthenticatorRequestDelegate* delegate_ = nullptr;
 };
 
 class BlockingDelegateAuthenticatorImplTest : public AuthenticatorImplTest {
@@ -5905,7 +5904,7 @@ class BlockingDelegateAuthenticatorImplTest : public AuthenticatorImplTest {
       &blocked_on_error_callback_};
 
  private:
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 };
 
 TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
@@ -6050,8 +6049,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
  private:
   const std::string expected_accounts_;
   const std::vector<uint8_t> selected_user_id_;
-  const CheckedPtr<absl::optional<InterestingFailureReason>> failure_reason_;
-  const CheckedPtr<bool> is_conditional_;
+  absl::optional<InterestingFailureReason>* const failure_reason_;
+  bool* const is_conditional_;
 };
 
 class ResidentKeyTestAuthenticatorContentBrowserClient
@@ -6124,7 +6123,7 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
   }
 
  private:
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ResidentKeyAuthenticatorImplTest);
 };
@@ -7532,7 +7531,7 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
 
   ContactWhenReadyContentBrowserClient browser_client_;
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
   base::OnceClosure maybe_contact_phones_callback_;
 };
 

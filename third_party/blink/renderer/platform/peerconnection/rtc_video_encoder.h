@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder_config.h"
@@ -79,7 +78,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   const bool is_constrained_h264_;
 
   // Factory for creating VEAs, shared memory buffers, etc.
-  CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   // Task runner that the video accelerator runs on.
   const scoped_refptr<base::SequencedTaskRunner> gpu_task_runner_;

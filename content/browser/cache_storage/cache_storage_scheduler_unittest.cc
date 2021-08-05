@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,7 +33,7 @@ class TestTask {
   base::RunLoop& run_loop() { return run_loop_; }
 
  protected:
-  CheckedPtr<CacheStorageScheduler> scheduler_;
+  CacheStorageScheduler* scheduler_;
   const CacheStorageSchedulerId id_;
   base::RunLoop run_loop_;
   int callback_count_;

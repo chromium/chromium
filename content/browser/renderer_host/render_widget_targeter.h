@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -42,7 +41,7 @@ struct CONTENT_EXPORT RenderWidgetTargetResult {
                            bool latched_target);
   ~RenderWidgetTargetResult();
 
-  CheckedPtr<RenderWidgetHostViewBase> view = nullptr;
+  RenderWidgetHostViewBase* view = nullptr;
   bool should_query_view = false;
   absl::optional<gfx::PointF> target_location = absl::nullopt;
   // When |latched_target| is false, we explicitly hit-tested events instead of
@@ -258,7 +257,7 @@ class RenderWidgetTargeter {
   // is enabled. This allows us to send the queried regions in batches.
   std::vector<viz::FrameSinkId> hit_test_async_queried_debug_queue_;
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
   base::WeakPtrFactory<RenderWidgetTargeter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetTargeter);

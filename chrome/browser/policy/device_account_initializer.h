@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/policy/enrollment_status.h"
 
 #include "base/compiler_specific.h"
@@ -104,8 +103,8 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
                                const std::string& auth_code);
 
   // Owned by this class owner.
-  CheckedPtr<CloudPolicyClient> client_;
-  CheckedPtr<Delegate> delegate_;
+  CloudPolicyClient* client_;
+  Delegate* delegate_;
 
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
 

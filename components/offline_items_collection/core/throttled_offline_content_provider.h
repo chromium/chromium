@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -88,7 +87,7 @@ class ThrottledOfflineContentProvider
   base::TimeTicks last_update_time_;
   bool update_queued_;
 
-  const CheckedPtr<OfflineContentProvider> wrapped_provider_;
+  OfflineContentProvider* const wrapped_provider_;
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};

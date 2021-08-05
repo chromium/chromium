@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -172,7 +171,7 @@ class UkmService : public UkmRecorderImpl {
   void SetInitializationCompleteCallbackForTesting(base::OnceClosure callback);
 
   // A weak pointer to the PrefService used to read and write preferences.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // If true, only whitelisted Entries should be recorded.
   bool restrict_to_whitelist_entries_;
@@ -188,7 +187,7 @@ class UkmService : public UkmRecorderImpl {
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
-  const CheckedPtr<metrics::MetricsServiceClient> client_;
+  metrics::MetricsServiceClient* const client_;
 
   // Registered metrics providers.
   metrics::DelegatingProvider metrics_providers_;

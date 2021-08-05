@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
 namespace send_tab_to_self {
@@ -41,7 +40,7 @@ class SendTabToSelfModelObserverBridge : public SendTabToSelfModelObserver {
   // Set during the constructor and owned by the SendTabToSelfSyncServiceFactory
   // is based off the KeyedServiceFactory which lives for the length of the
   // profile. SendTabToSelf is not supported for the Incognito profile.
-  CheckedPtr<SendTabToSelfModel> send_tab_to_self_model_;
+  SendTabToSelfModel* send_tab_to_self_model_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModelObserverBridge);
 };

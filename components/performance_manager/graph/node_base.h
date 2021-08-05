@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -138,7 +137,7 @@ class NodeBase {
 
   // Assigned when JoinGraph() is called, up until LeaveGraph() is called, where
   // it is reset to null.
-  CheckedPtr<GraphImpl> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  GraphImpl* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

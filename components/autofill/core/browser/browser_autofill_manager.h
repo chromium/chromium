@@ -16,7 +16,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -666,7 +665,7 @@ class BrowserAutofillManager
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  CheckedPtr<PersonalDataManager> personal_data_;
+  PersonalDataManager* personal_data_;
 
   // Used to help fill data into fields.
   FieldFiller field_filler_;
@@ -715,7 +714,7 @@ class BrowserAutofillManager
   // The autofill offer manager, used to to retrieve offers for card
   // suggestions. Initialized when BrowserAutofillManager is created.
   // |offer_manager_| is never null.
-  CheckedPtr<AutofillOfferManager> offer_manager_;
+  AutofillOfferManager* offer_manager_;
 
   // Helper class to generate Autofill suggestions.
   std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;
@@ -736,7 +735,7 @@ class BrowserAutofillManager
   mutable std::map<int, std::string> int_to_backend_map_;
 
   // Delegate used in test to get notifications on certain events.
-  CheckedPtr<BrowserAutofillManagerTestDelegate> test_delegate_ = nullptr;
+  BrowserAutofillManagerTestDelegate* test_delegate_ = nullptr;
 
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.

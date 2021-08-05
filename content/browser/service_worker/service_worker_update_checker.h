@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
 
@@ -154,7 +153,7 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
 
   // |context_| outlives |this| because it owns |this| through
   // ServiceWorkerJobCoordinator and ServiceWorkerRegisterJob.
-  const CheckedPtr<ServiceWorkerContextCore> context_;
+  ServiceWorkerContextCore* const context_;
 
   blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object_;
 

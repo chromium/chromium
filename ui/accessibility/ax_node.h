@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/char_traits.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -106,8 +105,8 @@ class AX_EXPORT AXNode final {
     NodeType* operator->() const;
 
    protected:
-    CheckedPtr<const NodeType> parent_;
-    CheckedPtr<NodeType> child_;
+    const NodeType* parent_;
+    NodeType* child_;
   };
 
   // The constructor requires a parent, id, and index in parent, but
@@ -663,11 +662,11 @@ class AX_EXPORT AXNode final {
   // blended with ancestor colors.
   SkColor ComputeColorAttribute(ax::mojom::IntAttribute color_attr) const;
 
-  const CheckedPtr<OwnerTree> tree_;  // Owns this.
+  OwnerTree* const tree_;  // Owns this.
   size_t index_in_parent_;
   size_t unignored_index_in_parent_;
   size_t unignored_child_count_ = 0;
-  const CheckedPtr<AXNode> parent_;
+  AXNode* const parent_;
   std::vector<AXNode*> children_;
 
   // Stores information about this node that is immutable and which has been

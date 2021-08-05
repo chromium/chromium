@@ -16,7 +16,6 @@
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -241,7 +240,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
   DCHECK(loaded_);
   std::set<GURL> removed_urls;
   struct RemoveNodeData {
-    CheckedPtr<const BookmarkNode> parent;
+    const BookmarkNode* parent;
     int index;
     std::unique_ptr<BookmarkNode> node;
   };
@@ -933,7 +932,7 @@ void BookmarkModel::SetUndoDelegate(BookmarkUndoDelegate* undo_delegate) {
 
 BookmarkUndoDelegate* BookmarkModel::undo_delegate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return undo_delegate_ ? undo_delegate_.get() : empty_undo_delegate_.get();
+  return undo_delegate_ ? undo_delegate_ : empty_undo_delegate_.get();
 }
 
 }  // namespace bookmarks

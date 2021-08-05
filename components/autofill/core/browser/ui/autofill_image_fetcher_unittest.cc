@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -84,7 +83,7 @@ class AutofillImageFetcherTest : public testing::Test {
 
  private:
   std::unique_ptr<TestAutofillImageFetcher> autofill_image_fetcher_;
-  CheckedPtr<image_fetcher::MockImageFetcher> image_fetcher_;
+  image_fetcher::MockImageFetcher* image_fetcher_;
 };
 
 TEST_F(AutofillImageFetcherTest, FetchImage_Success) {

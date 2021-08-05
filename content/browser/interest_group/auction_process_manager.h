@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -99,7 +98,7 @@ class CONTENT_EXPORT AuctionProcessManager {
     base::OnceClosure callback_;
     url::Origin origin_;
     WorkletType worklet_type_;
-    CheckedPtr<AuctionProcessManager> manager_ = nullptr;
+    AuctionProcessManager* manager_ = nullptr;
     scoped_refptr<WorkletProcess> worklet_process_;
 
     // Entry in the corresponding PendingRequestQueue if the handle has yet to

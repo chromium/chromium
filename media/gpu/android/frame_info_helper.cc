@@ -4,7 +4,6 @@
 
 #include "media/gpu/android/frame_info_helper.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/shared_image_video.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -146,7 +145,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
                                                  context_provider);
     }
 
-    CheckedPtr<gpu::CommandBufferStub> stub_ = nullptr;
+    gpu::CommandBufferStub* stub_ = nullptr;
     base::WeakPtrFactory<OnGpu> weak_factory_{this};
   };
 

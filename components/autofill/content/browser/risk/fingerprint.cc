@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/cpu.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
@@ -217,7 +216,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // The GPU data provider.
   // Weak reference because the GpuDataManager class is a singleton.
-  const CheckedPtr<content::GpuDataManager> gpu_data_manager_;
+  content::GpuDataManager* const gpu_data_manager_;
 
   // Ensures that any observer registrations for the GPU data are cleaned up by
   // the time this object is destroyed.
@@ -296,7 +295,7 @@ FingerprintDataLoader::FingerprintDataLoader(
   // Load GPU data if needed.
   if (gpu_data_manager_->GpuAccessAllowed(nullptr) &&
       !gpu_data_manager_->IsEssentialGpuInfoAvailable()) {
-    gpu_observation_.Observe(gpu_data_manager_.get());
+    gpu_observation_.Observe(gpu_data_manager_);
     OnGpuInfoUpdate();
   }
 
@@ -327,7 +326,7 @@ void FingerprintDataLoader::OnGpuInfoUpdate() {
   if (!gpu_data_manager_->IsEssentialGpuInfoAvailable())
     return;
 
-  DCHECK(gpu_observation_.IsObservingSource(gpu_data_manager_.get()));
+  DCHECK(gpu_observation_.IsObservingSource(gpu_data_manager_));
   gpu_observation_.Reset();
   MaybeFillFingerprint();
 }

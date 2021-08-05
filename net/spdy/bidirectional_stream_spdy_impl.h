@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/load_timing_info.h"
@@ -88,8 +87,8 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   bool MaybeHandleStreamClosedInSendData();
 
   const base::WeakPtr<SpdySession> spdy_session_;
-  CheckedPtr<const BidirectionalStreamRequestInfo> request_info_;
-  CheckedPtr<BidirectionalStreamImpl::Delegate> delegate_;
+  const BidirectionalStreamRequestInfo* request_info_;
+  BidirectionalStreamImpl::Delegate* delegate_;
   std::unique_ptr<base::OneShotTimer> timer_;
   SpdyStreamRequest stream_request_;
   base::WeakPtr<SpdyStream> stream_;

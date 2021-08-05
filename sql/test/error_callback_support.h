@@ -5,7 +5,6 @@
 #ifndef SQL_TEST_ERROR_CALLBACK_SUPPORT_H_
 #define SQL_TEST_ERROR_CALLBACK_SUPPORT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "sql/database.h"
 
 namespace sql {
@@ -30,7 +29,7 @@ class ScopedErrorCallback {
   ~ScopedErrorCallback();
 
  private:
-  CheckedPtr<sql::Database> db_;
+  sql::Database* db_;
 };
 
 }  // namespace sql

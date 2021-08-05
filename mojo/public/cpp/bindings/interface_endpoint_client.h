@@ -17,7 +17,6 @@
 #include "base/component_export.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -223,7 +222,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     Message response;
 
     // Points to a stack-allocated variable.
-    CheckedPtr<bool> response_received;
+    bool* response_received;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(SyncResponseInfo);
@@ -242,7 +241,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     bool Accept(Message* message) override;
 
    private:
-    const CheckedPtr<InterfaceEndpointClient> owner_;
+    InterfaceEndpointClient* const owner_;
 
     DISALLOW_COPY_AND_ASSIGN(HandleIncomingMessageThunk);
   };
@@ -286,10 +285,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   ScopedInterfaceEndpointHandle handle_;
   std::unique_ptr<AssociatedGroup> associated_group_;
-  CheckedPtr<InterfaceEndpointController> controller_ = nullptr;
+  InterfaceEndpointController* controller_ = nullptr;
 
-  const CheckedPtr<MessageReceiverWithResponderStatus> incoming_receiver_ =
-      nullptr;
+  MessageReceiverWithResponderStatus* const incoming_receiver_ = nullptr;
   HandleIncomingMessageThunk thunk_{this};
   MessageDispatcher dispatcher_;
 

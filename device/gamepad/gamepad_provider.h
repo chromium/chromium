@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -181,7 +180,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
-  CheckedPtr<GamepadChangeClient> gamepad_change_client_;
+  GamepadChangeClient* gamepad_change_client_;
 };
 
 }  // namespace device

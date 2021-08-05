@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom-forward.h"
@@ -126,7 +125,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   // Whether the render process has gone.
   bool render_process_gone_ = false;
 
-  CheckedPtr<content::WebUI> web_ui_;
+  content::WebUI* web_ui_;
 
   mojo::Receiver<downloads::mojom::PageHandler> receiver_;
 

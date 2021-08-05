@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -106,7 +105,7 @@ class WebrtcVideoStream : public VideoStream,
   // Capturer used to capture the screen.
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   // Used to send across encoded frames.
-  CheckedPtr<WebrtcDummyVideoEncoderFactory> video_encoder_factory_;
+  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
 
   // Task runner used by software encoders.
   scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;
@@ -128,7 +127,7 @@ class WebrtcVideoStream : public VideoStream,
 
   webrtc::DesktopSize frame_size_;
   webrtc::DesktopVector frame_dpi_;
-  CheckedPtr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
 
   WebrtcVideoEncoderSelector encoder_selector_;
 

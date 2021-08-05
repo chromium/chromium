@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -80,7 +79,7 @@ class FileHandlingPermissionRequestDialog
   void OnDialogAccepted();
   void OnDialogCanceled();
 
-  CheckedPtr<views::Checkbox> checkbox_ = nullptr;
+  views::Checkbox* checkbox_ = nullptr;
 
   base::OnceCallback<void(bool, bool)> result_callback_;
 };

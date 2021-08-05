@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -65,7 +64,7 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   CdmAllocator* GetAllocator();
 
   // Provides interfaces when needed.
-  CheckedPtr<mojom::FrameInterfaceFactory> frame_interfaces_;
+  mojom::FrameInterfaceFactory* frame_interfaces_;
 
   // Connections to the additional services. Will try to reconnect if
   // disconnected, to handle cases like page refresh, where the document is

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/view_tracker.h"
@@ -83,11 +82,11 @@ class SharingHubBubbleController
 #endif
 
   // The web_contents associated with this controller.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  CheckedPtr<SharingHubBubbleView> sharing_hub_bubble_view_ = nullptr;
+  SharingHubBubbleView* sharing_hub_bubble_view_ = nullptr;
   // Cached reference to the model.
-  CheckedPtr<SharingHubModel> sharing_hub_model_ = nullptr;
+  SharingHubModel* sharing_hub_model_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

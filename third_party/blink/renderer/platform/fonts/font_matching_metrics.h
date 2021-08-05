@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_MATCHING_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_MATCHING_METRICS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
@@ -267,7 +266,7 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   uint64_t total_emoji_clusters_shaped_ = 0;
   uint64_t total_broken_emoji_clusters_ = 0;
 
-  const CheckedPtr<ukm::UkmRecorder> ukm_recorder_;
+  ukm::UkmRecorder* const ukm_recorder_;
   const ukm::SourceId source_id_;
 
   TaskRunnerTimer<FontMatchingMetrics> identifiability_metrics_timer_;

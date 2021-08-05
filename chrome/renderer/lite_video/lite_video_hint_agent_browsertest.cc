@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
@@ -151,7 +150,7 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
   base::HistogramTester histogram_tester_;
 
   // Owned by the RenderFrame.
-  CheckedPtr<LiteVideoHintAgent> lite_video_hint_agent_;
+  LiteVideoHintAgent* lite_video_hint_agent_;
 };
 
 TEST_F(LiteVideoHintAgentTest, LiteVideoDisabled) {

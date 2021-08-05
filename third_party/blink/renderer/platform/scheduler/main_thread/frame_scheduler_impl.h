@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -332,10 +331,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // |frame_task_queue_controller_| via CreateResourceLoadingTaskRunnerHandle.
   ResourceLoadingTaskQueuePriorityMap resource_loading_task_queue_priorities_;
 
-  const CheckedPtr<MainThreadSchedulerImpl>
-      main_thread_scheduler_;                             // NOT OWNED
-  CheckedPtr<PageSchedulerImpl> parent_page_scheduler_;   // NOT OWNED
-  CheckedPtr<FrameScheduler::Delegate> delegate_;         // NOT OWNED
+  MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
+  PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED
+  FrameScheduler::Delegate* delegate_;                    // NOT OWNED
   base::trace_event::BlameContext* blame_context_;        // NOT OWNED
   SchedulingLifecycleState throttling_state_;
   TraceableState<bool, TracingCategoryName::kInfo> frame_visible_;

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/common/guest_view_messages.h"
 #include "components/guest_view/renderer/guest_view_request.h"
@@ -38,7 +37,7 @@ class GuestViewContainer::RenderFrameLifetimeObserver
   void OnDestruct() override;
 
  private:
-  CheckedPtr<GuestViewContainer> container_;
+  GuestViewContainer* container_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameLifetimeObserver);
 };

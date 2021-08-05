@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
@@ -197,7 +196,7 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void CreateNativeUIInspectionSession(const std::string& url);
   void OnFrontEndFinished();
 
-  const CheckedPtr<InspectUI> inspect_ui_;
+  InspectUI* const inspect_ui_;
 
   base::WeakPtrFactory<InspectMessageHandler> weak_factory_{this};
 };

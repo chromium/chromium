@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -55,7 +54,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
       trigger_script_ui_delegate_;
   std::unique_ptr<ServiceRequestSender> trigger_script_request_sender_for_test_;
-  CheckedPtr<WebsiteLoginManager> website_login_manager_ = nullptr;
+  WebsiteLoginManager* website_login_manager_ = nullptr;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool feature_module_installed_ = true;
   Metrics::FeatureModuleInstallation feature_module_installation_result_ =

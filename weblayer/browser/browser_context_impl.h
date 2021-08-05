@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_BROWSER_CONTEXT_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
@@ -83,7 +82,7 @@ class BrowserContextImpl : public content::BrowserContext {
   // Registers the preferences that WebLayer accesses.
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* pref_registry);
 
-  const CheckedPtr<ProfileImpl> profile_impl_;
+  ProfileImpl* const profile_impl_;
   base::FilePath path_;
   // In Chrome, a SimpleFactoryKey is used as a minimal representation of a
   // BrowserContext used before full browser mode has started. WebLayer doesn't

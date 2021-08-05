@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/capabilities.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/command_listener.h"
@@ -83,11 +82,10 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   Status CollectTraceEvents();  // Ditto.
   Status IsTraceDone(bool* trace_done) const; // True if trace is not buffering.
 
-  CheckedPtr<Log> log_;  // The log where to create entries.
-  CheckedPtr<const Session> session_;
+  Log* log_;  // The log where to create entries.
+  const Session* session_;
   PerfLoggingPrefs prefs_;
-  CheckedPtr<DevToolsClient>
-      browser_client_;    // Pointer to browser-wide |DevToolsClient|.
+  DevToolsClient* browser_client_; // Pointer to browser-wide |DevToolsClient|.
   bool trace_buffering_;  // True unless trace stopped and all events received.
   bool enable_service_worker_;
 

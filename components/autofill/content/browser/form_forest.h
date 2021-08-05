@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
@@ -188,7 +187,7 @@ class FormForest {
     // empty FrameData is created when a parent form can Resolve() a child's
     // LocalFrameToken and no form from that child frame has been seen yet.
     // However, if |child_forms| is non-empty, then driver is non-null.
-    CheckedPtr<ContentAutofillDriver> driver = nullptr;
+    ContentAutofillDriver* driver = nullptr;
   };
 
   FormForest();

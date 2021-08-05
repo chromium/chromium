@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -159,7 +158,7 @@ class SchemePageLoadMetricsObserverTest
         base::size(kUnderStatRecordingIntervalsSeconds) + 1, 0);
   }
 
-  CheckedPtr<SchemePageLoadMetricsObserver> observer_;
+  SchemePageLoadMetricsObserver* observer_;
 };
 
 TEST_F(SchemePageLoadMetricsObserverTest, HTTPNavigation) {

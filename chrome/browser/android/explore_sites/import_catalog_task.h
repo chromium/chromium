@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_IMPORT_CATALOG_TASK_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_IMPORT_CATALOG_TASK_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
@@ -39,7 +38,7 @@ class ImportCatalogTask : public Task {
 
   void FinishedExecuting(bool result);
 
-  CheckedPtr<ExploreSitesStore> store_;  // outlives this class.
+  ExploreSitesStore* store_;  // outlives this class.
   std::string version_token_;
   std::unique_ptr<Catalog> catalog_proto_;
 

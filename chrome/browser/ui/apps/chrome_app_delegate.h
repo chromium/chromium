@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -91,7 +90,7 @@ class ChromeAppDelegate : public extensions::AppDelegate,
   bool has_been_shown_;
   bool is_hidden_;
   bool for_lock_screen_app_;
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   std::unique_ptr<NewWindowContentsDelegate> new_window_contents_delegate_;

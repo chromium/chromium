@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
@@ -201,12 +200,12 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;
 #endif
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   bool run_message_loop_ = true;
 
   base::FilePath user_data_dir_;
 
-  CheckedPtr<StartupData> startup_data_;
+  StartupData* startup_data_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

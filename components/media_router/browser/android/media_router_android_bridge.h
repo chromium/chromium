@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
@@ -85,7 +84,7 @@ class MediaRouterAndroidBridge {
                  const base::android::JavaRef<jstring>& jmessage);
 
  private:
-  CheckedPtr<MediaRouterAndroid> native_media_router_;
+  MediaRouterAndroid* native_media_router_;
   base::android::ScopedJavaGlobalRef<jobject> java_media_router_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaRouterAndroidBridge);

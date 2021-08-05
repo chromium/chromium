@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_DRIVE_UPLOADER_WRAPPER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/drive/drive_uploader.h"
@@ -37,7 +36,7 @@ class DriveUploaderWrapper
                      drive::UploadCompletionCallback callback);
 
  private:
-  CheckedPtr<drive::DriveUploaderInterface> drive_uploader_;
+  drive::DriveUploaderInterface* drive_uploader_;
   base::SequenceChecker sequence_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(DriveUploaderWrapper);

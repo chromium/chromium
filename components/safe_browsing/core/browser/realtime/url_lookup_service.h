@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -105,7 +104,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const std::string& access_token);
 
   // Unowned object used for getting preference settings.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Observes changes to kSafeBrowsingEnhanced and
   // kUrlKeyedAnonymizedDataCollectionEnabled;
@@ -127,7 +126,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
   // Unowned. For checking whether real-time checks can be enabled in a given
   // location.
-  CheckedPtr<variations::VariationsService> variations_;
+  variations::VariationsService* variations_;
 
   friend class RealTimeUrlLookupServiceTest;
 

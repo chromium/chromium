@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -549,17 +548,16 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   absl::optional<WebSchedulingPriority> web_scheduling_priority_;
 
   // Needed to notify renderer scheduler about completed tasks.
-  CheckedPtr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
+  MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
 
-  CheckedPtr<AgentGroupSchedulerImpl> agent_group_scheduler_{
-      nullptr};  // NOT OWNED
+  AgentGroupSchedulerImpl* agent_group_scheduler_{nullptr};  // NOT OWNED
 
   // Set in the constructor. Cleared in ClearReferencesToSchedulers(). Can never
   // be set to a different value afterwards (except in tests).
-  CheckedPtr<FrameSchedulerImpl> frame_scheduler_;  // NOT OWNED
+  FrameSchedulerImpl* frame_scheduler_;  // NOT OWNED
 
   // The WakeUpBudgetPool for this TaskQueue, if any.
-  CheckedPtr<WakeUpBudgetPool> wake_up_budget_pool_{nullptr};  // NOT OWNED
+  WakeUpBudgetPool* wake_up_budget_pool_{nullptr};  // NOT OWNED
 
   base::WeakPtrFactory<MainThreadTaskQueue> weak_ptr_factory_{this};
 };

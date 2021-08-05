@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
@@ -110,7 +109,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                   bool triggered_by_initial_url,
                                   bool validation_success);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool use_test_profile_ = false;
 
   std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;

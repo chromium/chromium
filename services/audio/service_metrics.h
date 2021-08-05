@@ -6,7 +6,6 @@
 #define SERVICES_AUDIO_SERVICE_METRICS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -26,7 +25,7 @@ class ServiceMetrics {
  private:
   void LogHasNoConnectionsDuration();
 
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
   base::TimeTicks has_connections_start_;
   base::TimeTicks has_no_connections_start_;
 

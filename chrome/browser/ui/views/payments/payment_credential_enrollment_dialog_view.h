@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -78,13 +77,13 @@ class PaymentCredentialEnrollmentDialogView
   void UpdateLabelView(DialogViewID id, const std::u16string& text);
 
   // May be null.
-  CheckedPtr<ObserverForTest> observer_for_test_ = nullptr;
+  ObserverForTest* observer_for_test_ = nullptr;
 
   ResponseCallback response_callback_;
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().
-  CheckedPtr<const SkBitmap> instrument_icon_ = nullptr;
+  const SkBitmap* instrument_icon_ = nullptr;
   // Cache the instrument icon generation ID to check if the instrument_icon_
   // has changed pixels.
   uint32_t instrument_icon_generation_id_ = 0;

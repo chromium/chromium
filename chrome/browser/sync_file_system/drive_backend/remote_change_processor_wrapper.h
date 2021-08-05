@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_REMOTE_CHANGE_PROCESSOR_WRAPPER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/remote_change_processor.h"
@@ -42,7 +41,7 @@ class RemoteChangeProcessorWrapper
                              SyncStatusCallback callback);
 
  private:
-  CheckedPtr<RemoteChangeProcessor> remote_change_processor_;
+  RemoteChangeProcessor* remote_change_processor_;
   base::SequenceChecker sequence_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessorWrapper);

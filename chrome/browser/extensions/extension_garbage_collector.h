@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/extensions/install_observer.h"
@@ -75,7 +74,7 @@ class ExtensionGarbageCollector : public KeyedService,
       const std::multimap<std::string, base::FilePath>& extension_paths);
 
   // The BrowserContext associated with the GarbageCollector.
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
   // The number of currently ongoing CRX installations. This is used to prevent
   // garbage collection from running while a CRX is being installed.

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -67,7 +66,7 @@ class WebrtcDataStreamAdapter : public MessagePipe,
 
   rtc::scoped_refptr<webrtc::DataChannelInterface> channel_;
 
-  CheckedPtr<EventHandler> event_handler_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
 
   State state_ = State::CONNECTING;
 

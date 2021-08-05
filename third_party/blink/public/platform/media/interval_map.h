@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -150,7 +149,7 @@ class BLINK_PLATFORM_EXPORT IntervalMapConstIterator {
   }
 
  private:
-  CheckedPtr<const MapType> map_;
+  const MapType* map_;
 
   // Pointer to the entry in the IntervalMap that specifies the
   // beginning of the current interval.

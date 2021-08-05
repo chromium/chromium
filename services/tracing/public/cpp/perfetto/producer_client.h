@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -130,8 +129,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   uint32_t data_sources_tracing_ = 0;
   std::unique_ptr<mojo::Receiver<mojom::ProducerClient>> receiver_;
   mojo::Remote<mojom::ProducerHost> producer_host_;
-  CheckedPtr<base::tracing::PerfettoTaskRunner>
-      in_process_arbiter_task_runner_ = nullptr;
+  base::tracing::PerfettoTaskRunner* in_process_arbiter_task_runner_ = nullptr;
   // First value is the flush ID, the second is the number of
   // replies we're still waiting for.
   std::pair<uint64_t, size_t> pending_replies_for_latest_flush_;

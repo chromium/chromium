@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/view_stack.h"
 #include "components/payments/content/initialization_task.h"
@@ -218,15 +217,15 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // The PaymentRequest object that initiated this dialog.
   base::WeakPtr<PaymentRequest> request_;
   ControllerMap controller_map_;
-  CheckedPtr<ViewStack> view_stack_;
+  ViewStack* view_stack_;
 
   // A full dialog overlay that shows a spinner and the "processing" label. It's
   // hidden until ShowProcessingSpinner is called.
-  CheckedPtr<views::View> throbber_overlay_;
-  CheckedPtr<views::Throbber> throbber_;
+  views::View* throbber_overlay_;
+  views::Throbber* throbber_;
 
   // May be null.
-  CheckedPtr<ObserverForTest> observer_for_testing_;
+  ObserverForTest* observer_for_testing_;
 
   // Used when the dialog is being closed to avoid re-entrance into the
   // controller_map_ or view_stack_.

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
@@ -101,8 +100,8 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
                                   base::TimeDelta duration);
   gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<TabStripUIEmbedder> embedder_;
+  Browser* const browser_;
+  TabStripUIEmbedder* const embedder_;
   ThumbnailTracker thumbnail_tracker_;
   tab_strip_ui::TabBeforeUnloadTracker tab_before_unload_tracker_;
 

@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 
 namespace content {
@@ -46,7 +45,7 @@ class SaveUpdateAddressProfilePromptViewAndroid
 
   // The corresponding Java SaveUpdateAddressProfilePrompt owned by this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace autofill

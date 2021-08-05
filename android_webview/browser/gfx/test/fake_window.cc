@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/gfx/test/fake_window.h"
-#include "base/memory/checked_ptr.h"
 
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
@@ -43,7 +42,7 @@ class FakeWindow::ScopedMakeCurrent {
   }
 
  private:
-  CheckedPtr<FakeWindow> view_root_;
+  FakeWindow* view_root_;
 };
 
 FakeWindow::FakeWindow(BrowserViewRenderer* view,

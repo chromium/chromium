@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -100,13 +99,13 @@ class ModelTypeRegistry : public ModelTypeConnector,
   UpdateHandlerMap update_handler_map_;
   CommitContributorMap commit_contributor_map_;
 
-  const CheckedPtr<NudgeHandler> nudge_handler_;
+  NudgeHandler* const nudge_handler_;
 
   // CancelationSignal is signalled on engine shutdown. It is passed to
   // ModelTypeWorker to cancel blocking operation.
-  const CheckedPtr<CancelationSignal> cancelation_signal_;
+  CancelationSignal* const cancelation_signal_;
 
-  const CheckedPtr<SyncEncryptionHandler> sync_encryption_handler_;
+  SyncEncryptionHandler* const sync_encryption_handler_;
 
   base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
 

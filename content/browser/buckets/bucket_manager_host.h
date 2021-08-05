@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/buckets/bucket_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -62,7 +61,7 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
 
   // Raw pointer is safe because BucketManager owns this BucketManagerHost, and
   // is therefore guaranteed to outlive it.
-  const CheckedPtr<BucketManager> manager_;
+  BucketManager* const manager_;
 
   // The origin of the frame or worker connected to this BucketManagerHost.
   const url::Origin origin_;

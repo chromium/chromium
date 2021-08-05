@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/spellcheck/renderer/empty_local_interface_provider.h"
@@ -41,7 +40,7 @@ class FakeTextCheckingCompletion : public blink::WebTextCheckingCompletion {
       const blink::WebVector<blink::WebTextCheckingResult>& results) override;
   void DidCancelCheckingText() override;
 
-  CheckedPtr<FakeTextCheckingResult> result_;
+  FakeTextCheckingResult* result_;
 };
 
 // A fake SpellCheck object which can fake the number of (enabled) spell check

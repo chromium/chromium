@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/gfx/render_text.h"
@@ -330,7 +329,7 @@ class VIEWS_EXPORT TextfieldModel {
   static void ClearKillBuffer();
 
   // The TextfieldModel::Delegate instance should be provided by the owner.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // The stylized text, cursor, selection, and the visual layout model.
   std::unique_ptr<gfx::RenderText> render_text_;

@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -66,7 +65,7 @@ class SearchBoxIconURLHelper: public SearchBox::IconURLHelper {
       override;
 
  private:
-  CheckedPtr<const SearchBox> search_box_;
+  const SearchBox* search_box_;
 };
 
 SearchBoxIconURLHelper::SearchBoxIconURLHelper(const SearchBox* search_box)

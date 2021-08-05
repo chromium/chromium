@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/idle/idle_api_constants.h"
@@ -42,7 +41,7 @@ class DefaultEventDelegate : public IdleManager::EventDelegate {
   void UnregisterObserver(EventRouter::Observer* observer) override;
 
  private:
-  const CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* const context_;
 };
 
 DefaultEventDelegate::DefaultEventDelegate(content::BrowserContext* context)

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "components/metrics/metrics_provider.h"
@@ -87,7 +86,7 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
       metrics::SystemProfileProto* system_profile);
 
   // The MetricsStateManager from which the client ID is obtained.
-  CheckedPtr<metrics::MetricsStateManager> metrics_state_manager_;
+  metrics::MetricsStateManager* metrics_state_manager_;
 
   metrics::CachedMetricsProfile cached_profile_;
 

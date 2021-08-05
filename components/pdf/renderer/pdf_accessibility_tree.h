@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -147,7 +146,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   ui::AXTree tree_;
 
   // Unowned. Must outlive `this`.
-  const CheckedPtr<PdfAccessibilityActionHandler> action_handler_;
+  PdfAccessibilityActionHandler* const action_handler_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied
@@ -168,7 +167,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   uint32_t selection_end_page_index_ = 0;
   uint32_t selection_end_char_index_ = 0;
   uint32_t page_count_ = 0;
-  CheckedPtr<ui::AXNodeData> doc_node_;
+  ui::AXNodeData* doc_node_;
   std::vector<std::unique_ptr<ui::AXNodeData>> nodes_;
 
   // Map from the id of each static text AXNode and inline text box

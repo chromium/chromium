@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARESHEET_EXAMPLE_ACTION_H_
 #define CHROME_BROWSER_SHARESHEET_EXAMPLE_ACTION_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharesheet/share_action.h"
 
 namespace sharesheet {
@@ -26,7 +25,7 @@ class ExampleAction : public ShareAction {
   void OnClosing(SharesheetController* controller) override;
 
  private:
-  CheckedPtr<SharesheetController> controller_ = nullptr;
+  SharesheetController* controller_ = nullptr;
   std::string name_;
 };
 

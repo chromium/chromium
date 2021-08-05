@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 #include "base/macros.h"
@@ -135,7 +134,7 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
     focus_change_count++;
   }
 
-  CheckedPtr<views::FocusManager> focus_manager_;
+  views::FocusManager* focus_manager_;
   bool has_focused_on_non_webview_ = false;
   int focus_change_count = 0;
 };

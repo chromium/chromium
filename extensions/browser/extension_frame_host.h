@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_FRAME_HOST_H_
 #define EXTENSIONS_BROWSER_EXTENSION_FRAME_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
@@ -50,7 +49,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
  private:
   // This raw pointer is safe to use because ExtensionWebContentsObserver whose
   // lifetime is tied to the WebContents owns this instance.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   content::RenderFrameHostReceiverSet<mojom::LocalFrameHost> receivers_;
 };
 

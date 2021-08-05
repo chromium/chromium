@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_JOB_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_file.h"
@@ -66,7 +65,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJob {
   // destroy download file.
   bool AddInputStream(std::unique_ptr<InputStream> stream, int64_t offset);
 
-  CheckedPtr<DownloadItem> download_item_;
+  DownloadItem* download_item_;
 
   // Callback to cancel the download, can be null.
   CancelRequestCallback cancel_request_callback_;

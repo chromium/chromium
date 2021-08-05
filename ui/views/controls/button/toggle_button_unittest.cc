@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
@@ -44,7 +43,7 @@ class TestToggleButton : public ToggleButton {
   using View::Focus;
 
  private:
-  const CheckedPtr<int> counter_;
+  int* const counter_;
 
   DISALLOW_COPY_AND_ASSIGN(TestToggleButton);
 };
@@ -83,7 +82,7 @@ class ToggleButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  CheckedPtr<TestToggleButton> button_ = nullptr;
+  TestToggleButton* button_ = nullptr;
   int counter_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ToggleButtonTest);

@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -95,7 +94,7 @@ class LargeIconServiceImpl : public LargeIconService {
       favicon_base::GoogleFaviconServerCallback callback,
       bool can_set_on_demand_favicon);
 
-  const CheckedPtr<FaviconService> favicon_service_;
+  FaviconService* const favicon_service_;
 
   const std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 

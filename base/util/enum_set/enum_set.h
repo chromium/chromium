@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 namespace util {
@@ -144,7 +143,7 @@ class EnumSet {
       return i;
     }
 
-    CheckedPtr<const EnumBitSet> enums_;
+    const EnumBitSet* enums_;
     size_t i_;
   };
 

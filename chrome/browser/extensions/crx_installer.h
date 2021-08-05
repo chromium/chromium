@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
@@ -365,7 +364,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
   base::SequencedTaskRunner* GetUnpackerTaskRunner();
 
   // The Profile the extension is being installed in.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The extension being installed.
   scoped_refptr<const Extension> extension_;

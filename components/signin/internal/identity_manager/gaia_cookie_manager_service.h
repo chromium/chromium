@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -219,7 +218,7 @@ class GaiaCookieManagerService
 
     void GetCheckConnectionInfoCompleted(bool succeeded);
 
-    CheckedPtr<GaiaCookieManagerService> helper_;
+    GaiaCookieManagerService* helper_;
     base::OneShotTimer timer_;
     LoaderToToken loaders_;
     ResultMap results_;
@@ -399,8 +398,8 @@ class GaiaCookieManagerService
   // Start the next request, if needed.
   void HandleNextRequest();
 
-  CheckedPtr<ProfileOAuth2TokenService> token_service_;
-  CheckedPtr<SigninClient> signin_client_;
+  ProfileOAuth2TokenService* token_service_;
+  SigninClient* signin_client_;
 
   GaiaAccountsInCookieUpdatedCallback gaia_accounts_updated_in_cookie_callback_;
   GaiaCookieDeletedByUserActionCallback

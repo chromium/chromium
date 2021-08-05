@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
@@ -118,7 +117,7 @@ class StarterAndroid : public StarterPlatformDelegate,
   void CreateJavaDependenciesIfNecessary();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   std::unique_ptr<Starter> starter_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::android::ScopedJavaGlobalRef<jobject> java_dependencies_;

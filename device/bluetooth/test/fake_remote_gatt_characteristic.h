@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -139,7 +138,7 @@ class FakeRemoteGattCharacteristic
   const std::string characteristic_id_;
   const device::BluetoothUUID characteristic_uuid_;
   Properties properties_;
-  CheckedPtr<device::BluetoothRemoteGattService> service_;
+  device::BluetoothRemoteGattService* service_;
   std::vector<uint8_t> value_;
 
   // Last successfully written value to the characteristic.

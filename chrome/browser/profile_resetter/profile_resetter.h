@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -100,9 +99,9 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   // Callback for when TemplateURLService has loaded.
   void OnTemplateURLServiceLoaded();
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   std::unique_ptr<BrandcodedDefaultSettings> master_settings_;
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 
   // Flags of a Resetable indicating which reset operations we are still waiting
   // for.
@@ -113,14 +112,14 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 
   // If non-null it means removal is in progress. BrowsingDataRemover takes care
   // of deleting itself when done.
-  CheckedPtr<content::BrowsingDataRemover> cookies_remover_;
+  content::BrowsingDataRemover* cookies_remover_;
 
   base::CallbackListSubscription template_url_service_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used for resetting NTP customizations.
-  CheckedPtr<InstantService> ntp_service_;
+  InstantService* ntp_service_;
 
   base::WeakPtrFactory<ProfileResetter> weak_ptr_factory_{this};
 

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/renderer/web_ax_object_proxy.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -74,7 +73,7 @@ class AccessibilityController {
   v8::Persistent<v8::Function> notification_callback_;
 
   blink::WebView* web_view() const;
-  CheckedPtr<WebFrameTestProxy> web_frame_test_proxy_;
+  WebFrameTestProxy* web_frame_test_proxy_;
 
   std::unique_ptr<blink::WebAXContext> ax_context_;
 

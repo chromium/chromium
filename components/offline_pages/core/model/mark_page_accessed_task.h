@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_MARK_PAGE_ACCESSED_TASK_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/offline_pages/task/task.h"
@@ -32,7 +31,7 @@ class MarkPageAccessedTask : public Task {
   void OnMarkPageAccessedDone(bool result);
 
   // The metadata store used to update the page. Not owned.
-  CheckedPtr<OfflinePageMetadataStore> store_;
+  OfflinePageMetadataStore* store_;
 
   int64_t offline_id_;
   base::Time access_time_;

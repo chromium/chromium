@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
@@ -101,11 +100,11 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
     ~BufferInfo();
 
     bool in_use;
-    CheckedPtr<void> data;
+    void* data;
     scoped_refptr<PPB_Buffer_Impl> buffer;
   };
 
-  CheckedPtr<RendererPpapiHostImpl> renderer_ppapi_host_;
+  RendererPpapiHostImpl* renderer_ppapi_host_;
 
   gfx::Size alloc_size_;
   std::vector<BufferInfo> buffers_;

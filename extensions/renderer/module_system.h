@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_injection_callback.h"
@@ -54,7 +53,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
     std::string CreateExceptionString(const v8::TryCatch& try_catch);
     // A script context associated with this handler. Owned by the module
     // system.
-    CheckedPtr<ScriptContext> context_;
+    ScriptContext* context_;
   };
 
   // Enables native bindings for the duration of its lifetime.
@@ -234,11 +233,11 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   v8::Local<v8::Function> GetModuleFunction(const std::string& module_name,
                                             const std::string& method_name);
 
-  CheckedPtr<ScriptContext> context_;
+  ScriptContext* context_;
 
   // A map from module names to the JS source for that module. GetSource()
   // performs a lookup on this map.
-  const CheckedPtr<const SourceMap> source_map_;
+  const SourceMap* const source_map_;
 
   // A map from native handler names to native handlers.
   NativeHandlerMap native_handler_map_;

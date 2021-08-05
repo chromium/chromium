@@ -7,7 +7,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -294,7 +293,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       }
     };
 
-    const CheckedPtr<WebAuthnCableSecondFactor> parent_;
+    WebAuthnCableSecondFactor* const parent_;
     base::RepeatingCallback<void(device::cablev2::PairingEvent)>
         pairing_callback_;
     base::RepeatingClosure add_authenticator_callback_;
@@ -388,7 +387,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       return phone;
     }
 
-    const CheckedPtr<WebAuthnCableSecondFactor> parent_;
+    WebAuthnCableSecondFactor* const parent_;
   };
 
  protected:

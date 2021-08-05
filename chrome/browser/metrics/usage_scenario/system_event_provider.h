@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_SYSTEM_EVENT_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_SYSTEM_EVENT_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 
@@ -25,7 +24,7 @@ class SystemEventProvider : public base::PowerSuspendObserver {
 
  private:
   // The data store, must outlive |this|.
-  const CheckedPtr<UsageScenarioDataStoreImpl> data_store_
+  UsageScenarioDataStoreImpl* const data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

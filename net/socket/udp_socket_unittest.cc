@@ -10,7 +10,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_clear_last_error.h"
@@ -854,7 +853,7 @@ class TestUDPSocketWin : public UDPSocketWin {
   QwaveApi* GetQwaveApi() const override { return qos_; }
 
  private:
-  CheckedPtr<QwaveApi> qos_;
+  QwaveApi* qos_;
 
   DISALLOW_COPY_AND_ASSIGN(TestUDPSocketWin);
 };

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "net/base/network_isolation_key.h"
@@ -170,8 +169,8 @@ class TestReportingContext : public ReportingContext {
   // Owned by the DeliveryAgent and GarbageCollector, respectively, but
   // referenced here to preserve type:
 
-  CheckedPtr<base::MockOneShotTimer> delivery_timer_;
-  CheckedPtr<base::MockOneShotTimer> garbage_collection_timer_;
+  base::MockOneShotTimer* delivery_timer_;
+  base::MockOneShotTimer* garbage_collection_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(TestReportingContext);
 };
@@ -272,7 +271,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
-  CheckedPtr<ReportingCache::PersistentReportingStore> store_;
+  ReportingCache::PersistentReportingStore* store_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportingTestBase);
 };

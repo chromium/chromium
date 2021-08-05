@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -131,7 +130,7 @@ class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  const CheckedPtr<PasswordStore> password_store_;
+  PasswordStore* const password_store_;
 
   // Being the sole consumer of AndroidAffiliationService, |this| owns the
   // service.

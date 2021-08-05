@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -143,7 +142,7 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<MediaDrmOriginIdManager> origin_id_manager_;
+  MediaDrmOriginIdManager* origin_id_manager_;
 };
 
 TEST_F(MediaDrmOriginIdManagerTest, DisablePreProvisioningAtStartup) {

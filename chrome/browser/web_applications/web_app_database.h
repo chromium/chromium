@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -84,7 +83,7 @@ class WebAppDatabase {
                      const absl::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  const CheckedPtr<AbstractWebAppDatabaseFactory> database_factory_;
+  AbstractWebAppDatabaseFactory* const database_factory_;
   ReportErrorCallback error_callback_;
 
   // Database is opened if store is created and all data read.

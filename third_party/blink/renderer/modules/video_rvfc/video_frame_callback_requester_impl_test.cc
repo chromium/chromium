@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_callback_requester_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -240,7 +239,7 @@ class VideoFrameCallbackRequesterImplTest
   Persistent<HTMLVideoElement> video_;
 
   // Owned by HTMLVideoElementFrameClient.
-  CheckedPtr<MockWebMediaPlayer> media_player_;
+  MockWebMediaPlayer* media_player_;
 };
 
 class VideoFrameCallbackRequesterImplNullMediaPlayerTest

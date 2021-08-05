@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_COMMERCE_SUBSCRIPTIONS_COMMERCE_SUBSCRIPTION_DB_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -63,8 +62,7 @@ class CommerceSubscriptionDB {
   void Destroy(JNIEnv* env);
 
  private:
-  CheckedPtr<ProfileProtoDB<
-      commerce_subscription_db::CommerceSubscriptionContentProto>>
+  ProfileProtoDB<commerce_subscription_db::CommerceSubscriptionContentProto>*
       proto_db_;
   base::WeakPtrFactory<CommerceSubscriptionDB> weak_ptr_factory_{this};
 };

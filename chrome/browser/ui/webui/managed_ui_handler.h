@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -72,7 +71,7 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
   PrefChangeRegistrar pref_registrar_;
 
   // Profile to update data sources on. Injected for testing.
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // Whether or not this page is currently showing the managed UI footnote.
   bool managed_;

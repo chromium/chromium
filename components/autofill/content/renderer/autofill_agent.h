@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -296,12 +295,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // frame.
   FormCache form_cache_;
 
-  CheckedPtr<PasswordAutofillAgent>
-      password_autofill_agent_;  // Weak reference.
-  CheckedPtr<PasswordGenerationAgent>
-      password_generation_agent_;  // Weak reference.
-  CheckedPtr<AutofillAssistantAgent>
-      autofill_assistant_agent_;  // Weak reference.
+  PasswordAutofillAgent* password_autofill_agent_;      // Weak reference.
+  PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
+  AutofillAssistantAgent* autofill_assistant_agent_;    // Weak reference.
 
   // The ID of the last request sent for form field Autofill.  Used to ignore
   // out of date responses.

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,7 +93,7 @@ class SearchSuggestService::SigninObserver
   }
 
   // May be nullptr in tests.
-  const CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* const identity_manager_;
   SigninStatusChangedCallback callback_;
 };
 

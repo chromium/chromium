@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
@@ -268,8 +267,8 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // operation's execution.
   absl::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
-  const CheckedPtr<TrustTokenStore> token_store_;
-  const CheckedPtr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
+  TrustTokenStore* const token_store_;
+  const TrustTokenKeyCommitmentGetter* const key_commitment_getter_;
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 
@@ -294,7 +293,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
       is_current_os_callback_;
 
-  const CheckedPtr<MetricsDelegate> metrics_delegate_;
+  MetricsDelegate* const metrics_delegate_;
 
   net::NetLogWithSource net_log_;
   absl::optional<size_t> num_obtained_tokens_;

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_FAKE_EMBEDDED_WORKER_INSTANCE_CLIENT_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_FAKE_EMBEDDED_WORKER_INSTANCE_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -67,7 +66,7 @@ class FakeEmbeddedWorkerInstanceClient
   void CallOnConnectionError();
 
   // |helper_| owns |this|.
-  const CheckedPtr<EmbeddedWorkerTestHelper> helper_;
+  EmbeddedWorkerTestHelper* const helper_;
 
   blink::mojom::EmbeddedWorkerStartParamsPtr start_params_;
   mojo::AssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost> host_;

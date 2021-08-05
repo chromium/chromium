@@ -6,7 +6,6 @@
 #define SQL_TRANSACTION_H_
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 
@@ -59,7 +58,7 @@ class COMPONENT_EXPORT(SQL) Transaction {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const CheckedPtr<Database> database_;
+  Database* const database_;
 
   // True when the transaction is open, false when it's already been committed
   // or rolled back.

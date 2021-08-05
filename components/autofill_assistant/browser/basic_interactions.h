@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_BASIC_INTERACTIONS_H_
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
@@ -83,7 +82,7 @@ class BasicInteractions {
                               base::RepeatingCallback<void()> callback);
 
  private:
-  CheckedPtr<ScriptExecutorDelegate> delegate_;
+  ScriptExecutorDelegate* delegate_;
   // Only valid during a ShowGenericUiAction.
   base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
   base::OnceCallback<void(const ClientStatus&)>

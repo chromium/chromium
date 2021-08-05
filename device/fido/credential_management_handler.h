@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/credential_management.h"
@@ -129,7 +128,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   SEQUENCE_CHECKER(sequence_checker_);
 
   State state_ = State::kWaitingForTouch;
-  CheckedPtr<FidoAuthenticator> authenticator_ = nullptr;
+  FidoAuthenticator* authenticator_ = nullptr;
   absl::optional<pin::TokenResponse> pin_token_;
 
   ReadyCallback ready_callback_;

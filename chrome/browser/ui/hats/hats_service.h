@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -142,7 +141,7 @@ class HatsService : public KeyedService {
     }
 
    private:
-    CheckedPtr<HatsService> hats_service_;
+    HatsService* hats_service_;
     std::string trigger_;
     std::map<std::string, bool> product_specific_data_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
@@ -276,7 +275,7 @@ class HatsService : public KeyedService {
   void RemoveTask(const DelayedSurveyTask& task);
 
   // Profile associated with this service.
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   std::set<DelayedSurveyTask> pending_tasks_;
 

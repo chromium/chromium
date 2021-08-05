@@ -20,7 +20,6 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
@@ -377,16 +376,16 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   // Safe because the IndexedDBBackingStore is owned by the same object which
   // owns us, the IndexedDBPerStorageKeyFactory.
-  CheckedPtr<IndexedDBBackingStore> backing_store_;
+  IndexedDBBackingStore* backing_store_;
   blink::IndexedDBDatabaseMetadata metadata_;
 
   const Identifier identifier_;
   // TODO(dmurph): Remove the need for this to be here (and then remove it).
-  CheckedPtr<IndexedDBFactory> factory_;
-  const CheckedPtr<IndexedDBClassFactory> class_factory_;
+  IndexedDBFactory* factory_;
+  IndexedDBClassFactory* const class_factory_;
   std::unique_ptr<IndexedDBMetadataCoding> metadata_coding_;
 
-  CheckedPtr<ScopesLockManager> lock_manager_;
+  ScopesLockManager* lock_manager_;
   int64_t transaction_count_ = 0;
 
   list_set<IndexedDBConnection*> connections_;

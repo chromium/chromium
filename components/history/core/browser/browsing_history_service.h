@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -275,11 +274,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Whether there are other forms of browsing history on the history server.
   bool has_other_forms_of_browsing_history_ = false;
 
-  CheckedPtr<BrowsingHistoryDriver> driver_;
+  BrowsingHistoryDriver* driver_;
 
-  CheckedPtr<HistoryService> local_history_;
+  HistoryService* local_history_;
 
-  CheckedPtr<syncer::SyncService> sync_service_;
+  syncer::SyncService* sync_service_;
 
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;

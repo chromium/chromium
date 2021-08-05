@@ -7,7 +7,6 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -119,7 +118,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   // Manages VideoFrame destruction callbacks.
   scoped_refptr<MojoVideoFrameHandleReleaser> mojo_video_frame_handle_releaser_;
 
-  CheckedPtr<GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
+  GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
 
   InitCB init_cb_;
   OutputCB output_cb_;

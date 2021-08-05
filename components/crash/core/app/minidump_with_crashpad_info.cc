@@ -6,7 +6,6 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
@@ -40,7 +39,7 @@ class MinidumpUpdater {
                        size_t data_len,
                        FilePosition* position);
 
-  CheckedPtr<base::File> file_;
+  base::File* file_;
   std::vector<MINIDUMP_DIRECTORY> directory_;
 
   DISALLOW_COPY_AND_ASSIGN(MinidumpUpdater);

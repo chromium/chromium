@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,9 +55,9 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   }
 
  private:
-  const CheckedPtr<base::TimeTicks> capture_time_;
-  const CheckedPtr<media::VideoFrameMetadata> metadata_;
-  const CheckedPtr<gfx::Size> natural_size_;
+  base::TimeTicks* const capture_time_;
+  media::VideoFrameMetadata* const metadata_;
+  gfx::Size* const natural_size_;
   base::OnceClosure got_frame_cb_;
 };
 
@@ -101,7 +100,7 @@ class PushableMediaStreamVideoSourceTest : public testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   Persistent<MediaStreamSource> stream_source_;
-  CheckedPtr<PushableMediaStreamVideoSource> pushable_video_source_;
+  PushableMediaStreamVideoSource* pushable_video_source_;
 };
 
 TEST_F(PushableMediaStreamVideoSourceTest, StartAndStop) {

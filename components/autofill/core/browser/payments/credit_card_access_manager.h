@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -282,22 +281,22 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   bool is_authentication_in_progress_ = false;
 
   // The associated autofill driver. Weak reference.
-  const CheckedPtr<AutofillDriver> driver_;
+  AutofillDriver* const driver_;
 
   // The associated autofill client. Weak reference.
-  const CheckedPtr<AutofillClient> client_;
+  AutofillClient* const client_;
 
   // Client to interact with Payments servers.
-  CheckedPtr<payments::PaymentsClient> payments_client_;
+  payments::PaymentsClient* payments_client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   // Weak reference.
   // May be NULL. NULL indicates OTR.
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   // For logging metrics.
-  CheckedPtr<CreditCardFormEventLogger> form_event_logger_;
+  CreditCardFormEventLogger* form_event_logger_;
 
   // Timestamp used for preflight call metrics.
   base::TimeTicks preflight_call_timestamp_;

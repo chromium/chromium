@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
@@ -119,13 +118,13 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   mojo::Remote<mojom::Logger> logger_;
 
   // Non-owned pointer to the Cast MediaSinkServiceBase instance.
-  const CheckedPtr<MediaSinkServiceBase> media_sink_service_;
+  MediaSinkServiceBase* const media_sink_service_;
 
   // Non-owned pointer to the CastAppDiscoveryService instance.
-  const CheckedPtr<CastAppDiscoveryService> app_discovery_service_;
+  CastAppDiscoveryService* const app_discovery_service_;
 
   // Non-owned pointer to the CastMessageHandler instance.
-  const CheckedPtr<cast_channel::CastMessageHandler> message_handler_;
+  cast_channel::CastMessageHandler* const message_handler_;
 
   // Registered sink queries.
   base::flat_map<MediaSource::Id, base::CallbackListSubscription> sink_queries_;

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/offline_event_logger.h"
@@ -80,19 +79,19 @@ class PrefetchServiceImpl : public PrefetchService {
   std::unique_ptr<OfflineMetricsCollector> offline_metrics_collector_;
   std::unique_ptr<PrefetchDispatcher> prefetch_dispatcher_;
   std::unique_ptr<PrefetchNetworkRequestFactory> network_request_factory_;
-  CheckedPtr<OfflinePageModel> offline_page_model_;
+  OfflinePageModel* offline_page_model_;
   std::unique_ptr<PrefetchStore> prefetch_store_;
   std::unique_ptr<PrefetchDownloader> prefetch_downloader_;
   std::unique_ptr<PrefetchImporter> prefetch_importer_;
   std::unique_ptr<PrefetchGCMHandler> prefetch_gcm_handler_;
   std::unique_ptr<PrefetchBackgroundTaskHandler>
       prefetch_background_task_handler_;
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // Owned by CachedImageFetcherService.
-  CheckedPtr<image_fetcher::ImageFetcher> image_fetcher_;
+  image_fetcher::ImageFetcher* image_fetcher_;
 
-  CheckedPtr<SuggestionsProvider> suggestions_provider_ = nullptr;
+  SuggestionsProvider* suggestions_provider_ = nullptr;
 
   base::WeakPtrFactory<PrefetchServiceImpl> weak_ptr_factory_{this};
 

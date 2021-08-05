@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -353,10 +352,10 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   bool is_checking_dialog_confirmed_path_;
 #endif
 
-  CheckedPtr<download::DownloadItem> download_;
+  download::DownloadItem* download_;
   const bool is_resumption_;
-  CheckedPtr<DownloadPrefs> download_prefs_;
-  CheckedPtr<DownloadTargetDeterminerDelegate> delegate_;
+  DownloadPrefs* download_prefs_;
+  DownloadTargetDeterminerDelegate* delegate_;
   CompletionCallback completion_callback_;
   base::CancelableTaskTracker history_tracker_;
   absl::optional<download::DownloadSchedule> download_schedule_;

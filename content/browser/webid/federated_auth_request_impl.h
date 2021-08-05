@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service_base.h"
@@ -135,9 +134,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // chrome/browser/ui machinery to be used to load IDP sign-in content.
   std::unique_ptr<WebContents> idp_web_contents_;
 
-  CheckedPtr<FederatedIdentityRequestPermissionContextDelegate>
+  FederatedIdentityRequestPermissionContextDelegate*
       request_permission_delegate_ = nullptr;
-  CheckedPtr<FederatedIdentitySharingPermissionContextDelegate>
+  FederatedIdentitySharingPermissionContextDelegate*
       sharing_permission_delegate_ = nullptr;
 
   // The account that was selected by the user. This is only applicable to the

@@ -20,7 +20,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/timezone.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -256,7 +255,7 @@ class PersonalDatabaseHelper
   // to either profile_database_, or account_database_.
   scoped_refptr<AutofillWebDataService> server_database_;
 
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 };
 
 PersonalDataManager::PersonalDataManager(
@@ -300,7 +299,7 @@ void PersonalDataManager::Init(
   // Listen for URL deletions from browsing history.
   history_service_ = history_service;
   if (history_service_)
-    history_service_observation_.Observe(history_service_.get());
+    history_service_observation_.Observe(history_service_);
 
   // Listen for account cookie deletion by the user.
   identity_manager_ = identity_manager;

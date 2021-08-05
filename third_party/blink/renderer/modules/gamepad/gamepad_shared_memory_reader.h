@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_SHARED_MEMORY_READER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -59,8 +58,7 @@ class GamepadSharedMemoryReader
 
   base::ReadOnlySharedMemoryRegion renderer_shared_buffer_region_;
   base::ReadOnlySharedMemoryMapping renderer_shared_buffer_mapping_;
-  CheckedPtr<const device::GamepadHardwareBuffer> gamepad_hardware_buffer_ =
-      nullptr;
+  const device::GamepadHardwareBuffer* gamepad_hardware_buffer_ = nullptr;
 
   bool ever_interacted_with_ = false;
 
@@ -68,7 +66,7 @@ class GamepadSharedMemoryReader
                    GamepadSharedMemoryReader>
       receiver_;
   HeapMojoRemote<device::mojom::blink::GamepadMonitor> gamepad_monitor_remote_;
-  CheckedPtr<blink::GamepadListener> listener_ = nullptr;
+  blink::GamepadListener* listener_ = nullptr;
 };
 
 }  // namespace blink

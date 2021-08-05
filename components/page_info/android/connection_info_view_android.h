@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/page_info/page_info_ui.h"
 
 namespace content {
@@ -47,7 +46,7 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
   std::unique_ptr<PageInfo> presenter_;
 
   // PageInfoClient outlives this class.
-  CheckedPtr<page_info::PageInfoClient> page_info_client_;
+  page_info::PageInfoClient* page_info_client_;
 
   // The java prompt implementation.
   base::android::ScopedJavaGlobalRef<jobject> popup_jobject_;

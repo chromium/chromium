@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
 #include "weblayer/public/navigation.h"
@@ -135,7 +134,7 @@ class NavigationImpl : public Navigation {
   int GetNavigationEntryOffset() override;
 
  private:
-  CheckedPtr<content::NavigationHandle> navigation_handle_;
+  content::NavigationHandle* navigation_handle_;
 
   // The NavigationEntry's unique ID for this navigation, or -1 if there isn't
   // one.

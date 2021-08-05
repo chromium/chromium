@@ -272,7 +272,7 @@ CastStreamingDemuxer::~CastStreamingDemuxer() {
   if (was_initialization_successful_) {
     original_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&CastStreamingReceiver::OnDemuxerDestroyed,
-                                  base::Unretained(receiver_.get())));
+                                  base::Unretained(receiver_)));
   }
 }
 
@@ -342,9 +342,9 @@ void CastStreamingDemuxer::Initialize(media::DemuxerHost* host,
   initialized_cb_ = std::move(status_cb);
 
   original_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&CastStreamingReceiver::SetDemuxer,
-                                base::Unretained(receiver_.get()),
-                                base::Unretained(this)));
+      FROM_HERE,
+      base::BindOnce(&CastStreamingReceiver::SetDemuxer,
+                     base::Unretained(receiver_), base::Unretained(this)));
 }
 
 void CastStreamingDemuxer::AbortPendingReads() {

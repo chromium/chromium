@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_source.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
@@ -44,7 +43,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
         pushable_video_source_(new PushableMediaStreamVideoSource(
             scheduler::GetSingleThreadTaskRunnerForTesting())) {
     media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_video_source_.get()));
+        base::WrapUnique(pushable_video_source_));
   }
 
   ~MediaStreamVideoTrackUnderlyingSourceTest() override {
@@ -102,7 +101,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   const Persistent<MediaStreamSource> media_stream_source_;
-  const CheckedPtr<PushableMediaStreamVideoSource> pushable_video_source_;
+  PushableMediaStreamVideoSource* const pushable_video_source_;
 };
 
 TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,

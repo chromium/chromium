@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -318,7 +317,7 @@ class MediaDrmOriginIdManager::NetworkObserver
 
  private:
   // Use of raw pointer is okay as |parent_| owns this object.
-  const CheckedPtr<MediaDrmOriginIdManager> parent_;
+  MediaDrmOriginIdManager* const parent_;
   int number_of_attempts_ = 0;
 };
 

@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/cpu_affinity_posix.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/task/task_observer.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
@@ -123,7 +122,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerScheduler
   SchedulingPolicyParams pending_policy_;
 
   // Accessed only on the |thread_pool_task_runner_| sequence.
-  CheckedPtr<PowerModeArbiter> arbiter_;
+  PowerModeArbiter* arbiter_;
   bool power_observer_registered_ = false;
   bool task_observer_registered_ = false;
   base::CpuAffinityMode enforced_affinity_ = base::CpuAffinityMode::kDefault;

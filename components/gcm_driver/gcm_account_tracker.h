@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/gcm_driver/account_tracker.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
@@ -142,9 +141,9 @@ class GCMAccountTracker : public AccountTracker::Observer,
   // Account tracker.
   std::unique_ptr<AccountTracker> account_tracker_;
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
-  CheckedPtr<GCMDriver> driver_;
+  GCMDriver* driver_;
 
   // State of the account.
   AccountInfos account_infos_;

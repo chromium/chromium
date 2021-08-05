@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -122,7 +121,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
     observer_list_.RemoveObserver(observer);
   }
 
-  const CheckedPtr<BrowserViewLayout> browser_view_layout_;
+  BrowserViewLayout* const browser_view_layout_;
 
   base::ObserverList<ModalDialogHostObserver>::Unchecked observer_list_;
 
@@ -552,9 +551,9 @@ void BrowserViewLayout::LayoutSidePanelView(
   DCHECK(side_panel == right_aligned_side_panel_ ||
          side_panel == left_aligned_side_panel_);
   const bool is_right_aligned = side_panel == right_aligned_side_panel_;
-  views::View* side_panel_separator =
-      is_right_aligned ? right_aligned_side_panel_separator_.get()
-                       : left_aligned_side_panel_separator_.get();
+  views::View* side_panel_separator = is_right_aligned
+                                          ? right_aligned_side_panel_separator_
+                                          : left_aligned_side_panel_separator_;
   DCHECK(side_panel_separator);
   SetViewVisibility(side_panel_separator, side_panel->GetVisible());
   if (!side_panel->GetVisible())

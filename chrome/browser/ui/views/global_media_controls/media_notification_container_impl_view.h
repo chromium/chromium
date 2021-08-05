@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
@@ -166,28 +165,27 @@ class MediaNotificationContainerImplView
   void OnSizeChanged();
 
   const std::string id_;
-  CheckedPtr<views::View> swipeable_container_ = nullptr;
+  views::View* swipeable_container_ = nullptr;
 
   std::u16string title_;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
-  CheckedPtr<views::View> dismiss_button_placeholder_ = nullptr;
+  views::View* dismiss_button_placeholder_ = nullptr;
 
   // Shows the colored circle background behind the dismiss button to give it
   // proper contrast against the artwork. The background can't be on the dismiss
   // button itself because it messes up the ink drop.
-  CheckedPtr<views::View> dismiss_button_container_ = nullptr;
+  views::View* dismiss_button_container_ = nullptr;
 
-  CheckedPtr<DismissButton> dismiss_button_ = nullptr;
-  CheckedPtr<media_message_center::MediaNotificationView> view_ = nullptr;
-  CheckedPtr<MediaNotificationDeviceSelectorView> device_selector_view_ =
-      nullptr;
-  CheckedPtr<MediaNotificationFooterView> footer_view_ = nullptr;
+  DismissButton* dismiss_button_ = nullptr;
+  media_message_center::MediaNotificationView* view_ = nullptr;
+  MediaNotificationDeviceSelectorView* device_selector_view_ = nullptr;
+  MediaNotificationFooterView* footer_view_ = nullptr;
 
   // Only shows up for cast notifications.
-  CheckedPtr<views::View> stop_button_strip_ = nullptr;
-  CheckedPtr<views::LabelButton> stop_cast_button_ = nullptr;
+  views::View* stop_button_strip_ = nullptr;
+  views::LabelButton* stop_cast_button_ = nullptr;
 
   SkColor foreground_color_;
   SkColor background_color_;
@@ -223,15 +221,15 @@ class MediaNotificationContainerImplView
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
-  CheckedPtr<OverlayMediaNotificationView> overlay_ = nullptr;
+  OverlayMediaNotificationView* overlay_ = nullptr;
 
   views::UniqueWidgetPtr drag_image_widget_;
 
-  const CheckedPtr<MediaNotificationService> service_;
+  MediaNotificationService* const service_;
 
   const bool is_cros_;
   const GlobalMediaControlsEntryPoint entry_point_;
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_

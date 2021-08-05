@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -177,7 +176,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                       const AutocompleteInput& input,
                                       const GURL& suggest_url);
 
-  CheckedPtr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderListener* listener_;
 
   // The result type that is currently being processed by provider.
   // When the provider is not running, the result type is set to NONE.

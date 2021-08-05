@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
@@ -243,23 +242,23 @@ class InputController final : public StreamMonitor {
 
   // Contains the InputController::EventHandler which receives state
   // notifications from this class.
-  const CheckedPtr<EventHandler> handler_;
+  EventHandler* const handler_;
 
   // Pointer to the audio input stream object.
   // Only used on the audio thread.
-  CheckedPtr<media::AudioInputStream> stream_ = nullptr;
+  media::AudioInputStream* stream_ = nullptr;
 
   // SyncWriter is used only in low-latency mode for synchronous writing.
-  const CheckedPtr<SyncWriter> sync_writer_;
+  SyncWriter* const sync_writer_;
 
   StreamType type_;
 
   double max_volume_ = 0.0;
 
-  const CheckedPtr<media::UserInputMonitor> user_input_monitor_;
+  media::UserInputMonitor* const user_input_monitor_;
 
   // Notified when the stream starts/stops recording.
-  const CheckedPtr<InputStreamActivityMonitor> activity_monitor_;
+  InputStreamActivityMonitor* const activity_monitor_;
 
 #if defined(AUDIO_POWER_MONITORING)
   // Whether the silence state and microphone levels should be checked and sent

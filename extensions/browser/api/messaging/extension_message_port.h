@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "extensions/browser/api/messaging/message_port.h"
@@ -152,7 +151,7 @@ class ExtensionMessagePort : public MessagePort {
 
   const PortId port_id_;
   std::string extension_id_;
-  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
 
   // Whether this port corresponds to *all* extension contexts. Should only be
   // true for a receiver port.
@@ -177,7 +176,7 @@ class ExtensionMessagePort : public MessagePort {
   bool did_create_port_ = false;
 
   // Used in IncrementLazyKeepaliveCount
-  CheckedPtr<ExtensionHost> background_host_ptr_ = nullptr;
+  ExtensionHost* background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
 };
 

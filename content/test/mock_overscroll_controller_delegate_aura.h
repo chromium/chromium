@@ -6,7 +6,6 @@
 #define CONTENT_TEST_MOCK_OVERSCROLL_CONTROLLER_DELEGATE_AURA_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/test/mock_overscroll_observer.h"
@@ -42,7 +41,7 @@ class MockOverscrollControllerDelegateAura
  private:
   void OnOverscrollEnd();
 
-  CheckedPtr<RenderWidgetHostViewAura> rwhva_;
+  RenderWidgetHostViewAura* rwhva_;
   scoped_refptr<MessageLoopRunner> update_message_loop_runner_;
   scoped_refptr<MessageLoopRunner> end_message_loop_runner_;
   bool seen_update_;

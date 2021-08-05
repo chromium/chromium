@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -229,7 +228,7 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // A weak handle to the presenter used to join the list of insecure
   // credentials with saved passwords. Needs to outlive this instance.
-  CheckedPtr<SavedPasswordsPresenter> presenter_ = nullptr;
+  SavedPasswordsPresenter* presenter_ = nullptr;
 
   // The password stores containing the insecure credentials.
   scoped_refptr<PasswordStore> profile_store_;

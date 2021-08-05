@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "cc/paint/paint_flags.h"
 #include "components/power_scheduler/power_mode_voter.h"
@@ -148,7 +147,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   viz::BeginFrameAck current_begin_frame_ack_;
 
-  CheckedPtr<CanvasResourceDispatcherClient> client_;
+  CanvasResourceDispatcherClient* client_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 

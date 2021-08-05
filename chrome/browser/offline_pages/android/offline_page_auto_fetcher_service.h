@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom-forward.h"
@@ -115,9 +114,9 @@ class OfflinePageAutoFetcherService : public KeyedService,
 
   std::unique_ptr<AutoFetchNotifier> notifier_;
   AutoFetchPageLoadWatcher page_load_watcher_;
-  CheckedPtr<RequestCoordinator> request_coordinator_;
-  CheckedPtr<OfflinePageModel> offline_page_model_;
-  CheckedPtr<Delegate> delegate_;
+  RequestCoordinator* request_coordinator_;
+  OfflinePageModel* offline_page_model_;
+  Delegate* delegate_;
   base::WeakPtrFactory<OfflinePageAutoFetcherService> weak_ptr_factory_{this};
 };
 

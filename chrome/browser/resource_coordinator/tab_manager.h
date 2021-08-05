@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -383,7 +382,7 @@ class TabManager : public LifecycleUnitObserver,
   UsageClock usage_clock_;
 
   // The tab load tracker observed by this instance.
-  const CheckedPtr<TabLoadTracker> tab_load_tracker_;
+  TabLoadTracker* const tab_load_tracker_;
 
   // Weak pointer factory used for posting delayed tasks.
   base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};

@@ -13,7 +13,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -133,7 +132,7 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       database_client_;
 
   // May be null. If non-null, must outlive this class.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in
   // WillProcessResponse. If deferral was not necessary, will remain null.

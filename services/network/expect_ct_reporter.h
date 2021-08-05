@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/transport_security_state.h"
 #include "net/url_request/url_request.h"
@@ -107,7 +106,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
 
   std::unique_ptr<net::ReportSender> report_sender_;
 
-  CheckedPtr<net::URLRequestContext> request_context_;
+  net::URLRequestContext* request_context_;
 
   base::RepeatingClosure success_callback_;
   base::RepeatingClosure failure_callback_;

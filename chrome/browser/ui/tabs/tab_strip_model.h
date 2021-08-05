@@ -16,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -807,14 +806,14 @@ class TabStripModel : public TabGroupController {
   // The model for tab groups hosted within this TabStripModel.
   std::unique_ptr<TabGroupModel> group_model_;
 
-  CheckedPtr<TabStripModelDelegate> delegate_;
+  TabStripModelDelegate* delegate_;
 
   bool tab_strip_ui_was_set_ = false;
 
   base::ObserverList<TabStripModelObserver>::Unchecked observers_;
 
   // A profile associated with this TabStripModel.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // True if all tabs are currently being closed via CloseAllTabs.
   bool closing_all_ = false;

@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -344,7 +343,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   void TopSitesChanged(history::TopSites* top_sites,
                        ChangeReason change_reason) override;
 
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_;

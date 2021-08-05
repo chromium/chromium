@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,7 +53,7 @@ class TranslateModelService
   // Optimization Guide Service that provides model files for this service.
   // Optimization Guide Service is a BrowserContextKeyedServiceFactory and
   // should not be used after Shutdown.
-  CheckedPtr<optimization_guide::OptimizationGuideModelProvider> opt_guide_;
+  optimization_guide::OptimizationGuideModelProvider* opt_guide_;
 
   // The file that contains the language detection model. Available when the
   // file path has been provided by the Optimization Guide and has been

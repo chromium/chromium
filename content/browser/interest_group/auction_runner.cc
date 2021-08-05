@@ -205,7 +205,7 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
   seller_url_loader_factory_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
       url_loader_factory.InitWithNewPipeAndPassReceiver(),
       base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
-                          base::Unretained(delegate_.get())),
+                          base::Unretained(delegate_)),
       frame_origin_, true /* use_cors */, seller_url);
   bool should_pause_on_start = false;  // TODO(morlovich): Use this.
   mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
@@ -283,7 +283,7 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
       std::make_unique<AuctionURLLoaderFactoryProxy>(
           url_loader_factory.InitWithNewPipeAndPassReceiver(),
           base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
-                              base::Unretained(delegate_.get())),
+                              base::Unretained(delegate_)),
           frame_origin_, false /* use_cors */, bidding_url,
           trusted_bidding_signals_full_url);
 

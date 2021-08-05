@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -59,7 +58,7 @@ class BackgroundTracingActiveScenario::TracingTimer {
  private:
   void TracingTimerFired() { scenario_->BeginFinalizing(std::move(callback_)); }
 
-  CheckedPtr<BackgroundTracingActiveScenario> scenario_;
+  BackgroundTracingActiveScenario* scenario_;
   base::OneShotTimer tracing_timer_;
   BackgroundTracingManager::StartedFinalizingCallback callback_;
 };
@@ -264,7 +263,7 @@ class BackgroundTracingActiveScenario::TracingSession {
     tracing_session->data->Stop();
   }
 
-  const CheckedPtr<BackgroundTracingActiveScenario> parent_scenario_;
+  BackgroundTracingActiveScenario* const parent_scenario_;
   const bool convert_to_legacy_json_;
   // True if the trace should be output to a local location using a
   // ReceiveCallback instead of uploading through UMA.

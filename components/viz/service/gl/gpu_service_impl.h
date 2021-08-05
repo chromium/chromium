@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
@@ -426,7 +425,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   std::unique_ptr<gpu::Scheduler> scheduler_;
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  CheckedPtr<gpu::VulkanImplementation> vulkan_implementation_;
+  gpu::VulkanImplementation* vulkan_implementation_;
   scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
 #endif
   std::unique_ptr<MetalContextProvider> metal_context_provider_;
@@ -439,7 +438,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   // An event that will be signalled when we shutdown. On some platforms it
   // comes from external sources.
   std::unique_ptr<base::WaitableEvent> owned_shutdown_event_;
-  CheckedPtr<base::WaitableEvent> shutdown_event_ = nullptr;
+  base::WaitableEvent* shutdown_event_ = nullptr;
 
   // Callback that safely exits GPU process.
   base::OnceCallback<void(ExitCode)> exit_callback_;

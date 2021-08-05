@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -233,7 +232,7 @@ class WebUsbAllowDevicesForUrlsPolicyHandlerTest
     handler_list_.AddHandler(std::move(handler));
   }
 
-  CheckedPtr<WebUsbAllowDevicesForUrlsPolicyHandler> handler_;
+  WebUsbAllowDevicesForUrlsPolicyHandler* handler_;
 };
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, CheckPolicySettings) {

@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -236,7 +235,7 @@ class CONTENT_EXPORT AppCacheUpdateJob
 
   AppCache* inprogress_cache() { return inprogress_cache_.get(); }
 
-  CheckedPtr<AppCacheServiceImpl> service_;
+  AppCacheServiceImpl* service_;
   const GURL manifest_url_;  // here for easier access
 
   // Stores the manifest parser version for the group before an update begins.
@@ -258,7 +257,7 @@ class CONTENT_EXPORT AppCacheUpdateJob
 
   scoped_refptr<AppCache> inprogress_cache_;
 
-  CheckedPtr<AppCacheGroup> group_;
+  AppCacheGroup* group_;
 
   UpdateType update_type_;
   AppCacheUpdateJobState internal_state_;
@@ -332,7 +331,7 @@ class CONTENT_EXPORT AppCacheUpdateJob
   // an origin trial token in the manifest.
   bool is_origin_trial_required_ = false;
 
-  CheckedPtr<AppCacheStorage> storage_;
+  AppCacheStorage* storage_;
   base::WeakPtrFactory<AppCacheUpdateJob> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheGroupTest, QueueUpdate);

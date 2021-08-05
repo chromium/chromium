@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
@@ -402,7 +401,7 @@ class FaviconUpdateNoLastCommittedEntryTabStripObserver
 
  private:
   base::RunLoop run_loop_;
-  CheckedPtr<TabStripModel> model_ = nullptr;
+  TabStripModel* model_ = nullptr;
   std::unique_ptr<PendingTaskWaiter> pending_task_waiter_;
   std::unique_ptr<NoCommittedEntryWebContentsObserver> observer_;
 };

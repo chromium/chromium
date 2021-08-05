@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 #if defined(__OBJC__)
 @class NSAutoreleasePool;
@@ -36,7 +35,7 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   // no longer needed.
   void Recycle();
  private:
-  CheckedPtr<NSAutoreleasePool> autorelease_pool_;
+  NSAutoreleasePool* autorelease_pool_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ScopedNSAutoreleasePool);

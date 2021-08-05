@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -131,8 +130,8 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
       std::move(on_microtask_checkpoint_).Run();
   }
 
-  CheckedPtr<const base::TickClock> clock_;  // Not owned.
-  CheckedPtr<Vector<String>> timeline_;      // Not owned.
+  const base::TickClock* clock_;        // Not owned.
+  Vector<String>* timeline_;            // Not owned.
   base::OnceClosure on_microtask_checkpoint_;
 };
 

@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_RENDERER_WRAPPER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
 #include "media/base/pipeline_status.h"
@@ -64,7 +63,7 @@ class MediaFoundationRendererWrapper final
  private:
   void OnReceiveDCOMPSurface(HANDLE handle);
 
-  CheckedPtr<mojom::FrameInterfaceFactory> frame_interfaces_;
+  mojom::FrameInterfaceFactory* frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
   GetDCOMPSurfaceCallback get_decomp_surface_cb_;

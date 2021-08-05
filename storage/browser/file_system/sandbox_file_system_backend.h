@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
@@ -74,7 +73,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   SandboxFileSystemBackendDelegate::OriginEnumerator* CreateOriginEnumerator();
 
  private:
-  CheckedPtr<SandboxFileSystemBackendDelegate> delegate_;  // Not owned.
+  SandboxFileSystemBackendDelegate* delegate_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(SandboxFileSystemBackend);
 };

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,7 +49,7 @@ class TemplateURLServiceObserver {
 
  private:
   void StopLoop() { runner_->Quit(); }
-  CheckedPtr<base::RunLoop> runner_;
+  base::RunLoop* runner_;
   base::CallbackListSubscription template_url_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceObserver);

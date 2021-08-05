@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -104,7 +103,7 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock {
   mojom::WakeLockType type_;
 
   // Not owned.
-  CheckedPtr<TestWakeLockProvider> provider_;
+  TestWakeLockProvider* provider_;
 
   mojo::ReceiverSet<mojom::WakeLock, std::unique_ptr<bool>> receivers_;
 

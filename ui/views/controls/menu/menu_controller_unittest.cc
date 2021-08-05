@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -126,7 +125,7 @@ class TestMenuControllerDelegate : public internal::MenuControllerDelegate {
 
   // The values passed on the last call of OnMenuClosed.
   NotifyType on_menu_closed_notify_type_ = NOTIFY_DELEGATE;
-  CheckedPtr<MenuItemView> on_menu_closed_menu_ = nullptr;
+  MenuItemView* on_menu_closed_menu_ = nullptr;
   int on_menu_closed_mouse_event_flags_ = 0;
 
   // Optional callback triggered during OnMenuClosed
@@ -269,7 +268,7 @@ class CancelMenuOnMousePressView : public View {
   gfx::Size CalculatePreferredSize() const override { return size(); }
 
  private:
-  CheckedPtr<MenuController> controller_;
+  MenuController* controller_;
 };
 
 }  // namespace
@@ -874,14 +873,14 @@ class MenuControllerTest : public ViewsTestBase,
   }
 
   // Not owned.
-  CheckedPtr<ReleaseRefTestViewsDelegate> test_views_delegate_ = nullptr;
+  ReleaseRefTestViewsDelegate* test_views_delegate_ = nullptr;
 
   std::unique_ptr<GestureTestWidget> owner_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<TestMenuItemViewShown> menu_item_;
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
-  CheckedPtr<MenuController> menu_controller_ = nullptr;
+  MenuController* menu_controller_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MenuControllerTest);
 };

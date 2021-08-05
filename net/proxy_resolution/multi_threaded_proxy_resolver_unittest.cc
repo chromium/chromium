@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -262,7 +261,7 @@ class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
   }
 
  private:
-  CheckedPtr<BlockableProxyResolverFactory> factory_ = nullptr;
+  BlockableProxyResolverFactory* factory_ = nullptr;
   std::unique_ptr<ProxyResolverFactory> factory_owner_;
   std::unique_ptr<MultiThreadedProxyResolverFactory> resolver_factory_;
   std::unique_ptr<ProxyResolver> resolver_;

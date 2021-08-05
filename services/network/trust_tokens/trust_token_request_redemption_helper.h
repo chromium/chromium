@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
@@ -212,8 +211,8 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // alongside the RR if redemption succeeds.
   std::string token_verification_key_;
 
-  const CheckedPtr<TrustTokenStore> token_store_;
-  const CheckedPtr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
+  TrustTokenStore* const token_store_;
+  const TrustTokenKeyCommitmentGetter* const key_commitment_getter_;
   const std::unique_ptr<KeyPairGenerator> key_pair_generator_;
   const std::unique_ptr<Cryptographer> cryptographer_;
   net::NetLogWithSource net_log_;

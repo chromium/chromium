@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -281,8 +280,8 @@ class MODULES_EXPORT UserMediaProcessor
   WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver();
 
   // Owned by the test.
-  CheckedPtr<WebMediaStreamDeviceObserver>
-      media_stream_device_observer_for_testing_ = nullptr;
+  WebMediaStreamDeviceObserver* media_stream_device_observer_for_testing_ =
+      nullptr;
 
   LocalStreamSources local_sources_;
   LocalStreamSources pending_local_sources_;

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -37,10 +36,10 @@ class GeneratePageBundleTask : public Task {
   void Run() override;
   void StartGeneratePageBundle(std::unique_ptr<UrlAndIds> url_and_ids);
 
-  CheckedPtr<PrefetchDispatcher> prefetch_dispatcher_;
-  CheckedPtr<PrefetchStore> prefetch_store_;
+  PrefetchDispatcher* prefetch_dispatcher_;
+  PrefetchStore* prefetch_store_;
   std::string gcm_token_;
-  CheckedPtr<PrefetchNetworkRequestFactory> request_factory_;
+  PrefetchNetworkRequestFactory* request_factory_;
   PrefetchRequestFinishedCallback callback_;
 
   base::WeakPtrFactory<GeneratePageBundleTask> weak_factory_{this};

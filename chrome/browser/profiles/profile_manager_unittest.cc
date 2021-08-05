@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -772,7 +771,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
 #endif
 
  private:
-  CheckedPtr<UnittestGuestProfileManager> unittest_profile_manager_ = nullptr;
+  UnittestGuestProfileManager* unittest_profile_manager_ = nullptr;
 };
 
 TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {

@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_context.h"
@@ -189,7 +188,7 @@ class ContextualSearchDelegate
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Holds the TemplateURLService. Not owned.
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 
   // The field trial helper instance, always set up by the constructor.
   std::unique_ptr<ContextualSearchFieldTrial> field_trial_;

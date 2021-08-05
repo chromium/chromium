@@ -143,9 +143,8 @@ media::AudioManager* OwningAudioManagerAccessor::GetAudioManager() {
     DCHECK(audio_manager_factory_cb_);
     DCHECK(log_factory_);
     base::TimeTicks creation_start_time = base::TimeTicks::Now();
-    audio_manager_ =
-        std::move(audio_manager_factory_cb_)
-            .Run(std::make_unique<MainThread>(), log_factory_.get());
+    audio_manager_ = std::move(audio_manager_factory_cb_)
+                         .Run(std::make_unique<MainThread>(), log_factory_);
     DCHECK(audio_manager_);
     UMA_HISTOGRAM_TIMES("Media.AudioService.AudioManagerStartupTime",
                         base::TimeTicks::Now() - creation_start_time);

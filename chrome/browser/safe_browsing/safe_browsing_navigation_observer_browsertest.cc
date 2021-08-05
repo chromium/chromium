@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -145,7 +144,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   }
 
   base::OnceClosure quit_waiting_callback_;
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
   std::vector<DownloadItem*> items_seen_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadItemCreatedObserver);

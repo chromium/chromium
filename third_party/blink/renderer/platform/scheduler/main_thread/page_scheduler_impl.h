@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
@@ -218,7 +217,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     static void RecordPageLifecycleStateTransition(
         PageLifecycleStateTransition);
 
-    CheckedPtr<PageSchedulerImpl> page_scheduler_impl_;
+    PageSchedulerImpl* page_scheduler_impl_;
     PageLifecycleState current_state_;
   };
 
@@ -316,7 +315,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
-  CheckedPtr<MainThreadSchedulerImpl> main_thread_scheduler_;
+  MainThreadSchedulerImpl* main_thread_scheduler_;
   AgentGroupSchedulerImpl& agent_group_scheduler_;
 
   PageVisibilityState page_visibility_;
@@ -373,7 +372,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   //    AllowUnalignedWakeUpIfNoRecentWakeUp() on this pool.
   std::unique_ptr<WakeUpBudgetPool> cross_origin_intensive_wake_up_budget_pool_;
 
-  CheckedPtr<PageScheduler::Delegate> delegate_;
+  PageScheduler::Delegate* delegate_;
   CancelableClosureHolder do_throttle_cpu_time_callback_;
   CancelableClosureHolder do_intensively_throttle_wake_ups_callback_;
   CancelableClosureHolder reset_had_recent_title_or_favicon_update_;

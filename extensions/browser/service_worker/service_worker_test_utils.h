@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TEST_UTILS_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TEST_UTILS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -50,7 +49,7 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
 
   RegistrationsMap registrations_completed_map_;
   base::RunLoop stored_run_loop_;
-  CheckedPtr<content::ServiceWorkerContext> context_ = nullptr;
+  content::ServiceWorkerContext* context_ = nullptr;
 };
 
 // Observes ProcessManager::UnregisterServiceWorker.

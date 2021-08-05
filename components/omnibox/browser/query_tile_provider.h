@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -66,11 +65,11 @@ class QueryTileProvider : public AutocompleteProvider {
                        const std::string& tile_query_text,
                        std::vector<query_tiles::Tile> tiles);
 
-  const CheckedPtr<AutocompleteProviderClient> client_;
-  const CheckedPtr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderClient* const client_;
+  AutocompleteProviderListener* const listener_;
 
   // The backend providing query tiles.
-  const CheckedPtr<query_tiles::TileService> tile_service_;
+  query_tiles::TileService* const tile_service_;
 
   base::WeakPtrFactory<QueryTileProvider> weak_ptr_factory_{this};
 };

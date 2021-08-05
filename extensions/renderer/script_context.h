@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
@@ -190,8 +189,8 @@ class ScriptContext {
     ~ScopedFrameDocumentLoader();
 
    private:
-    CheckedPtr<blink::WebLocalFrame> frame_;
-    CheckedPtr<blink::WebDocumentLoader> document_loader_;
+    blink::WebLocalFrame* frame_;
+    blink::WebDocumentLoader* document_loader_;
     DISALLOW_COPY_AND_ASSIGN(ScopedFrameDocumentLoader);
   };
 
@@ -283,7 +282,7 @@ class ScriptContext {
 
   // The WebLocalFrame associated with this context. This can be NULL because
   // this object can outlive is destroyed asynchronously.
-  CheckedPtr<blink::WebLocalFrame> web_frame_;
+  blink::WebLocalFrame* web_frame_;
 
   // The extension associated with this context, or NULL if there is none. This
   // might be a hosted app in the case that this context is hosting a web URL.

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -118,7 +117,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   std::unique_ptr<ElevatedNativeMessagingHost> elevated_host_;
 #endif  // defined(OS_WIN)
 
-  CheckedPtr<Client> client_ = nullptr;
+  Client* client_ = nullptr;
   DelegatingSignalStrategy::IqCallback incoming_message_callback_;
   std::unique_ptr<ChromotingHostContext> host_context_;
   std::unique_ptr<It2MeHostFactory> factory_;

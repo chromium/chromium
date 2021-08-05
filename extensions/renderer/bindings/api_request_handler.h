@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
@@ -162,14 +161,14 @@ class APIRequestHandler {
 
   // The exception handler for the bindings system; guaranteed to be valid
   // during this object's lifetime.
-  const CheckedPtr<ExceptionHandler> exception_handler_;
+  ExceptionHandler* const exception_handler_;
 
   // The response validator used to check the responses for resolved requests.
   // Null if response validation is disabled.
   std::unique_ptr<APIResponseValidator> response_validator_;
 
   // Outlives |this|.
-  const CheckedPtr<const InteractionProvider> interaction_provider_;
+  const InteractionProvider* const interaction_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(APIRequestHandler);
 };

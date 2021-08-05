@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
@@ -48,7 +47,7 @@ class ScopedIncrementer {
   }
 
  private:
-  CheckedPtr<int> count_;
+  int* count_;
 };
 
 Status ConditionIsMet(bool* is_condition_met) {
@@ -347,7 +346,7 @@ DevToolsClientImpl::ResponseInfo::ResponseInfo(const std::string& method)
 DevToolsClientImpl::ResponseInfo::~ResponseInfo() {}
 
 DevToolsClient* DevToolsClientImpl::GetRootClient() {
-  return parent_ ? parent_.get() : this;
+  return parent_ ? parent_ : this;
 }
 
 Status DevToolsClientImpl::SendCommandInternal(

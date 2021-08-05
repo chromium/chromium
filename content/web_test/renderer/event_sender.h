@@ -14,7 +14,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -254,8 +253,8 @@ class EventSender {
   int wm_sys_dead_char_;
 #endif
 
-  const CheckedPtr<blink::WebFrameWidget> web_frame_widget_;
-  const CheckedPtr<TestRunner> test_runner_;
+  blink::WebFrameWidget* const web_frame_widget_;
+  TestRunner* const test_runner_;
 
   bool force_layout_on_events_;
 

@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "services/device/hid/hid_device_info.h"
@@ -111,7 +110,7 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
   scoped_refptr<HidDeviceInfo> device_info_;
   const bool allow_protected_reports_;
   const bool allow_fido_reports_;
-  CheckedPtr<Client> client_ = nullptr;
+  Client* client_ = nullptr;
   bool has_always_protected_collection_;
   bool closed_;
 

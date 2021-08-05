@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_AUDIO_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_AUDIO_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -76,7 +75,7 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   const media::AudioParameters& Parameters() const;
 
  private:
-  CheckedPtr<blink::MediaStreamAudioSource> source_ = nullptr;
+  blink::MediaStreamAudioSource* source_ = nullptr;
   String device_id_;
   String group_id_;
   media::AudioParameters parameters_;

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -348,10 +347,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void CountMutation();
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   Registry registry_;
   bool registry_profile_being_deleted_ = false;

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -387,7 +386,7 @@ struct UIDNAWrapper {
                           << "https://crbug.com/778929.";
   }
 
-  CheckedPtr<UIDNA> value;
+  UIDNA* value;
 };
 
 base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;

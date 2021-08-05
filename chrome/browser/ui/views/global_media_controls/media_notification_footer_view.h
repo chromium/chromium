@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_FOOTER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_FOOTER_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/button.h"
@@ -51,9 +50,9 @@ class MediaNotificationFooterView
 
   SkColor foreground_color_ = gfx::kPlaceholderColor;
 
-  CheckedPtr<DeviceEntryButton> overflow_button_ = nullptr;
+  DeviceEntryButton* overflow_button_ = nullptr;
 
-  CheckedPtr<Delegate> delegate_ = nullptr;
+  Delegate* delegate_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_FOOTER_VIEW_H_

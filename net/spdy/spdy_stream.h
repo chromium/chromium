@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
@@ -493,7 +492,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   const base::WeakPtr<SpdySession> session_;
 
   // The transaction should own the delegate.
-  CheckedPtr<SpdyStream::Delegate> delegate_;
+  SpdyStream::Delegate* delegate_;
 
   // The headers for the request to send.
   bool request_headers_valid_;

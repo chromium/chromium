@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image.h"
 
@@ -66,7 +65,7 @@ class ExtensionIconManager {
   // If true, we will desaturate the icons to make them monochromatic.
   bool monochrome_ = false;
 
-  CheckedPtr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<ExtensionIconManager> weak_ptr_factory_{this};
 

@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -140,7 +139,7 @@ class FakeSocket : public P2PDatagramSocket {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&FakeSocket::AppendInputPacket,
-                         base::Unretained(peer_socket_.get()),
+                         base::Unretained(peer_socket_),
                          std::vector<char>(buf->data(), buf->data() + buf_len)),
           base::TimeDelta::FromMilliseconds(latency_ms_));
     }
@@ -155,8 +154,8 @@ class FakeSocket : public P2PDatagramSocket {
 
   base::circular_deque<std::vector<char>> incoming_packets_;
 
-  CheckedPtr<FakeSocket> peer_socket_;
-  CheckedPtr<RateLimiter> rate_limiter_;
+  FakeSocket* peer_socket_;
+  RateLimiter* rate_limiter_;
   int latency_ms_;
 };
 
@@ -282,8 +281,8 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
   friend class base::RefCountedThreadSafe<TCPChannelTester>;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CheckedPtr<P2PStreamSocket> host_socket_;
-  CheckedPtr<P2PStreamSocket> client_socket_;
+  P2PStreamSocket* host_socket_;
+  P2PStreamSocket* client_socket_;
   bool done_;
 
   scoped_refptr<net::DrainableIOBuffer> output_buffer_;
@@ -304,14 +303,14 @@ class PseudoTcpAdapterTest : public testing::Test {
     host_socket_->Connect(client_socket_);
     client_socket_->Connect(host_socket_);
 
-    host_pseudotcp_ = std::make_unique<PseudoTcpAdapter>(
-        base::WrapUnique(host_socket_.get()));
-    client_pseudotcp_ = std::make_unique<PseudoTcpAdapter>(
-        base::WrapUnique(client_socket_.get()));
+    host_pseudotcp_ =
+        std::make_unique<PseudoTcpAdapter>(base::WrapUnique(host_socket_));
+    client_pseudotcp_ =
+        std::make_unique<PseudoTcpAdapter>(base::WrapUnique(client_socket_));
   }
 
-  CheckedPtr<FakeSocket> host_socket_;
-  CheckedPtr<FakeSocket> client_socket_;
+  FakeSocket* host_socket_;
+  FakeSocket* client_socket_;
 
   std::unique_ptr<PseudoTcpAdapter> host_pseudotcp_;
   std::unique_ptr<PseudoTcpAdapter> client_pseudotcp_;
@@ -387,7 +386,7 @@ class DeleteOnConnected {
         FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
   }
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CheckedPtr<std::unique_ptr<PseudoTcpAdapter>> adapter_;
+  std::unique_ptr<PseudoTcpAdapter>* adapter_;
 };
 
 TEST_F(PseudoTcpAdapterTest, DeleteOnConnected) {

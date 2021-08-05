@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_WORKER_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_WORKER_SCHEDULER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -110,7 +109,7 @@ class PLATFORM_EXPORT WorkerScheduler : public FrameOrWorkerScheduler {
   SchedulingLifecycleState lifecycle_state_ =
       SchedulingLifecycleState::kNotThrottled;
 
-  CheckedPtr<WorkerThreadScheduler> thread_scheduler_;  // NOT OWNED
+  WorkerThreadScheduler* thread_scheduler_;  // NOT OWNED
 
   bool is_disposed_ = false;
   uint32_t paused_count_ = 0;

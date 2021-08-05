@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -178,7 +177,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
-  CheckedPtr<SafeBrowsingNavigationObserver> navigation_observer_;
+  SafeBrowsingNavigationObserver* navigation_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:

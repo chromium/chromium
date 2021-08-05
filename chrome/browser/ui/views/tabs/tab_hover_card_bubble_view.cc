@@ -11,7 +11,6 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/i18n/break_iterator.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -393,8 +392,8 @@ class TabHoverCardBubbleView::FadeLabel : public views::View {
     }
   }
 
-  CheckedPtr<TwoLineLabel> primary_label_;
-  CheckedPtr<SolidLabel> label_fading_out_;
+  TwoLineLabel* primary_label_;
+  SolidLabel* label_fading_out_;
   absl::optional<bool> was_filename_;
   double percent_ = 1.0;
 };
@@ -607,16 +606,16 @@ class TabHoverCardBubbleView::ThumbnailView
     }
   }
 
-  const CheckedPtr<TabHoverCardBubbleView> bubble_view_;
+  TabHoverCardBubbleView* const bubble_view_;
 
   // Displays the image that we are trying to display for the target/current
   // tab. Placed under `image_fading_out_` so that it is revealed as the
   // previous image fades out.
-  CheckedPtr<views::ImageView> target_tab_image_ = nullptr;
+  views::ImageView* target_tab_image_ = nullptr;
 
   // Displays the previous image as it's fading out. Rendered over
   // `target_tab_image_` and has its alpha animated from 1 to 0.
-  CheckedPtr<views::ImageView> image_fading_out_ = nullptr;
+  views::ImageView* image_fading_out_ = nullptr;
 
   // Provides a smooth fade out for `image_fading_out_`. We do not use a
   // LayerAnimation because we need to rewind the transparency at various

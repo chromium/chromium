@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -52,8 +51,8 @@ class MarkOperationDoneTask : public Task {
   void MarkOperationDone(int updated_entry_count);
   void Done(TaskResult result);
 
-  CheckedPtr<PrefetchDispatcher> prefetch_dispatcher_;
-  CheckedPtr<PrefetchStore> prefetch_store_;
+  PrefetchDispatcher* prefetch_dispatcher_;
+  PrefetchStore* prefetch_store_;
   std::string operation_name_;
   TaskResult result_ = std::make_pair(StoreResult::UNFINISHED, -1);
 

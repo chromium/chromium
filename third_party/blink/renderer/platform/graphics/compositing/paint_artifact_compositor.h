@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/input/layer_selection_bound.h"
@@ -349,7 +348,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   scoped_refptr<cc::Layer> root_layer_;
   Vector<std::unique_ptr<ContentLayerClientImpl>> content_layer_clients_;
   struct SynthesizedClipEntry {
-    CheckedPtr<const ClipPaintPropertyNode> key;
+    const ClipPaintPropertyNode* key;
     std::unique_ptr<SynthesizedClip> synthesized_clip;
     bool in_use;
   };

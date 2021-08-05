@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "google_apis/common/api_error_codes.h"
@@ -51,8 +50,8 @@ class FolderCreator {
       google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::FileList> file_list);
 
-  CheckedPtr<drive::DriveServiceInterface> drive_service_;
-  CheckedPtr<MetadataDatabase> metadata_database_;
+  drive::DriveServiceInterface* drive_service_;
+  MetadataDatabase* metadata_database_;
 
   const std::string parent_folder_id_;
   const std::string title_;

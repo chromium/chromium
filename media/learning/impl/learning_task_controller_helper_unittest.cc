@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "media/learning/impl/learning_task_controller_helper.h"
@@ -31,8 +30,8 @@ class LearningTaskControllerHelperTest : public testing::Test {
       *cb_out_ = std::move(cb);
     }
 
-    CheckedPtr<FeatureVector> features_out_;
-    CheckedPtr<FeatureProvider::FeatureVectorCB> cb_out_;
+    FeatureVector* features_out_;
+    FeatureProvider::FeatureVectorCB* cb_out_;
   };
 
   LearningTaskControllerHelperTest() {

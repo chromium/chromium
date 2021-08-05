@@ -1961,8 +1961,7 @@ void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
   if (handlers.empty())
     return;
 
-  protocol_handler_registry_observation_.Observe(
-      protocol_handler_registry_.get());
+  protocol_handler_registry_observation_.Observe(protocol_handler_registry_);
   is_protocol_submenu_valid_ = true;
 
   size_t max = IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_LAST -

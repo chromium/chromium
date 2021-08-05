@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -108,7 +107,7 @@ class PageInfoBubbleViewTestApi {
     Profile* profile =
         use_off_the_record_profile_
             ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-            : profile_.get();
+            : profile_;
     if (is_version_two_) {
       auto* bubble = new PageInfoNewBubbleView(
           anchor_view, gfx::Rect(), parent_, profile, web_contents_, GURL(kUrl),
@@ -229,7 +228,7 @@ class PageInfoBubbleViewTestApi {
 
   std::u16string GetPermissionComboboxTextAt(int index) {
     DCHECK(!is_version_two_);
-    auto* combobox = GetPermissionSelectorAt(index)->combobox_.get();
+    auto* combobox = GetPermissionSelectorAt(index)->combobox_;
     return combobox->GetTextForRow(combobox->GetSelectedRow());
   }
 
@@ -240,7 +239,7 @@ class PageInfoBubbleViewTestApi {
 
   void SimulateUserSelectingComboboxItemAt(int selector_index, int menu_index) {
     DCHECK(!is_version_two_);
-    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_.get();
+    auto* combobox = GetPermissionSelectorAt(selector_index)->combobox_;
     combobox->SetSelectedRow(menu_index);
   }
 
@@ -306,18 +305,17 @@ class PageInfoBubbleViewTestApi {
     quit_closure.Run();
   }
 
-  CheckedPtr<views::BubbleDialogDelegateView> bubble_delegate_;
-  CheckedPtr<PageInfo> presenter_ = nullptr;
-  CheckedPtr<std::vector<std::unique_ptr<PermissionSelectorRow>>>
-      selector_rows_ = nullptr;
-  CheckedPtr<std::vector<PermissionToggleRowView*>> toggle_rows_ = nullptr;
+  views::BubbleDialogDelegateView* bubble_delegate_;
+  PageInfo* presenter_ = nullptr;
+  std::vector<std::unique_ptr<PermissionSelectorRow>>* selector_rows_ = nullptr;
+  std::vector<PermissionToggleRowView*>* toggle_rows_ = nullptr;
 
-  CheckedPtr<PageInfoNavigationHandler> navigation_handler_ = nullptr;
+  PageInfoNavigationHandler* navigation_handler_ = nullptr;
 
   // For recreating the view.
   gfx::NativeView parent_;
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<content::WebContents> web_contents_;
+  Profile* profile_;
+  content::WebContents* web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
@@ -377,9 +375,9 @@ class ScopedWebContentsTestHelper {
 #endif
 
   TestingProfileManager testing_profile_manager_;
-  CheckedPtr<TestingProfile> profile_ = nullptr;
+  TestingProfile* profile_ = nullptr;
   content::TestWebContentsFactory factory_;
-  CheckedPtr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  content::WebContents* web_contents_;  // Weak. Owned by factory_.
 
   DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsTestHelper);
 };
@@ -432,10 +430,9 @@ class PageInfoBubbleViewTest : public testing::Test,
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
-  CheckedPtr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  MockTrustSafetySentimentService* mock_sentiment_service_;
 
-  CheckedPtr<views::Widget> parent_window_ =
-      nullptr;  // Weak. Owned by the NativeWidget.
+  views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
 };
 

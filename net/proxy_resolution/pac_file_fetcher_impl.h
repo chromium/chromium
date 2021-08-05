@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -111,7 +110,7 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
 
   // The context used for making network requests.  Set to nullptr by
   // OnShutdown.
-  CheckedPtr<URLRequestContext> url_request_context_;
+  URLRequestContext* url_request_context_;
 
   // Transient IsolationInfo used to fetch PAC scripts.
   const IsolationInfo isolation_info_;
@@ -141,7 +140,7 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
 
   // This buffer is owned by the owner of |callback|, and will be filled with
   // UTF16 response on completion.
-  CheckedPtr<std::u16string> result_text_;
+  std::u16string* result_text_;
 
   // The maximum number of bytes to allow in responses.
   size_t max_response_bytes_;

@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "courgette/courgette.h"
 #include "courgette/region.h"
 #include "courgette/streams.h"
@@ -56,7 +55,7 @@ class Element {
 
  private:
   ExecutableType kind_;
-  CheckedPtr<Ensemble> ensemble_;
+  Ensemble* ensemble_;
   Region region_;
 
   DISALLOW_COPY_AND_ASSIGN(Element);
@@ -242,9 +241,9 @@ class TransformationPatchGenerator {
                         SinkStream* reformed_element);
 
  protected:
-  CheckedPtr<Element> old_element_;
-  CheckedPtr<Element> new_element_;
-  CheckedPtr<TransformationPatcher> patcher_;
+  Element* old_element_;
+  Element* new_element_;
+  TransformationPatcher* patcher_;
 };
 
 }  // namespace

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -208,7 +207,7 @@ class UkmPageLoadMetricsObserver
       const net::CookieAccessResultList& excluded_cookies);
 
   // Guaranteed to be non-null during the lifetime of |this|.
-  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
+  network::NetworkQualityTracker* network_quality_tracker_;
 
   // The ID of this navigation, as recorded at each navigation start.
   int64_t navigation_id_ = -1;
@@ -274,7 +273,7 @@ class UkmPageLoadMetricsObserver
   absl::optional<bool> main_frame_request_had_cookies_;
 
   // The browser context this navigation is operating in.
-  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
 
   // Whether the navigation resulted in the main frame being hosted in
   // a different process.

@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 
 namespace midi {
@@ -41,7 +40,7 @@ class MidiInputPortAndroid final {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> raw_port_;
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 };
 
 }  // namespace midi

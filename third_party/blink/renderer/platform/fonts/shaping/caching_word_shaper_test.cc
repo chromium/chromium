@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -35,7 +34,7 @@ class CachingWordShaperTest : public testing::Test {
   FontDescription font_description;
   Font font;
   std::unique_ptr<ShapeCache> cache;
-  CheckedPtr<HashSet<const SimpleFontData*>> fallback_fonts;
+  HashSet<const SimpleFontData*>* fallback_fonts;
   unsigned start_index = 0;
   unsigned num_glyphs = 0;
   hb_script_t script = HB_SCRIPT_INVALID;

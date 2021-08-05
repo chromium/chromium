@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
@@ -112,7 +111,7 @@ class ReadLaterSidePanelWebView : public views::WebView,
         chrome::GetURLToBookmark(contents));
   }
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
   base::RepeatingClosure close_cb_;
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
@@ -160,7 +159,7 @@ void ReadLaterToolbarButton::ButtonPressed() {
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
   } else {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
-        side_panel_webview_.get());
+        side_panel_webview_);
     side_panel_webview_ = nullptr;
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -96,7 +95,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void InvalidateAndResetFrame(bool force_reset);
 
   // The owning ScriptInjectionManager.
-  CheckedPtr<ScriptInjectionManager> manager_;
+  ScriptInjectionManager* manager_;
 
   bool should_run_idle_ = true;
 
@@ -247,7 +246,7 @@ void ScriptInjectionManager::RFOHelper::InvalidateAndResetFrame(
 ScriptInjectionManager::ScriptInjectionManager(
     UserScriptSetManager* user_script_set_manager)
     : user_script_set_manager_(user_script_set_manager) {
-  user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
+  user_script_set_manager_observation_.Observe(user_script_set_manager_);
 }
 
 ScriptInjectionManager::~ScriptInjectionManager() {

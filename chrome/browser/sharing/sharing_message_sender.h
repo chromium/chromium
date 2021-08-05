@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -116,7 +115,7 @@ class SharingMessageSender {
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
-  CheckedPtr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
+  syncer::LocalDeviceInfoProvider* local_device_info_provider_;
 
   // Map of random GUID to SentMessageMetadata.
   std::map<std::string, SentMessageMetadata> message_metadata_;

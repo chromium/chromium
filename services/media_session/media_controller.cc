@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
@@ -35,9 +34,8 @@ class MediaController::ImageObserverHolder {
         observer_(std::move(observer)) {
     // Set a connection error handler so that we will remove observers that have
     // had an error / been closed.
-    observer_.set_disconnect_handler(
-        base::BindOnce(&MediaController::CleanupImageObservers,
-                       base::Unretained(owner_.get())));
+    observer_.set_disconnect_handler(base::BindOnce(
+        &MediaController::CleanupImageObservers, base::Unretained(owner_)));
 
     // Flush the observer with the latest state.
     ImagesChanged(current_images);
@@ -81,7 +79,7 @@ class MediaController::ImageObserverHolder {
 
   media_session::MediaImageManager manager_;
 
-  const CheckedPtr<MediaController> owner_;
+  MediaController* const owner_;
 
   mojom::MediaSessionImageType const type_;
 

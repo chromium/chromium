@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/serial/serial_test_utils.h"
 #include "content/public/browser/content_browser_client.h"
@@ -60,7 +59,7 @@ class SerialTest : public ContentBrowserTest {
 
  private:
   SerialTestContentBrowserClient test_client_;
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   device::FakeSerialPortManager port_manager_;
 };
 

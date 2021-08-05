@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -335,7 +334,7 @@ class OmniboxViewViews : public OmniboxView,
   bool ime_composing_before_change_ = false;
 
   // |location_bar_view_| can be NULL in tests.
-  CheckedPtr<LocationBarView> location_bar_view_;
+  LocationBarView* location_bar_view_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the IME candidate window is open. When this is true, we want to

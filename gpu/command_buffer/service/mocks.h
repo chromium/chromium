@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/service/async_api_interface.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -84,7 +83,7 @@ class AsyncAPIMock : public AsyncAPIInterface {
                 const volatile void* _args);
 
  private:
-  CheckedPtr<CommandBufferServiceBase> command_buffer_service_;
+  CommandBufferServiceBase* command_buffer_service_;
 };
 
 namespace gles2 {

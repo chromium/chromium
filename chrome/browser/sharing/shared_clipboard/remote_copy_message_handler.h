@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -61,7 +60,7 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
     allowed_origin_ = origin;
   }
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   std::string device_name_;
   base::ElapsedTimer timer_;

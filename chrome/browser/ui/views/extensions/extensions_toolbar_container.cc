@@ -71,7 +71,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 
-  model_observation_.Observe(model_.get());
+  model_observation_.Observe(model_);
   // Do not flip the Extensions icon in RTL.
   extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
 
@@ -157,7 +157,7 @@ ExtensionsToolbarContainer::GetAnchoredWidgetForExtensionForTesting(
                            [extension_id](const auto& info) {
                              return info.extension_id == extension_id;
                            });
-  return iter == anchored_widgets_.end() ? nullptr : iter->widget.get();
+  return iter == anchored_widgets_.end() ? nullptr : iter->widget;
 }
 
 bool ExtensionsToolbarContainer::ShouldForceVisibility(
@@ -244,7 +244,7 @@ void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
   views::View* const anchor_view = GetViewForId(iter->extension_id);
   widget->widget_delegate()->AsBubbleDialogDelegate()->SetAnchorView(
       anchor_view && anchor_view->GetVisible() ? anchor_view
-                                               : extensions_button_.get());
+                                               : extensions_button_);
   widget->Show();
 }
 
@@ -385,7 +385,7 @@ void ExtensionsToolbarContainer::ShowToolbarActionBubble(
 
   views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<ToolbarActionsBarBubbleViews>(
-          anchor_view ? anchor_view : extensions_button_.get(),
+          anchor_view ? anchor_view : extensions_button_,
           anchor_view != nullptr, std::move(controller)));
 
   ShowWidgetForExtension(widget, extension_id);

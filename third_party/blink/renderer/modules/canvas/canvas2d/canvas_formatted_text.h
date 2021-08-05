@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text_run.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -122,7 +121,7 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
 
  private:
   HeapVector<Member<CanvasFormattedTextRun>> text_runs_;
-  CheckedPtr<LayoutBlockFlow> block_;
+  LayoutBlockFlow* block_;
 };
 
 }  // namespace blink

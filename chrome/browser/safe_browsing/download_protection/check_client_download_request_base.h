@@ -15,7 +15,6 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -154,7 +153,7 @@ class CheckClientDownloadRequestBase {
   std::unique_ptr<ClientDownloadRequest> client_download_request_;
   std::string client_download_request_data_;
 
-  const CheckedPtr<DownloadProtectionService> service_;
+  DownloadProtectionService* const service_;
   const scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   const bool pingback_enabled_;
   base::CancelableTaskTracker request_tracker_;  // For HistoryService lookup.

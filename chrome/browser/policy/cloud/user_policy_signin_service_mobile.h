@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -81,7 +80,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
 
   // The PrefService associated with the profile.
-  CheckedPtr<PrefService> profile_prefs_;
+  PrefService* profile_prefs_;
 
   base::WeakPtrFactory<UserPolicySigninService> weak_factory_{this};
 };

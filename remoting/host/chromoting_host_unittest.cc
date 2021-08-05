@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -75,8 +74,7 @@ class ChromotingHostTest : public testing::Test {
     session_manager_ = new protocol::MockSessionManager();
 
     host_ = std::make_unique<ChromotingHost>(
-        desktop_environment_factory_.get(),
-        base::WrapUnique(session_manager_.get()),
+        desktop_environment_factory_.get(), base::WrapUnique(session_manager_),
         protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
         task_runner_,  // Audio
         task_runner_,
@@ -119,13 +117,13 @@ class ChromotingHostTest : public testing::Test {
         .WillRepeatedly(ReturnRef(*session_config2_));
 
     owned_connection1_ = std::make_unique<protocol::FakeConnectionToClient>(
-        base::WrapUnique(session1_.get()));
+        base::WrapUnique(session1_));
     owned_connection1_->set_host_stub(&host_stub1_);
     connection1_ = owned_connection1_.get();
     connection1_->set_client_stub(&client_stub1_);
 
     owned_connection2_ = std::make_unique<protocol::FakeConnectionToClient>(
-        base::WrapUnique(session2_.get()));
+        base::WrapUnique(session2_));
     owned_connection2_->set_host_stub(&host_stub2_);
     connection2_ = owned_connection2_.get();
     connection2_->set_client_stub(&client_stub2_);
@@ -218,21 +216,21 @@ class ChromotingHostTest : public testing::Test {
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
   MockHostStatusObserver host_status_observer_;
   std::unique_ptr<ChromotingHost> host_;
-  CheckedPtr<protocol::MockSessionManager> session_manager_;
+  protocol::MockSessionManager* session_manager_;
   std::string xmpp_login_;
-  CheckedPtr<protocol::FakeConnectionToClient> connection1_;
+  protocol::FakeConnectionToClient* connection1_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection1_;
   ClientSession* client1_;
   std::string session_jid1_;
-  CheckedPtr<MockSession> session1_;  // Owned by |connection_|.
+  MockSession* session1_;  // Owned by |connection_|.
   std::unique_ptr<SessionConfig> session_config1_;
   MockClientStub client_stub1_;
   MockHostStub host_stub1_;
-  CheckedPtr<protocol::FakeConnectionToClient> connection2_;
+  protocol::FakeConnectionToClient* connection2_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection2_;
   ClientSession* client2_;
   std::string session_jid2_;
-  CheckedPtr<MockSession> session2_;  // Owned by |connection2_|.
+  MockSession* session2_;  // Owned by |connection2_|.
   std::unique_ptr<SessionConfig> session_config2_;
   MockClientStub client_stub2_;
   MockHostStub host_stub2_;

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -50,8 +49,8 @@ class TabGroupsEventRouter : public TabStripModelObserver,
                      const std::string& event_name,
                      std::vector<base::Value> args);
 
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<EventRouter> event_router_ = nullptr;
+  Profile* const profile_;
+  EventRouter* const event_router_ = nullptr;
   BrowserTabStripTracker browser_tab_strip_tracker_;
 };
 
