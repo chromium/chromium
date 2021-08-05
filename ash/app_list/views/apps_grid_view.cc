@@ -825,7 +825,7 @@ void AppsGridView::ClearDragState() {
     if (IsDraggingForReparentInRootLevelGridView()) {
       const int drag_view_index = view_model_.GetIndexOfView(drag_view_);
       CHECK_EQ(view_model_.view_size() - 1, drag_view_index);
-      DeleteItemViewAtIndex(drag_view_index, true /* sanitize */);
+      DeleteItemViewAtIndex(drag_view_index);
     }
   }
   drag_view_ = nullptr;
@@ -1989,8 +1989,7 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
 }
 
 void AppsGridView::MoveItemInModel(AppListItemView* item_view,
-                                   const GridIndex& target,
-                                   bool clear_overflow) {
+                                   const GridIndex& target) {
   int current_model_index = view_model_.GetIndexOfView(item_view);
   CHECK_GE(current_model_index, 0);
   size_t current_item_list_index = 0;
@@ -2004,7 +2003,7 @@ void AppsGridView::MoveItemInModel(AppListItemView* item_view,
       view_structure_.GetTargetItemListIndexForMove(item_view, target);
   // The same item index does not guarantee the same visual index, so move the
   // item visual index here.
-  view_structure_.Move(item_view, target, clear_overflow);
+  view_structure_.Move(item_view, target);
 
   DVLOG(1) << "MoveItemInModel: view model: " << current_model_index << " -> "
            << target_model_index << ", item list: " << current_item_list_index
@@ -2051,10 +2050,17 @@ AppListItemView* AppsGridView::MoveItemToFolder(AppListItemView* item_view,
     // view with the new folder item view.
     size_t folder_item_index;
     if (item_list_->FindItemIndex(folder_item_id, &folder_item_index)) {
+      // Paged view structure may get updated in two steps:
+      // 1. Item view deletion.
+      // 2. Addition of the new target view.
+      // Make sure the view structure is not sanitized between those two steps.
+      std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
+          view_structure_.GetSanitizeLock();
+
       int target_model_index = view_model_.GetIndexOfView(target_view);
       GridIndex target_index = GetIndexOfView(target_view);
       gfx::Rect target_view_bounds = target_view->bounds();
-      DeleteItemViewAtIndex(target_model_index, false /* sanitize */);
+      DeleteItemViewAtIndex(target_model_index);
       std::unique_ptr<AppListItemView> new_target_view =
           CreateViewForItemAtIndex(folder_item_index);
       new_target_view->SetBoundsRect(target_view_bounds);
@@ -2109,6 +2115,13 @@ void AppsGridView::ReparentItemForReorder(AppListItemView* item_view,
   int target_item_index =
       view_structure_.GetTargetItemListIndexForMove(item_view, target);
 
+  // Paged view structure may get updated in two steps:
+  // 1. (Folder) item view deletion.
+  // 2. Item move to a new position.
+  // Make sure the view structure is not sanitized between those two steps.
+  std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
+      view_structure_.GetSanitizeLock();
+
   // Remove the source folder view if there is only 1 item in it, since the
   // source folder will be deleted after its only child item removed from it.
   GridIndex target_override = target;
@@ -2117,7 +2130,7 @@ void AppsGridView::ReparentItemForReorder(AppListItemView* item_view,
         view_model_.GetIndexOfView(activated_folder_item_view_);
     const GridIndex deleted_folder_grid_index =
         GetIndexOfView(activated_folder_item_view_);
-    DeleteItemViewAtIndex(deleted_folder_index, false /* sanitize */);
+    DeleteItemViewAtIndex(deleted_folder_index);
 
     // Adjust |target_model_index| if it is beyond the deleted folder index.
     if (target_model_index > deleted_folder_index) {
@@ -2180,13 +2193,24 @@ bool AppsGridView::ReparentItemToAnotherFolder(AppListItemView* item_view,
   // Make change to data model.
   item_list_->RemoveObserver(this);
 
+  // Paged view structure may get updated in several steps:
+  // 1.  (Folder) item view deletion (if the folder has no items left).
+  // 2.  Deletion of item view on which the drag view was dropped (if a new
+  //     folder was created).
+  // 3.  Addition of a new folder view (if a new folder was created).
+  // 4.  Removal of the last item from the source folder (if only one item was
+  //     left).
+  // 5.  Removal of the drag view.
+  // Make sure the view structure is not sanitized between those steps.
+  std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
+      view_structure_.GetSanitizeLock();
+
   // Remove the source folder view if there is only 1 item in it, since the
   // source folder will be deleted after its only child item merged into the
   // target item.
   if (source_folder->ChildItemCount() == 1u) {
     DeleteItemViewAtIndex(
-        view_model_.GetIndexOfView(activated_folder_item_view()),
-        false /* sanitize */);
+        view_model_.GetIndexOfView(activated_folder_item_view()));
   }
 
   // Move item to the target folder.
@@ -2209,7 +2233,7 @@ bool AppsGridView::ReparentItemToAnotherFolder(AppListItemView* item_view,
       gfx::Rect target_rect = target_view->bounds();
       int target_model_index = view_model_.GetIndexOfView(target_view);
       GridIndex target_index = GetIndexOfView(target_view);
-      DeleteItemViewAtIndex(target_model_index, false /* sanitize */);
+      DeleteItemViewAtIndex(target_model_index);
       std::unique_ptr<AppListItemView> new_folder_view =
           CreateViewForItemAtIndex(new_folder_index);
       new_folder_view->SetBoundsRect(target_rect);
@@ -2257,10 +2281,17 @@ void AppsGridView::RemoveLastItemFromReparentItemFolderIfNecessary(
   const int target_model_index =
       view_model_.GetIndexOfView(activated_folder_item_view());
 
+  // Removing last item from the folder may require several paged view
+  // structure updates:
+  // 1.  Delete the folder view.
+  // 2.  Add an item view for the last folder item to the root level grid.
+  // Ensure the view structure is not sanitized between those steps.
+  std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
+      view_structure_.GetSanitizeLock();
+
   // Delete view associated with the folder item to be removed.
   DeleteItemViewAtIndex(
-      view_model_.GetIndexOfView(activated_folder_item_view()),
-      false /* sanitize */);
+      view_model_.GetIndexOfView(activated_folder_item_view()));
 
   // For single-app folders (which can exist for system-managed folders, see
   // crbug.com/925052) there will not be a "last item" so we can ignore the
@@ -2298,11 +2329,10 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
     GetItemViewAt(i)->CancelContextMenu();
 }
 
-void AppsGridView::DeleteItemViewAtIndex(int index, bool sanitize) {
+void AppsGridView::DeleteItemViewAtIndex(int index) {
   AppListItemView* item_view = GetItemViewAt(index);
   view_model_.Remove(index);
-  view_structure_.Remove(item_view, sanitize /* clear_overflow */,
-                         sanitize /* clear_empty_pages */);
+  view_structure_.Remove(item_view);
   if (item_view == drag_view_)
     drag_view_ = nullptr;
   delete item_view;
@@ -2336,7 +2366,7 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
   EndDrag(true);
 
   if (!item->is_page_break())
-    DeleteItemViewAtIndex(GetModelIndexOfItem(item), true /* sanitize */);
+    DeleteItemViewAtIndex(GetModelIndexOfItem(item));
 
   view_structure_.LoadFromMetadata();
   UpdateColsAndRowsForFolder();
@@ -2626,17 +2656,21 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
       target_index.page == original_selected_view_index.page;
 
   AppListItemView* target_view = GetViewAtIndex(target_index);
-  // If the move is a two part operation (swap) do not clear the overflow during
-  // the initial move. Clearing the overflow when |target_index| is on a full
-  // page results in the last item being pushed to the next page.
-  MoveItemInModel(selected_view_, target_index, !swap_items /*clear_overflow*/);
-  view_structure_.SaveToMetadata();
-
-  if (swap_items) {
-    DCHECK(target_view);
-    MoveItemInModel(target_view, original_selected_view_index);
+  {
+    // If the move is a two part operation (swap) do not clear the overflow
+    // during the initial move. Clearing the overflow when |target_index| is on
+    // a full page results in the last item being pushed to the next page.
+    std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
+        view_structure_.GetSanitizeLock();
+    MoveItemInModel(selected_view_, target_index);
     view_structure_.SaveToMetadata();
+    if (swap_items) {
+      DCHECK(target_view);
+      MoveItemInModel(target_view, original_selected_view_index);
+    }
   }
+
+  view_structure_.SaveToMetadata();
 
   int target_page = target_index.page;
   if (!folder_delegate_) {
@@ -2679,18 +2713,22 @@ void AppsGridView::CalculateIdealBounds() {
   // copy of it and only change the copy for calculating the ideal bounds of
   // each item view.
   PagedViewStructure copied_view_structure(view_structure_);
+  // Allow empty pages in the copied view structure so an app list page does
+  // not get removed when dragging the last item in the page.
+  copied_view_structure.AllowEmptyPages();
 
-  // Remove the item view being dragged.
-  if (drag_view_) {
-    copied_view_structure.Remove(drag_view_, false /* clear_overflow */,
-                                 false /* clear_empty_pages */);
-  }
+  {
+    // Delay page overflow sanitization until both drag view was removed, and
+    // reorder placeholder was added to the view structure.
+    std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
+        copied_view_structure.GetSanitizeLock();
+    // Remove the item view being dragged.
+    if (drag_view_)
+      copied_view_structure.Remove(drag_view_);
 
-  // Leaves a blank space in the grid for the current reorder placeholder.
-  if (IsValidIndex(reorder_placeholder_)) {
-    copied_view_structure.Add(nullptr, reorder_placeholder_,
-                              true /* clear_overflow */,
-                              false /* clear_empty_pages */);
+    // Leave a blank space in the grid for the current reorder placeholder.
+    if (IsValidIndex(reorder_placeholder_))
+      copied_view_structure.Add(nullptr, reorder_placeholder_);
   }
 
   // Convert visual index to ideal bounds.

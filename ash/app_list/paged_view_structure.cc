@@ -17,16 +17,38 @@
 
 namespace ash {
 
+PagedViewStructure::ScopedSanitizeLock::ScopedSanitizeLock(
+    PagedViewStructure* view_structure)
+    : view_structure_(view_structure) {
+  ++view_structure_->sanitize_locks_;
+}
+
+PagedViewStructure::ScopedSanitizeLock::~ScopedSanitizeLock() {
+  --view_structure_->sanitize_locks_;
+  view_structure_->Sanitize();
+}
+
 PagedViewStructure::PagedViewStructure(AppsGridView* apps_grid_view)
     : apps_grid_view_(apps_grid_view) {}
 
 PagedViewStructure::PagedViewStructure(const PagedViewStructure& other) =
     default;
 
-PagedViewStructure::~PagedViewStructure() = default;
+PagedViewStructure::~PagedViewStructure() {
+  DCHECK_EQ(0, sanitize_locks_);
+}
 
 void PagedViewStructure::Init(Mode mode) {
   mode_ = mode;
+}
+
+std::unique_ptr<PagedViewStructure::ScopedSanitizeLock>
+PagedViewStructure::GetSanitizeLock() {
+  return std::make_unique<ScopedSanitizeLock>(this);
+}
+
+void PagedViewStructure::AllowEmptyPages() {
+  empty_pages_allowed_ = true;
 }
 
 void PagedViewStructure::LoadFromMetadata() {
@@ -147,16 +169,14 @@ void PagedViewStructure::SaveToMetadata() {
 }
 
 void PagedViewStructure::Move(AppListItemView* view,
-                              const GridIndex& target_index,
-                              bool clear_overflow,
-                              bool clear_empty_pages) {
-  Remove(view, false /* clear_overflow */, false /* clear_empty_pages */);
-  Add(view, target_index, clear_overflow, clear_empty_pages);
+                              const GridIndex& target_index) {
+  // Do not sanitize view structure after Remove() call.
+  std::unique_ptr<ScopedSanitizeLock> sanitize_lock = GetSanitizeLock();
+  Remove(view);
+  Add(view, target_index);
 }
 
-void PagedViewStructure::Remove(AppListItemView* view,
-                                bool clear_overflow,
-                                bool clear_empty_pages) {
+void PagedViewStructure::Remove(AppListItemView* view) {
   for (auto& page : pages_) {
     auto iter = std::find(page.begin(), page.end(), view);
     if (iter != page.end()) {
@@ -165,17 +185,11 @@ void PagedViewStructure::Remove(AppListItemView* view,
     }
   }
 
-  if (clear_overflow)
-    ClearOverflow();
-
-  if (clear_empty_pages)
-    ClearEmptyPages();
+  Sanitize();
 }
 
 void PagedViewStructure::Add(AppListItemView* view,
-                             const GridIndex& target_index,
-                             bool clear_overflow,
-                             bool clear_empty_pages) {
+                             const GridIndex& target_index) {
   const int view_structure_size = total_pages();
   if (target_index.page < view_structure_size) {
     // Adding to an existing page.
@@ -192,11 +206,7 @@ void PagedViewStructure::Add(AppListItemView* view,
   auto& page = pages_[target_index.page];
   page.insert(page.begin() + target_index.slot, view);
 
-  if (clear_overflow)
-    ClearOverflow();
-
-  if (clear_empty_pages)
-    ClearEmptyPages();
+  Sanitize();
 }
 
 GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
@@ -417,9 +427,16 @@ int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
   return static_cast<int>(target_slot);
 }
 
-bool PagedViewStructure::ClearOverflow() {
+void PagedViewStructure::Sanitize() {
+  if (sanitize_locks_ == 0)
+    ClearOverflow();
+
+  if (!empty_pages_allowed_ && sanitize_locks_ == 0)
+    ClearEmptyPages();
+}
+
+void PagedViewStructure::ClearOverflow() {
   const size_t max_item_views = apps_grid_view_->TilesPerPage();
-  bool changed = false;
   std::vector<AppListItemView*> overflow_views;
   auto iter = pages_.begin();
   while (iter != pages_.end() || !overflow_views.empty()) {
@@ -427,7 +444,6 @@ bool PagedViewStructure::ClearOverflow() {
       // Add additional page if overflowing item views remain.
       pages_.emplace_back();
       iter = pages_.end() - 1;
-      changed = true;
     }
 
     auto& page = *iter;
@@ -436,7 +452,6 @@ bool PagedViewStructure::ClearOverflow() {
       // Put overflowing item views in current page.
       page.insert(page.begin(), overflow_views.begin(), overflow_views.end());
       overflow_views.clear();
-      changed = true;
     }
 
     if (page.size() > max_item_views) {
@@ -444,27 +459,22 @@ bool PagedViewStructure::ClearOverflow() {
       overflow_views.insert(overflow_views.begin(),
                             page.begin() + max_item_views, page.end());
       page.erase(page.begin() + max_item_views, page.end());
-      changed = true;
     }
 
     ++iter;
   }
-  return changed;
 }
 
-bool PagedViewStructure::ClearEmptyPages() {
-  bool changed = false;
+void PagedViewStructure::ClearEmptyPages() {
   auto iter = pages_.begin();
   while (iter != pages_.end()) {
     if (iter->empty()) {
       // Remove empty page.
       iter = pages_.erase(iter);
-      changed = true;
     } else {
       ++iter;
     }
   }
-  return changed;
 }
 
 int PagedViewStructure::TilesPerPage() const {

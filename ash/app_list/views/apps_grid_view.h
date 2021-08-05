@@ -573,11 +573,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Updates |model_| to move item represented by |item_view| to |target| slot.
   // Pushes all items from |item_view|'s GridIndex + 1 to |target| back by 1
-  // GridIndex slot. |clear_overflow| is whether, if |target| is on a full page,
-  // to push the overflow item to the next page.
-  void MoveItemInModel(AppListItemView* item_view,
-                       const GridIndex& target,
-                       bool clear_overflow = true);
+  // GridIndex slot.
+  void MoveItemInModel(AppListItemView* item_view, const GridIndex& target);
 
   // Updates |model_| to move item represented by |item_view| into a folder
   // containing item located at |target| slot, also update |view_model_| for
@@ -606,12 +603,8 @@ class ASH_EXPORT AppsGridView : public views::View,
       const std::string& source_folder_id);
 
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
-  // view structure as well and deletes it. Sanitizes the view structure if
-  // |sanitize| if true. (|sanitize| should be true when moving an item outside
-  // a folder of size 2 while the folder is the only item in its page. The
-  // folder will be destroyed first before adding the remaining item to the
-  // folder's visual index in root grid.)
-  void DeleteItemViewAtIndex(int index, bool sanitize);
+  // view structure as well and deletes it.
+  void DeleteItemViewAtIndex(int index);
 
   // Returns true if |point| lies within the bounds of this grid view plus a
   // buffer area surrounding it that can trigger drop target change.
