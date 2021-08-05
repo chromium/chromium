@@ -630,6 +630,7 @@ crbug.com/angleproject/4242 [ linux intel no-passthrough mesa_lt_19.1 ] conforma
 crbug.com/905003 [ linux nvidia ] conformance2/textures/misc/integer-cubemap-specification-order-bug.html [ Failure ]
 crbug.com/angleproject/5783 [ linux nvidia angle-opengl passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/906846 [ linux nvidia ] conformance2/rendering/canvas-resizing-with-pbo-bound.html [ RetryOnFailure ]
+crbug.com/1236820 [ linux nvidia ] conformance2/glsl3/reciprocal-sqrt-of-sum-of-squares-crash.html [ Skip ]
 
 # Linux NVIDIA Quadro P400, OpenGL backend
 crbug.com/703779 [ angle-opengl linux nvidia-0x1cb3 ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
