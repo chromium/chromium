@@ -182,9 +182,21 @@ public class TrustedWebActivityUmaRecorder {
                 "TrustedWebActivity.ShareTargetRequest", method, ShareRequestMethod.NUM_ENTRIES);
     }
 
-    public void recordLocationDelegationEnrolled(boolean enrolled) {
+    /**
+     * Records whether the TWA client app enrolled in loction delegtaion when the site is
+     * requesting geolocation.
+     */
+    public void recordLocationDelegationEnrolled(
+            @Nullable WebContents webContents, boolean enrolled) {
         RecordHistogram.recordBooleanHistogram(
                 "TrustedWebActivity.LocationDelegationEnrolled", enrolled);
+
+        if (webContents != null) {
+            new UkmRecorder.Bridge().recordEventWithIntegerMetric(webContents,
+                    /* eventName = */ "TrustedWebActivity.LocationDelegation",
+                    /* metricName = */ "Enrolled",
+                    /* metricValue = */ enrolled ? 1 : 0);
+        }
     }
 
     public void recordPermissionChangedUma(

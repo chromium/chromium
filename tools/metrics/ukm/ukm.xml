@@ -16427,6 +16427,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TrustedWebActivity.LocationDelegation" singular="True">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records when a site running in Trusted Web Activity requests geolocation.
+  </summary>
+  <metric name="Enrolled" enum="Boolean">
+    <summary>
+      Whether the Trusted Web Activity client app enrolled location delegation.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="TrustedWebActivity.Open" singular="True">
   <owner>peconn@chromium.org</owner>
   <summary>
