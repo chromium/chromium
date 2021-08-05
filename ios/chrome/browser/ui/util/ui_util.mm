@@ -35,13 +35,6 @@ CGFloat CurrentScreenWidth() {
   return [UIScreen mainScreen].bounds.size.width;
 }
 
-bool IsIPhoneX() {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  CGFloat height = CGRectGetHeight([[UIScreen mainScreen] nativeBounds]);
-  return (idiom == UIUserInterfaceIdiomPhone &&
-          (height == 2436 || height == 2688 || height == 1792));
-}
-
 bool IsSmallDevice() {
   CGSize mSize = [@"m" sizeWithAttributes:@{
     NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
@@ -51,7 +44,11 @@ bool IsSmallDevice() {
 }
 
 CGFloat DeviceCornerRadius() {
-  return IsIPhoneX() ? 40.0 : 0.0;
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+  const BOOL isRoundedDevice =
+      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
+  return isRoundedDevice ? 40.0 : 0.0;
 }
 
 CGFloat AlignValueToPixel(CGFloat value) {

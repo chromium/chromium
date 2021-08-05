@@ -15,9 +15,6 @@ CGFloat CurrentScreenHeight();
 // Returns the width of the screen in the current orientation.
 CGFloat CurrentScreenWidth();
 
-// Returns true if the device is an iPhone X.
-bool IsIPhoneX();
-
 // Returns true if the device is considered as a small device.
 bool IsSmallDevice();
 
