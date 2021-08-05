@@ -85,7 +85,7 @@ class FvdlTarget(emu_target.EmuTarget):
       emu_command.append('--host-gpu')
     if self._with_network:
       emu_command.append('-N')
-    logging.info(emu_command)
+    logging.info('FVDL command: ' + ' '.join(emu_command))
 
     return emu_command
 
