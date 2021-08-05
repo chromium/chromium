@@ -14,6 +14,7 @@
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/country_codes/country_codes.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -133,12 +134,14 @@ void ShareTargets::RemoveObserver(ShareTargetsObserver* observer) {
 }
 
 void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
-  std::string locale = GLOBAL;
-  std::string app_locale = g_browser_process->GetApplicationLocale();
-  if (!app_locale.empty() && app_locale.size() == 5) {
-    // This retrieves just the country code from the locale.
-    locale = app_locale.substr(3, 2);
-  }
+  int countryID = country_codes::GetCurrentCountryID();
+  // Decode the country code string from the provided integer.
+  unsigned char mask = 0xFF;
+  char c2 = static_cast<char>(mask & countryID);
+  char c1 = static_cast<char>(countryID >> 8);
+  std::string locale = std::string() + static_cast<char>(toupper(c1)) +
+                       static_cast<char>(toupper(c2));
+
   auto it = targets_->map_target_locale_map().find(locale);
 
   if (it == targets_->map_target_locale_map().end()) {
