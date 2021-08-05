@@ -188,7 +188,7 @@ class TabMenuBridge;
 // may have changed. This can cause a rebuild of the user-data menus. This is a
 // no-op if the new profile is the same as the current one. This can be either
 // the original or the incognito profile.
-- (void)windowChangedToProfile:(Profile*)profile;
+- (void)setLastProfile:(Profile*)profile;
 
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:

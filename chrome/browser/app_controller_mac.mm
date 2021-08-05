@@ -382,7 +382,6 @@ Profile* GetLastProfileMac() {
 - (BOOL)shouldQuitWithInProgressDownloads;
 - (void)profileWasRemoved:(const base::FilePath&)profilePath
              forIncognito:(bool)isIncognito;
-- (void)setLastProfile:(Profile*)profile;
 
 // This class cannot open urls until startup has finished. The urls that cannot
 // be opened are cached in |startupUrls_|. This method must be called exactly
@@ -579,11 +578,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
          selector:@selector(windowDidBecomeMain:)
              name:NSWindowDidBecomeMainNotification
            object:nil];
-  [notificationCenter
-      addObserver:self
-         selector:@selector(windowDidResignMain:)
-             name:NSWindowDidResignMainNotification
-           object:nil];
 
   // Register for space change notifications.
   [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -734,17 +728,14 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // browsers get dealloc'd, it will stop the RunLoop and fall back into main().
   _keep_alive.reset();
 
-  // Reset all pref watching, as this object outlives the prefs system.
-  _profilePrefRegistrar.reset();
+  // Reset local state watching, as this object outlives the prefs system.
   _localPrefRegistrar.RemoveAll();
 
   // It's safe to delete |_lastProfile| now.
   [self setLastProfile:nullptr];
 
   [self unregisterEventHandlers];
-
   _appShimMenuController.reset();
-
   _profileBookmarkMenuBridgeMap.clear();
 }
 
@@ -825,14 +816,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
           features::kUpdateHistoryEntryPointsInIncognito)) {
     profile = profile->GetOriginalProfile();
   }
-  [self windowChangedToProfile:profile];
-}
-
-- (void)windowDidResignMain:(NSNotification*)notify {
-  if (_lastProfile && chrome::GetTotalBrowserCount() == 0 &&
-      [self isProfileReady]) {
-    [self windowChangedToProfile:_lastProfile];
-  }
+  [self setLastProfile:profile];
 }
 
 - (void)activeSpaceDidChange:(NSNotification*)notify {
@@ -1113,17 +1097,13 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // |lastProfile_| might be null.
   if (!_lastProfile || (profilePath == _lastProfile->GetPath() &&
                         isOffTheRecord == _lastProfile->IsOffTheRecord())) {
-    // Force windowChangedToProfile: to set the lastProfile_ and also update the
-    // relevant menuBridge objects.
-    [self setLastProfile:nullptr];
+    Profile* last_used_profile = nullptr;
     auto* profile_manager = g_browser_process->profile_manager();
     if (profile_manager) {
       // |profile_manager| is null in browser tests during shutdown.
-      Profile* last_used_profile =
-          profile_manager->GetLastUsedProfileIfLoaded();
-      if (last_used_profile)
-        [self windowChangedToProfile:last_used_profile];
+      last_used_profile = profile_manager->GetLastUsedProfileIfLoaded();
     }
+    [self setLastProfile:last_used_profile];
   }
 
   _profileBookmarkMenuBridgeMap.erase(profilePath);
@@ -1734,33 +1714,14 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (profile == _lastProfile)
     return;
 
-  if (profile == nullptr) {
-    _lastProfile = nullptr;
-    _lastProfileKeepAlive.reset();
-    return;
-  }
-
-  _lastProfile = profile;
-  if (profile->IsOffTheRecord()) {
-    _lastProfileKeepAlive.reset();
-  } else {
-    _lastProfileKeepAlive = std::make_unique<ScopedProfileKeepAlive>(
-        _lastProfile, ProfileKeepAliveOrigin::kAppControllerMac);
-  }
-}
-
-- (void)windowChangedToProfile:(Profile*)profile {
-  if (_lastProfile == profile)
-    return;
-
   // Before tearing down the menu controller bridges, return the history menu to
   // its initial state.
   if (_historyMenuBridge)
     _historyMenuBridge->ResetMenu();
+  _historyMenuBridge.reset();
 
-  // Clear the profile pref registrar before tearing down.
-  if (_profilePrefRegistrar)
-    _profilePrefRegistrar->RemoveAll();
+  _profilePrefRegistrar.reset();
+  _lastProfileKeepAlive.reset();
 
   // Rebuild the menus with the new profile. The bookmarks submenu is cached to
   // avoid slowdowns when switching between profiles with large numbers of
@@ -1772,7 +1733,16 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   NSMenuItem* bookmarkItem = [[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU];
   BOOL hidden = [bookmarkItem isHidden];
   [bookmarkItem setHidden:NO];
-  [self setLastProfile:profile];
+
+  _lastProfile = profile;
+
+  if (_lastProfile == nullptr)
+    return;
+
+  if (!profile->IsOffTheRecord()) {
+    _lastProfileKeepAlive = std::make_unique<ScopedProfileKeepAlive>(
+        _lastProfile, ProfileKeepAliveOrigin::kAppControllerMac);
+  }
 
   auto& entry = _profileBookmarkMenuBridgeMap[profile->GetPath()];
   if (!entry) {
@@ -2011,7 +1981,7 @@ void UpdateProfileInUse(Profile* profile, Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED) {
     AppController* controller =
         base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-    [controller windowChangedToProfile:profile];
+    [controller setLastProfile:profile];
   }
 }
 

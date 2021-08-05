@@ -244,6 +244,66 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
   // Let the run loop get flushed, during process cleanup and try not to crash.
 }
 
+// Regression test for https://crbug.com/1236073
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, DeleteEphemeralProfile) {
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  Profile* profile = browser()->profile();
+  // Activate the first profile.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:browser()
+                               ->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  AppController* ac = base::mac::ObjCCast<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
+  ASSERT_EQ(profile, [ac lastProfile]);
+
+  // Mark the profile as ephemeral.
+  profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  EXPECT_TRUE(entry->IsEphemeral());
+
+  // Add sentinel data to observe profile destruction. Ephemeral profiles are
+  // destroyed immediately upon browser close.
+  class ProfileDestroyedData : public base::SupportsUserData::Data {
+   public:
+    ProfileDestroyedData(base::OnceClosure callback)
+        : callback_(std::move(callback)) {}
+
+    ~ProfileDestroyedData() override { std::move(callback_).Run(); }
+
+   private:
+    base::OnceClosure callback_;
+  };
+  base::RunLoop loop;
+  const char kUserDataKey = 0;
+  profile->SetUserData(&kUserDataKey, std::make_unique<ProfileDestroyedData>(
+                                          loop.QuitClosure()));
+
+  // Close browser and wait for the profile to be deleted.
+  CloseBrowserSynchronously(browser());
+  loop.Run();
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Create a new profile and activate it.
+  Profile* profile2 = CreateAndWaitForProfile(
+      profile_manager->user_data_dir().AppendASCII("Profile 2"));
+  Browser* browser2 = CreateBrowser(profile2);
+  // This should not crash.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:browser2->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  ASSERT_EQ(profile2, [ac lastProfile]);
+}
+
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
  protected:
   AppControllerKeepAliveBrowserTest() {
@@ -270,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerKeepAliveBrowserTest,
   Profile* profile1 = browser()->profile();
   Profile* profile2 = CreateAndWaitForProfile(
       profile_manager->user_data_dir().AppendASCII("Profile 2"));
-  [ac windowChangedToProfile:profile1];
+  [ac setLastProfile:profile1];
   ASSERT_EQ(profile1, [ac lastProfile]);
 
   // |profile1| is active.
@@ -281,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerKeepAliveBrowserTest,
       profile2, ProfileKeepAliveOrigin::kAppControllerMac));
 
   // Make |profile2| active.
-  [ac windowChangedToProfile:profile2];
+  [ac setLastProfile:profile2];
   ASSERT_EQ(profile2, [ac lastProfile]);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
@@ -813,12 +873,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ASSERT_TRUE(profile2);
 
   // Load profile1's History Service backend so it will be assigned to the
-  // HistoryMenuBridge when windowChangedToProfile is called, or else this test
-  // will fail flaky.
+  // HistoryMenuBridge when setLastProfile is called, or else this test will
+  // fail flaky.
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
       profile1, ServiceAccessType::EXPLICIT_ACCESS));
   // Switch the controller to profile1.
-  [ac windowChangedToProfile:profile1];
+  [ac setLastProfile:profile1];
   base::RunLoop().RunUntilIdle();
 
   // Verify the controller's History Menu corresponds to profile1.
@@ -828,13 +888,13 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                                            ServiceAccessType::EXPLICIT_ACCESS));
 
   // Load profile2's History Service backend so it will be assigned to the
-  // HistoryMenuBridge when windowChangedToProfile is called, or else this test
-  // will fail flaky.
+  // HistoryMenuBridge when setLastProfile is called, or else this test will
+  // fail flaky.
   ui_test_utils::WaitForHistoryToLoad(
       HistoryServiceFactory::GetForProfile(profile2,
                                            ServiceAccessType::EXPLICIT_ACCESS));
   // Switch the controller to profile2.
-  [ac windowChangedToProfile:profile2];
+  [ac setLastProfile:profile2];
   base::RunLoop().RunUntilIdle();
 
   // Verify the controller's History Menu has changed.
@@ -891,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
       BookmarkModelFactory::GetForBrowserContext(profile2_ptr));
 
   // Switch to profile 1, create bookmark 1 and force the menu to build.
-  [ac windowChangedToProfile:profile1];
+  [ac setLastProfile:profile1];
   [ac bookmarkMenuBridge]->GetBookmarkModel()->AddURL(
       [ac bookmarkMenuBridge]->GetBookmarkModel()->bookmark_bar_node(),
       0, title1, url1);
@@ -899,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   [[profile1_submenu delegate] menuNeedsUpdate:profile1_submenu];
 
   // Switch to profile 2, create bookmark 2 and force the menu to build.
-  [ac windowChangedToProfile:profile2_ptr];
+  [ac setLastProfile:profile2_ptr];
   [ac bookmarkMenuBridge]->GetBookmarkModel()->AddURL(
       [ac bookmarkMenuBridge]->GetBookmarkModel()->bookmark_bar_node(),
       0, title2, url2);
@@ -914,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
       SysUTF16ToNSString(title2)]);
 
   // Switch *back* to profile 1 and *don't* force the menu to build.
-  [ac windowChangedToProfile:profile1];
+  [ac setLastProfile:profile1];
 
   // Test that only bookmark 1 is shown in the restored menu.
   EXPECT_TRUE([[ac bookmarkMenuBridge]->BookmarkMenu() itemWithTitle:
