@@ -59,19 +59,33 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
 
 // Return layout overflow block-size that's not clipped (or simply the
 // block-size if it *is* clipped).
-LayoutUnit BlockAxisLayoutOverflow(const NGPhysicalFragment& fragment,
+LayoutUnit BlockAxisLayoutOverflow(const NGLayoutResult& result,
                                    WritingDirectionMode writing_direction) {
-  const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment);
-  if (box && box->HasNonVisibleOverflow()) {
-    OverflowClipAxes block_axis =
-        writing_direction.IsHorizontal() ? kOverflowClipY : kOverflowClipX;
-    if (box->GetOverflowClipAxes() & block_axis)
-      box = nullptr;
+  const NGPhysicalFragment& fragment = result.PhysicalFragment();
+  LayoutUnit block_size = NGFragment(writing_direction, fragment).BlockSize();
+  if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment)) {
+    if (box->HasNonVisibleOverflow()) {
+      OverflowClipAxes block_axis =
+          writing_direction.IsHorizontal() ? kOverflowClipY : kOverflowClipX;
+      if (box->GetOverflowClipAxes() & block_axis)
+        box = nullptr;
+    }
+    if (box) {
+      WritingModeConverter converter(writing_direction, fragment.Size());
+      block_size =
+          std::max(block_size,
+                   converter.ToLogical(box->LayoutOverflow()).BlockEndOffset());
+    }
+    return block_size;
   }
-  PhysicalRect rect = fragment.LocalRect();
-  if (box)
-    rect.UniteEvenIfEmpty(box->LayoutOverflow());
-  return writing_direction.IsHorizontal() ? rect.Bottom() : rect.Right();
+
+  // Ruby annotations do not take up space in the line box, so we need this to
+  // make sure that we don't let them cross the fragmentation line without
+  // noticing.
+  LayoutUnit annotation_overflow = result.AnnotationOverflow();
+  if (annotation_overflow > LayoutUnit())
+    block_size += annotation_overflow;
+  return block_size;
 }
 
 }  // anonymous namespace
@@ -695,9 +709,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
       return true;
     }
   } else if (refuse_break_before ||
-             BlockAxisLayoutOverflow(physical_fragment,
-                                     space.GetWritingDirection()) <=
-                 space_left) {
+             BlockAxisLayoutOverflow(
+                 layout_result, space.GetWritingDirection()) <= space_left) {
     // The child either fits, or we are not allowed to break. So we can move
     // past this breakpoint.
     if (child.IsBlock() && builder) {
