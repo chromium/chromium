@@ -259,6 +259,11 @@ class PDFiumEngine : public PDFEngine,
   friend class PDFiumTestBase;
   friend class SelectionChangeInvalidator;
 
+  gfx::Size plugin_size() const {
+    // TODO(crbug.com/1237119): Enforce DCHECK(plugin_size_.has_value()).
+    return plugin_size_.value_or(gfx::Size());
+  }
+
   // We finished getting the pdf file, so load it. This will complete
   // asynchronously (due to password fetching) and may be run multiple times.
   void LoadDocument();
@@ -660,7 +665,7 @@ class PDFiumEngine : public PDFEngine,
   // The offset of the page into the viewport.
   gfx::Vector2d page_offset_;
   // The plugin size in screen coordinates.
-  gfx::Size plugin_size_;
+  absl::optional<gfx::Size> plugin_size_;
   double current_zoom_ = 1.0;
   // The caret position and bound in plugin viewport coordinates.
   gfx::Rect caret_rect_;
