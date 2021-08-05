@@ -177,7 +177,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kChromeShareHighlightsAndroid,
     &kChromeShareLongScreenshot,
     &kChromeShareScreenshot,
-    &kChromeSharingHub,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
     &kConditionalTabStripAndroid,
@@ -467,9 +466,6 @@ const base::Feature kChromeShareLongScreenshot{
 
 const base::Feature kChromeShareScreenshot{"ChromeShareScreenshot",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kChromeSharingHub{"ChromeSharingHub",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kChromeSurveyNextAndroid{"ChromeSurveyNextAndroid",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
