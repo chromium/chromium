@@ -1189,18 +1189,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_FALSE(frame_c_popup_opened);
 }
 
-// Flaky on Linux and ChromeOS (crbug.com/1021895)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_TabCloseWithCrossSiteBeforeUnloadIframe \
-  DISABLED_TabCloseWithCrossSiteBeforeUnloadIframe
-#else
-#define MAYBE_TabCloseWithCrossSiteBeforeUnloadIframe \
-  TabCloseWithCrossSiteBeforeUnloadIframe
-#endif
+// TODO(crbug.com/1021895): Flaky.
 // Tests that a cross-site iframe runs its beforeunload handler when closing a
 // tab.  See https://crbug.com/853021.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
-                       MAYBE_TabCloseWithCrossSiteBeforeUnloadIframe) {
+                       DISABLED_TabCloseWithCrossSiteBeforeUnloadIframe) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* first_web_contents =
       tab_strip_model->GetActiveWebContents();
