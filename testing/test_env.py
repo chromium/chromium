@@ -390,5 +390,5 @@ if __name__ == '__main__':
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
         'scripts'))
     import common
-    common.set_lpac_acls(ROOT_DIR)
+    common.set_lpac_acls(ROOT_DIR, is_test_script=True)
   sys.exit(main())
