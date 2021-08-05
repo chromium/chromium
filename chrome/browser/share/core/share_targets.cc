@@ -133,14 +133,18 @@ void ShareTargets::RemoveObserver(ShareTargetsObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
-  int countryID = country_codes::GetCurrentCountryID();
+std::string ShareTargets::GetCountryStringFromID(int countryID) {
   // Decode the country code string from the provided integer.
   unsigned char mask = 0xFF;
   char c2 = static_cast<char>(mask & countryID);
   char c1 = static_cast<char>(countryID >> 8);
-  std::string locale = std::string() + static_cast<char>(toupper(c1)) +
-                       static_cast<char>(toupper(c2));
+  return std::string() + static_cast<char>(toupper(c1)) +
+         static_cast<char>(toupper(c2));
+}
+
+void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
+  std::string locale =
+      GetCountryStringFromID(country_codes::GetCurrentCountryID());
 
   auto it = targets_->map_target_locale_map().find(locale);
 

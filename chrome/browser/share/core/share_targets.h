@@ -54,6 +54,9 @@ class ShareTargets {
     DYNAMIC_UPDATE = 2,
   };
 
+  // Visible for testing.
+  std::string GetCountryStringFromID(int countryID);
+
  private:
   // Read data from an serialized protobuf and update the internal list
   // only if it passes integrity checks.
@@ -88,6 +91,7 @@ class ShareTargets {
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, UnpackResourceBundle);
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadProto);
   FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadUpdateFromExisting);
+  FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, CountryCodeMatches);
 
   friend struct ShareTargetsSingletonTrait;
 };

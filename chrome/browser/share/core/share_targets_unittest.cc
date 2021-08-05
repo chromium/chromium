@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/country_codes/country_codes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,5 +68,18 @@ TEST_F(ShareTargetsTest, BadUpdateFromExisting) {
   mlt.set_version_id(1);
   EXPECT_EQ(ShareTargets::UpdateResult::FAILED_VERSION_CHECK,
             targets_.PopulateFromBinaryPb(mlt.SerializeAsString()));
+}
+
+TEST_F(ShareTargetsTest, CountryCodeMatches) {
+  EXPECT_EQ("US", targets_.GetCountryStringFromID(
+                      country_codes::CountryStringToCountryID("US")));
+  EXPECT_EQ("CA", targets_.GetCountryStringFromID(
+                      country_codes::CountryStringToCountryID("CA")));
+  EXPECT_EQ("RU", targets_.GetCountryStringFromID(
+                      country_codes::CountryStringToCountryID("RU")));
+  EXPECT_EQ("JP", targets_.GetCountryStringFromID(
+                      country_codes::CountryStringToCountryID("JP")));
+  EXPECT_NE("JP", targets_.GetCountryStringFromID(
+                      country_codes::CountryStringToCountryID("US")));
 }
 }  // namespace sharing
