@@ -32,8 +32,9 @@ class NetworkDeviceHandler;
 
 namespace policy {
 
-class PolicyService;
 class NetworkRoamingStateMigrationHandler;
+class PolicyService;
+class RoamingConfigurationMigrationHandler;
 
 // Implements addtional special handling of ONC device policies, which requires
 // listening for notifications from CrosSettings.
@@ -83,6 +84,11 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   // feature flag is disabled.
   std::unique_ptr<NetworkRoamingStateMigrationHandler>
       network_roaming_state_migration_handler_;
+
+  // This is only instantiated when both the |kCellularAllowPerNetworkRoaming|
+  // feature flag is disabled and the device is not enterprise-managed.
+  std::unique_ptr<RoamingConfigurationMigrationHandler>
+      roaming_configuration_migration_handler_;
 
   // Returns the device's administrator-set asset id.
   DeviceAssetIDFetcher device_asset_id_fetcher_;
