@@ -122,6 +122,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
 
   base::circular_deque<PendingFrame> pending_frames_;
 
+  std::vector<zx::event> release_fences_from_last_present_;
+
   // Ordinal that will be assigned to the next frame. Ordinals are used to
   // calculate frame position relative to the current frame stored in
   // |presentation_state_|. They will wrap around when reaching 2^32, but the
