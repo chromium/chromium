@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/bluetooth_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -119,6 +120,31 @@ const std::vector<SearchConcept>& GetBluetoothPairedSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_BLUETOOTH_UNPAIR_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
+}
+
+std::vector<mojom::Setting> GetBluetoothDevicesSubpageSettings() {
+  std::vector<mojom::Setting> bluetooth_devices_settings{
+      mojom::Setting::kBluetoothOnOff, mojom::Setting::kBluetoothPairDevice};
+
+  if (!chromeos::features::IsBluetoothRevampEnabled()) {
+    bluetooth_devices_settings.insert(
+        bluetooth_devices_settings.end(),
+        {mojom::Setting::kBluetoothConnectToDevice,
+         mojom::Setting::kBluetoothDisconnectFromDevice,
+         mojom::Setting::kBluetoothUnpairDevice});
+  }
+
+  return bluetooth_devices_settings;
+}
+
+std::vector<mojom::Setting> GetBluetoothDeviceDetailSubpageSettings() {
+  if (!chromeos::features::IsBluetoothRevampEnabled())
+    return std::vector<mojom::Setting>{};
+
+  return std::vector<mojom::Setting>{
+      mojom::Setting::kBluetoothConnectToDevice,
+      mojom::Setting::kBluetoothDisconnectFromDevice,
+      mojom::Setting::kBluetoothUnpairDevice};
 }
 
 }  // namespace
@@ -250,16 +276,20 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultIcon::kBluetooth,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kBluetoothDevicesSubpagePath);
-  static constexpr mojom::Setting kBluetoothDevicesSettings[] = {
-      mojom::Setting::kBluetoothOnOff,
-      mojom::Setting::kBluetoothConnectToDevice,
-      mojom::Setting::kBluetoothDisconnectFromDevice,
-      mojom::Setting::kBluetoothPairDevice,
-      mojom::Setting::kBluetoothUnpairDevice,
-  };
+
   RegisterNestedSettingBulk(mojom::Subpage::kBluetoothDevices,
-                            kBluetoothDevicesSettings, generator);
+                            GetBluetoothDevicesSubpageSettings(), generator);
   generator->RegisterTopLevelAltSetting(mojom::Setting::kBluetoothOnOff);
+
+  generator->RegisterNestedSubpage(IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS,
+                                   mojom::Subpage::kBluetoothDeviceDetail,
+                                   mojom::Subpage::kBluetoothDevices,
+                                   mojom::SearchResultIcon::kBluetooth,
+                                   mojom::SearchResultDefaultRank::kMedium,
+                                   mojom::kBluetoothDeviceDetailSubpagePath);
+  RegisterNestedSettingBulk(mojom::Subpage::kBluetoothDeviceDetail,
+                            GetBluetoothDeviceDetailSubpageSettings(),
+                            generator);
 }
 
 void BluetoothSection::AdapterPresentChanged(device::BluetoothAdapter* adapter,

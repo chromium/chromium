@@ -46,6 +46,7 @@ enum Subpage {
 
   // Bluetooth section.
   kBluetoothDevices = 100,
+  kBluetoothDeviceDetail = 101,
 
   // MultiDevice section.
   kMultiDeviceFeatures = 200,
@@ -161,6 +162,7 @@ const string kVpnDetailsSubpagePath = "networkDetail";
 // Bluetooth section.
 const string kBluetoothSectionPath = "bluetooth";
 const string kBluetoothDevicesSubpagePath = "bluetoothDevices";
+const string kBluetoothDeviceDetailSubpagePath = "bluetoothDeviceDetail";
 
 // MultiDevice section.
 const string kMultiDeviceSectionPath = "multidevice";

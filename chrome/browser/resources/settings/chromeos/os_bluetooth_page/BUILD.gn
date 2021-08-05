@@ -10,6 +10,7 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":os_bluetooth_device_detail_subpage",
     ":os_bluetooth_devices_subpage",
     ":os_bluetooth_page",
     ":os_bluetooth_summary",
@@ -62,6 +63,12 @@ js_library("os_paired_bluetooth_list_item") {
   ]
 }
 
+js_library("os_bluetooth_device_detail_subpage") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "os_paired_bluetooth_list_item.js",
@@ -69,5 +76,6 @@ html_to_js("web_components") {
     "os_bluetooth_devices_subpage.js",
     "os_bluetooth_page.js",
     "os_bluetooth_summary.js",
+    "os_bluetooth_device_detail_subpage.js",
   ]
 }

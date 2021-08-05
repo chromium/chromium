@@ -33,6 +33,7 @@
  *   BASIC: !settings.Route,
  *   BLUETOOTH: !settings.Route,
  *   BLUETOOTH_DEVICES: !settings.Route,
+ *   BLUETOOTH_DEVICE_DETAIL: !settings.Route,
  *   CHANGE_PICTURE: !settings.Route,
  *   CUPS_PRINTERS: !settings.Route,
  *   DARK_MODE: !settings.Route,

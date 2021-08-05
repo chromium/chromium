@@ -14,6 +14,7 @@ import '../../settings_shared_css.js';
 import '../../settings_page/settings_animated_pages.js';
 import './os_bluetooth_devices_subpage.js';
 import './os_bluetooth_summary.js';
+import './os_bluetooth_device_detail_subpage.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

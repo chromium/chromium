@@ -61684,6 +61684,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Tether Details"/>
   <int value="7" label="Vpn Details"/>
   <int value="100" label="Bluetooth Devices"/>
+  <int value="101" label="Bluetooth Device Details"/>
   <int value="200" label="Multi Device Features"/>
   <int value="201" label="Smart Lock"/>
   <int value="202" label="Nearby Share"/>

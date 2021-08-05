@@ -70,6 +70,11 @@ cr.define('settings', function() {
     r.BLUETOOTH_DEVICES = createSubpage(
         r.BLUETOOTH, mojom.BLUETOOTH_DEVICES_SUBPAGE_PATH,
         Subpage.kBluetoothDevices);
+    if (loadTimeData.getBoolean('enableBluetoothRevamp')) {
+      r.BLUETOOTH_DEVICE_DETAIL = createSubpage(
+          r.BLUETOOTH, mojom.BLUETOOTH_DEVICE_DETAIL_SUBPAGE_PATH,
+          Subpage.kBluetoothDeviceDetail);
+    }
 
     // MultiDevice section.
     if (!loadTimeData.getBoolean('isGuest')) {
