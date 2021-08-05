@@ -7937,6 +7937,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IncognitoModePrefs.WindowsParentalControlsInitThread"
     enum="ThreadType" expires_after="M77">
+  <obsolete>
+    Removed in http://crrev.com/747875.
+  </obsolete>
   <owner>robliao@chromium.org</owner>
   <summary>
     The thread used to initialize the Windows parental controls.
@@ -7945,6 +7948,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IncognitoModePrefs.WindowsParentalControlsInitTime" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed in http://crrev.com/747875.
+  </obsolete>
   <owner>robliao@chromium.org</owner>
   <summary>
     The amount of time that elapsed during a run of
