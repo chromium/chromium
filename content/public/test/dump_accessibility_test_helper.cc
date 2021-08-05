@@ -19,8 +19,6 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
-#elif BUILDFLAG(USE_ATK)
-#include <dlfcn.h>
 #endif
 
 namespace content {
@@ -332,17 +330,6 @@ DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
     if (!expectations_qualifier.empty())
       suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
     return suffix + FILE_PATH_LITERAL("-expected-uia-win7.txt");
-  }
-#elif BUILDFLAG(USE_ATK)
-  // On the Trusty bot, the ATK version at compile time is much newer than the
-  // runtime version. AtkTableCell was added in 2.12, Trusty runs 2.10. So use
-  // the absence of this API as a runtime means to identify Trusty.
-  if (expectation_type_ == "linux" &&
-      !dlsym(RTLD_DEFAULT, "atk_table_cell_get_type")) {
-    FilePath::StringType suffix;
-    if (!expectations_qualifier.empty())
-      suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
-    return suffix + FILE_PATH_LITERAL("-expected-auralinux-trusty.txt");
   }
 #endif
   return FILE_PATH_LITERAL("");

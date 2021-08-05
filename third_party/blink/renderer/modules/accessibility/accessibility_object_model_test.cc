@@ -275,7 +275,6 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
      aria-virtualcontent=block-end
      aria-activedescendant=active
      aria-details=details
-     aria-invalid=true
      aria-errormessage=error>
     <div id=active role=option></div>
     <div id=active2 role=gridcell></div>

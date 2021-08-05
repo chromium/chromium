@@ -1,6 +1,6 @@
 (async function(testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
-    <input data-dump aria-errormessage='err' aria-invalid='true'>
+    <input data-dump aria-errormessage='err'>
     <h3 id='err'>This text field has an error!</h3>
 
     <img data-dump aria-details='d' aria-label='Label'>
