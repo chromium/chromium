@@ -6,13 +6,16 @@
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_SWITCHES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace switches {
 
 extern const base::Feature kSyncResetPollIntervalOnStart;
 extern const base::Feature kSyncUseScryptForNewCustomPassphrases;
 extern const base::Feature kSyncTriggerFullKeystoreMigration;
+
 extern const base::Feature kIgnoreSyncEncryptionKeysLongMissing;
+extern const base::FeatureParam<int> kMinGuResponsesToIgnoreKey;
 
 }  // namespace switches
 

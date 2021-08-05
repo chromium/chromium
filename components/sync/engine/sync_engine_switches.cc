@@ -26,4 +26,9 @@ const base::Feature kSyncTriggerFullKeystoreMigration{
 const base::Feature kIgnoreSyncEncryptionKeysLongMissing{
     "IgnoreSyncEncryptionKeysLongMissing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The threshold for kIgnoreSyncEncryptionKeysLongMissing to start ignoring keys
+// (measured in number of GetUpdatesResponses messages).
+const base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
+    &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 50};
+
 }  // namespace switches
