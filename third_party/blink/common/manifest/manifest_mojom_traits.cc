@@ -23,31 +23,6 @@ struct TruncatedString16 {
   absl::optional<std::u16string> string;
 };
 
-// This function should be kept in sync with IsHostValidForUrlHandler in
-// manifest_parser.cc.
-bool IsHostValidForUrlHandler(const std::string& host) {
-  if (url::HostIsIPAddress(host))
-    return true;
-
-  const size_t registry_length =
-      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
-          host,
-          // Reject unknown registries (registries that don't have any matches
-          // in effective TLD names).
-          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          // Skip matching private registries that allow external users to
-          // specify sub-domains, e.g. glitch.me, as this is allowed.
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-
-  // Host cannot be a TLD or invalid.
-  if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= host.length()) {
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 template <>
@@ -161,22 +136,6 @@ bool StructTraits<blink::mojom::ManifestFileFilterDataView,
   return true;
 }
 
-bool StructTraits<blink::mojom::ManifestUrlHandlerDataView,
-                  ::blink::Manifest::UrlHandler>::
-    Read(blink::mojom::ManifestUrlHandlerDataView data,
-         ::blink::Manifest::UrlHandler* out) {
-  if (!data.ReadOrigin(&out->origin))
-    return false;
-
-  // Make sure the origin is valid.
-  if (!IsHostValidForUrlHandler(out->origin.host()))
-    return false;
-
-  out->has_origin_wildcard = data.has_origin_wildcard();
-
-  return true;
-}
-
 bool StructTraits<blink::mojom::ManifestShareTargetParamsDataView,
                   ::blink::Manifest::ShareTargetParams>::
     Read(blink::mojom::ManifestShareTargetParamsDataView data,
@@ -214,48 +173,6 @@ bool StructTraits<blink::mojom::ManifestShareTargetDataView,
     return false;
 
   return data.ReadParams(&out->params);
-}
-
-bool StructTraits<blink::mojom::ManifestFileHandlerDataView,
-                  ::blink::Manifest::FileHandler>::
-    Read(blink::mojom::ManifestFileHandlerDataView data,
-         ::blink::Manifest::FileHandler* out) {
-  if (!data.ReadAction(&out->action))
-    return false;
-
-  if (!data.ReadName(&out->name))
-    return false;
-
-  if (!data.ReadIcons(&out->icons))
-    return false;
-
-  if (!data.ReadAccept(&out->accept))
-    return false;
-
-  return true;
-}
-
-bool StructTraits<blink::mojom::ManifestProtocolHandlerDataView,
-                  ::blink::Manifest::ProtocolHandler>::
-    Read(blink::mojom::ManifestProtocolHandlerDataView data,
-         ::blink::Manifest::ProtocolHandler* out) {
-  if (!data.ReadProtocol(&out->protocol))
-    return false;
-
-  if (!data.ReadUrl(&out->url))
-    return false;
-
-  return true;
-}
-
-bool StructTraits<blink::mojom::ManifestNoteTakingDataView,
-                  ::blink::Manifest::NoteTaking>::
-    Read(blink::mojom::ManifestNoteTakingDataView data,
-         ::blink::Manifest::NoteTaking* out) {
-  if (!data.ReadNewNoteUrl(&out->new_note_url))
-    return false;
-
-  return true;
 }
 
 }  // namespace mojo

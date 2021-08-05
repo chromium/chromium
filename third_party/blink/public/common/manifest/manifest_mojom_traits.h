@@ -140,24 +140,6 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::ManifestUrlHandlerDataView,
-                 ::blink::Manifest::UrlHandler> {
-  static const url::Origin& origin(
-      const ::blink::Manifest::UrlHandler& url_handler) {
-    return url_handler.origin;
-  }
-
-  static bool has_origin_wildcard(
-      const ::blink::Manifest::UrlHandler& url_handler) {
-    return url_handler.has_origin_wildcard;
-  }
-
-  static bool Read(blink::mojom::ManifestUrlHandlerDataView data,
-                   ::blink::Manifest::UrlHandler* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestShareTargetParamsDataView,
                  ::blink::Manifest::ShareTargetParams> {
   static const absl::optional<base::StringPiece16> text(
@@ -203,61 +185,6 @@ struct BLINK_COMMON_EXPORT
   }
   static bool Read(blink::mojom::ManifestShareTargetDataView data,
                    ::blink::Manifest::ShareTarget* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::ManifestFileHandlerDataView,
-                 ::blink::Manifest::FileHandler> {
-  static const GURL& action(const ::blink::Manifest::FileHandler& entry) {
-    return entry.action;
-  }
-
-  static const std::u16string& name(
-      const ::blink::Manifest::FileHandler& entry) {
-    return entry.name;
-  }
-
-  static const std::vector<::blink::Manifest::ImageResource>& icons(
-      const ::blink::Manifest::FileHandler& entry) {
-    return entry.icons;
-  }
-
-  static const std::map<std::u16string, std::vector<std::u16string>>& accept(
-      const ::blink::Manifest::FileHandler& entry) {
-    return entry.accept;
-  }
-
-  static bool Read(blink::mojom::ManifestFileHandlerDataView data,
-                   ::blink::Manifest::FileHandler* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::ManifestProtocolHandlerDataView,
-                 ::blink::Manifest::ProtocolHandler> {
-  static base::StringPiece16 protocol(
-      const ::blink::Manifest::ProtocolHandler& protocol) {
-    return internal::TruncateString16(protocol.protocol);
-  }
-  static const GURL& url(const ::blink::Manifest::ProtocolHandler& protocol) {
-    return protocol.url;
-  }
-  static bool Read(blink::mojom::ManifestProtocolHandlerDataView data,
-                   ::blink::Manifest::ProtocolHandler* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::ManifestNoteTakingDataView,
-                 ::blink::Manifest::NoteTaking> {
-  static const GURL new_note_url(
-      const ::blink::Manifest::NoteTaking& note_taking) {
-    return note_taking.new_note_url;
-  }
-
-  static bool Read(blink::mojom::ManifestNoteTakingDataView data,
-                   ::blink::Manifest::NoteTaking* out);
 };
 
 }  // namespace mojo

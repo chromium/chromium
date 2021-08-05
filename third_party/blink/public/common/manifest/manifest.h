@@ -105,32 +105,6 @@ class BLINK_COMMON_EXPORT Manifest {
     ShareTargetParams params;
   };
 
-  // Structure representing a File Handler.
-  struct BLINK_COMMON_EXPORT FileHandler {
-    // The URL which will be opened when the file handler is invoked.
-    GURL action;
-    std::u16string name;
-    std::vector<ImageResource> icons;
-    std::map<std::u16string, std::vector<std::u16string>> accept;
-  };
-
-  // Structure representing a Protocol Handler.
-  struct BLINK_COMMON_EXPORT ProtocolHandler {
-    std::u16string protocol;
-    GURL url;
-  };
-
-  struct BLINK_COMMON_EXPORT UrlHandler {
-    url::Origin origin;
-    bool has_origin_wildcard;
-  };
-
-  struct BLINK_COMMON_EXPORT NoteTaking {
-    // A URL for taking a new note in the web application. If valid, this web
-    // application is a note-taking application.
-    GURL new_note_url;
-  };
-
   // Structure representing a related application.
   struct BLINK_COMMON_EXPORT RelatedApplication {
     RelatedApplication();
