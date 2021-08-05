@@ -4,6 +4,7 @@
 
 #include "ui/views/animation/animation_builder.h"
 
+#include "base/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -101,6 +102,58 @@ TEST_F(AnimationBuilderTest, SimpleAnimation) {
   base::TimeTicks last_step_time = second_layer_animator->last_step_time();
   second_animating_view->layer()->GetAnimator()->Step(last_step_time + kDelay);
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
+  auto first_animating_view = std::make_unique<View>();
+  auto second_animating_view = std::make_unique<View>();
+
+  first_animating_view->SetPaintToLayer();
+  second_animating_view->SetPaintToLayer();
+
+  ui::LayerAnimator* first_layer_animator =
+      first_animating_view->layer()->GetAnimator();
+  // TODO(kylixrd): Consider adding more test support to AnimationBuilder to
+  // avoid reaching behind the curtain for these things.
+  first_layer_animator->set_disable_timer_for_test(true);
+
+  ui::LayerAnimator* second_layer_animator =
+      second_animating_view->layer()->GetAnimator();
+  second_layer_animator->set_disable_timer_for_test(true);
+
+  ui::LayerAnimatorTestController first_test_controller(first_layer_animator);
+  ui::LayerAnimatorTestController second_test_controller(second_layer_animator);
+
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
+  bool started = false;
+  bool ended = false;
+
+  {
+    AnimationBuilder b;
+    b.OnStarted(
+         base::BindOnce([](bool* started) { *started = true; }, &started))
+        .OnEnded(base::BindOnce([](bool* ended) { *ended = true; }, &ended))
+        .NewSequence()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view.get(), 0.4f)
+        .EndSequence()
+        .NewSequence()
+        .SetDuration(kDelay * 2)
+        .SetOpacity(second_animating_view.get(), 0.9f)
+        .EndSequence();
+  }
+
+  first_test_controller.StartThreadedAnimationsIfNeeded();
+  second_test_controller.StartThreadedAnimationsIfNeeded();
+
+  EXPECT_TRUE(started);
+
+  first_animating_view->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
+                                                     kDelay * 2);
+  second_animating_view->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
+                                                      kDelay * 2);
+
+  EXPECT_TRUE(ended);
 }
 
 }  // namespace views

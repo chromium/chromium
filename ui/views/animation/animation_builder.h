@@ -46,17 +46,17 @@ class VIEWS_EXPORT AnimationBuilder {
 
 
   // Called when the animation starts.
-  void OnStarted(base::OnceClosure callback);
+  AnimationBuilder& OnStarted(base::OnceClosure callback);
   // Called when the animation ends. Not called if animation is aborted.
-  void OnEnded(base::OnceClosure callback);
+  AnimationBuilder& OnEnded(base::OnceClosure callback);
   // Called when a sequence repetition ends and will repeat. Not called if
   // sequence is aborted.
-  void OnWillRepeat(base::RepeatingClosure callback);
+  AnimationBuilder& OnWillRepeat(base::RepeatingClosure callback);
   // Called if animation is aborted for any reason. Should never do anything
   // that may cause another animation to be started.
-  void OnAborted(base::OnceClosure callback);
+  AnimationBuilder& OnAborted(base::OnceClosure callback);
   // Called when the animation is scheduled.
-  void OnScheduled(base::OnceClosure callback);
+  AnimationBuilder& OnScheduled(base::OnceClosure callback);
 
  private:
   struct AnimationKey {
@@ -82,6 +82,13 @@ class VIEWS_EXPORT AnimationBuilder {
 
     void ObserveAnimationSequence(ui::LayerAnimationSequence* sequence);
 
+    void SetOnStarted(base::OnceClosure callback);
+    void SetOnEnded(base::OnceClosure callback);
+    void SetOnWillRepeat(base::RepeatingClosure callback);
+    void SetOnAborted(base::OnceClosure callback);
+    void SetOnScheduled(base::OnceClosure callback);
+
+    // ui::LayerAnimationObserver
     void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
     void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
     void OnLayerAnimationWillRepeat(
@@ -94,12 +101,19 @@ class VIEWS_EXPORT AnimationBuilder {
     void Reset();
 
     std::vector<base::WeakPtr<ui::LayerAnimationSequence>> sequences_;
+    base::OnceClosure on_started_;
+    base::OnceClosure on_ended_;
+    base::RepeatingClosure on_will_repeat_;
+    base::OnceClosure on_aborted_;
+    base::OnceClosure on_scheduled_;
   };
 
   void CreateNewEntry(const AnimationKey& key);
 
   void AddAnimation(const AnimationKey& key,
                     std::unique_ptr<ui::LayerAnimationElement> element);
+
+  AnimationBuilderObserver* GetAnimationObserver();
 
   base::flat_map<AnimationKey,
                  std::vector<std::unique_ptr<ui::LayerAnimationSequence>>>
