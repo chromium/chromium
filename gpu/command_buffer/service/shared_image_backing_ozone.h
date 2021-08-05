@@ -51,6 +51,11 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   // gpu::SharedImageBacking:
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
+  bool WritePixels(base::span<const uint8_t> pixel_data,
+                   SharedContextState* const shared_context_state,
+                   viz::ResourceFormat format,
+                   const gfx::Size& size,
+                   SkAlphaType alpha_type);
 
  protected:
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
@@ -83,6 +88,10 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   class SharedImageRepresentationOverlayOzone;
 
   bool VaSync();
+
+  void FlushAndSubmitIfNecessary(
+      std::vector<GrBackendSemaphore> signal_semaphores,
+      SharedContextState* const shared_context_state);
 
   bool NeedsSynchronization() const;
 

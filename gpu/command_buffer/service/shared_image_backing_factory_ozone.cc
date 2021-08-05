@@ -48,8 +48,8 @@ SharedImageBackingFactoryOzone::SharedImageBackingFactoryOzone(
 
 SharedImageBackingFactoryOzone::~SharedImageBackingFactoryOzone() = default;
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryOzone::CreateSharedImage(
+std::unique_ptr<SharedImageBackingOzone>
+SharedImageBackingFactoryOzone::CreateSharedImageInternal(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     SurfaceHandle surface_handle,
@@ -57,9 +57,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
-    bool is_thread_safe) {
-  DCHECK(!is_thread_safe);
+    uint32_t usage) {
   gfx::BufferFormat buffer_format = viz::BufferFormat(format);
   VkDevice vk_device = VK_NULL_HANDLE;
   DCHECK(shared_context_state_);
@@ -75,10 +73,26 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
   if (!pixmap) {
     return nullptr;
   }
-  auto backing = std::make_unique<SharedImageBackingOzone>(
+  return std::make_unique<SharedImageBackingOzone>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       shared_context_state_, std::move(pixmap), dawn_procs_);
-  return backing;
+}
+
+std::unique_ptr<SharedImageBacking>
+SharedImageBackingFactoryOzone::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::ResourceFormat format,
+    SurfaceHandle surface_handle,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    bool is_thread_safe) {
+  DCHECK(!is_thread_safe);
+  return CreateSharedImageInternal(mailbox, format, surface_handle, size,
+                                   color_space, surface_origin, alpha_type,
+                                   usage);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -91,8 +105,18 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  SurfaceHandle surface_handle = SurfaceHandle();
+  auto backing =
+      CreateSharedImageInternal(mailbox, format, surface_handle, size,
+                                color_space, surface_origin, alpha_type, usage);
+
+  if (!pixel_data.empty() &&
+      !backing->WritePixels(pixel_data, shared_context_state_, format, size,
+                            alpha_type)) {
+    return nullptr;
+  }
+
+  return backing;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -133,9 +157,6 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
-  if (is_pixel_used) {
-    return false;
-  }
   if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
   }

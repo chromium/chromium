@@ -22,6 +22,9 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image_representation_gl_ozone.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
+#include "gpu/command_buffer/service/skia_utils.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -231,6 +234,71 @@ bool SharedImageBackingOzone::VaSync() {
   if (has_pending_va_writes_)
     has_pending_va_writes_ = !vaapi_deps_->SyncSurface();
   return !has_pending_va_writes_;
+}
+
+bool SharedImageBackingOzone::WritePixels(
+    base::span<const uint8_t> pixel_data,
+    SharedContextState* const shared_context_state,
+    viz::ResourceFormat format,
+    const gfx::Size& size,
+    SkAlphaType alpha_type) {
+  auto representation =
+      ProduceSkia(nullptr, shared_context_state->memory_type_tracker(),
+                  shared_context_state);
+
+  SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
+                                       ResourceFormatToClosestSkColorType(
+                                           /*gpu_compositing=*/true, format),
+                                       alpha_type);
+  SkPixmap sk_pixmap(info, pixel_data.data(), info.minRowBytes());
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  // Allow uncleared access, as we manually handle clear tracking.
+  auto dest_scoped_access = representation->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes,
+      /*use_sk_surface=*/false);
+  if (!dest_scoped_access) {
+    return false;
+  }
+  if (!begin_semaphores.empty()) {
+    bool result = shared_context_state->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(result);
+  }
+
+  bool written = shared_context_state->gr_context()->updateBackendTexture(
+      dest_scoped_access->promise_image_texture()->backendTexture(), &sk_pixmap,
+      /*numLevels=*/1, representation->surface_origin(), nullptr, nullptr);
+
+  FlushAndSubmitIfNecessary(std::move(end_semaphores), shared_context_state);
+  if (written && !representation->IsCleared()) {
+    representation->SetClearedRect(gfx::Rect(info.width(), info.height()));
+  }
+  return written;
+}
+
+void SharedImageBackingOzone::FlushAndSubmitIfNecessary(
+    std::vector<GrBackendSemaphore> signal_semaphores,
+    SharedContextState* const shared_context_state) {
+  bool sync_cpu = gpu::ShouldVulkanSyncCpuForSkiaSubmit(
+      shared_context_state->vk_context_provider());
+  GrFlushInfo flush_info = {};
+  if (!signal_semaphores.empty()) {
+    flush_info = {
+        .fNumSemaphores = signal_semaphores.size(),
+        .fSignalSemaphores = signal_semaphores.data(),
+    };
+    gpu::AddVulkanCleanupTaskForSkiaFlush(
+        shared_context_state->vk_context_provider(), &flush_info);
+  }
+
+  shared_context_state->gr_context()->flush(flush_info);
+  if (sync_cpu || !signal_semaphores.empty()) {
+    shared_context_state->gr_context()->submit();
+  }
 }
 
 bool SharedImageBackingOzone::NeedsSynchronization() const {

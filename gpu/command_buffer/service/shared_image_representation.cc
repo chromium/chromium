@@ -22,7 +22,12 @@ SharedImageRepresentation::SharedImageRepresentation(
     MemoryTypeTracker* owning_tracker)
     : manager_(manager), backing_(backing), tracker_(owning_tracker) {
   DCHECK(tracker_);
-  backing_->AddRef(this);
+  // TODO(hitawala): Rewrite the reference counting so that
+  // SharedImageRepresentation does not need manager and manager attaches to
+  // backing in Register().
+  if (manager_) {
+    backing_->AddRef(this);
+  }
 }
 
 SharedImageRepresentation::~SharedImageRepresentation() {
@@ -30,7 +35,9 @@ SharedImageRepresentation::~SharedImageRepresentation() {
   // error is.
   CHECK(!has_scoped_access_) << "Destroying a SharedImageRepresentation with "
                                 "outstanding Scoped*Access objects.";
-  manager_->OnRepresentationDestroyed(backing_->mailbox(), this);
+  if (manager_) {
+    manager_->OnRepresentationDestroyed(backing_->mailbox(), this);
+  }
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexture::ScopedAccess>
