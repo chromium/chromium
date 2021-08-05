@@ -13,6 +13,7 @@
 #include "components/javascript_dialogs/views/app_modal_dialog_view_views.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -79,6 +80,19 @@ class ChromeJavaScriptAppModalDialogViews
   PopunderPreventer popunder_preventer_;
 };
 
+void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
+  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
+  gfx::Rect screen_rect =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestPoint(widget_bounds.CenterPoint())
+          .work_area();
+
+  if (!screen_rect.Contains(widget_bounds)) {
+    widget_bounds.AdjustToFit(screen_rect);
+    widget->SetBounds(widget_bounds);
+  }
+}
+
 javascript_dialogs::AppModalDialogView* CreateViewsJavaScriptDialog(
     javascript_dialogs::AppModalDialogController* controller) {
   javascript_dialogs::AppModalDialogViewViews* dialog =
@@ -94,7 +108,9 @@ javascript_dialogs::AppModalDialogView* CreateViewsJavaScriptDialog(
     parent_window = nullptr;
   }
 #endif
-  constrained_window::CreateBrowserModalDialogViews(dialog, parent_window);
+  views::Widget* widget =
+      constrained_window::CreateBrowserModalDialogViews(dialog, parent_window);
+  AdjustWidgetBoundsIfOffscreen(widget);
   return dialog;
 }
 
