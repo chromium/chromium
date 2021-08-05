@@ -212,11 +212,15 @@ class ExceptionToAbortStreamingScope {
 
 void SendCachedData(String response_url,
                     base::Time response_time,
-                    blink::mojom::CodeCacheHost* code_cache_host,
+                    ExecutionContext* execution_context,
                     Vector<uint8_t> serialized_module) {
+  if (!execution_context)
+    return;
   scoped_refptr<CachedMetadata> cached_metadata =
       CachedMetadata::CreateFromSerializedData(std::move(serialized_module));
 
+  blink::mojom::CodeCacheHost* code_cache_host =
+      ExecutionContext::GetCodeCacheHostFromContext(execution_context);
   base::span<const uint8_t> serialized_data = cached_metadata->SerializedData();
   CachedMetadataSender::SendToCodeCacheHost(
       code_cache_host, mojom::blink::CodeCacheType::kWebAssembly, response_url,
@@ -228,11 +232,11 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
   WasmStreamingClient(const String& response_url,
                       const base::Time& response_time,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                      blink::mojom::CodeCacheHost* code_cache_host)
+                      ExecutionContext* execution_context)
       : response_url_(response_url.IsolatedCopy()),
         response_time_(response_time),
         main_thread_task_runner_(std::move(task_runner)),
-        code_cache_host_(code_cache_host) {}
+        execution_context_(execution_context) {}
 
   void OnModuleCompiled(v8::CompiledWasmModule compiled_module) override {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
@@ -273,7 +277,7 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     // TODO(mythria): Add support for worklets and remove this code that uses
     // per-process interface.
     if (!main_thread_task_runner_.get()) {
-      SendCachedData(response_url_, response_time_, nullptr,
+      SendCachedData(response_url_, response_time_, execution_context_.Lock(),
                      std::move(serialized_data));
       return;
     }
@@ -281,8 +285,7 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     main_thread_task_runner_->PostTask(
         FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
                        &SendCachedData, response_url_, response_time_,
-                       WTF::CrossThreadUnretained(code_cache_host_),
-                       std::move(serialized_data))));
+                       execution_context_, std::move(serialized_data))));
   }
 
   void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
@@ -294,7 +297,7 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
   base::Time response_time_;
   scoped_refptr<CachedMetadata> cached_module_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  blink::mojom::CodeCacheHost* code_cache_host_;
+  CrossThreadWeakPersistent<ExecutionContext> execution_context_;
 
   DISALLOW_COPY_AND_ASSIGN(WasmStreamingClient);
 };
@@ -384,8 +387,7 @@ void StreamFromResponseCallback(
 
     auto client = std::make_shared<WasmStreamingClient>(
         url, response->GetResponse()->InternalResponse()->ResponseTime(),
-        GetContextTaskRunner(*execution_context),
-        ExecutionContext::GetCodeCacheHostFromContext(execution_context));
+        GetContextTaskRunner(*execution_context), execution_context);
     streaming->SetClient(client);
     scoped_refptr<CachedMetadata> cached_module =
         cache_handler->GetCachedMetadata(kWasmModuleTag);
