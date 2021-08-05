@@ -13,6 +13,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -540,9 +541,9 @@ void CrosUsbDetector::OnDeviceChecked(
     bool hide_notification,
     bool allowed) {
   if (!allowed) {
-    LOG(WARNING) << "Device not allowed by Permission Broker. product:"
-                 << device_info->product_id
-                 << " vendor:" << device_info->vendor_id;
+    LOG(WARNING) << "Device not allowed by Permission Broker. vendor: 0x"
+                 << std::hex << device_info->vendor_id << " product: 0x"
+                 << device_info->product_id;
     return;
   }
 
