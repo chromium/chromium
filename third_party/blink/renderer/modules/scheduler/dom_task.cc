@@ -11,9 +11,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace blink {
 
@@ -30,6 +32,17 @@ namespace blink {
                              sample, base::TimeDelta::FromMilliseconds(1), \
                              base::TimeDelta::FromMinutes(1), 50)
 
+namespace {
+void PostTaskCallbackTraceEventData(perfetto::TracedValue context,
+                                    const String& priority,
+                                    const double delay) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("priority", priority);
+  dict.Add("delay", delay);
+  SetCallStack(dict);
+}
+}  // namespace
+
 DOMTask::DOMTask(ScriptPromiseResolver* resolver,
                  V8SchedulerPostTaskCallback* callback,
                  DOMTaskSignal* signal,
@@ -40,8 +53,8 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
       signal_(signal),
       // TODO(kdillon): Expose queuing time from base::sequence_manager so we
       // don't have to recalculate it here.
-      queue_time_(delay.is_zero() ? base::TimeTicks::Now()
-                                  : base::TimeTicks()) {
+      queue_time_(delay.is_zero() ? base::TimeTicks::Now() : base::TimeTicks()),
+      delay_(delay) {
   DCHECK(signal_);
   DCHECK(task_runner);
   DCHECK(callback_);
@@ -101,6 +114,10 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(isolate);
+
+  DEVTOOLS_TIMELINE_TRACE_EVENT("RunPostTaskCallback",
+                                PostTaskCallbackTraceEventData,
+                                signal_->priority(), delay_.InMillisecondsF());
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context);

@@ -45,6 +45,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   probe::AsyncTaskId async_task_id_;
   Member<DOMTaskSignal> signal_;
   const base::TimeTicks queue_time_;
+  const base::TimeDelta delay_;
 };
 
 }  // namespace blink
