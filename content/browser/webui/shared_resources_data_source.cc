@@ -28,7 +28,7 @@
 #include "base/feature_list.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #endif
 
 namespace content {
@@ -130,7 +130,7 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
   source->AddString(
       "crosColorsDebugOverrides",
       base::FeatureList::IsEnabled(ash::features::kSemanticColorsDebugOverride)
-          ? cros_colors::kDebugOverrideCssString
+          ? cros_styles::kDebugOverrideCssString
           : "");
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

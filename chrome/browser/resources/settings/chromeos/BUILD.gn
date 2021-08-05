@@ -59,7 +59,7 @@ if (optimize_webui) {
       "chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js",
       "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js",
       "chrome://resources/js/cr.m.js",
-      "chrome://resources/chromeos/colors/cros_colors.generated.css",
+      "chrome://resources/chromeos/colors/cros_styles.css",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js",

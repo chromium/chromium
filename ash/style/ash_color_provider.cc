@@ -21,7 +21,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -34,7 +34,7 @@
 
 namespace ash {
 
-using ColorName = cros_colors::ColorName;
+using ColorName = cros_styles::ColorName;
 
 namespace {
 
@@ -68,8 +68,8 @@ constexpr SkColor kBackgroundColorDefaultDark = gfx::kGoogleGrey900;
 constexpr int kPillButtonImageLabelSpacingDp = 8;
 
 // Get the corresponding ColorName for |type|. ColorName is an enum in
-// cros_colors.h file that is generated from cros_colors.json5, which includes
-// the color IDs and colors that will be used by ChromeOS WebUI.
+// cros_styles.h file that is generated from cros_colors.json5, which
+// includes the color IDs and colors that will be used by ChromeOS WebUI.
 ColorName TypeToColorName(AshColorProvider::ContentLayerType type) {
   switch (type) {
     case AshColorProvider::ContentLayerType::kTextColorPrimary:
@@ -96,11 +96,11 @@ ColorName TypeToColorName(AshColorProvider::ContentLayerType type) {
   }
 }
 
-// Get the color from cros_colors.h header file that is generated from
+// Get the color from cros_styles.h header file that is generated from
 // cros_colors.json5. Colors there will also be used by ChromeOS WebUI.
 SkColor ResolveColor(AshColorProvider::ContentLayerType type,
                      bool use_dark_color) {
-  return cros_colors::ResolveColor(
+  return cros_styles::ResolveColor(
       TypeToColorName(type), use_dark_color,
       base::FeatureList::IsEnabled(
           ash::features::kSemanticColorsDebugOverride));

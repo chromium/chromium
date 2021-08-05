@@ -4,7 +4,7 @@
 
 import("//tools/style_variable_generator/style_variable_generator.gni")
 
-style_variable_generator("cros_colors") {
+style_variable_generator("cros_styles") {
   sources = [
     "cros_colors.json5",
     "cros_palette.json5",

@@ -16,7 +16,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -49,7 +49,7 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
                 assistant_colors::ColorName::kBgAssistantPlate,
                 /*is_dark_mode=*/false, /*use_debug_colors=*/false));
   EXPECT_EQ(high_confidence_label->GetEnabledColor(),
-            cros_colors::ResolveColor(cros_colors::ColorName::kTextColorPrimary,
+            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/false,
                                       /*use_debug_colors=*/false));
   EXPECT_EQ(low_confidence_label->GetBackgroundColor(),
@@ -58,7 +58,7 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
                 /*is_dark_mode=*/false, /*use_debug_colors=*/false));
   EXPECT_EQ(
       low_confidence_label->GetEnabledColor(),
-      cros_colors::ResolveColor(cros_colors::ColorName::kTextColorSecondary,
+      cros_styles::ResolveColor(cros_styles::ColorName::kTextColorSecondary,
                                 /*is_dark_mode=*/false,
                                 /*use_debug_colors=*/false));
 
@@ -74,7 +74,7 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
                 assistant_colors::ColorName::kBgAssistantPlate,
                 /*is_dark_mode=*/true, /*use_debug_colors=*/false));
   EXPECT_EQ(high_confidence_label->GetEnabledColor(),
-            cros_colors::ResolveColor(cros_colors::ColorName::kTextColorPrimary,
+            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/true,
                                       /*use_debug_colors=*/false));
   EXPECT_EQ(low_confidence_label->GetBackgroundColor(),
@@ -83,7 +83,7 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
                 /*is_dark_mode=*/true, /*use_debug_colors=*/false));
   EXPECT_EQ(
       low_confidence_label->GetEnabledColor(),
-      cros_colors::ResolveColor(cros_colors::ColorName::kTextColorSecondary,
+      cros_styles::ResolveColor(cros_styles::ColorName::kTextColorSecondary,
                                 /*is_dark_mode=*/true,
                                 /*use_debug_colors=*/false));
 }

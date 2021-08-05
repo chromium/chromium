@@ -18,7 +18,7 @@
 #include "net/base/escape.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
@@ -79,20 +79,20 @@ void AssistantQueryView::OnThemeChanged() {
 
   // TODO(crbug.com/1176919): We cannot use ScopedLightModeAsDefault from
   // ash/assistant/ui as it causes a circular dependency. Find a better way to
-  // resolve cros_colors color.
+  // resolve cros_styles color.
   SkColor text_color_primary =
       features::IsDarkLightModeEnabled()
           ? ColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary)
-          : cros_colors::ResolveColor(cros_colors::ColorName::kTextColorPrimary,
+          : cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/false,
                                       /*use_debug_colors=*/false);
   SkColor text_color_secondary =
       features::IsDarkLightModeEnabled()
           ? ColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorSecondary)
-          : cros_colors::ResolveColor(
-                cros_colors::ColorName::kTextColorSecondary,
+          : cros_styles::ResolveColor(
+                cros_styles::ColorName::kTextColorSecondary,
                 /*is_dark_mode=*/false,
                 /*use_debug_colors=*/false);
 

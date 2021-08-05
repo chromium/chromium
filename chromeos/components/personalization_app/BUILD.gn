@@ -25,7 +25,7 @@ static_library("personalization_app") {
     "//chromeos/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
-    "//ui/chromeos/colors:cros_colors_views_generator",
+    "//ui/chromeos/styles:cros_styles_views_generator",
     "//ui/resources:webui_generated_resources_grd_grit",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",

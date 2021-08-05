@@ -16,7 +16,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_generated_resources_map.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -43,13 +43,13 @@ void AddStrings(content::WebUIDataSource* source) {
 }
 
 void AddCrosColors(content::WebUIDataSource* source) {
-  source->AddResourcePath("chromeos/colors/cros_colors.generated.css",
+  source->AddResourcePath("chromeos/colors/cros_styles.css",
                           IDR_WEBUI_CROS_COLORS_CSS);
 
   source->AddString(
       "crosColorsDebugOverrides",
       base::FeatureList::IsEnabled(ash::features::kSemanticColorsDebugOverride)
-          ? cros_colors::kDebugOverrideCssString
+          ? cros_styles::kDebugOverrideCssString
           : std::string());
 }
 

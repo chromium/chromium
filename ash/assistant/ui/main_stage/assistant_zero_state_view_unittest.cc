@@ -15,7 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -50,7 +50,7 @@ TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
                 assistant_colors::ColorName::kBgAssistantPlate,
                 /*is_dark_mode=*/false, /*use_debug_colors=*/false));
   EXPECT_EQ(greeting_label->GetEnabledColor(),
-            cros_colors::ResolveColor(cros_colors::ColorName::kTextColorPrimary,
+            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/false,
                                       /*use_debug_colors=*/false));
 
@@ -62,7 +62,7 @@ TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
                 assistant_colors::ColorName::kBgAssistantPlate,
                 /*is_dark_mode=*/true, /*use_debug_colors=*/false));
   EXPECT_EQ(greeting_label->GetEnabledColor(),
-            cros_colors::ResolveColor(cros_colors::ColorName::kTextColorPrimary,
+            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/true,
                                       /*use_debug_colors=*/false));
 }
