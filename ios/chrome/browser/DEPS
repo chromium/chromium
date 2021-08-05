@@ -58,6 +58,7 @@ include_rules = [
   "+components/omnibox/browser",
   "+components/omnibox/common",
   "+components/open_from_clipboard",
+  "+components/optimization_guide",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/password_manager/ios",
