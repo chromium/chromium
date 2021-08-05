@@ -46,7 +46,7 @@ class ArcNearbyShareBridge : public KeyedService,
 
   // mojom::NearbyShareHost overrides.
   void StartNearbyShare(
-      int32_t task_id,
+      uint32_t task_id,
       mojom::ShareIntentInfoPtr info,
       mojo::PendingRemote<mojom::NearbyShareSessionInstance> instance,
       StartNearbyShareCallback callback) override;

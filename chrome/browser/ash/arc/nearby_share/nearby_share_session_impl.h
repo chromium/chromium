@@ -33,7 +33,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
 
   NearbyShareSessionImpl(
       Profile* profile,
-      int32_t task_id,
+      uint32_t task_id,
       mojom::ShareIntentInfoPtr share_info,
       mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
       mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver,
@@ -88,7 +88,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnCleanupSession();
 
   // Android activity's task ID
-  int32_t task_id_;
+  uint32_t task_id_;
 
   // Used to send messages to ARC.
   mojo::Remote<mojom::NearbyShareSessionInstance> session_instance_;

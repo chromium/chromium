@@ -81,7 +81,7 @@ void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
 }
 
 void ArcNearbyShareBridge::StartNearbyShare(
-    int32_t task_id,
+    uint32_t task_id,
     mojom::ShareIntentInfoPtr share_info,
     mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
     StartNearbyShareCallback callback) {

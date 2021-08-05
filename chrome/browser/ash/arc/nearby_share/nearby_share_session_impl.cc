@@ -47,7 +47,7 @@ constexpr base::FilePath::CharType kArcNearbyShareDirname[] =
 
 NearbyShareSessionImpl::NearbyShareSessionImpl(
     Profile* profile,
-    int32_t task_id,
+    uint32_t task_id,
     mojom::ShareIntentInfoPtr share_info,
     mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
     mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver,
@@ -120,7 +120,10 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(
     bool visible) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (visible && (arc::GetWindowTaskId(window) == task_id_)) {
+  absl::optional<int> task_id = arc::GetWindowTaskId(window);
+  DCHECK(task_id.has_value());
+  DCHECK_GE(task_id.value(), 0);
+  if (visible && (task_id.value() == task_id_)) {
     VLOG(1) << "ARC Window is visible";
     if (window_initialization_timer_.IsRunning()) {
       window_initialization_timer_.Stop();
