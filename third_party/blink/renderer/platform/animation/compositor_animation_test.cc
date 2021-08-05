@@ -66,7 +66,9 @@ TEST_F(CompositorAnimationTest, NullDelegate) {
 
   auto curve = std::make_unique<CompositorFloatAnimationCurve>();
   auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-      *curve, compositor_target_property::TRANSFORM, 0, 1);
+      *curve, 0, 1,
+      CompositorKeyframeModel::TargetPropertyId(
+          compositor_target_property::TRANSFORM));
   int keyframe_model_id = keyframe_model->Id();
   animation->AddKeyframeModel(std::move(keyframe_model));
 
@@ -99,7 +101,9 @@ TEST_F(CompositorAnimationTest, NotifyFromCCAfterCompositorAnimationDeletion) {
 
   auto curve = std::make_unique<CompositorFloatAnimationCurve>();
   auto keyframe_model = std::make_unique<CompositorKeyframeModel>(
-      *curve, compositor_target_property::OPACITY, 0, 1);
+      *curve, 0, 1,
+      CompositorKeyframeModel::TargetPropertyId(
+          compositor_target_property::OPACITY));
   int keyframe_model_id = keyframe_model->Id();
   animation->AddKeyframeModel(std::move(keyframe_model));
 

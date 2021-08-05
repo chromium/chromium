@@ -144,7 +144,9 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
     if (!scrollable_area_->ShouldScrollOnMainThread() &&
         !is_sequenced_scroll_) {
       auto animation = std::make_unique<CompositorKeyframeModel>(
-          *animation_curve_, compositor_target_property::SCROLL_OFFSET, 0, 0);
+          *animation_curve_, 0, 0,
+          CompositorKeyframeModel::TargetPropertyId(
+              compositor_target_property::SCROLL_OFFSET));
 
       if (AddAnimation(std::move(animation))) {
         sent_to_compositor = true;
