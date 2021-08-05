@@ -15,7 +15,8 @@
 namespace {
 
 // Templates for the profile preferences paths to store account related
-// information, per service provider. OAuth2 tokens:
+// information, per service provider.
+// OAuth2 tokens:
 constexpr char kAccessTokenPrefPathTemplate[] =
     "enterprise_connectors.file_system.%s.access_token";
 constexpr char kRefreshTokenPrefPathTemplate[] =
@@ -206,6 +207,18 @@ std::string GetDefaultFolderName(PrefService* prefs,
   std::string name = prefs->GetString(
       GetPrefPath(kUploadFolderNamePrefPathTemplate, service_provider));
   return name.empty() ? kUploadFolderDefaultName : name;
+}
+
+std::vector<std::string> GetFileSystemConnectorAccountInfoPrefs(
+    const std::string& service_provider) {
+  std::vector<std::string> prefs_paths;
+  prefs_paths.emplace_back(
+      GetPrefPath(kUploadFolderIdPrefPathTemplate, service_provider));
+  prefs_paths.emplace_back(
+      GetPrefPath(kUploadFolderNamePrefPathTemplate, service_provider));
+  prefs_paths.emplace_back(
+      GetPrefPath(kAccountInfoPrefPathTemplate, service_provider));
+  return prefs_paths;
 }
 
 void SetFileSystemAccountInfo(PrefService* prefs,

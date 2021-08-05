@@ -225,6 +225,16 @@ bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
          ClearFileSystemAccountInfo(prefs, settings.service_provider);
 }
 
+std::vector<std::string> GetFileSystemConnectorPrefsForSettingsPage(
+    Profile* profile) {
+  std::vector<std::string> prefs_paths;
+  auto settings = GetFileSystemSettings(profile);
+  if (settings.has_value()) {
+    return GetFileSystemConnectorAccountInfoPrefs(settings->service_provider);
+  }
+  return std::vector<std::string>();
+}
+
 AccountInfo::AccountInfo() = default;
 AccountInfo::~AccountInfo() = default;
 AccountInfo::AccountInfo(const AccountInfo& other) = default;

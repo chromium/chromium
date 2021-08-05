@@ -54,6 +54,10 @@ struct AccountInfo {
   AccountInfo(const AccountInfo& other);
 };
 
+// Prefs for the settings page to observe to refresh the connection section.
+std::vector<std::string> GetFileSystemConnectorPrefsForSettingsPage(
+    Profile* profile);
+
 absl::optional<AccountInfo> GetFileSystemConnectorLinkedAccountInfo(
     const FileSystemSettings& settings,
     PrefService* prefs);

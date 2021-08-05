@@ -166,8 +166,20 @@ bool DownloadsHandler::IsDownloadsConnectionPolicyEnabled() const {
 
 void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
   bool routing_enabled = IsDownloadsConnectionPolicyEnabled();
-  if (routing_enabled)
+  if (routing_enabled) {
+    std::vector<std::string> connection_prefs =
+        ec::GetFileSystemConnectorPrefsForSettingsPage(profile_);
+    for (const std::string& pref : connection_prefs) {
+      if (pref_registrar_.IsObserved(pref))
+        continue;
+      pref_registrar_.Add(
+          pref, base::BindRepeating(
+                    &DownloadsHandler::SendDownloadsConnectionInfoToJavascript,
+                    base::Unretained(this)));
+    }
     SendDownloadsConnectionInfoToJavascript();
+  }
+
   FireWebUIListener("downloads-connection-policy-changed",
                     base::Value(routing_enabled));
 }
@@ -193,6 +205,7 @@ void DownloadsHandler::OnDownloadsConnectionAccountLinkSet(bool success) {
 void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
   absl::optional<ec::FileSystemSettings> settings =
       ec::GetFileSystemSettings(profile_);
+
   absl::optional<ec::AccountInfo> info;
   bool got_linked_account =
       settings.has_value() && (info = GetFileSystemConnectorLinkedAccountInfo(
