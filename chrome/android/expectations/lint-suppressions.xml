@@ -280,6 +280,11 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_share_iph_settings` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph_settings` appears to be unused"/>
 
+    <!-- 3: TODO(crbug.com/1213541) Remove when Shortcuts Widget is ready to ship. -->
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_google_lens` appears to be unused"/>
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
