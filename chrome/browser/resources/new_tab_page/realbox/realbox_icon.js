@@ -89,15 +89,6 @@ class RealboxIconElement extends PolymerElement {
        * @type {string}
        * @private
        */
-      imageContainerStyle_: {
-        type: String,
-        computed: `computeImageContainerStyle_(imageSrc_, match)`,
-      },
-
-      /**
-       * @type {string}
-       * @private
-       */
       imageSrc_: {
         type: String,
         computed: `computeImageSrc_(match.imageDataUrl, match)`,
@@ -165,18 +156,6 @@ class RealboxIconElement extends PolymerElement {
   /**
    * @returns {string}
    * @private
-   */
-  computeImageContainerStyle_() {
-    // Show a background color until the image loads.
-    return (this.match && this.match.imageDominantColor && !this.imageSrc_) ?
-        // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
-        `background-color: ${this.match.imageDominantColor}40;` :
-        'background-color: transparent;';
-  }
-
-  /**
-   * @returns {string}
-   * @private
    * @suppress {checkTypes}
    */
   computeImageSrc_() {
@@ -193,6 +172,21 @@ class RealboxIconElement extends PolymerElement {
     } else {
       return '';
     }
+  }
+
+  /**
+   * @param {string} imageSrc
+   * @param {string} imageDominantColor
+   * @returns {string}
+   * @private
+   */
+  containerBgColor_(imageSrc, imageDominantColor) {
+    // If the match has an image dominant color, show that color in place of the
+    // image until it loads. This helps the image appear to load more smoothly.
+    return (!imageSrc && imageDominantColor) ?
+        // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
+        `${imageDominantColor}40` :
+        '';
   }
 }
 

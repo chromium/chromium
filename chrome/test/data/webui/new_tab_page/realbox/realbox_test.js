@@ -2007,6 +2007,7 @@ suite('NewTabPageRealboxTest', () => {
             iconUrl: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
+            isRichSuggestion: true,
           })
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -2056,36 +2057,36 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('hello world', realbox.$.input.value);
         // Second match shows a placeholder color until the image loads.
-        const imageContainerEl = matchEls[1].$.icon.$.imageContainer;
+        const containerEl = matchEls[1].$.icon.$.container;
         assertStyle(
-            imageContainerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
-        // Realbox icon is updated.
-        assertIconMaskImageUrl(realbox.$.icon, 'clock.svg');
+            containerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
+        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
         // URL of the loaded image must match image URL of the match.
         testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
             1, {url: 'http://example.com/'}, imageData);
         await testProxy.callbackRouterRemote.$.flushForTesting();
         assertStyle(
-            imageContainerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
-        assertIconMaskImageUrl(realbox.$.icon, 'clock.svg');
+            containerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
+        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
         // Index of the loaded image must match index of the match.
         testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
             0, {url: 'https://gstatic.com/'}, imageData);
         await testProxy.callbackRouterRemote.$.flushForTesting();
         assertStyle(
-            imageContainerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
-        assertIconMaskImageUrl(realbox.$.icon, 'clock.svg');
+            containerEl, 'background-color', 'rgba(117, 117, 117, 0.25)');
+        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
         // Once the image successfully loads it replaces the match icon.
         testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
             1, {url: 'https://gstatic.com/'}, imageData);
         await testProxy.callbackRouterRemote.$.flushForTesting();
         assertEquals(matchEls[1].$.icon.$.image.getAttribute('src'), imageData);
-        assertStyle(imageContainerEl, 'background-color', 'rgba(0, 0, 0, 0)');
+        assertStyle(containerEl, 'background-color', 'rgba(0, 0, 0, 0)');
         // Realbox icon is not updated as the input does not feature images.
-        assertIconMaskImageUrl(realbox.$.icon, 'clock.svg');
+        assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
+        assertTrue(window.getComputedStyle(realbox.$.icon).display !== 'none');
 
         // Select the first match by pressing 'Escape'.
         let escapeEvent = new KeyboardEvent('keydown', {

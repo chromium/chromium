@@ -27,8 +27,6 @@ const ACMatchClassificationStyle = {
 };
 // clang-format on
 
-const SEARCH_CALCULATOR_ANSWER_TYPE = 'search-calculator-answer';
-
 // Displays an autocomplete match similar to those in the Omnibox.
 class RealboxMatchElement extends PolymerElement {
   static get is() {
