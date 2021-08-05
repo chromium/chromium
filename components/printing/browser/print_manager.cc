@@ -29,10 +29,6 @@ void PrintManager::DidGetPrintedPagesCount(int32_t cookie,
   number_pages_ = number_pages;
 }
 
-void PrintManager::DidGetDocumentCookie(int32_t cookie) {
-  cookie_ = cookie;
-}
-
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
 void PrintManager::SetAccessibilityTree(
     int32_t cookie,
