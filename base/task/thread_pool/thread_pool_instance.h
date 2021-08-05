@@ -6,7 +6,6 @@
 #define BASE_TASK_THREAD_POOL_THREAD_POOL_INSTANCE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"

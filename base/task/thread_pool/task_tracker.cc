@@ -7,7 +7,6 @@
 #include <atomic>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/base_switches.h"
 #include "base/callback.h"

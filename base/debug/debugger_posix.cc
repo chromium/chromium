@@ -15,7 +15,6 @@
 #include <unistd.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"

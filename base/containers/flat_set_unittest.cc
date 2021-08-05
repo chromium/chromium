@@ -5,7 +5,6 @@
 #include "base/containers/flat_set.h"
 
 #include <string>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/test/move_only_int.h"

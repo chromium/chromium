@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <winternl.h>
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/profiler/native_unwinder_win.h"

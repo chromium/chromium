@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"

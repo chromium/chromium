@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/check.h"
 #include "base/notreached.h"

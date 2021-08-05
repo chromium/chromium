@@ -12,7 +12,6 @@
 #include <atomic>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
