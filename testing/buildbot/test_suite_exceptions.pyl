@@ -133,6 +133,7 @@
       'linux-lacros-code-coverage',
       'linux-lacros-tester-rel',
       'linux-lacros-tester-fyi-rel',
+      'linux-lacros-dbg-tests-fyi',
     ],
   },
   'angle_white_box_tests': {
