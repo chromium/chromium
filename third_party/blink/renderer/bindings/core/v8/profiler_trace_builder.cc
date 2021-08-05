@@ -73,15 +73,8 @@ absl::optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
   if (!node)
     return absl::optional<wtf_size_t>();
 
-  // Omit frames that don't pass a cross-origin check.
-  // Do this at the stack level (rather than the frame level) to avoid
-  // including skeleton frames without data.
-  KURL resource_url(node->GetScriptResourceNameStr());
-  if (!ShouldIncludeStackFrame(resource_url, node->GetScriptId(),
-                               node->GetSourceType(),
-                               node->IsScriptSharedCrossOrigin())) {
+  if (!ShouldIncludeStackFrame(node))
     return GetOrInsertStackId(node->GetParent());
-  }
 
   auto existing_stack_id = node_to_stack_map_.find(node);
   if (existing_stack_id != node_to_stack_map_.end()) {
@@ -155,22 +148,31 @@ ProfilerTrace* ProfilerTraceBuilder::GetTrace() const {
 }
 
 bool ProfilerTraceBuilder::ShouldIncludeStackFrame(
-    const KURL& script_url,
-    int script_id,
-    v8::CpuProfileNode::SourceType source_type,
-    bool script_shared_cross_origin) {
+    const v8::CpuProfileNode* node) {
+  DCHECK(node);
+
   // Omit V8 metadata frames.
+  const v8::CpuProfileNode::SourceType source_type = node->GetSourceType();
   if (source_type != v8::CpuProfileNode::kScript &&
       source_type != v8::CpuProfileNode::kBuiltin &&
       source_type != v8::CpuProfileNode::kCallback) {
     return false;
   }
 
-  // If we couldn't derive script data, only allow builtins and callbacks.
-  if (script_id == v8::UnboundScript::kNoScriptId) {
-    return source_type == v8::CpuProfileNode::kBuiltin ||
-           source_type == v8::CpuProfileNode::kCallback;
+  // Attempt to attribute each stack frame to a script.
+  // - For JS functions, this is their own script.
+  // - For builtins, this is the first attributable caller script.
+  const v8::CpuProfileNode* resource_node = node;
+  if (source_type != v8::CpuProfileNode::kScript) {
+    while (resource_node &&
+           resource_node->GetScriptId() == v8::UnboundScript::kNoScriptId) {
+      resource_node = resource_node->GetParent();
+    }
   }
+  if (!resource_node)
+    return false;
+
+  int script_id = resource_node->GetScriptId();
 
   // If we already tested whether or not this script was cross-origin, return
   // the cached results.
@@ -178,13 +180,16 @@ bool ProfilerTraceBuilder::ShouldIncludeStackFrame(
   if (it != script_same_origin_cache_.end())
     return it->value;
 
-  if (!script_url.IsValid())
+  KURL resource_url(resource_node->GetScriptResourceNameStr());
+  if (!resource_url.IsValid())
     return false;
 
-  auto origin = SecurityOrigin::Create(script_url);
-  // TODO(acomminos): Consider easing this check based on optional headers.
-  bool allowed =
-      script_shared_cross_origin || origin->IsSameOriginWith(allowed_origin_);
+  auto origin = SecurityOrigin::Create(resource_url);
+  // Omit frames that don't pass a cross-origin check.
+  // Do this at the stack level (rather than the frame level) to avoid
+  // including skeleton frames without data.
+  bool allowed = resource_node->IsScriptSharedCrossOrigin() ||
+                 origin->IsSameOriginWith(allowed_origin_);
   script_same_origin_cache_.Set(script_id, allowed);
   return allowed;
 }

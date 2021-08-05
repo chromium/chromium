@@ -99,10 +99,7 @@ class ProfilerTraceBuilder final
   // Discards metadata frames and performs an origin check on the given stack
   // frame, returning true if it either has the same origin as the profiler, or
   // if it should be shared cross origin.
-  bool ShouldIncludeStackFrame(const KURL& script_url,
-                               int script_id,
-                               v8::CpuProfileNode::SourceType source_type,
-                               bool script_shared_cross_origin);
+  bool ShouldIncludeStackFrame(const v8::CpuProfileNode* node);
 
   Member<ScriptState> script_state_;
 
