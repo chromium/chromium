@@ -177,8 +177,17 @@ bool FullRestoreController::CanActivateFullRestoredWindow(
   if (!desk_container || !desks_util::IsDeskContainer(desk_container))
     return true;
 
-  // Only the topmost Full Restore'd window can be activated.
-  return window == desk_container->children().back();
+  // Only the topmost unminimized Full Restore'd window can be activated.
+  auto siblings = desk_container->children();
+  for (auto child_iter = siblings.rbegin(); child_iter != siblings.rend();
+       ++child_iter) {
+    if (WindowState::Get(*child_iter)->IsMinimized())
+      continue;
+
+    return window == (*child_iter);
+  }
+
+  return false;
 }
 
 // static
@@ -417,9 +426,7 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
 
   // Unless minimized, snap state and activation unblock are done when the
   // window is first shown, which will be async for exo apps.
-  if (WindowState::Get(window)->IsMinimized()) {
-    window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, false);
-  } else if (window->IsVisible()) {
+  if (WindowState::Get(window)->IsMinimized() || window->IsVisible()) {
     // If the window is already visible, do not wait until it is next visible to
     // restore the state type and clear the launched key.
     RestoreStateTypeAndClearLaunchedKey(window);

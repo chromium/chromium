@@ -989,10 +989,13 @@ TEST_F(FullRestoreControllerTest, HotseatIsHiddenOnRestoration) {
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   views::Widget* restored_widget_2 =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2);
+
   EXPECT_FALSE(restored_widget_1->IsVisible());
-  EXPECT_TRUE(restored_widget_2->IsVisible());
   EXPECT_FALSE(restored_widget_1->IsActive());
-  EXPECT_FALSE(restored_widget_2->IsActive());
+
+  EXPECT_TRUE(restored_widget_2->IsActive());
+  EXPECT_TRUE(restored_widget_2->IsVisible());
+
   EXPECT_EQ(HotseatState::kHidden, hotseat_widget->state());
   EXPECT_FALSE(app_list_widget->IsActive());
 }
@@ -1237,6 +1240,58 @@ TEST_F(FullRestoreControllerTest, TopmostWindowIsActivatable) {
       restored_window1->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
   EXPECT_TRUE(wm::CanActivateWindow(restored_window1));
   EXPECT_FALSE(wm::CanActivateWindow(window_4));
+}
+
+// Tests that when the topmost window is minimized, the next highest unminimized
+// window is activated.
+TEST_F(FullRestoreControllerTest, NextTopmostWindowIsActivatable) {
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
+
+  // Create a minimized Full Restore'd browser. It should not be activatable.
+  AddEntryToFakeFile(
+      /*restore_id=*/2, gfx::Rect(200, 200),
+      chromeos::WindowStateType::kMinimized,
+      /*activation_index=*/2, WindowTreeHostManager::GetPrimaryDisplayId());
+  auto* restored_window2 = CreateTestFullRestoredWidgetFromRestoreId(
+                               /*restore_id=*/2, AppType::BROWSER,
+                               /*is_taskless_arc_app=*/false)
+                               ->GetNativeWindow();
+  VerifyStackingOrder(desk_container, {restored_window2});
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
+
+  // Create another minimized Full Restore'd browser which is below
+  // `restored_window2` in the stacking order. Both restored windows should not
+  // be activatable because they're minimized.
+  AddEntryToFakeFile(
+      /*restore_id=*/3, gfx::Rect(200, 200),
+      chromeos::WindowStateType::kMinimized,
+      /*activation_index=*/3, WindowTreeHostManager::GetPrimaryDisplayId());
+  auto* restored_window3 = CreateTestFullRestoredWidgetFromRestoreId(
+                               /*restore_id=*/3, AppType::BROWSER,
+                               /*is_taskless_arc_app=*/false)
+                               ->GetNativeWindow();
+  VerifyStackingOrder(desk_container, {restored_window3, restored_window2});
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window3));
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
+
+  // Create Full Restore'd browser which is below `restored_window3` in the
+  // stacking order. Since it's the topmost unminimized window, it should be
+  // activatable and will be activated so it will be added to the top of the
+  // stacking order.
+  AddEntryToFakeFile(
+      /*restore_id=*/4, gfx::Rect(200, 200), chromeos::WindowStateType::kNormal,
+      /*activation_index=*/4, WindowTreeHostManager::GetPrimaryDisplayId());
+  auto* restored_window4 = CreateTestFullRestoredWidgetFromRestoreId(
+                               /*restore_id=*/4, AppType::BROWSER,
+                               /*is_taskless_arc_app=*/false)
+                               ->GetNativeWindow();
+  VerifyStackingOrder(desk_container,
+                      {restored_window3, restored_window2, restored_window4});
+  EXPECT_TRUE(wm::CanActivateWindow(restored_window4));
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window3));
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
+  EXPECT_TRUE(wm::IsActiveWindow(restored_window4));
 }
 
 }  // namespace ash
