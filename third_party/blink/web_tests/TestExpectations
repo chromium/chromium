@@ -7240,3 +7240,4 @@ crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.j
 
 # Sheriff 2021-08/05
 crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
+crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Failure Pass Timeout ]
