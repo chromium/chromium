@@ -1252,16 +1252,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 // Tests that a same-site iframe runs its beforeunload handler when closing a
 // tab.  Same as the test above, but for a same-site rather than cross-site
 // iframe.  See https://crbug.com/1010456.
-// Flaky on Linux, ChromeOS and Windows (crbug.com/1033002)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_TabCloseWithSameSiteBeforeUnloadIframe \
-  DISABLED_TabCloseWithSameSiteBeforeUnloadIframe
-#else
-#define MAYBE_TabCloseWithSameSiteBeforeUnloadIframe \
-  TabCloseWithSameSiteBeforeUnloadIframe
-#endif
+// Flaky (timeout) on Linux, ChromeOS, MacOS, and Windows (crbug.com/1033002)
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
-                       MAYBE_TabCloseWithSameSiteBeforeUnloadIframe) {
+                       DISABLED_TabCloseWithSameSiteBeforeUnloadIframe) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* first_web_contents =
       tab_strip_model->GetActiveWebContents();
