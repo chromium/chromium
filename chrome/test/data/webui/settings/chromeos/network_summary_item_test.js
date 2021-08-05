@@ -20,14 +20,13 @@ suite('NetworkSummaryItem', function() {
     return (el !== null) && (el.style.display !== 'none');
   }
 
-  function initWithPSimOnly(flagEnabled, isLocked) {
+  function initWithPSimOnly(isLocked) {
     const mojom = chromeos.networkConfig.mojom;
     const kTestIccid1 = '00000000000000000000';
 
     const simLockStatus = isLocked ? {lockType: 'sim-pin'} : {lockType: ''};
 
     netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: flagEnabled,
       deviceState: {
         deviceState: mojom.DeviceStateType.kEnabled,
         type: mojom.NetworkType.kCellular,
@@ -46,12 +45,11 @@ suite('NetworkSummaryItem', function() {
     Polymer.dom.flush();
   }
 
-  function initWithESimLocked(flagEnabled) {
+  function initWithESimLocked() {
     const mojom = chromeos.networkConfig.mojom;
     const kTestIccid1 = '00000000000000000000';
 
     netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: flagEnabled,
       deviceState: {
         deviceState: mojom.DeviceStateType.kEnabled,
         type: mojom.NetworkType.kCellular,
@@ -82,7 +80,6 @@ suite('NetworkSummaryItem', function() {
     const mojom = chromeos.networkConfig.mojom;
 
     netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: false,
       deviceState: {
         deviceState: mojom.DeviceStateType.kUninitialized,
         type: mojom.NetworkType.kEthernet,
@@ -136,66 +133,10 @@ suite('NetworkSummaryItem', function() {
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
-  test('SIM info shown when locked but enabled, flag off', function() {
+  test('Inhibited device on cellular network', function() {
     const mojom = chromeos.networkConfig.mojom;
 
     netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: false,
-      deviceState: {
-        deviceState: mojom.DeviceStateType.kEnabled,
-        type: mojom.NetworkType.kCellular,
-        simAbsent: false,
-        simLockStatus: {lockType: 'sim-pin'},
-      },
-      activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
-        guid: '',
-        type: mojom.NetworkType.kCellular,
-        typeState: {cellular: {networkTechnology: ''}}
-      },
-    });
-
-    Polymer.dom.flush();
-    assertTrue(doesElementExist('network-siminfo'));
-    assertFalse(doesElementExist('.subpage-arrow'));
-  });
-
-  test('Click event in SIMinfo should not trigger show details', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
-    let showDetailFired = false;
-    netSummaryItem.addEventListener(
-        'show-detail', () => showDetailFired = true);
-
-    netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: false,
-      deviceState: {
-        deviceState: mojom.DeviceStateType.kEnabled,
-        type: mojom.NetworkType.kCellular,
-        simAbsent: false,
-        simLockStatus: {lockType: 'sim-pin'},
-      },
-      activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
-        guid: 'test_guid',
-        type: mojom.NetworkType.kCellular,
-        typeState: {cellular: {networkTechnology: ''}}
-      },
-    });
-    Polymer.dom.flush();
-    assertTrue(doesElementExist('network-siminfo'));
-
-    const networkSimInfo = netSummaryItem.$$('network-siminfo');
-    networkSimInfo.click();
-    Polymer.dom.flush();
-    assertFalse(showDetailFired);
-  });
-
-  test('Inhibited device on cellular network, flag on', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
-    netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: true,
       deviceState: {
         inhibitReason: mojom.InhibitReason.kInstallingProfile,
         deviceState: mojom.DeviceStateType.kEnabled,
@@ -218,11 +159,10 @@ suite('NetworkSummaryItem', function() {
         netSummaryItem.i18n('internetDeviceBusy'));
   });
 
-  test('Not inhibited device on cellular network, flag on', function() {
+  test('Not inhibited device on cellular network', function() {
     const mojom = chromeos.networkConfig.mojom;
 
     netSummaryItem.setProperties({
-      isUpdatedCellularUiEnabled_: true,
       deviceState: {
         inhibitReason: mojom.InhibitReason.kNotInhibited,
         deviceState: mojom.DeviceStateType.kUnavailable,
@@ -242,40 +182,14 @@ suite('NetworkSummaryItem', function() {
     assertFalse(netSummaryItem.$$('#deviceEnabledButton').disabled);
   });
 
-  test('Mobile data toggle shown on locked device, flag on', function() {
-    initWithESimLocked(/*flagEnabled = */ true);
+  test('Mobile data toggle shown on locked device', function() {
+    initWithESimLocked();
     assertNotEquals(netSummaryItem.$$('#deviceEnabledButton'), null);
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
-  test('Mobile data toggle shown on locked device, flag off', function() {
-    initWithESimLocked(/*flagEnabled = */ false);
-    assertEquals(netSummaryItem.$$('#deviceEnabledButton'), null);
-    assertFalse(doesElementExist('#deviceEnabledButton'));
-  });
-
-  test('pSIM-only locked device, show SIM locked UI, flag off', function() {
-    initWithPSimOnly(/*flagEnabled = */ false, /*isLocked = */ true);
-    assertTrue(doesElementExist('network-siminfo'));
-    assertFalse(netSummaryItem.$$('#networkState')
-                    .classList.contains('locked-warning-message'));
-    assertTrue(
-        netSummaryItem.$$('#networkState').classList.contains('network-state'));
-    assertFalse(doesElementExist('#deviceEnabledButton'));
-  });
-
-  test('eSIM enabled locked device, show SIM locked UI, flag off', function() {
-    initWithESimLocked(/*flagEnabled = */ false);
-    assertTrue(doesElementExist('network-siminfo'));
-    assertFalse(netSummaryItem.$$('#networkState')
-                    .classList.contains('locked-warning-message'));
-    assertTrue(
-        netSummaryItem.$$('#networkState').classList.contains('network-state'));
-    assertFalse(doesElementExist('#deviceEnabledButton'));
-  });
-
-  test('pSIM-only locked device, show SIM locked UI, flag on', function() {
-    initWithPSimOnly(/*flagEnabled = */ true, /*isLocked = */ true);
+  test('pSIM-only locked device, show SIM locked UI', function() {
+    initWithPSimOnly(/*isLocked=*/ true);
     assertTrue(doesElementExist('network-siminfo'));
     assertTrue(netSummaryItem.$$('#networkState')
                    .classList.contains('locked-warning-message'));
@@ -284,8 +198,8 @@ suite('NetworkSummaryItem', function() {
     assertFalse(doesElementExist('#deviceEnabledButton'));
   });
 
-  test('pSIM-only locked device, no SIM locked UI, flag on', function() {
-    initWithPSimOnly(/*flagEnabled = */ true, /*isLocked = */ false);
+  test('pSIM-only locked device, no SIM locked UI', function() {
+    initWithPSimOnly(/*isLocked=*/ false);
     assertFalse(doesElementExist('network-siminfo'));
     assertFalse(netSummaryItem.$$('#networkState')
                     .classList.contains('locked-warning-message'));
@@ -294,8 +208,8 @@ suite('NetworkSummaryItem', function() {
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
-  test('eSIM enabled locked device, show SIM locked UI, flag on', function() {
-    initWithESimLocked(/*flagEnabled = */ true);
+  test('eSIM enabled locked device, show SIM locked UI', function() {
+    initWithESimLocked();
     assertFalse(doesElementExist('network-siminfo'));
     assertFalse(netSummaryItem.$$('#networkState')
                     .classList.contains('locked-warning-message'));
@@ -316,7 +230,6 @@ suite('NetworkSummaryItem', function() {
         const simInfos = [{slotId: 1, iccid: '000', isPrimary: true, eid: ''}];
 
         netSummaryItem.setProperties({
-          isUpdatedCellularUiEnabled_: true,
           deviceState: {
             deviceState: mojom.DeviceStateType.kEnabled,
             type: mojom.NetworkType.kCellular,
