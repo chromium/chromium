@@ -59,6 +59,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     private CompositorView mCompositorView;
     private MediaSessionObserver mMediaSessionObserver;
+    private boolean mIsPlayPauseVisible;
 
     private BroadcastReceiver mMediaSessionReceiver = new BroadcastReceiver() {
         @Override
@@ -230,7 +231,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // place a play button in the Picture-in-Picture window that will
         // trigger playback.
         if (mMediaSessionObserver != null
-                && !mMediaSessionObserver.getMediaSession().isControllable()) {
+                && !mMediaSessionObserver.getMediaSession().isControllable()
+                && mIsPlayPauseVisible) {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
                     new Intent(ACTION_PLAY), IntentUtils.getPendingIntentMutabilityFlag(false));
 
@@ -254,6 +256,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         builder.setAspectRatio(new Rational(width, height));
         setPictureInPictureParams(builder.build());
+    }
+
+    @CalledByNative
+    @SuppressLint("NewAPI")
+    private void setPlayPauseButtonVisibility(boolean isVisible) {
+        mIsPlayPauseVisible = isVisible;
+        setPictureInPictureParams(getPictureInPictureParams());
     }
 
     @CalledByNative

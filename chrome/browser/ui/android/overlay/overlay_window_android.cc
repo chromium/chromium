@@ -53,6 +53,9 @@ void OverlayWindowAndroid::OnActivityStart(
   window_android_ = ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   window_android_->AddObserver(this);
 
+  Java_PictureInPictureActivity_setPlayPauseButtonVisibility(
+      env, java_ref_.get(env), is_play_pause_button_visible_);
+
   if (video_size_.IsEmpty())
     return;
 
@@ -158,6 +161,16 @@ void OverlayWindowAndroid::UpdateVideoSize(const gfx::Size& natural_size) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_updateVideoSize(
       env, java_ref_.get(env), natural_size.width(), natural_size.height());
+}
+
+void OverlayWindowAndroid::SetPlayPauseButtonVisibility(bool is_visible) {
+  is_play_pause_button_visible_ = is_visible;
+  if (java_ref_.is_uninitialized())
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PictureInPictureActivity_setPlayPauseButtonVisibility(
+      env, java_ref_.get(env), is_visible);
 }
 
 void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
