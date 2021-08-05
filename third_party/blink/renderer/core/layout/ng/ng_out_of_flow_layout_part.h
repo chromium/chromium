@@ -325,7 +325,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   bool is_fixed_container_ = false;
   bool allow_first_tier_oof_cache_ = false;
   bool has_block_fragmentation_ = false;
-  bool can_traverse_fragments_ = false;
   // A fixedpos containing block was found in an outer fragmentation context.
   bool outer_context_has_fixedpos_container_ = false;
 };

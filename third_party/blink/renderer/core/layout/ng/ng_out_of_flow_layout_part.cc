@@ -83,9 +83,7 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
                             container_node.IsFixedContainer(),
                             container_node.Style(),
                             container_space,
-                            container_builder) {
-  can_traverse_fragments_ = container_node.CanTraversePhysicalFragments();
-}
+                            container_builder) {}
 
 NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     bool is_absolute_container,
@@ -1269,7 +1267,13 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   offset_info.offset.inline_offset += inset.inline_start;
   offset_info.offset.block_offset += inset.block_start;
 
-  if (!only_layout && !can_traverse_fragments_) {
+  if (!only_layout && !container_builder_->IsBlockFragmentationContextRoot()) {
+    // OOFs contained by an inline that's been split into continuations are
+    // special, as their offset is relative to a fragment that's not the same as
+    // their containing NG fragment; take a look inside
+    // AdjustOffsetForSplitInline() for further details. This doesn't apply if
+    // block fragmentation is involved, though, since all OOFs are then child
+    // fragments of the nearest fragmentainer.
     AdjustOffsetForSplitInline(node_info.node, container_builder_,
                                offset_info.offset);
   }
