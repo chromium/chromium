@@ -17,6 +17,7 @@
 namespace blink {
 
 class AbortSignal;
+class AppHistoryApiNavigation;
 class AppHistoryEntry;
 class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
@@ -25,7 +26,6 @@ class HTMLFormElement;
 class HistoryItem;
 class KURL;
 class ScriptPromise;
-class ScriptPromiseResolver;
 class SerializedScriptValue;
 
 // TODO(japhet): This should probably move to frame_loader_types.h and possibly
@@ -88,7 +88,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                                        UserNavigationInvolvement,
                                        SerializedScriptValue* = nullptr,
                                        HistoryItem* destination_item = nullptr);
-  void CancelOngoingNavigateEvent();
+  void InformAboutCanceledNavigation();
 
   int GetIndexFor(AppHistoryEntry*);
 
@@ -101,25 +101,23 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   void Trace(Visitor*) const final;
 
  private:
+  friend class NavigateReaction;
   void PopulateKeySet();
-  void FinalizeWithAbortedNavigationError(ScriptState*, AbortSignal*);
+  void FinalizeWithAbortedNavigationError(ScriptState*,
+                                          AppHistoryApiNavigation*);
 
   HeapVector<Member<AppHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
   int current_index_ = -1;
 
+  Member<AppHistoryApiNavigation> ongoing_non_traversal_navigation_;
+  HeapHashMap<String, Member<AppHistoryApiNavigation>> ongoing_traversals_;
+  Member<AppHistoryApiNavigation> upcoming_non_traversal_navigation_;
+
   Member<AppHistoryNavigateEvent> ongoing_navigate_event_;
-  Member<ScriptPromiseResolver> navigate_method_call_promise_resolver_;
-  scoped_refptr<SerializedScriptValue> navigate_serialized_state_;
-
-  bool did_react_to_promise_ = false;
-  Member<ScriptPromiseResolver> goto_promise_resolver_;
-
-  ScriptValue navigate_event_info_;
-  ScriptValue goto_navigate_event_info_;
-  int64_t goto_item_sequence_number_ = 0;
-
   Member<AbortSignal> post_navigate_event_ongoing_navigation_signal_;
+
+  scoped_refptr<SerializedScriptValue> to_be_set_serialized_state_;
 };
 
 }  // namespace blink
