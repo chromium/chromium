@@ -109,6 +109,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   // Disconnects the manager.
   virtual void Disconnect();
 
+  bool IsConnected() const { return core()->service() != nullptr; }
+
   DeviceCloudPolicyStoreAsh* device_store() { return device_store_.get(); }
 
   // Return the StatusUploader used to communicate device status to the

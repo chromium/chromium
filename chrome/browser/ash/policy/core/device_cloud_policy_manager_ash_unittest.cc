@@ -455,7 +455,7 @@ class DeviceCloudPolicyManagerAshObserverTest
 TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
   LockDevice();
   FlushDeviceSettings();
-  EXPECT_FALSE(manager_->core()->service());  // Not connected.
+  EXPECT_FALSE(manager_->IsConnected());
 
   // Connect the manager.
   DeviceManagementService::JobForTesting policy_job;
@@ -466,12 +466,12 @@ TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
   ConnectManager();
   Mock::VerifyAndClearExpectations(&device_management_service_);
   Mock::VerifyAndClearExpectations(this);
-  EXPECT_TRUE(manager_->core()->service());  // Connected.
+  EXPECT_TRUE(manager_->IsConnected());
 
   // Disconnect the manager.
   EXPECT_CALL(*this, OnDeviceCloudPolicyManagerDisconnected());
   manager_->Disconnect();
-  EXPECT_FALSE(manager_->core()->service());  // Not connnected.
+  EXPECT_FALSE(manager_->IsConnected());
 }
 
 class DeviceCloudPolicyManagerAshEnrollmentTest

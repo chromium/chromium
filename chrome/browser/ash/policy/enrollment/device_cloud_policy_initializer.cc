@@ -340,7 +340,7 @@ void DeviceCloudPolicyInitializer::TryToStartConnection(
 void DeviceCloudPolicyInitializer::StartConnection(
     DeviceCloudPolicyInitializer::StartConnectionReason reason,
     std::unique_ptr<CloudPolicyClient> client) {
-  if (!policy_manager_->core()->service()) {
+  if (!policy_manager_->IsConnected()) {
     LOG(WARNING)
         << "DeviceCloudPolicyInitializer will be removed soon with reason: "
         << static_cast<int>(reason);
