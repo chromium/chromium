@@ -33,6 +33,18 @@ bool StructTraits<autofill::mojom::FieldRendererIdDataView,
 
 // static
 bool StructTraits<
+    autofill::mojom::SelectOptionDataView,
+    autofill::SelectOption>::Read(autofill::mojom::SelectOptionDataView data,
+                                  autofill::SelectOption* out) {
+  if (!data.ReadValue(&out->value))
+    return false;
+  if (!data.ReadContent(&out->content))
+    return false;
+  return true;
+}
+
+// static
+bool StructTraits<
     autofill::mojom::FormFieldDataDataView,
     autofill::FormFieldData>::Read(autofill::mojom::FormFieldDataDataView data,
                                    autofill::FormFieldData* out) {
@@ -93,9 +105,7 @@ bool StructTraits<
   if (!data.ReadUserInput(&out->user_input))
     return false;
 
-  if (!data.ReadOptionValues(&out->option_values))
-    return false;
-  if (!data.ReadOptionContents(&out->option_contents))
+  if (!data.ReadOptions(&out->options))
     return false;
 
   if (!data.ReadLabelSource(&out->label_source))

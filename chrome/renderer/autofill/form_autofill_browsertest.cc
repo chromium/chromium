@@ -2528,12 +2528,11 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
   expected.value.clear();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result3);
 
-  ASSERT_EQ(2U, result3.option_values.size());
-  ASSERT_EQ(2U, result3.option_contents.size());
-  EXPECT_EQ(ASCIIToUTF16("CA"), result3.option_values[0]);
-  EXPECT_EQ(ASCIIToUTF16("California"), result3.option_contents[0]);
-  EXPECT_EQ(ASCIIToUTF16("TX"), result3.option_values[1]);
-  EXPECT_EQ(ASCIIToUTF16("Texas"), result3.option_contents[1]);
+  ASSERT_EQ(2U, result3.options.size());
+  EXPECT_EQ(ASCIIToUTF16("CA"), result3.options[0].value);
+  EXPECT_EQ(ASCIIToUTF16("California"), result3.options[0].content);
+  EXPECT_EQ(ASCIIToUTF16("TX"), result3.options[1].value);
+  EXPECT_EQ(ASCIIToUTF16("Texas"), result3.options[1].content);
 }
 
 // We copy extra attributes for the select field.
@@ -2587,8 +2586,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
   FormFieldData result;
   WebFormControlElementToFormField(element, nullptr, EXTRACT_OPTIONS, &result);
 
-  EXPECT_TRUE(result.option_values.empty());
-  EXPECT_TRUE(result.option_contents.empty());
+  EXPECT_TRUE(result.options.empty());
 }
 
 // We should be able to extract a <textarea> field.

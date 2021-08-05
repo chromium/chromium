@@ -36,17 +36,28 @@ namespace {
 // [Ref: http://en.wikipedia.org/wiki/Bank_card_number]
 const size_t kMaxValidCardNumberSize = 19;
 
-// Look for the vector |regex_needles| in |haystack|. Returns true if a
-// consecutive section of |haystack| matches |regex_needles|.
+// Look for the vector |regex_needles| in the values and in the options of
+// |haystack|. Returns true if a consecutive section of |haystack| matches
+// |regex_needles|.
 bool FindConsecutiveStrings(const std::vector<base::string16>& regex_needles,
-                            const std::vector<base::string16>& haystack) {
+                            const std::vector<SelectOption>& haystack) {
   if (regex_needles.empty() || haystack.empty() ||
       (haystack.size() < regex_needles.size()))
     return false;
 
   for (size_t i = 0; i < haystack.size() - regex_needles.size() + 1; ++i) {
     for (size_t j = 0; j < regex_needles.size(); ++j) {
-      if (!MatchesPattern(haystack[i + j], regex_needles[j]))
+      if (!MatchesPattern(haystack[i + j].value, regex_needles[j]))
+        break;
+
+      if (j == regex_needles.size() - 1)
+        return true;
+    }
+  }
+
+  for (size_t i = 0; i < haystack.size() - regex_needles.size() + 1; ++i) {
+    for (size_t j = 0; j < regex_needles.size(); ++j) {
+      if (!MatchesPattern(haystack[i + j].content, regex_needles[j]))
         break;
 
       if (j == regex_needles.size() - 1)
@@ -320,25 +331,25 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
                               MATCH_SELECT | MATCH_SEARCH))
     return false;
 
-  if (field->option_values.size() < 12 || field->option_values.size() > 13)
+  if (field->options.size() < 12 || field->options.size() > 13)
     return false;
 
   // Filter out years.
   const base::string16 kNumericalYearRe =
       base::ASCIIToUTF16("[1-9][0-9][0-9][0-9]");
-  for (const auto& value : field->option_values) {
-    if (MatchesPattern(value, kNumericalYearRe))
+  for (const auto& option : field->options) {
+    if (MatchesPattern(option.value, kNumericalYearRe))
       return false;
   }
-  for (const auto& value : field->option_contents) {
-    if (MatchesPattern(value, kNumericalYearRe))
+  for (const auto& option : field->options) {
+    if (MatchesPattern(option.content, kNumericalYearRe))
       return false;
   }
 
   // Look for numerical months.
   const base::string16 kNumericalMonthRe = base::ASCIIToUTF16("12");
-  if (MatchesPattern(field->option_values.back(), kNumericalMonthRe) ||
-      MatchesPattern(field->option_contents.back(), kNumericalMonthRe)) {
+  if (MatchesPattern(field->options.back().value, kNumericalMonthRe) ||
+      MatchesPattern(field->options.back().content, kNumericalMonthRe)) {
     return true;
   }
 
@@ -364,8 +375,8 @@ bool CreditCardField::LikelyCardYearSelectField(
   // Filter out days - elements for date entries would have
   // numbers 1 to 9 as well in them, which we can filter on.
   const base::string16 kSingleDigitDateRe = base::ASCIIToUTF16("\\b[1-9]\\b");
-  for (const auto& value : field->option_contents) {
-    if (MatchesPattern(value, kSingleDigitDateRe)) {
+  for (const auto& option : field->options) {
+    if (MatchesPattern(option.content, kSingleDigitDateRe)) {
       return false;
     }
   }
@@ -382,8 +393,8 @@ bool CreditCardField::LikelyCardYearSelectField(
   // Filter out birth years - a website would not offer 1999 as a credit card
   // expiration year, but show it in the context of a birth year selector.
   const base::string16 kBirthYearRe = base::ASCIIToUTF16("(1999|99)");
-  for (const auto& value : field->option_contents) {
-    if (MatchesPattern(value, kBirthYearRe)) {
+  for (const auto& option : field->options) {
+    if (MatchesPattern(option.content, kBirthYearRe)) {
       return false;
     }
   }
@@ -400,11 +411,8 @@ bool CreditCardField::LikelyCardYearSelectField(
     years_to_check_4_digit.push_back(base::NumberToString16(year));
     years_to_check_2_digit.push_back(base::NumberToString16(year).substr(2));
   }
-  return (
-      FindConsecutiveStrings(years_to_check_4_digit, field->option_values) ||
-      FindConsecutiveStrings(years_to_check_4_digit, field->option_contents) ||
-      FindConsecutiveStrings(years_to_check_2_digit, field->option_values) ||
-      FindConsecutiveStrings(years_to_check_2_digit, field->option_contents));
+  return FindConsecutiveStrings(years_to_check_4_digit, field->options) ||
+         FindConsecutiveStrings(years_to_check_2_digit, field->options);
 }
 
 // static

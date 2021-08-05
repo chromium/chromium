@@ -155,16 +155,14 @@ void CreateTestSelectField(const char* label,
   // Fill the base attributes.
   CreateTestFormField(label, name, value, "select-one", field);
 
-  std::vector<base::string16> values16(select_size);
-  for (size_t i = 0; i < select_size; ++i)
-    values16[i] = base::UTF8ToUTF16(values[i]);
-
-  std::vector<base::string16> contents16(select_size);
-  for (size_t i = 0; i < select_size; ++i)
-    contents16[i] = base::UTF8ToUTF16(contents[i]);
-
-  field->option_values = values16;
-  field->option_contents = contents16;
+  field->options.clear();
+  CHECK_EQ(values.size(), contents.size());
+  for (size_t i = 0; i < std::min(values.size(), contents.size()); ++i) {
+    field->options.push_back({
+        .value = base::UTF8ToUTF16(values[i]),
+        .content = base::UTF8ToUTF16(contents[i]),
+    });
+  }
 }
 
 void CreateTestSelectField(const std::vector<const char*>& values,

@@ -960,12 +960,10 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
 // Fills |option_strings| with the values of the <option> elements present in
 // |select_element|.
 void GetOptionStringsFromElement(const WebSelectElement& select_element,
-                                 std::vector<base::string16>* option_values,
-                                 std::vector<base::string16>* option_contents) {
+                                 std::vector<SelectOption>* options) {
   DCHECK(!select_element.IsNull());
 
-  option_values->clear();
-  option_contents->clear();
+  options->clear();
   WebVector<WebElement> list_items = select_element.GetListItems();
 
   // Constrain the maximum list length to prevent a malicious site from DOS'ing
@@ -974,13 +972,12 @@ void GetOptionStringsFromElement(const WebSelectElement& select_element,
   if (list_items.size() > kMaxListSize)
     return;
 
-  option_values->reserve(list_items.size());
-  option_contents->reserve(list_items.size());
-  for (size_t i = 0; i < list_items.size(); ++i) {
-    if (IsOptionElement(list_items[i])) {
-      const WebOptionElement option = list_items[i].ToConst<WebOptionElement>();
-      option_values->push_back(option.Value().Utf16());
-      option_contents->push_back(option.GetText().Utf16());
+  options->reserve(list_items.size());
+  for (const auto& list_item : list_items) {
+    if (IsOptionElement(list_item)) {
+      const WebOptionElement option = list_item.ToConst<WebOptionElement>();
+      options->push_back({.value = option.Value().Utf16(),
+                          .content = option.GetText().Utf16()});
     }
   }
 }
@@ -1809,8 +1806,7 @@ void WebFormControlElementToFormField(
     // Set option strings on the field if available.
     DCHECK(IsSelectElement(element));
     const WebSelectElement select_element = element.ToConst<WebSelectElement>();
-    GetOptionStringsFromElement(select_element, &field->option_values,
-                                &field->option_contents);
+    GetOptionStringsFromElement(select_element, &field->options);
   }
   if (extract_mask & EXTRACT_BOUNDS) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {

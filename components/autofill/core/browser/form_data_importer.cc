@@ -895,12 +895,9 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
     // month. Attempt to save with the option value. First find the index of the
     // option text in the select options and try the corresponding value.
     if (!saved && server_field_type == CREDIT_CARD_EXP_MONTH) {
-      size_t items_count =
-          std::min(field->option_contents.size(), field->option_values.size());
-      for (size_t i = 0; i < items_count; ++i) {
-        if (value == field->option_contents[i]) {
-          candidate_credit_card.SetInfo(field_type, field->option_values[i],
-                                        app_locale_);
+      for (const SelectOption& option : field->options) {
+        if (value == option.content) {
+          candidate_credit_card.SetInfo(field_type, option.value, app_locale_);
           break;
         }
       }

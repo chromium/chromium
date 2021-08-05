@@ -47,6 +47,21 @@ struct StructTraits<autofill::mojom::FieldRendererIdDataView,
 };
 
 template <>
+struct StructTraits<autofill::mojom::SelectOptionDataView,
+                    autofill::SelectOption> {
+  static const base::string16& value(const autofill::SelectOption& r) {
+    return r.value;
+  }
+
+  static const base::string16& content(const autofill::SelectOption& r) {
+    return r.content;
+  }
+
+  static bool Read(autofill::mojom::SelectOptionDataView data,
+                   autofill::SelectOption* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::FormFieldDataDataView,
                     autofill::FormFieldData> {
   static const base::string16& label(const autofill::FormFieldData& r) {
@@ -157,14 +172,9 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.user_input;
   }
 
-  static const std::vector<base::string16>& option_values(
+  static const std::vector<autofill::SelectOption>& options(
       const autofill::FormFieldData& r) {
-    return r.option_values;
-  }
-
-  static const std::vector<base::string16>& option_contents(
-      const autofill::FormFieldData& r) {
-    return r.option_contents;
+    return r.options;
   }
 
   static autofill::FormFieldData::LabelSource label_source(

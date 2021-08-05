@@ -205,26 +205,29 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   // TODO(crbug.com/427614): Extract |text_direction|.
 
   // Load option values where present.
-  const base::ListValue* option_values = nullptr;
-  if (field.GetList("option_values", &option_values)) {
-    for (const auto& optionValue : *option_values) {
+
+  const base::ListValue* option_values;
+  const base::ListValue* option_contents;
+  if (field.GetList("option_values", &option_values) &&
+      field.GetList("option_contents", &option_contents)) {
+    auto value_list = option_values->GetList();
+    auto content_list = option_contents->GetList();
+    if (value_list.size() != content_list.size())
+      return false;
+    auto value_it = value_list.begin();
+    auto content_it = content_list.begin();
+    while (value_it != value_list.end() && content_it != content_list.end()) {
       base::string16 value;
-      if (optionValue.GetAsString(&value))
-        field_data->option_values.push_back(std::move(value));
-    }
-  }
-
-  // Load option contents where present.
-  const base::ListValue* option_contents = nullptr;
-  if (field.GetList("option_contents", &option_contents)) {
-    for (const auto& option_content : *option_contents) {
       base::string16 content;
-      if (option_content.GetAsString(&content))
-        field_data->option_contents.push_back(std::move(content));
+      if (value_it->GetAsString(&value) && content_it->GetAsString(&content)) {
+        field_data->options.push_back({.value = value, .content = content});
+      }
+      ++value_it;
+      ++content_it;
     }
   }
 
-  return field_data->option_values.size() == field_data->option_contents.size();
+  return true;
 }
 
 JavaScriptResultCallback CreateStringCallback(

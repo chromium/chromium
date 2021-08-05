@@ -46,6 +46,14 @@ FormFieldDataAndroid::~FormFieldDataAndroid() = default;
 ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+
+  auto ProjectOptions = [this](const std::vector<SelectOption>& options,
+                               const auto& projection) {
+    std::vector<base::string16> projected_options;
+    base::ranges::transform(field_ptr_->options,
+                            std::back_inserter(projected_options), projection);
+    return projected_options;
+  };
   if (obj.is_null()) {
     ScopedJavaLocalRef<jstring> jname =
         ConvertUTF16ToJavaString(env, field_ptr_->name);
@@ -61,10 +69,10 @@ ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
         ConvertUTF16ToJavaString(env, field_ptr_->id_attribute);
     ScopedJavaLocalRef<jstring> jtype =
         ConvertUTF8ToJavaString(env, field_ptr_->form_control_type);
-    ScopedJavaLocalRef<jobjectArray> joption_values =
-        ToJavaArrayOfStrings(env, field_ptr_->option_values);
-    ScopedJavaLocalRef<jobjectArray> joption_contents =
-        ToJavaArrayOfStrings(env, field_ptr_->option_contents);
+    ScopedJavaLocalRef<jobjectArray> joption_values = ToJavaArrayOfStrings(
+        env, ProjectOptions(field_ptr_->options, &SelectOption::value));
+    ScopedJavaLocalRef<jobjectArray> joption_contents = ToJavaArrayOfStrings(
+        env, ProjectOptions(field_ptr_->options, &SelectOption::content));
     ScopedJavaLocalRef<jstring> jheuristic_type;
     if (!heuristic_type_.IsUnknown()) {
       jheuristic_type =

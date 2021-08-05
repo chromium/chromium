@@ -1464,19 +1464,19 @@ std::set<base::string16> FormStructure::PossibleValues(ServerFieldType type) {
     }
 
     // No option values; anything goes.
-    if (field->option_values.empty()) {
+    if (field->options.empty()) {
       values.clear();
       break;
     }
 
-    for (const base::string16& val : field->option_values) {
-      if (!val.empty())
-        values.insert(base::i18n::ToUpper(val));
+    for (const SelectOption& option : field->options) {
+      if (!option.value.empty())
+        values.insert(base::i18n::ToUpper(option.value));
     }
 
-    for (const base::string16& content : field->option_contents) {
-      if (!content.empty())
-        values.insert(base::i18n::ToUpper(content));
+    for (const SelectOption& option : field->options) {
+      if (!option.content.empty())
+        values.insert(base::i18n::ToUpper(option.content));
     }
   }
 

@@ -5170,12 +5170,15 @@ TEST_F(FormStructureTestImpl, PossibleValues) {
 
   FormFieldData field;
   field.autocomplete_attribute = "billing country";
-  field.option_contents.push_back(ASCIIToUTF16("Down Under"));
-  field.option_values.push_back(ASCIIToUTF16("AU"));
-  field.option_contents.push_back(ASCIIToUTF16("Fr"));
-  field.option_values.push_back(ASCIIToUTF16(""));
-  field.option_contents.push_back(ASCIIToUTF16("Germany"));
-  field.option_values.push_back(ASCIIToUTF16("GRMNY"));
+
+  field.options = {
+      {.value = base::ASCIIToUTF16("AU"),
+       .content = ASCIIToUTF16("Down Under")},
+      {.value = base::ASCIIToUTF16("Fr"), .content = ASCIIToUTF16("")},
+      {.value = base::ASCIIToUTF16("GRMNY"),
+       .content = ASCIIToUTF16("Germany")},
+  };
+
   field.unique_renderer_id = MakeFieldRendererId();
   form_data.fields.push_back(field);
 

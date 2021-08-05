@@ -76,6 +76,12 @@ struct FieldRendererId {
   uint32 id;
 };
 
+// autofill::SelectOption
+struct SelectOption {
+  mojo_base.mojom.String16 value;
+  mojo_base.mojom.String16 content;
+};
+
 // autofill::FormFieldData
 struct FormFieldData {
   enum CheckStatus {
@@ -134,8 +140,7 @@ struct FormFieldData {
   bool is_readonly;
   mojo_base.mojom.String16 user_input;
 
-  array<mojo_base.mojom.String16> option_values;
-  array<mojo_base.mojom.String16> option_contents;
+  array<SelectOption> options;
 
   LabelSource label_source;
 

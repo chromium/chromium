@@ -947,7 +947,7 @@ void AutofillAgent::SelectWasUpdated(
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
                                             &form, &field) &&
-      !field.option_values.empty()) {
+      !field.options.empty()) {
     GetAutofillDriver()->SelectFieldOptionsDidChange(form);
   }
 }

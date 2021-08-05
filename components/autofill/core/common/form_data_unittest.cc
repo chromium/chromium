@@ -136,17 +136,16 @@ void FillInDummyFormData(FormData* data) {
   field_data.is_focusable = true;
   field_data.should_autocomplete = false;
   field_data.text_direction = base::i18n::RIGHT_TO_LEFT;
-  field_data.option_values.push_back(base::ASCIIToUTF16("First"));
-  field_data.option_values.push_back(base::ASCIIToUTF16("Second"));
-  field_data.option_contents.push_back(base::ASCIIToUTF16("First"));
-  field_data.option_contents.push_back(base::ASCIIToUTF16("Second"));
-
+  field_data.options = {{.value = base::ASCIIToUTF16("First"),
+                         .content = base::ASCIIToUTF16("First")},
+                        {.value = base::ASCIIToUTF16("Second"),
+                         .content = base::ASCIIToUTF16("Second")}};
   data->fields.push_back(field_data);
 
   // Change a few fields.
   field_data.max_length = 150;
-  field_data.option_values.push_back(base::ASCIIToUTF16("Third"));
-  field_data.option_contents.push_back(base::ASCIIToUTF16("Third"));
+  field_data.options = {{.value = base::ASCIIToUTF16("Third"),
+                         .content = base::ASCIIToUTF16("Third")}};
   data->fields.push_back(field_data);
 }
 

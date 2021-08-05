@@ -170,20 +170,20 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 
   // If the number of the options is less than the minimum limit or more than
   // the maximum limit, return false.
-  if (field->option_contents.size() < kMinSelectOptionsForCountryCode ||
-      field->option_contents.size() >= kMaxSelectOptionsForCountryCode)
+  if (field->options.size() < kMinSelectOptionsForCountryCode ||
+      field->options.size() >= kMaxSelectOptionsForCountryCode)
     return false;
 
   // |total_covered_options| stores the count of the options that are
   // compared with the regex.
-  int total_num_options = static_cast<int>(field->option_contents.size());
+  int total_num_options = static_cast<int>(field->options.size());
 
   // |total_positive_options| stores the count of the options that match the
   // regex.
   int total_positive_options = 0;
 
-  for (const auto& option : field->option_contents) {
-    if (MatchesPattern(option,
+  for (const auto& option : field->options) {
+    if (MatchesPattern(option.content,
                        base::ASCIIToUTF16(kAugmentedPhoneCountryCodeRe)))
       total_positive_options++;
   }
