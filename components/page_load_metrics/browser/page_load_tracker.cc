@@ -242,8 +242,6 @@ PageLoadTracker::PageLoadTracker(
       aborted_chain_size_same_url_(aborted_chain_size_same_url),
       embedder_interface_(embedder_interface),
       metrics_update_dispatcher_(this, navigation_handle, embedder_interface),
-      source_id_(ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                        ukm::SourceIdType::NAVIGATION_ID)),
       web_contents_(navigation_handle->GetWebContents()),
       is_first_navigation_in_web_contents_(
           is_first_navigation_in_web_contents) {
@@ -257,6 +255,8 @@ PageLoadTracker::PageLoadTracker(
         internal::kPageLoadPrerender2Event,
         internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
   } else {
+    source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                        ukm::SourceIdType::NAVIGATION_ID);
     INVOKE_AND_PRUNE_OBSERVERS(observers_, OnStart, navigation_handle,
                                currently_committed_url, started_in_foreground_);
   }
@@ -456,6 +456,9 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
 
 void PageLoadTracker::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
+  source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                      ukm::SourceIdType::NAVIGATION_ID);
+
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     was_prerendered_then_activated_in_foreground_ = true;
     PageShown();

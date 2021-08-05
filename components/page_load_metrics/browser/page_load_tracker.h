@@ -493,7 +493,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   PageLoadMetricsUpdateDispatcher metrics_update_dispatcher_;
 
-  const ukm::SourceId source_id_;
+  ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 
   content::WebContents* const web_contents_;
 
