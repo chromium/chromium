@@ -1027,31 +1027,26 @@ void CrostiniManager::MaybeUpdateCrostini() {
       base::BindOnce(&CrostiniManager::CheckPaths),
       base::BindOnce(&CrostiniManager::MaybeUpdateCrostiniAfterChecks,
                      weak_ptr_factory_.GetWeakPtr()));
+
   // Probe Concierge - if it's still running after an unclean shutdown, a
   // success response will be received.
-  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    vm_tools::concierge::GetVmInfoRequest concierge_request;
-    concierge_request.set_owner_id(owner_id_);
-    concierge_request.set_name(kCrostiniDefaultVmName);
-    GetConciergeClient()->GetVmInfo(
-        std::move(concierge_request),
-        base::BindOnce(
-            [](base::WeakPtr<CrostiniManager> weak_this,
-               absl::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
-              if (weak_this) {
-                VLOG(1) << "Exit type: "
-                        << static_cast<int>(Profile::EXIT_CRASHED);
-                VLOG(1) << "GetVmInfo result: "
-                        << (reply.has_value() && reply->success());
-                weak_this->is_unclean_startup_ =
-                    reply.has_value() && reply->success();
-                if (weak_this->is_unclean_startup_) {
-                  weak_this->RemoveUncleanSshfsMounts();
-                }
+  vm_tools::concierge::GetVmInfoRequest concierge_request;
+  concierge_request.set_owner_id(owner_id_);
+  concierge_request.set_name(kCrostiniDefaultVmName);
+  GetConciergeClient()->GetVmInfo(
+      std::move(concierge_request),
+      base::BindOnce(
+          [](base::WeakPtr<CrostiniManager> weak_this,
+             absl::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
+            if (weak_this) {
+              weak_this->is_unclean_startup_ =
+                  reply.has_value() && reply->success();
+              if (weak_this->is_unclean_startup_) {
+                weak_this->RemoveUncleanSshfsMounts();
               }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
-  }
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 // static

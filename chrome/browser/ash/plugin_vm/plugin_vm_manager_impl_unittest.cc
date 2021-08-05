@@ -126,6 +126,14 @@ class PluginVmManagerImplTest : public testing::Test {
     VmPluginDispatcherClient().NotifyVmStateChanged(state_changed_signal);
   }
 
+  void NotifyVmStarted() {
+    vm_tools::concierge::VmStartedSignal signal;
+    signal.set_name(kPluginVmName);
+    signal.set_owner_id(
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
+    ConciergeClient().NotifyVmStarted(signal);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<PluginVmTestHelper> test_helper_;
@@ -245,6 +253,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   EXPECT_TRUE(
       chrome_shelf_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
 
+  NotifyVmStarted();
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
   task_environment_.RunUntilIdle();
   EXPECT_GE(ConciergeClient().get_vm_info_call_count(), 1);

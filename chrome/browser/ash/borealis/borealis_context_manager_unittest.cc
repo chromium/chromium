@@ -106,6 +106,16 @@ class BorealisContextManagerTest : public testing::Test,
     histogram_tester_.reset();
   }
 
+  void SendVmStartedSignal() {
+    auto* concierge_client = chromeos::FakeConciergeClient::Get();
+
+    vm_tools::concierge::VmStartedSignal signal;
+    signal.set_name("test_vm_name");
+    signal.set_owner_id(
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+    concierge_client->NotifyVmStarted(signal);
+  }
+
   void SendVmStoppedSignal() {
     auto* concierge_client = chromeos::FakeConciergeClient::Get();
 
@@ -414,6 +424,10 @@ TEST_F(BorealisContextManagerTest, LogVmStoppedWhenUnexpected) {
 TEST_F(BorealisContextManagerTest, VmShutsDownAfterChromeCrashes) {
   chromeos::FakeConciergeClient* fake_concierge_client =
       chromeos::FakeConciergeClient::Get();
+
+  // Ensure that GetVmInfo returns success - a VM "still running".
+  SendVmStartedSignal();
+
   profile_->set_last_session_exited_cleanly(false);
   BorealisContextManagerImpl context_manager(profile_.get());
   task_environment_.RunUntilIdle();

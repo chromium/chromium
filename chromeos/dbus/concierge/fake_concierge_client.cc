@@ -207,6 +207,15 @@ void FakeConciergeClient::StartTerminaVm(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(tremplin_started_signal)),
       send_tremplin_started_signal_delay_);
+
+  // Trigger VmStartedSignal
+  vm_tools::concierge::VmStartedSignal vm_started_signal;
+  vm_started_signal.set_name(request.name());
+  vm_started_signal.set_owner_id(request.owner_id());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&FakeConciergeClient::NotifyVmStarted,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(vm_started_signal)));
 }
 
 void FakeConciergeClient::NotifyTremplinStarted(
@@ -356,12 +365,16 @@ void FakeConciergeClient::ReclaimVmMemory(
 
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
+  // Now GetVmInfo can return success.
+  get_vm_info_response_->set_success(true);
   for (auto& observer : vm_observer_list_)
     observer.OnVmStarted(signal);
 }
 
 void FakeConciergeClient::NotifyVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
+  // Now GetVmInfo can return success.
+  get_vm_info_response_->set_success(false);
   for (auto& observer : vm_observer_list_)
     observer.OnVmStopped(signal);
 }
@@ -402,7 +415,7 @@ void FakeConciergeClient::InitializeProtoResponses() {
   resume_vm_response_->set_success(true);
 
   get_vm_info_response_.emplace();
-  get_vm_info_response_->set_success(true);
+  get_vm_info_response_->set_success(false);
   get_vm_info_response_->mutable_vm_info()->set_seneschal_server_handle(1);
 
   get_vm_enterprise_reporting_info_response_.emplace();
