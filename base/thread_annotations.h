@@ -7,6 +7,11 @@
 // code. The annotations can also help program analysis tools to identify
 // potential thread safety issues.
 //
+// Note that no analysis is done inside constructors and destructors,
+// regardless of what attributes are used. See
+// https://clang.llvm.org/docs/ThreadSafetyAnalysis.html#no-checking-inside-constructors-and-destructors
+// for details.
+//
 // Note that the annotations we use are described as deprecated in the Clang
 // documentation, linked below. E.g. we use EXCLUSIVE_LOCKS_REQUIRED where the
 // Clang docs use REQUIRES.
