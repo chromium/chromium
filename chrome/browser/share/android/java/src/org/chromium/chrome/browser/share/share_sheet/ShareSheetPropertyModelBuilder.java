@@ -66,7 +66,6 @@ public class ShareSheetPropertyModelBuilder {
     private static final String IMAGE_TYPE = "image/";
     // Variations parameter name for the comma-separated list of third-party activity names.
     private static final String PARAM_SHARING_HUB_THIRD_PARTY_APPS = "sharing-hub-third-party-apps";
-    private static final String SHARING_HUB_APPS_KEY = "ChromeSharingHub";
 
     static final HashSet<Integer> ALL_CONTENT_TYPES_FOR_TEST = new HashSet<>(
             Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE,
@@ -275,7 +274,7 @@ public class ShareSheetPropertyModelBuilder {
 
     private List<String> getThirdPartyActivityNames() {
         String param = ChromeFeatureList.getFieldTrialParamByFeature(
-                SHARING_HUB_APPS_KEY, PARAM_SHARING_HUB_THIRD_PARTY_APPS);
+                ChromeFeatureList.CHROME_SHARING_HUB, PARAM_SHARING_HUB_THIRD_PARTY_APPS);
         if (param.isEmpty()) {
             return FALLBACK_ACTIVITIES;
         }

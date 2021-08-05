@@ -1791,6 +1791,9 @@ extern const char kChromeShareLongScreenshotDescription[];
 extern const char kChromeShareScreenshotName[];
 extern const char kChromeShareScreenshotDescription[];
 
+extern const char kChromeSharingHubName[];
+extern const char kChromeSharingHubDescription[];
+
 extern const char kClipboardSuggestionContentHiddenName[];
 extern const char kClipboardSuggestionContentHiddenDescription[];
 
