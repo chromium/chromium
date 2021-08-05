@@ -5,6 +5,7 @@
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -176,7 +178,13 @@ class SoundContentSettingObserverBrowserTest : public InProcessBrowserTest {
   SoundContentSettingObserverBrowserTest()
       : prerender_helper_(base::BindRepeating(
             &SoundContentSettingObserverBrowserTest::web_contents,
-            base::Unretained(this))) {}
+            base::Unretained(this))) {
+    // TODO(crbug.com/1233349): In cases where a new AudioContext is created
+    // in a blocking script, the optimizations with this feature can cause
+    // hangs. See bug for more details.
+    feature_list_.InitAndDisableFeature(
+        features::kNavigationThreadingOptimizations);
+  }
   ~SoundContentSettingObserverBrowserTest() override = default;
 
   content::test::PrerenderTestHelper* prerender_helper() {
@@ -189,6 +197,7 @@ class SoundContentSettingObserverBrowserTest : public InProcessBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the prerending doesn't affect SoundContentSettingObserver status
