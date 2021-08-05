@@ -52,15 +52,21 @@ std::vector<SharedField> ExtractSharedFields(
 
   std::string extracted_text = *intent.share_text;
   GURL extracted_url;
-  size_t last_space = extracted_text.find_last_of(' ');
-  if (last_space == std::string::npos) {
+  size_t separator_pos = extracted_text.find_last_of(' ');
+  size_t newline_pos = extracted_text.find_last_of('\n');
+  if (newline_pos != std::string::npos &&
+      (separator_pos == std::string::npos || separator_pos < newline_pos)) {
+    separator_pos = newline_pos;
+  }
+
+  if (separator_pos == std::string::npos) {
     extracted_url = GURL(extracted_text);
     if (extracted_url.is_valid())
       extracted_text.clear();
   } else {
-    extracted_url = GURL(extracted_text.substr(last_space + 1));
+    extracted_url = GURL(extracted_text.substr(separator_pos + 1));
     if (extracted_url.is_valid())
-      extracted_text.erase(last_space);
+      extracted_text.erase(separator_pos);
   }
 
   if (!share_target.params.text.empty() && !extracted_text.empty())
