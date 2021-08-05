@@ -177,6 +177,7 @@ id<GREYMatcher> SkipSigninButton() {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(

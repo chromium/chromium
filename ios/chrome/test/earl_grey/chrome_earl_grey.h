@@ -395,6 +395,11 @@ UIWindow* GetAnyKeyWindow();
 // Opens a new window.
 - (void)openNewWindow;
 
+// After opening a new window (through openNewWindow or otherwise) a call
+// to this should be made to make sure the new window is ready to interact
+// or to be closed. Closing while setting up leads to crashes.
+- (void)waitUntilReadyWindowWithNumber:(int)windowNumber;
+
 // Opens a new tab in window with given number and waits for the new tab
 // animation to complete within a timeout, or a GREYAssert is induced.
 - (void)openNewTabInWindowWithNumber:(int)windowNumber;

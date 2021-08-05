@@ -1115,6 +1115,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_TRUE([condition waitWithTimeout:timeout], errorString);
 }
 
+- (void)waitUntilReadyWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::MatchInWindowWithNumber(
+                          windowNumber, chrome_test_util::FakeOmnibox())];
+}
+
 #pragma mark - SignIn Utilities (EG2)
 
 - (void)signOutAndClearIdentities {

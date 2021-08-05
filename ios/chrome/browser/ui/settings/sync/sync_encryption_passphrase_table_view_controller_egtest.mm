@@ -69,6 +69,7 @@ NSString* const kPassphrase = @"hello";
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   [[EarlGrey

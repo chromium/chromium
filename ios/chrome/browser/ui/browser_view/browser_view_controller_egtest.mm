@@ -207,8 +207,7 @@
 
 #pragma mark - Multiwindow
 
-// TODO(crbug.com/1232517) Re-enable test.
-- (void)DISABLED_testMultiWindowURLLoading {
+- (void)testMultiWindowURLLoading {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
@@ -225,6 +224,7 @@
 
   // Opens second window and loads url.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
   [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
 
@@ -243,6 +243,7 @@
 
   // Opens a 'new' second window.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   // Loads urls in both windows, and verifies.

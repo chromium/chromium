@@ -1128,6 +1128,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
   // Open bookmark panel in a second window
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   [BookmarkEarlGreyUI openBookmarksInWindowWithNumber:1];

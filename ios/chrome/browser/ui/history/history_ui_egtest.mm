@@ -594,6 +594,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Open history panel in a second window
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   [self openHistoryPanelInWindowWithNumber:1];

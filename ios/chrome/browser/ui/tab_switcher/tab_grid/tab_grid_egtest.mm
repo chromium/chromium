@@ -578,13 +578,6 @@ id<GREYMatcher> SelectAllButton() {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
-// TODO(crbug.com/1184267): Test is flaky on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
-  }
-#endif
-
   // Setup first window with tabs 1 and 2.
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -597,6 +590,7 @@ id<GREYMatcher> SelectAllButton() {
 
   // Open second window.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   // Setup second window with tabs 3 and 4.
@@ -677,6 +671,7 @@ id<GREYMatcher> SelectAllButton() {
 
   // Open second window with main ntp.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
@@ -750,6 +745,7 @@ id<GREYMatcher> SelectAllButton() {
 
   // Open second window.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   // Setup second window with tab 3.
@@ -809,6 +805,7 @@ id<GREYMatcher> SelectAllButton() {
 
   // Open second window.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   // Setup second window with tab 3.
@@ -879,6 +876,7 @@ id<GREYMatcher> SelectAllButton() {
 
   // Open second window.
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
   // Setup second window with tab 3.
