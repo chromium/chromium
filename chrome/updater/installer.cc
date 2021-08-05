@@ -4,6 +4,7 @@
 
 #include "chrome/updater/installer.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -49,10 +50,14 @@ absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
 
 Installer::Installer(const std::string& app_id,
                      const std::string& target_channel,
+                     const std::string& target_version_prefix,
+                     bool rollback_allowed,
                      scoped_refptr<PersistedData> persisted_data)
     : updater_scope_(GetUpdaterScope()),
       app_id_(app_id),
+      rollback_allowed_(rollback_allowed),
       target_channel_(target_channel),
+      target_version_prefix_(target_version_prefix),
       persisted_data_(persisted_data) {}
 
 Installer::~Installer() {
@@ -86,6 +91,8 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.version = pv_;
   component.fingerprint = fingerprint_;
   component.channel = target_channel_;
+  component.rollback_allowed = rollback_allowed_;
+  component.target_version_prefix = target_version_prefix_;
 
   return component;
 }

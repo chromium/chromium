@@ -128,6 +128,13 @@ std::string ProtocolSerializerJSON::Serialize(
           app_node.SetKey("updatecheck", Value(Value::Type::DICTIONARY));
       if (app.update_check->is_update_disabled)
         update_check_node->SetKey("updatedisabled", Value(true));
+      if (app.update_check->rollback_allowed)
+        update_check_node->SetKey("rollback_allowed", Value(true));
+      if (!app.update_check->target_version_prefix.empty()) {
+        update_check_node->SetKey(
+            "targetversionprefix",
+            Value(app.update_check->target_version_prefix));
+      }
     }
 
     if (app.ping) {

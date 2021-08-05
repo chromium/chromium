@@ -153,6 +153,21 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
                          ? component_channel
                          : std::string();
             }(),
+            [&config, &id]() {
+              std::string target_version_prefix;
+              return config->GetPolicyService()->GetTargetVersionPrefix(
+                         id, nullptr, &target_version_prefix)
+                         ? target_version_prefix
+                         : std::string();
+            }(),
+            [&config, &id]() {
+              bool rollback_allowed;
+              return config->GetPolicyService()
+                             ->IsRollbackToTargetVersionAllowed(
+                                 id, nullptr, &rollback_allowed)
+                         ? rollback_allowed
+                         : false;
+            }(),
             persisted_data)
             ->MakeCrxComponent());
   }

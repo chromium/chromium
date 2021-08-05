@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
@@ -46,12 +45,7 @@ CrxUpdateItem::CrxUpdateItem() : state(ComponentState::kNew) {}
 CrxUpdateItem::~CrxUpdateItem() = default;
 CrxUpdateItem::CrxUpdateItem(const CrxUpdateItem& other) = default;
 
-CrxComponent::CrxComponent()
-    : allows_background_download(true),
-      requires_network_encryption(true),
-      crx_format_requirement(
-          crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF),
-      supports_group_policy_enable_component_updates(false) {}
+CrxComponent::CrxComponent() = default;
 CrxComponent::CrxComponent(const CrxComponent& other) = default;
 CrxComponent::~CrxComponent() = default;
 

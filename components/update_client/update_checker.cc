@@ -212,7 +212,9 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         metadata_->GetCohort(app_id), metadata_->GetCohortName(app_id),
         metadata_->GetCohortHint(app_id), crx_component->channel,
         crx_component->disabled_reasons,
-        MakeProtocolUpdateCheck(is_update_disabled),
+        MakeProtocolUpdateCheck(is_update_disabled,
+                                crx_component->target_version_prefix,
+                                crx_component->rollback_allowed),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end())));
   }

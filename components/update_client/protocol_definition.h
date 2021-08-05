@@ -66,6 +66,8 @@ struct UpdateCheck {
   ~UpdateCheck();
 
   bool is_update_disabled = false;
+  std::string target_version_prefix;
+  bool rollback_allowed = false;
 };
 
 // didrun element. The element is named "ping" for legacy reasons.

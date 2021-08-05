@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -294,22 +295,23 @@ struct CrxComponent {
 
   // Specifies that the CRX can be background-downloaded in some cases.
   // The default for this value is |true|.
-  bool allows_background_download;
+  bool allows_background_download = true;
 
   // Specifies that the update checks and pings associated with this component
   // require confidentiality. The default for this value is |true|. As a side
   // note, the confidentiality of the downloads is enforced by the server,
   // which only returns secure download URLs in this case.
-  bool requires_network_encryption;
+  bool requires_network_encryption = true;
 
   // Specifies the strength of package validation required for the item.
-  crx_file::VerifierFormat crx_format_requirement;
+  crx_file::VerifierFormat crx_format_requirement =
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
 
   // True if the component allows enabling or disabling updates by group policy.
   // This member should be set to |false| for data, non-binary components, such
   // as CRLSet, Supervised User Whitelists, STH Set, Origin Trials, and File
   // Type Policies.
-  bool supports_group_policy_enable_component_updates;
+  bool supports_group_policy_enable_component_updates = false;
 
   // Reasons why this component/extension is disabled.
   std::vector<int> disabled_reasons;
@@ -328,6 +330,15 @@ struct CrxComponent {
   // the component. This optional field is typically populated by policy and is
   // only populated on managed devices.
   std::string channel;
+
+  // A version prefix sent to the server in the case of version pinning. The
+  // server should not respond with an update to a version that does not match
+  // this prefix. If no prefix is specified, the client will accept any version.
+  std::string target_version_prefix;
+
+  // An indicator sent to the server to advise whether it may perform a version
+  // downgrade of this item.
+  bool rollback_allowed = false;
 };
 
 // Called when a non-blocking call of UpdateClient completes.
