@@ -24,13 +24,6 @@ enum BluetoothSystemState {
   kEnabling
 };
 
-// Describes the high-level status of system Bluetooth.
-// TODO(khorimoto): Add properties describing paired devices and modification
-// state.
-struct BluetoothSystemProperties {
-  BluetoothSystemState system_state;
-};
-
 // Bluetooth device type, derived from the device's ClassOfDevice attribute.
 enum DeviceType {
   kUnknown,
@@ -92,6 +85,24 @@ struct BluetoothDeviceProperties {
   DeviceBatteryInfo? battery_info;
 
   DeviceConnectionState connection_state;
+};
+
+// Properties belonging to a Bluetooth device which has been paired to this
+// Chrome OS device.
+struct PairedBluetoothDeviceProperties {
+  BluetoothDeviceProperties device_properties;
+
+  // Nickname for this device as provided by the user. Local to the device
+  // (i.e., other devices do not have access to this name). Null if the
+  // device has not been nicknamed by the user.
+  string? nickname;
+};
+
+// Describes the high-level status of system Bluetooth.
+// TODO(khorimoto): Add properties describing paired devices and modification
+// state.
+struct BluetoothSystemProperties {
+  BluetoothSystemState system_state;
 };
 
 // Observer for changes to Bluetooth system properties.
