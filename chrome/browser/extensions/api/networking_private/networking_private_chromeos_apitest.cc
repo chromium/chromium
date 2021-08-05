@@ -56,18 +56,14 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "dbus/object_path.h"
 #include "extensions/browser/api/networking_private/networking_private_chromeos.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -116,33 +112,6 @@ class UIDelegateStub : public NetworkingPrivateDelegate::UIDelegate {
 
 // static
 int UIDelegateStub::s_show_account_details_called_ = 0;
-
-class TestListener : public content::NotificationObserver {
- public:
-  TestListener(const std::string& message,
-               const base::RepeatingClosure& callback)
-      : message_(message), callback_(callback) {
-    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                   content::NotificationService::AllSources());
-  }
-
-  void Observe(int type,
-               const content::NotificationSource& /* source */,
-               const content::NotificationDetails& details) override {
-    const std::string& message =
-        content::Details<std::pair<std::string, bool*>>(details).ptr()->first;
-    if (message == message_)
-      callback_.Run();
-  }
-
- private:
-  std::string message_;
-  base::RepeatingClosure callback_;
-
-  content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestListener);
-};
 
 class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
  public:
@@ -728,12 +697,12 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                        OnCertificateListsChangedEvent) {
-  TestListener listener(
-      "eventListenerReady", base::BindRepeating([]() {
-        chromeos::NetworkHandler::Get()
-            ->network_certificate_handler()
-            ->AddAuthorityCertificateForTest("authority_cert");
-      }));
+  ExtensionTestMessageListener listener("eventListenerReady", false);
+  listener.SetOnSatisfied(base::BindOnce([](const std::string& message) {
+    chromeos::NetworkHandler::Get()
+        ->network_certificate_handler()
+        ->AddAuthorityCertificateForTest("authority_cert");
+  }));
   EXPECT_TRUE(RunNetworkingSubtest("onCertificateListsChangedEvent"))
       << message_;
 }
@@ -757,12 +726,15 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
   // occur for the default service.
   service_test()->RemoveService("stub_ethernet");
   service_test()->RemoveService("stub_vpn1");
-  TestListener listener("notifyPortalDetectorObservers",
-                        base::BindLambdaForTesting([&]() {
-                          service_test()->SetServiceProperty(
-                              kWifi1ServicePath, shill::kStateProperty,
-                              base::Value(shill::kStateRedirectFound));
-                        }));
+
+  ExtensionTestMessageListener listener("notifyPortalDetectorObservers", false);
+  listener.SetOnSatisfied(
+      base::BindLambdaForTesting([&](const std::string& message) {
+        service_test()->SetServiceProperty(
+            kWifi1ServicePath, shill::kStateProperty,
+            base::Value(shill::kStateRedirectFound));
+      }));
+
   EXPECT_TRUE(RunNetworkingSubtest("captivePortalNotification")) << message_;
 }
 
