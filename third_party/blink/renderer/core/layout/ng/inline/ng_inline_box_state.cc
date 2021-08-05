@@ -643,25 +643,27 @@ LayoutUnit NGInlineLayoutStateStack::ComputeInlinePositions(
     position += child.inline_size;
   }
 
-  if (box_data_list_.IsEmpty() || ignore_box_margin_border_padding)
+  if (box_data_list_.IsEmpty())
     return position;
 
-  // Adjust child offsets for margin/border/padding of inline boxes.
-  for (BoxData& box_data : box_data_list_) {
-    unsigned start = box_data.fragment_start;
-    unsigned end = box_data.fragment_end;
-    DCHECK_GT(end, start);
+  if (!ignore_box_margin_border_padding) {
+    // Adjust child offsets for margin/border/padding of inline boxes.
+    for (BoxData& box_data : box_data_list_) {
+      unsigned start = box_data.fragment_start;
+      unsigned end = box_data.fragment_end;
+      DCHECK_GT(end, start);
 
-    if (box_data.margin_border_padding_line_left) {
-      line_box->MoveInInlineDirection(box_data.margin_border_padding_line_left,
-                                      start, line_box->size());
-      position += box_data.margin_border_padding_line_left;
-    }
+      if (box_data.margin_border_padding_line_left) {
+        line_box->MoveInInlineDirection(
+            box_data.margin_border_padding_line_left, start, line_box->size());
+        position += box_data.margin_border_padding_line_left;
+      }
 
-    if (box_data.margin_border_padding_line_right) {
-      line_box->MoveInInlineDirection(box_data.margin_border_padding_line_right,
-                                      end, line_box->size());
-      position += box_data.margin_border_padding_line_right;
+      if (box_data.margin_border_padding_line_right) {
+        line_box->MoveInInlineDirection(
+            box_data.margin_border_padding_line_right, end, line_box->size());
+        position += box_data.margin_border_padding_line_right;
+      }
     }
   }
 
@@ -683,8 +685,6 @@ LayoutUnit NGInlineLayoutStateStack::ComputeInlinePositions(
     LayoutUnit line_left_offset =
         start_child.rect.offset.inline_offset - start_child.margin_line_left;
     LinePadding& start_padding = accumulated_padding[start];
-    start_padding.line_left += box_data.margin_border_padding_line_left;
-    line_left_offset -= start_padding.line_left - box_data.margin_line_left;
 
     DCHECK_GT(box_data.fragment_end, start);
     unsigned last = box_data.fragment_end - 1;
@@ -693,8 +693,16 @@ LayoutUnit NGInlineLayoutStateStack::ComputeInlinePositions(
                                    last_child.margin_line_left +
                                    last_child.inline_size;
     LinePadding& last_padding = accumulated_padding[last];
-    last_padding.line_right += box_data.margin_border_padding_line_right;
-    line_right_offset += last_padding.line_right - box_data.margin_line_right;
+
+    if (!ignore_box_margin_border_padding) {
+      start_padding.line_left += box_data.margin_border_padding_line_left;
+      last_padding.line_right += box_data.margin_border_padding_line_right;
+      line_left_offset += box_data.margin_line_left;
+      line_right_offset -= box_data.margin_line_right;
+    }
+
+    line_left_offset -= start_padding.line_left;
+    line_right_offset += last_padding.line_right;
 
     box_data.rect.offset.inline_offset = line_left_offset;
     box_data.rect.size.inline_size = line_right_offset - line_left_offset;
