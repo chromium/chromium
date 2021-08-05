@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
@@ -71,6 +72,10 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
       applicable_handlers_.back().get());
   return button_controller;
 #elif defined(OS_ANDROID)
+  return nullptr;
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 #endif
 }

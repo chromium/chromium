@@ -162,6 +162,8 @@ void TraceCrashServiceUploader::DoCompressOnBackgroundThread(
   const char product[] = "Chrome_Linux";
 #elif defined(OS_ANDROID)
   const char product[] = "Chrome_Android";
+#elif defined(OS_FUCHSIA)
+  const char product[] = "Chrome_Fuchsia";
 #else
 #error Platform not supported.
 #endif

@@ -2479,7 +2479,7 @@ static_library("browser") {
     sources += [ "net/net_error_diagnostics_dialog_stub.cc" ]
   }
 
-  if (is_posix) {
+  if (is_posix || is_fuchsia) {
     sources += [
       "download/trusted_sources_manager_posix.cc",
       "google/google_update_settings_posix.cc",
@@ -5354,7 +5354,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_linux || is_win || is_mac) {
+  if (is_linux || is_win || is_mac || is_fuchsia) {
     sources += [
       "enterprise/connectors/device_trust/attestation_service.cc",
       "enterprise/connectors/device_trust/attestation_service.h",
@@ -5467,10 +5467,15 @@ static_library("browser") {
       "first_run/first_run_internal_fuchsia.cc",
       "first_run/upgrade_util_fuchsia.cc",
       "icon_loader_fuchsia.cc",
+      "importer/firefox_profile_lock_fuchsia.cc",
       "media/webrtc/window_icon_util_fuchsia.cc",
       "memory_details_fuchsia.cc",
       "obsolete_system/obsolete_system_stub.cc",
+      "platform_util_fuchsia.cc",
+      "process_singleton_fuchsia.cc",
       "shell_integration_fuchsia.cc",
+      "upgrade_detector/get_installed_version_fuchsia.cc",
+      "upgrade_detector/installed_version_monitor_fuchsia.cc",
     ]
   }
 
@@ -5500,12 +5505,14 @@ static_library("browser") {
     sources += [ "hang_monitor/hang_crash_dump.cc" ]
   }
 
-  if (is_win || is_linux || is_chromeos) {
+  if (is_win || is_linux || is_chromeos || is_fuchsia) {
     sources += [
       "renderer_context_menu/spelling_options_submenu_observer.cc",
       "renderer_context_menu/spelling_options_submenu_observer.h",
     ]
+  }
 
+  if (is_win || is_linux || is_chromeos) {
     # TODO(crbug/1229334): Add Mac support for Lens Region Search feature.
     deps += [ "//chrome/browser/lens/region_search" ]
   }
@@ -5519,7 +5526,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros) || is_fuchsia) {
     sources += [
       "browser_switcher/alternative_browser_driver.h",
       "browser_switcher/browser_switcher_navigation_throttle.cc",
@@ -5645,7 +5652,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
     sources += [
       "media/cast_mirroring_service_host.cc",
       "media/cast_mirroring_service_host.h",
@@ -6884,6 +6891,7 @@ grit("resources") {
   ]
 
   if (enable_plugins) {
+    assert(!is_fuchsia)
     if (is_chromeos_ash) {
       inputs = [ "resources/plugin_metadata/plugins_chromeos.json" ]
     }
@@ -6898,7 +6906,7 @@ grit("resources") {
     }
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
     deps += [
       "//chrome/browser/resources/discards:discards_resources_gen",
       "//chrome/browser/resources/gaia_auth_host:modulize",

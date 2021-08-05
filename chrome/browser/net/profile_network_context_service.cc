@@ -593,6 +593,10 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // cert matching is done by the OS as part of the call to show the cert
   // selection dialog.
   return nullptr;
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
 #else
 #error Unknown platform.
 #endif
