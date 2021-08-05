@@ -103,6 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   bool CanRemoveNetworkConfig(const std::string& guid,
                               const std::string& profile_path) const override;
 
+  bool AllowOnlyPolicyCellularNetworks() const override;
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;
   bool AllowOnlyPolicyNetworksToAutoconnect() const override;

@@ -794,6 +794,20 @@ bool ManagedNetworkConfigurationHandlerImpl::CanRemoveNetworkConfig(
   return !IsNetworkConfiguredByPolicy(guid, profile_path);
 }
 
+bool ManagedNetworkConfigurationHandlerImpl::AllowOnlyPolicyCellularNetworks()
+    const {
+  const base::DictionaryValue* global_network_config =
+      GetGlobalConfigFromPolicy(
+          std::string() /* no username hash, device policy */);
+  if (!global_network_config)
+    return false;
+
+  const base::Value* managed_only_value = global_network_config->FindKeyOfType(
+      ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+      base::Value::Type::BOOLEAN);
+  return managed_only_value && managed_only_value->GetBool();
+}
+
 bool ManagedNetworkConfigurationHandlerImpl::AllowOnlyPolicyWiFiToConnect()
     const {
   const base::DictionaryValue* global_network_config =
