@@ -190,6 +190,7 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-patt
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-text.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-transforms.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Slow ]
+crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-image.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-solid.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Slow ]
