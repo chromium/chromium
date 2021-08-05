@@ -78,4 +78,8 @@ typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
   SigninTrustedVaultDialogIntentDegradedRecoverability,
 };
 
+// Max dismissal count for web sign-in consistency dialog (the dismissal value
+// is reset as soon as the user shows sign-in intent).
+extern const int kDefaultWebSignInDismissalCount;
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_CONSTANTS_H_

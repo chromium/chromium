@@ -22,3 +22,8 @@ NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier =
     @"WebSigninContinueAsButtonAccessibilityIdentifier";
 NSString* const kWebSigninSkipButtonAccessibilityIdentifier =
     @"WebSigninSkipButtonAccessibilityIdentifier";
+
+const char* kWebSigninConsistencyConsecutiveActiveDismissalLimitParam =
+    "consecutive_active_dismissal_limit";
+
+const int kDefaultWebSignInDismissalCount = 3;

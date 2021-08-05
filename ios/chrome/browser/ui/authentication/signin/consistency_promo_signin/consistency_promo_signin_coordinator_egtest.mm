@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -25,6 +28,13 @@
 
 @implementation ConsistencyPromoSigninCoordinatorTestCase
 
+- (void)setUp {
+  [super setUp];
+  // Resets the number of dismissals for web sign-in.
+  [ChromeEarlGrey setIntegerValue:0
+                      forUserPref:prefs::kSigninWebSignDismissalCount];
+}
+
 // Tests that ConsistencyPromoSigninCoordinator shows up, and then skips it.
 - (void)testDismissConsistencyPromoSignin {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
@@ -36,6 +46,36 @@
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+}
+
+// Tests that ConsistencyPromoSigninCoordinator is not shown after the last
+// dismissal (based on kDefaultWebSignInDismissalCount value).
+- (void)testDismissalCount {
+  // Setup.
+  GREYAssertTrue(kDefaultWebSignInDismissalCount > 0,
+                 @"The default dismissal max value should be more than 0");
+  [ChromeEarlGrey setIntegerValue:kDefaultWebSignInDismissalCount - 1
+                      forUserPref:prefs::kSigninWebSignDismissalCount];
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Show the web sign-in consistency dialog for the last time.
+  [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  GREYAssertEqual(
+      kDefaultWebSignInDismissalCount,
+      [ChromeEarlGrey userIntegerPref:prefs::kSigninWebSignDismissalCount],
+      @"Dismissal count should be increased to the max value");
+  // Asks for the web sign-in consistency that should not succeed.
+  [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  GREYAssertEqual(
+      kDefaultWebSignInDismissalCount,
+      [ChromeEarlGrey userIntegerPref:prefs::kSigninWebSignDismissalCount],
+      @"Dismissal count should be at the max value");
 }
 
 @end
