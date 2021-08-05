@@ -50,6 +50,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/wm_helper.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/aura/client/aura_constants.h"
@@ -1788,53 +1789,6 @@ TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
 }
 
 // Tests that a WideFrameView is created for an unparented ARC task and that the
-// WideFrameView follows its respective surface when it is eventually parented.
-// See crbug.com/1223135.
-TEST_F(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
-  std::unique_ptr<Surface> surface(new Surface);
-  auto shell_surface =
-      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
-
-  // Create a non-wide frame shell surface.
-  std::unique_ptr<Buffer> desktop_buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(64, 64))));
-  surface->Attach(desktop_buffer.get());
-  surface->SetInputRegion(gfx::Rect(0, 0, 64, 64));
-  shell_surface->SetGeometry(gfx::Rect(100, 0, 64, 64));
-  surface->SetFrame(SurfaceFrameType::NORMAL);
-  surface->Commit();
-  auto* wide_frame = shell_surface->wide_frame_for_test();
-  ASSERT_FALSE(wide_frame);
-
-  // Set the |full_restore::kParentToHiddenContainerKey| for the surface and
-  // reparent it, simulating the Full Restore process for an unparented ARC
-  // task.
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  window->SetProperty(full_restore::kParentToHiddenContainerKey, true);
-  aura::client::ParentWindowWithContext(window,
-                                        /*context=*/window->GetRootWindow(),
-                                        window->GetBoundsInScreen());
-
-  // Maximize the surface. The WideFrameView should be created and a crash
-  // should not occur.
-  shell_surface->SetMaximized();
-  surface->Commit();
-  const auto* hidden_container_parent = window->parent();
-  wide_frame = shell_surface->wide_frame_for_test();
-  EXPECT_TRUE(wide_frame);
-  EXPECT_EQ(hidden_container_parent,
-            wide_frame->GetWidget()->GetNativeWindow()->parent());
-
-  // Call the FullRestoreController, simulating the ARC task becoming ready. The
-  // surface should be reparented and the WideFrameView should follow it.
-  ash::FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(window);
-  EXPECT_NE(hidden_container_parent, window->parent());
-  wide_frame = shell_surface->wide_frame_for_test();
-  EXPECT_TRUE(wide_frame);
-  EXPECT_EQ(window->parent(),
-            wide_frame->GetWidget()->GetNativeWindow()->parent());
-}
-
 TEST_F(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
   std::unique_ptr<Surface> surface(new Surface);
   auto shell_surface =
@@ -2854,6 +2808,75 @@ TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
     gfx::Size shadow_size = shell_surface->GetShadowBounds().size();
     EXPECT_EQ(shadow_size, overlay_size);
   }
+}
+
+class ClientControlledShellSurfaceFullRestoreTest
+    : public ClientControlledShellSurfaceTest {
+ public:
+  ClientControlledShellSurfaceFullRestoreTest() = default;
+  ClientControlledShellSurfaceFullRestoreTest(
+      const ClientControlledShellSurfaceFullRestoreTest&) = delete;
+  ClientControlledShellSurfaceFullRestoreTest& operator=(
+      const ClientControlledShellSurfaceFullRestoreTest&) = delete;
+  ~ClientControlledShellSurfaceFullRestoreTest() override = default;
+
+  // ClientControlledShellSurfaceTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::full_restore::features::kFullRestore);
+    ClientControlledShellSurfaceTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// WideFrameView follows its respective surface when it is eventually parented.
+// See crbug.com/1223135.
+TEST_F(ClientControlledShellSurfaceFullRestoreTest,
+       WideframeForUnparentedTasks) {
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+
+  // Create a non-wide frame shell surface.
+  auto desktop_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(64, 64)));
+  surface->Attach(desktop_buffer.get());
+  surface->SetInputRegion(gfx::Rect(0, 0, 64, 64));
+  shell_surface->SetGeometry(gfx::Rect(100, 0, 64, 64));
+  surface->SetFrame(SurfaceFrameType::NORMAL);
+  surface->Commit();
+  auto* wide_frame = shell_surface->wide_frame_for_test();
+  ASSERT_FALSE(wide_frame);
+
+  // Set the |full_restore::kParentToHiddenContainerKey| for the surface and
+  // reparent it, simulating the Full Restore process for an unparented ARC
+  // task.
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  window->SetProperty(full_restore::kParentToHiddenContainerKey, true);
+  aura::client::ParentWindowWithContext(window,
+                                        /*context=*/window->GetRootWindow(),
+                                        window->GetBoundsInScreen());
+
+  // Maximize the surface. The WideFrameView should be created and a crash
+  // should not occur.
+  shell_surface->SetMaximized();
+  surface->Commit();
+  const auto* hidden_container_parent = window->parent();
+  wide_frame = shell_surface->wide_frame_for_test();
+  EXPECT_TRUE(wide_frame);
+  EXPECT_EQ(hidden_container_parent,
+            wide_frame->GetWidget()->GetNativeWindow()->parent());
+
+  // Call the FullRestoreController, simulating the ARC task becoming ready. The
+  // surface should be reparented and the WideFrameView should follow it.
+  ash::FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(window);
+  EXPECT_NE(hidden_container_parent, window->parent());
+  wide_frame = shell_surface->wide_frame_for_test();
+  EXPECT_TRUE(wide_frame);
+  EXPECT_EQ(window->parent(),
+            wide_frame->GetWidget()->GetNativeWindow()->parent());
 }
 
 }  // namespace exo
