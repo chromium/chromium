@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -108,6 +109,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextItem* timeThresholdContextInformationalItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeInformationalText];
+  timeThresholdContextInformationalItem.textColor =
+      UIColor.cr_secondaryLabelColor;
+  timeThresholdContextInformationalItem.textFont =
+      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
   timeThresholdContextInformationalItem.text =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_DESCRIPTION);
   [model addItem:timeThresholdContextInformationalItem

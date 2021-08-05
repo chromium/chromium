@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_toolbar_button_manager.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -693,10 +694,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   switchItem.enabled = YES;
   [model addItem:switchItem
       toSectionWithIdentifier:SectionIdentifierMessagesSwitch];
-
-  TableViewTextHeaderFooterItem* footerItem =
-      [[TableViewTextHeaderFooterItem alloc] initWithType:SwitchItemFooterType];
-  footerItem.subtitleText =
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:SwitchItemFooterType];
+  footerItem.text =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_DESCRIPTION);
   [model setFooter:footerItem
       forSectionWithIdentifier:SectionIdentifierMessagesSwitch];
