@@ -455,17 +455,8 @@ public class RelatedSearchesControl {
      */
     private void onSuggestionClicked(int suggestionIndex) {
         mPanelSectionHost.onSuggestionClicked(suggestionIndex);
-
-        // TODO(donnd): add logging of clicks for the In-Bar control.
-        // Currently the server only produces selection-relevant data for regular TTS queries.
-        // When the server returns Related Searches for the selection we need to update this
-        // logging. See https://crbug.com/1222805.
-        if (mIsInBarControl) return;
-
+        // TODO(donnd): add infrastructure to check if the suggestion is an RS before logging.
         RelatedSearchesUma.logSelectedCarouselIndex(suggestionIndex);
-        // TODO(donnd): check the computation once we're showing the default query. That will
-        // not need to be logged using the call below since it's not an RS suggestion.
-        // See https://crbug.com/1216593.
         RelatedSearchesUma.logSelectedSuggestionIndex(
                 suggestionIndex + (mDisplayDefaultQuery ? 0 : 1));
         mChipsSelected++;
