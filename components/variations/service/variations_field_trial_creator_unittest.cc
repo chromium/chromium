@@ -304,13 +304,14 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
   // A convenience wrapper around SetupFieldTrials() which passes default values
   // for uninteresting params.
-  bool SetupFieldTrials() {
+  bool SetupFieldTrials(bool extend_variations_safe_mode = true) {
     TestPlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetupFieldTrials(
         "", "", "", std::vector<std::string>(),
         std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
-        &platform_field_trials, safe_seed_manager_, absl::nullopt);
+        &platform_field_trials, safe_seed_manager_, absl::nullopt,
+        extend_variations_safe_mode);
   }
 
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
@@ -824,9 +825,38 @@ class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
   base::FieldTrialList field_trial_list_;
 };
 
+TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::DEV));
+
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager);
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials(
+      /*extend_variations_safe_mode=*/false));
+
+  // Verify that the experiment is not active and that the WritePrefsTime metric
+  // was not recorded.
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeMode));
+  histogram_tester.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+
+  base::FeatureList::ClearInstanceForTesting();
+}
+
 // TODO(b/184937096): Update this test if and when the extended variations safe
 // mode experiment is rolled out to beta or stable.
-TEST_F(FieldTrialCreatorSafeModeExperimentTest, DisableExperiment) {
+TEST_F(FieldTrialCreatorSafeModeExperimentTest,
+       DisableExperimentOnSelectChannels) {
   std::unique_ptr<PrefService> pref_service(CreatePrefService());
 
   // Ensure that variations safe mode is not triggered.

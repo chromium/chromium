@@ -224,7 +224,10 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // Populate FieldTrialList. Since |low_entropy_provider| is null, it will fall
   // back to the provider we previously gave to FieldTrialList, which is a low
   // entropy provider. The X-Client-Data header is not reported on WebView, so
-  // we pass an empty object as the |low_entropy_source_value|.
+  // we pass an empty object as the |low_entropy_source_value|. Because WebView
+  // does not use the same Variations Safe Mode mechanism as most other
+  // platforms, pass false for |extend_variations_safe_mode| to opt out of the
+  // Extended Variations Safe Mode experiment. See crbug/1220131 for more info.
   variations_field_trial_creator_->SetupFieldTrials(
       cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
       switches::kDisableFeatures, std::vector<std::string>(),
@@ -232,7 +235,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
       metrics_client->metrics_state_manager(), aw_field_trials_.get(),
-      &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt);
+      &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt,
+      /*extend_variations_safe_mode=*/false);
 }
 
 void AwFeatureListCreator::CreateLocalState() {

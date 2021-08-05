@@ -176,9 +176,11 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManager* safe_seed_manager,
-    absl::optional<int> low_entropy_source_value) {
+    absl::optional<int> low_entropy_source_value,
+    bool extend_variations_safe_mode) {
 #if !defined(OS_ANDROID)
-  MaybeExtendVariationsSafeMode(metrics_state_manager);
+  if (extend_variations_safe_mode)
+    MaybeExtendVariationsSafeMode(metrics_state_manager);
 #endif
 
   const base::CommandLine* command_line =
