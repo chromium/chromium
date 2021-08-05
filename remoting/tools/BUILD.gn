@@ -20,14 +20,20 @@ group("all") {
 
 if (is_win) {
   executable("remoting_breakpad_tester") {
+    sources = [ "breakpad_tester_win.cc" ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     deps = [
       "//base",
       "//build/win:default_exe_manifest",
       "//remoting/host",
+      "//remoting/host:base",
     ]
 
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-    sources = [ "breakpad_tester_win.cc" ]
+    libs = [
+      "rpcrt4.lib",
+      "wtsapi32.lib",
+    ]
   }
 }
