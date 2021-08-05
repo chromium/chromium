@@ -16,7 +16,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_member.h"
@@ -1076,8 +1075,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     TableViewDetailIconCell* detailCell =
         base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
     if (itemType == SettingsItemTypePasswords) {
-      scoped_refptr<password_manager::PasswordStore> passwordStore =
-          IOSChromePasswordStoreFactory::GetForBrowserState(
+      scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
+          IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
               _browserState, ServiceAccessType::EXPLICIT_ACCESS);
       if (!passwordStore) {
         // The password store factory returns a NULL password store if something
