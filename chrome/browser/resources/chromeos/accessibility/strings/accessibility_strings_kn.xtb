@@ -425,6 +425,7 @@
 <translation id="3813387282697781382">ತಿಳಿ ಹವಳದ ಬಣ್ಣ</translation>
 <translation id="3816633764618089385">ಮುಂದಿನ ಮಾಧ್ಯಮ</translation>
 <translation id="3840823741487267909">ಅಬ್ರಿವೇಶನ್</translation>
+<translation id="3841319830220785495">ಡೀಫಾಲ್ಟ್ ಸ್ವಾಭಾವಿಕ ಧ್ವನಿ</translation>
 <translation id="385383972552776628">ಆಯ್ಕೆಗಳ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3856075812838139784">ಓದಲು ಮಾತ್ರ</translation>
 <translation id="3857141338659865495">ಮಧ್ಯಮ ವೈಢೂರ್ಯನೀಲಿ</translation>
@@ -688,6 +689,7 @@
 <translation id="5748623122140342504">ಹಿಂದಿನ ಹಂತದ 5 ಶಿರೋನಾಮೆ</translation>
 <translation id="5760594853119905566">ಅನುಬಂಧ</translation>
 <translation id="5761219715606611783">ಚೆನ್ನಾಗಿ ಮಾಡಿದ್ದೀರಿ! ನೀವು ChromeVox ಸ್ಪರ್ಶದ ಮೂಲಭೂತಗಳನ್ನು ಕಲಿತಿದ್ದೀರಿ. ನೀವು ಮತ್ತೆ ಟುಟೋರಿಯಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಅಥವಾ ಕೆಳಗಿನ ಬಟನ್ ಬಳಸಿ ಈ ಟುಟೋರಿಯಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಬಹುದು.</translation>
+<translation id="5776001898637896684">Google ವರ್ಧಿತ ನೆಟ್‌ವರ್ಕ್ ಪಠ್ಯದಿಂದ ಧ್ವನಿ ವಿಸ್ತರಣೆ</translation>
 <translation id="5805940204952508776">ಎರಡು ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="5819072574982403430">ಟ್ರೀ ಐಟಂ</translation>
 <translation id="5822819874379903994">ಗಾಢ ವೈಢೂರ್ಯನೀಲಿ</translation>
@@ -980,6 +982,7 @@
 <translation id="7968340748835037139">ಗಾಢ ಹಸಿರು</translation>
 <translation id="7972507042926081808">ಚಾಕೊಲೇಟ್</translation>
 <translation id="7974390230414479278">ಮೆನು ಐಟಂ</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ಧ್ವನಿ <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">ಪದಗಳು</translation>
 <translation id="8004512796067398576">ಹೆಚ್ಚಿಕೆ</translation>
 <translation id="8007540374018858731">h3</translation>

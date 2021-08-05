@@ -618,6 +618,7 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
+<translation id="5867217927013474703">நெட்வொர்க் தகவல்களைச் சேகரிக்கிறது</translation>
 <translation id="5876666360658629066">பெற்றோர் குறியீட்டை உள்ளிடுங்கள்</translation>
 <translation id="5881540930187678962">Phone Hubபைப் பின்னர் அமைத்திடுங்கள்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
@@ -692,6 +693,7 @@
 <translation id="6482559668224714696">முழுத்திரைப் பெரிதாக்கி</translation>
 <translation id="6490471652906364588">USB-C சாதனம் (வலது போர்ட்)</translation>
 <translation id="649452524636452238">ஸ்மார்ட் கார்டு பின்</translation>
+<translation id="6500818810472529210">Google Searchசில் முடிவுகளைப் பார்க்கவும்</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புகிறது</translation>
 <translation id="6520517963145875092">படமெடுக்க, சாளரத்தைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="652139407789908527">இந்தப் புதுப்பிப்பின்போது வழக்கத்தை விடக் கூடுதல் நேரம் (ஒரு நிமிடம் வரை) உங்கள் திரை காலியாக இருக்கும். புதுப்பிப்பு செயலில் இருக்கும்போது பவர் பட்டனை அழுத்த வேண்டாம்.</translation>
@@ -936,7 +938,6 @@
 <translation id="8413272770729657668">ரெக்கார்டிங் தொடங்கப் போகிறது 3, 2, 1</translation>
 <translation id="8425213833346101688">மாற்று</translation>
 <translation id="8426708595819210923">மாலை வணக்கம் <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">உரை புலங்களில் குரல் தட்டச்சை அனுமதிக்க, டிக்டேஷன் அம்சம் உங்கள் குரலை Googleளுக்கு அனுப்பும்.</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="8433977262951327081">உள்ளீட்டு விருப்பங்கள் மெனு குமிழியை அடுக்கில் காட்டுவதற்கான ஷார்ட்கட் மாறியுள்ளது. <ph name="OLD_SHORTCUT" />க்குப் பதிலாக <ph name="NEW_SHORTCUT" />ஐப் பயன்படுத்தவும்.</translation>
@@ -990,6 +991,7 @@
 <translation id="8818320199597151042">நெட்வொர்க் சுயவிவரத்தை அகற்றுகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="8825863694328519386">முந்தையதற்குச் செல்ல இடது பக்கத்திலிருந்து ஸ்வைப் செய்யவும்</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">எப்போது வேண்டுமானாலும் பேக்கெட் கேப்ச்சரை நிறுத்தலாம்.</translation>
 <translation id="8841375032071747811">முந்தையது பொத்தான்</translation>
 <translation id="8843682306134542540">சுழற்சிப் பூட்டை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">தேடல்+Esc</translation>

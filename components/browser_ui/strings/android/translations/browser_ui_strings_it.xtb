@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
-<translation id="1195941046451948919">Vuoi reimpostare tutte le autorizzazioni per questo sito web?</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1242008676835033345">Incorporato su <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Interrompi</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Dettagli</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
-<translation id="4708011789095599544">Vuoi cancellare i cookie e altri dati del sito per questo sito web?</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4836046166855586901">Chiedi conferma quando un sito vuole sapere quando usi attivamente questo dispositivo</translation>
 <translation id="4883854917563148705">Le impostazioni gestite non possono essere reimpostate</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Vibrazione</translation>
 <translation id="6388207532828177975">Cancella e reimposta</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
-<translation id="6423924377271166037">Cancella cookie</translation>
 <translation id="6439114592976064011">Impedisci ai siti di usare i dati e dispositivi della realtà virtuale</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">Condividi</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Attiva le autorizzazioni per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Questa pagina è pericolosa</translation>
 <translation id="930525582205581608">Vuoi eliminare questo sito?</translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 </translationbundle>

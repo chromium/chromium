@@ -112,7 +112,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1989112275319619282">Tanlash</translation>
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="2021670401941426298">Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsatmalarini oching.</translation>
-<translation id="2022352537516230970">iPhone uchun ishlab chiqilgan</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> kun oldin onlayn edi</translation>
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
@@ -284,13 +283,16 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="3691593122358196899">Xatcho‘p “<ph name="FOLDER_TITLE" />” jildiga saqlandi</translation>
 <translation id="3709582977625132201">Oʻqilmagan deb belgilash</translation>
 <translation id="3740397331642243698">Kiritilgan URL manzillar Google Chrome brauzerida Inkognito rejimda ochiladi.</translation>
+<translation id="3762232513783804601">iPad uchun ishlab chiqilgan</translation>
 <translation id="3771033907050503522">Inkognito varaqlar</translation>
 <translation id="3775743491439407556">Sinxronizatsiya ishlamayapti</translation>
 <translation id="3779810277399252432">Internetga ulanmagansiz</translation>
 <translation id="3783017676699494206">Tasvirni saqlash</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
+<translation id="380329542618494757">Ism</translation>
 <translation id="3803696231112616155">Bu saytda tarjima taklif qilinsin</translation>
 <translation id="385051799172605136">Orqaga</translation>
+<translation id="3858860766373142691">Ism</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3913386780052199712">Chrome hisobiga kirildi</translation>
@@ -321,7 +323,6 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
 <translation id="418156467088430727">Oflayn versiyasini yangi varaqda ochish</translation>
 <translation id="4181841719683918333">Tillar</translation>
-<translation id="4184011057600693970">iPad uchun ishlab chiqilgan</translation>
 <translation id="424315890655130736">Kodli iborani kiriting</translation>
 <translation id="4263576668337963058">Sahifa amallarini chiqarish</translation>
 <translation id="4267380167363222949">Keyingi varaq</translation>
@@ -339,6 +340,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4389019817280890563">Tilni almashtirish uchun bosing.</translation>
 <translation id="4454246407045105932">Til kiritish</translation>
 <translation id="4469418912670346607">Sozlashda davom etish</translation>
+<translation id="4474494258097106883">iPhone uchun ishlab chiqilgan</translation>
 <translation id="4476574785019001431">Sozlamalar</translation>
 <translation id="4496373720959965247">Varaqlar qo‘shing va sahifadan sahifaga o‘ting</translation>
 <translation id="4502566650163919158">Hozir tekshirish</translation>

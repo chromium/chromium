@@ -635,6 +635,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3229041911291329567">Versijas informācija par ierīci un pārlūku</translation>
 <translation id="323107829343500871">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> CVC</translation>
 <translation id="3234666976984236645">Vienmēr noteikt nozīmīgu saturu šajā vietnē</translation>
+<translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="3249845759089040423">Moderna</translation>
 <translation id="3252266817569339921">Franču valoda</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu pasākumu Google kalendārā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -808,6 +809,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3793574014653384240">Nesen notikušo avāriju skaits un cēloņi</translation>
 <translation id="3797522431967816232">Prc3 (aploksne)</translation>
 <translation id="3799805948399000906">Tika pieprasīts fonts</translation>
+<translation id="380329542618494757">Vārds, uzvārds</translation>
 <translation id="3807366285948165054">Attēla nobīde uz X ass</translation>
 <translation id="3807873520724684969">Tika bloķēts kaitīgs saturs.</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -822,6 +824,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu Google dokumentu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3858027520442213535">Atjaunināt datumu un laiku</translation>
+<translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3881478300875776315">Rādīt mazāk rindu</translation>
 <translation id="3884278016824448484">Ierīces identifikators rada konfliktu.</translation>
 <translation id="3885155851504623709">Pagasts</translation>
@@ -1456,6 +1459,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6051221802930200923">Pašlaik nevarat apmeklēt vietni <ph name="SITE" />, jo tajā tiek izmantota sertifikātu piespraušana. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīgi, visticamāk, šī lapa vēlāk darbosies.</translation>
 <translation id="6051898664905071243">Lappušu skaits:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">Lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="6058977677006700226">Vai vēlaties izmantot kartes visās savās ierīcēs?</translation>
 <translation id="6059925163896151826">USB ierīces</translation>
 <translation id="6060009363608157444">Nederīgs DnsOverHttps režīms.</translation>
@@ -1533,6 +1537,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6389470377220713856">Vārds un uzvārds uz kartes</translation>
 <translation id="6390200185239044127">Z-veida locījums uz pusēm</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6391700400718590966">Ir aizvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="6393956493820063117">Saskaņā ar administratora iestatīto politiku ielīmēšana no <ph name="ORIGIN_NAME" /> ir bloķēta šajā atrašanās vietā.</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
 <translation id="6401136357288658127">Šī politika ir novecojusi. Tās vietā jums vajadzētu izmantot <ph name="NEW_POLICY" /> politiku.</translation>
@@ -2036,6 +2041,7 @@ Papildu informācija:
 <translation id="8190193880870196235">Pārvalda paplašinājums</translation>
 <translation id="8193086767630290324">Darbības ar datiem, kas atzīmēti kā konfidenciāli</translation>
 <translation id="8194797478851900357">&amp;Pārvietošanas atsaukšana</translation>
+<translation id="8199274926193258625">Iespējams, vietnē <ph name="HOSTNAME" /> būs jāveic papildu darbības, lai apstiprinātu maksājumu.</translation>
 <translation id="8201077131113104583">Nederīgs atjaunināšanas URL paplašinājumam ar ID “<ph name="EXTENSION_ID" />”.</translation>
 <translation id="8202097416529803614">Pasūtījuma kopsavilkums</translation>
 <translation id="8202370299023114387">Konflikts</translation>

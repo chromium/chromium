@@ -13,6 +13,7 @@
 <translation id="107147699690128016">Se cambias a extensión do ficheiro, é posible que este se abra nunha aplicación diferente e supoña un perigo para o teu dispositivo.</translation>
 <translation id="1095761715416917775">Asegúrate de poder acceder sempre aos teus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir pestana nova nun grupo</translation>
+<translation id="1103142993930332957">Queres axudar a mellorar Chrome?</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1110914759170138831">Acurtouse o texto destacado</translation>
 <translation id="1111673857033749125">Aquí aparecerán os marcadores que gardases noutros dispositivos.</translation>
@@ -157,6 +158,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Realiza buscas en Internet</translation>
 <translation id="2056878612599315956">O sitio está en pausa</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{Produciuse un erro en 1 descarga}other{Produciuse un erro en # descargas}}</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Ver vídeo seguinte</translation>
 <translation id="2074143993849053708">A interface de consentimento para a busca por voz a través do Asistente está pechada</translation>
@@ -194,7 +196,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
-<translation id="2294030144029925122">Política de privacidade de Chrome</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
 <translation id="230155349749732438">Para poder usar esta opción de configuración, debes activar <ph name="BEGIN_LINK" />Mellorar as buscas e a navegación<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Toca para chamar</translation>
@@ -212,6 +213,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2345671828921229300">Para realizar buscas, mantén premida unha palabra</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
 <translation id="2353636109065292463">Comprobando a túa conexión a Internet</translation>
+<translation id="235789365079050412">Política de privacidade de Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2369533728426058518">pestanas abertas</translation>
 <translation id="2386938421315164605">Ocultar e mostrar temas</translation>
@@ -313,6 +315,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2979025552038692506">Pestana do modo de incógnito seleccionada</translation>
 <translation id="2979448359891869301">Non se pode ampliar a captura de pantalla. Proba de novo cando o teléfono non estea ocupado.</translation>
 <translation id="2979639724566107830">Abre o marcador nunha ventá nova</translation>
+<translation id="2981364137500752533">Podes ter ata 5 ventás.</translation>
 <translation id="2987620471460279764">O texto compartiuse desde outro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2992473221983447149">Descricións de imaxes</translation>
@@ -444,6 +447,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas eliminadas</translation>
 <translation id="3845098929839618392">Abrir en pestana de incógnito</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
@@ -523,6 +527,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4411535500181276704">Modo básico</translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
+<translation id="4450672886426705087">Resultados da busca de Google.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Inicia sesión e activa a sincronización para personalizar todos os teus dispositivos e sincronizalos</translation>
@@ -978,6 +983,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
 <translation id="7233236755231902816">Para ver a Web no teu idioma, descarga a última versión de Chrome</translation>
 <translation id="7242755609445462077">Nota estilizada (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
@@ -1173,7 +1179,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8354977102499939946">Fai buscas rapidamente coa voz. Para editar este atallo, vai a Configuración.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
 <translation id="8364299278605033898">Descubre sitios web populares</translation>
-<translation id="8372925856448695381">O idioma (<ph name="LANG" />) está listo.</translation>
 <translation id="8387617938027387193">Verifica que es ti</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
 <translation id="8410695015584479363">Facer seguimento de prezos</translation>

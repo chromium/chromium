@@ -618,6 +618,7 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
+<translation id="5867217927013474703">ကွန်ရက်အချက်အလက်ကို စုစည်းနေသည်</translation>
 <translation id="5876666360658629066">မိဘကုဒ်ကို ထည့်ပါ</translation>
 <translation id="5881540930187678962">'ဖုန်းစင်တာ' ကို နောင်တွင် စနစ်ထည့်သွင်းမည်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -692,6 +693,7 @@
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="649452524636452238">အဆင့်မြင့်ကတ် ပင်နံပါတ်</translation>
+<translation id="6500818810472529210">Google Search တွင် ရလဒ်ကြည့်ပါ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />သို့ မျက်နှာပြင်ကို ကာစ် လုပ်နေသည်</translation>
 <translation id="6520517963145875092">ရိုက်ယူရန် ဝင်းဒိုးတစ်ခု ရွေးပါ</translation>
 <translation id="652139407789908527">ဤအပ်ဒိတ်အတွင်း သင့်ဖန်သားပြင်သည် ပုံမှန်ထက်ပိုမိုကြာမြင့်စွာ (တစ်မိနစ်အထိ) ဗလာဖြစ်သွားပါမည်။ အပ်ဒိတ်လုပ်နေစဉ် ဖွင့်ပိတ်ခလုတ်ကို မနှိပ်ပါနှင့်။</translation>
@@ -936,7 +938,6 @@
 <translation id="8413272770729657668">ရိုက်ကူးခြင်း စပါတော့မည်- ၃၊ ၂၊ ၁</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8426708595819210923">မင်္ဂလာ ညနေခင်းပါ <ph name="GIVEN_NAME" /></translation>
-<translation id="8427213022735114808">စာရိုက်ရန်အကွက်များတွင် စကားသံဖြင့်စာရိုက်ခြင်းကို ခွင့်ပြုရန် Dictation သည် သင့်အသံကို Google သို့ ပို့သည်။</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8433186206711564395">ကွန်ရက် ဆက်တင်များ</translation>
 <translation id="8433977262951327081">စင်ပေါ်တွင် စာရိုက်စနစ်ရွေးချယ်စရာ မီနူးစာသားအကွက်ကို ပြသရန် ဖြတ်လမ်းလင့်ခ် ပြောင်းသွားပါပြီ။ <ph name="NEW_SHORTCUT" /> ကို <ph name="OLD_SHORTCUT" /> အစား သုံးပေးပါ။</translation>
@@ -990,6 +991,7 @@
 <translation id="8818320199597151042">ပရိုဖိုင်ကို ဖယ်ရှားနေသည်။ မိနစ်အနည်းငယ် စောင့်ပါ။</translation>
 <translation id="8825863694328519386">နောက်သို့ပြန်သွားရန် ဘယ်ဘက်မှ ပွတ်ဆွဲပါ</translation>
 <translation id="8828714802988429505">၉၀°</translation>
+<translation id="8832757911363938552">အပိုင်းငယ်ဖမ်းယူမှုကို အချိန်မရွေး ရပ်နိုင်သည်။</translation>
 <translation id="8841375032071747811">နောက်သို့ပြန်သည့် ခလုတ်</translation>
 <translation id="8843682306134542540">လှည့်ခြင်းလော့ခ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">ရှာဖွေမှု+Esc</translation>

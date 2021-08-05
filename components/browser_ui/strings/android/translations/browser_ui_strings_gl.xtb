@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Ao realizar esta acción, borraranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios ou as aplicacións da túa pantalla de inicio.</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
-<translation id="1195941046451948919">Seguro que queres restablecer todos os permisos deste sitio web?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1242008676835033345">Cookie inserida en <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Deter</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
-<translation id="4708011789095599544">Seguro que queres borrar as cookies e outros datos deste sitio web?</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6388207532828177975">Borrar e restablecer</translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
-<translation id="6423924377271166037">Borrar cookies</translation>
 <translation id="6439114592976064011">Impide que os sitios utilicen os teus datos e dispositivos de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Compartir</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}}</translation>
 <translation id="913657688200966289">Activa os permisos para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Esta páxina é perigosa</translation>
 <translation id="930525582205581608">Queres esquecer este sitio?</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 </translationbundle>

@@ -618,6 +618,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="5867217927013474703">Po mblidhet informacioni i rrjetit</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
 <translation id="5881540930187678962">Konfiguroje Phone Hub më vonë</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -692,6 +693,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6482559668224714696">Zmadhuesi në ekran të plotë</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
 <translation id="649452524636452238">Kodi PIN i kartës smart</translation>
+<translation id="6500818810472529210">Shikoje rezultatin te "Kërko në Google"</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
 <translation id="652139407789908527">Ekrani yt do të jetë bosh për një kohë më të gjatë se zakonisht (deri në një minutë) gjatë këtij përditësimi. Mos e shtyp butonin e energjisë kur përditësimi është në vazhdim.</translation>
@@ -702,6 +704,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6559976592393364813">Pyet administratorin</translation>
 <translation id="6570902864550063460">Po karikohet përmes USB-së</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6612802754306526077">U zgjodh modaliteti i regjistrimit të ekranit</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
@@ -935,7 +938,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8413272770729657668">Regjistrimi fillon në 3, 2, 1</translation>
 <translation id="8425213833346101688">Ndrysho</translation>
 <translation id="8426708595819210923">Mirëmbrëma <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">Diktimi ia dërgon zërin tënd Google për të lejuar shkrimin me zë në çfarëdo fushe teksti.</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8433186206711564395">Cilësimet e rrjetit</translation>
 <translation id="8433977262951327081">Shkurtorja për të shfaqur flluskën e menysë së opsioneve të hyrjes në raft ka ndryshuar. Përdor <ph name="NEW_SHORTCUT" /> në vend të <ph name="OLD_SHORTCUT" />.</translation>
@@ -989,6 +991,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8818320199597151042">Profili po hiqet. Prit disa minuta.</translation>
 <translation id="8825863694328519386">Rrëshqit nga e majta për t'u kthyer prapa</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Mund të ndalosh kapjen e paketave në çfarëdo kohe.</translation>
 <translation id="8841375032071747811">Butoni "Prapa"</translation>
 <translation id="8843682306134542540">Aktivizo/çaktivizo kyçjen e rrotullimit. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>

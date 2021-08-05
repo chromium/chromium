@@ -3,6 +3,8 @@
 <translationbundle lang="as">
 <translation id="1175958423215084756">লিংক চিনাক্ত কৰা হৈছে। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">গেলাৰীৰ প্ৰতিচ্ছবিসমূহ</translation>
+<translation id="1300209025925956156">আপোনাৰ নথি স্কেন কৰক</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। এক্সেছৰ বাবে ছাৰ্চ + লেফ্ট এৰ’ কী।</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ কৰা হ’ল।</translation>
 <translation id="1473110567575736769">৩ ছেকেণ্ডৰ টাইমাৰ</translation>
@@ -63,8 +65,10 @@
 <translation id="5057360777601936059">আপোনাৰ কেমেৰা বৰ্তমান উপলব্ধ নহয়।
         অনুগ্ৰহ কৰি কেমেৰাটো সঠিক ধৰণে সংযুক্ত হৈ আছেনে নাই পৰীক্ষা কৰক।</translation>
 <translation id="5152121255775685072">গেলাৰীলৈ যাওক</translation>
+<translation id="520537883758714667">এতিয়া নথি স্কেন কৰাৰ সুবিধাটো উপলব্ধ</translation>
 <translation id="5268823927180092501">আটাইবোৰ কেমেৰাত নথিৰ ম’ডটো সক্ষম কৰক</translation>
 <translation id="5422455049771430511">আপোনাৰ ফট' আৰু ভিডিঅ'সমূহ ৰাখিবৰ বাবে এখন নতুন ঠাই আছে</translation>
+<translation id="5444515100983837161">নথিখনৰ আটাইকেইটা কাষ ফ্ৰে’মটোৰ ভিতৰত ৰাখক। নথিখনৰ সৈতে নেপথ্যৰ ৰঙটো পৃথক হ’লে স্কেন কৰাৰ সুবিধাটোৱে আটাইতকৈ ভালকৈ কৰে।</translation>
 <translation id="5671277269877808209">বৰ্গাকাৰ</translation>
 <translation id="5753488212459587150">বিশেষজ্ঞ ম’ড সক্ষম কৰক</translation>
 <translation id="5759254179196327752">নথি স্কেন কৰক</translation>

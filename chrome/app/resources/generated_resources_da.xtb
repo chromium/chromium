@@ -32,7 +32,6 @@
 <translation id="1032605640136438169">Læs de nye vilkår</translation>
 <translation id="103279545524624934">Frigør diskplads for at starte Android-apps.</translation>
 <translation id="1033780634303702874">Få adgang til dine serieenheder</translation>
-<translation id="1034942643314881546">Illustration, der viser, at ADB aktiveres for at oprette apps</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1036511912703768636">Få adgang til alle disse USB-enheder</translation>
 <translation id="1036982837258183574">Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
@@ -702,7 +701,6 @@
 <translation id="1721312023322545264">Du skal have tilladelse fra <ph name="NAME" /> til at besøge dette website</translation>
 <translation id="1722460139690167654">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> af <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nyt vindue</translation>
-<translation id="1725149567830788547">Vis &amp;kontroller</translation>
 <translation id="1725562816265788801">Fanerulning</translation>
 <translation id="1727662110063605623">Åbn Indstillinger for at knytte <ph name="USB_DEVICE_NAME" /> til Parallels Desktop eller Linux</translation>
 <translation id="1729533290416704613">Den styrer også, hvilken side der vises, når du søger via omnifeltet.</translation>
@@ -1244,6 +1242,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2278668501808246459">Starter containeradministration</translation>
 <translation id="2280486287150724112">Højremargen</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
+<translation id="2285109769884538519">{COUNT,plural, =0{Åbn alle i gruppen &amp;Ny fane}=1{Åbn i gruppen &amp;Ny fane}one{Åbn ({COUNT}) i gruppen &amp;Ny fane}other{Åbn alle ({COUNT}) i gruppen &amp;Ny fane}}</translation>
 <translation id="2285942871162473373">Dit fingeraftryk blev ikke genkendt. Prøv igen.</translation>
 <translation id="2287944065963043964">Loginskærm</translation>
 <translation id="2288181517385084064">Skift til videooptagelse</translation>
@@ -2675,6 +2674,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3799128412641261490">Indstillinger for kontaktadgang</translation>
 <translation id="3799903419983101749">Fortsæt, hvor du slap. Du kan indstille apps til automatisk at blive gendannet ved at gå til Indstillinger.</translation>
 <translation id="3800806661949714323">Vis alle (anbefales)</translation>
+<translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
 <translation id="380408572480438692">Aktiverer registrering af ydelsesdata, der hjælper Google med at forbedre systemet med tiden. Der sendes ingen data, før du indgiver en feedbackrapport (Alt-Shift-I) og medtager ydelsesdata. Du kan altid vende tilbage til dette skærmbillede for at deaktivere registreringen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (udvidelses-id "<ph name="EXTENSION_ID" />") er ikke tilladt på en loginskærm.</translation>
@@ -2736,6 +2736,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3856096718352044181">Bekræft, at dette er en gyldig udbyder, eller prøv igen senere</translation>
 <translation id="3856800405688283469">Vælg tidszone</translation>
 <translation id="3857807444929313943">Løft, og tryk igen</translation>
+<translation id="3858860766373142691">Navn</translation>
 <translation id="3861638017150647085">Brugernavnet "<ph name="USERNAME" />" er ikke tilgængeligt</translation>
 <translation id="3861977424605124250">Vis ved opstart</translation>
 <translation id="386239283124269513">&amp;Gendan gruppe</translation>
@@ -3019,6 +3020,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4158364720893025815">Bestået</translation>
 <translation id="4159681666905192102">Dette er en børnekonto, der administreres af <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Ukendt tastatur</translation>
+<translation id="4165942112764990069"><ph name="USER_EMAIL" /> tilhører ikke en gyldig organisation. Kontakt din administrator. Hvis du er administrator, kan du konfigurere din organisation ved at gå til: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Websites bruger normalt JavaScript til interaktive formål såsom videospil og webformularer</translation>
 <translation id="4168015872538332605">Nogle af de indstillinger, der tilhører <ph name="PRIMARY_EMAIL" />, deles med dig. Disse indstillinger påvirker kun din konto ved brug af samlet login fra flere konti.</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
@@ -3409,7 +3411,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4602466770786743961">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera og din mikrofon</translation>
 <translation id="4606551464649945562">Tillad ikke, at websites opretter et 3D-kort over dine omgivelser eller registrerer kamerapositionen</translation>
 <translation id="4608500690299898628">&amp;Find...</translation>
-<translation id="4608520674724523647">Illustration af fuldført tilmelding</translation>
 <translation id="4608703838363792434"><ph name="FILE_NAME" /> har følsomt indhold</translation>
 <translation id="4609987916561367134">Har tilladelse til at bruge JavaScript</translation>
 <translation id="4610162781778310380">Der opstod en fejl i <ph name="PLUGIN_NAME" /></translation>
@@ -4046,11 +4047,11 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5315738755890845852">Ekstra krøllet parentes: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
+<translation id="5319712128756744240">Par en ny enhed</translation>
 <translation id="5320135788267874712">Navn på ny enhed</translation>
 <translation id="532247166573571973">Serveren kan være utilgængelig. Prøv igen senere.</translation>
 <translation id="5324300749339591280">Liste med apps</translation>
 <translation id="5324780743567488672">Indstil tidszonen automatisk ved hjælp af din placering</translation>
-<translation id="5327248766486351172">Navn</translation>
 <translation id="5327570636534774768">Denne enhed er markeret til administration af et andet domæne. Enheden skal deprovisioneres fra dette domæne, før demotilstand konfigureres.</translation>
 <translation id="5327912693242073631">Funktioner, der skal bruge notifikationer, fungerer ikke</translation>
 <translation id="532943162177641444">Tryk på notifikationen på din <ph name="PHONE_NAME" /> for at konfigurere det mobilhotspot, der kan anvendes af denne enhed.</translation>
@@ -4149,6 +4150,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5442550868130618860">Aktivér automatisk opdatering</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Vis certifikater for organisationen</translation>
+<translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> elementer</translation>
 <translation id="5448293924669608770">Ups! Noget gik galt under login</translation>
 <translation id="5449551289610225147">Ugyldig adgangskode</translation>
 <translation id="5449588825071916739">Tilføj alle faner som bogmærker</translation>
@@ -4654,6 +4656,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6007240208646052708">Talesøgning er ikke tilgængelig på dit sprog.</translation>
 <translation id="6011193465932186973">Fingeraftryk</translation>
 <translation id="6011449291337289699">Ryd websitedata</translation>
+<translation id="6011908034087870826">Sender link til <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Få undertekster til dit lyd- og videoindhold</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Gå til yderligere indhold <ph name="CURRENT_ELEMENT" /> ud af <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4832,6 +4835,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6208725777148613371">Elementet kunne ikke gemmes i <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Komponenten opdateres</translation>
 <translation id="6209908325007204267">Din enhed inkluderer en Chrome Enterprise-opgradering, men dit brugernavn er ikke tilknyttet en virksomhedskonto. Du skal oprette en virksomhedskonto på g.co/ChromeEnterpriseAccount på en sekundær enhed.</translation>
+<translation id="621172521139737651">{COUNT,plural, =0{Åbn alle i gruppen &amp;Ny fane}=1{Åbn i gruppen &amp;Ny fane}one{Åbn ({COUNT}) i gruppen &amp;Ny fane}other{Åbn alle ({COUNT}) i gruppen &amp;Ny fane}}</translation>
 <translation id="6212039847102026977">Vis avancerede netværksegenskaber</translation>
 <translation id="6212168817037875041">Sluk skærmen</translation>
 <translation id="6212752530110374741">Send link via mail</translation>
@@ -5082,7 +5086,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> filer</translation>
 <translation id="6469557521904094793">Aktivér mobilnetværk</translation>
 <translation id="6472893788822429178">Vis knappen Startside</translation>
-<translation id="6473842110411557830">Powerwash-illustration</translation>
 <translation id="6474498546677193336">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Linux lukkes.</translation>
 <translation id="6474884162850599008">Fjern tilknytningen af din Google Drev-konto</translation>
 <translation id="6475294023568239942">Du skal frigøre diskplads eller vælge en anden størrelse på Linux-disken i Indstillinger</translation>
@@ -5290,7 +5293,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6700480081846086223">Cast <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Profilen kunne ikke hentes.</translation>
 <translation id="6702639462873609204">&amp;Rediger...</translation>
-<translation id="6703966911896067184">Illustration af tilmeldingsfejl</translation>
 <translation id="6706210727756204531">Omfang</translation>
 <translation id="6707389671160270963">SSL-klientcertifikat</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 anden fane}one{<ph name="PAGE_TITLE" /> og # anden fane}other{<ph name="PAGE_TITLE" /> og # andre faner}}</translation>
@@ -5670,6 +5672,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7109543803214225826">Genvejen blev fjernet</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="7111822978084196600">Navngiv dette vindue</translation>
+<translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> element</translation>
 <translation id="7113502843173351041">Kende din mailadresse</translation>
 <translation id="7114054701490058191">Adgangskoderne matcher ikke</translation>
 <translation id="7114648273807173152">Du kan bruge Smart Lock til at logge ind på din Google-konto ved at gå til Indstillinger &gt; Tilsluttede enheder &gt; Din telefon &gt; Smart Lock.</translation>
@@ -5833,7 +5836,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7307129035224081534">Sat på pause</translation>
 <translation id="7308436126008021607">synkronisering i baggrunden.</translation>
 <translation id="7308643132139167865">Sprog på websites</translation>
-<translation id="7309257895202129721">Vis &amp;knapper</translation>
 <translation id="7310598146671372464">Der kunne ikke logges ind. Serveren understøtter ikke de angivne Kerberos-krypteringstyper. Kontakt din administrator.</translation>
 <translation id="7320213904474460808">Vælg som standardnetværk</translation>
 <translation id="7321545336522791733">Serveren er utilgængelig</translation>
@@ -6915,6 +6917,7 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8425492902634685834">Fastgør til proceslinje</translation>
 <translation id="8425768983279799676">Du kan bruge pinkoden til at låse din enhed op.</translation>
 <translation id="8426713856918551002">Aktiverer</translation>
+<translation id="8427213022735114808">Diktering sender din stemme til Google, så du kan indtale tekst i alle tekstfelter.</translation>
 <translation id="8427292751741042100">indlejret på hvilken som helst host</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8428271547607112339">Tilføj skolekonto</translation>
@@ -6934,7 +6937,6 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8448729345478502352">Gør elementer på skærmen mindre eller større</translation>
 <translation id="8449008133205184768">Indsæt og match stil</translation>
 <translation id="8449036207308062757">Administrer lagerplads</translation>
-<translation id="8455026683977728932">Illustration, der viser, at ADB kunne ikke aktiveres</translation>
 <translation id="8456512334795994339">Find apps til arbejde og fritid</translation>
 <translation id="8456761643544401578">Automatisk mørk tilstand</translation>
 <translation id="845702320058262034">Der kan ikke oprettes forbindelse. Sørg for, at Bluetooth er aktiveret på din telefon.</translation>
@@ -7636,7 +7638,6 @@ Flere kontakter kan tildeles denne handling</translation>
 <translation id="917510707618656279">Spørg, når et website vil have adgang til Bluetooth-enheder</translation>
 <translation id="9176476835295860688">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhed er forbundet</translation>
-<translation id="9176817945195089764"><ph name="DOMAIN" /> er ikke en gyldig organisation. Kontakt din administrator. Hvis du er administrator, kan du konfigurere din organisation ved at gå til: g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">Brugernavn på loginskærm</translation>
 <translation id="9180281769944411366">Denne proces kan tage et par minutter. Linux-containeren startes.</translation>
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>

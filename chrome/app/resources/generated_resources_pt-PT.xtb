@@ -32,7 +32,6 @@
 <translation id="1032605640136438169">Reveja os novos termos.</translation>
 <translation id="103279545524624934">Liberte espaço em disco para iniciar as aplicações para Android.</translation>
 <translation id="1033780634303702874">Aceder aos dispositivos de série</translation>
-<translation id="1034942643314881546">Ativar o adb para criar a ilustração das aplicações</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036511912703768636">Aceder a qualquer um destes dispositivos USB</translation>
 <translation id="1036982837258183574">Premir |<ph name="ACCELERATOR" />| para sair do ecrã inteiro</translation>
@@ -690,7 +689,6 @@
 <translation id="1721312023322545264">Precisa da autorização de <ph name="NAME" /> para visitar este site</translation>
 <translation id="1722460139690167654">O <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> é gerido<ph name="END_LINK" /> por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nova janela</translation>
-<translation id="1725149567830788547">Mostrar &amp;controlos</translation>
 <translation id="1725562816265788801">Deslocamento do separador</translation>
 <translation id="1727662110063605623">Abra as Definições para ligar o <ph name="USB_DEVICE_NAME" /> ao Parallels Desktop ou ao Linux.</translation>
 <translation id="1729533290416704613">Também controla a página apresentada quando pesquisa a partir da Caixa geral.</translation>
@@ -1228,6 +1226,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2278668501808246459">A iniciar o gestor de contentores…</translation>
 <translation id="2280486287150724112">Margem direita</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
+<translation id="2285109769884538519">{COUNT,plural, =0{Abrir todos num &amp;novo grupo de separadores}=1{Abrir num &amp;novo grupo de separadores}other{Abrir todos ({COUNT}) num &amp;novo grupo de separadores}}</translation>
 <translation id="2285942871162473373">Não foi possível reconhecer a sua impressão digital. Tente novamente.</translation>
 <translation id="2287944065963043964">Ecrã de início de sessão</translation>
 <translation id="2288181517385084064">Mudar para gravador de vídeo</translation>
@@ -2660,6 +2659,7 @@ Pretende pará-lo?</translation>
 <translation id="3799128412641261490">Definições do acesso por comutador</translation>
 <translation id="3799903419983101749">Continue a partir de onde parou. Pode configurar o restauro automático das apps nas Definições.</translation>
 <translation id="3800806661949714323">Mostrar tudo (recomendado)</translation>
+<translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualidade de vídeo</translation>
 <translation id="380408572480438692">A ativação da recolha de dados de desempenho ajudará a Google a melhorar o sistema ao longo do tempo. Não serão enviados quaisquer dados enquanto não apresentar um relatório de comentários (Alt-Shift-I) e incluir os dados de desempenho. É possível regressar a este ecrã para desativar a recolha em qualquer altura.</translation>
 <translation id="3807249107536149332">O <ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido num ecrã de início de sessão.</translation>
@@ -2721,6 +2721,7 @@ Pretende pará-lo?</translation>
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
 <translation id="3857807444929313943">Levante e toque novamente</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3861638017150647085">O nome de utilizador "<ph name="USERNAME" />" não está disponível.</translation>
 <translation id="3861977424605124250">Mostrar no arranque</translation>
 <translation id="386239283124269513">&amp;Restaurar grupo</translation>
@@ -3004,6 +3005,7 @@ Pretende pará-lo?</translation>
 <translation id="4158364720893025815">Aprovado</translation>
 <translation id="4159681666905192102">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
+<translation id="4165942112764990069"><ph name="USER_EMAIL" /> não pertence a uma entidade válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua entidade ao visitar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Normalmente, os sites utilizam JavaScript para apresentar funcionalidades interativas como videojogos ou formulários Web.</translation>
 <translation id="4168015872538332605">Algumas definições pertencentes a <ph name="PRIMARY_EMAIL" /> estão a ser partilhadas consigo. Estas definições afetam apenas a sua conta quando utilizar o início de sessão integrado.</translation>
 <translation id="4169535189173047238">Não permitir</translation>
@@ -3393,7 +3395,6 @@ Pretende pará-lo?</translation>
 <translation id="4602466770786743961">Permitir sempre que <ph name="HOST" /> aceda à sua câmara e microfone</translation>
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente à sua volta nem monitorizem a posição da câmara</translation>
 <translation id="4608500690299898628">&amp;Localizar...</translation>
-<translation id="4608520674724523647">Ilustração de inscrição com êxito</translation>
 <translation id="4608703838363792434"><ph name="FILE_NAME" /> tem conteúdo sensível</translation>
 <translation id="4609987916561367134">Com autorização para utilizar JavaScript</translation>
 <translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro.</translation>
@@ -4030,11 +4031,11 @@ Pretende pará-lo?</translation>
 <translation id="5315738755890845852">Chaveta adicional: <ph name="ERROR_LINE" />.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">A Google recomenda o Chrome</translation>
+<translation id="5319712128756744240">Sincronizar novo dispositivo</translation>
 <translation id="5320135788267874712">Nome do dispositivo novo</translation>
 <translation id="532247166573571973">O servidor pode estar inacessível. Tente novamente mais tarde.</translation>
 <translation id="5324300749339591280">Lista de apps</translation>
 <translation id="5324780743567488672">Definir automaticamente o fuso horário com base na localização</translation>
-<translation id="5327248766486351172">Nome</translation>
 <translation id="5327570636534774768">O dispositivo está marcado para gestão por um domínio diferente. Remova o domínio do dispositivo antes de configurar o modo de demonstração.</translation>
 <translation id="5327912693242073631">As funcionalidades que necessitam de notificações não funcionarão.</translation>
 <translation id="532943162177641444">Toque na notificação no <ph name="PHONE_NAME" /> para configurar a zona Wi-Fi móvel que pode ser utilizada por este dispositivo.</translation>
@@ -4133,6 +4134,7 @@ Pretende pará-lo?</translation>
 <translation id="5442550868130618860">Ativar atualização automática</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Mostrar certificados da entidade</translation>
+<translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> itens</translation>
 <translation id="5448293924669608770">Ups, ocorreu um erro ao iniciar sessão</translation>
 <translation id="5449551289610225147">Palavra-passe inválida</translation>
 <translation id="5449588825071916739">Adicionar Todos os Separadores aos Marcadores</translation>
@@ -4639,6 +4641,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6007240208646052708">A pesquisa por voz não está disponível no seu idioma.</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011449291337289699">Limpar dados do site</translation>
+<translation id="6011908034087870826">A enviar link para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Obtenha legendas para o áudio e o vídeo.</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6016178549409952427">Navegar para conteúdo adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4817,6 +4820,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6208725777148613371">Falha ao guardar no <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Atualização de componentes</translation>
 <translation id="6209908325007204267">O seu dispositivo inclui uma Atualização do Chrome Enterprise, mas o seu nome de utilizador não está associado a uma conta de empresa. Crie uma conta de empresa ao visitar g.co/ChromeEnterpriseAccount num dispositivo secundário.</translation>
+<translation id="621172521139737651">{COUNT,plural, =0{Abrir todos num &amp;novo grupo de separadores}=1{Abrir num &amp;novo grupo de separadores}other{Abrir todos ({COUNT}) num &amp;novo grupo de separadores}}</translation>
 <translation id="6212039847102026977">Mostrar propriedades de rede avançadas</translation>
 <translation id="6212168817037875041">Desligar o ecrã</translation>
 <translation id="6212752530110374741">Enviar link por email</translation>
@@ -5067,7 +5071,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ficheiros</translation>
 <translation id="6469557521904094793">Ligar rede móvel</translation>
 <translation id="6472893788822429178">Mostrar botão Página Inicial</translation>
-<translation id="6473842110411557830">Ilustração do Powerwash</translation>
 <translation id="6474498546677193336">Não foi possível cancelar a partilha porque uma aplicação está a utilizar esta pasta. Será cancelada a partilha da pasta quando o Linux for encerrado.</translation>
 <translation id="6474884162850599008">Desligar a conta do Google Drive</translation>
 <translation id="6475294023568239942">Liberte espaço em disco ou redimensione o disco do Linux nas Definições</translation>
@@ -5275,7 +5278,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6700480081846086223">Transmitir <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Não foi possível obter o perfil.</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
-<translation id="6703966911896067184">Ilustração do erro na inscrição</translation>
 <translation id="6706210727756204531">Âmbito</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e mais 1 separador}other{<ph name="PAGE_TITLE" /> e mais # separadores}}</translation>
@@ -5655,6 +5657,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7109543803214225826">Atalho removido</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="7111822978084196600">Dê um nome a esta janela</translation>
+<translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> item</translation>
 <translation id="7113502843173351041">Saber o seu endereço de email</translation>
 <translation id="7114054701490058191">As palavras-passe não coincidem</translation>
 <translation id="7114648273807173152">Para utilizar o Smart Lock para iniciar sessão na sua Conta Google, aceda a Definições &gt; Dispositivos ligados &gt; O seu telemóvel &gt; Smart Lock.</translation>
@@ -5818,7 +5821,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7307129035224081534">Em pausa</translation>
 <translation id="7308436126008021607">sincronização em segundo plano</translation>
 <translation id="7308643132139167865">Idiomas de Websites</translation>
-<translation id="7309257895202129721">Mostrar &amp;controlos</translation>
 <translation id="7310598146671372464">Não é possível iniciar sessão. O servidor não suporta os tipos de encriptação Kerberos especificados. Contacte o administrador.</translation>
 <translation id="7320213904474460808">Predefinir rede</translation>
 <translation id="7321545336522791733">Servidor inacessível</translation>
@@ -6901,6 +6903,7 @@ Prima um comutador atribuído para remover a atribuição</translation>
 <translation id="8425492902634685834">Afixar na Barra de tarefas</translation>
 <translation id="8425768983279799676">Pode utilizar o PIN para desbloquear o dispositivo.</translation>
 <translation id="8426713856918551002">A ativar…</translation>
+<translation id="8427213022735114808">A introdução por voz envia a sua voz para o Google para permitir a digitação por voz em qualquer campo de texto.</translation>
 <translation id="8427292751741042100">incorporada em qualquer anfitrião</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8428271547607112339">Adicionar conta escolar</translation>
@@ -6920,7 +6923,6 @@ Prima um comutador atribuído para remover a atribuição</translation>
 <translation id="8448729345478502352">Diminuir ou aumentar os elementos no ecrã</translation>
 <translation id="8449008133205184768">Colar e fazer corresponder estilo</translation>
 <translation id="8449036207308062757">Gerir armazenamento</translation>
-<translation id="8455026683977728932">Falha ao ativar a ilustração do adb</translation>
 <translation id="8456512334795994339">Encontre apps para trabalho e lazer</translation>
 <translation id="8456761643544401578">Modo escuro automático</translation>
 <translation id="845702320058262034">Não é possível estabelecer a ligação. Certifique-se de que o Bluetooth do telemóvel está ativado.</translation>
@@ -7620,7 +7622,6 @@ Pode atribuir vários comutadores a esta ação</translation>
 <translation id="917510707618656279">Perguntar quando um site pretender aceder a dispositivos Bluetooth</translation>
 <translation id="9176476835295860688">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de aplicações e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das aplicações e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as aplicações e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – dispositivo Bluetooth ligado</translation>
-<translation id="9176817945195089764">O domínio <ph name="DOMAIN" /> não é uma entidade válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua entidade ao visitar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">Nome de utilizador do ecrã de início de sessão</translation>
 <translation id="9180281769944411366">Este processo pode demorar alguns minutos. A iniciar o contentor do Linux…</translation>
 <translation id="9180380851667544951">O site pode partilhar o ecrã.</translation>

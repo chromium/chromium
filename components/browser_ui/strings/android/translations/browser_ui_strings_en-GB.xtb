@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
-<translation id="1195941046451948919">Are you sure that you want to reset all permissions for this website?</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Details</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
-<translation id="4708011789095599544">Are you sure that you want to clear cookies and other site data for this website?</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Vibrate</translation>
 <translation id="6388207532828177975">Clear &amp; reset</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
-<translation id="6423924377271166037">Clear cookies</translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Share</translation>

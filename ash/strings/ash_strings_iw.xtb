@@ -618,6 +618,7 @@
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
+<translation id="5867217927013474703">מתבצע איסוף של פרטי הרשת</translation>
 <translation id="5876666360658629066">יש להזין קוד גישה להורים</translation>
 <translation id="5881540930187678962">‏להגדרת Phone Hub במועד מאוחר יותר</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -692,6 +693,7 @@
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
 <translation id="6490471652906364588">‏מכשיר עם יציאת USB-C (יציאה ימנית)</translation>
 <translation id="649452524636452238">קוד האימות של הכרטיס החכם</translation>
+<translation id="6500818810472529210">‏לתוצאות בחיפוש Google</translation>
 <translation id="6501401484702599040">העברת המסך אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
 <translation id="6520517963145875092">יש לבחור חלון לצילום</translation>
 <translation id="652139407789908527">במהלך העדכון, ייתכן שהתצוגה במסך תופסק לפרק זמן ארוך מהרגיל (עד דקה). אין ללחוץ על לחצן ההפעלה עד להשלמת העדכון.</translation>
@@ -938,7 +940,6 @@
 <translation id="8413272770729657668">ההקלטה מתחילה: 3, 2, 1</translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8426708595819210923">ערב טוב <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">‏הכתבה שולחת הקלטה של הקול שלך אל Google כדי לאפשר הקלדה קולית בתיבת טקסט כלשהי.</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="8433977262951327081">שינינו את קיצור הדרך להצגת בועת התפריט של אפשרויות הקלט במדף. יש להשתמש ב-<ph name="NEW_SHORTCUT" /> במקום ב-<ph name="OLD_SHORTCUT" />.</translation>
@@ -992,6 +993,7 @@
 <translation id="8818320199597151042">הסרת הפרופיל מתבצעת. יש להמתין מספר דקות.</translation>
 <translation id="8825863694328519386">יש להחליק מצד ימין כדי לחזור אחורה</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">תמיד אפשר להפסיק את תיעוד החבילות.</translation>
 <translation id="8841375032071747811">לחצן 'הקודם'</translation>
 <translation id="8843682306134542540">הפעלה או השבתה של נעילת הסיבוב. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

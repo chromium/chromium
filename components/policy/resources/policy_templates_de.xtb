@@ -1223,6 +1223,22 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
        Wenn die Richtlinie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.</translation>
 <translation id="2502467045153796624">Verhalten zum Versionsdowngrade</translation>
+<translation id="2505351097561237268">
+      Die Richtlinie für Berechtigungen zur Display-Erfassung ermöglicht Zugriff auf getDisplayMedia(),
+gemäß dieser Spezifikation:
+https://www.w3.org/TR/screen-capture/#feature-policy-integration
+Ist die Richtlinie jedoch deaktiviert, wird diese Anforderung nicht erzwungen
+und getDisplayMedia() wird aus Kontexten zugelassen, die andernfalls nicht zulässig wären. Diese Unternehmensrichtlinie ist vorübergehend.
+Nach Version 100 von <ph name="PRODUCT_NAME" /> wird sie voraussichtlich entfernt.
+      Sie soll Unternehmensnutzer freigeben, deren Anwendung nicht spezifikationskonform ist,
+jedoch erst nach einiger Zeit angepasst werden kann.
+
+      Ist die Richtlinie aktiviert oder nicht konfiguriert, können Websites getDisplayMedia() nur aus
+Kontexten anrufen, die auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display-Erfassung aufgeführt sind.
+
+      Wenn die Richtlinie deaktiviert ist, können Websites getDisplayMedia() auch aus Kontexten anrufen,
+die nicht auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display-Erfassung aufgeführt sind.
+      Andere Einschränkungen können dennoch gültig sein.</translation>
 <translation id="250670737672448119">Mit dieser Richtlinie wird die Bedienungshilfe "Textcursor hervorheben" aktiviert.
 
           Dabei wird der Bereich um den Textcursor beim Bearbeiten hervorgehoben.
@@ -1718,7 +1734,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3066446511111537292">Nutzern dieses Geräts erlauben, ADB-Sideloading zu verwenden</translation>
+<translation id="3066446511111537292">Verknüpften Nutzern dieses Geräts erlauben, ADB-Sideloading zu verwenden</translation>
 <translation id="3072045631333522102">Bildschirmschoner für die Anmeldeseite im Händlermodus</translation>
 <translation id="3072788420987305247">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die Mediensteuerung auf dem Sperrbildschirm angezeigt, wenn Nutzer das Gerät sperren, während Medien wiedergegeben werden.
 
@@ -1737,6 +1753,15 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3110248563985502478">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie aktiviert ist, werden veraltete Plug-ins als normale Plug-ins verwendet. Ist diese Einstellung deaktiviert, werden veraltete Plug-ins nicht verwendet.
 
       Ist diese Richtlinie nicht konfiguriert, müssen die Nutzer der Ausführung von veralteten Plug-ins zustimmen.</translation>
+<translation id="3110373701407677290">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die Tabs mit demselben Ursprung aufnehmen können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktion nicht nutzen.
+
+      Bitte beachten Sie, dass auch Chrome-Apps im Fenstermodus, die denselben Ursprung haben wie diese Website, aufgenommen werden können.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="3117676313396757089">Achtung: DHE wird nach Version 57, etwa im März 2017, vollständig aus <ph name="PRODUCT_NAME" /> entfernt. Anschließend funktioniert diese Richtlinie nicht mehr.
 
       Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, werden DHE-Verschlüsselungssammlungen in TLS nicht aktiviert. Die Richtlinie kann auf "true" festgelegt werden, um DHE-Verschlüsselungssammlungen zu aktivieren und die Kompatibilität mit veralteten Servern zu gewährleisten. Dies ist eine provisorische Maßnahme. Der Server sollte neu konfiguriert werden.
@@ -1854,6 +1879,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3251500716404598358">Konfigurieren Sie Richtlinien, um zwischen Browsern zu wechseln.
 
       Konfigurierte Websites werden automatisch in einem anderen Browser als <ph name="PRODUCT_NAME" /> geöffnet.</translation>
+<translation id="3252724033247471310">Same-Origin-Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="3255624750680556186">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann ein Gerät Powerwash auslösen.
 
       Ist sie deaktiviert, kann ein Gerät Powerwash nicht auslösen. Als Ausnahme ist Powerwash dennoch möglich, wenn <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> auf einen Wert gesetzt wird, der ein Update der TPM-Firmware zulässt, dieses aber noch nicht durchgeführt wurde.</translation>
@@ -2105,6 +2131,8 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf der Windows 10 Pro läuft, oder die von der Chrome-Verwaltung über die Cloud verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="356579196325389849">Nutzer dürfen die Chrome OS-Release-Version konfigurieren</translation>
+<translation id="35668690622495904">
+          Anrufe werden nicht abgelehnt, weil sie aus Kontexten stammen, die nicht in der Zulassungsliste aufgeführt sind. Anrufe können jedoch weiterhin aus anderen Gründen abgelehnt werden.</translation>
 <translation id="3575011234198230041">HTTP-Authentifizierung</translation>
 <translation id="3577251398714997599">Einstellungen für Werbung für Websites mit aufdringlichen Werbeanzeigen</translation>
 <translation id="3577628175311752799">Setzt die standardmäßige Verweisrichtlinie auf "no-referrer-when-downgrade".</translation>
@@ -2376,6 +2404,8 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bildschirmtastatur auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="3913680877415932969">Mithilfe von Richtlinien können Sie festlegen, welche Bildschirmfreigabe-APIs (z. B. getDisplayMedia() oder die Desktop Capture Extension API)
+      von Websites verwendet werden können (z. B. für die Tab-, Fenster oder Desktopaufnahme).</translation>
 <translation id="3915395663995367577">URL einer PAC-Proxy-Datei</translation>
 <translation id="3915587396318773837">Wenn diese Richtlinie konfiguriert ist, verlangt der Host für den Remotezugriff von Clients, die sich authentifizieren, ein Authentifizierungstoken von dieser URL, damit eine Verbindung aufgebaut werden kann.
 
@@ -2392,6 +2422,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Einfingerbedienung auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="3927291637826333102">Desktop-, Fenster- und Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="3932553013632130433">
       Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann. Chrome setzt bei der Verwendung von „SharedArrayBuffers“ aus Gründen der Webkompatibilität ab Version 91 (25.05.2021) die ursprungsübergreifende Isolierung voraus. Weitere Informationen finden Sie hier: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
       Bei Auswahl von „true“ können Websites „SharedArrayBuffers“ ohne Einschränkungen verwenden.
@@ -3128,12 +3159,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       * <ph name="MODE_ENUM_DROP_DOWN" /> gibt an, dass <ph name="SHARE_URL_FIELD_NAME" /> der Liste zur automatischen Freigabeerkennung hinzugefügt wird.
 
       * <ph name="MODE_ENUM_PRE_MOUNT" /> gibt an, dass <ph name="SHARE_URL_FIELD_NAME" /> verwendet wird.</translation>
-<translation id="5023555740504506178">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist (Standard), können Webseiten
-      Bildschirmfreigabe-APIs (z. B. "getDisplayMedia()" oder die Desktop Capture-Erweiterungs-API) verwenden,
-      um den Nutzer aufzufordern, einen Tab, ein Fenster oder einen Desktop für die Aufnahme auszuwählen.
-
-      Wenn diese Richtlinie deaktiviert ist, treten beim Aufrufen von Bildschirmfreigabe-APIs
-      Fehler auf.</translation>
 <translation id="5025239932007658691">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sendet <ph name="PRODUCT_NAME" /> gelegentlich Abfragen an einen Google-Server, um einen korrekten Zeitstempel abzurufen.
 
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
@@ -3341,6 +3366,15 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5311275381462687162">Einstellung für das alte Standardverhalten des "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Cookies</translation>
 <translation id="5312253627576569499">Prozentsatz, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird.</translation>
+<translation id="5317852436044398288">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Fenster- und Tabaufnahme verwenden können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktionen nicht nutzen.
+
+      Diese Richtlinie wird nicht berücksichtigt, wenn eine Website mit einem URL-Muster in einer der folgenden Richtlinien übereinstimmt: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="5318185076587284965">Verwendung von Relayservern durch den Host für den Remotezugriff gestatten</translation>
 <translation id="5323128137188992869">Hiermit wird das Streamen von Inhalten an das Gerät über <ph name="PRODUCT_NAME" /> erlaubt.
 
@@ -3754,6 +3788,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
       Ist die Richtlinie festgelegt, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Sollte sie nicht festgelegt sein, ist die Datenleckprüfung zulässig, kann jedoch vom Nutzer deaktiviert werden. 
 
       Dieses Verhalten wird nicht ausgelöst, wenn Safe Browsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn Sie die Aktivierung von Safe Browsing erzwingen möchten, verwenden Sie die Richtlinie „<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />“ oder „<ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />“.</translation>
+<translation id="5835312413892670446">Einstellungen für die Bildschirmaufnahme</translation>
 <translation id="5836064773277134605">Vom Host für den Remotezugriff verwendeten UDP-Portbereich einschränken</translation>
 <translation id="5837898601525273156">Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert ist, ist der intelligente Akkulademodus immer aktiviert, sofern diese Funktion vom Gerät unterstützt wird. Dieser Modus verwendet außerhalb der Arbeitszeit den Standardladealgorithmus und weitere Verfahren, um die Lebensdauer des Akkus zu maximieren. Während der Arbeitszeit wird dagegen das Schnellladen verwendet. Für jeden Tag wird die Zeit, in der das System am intensivsten genutzt wird, durch einen Startzeitpunkt und eine Dauer angegeben.
 
@@ -4295,6 +4330,15 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6561396069801924653">Optionen für Bedienungshilfen im Taskleistenmenü anzeigen</translation>
 <translation id="6562889469672829421">Zeitraum ohne Nutzereingabe, nach dem der Bildschirm gedimmt wird, angegeben in Millisekunden.</translation>
 <translation id="6563458316362153786">802.11r Fast Transition aktivieren</translation>
+<translation id="6563462845077594854">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Desktop-, Fenster- und Tabaufnahme verwenden können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktionen nicht nutzen.
+
+      Diese Richtlinie wird nicht berücksichtigt, wenn eine Website mit einem URL-Muster in einer der folgenden Richtlinien übereinstimmt: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, wird <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> nicht berücksichtigt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="6568977718979857253">Diese Richtlinie ist veraltet. Sie können mit <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> die Verfügbarkeit des Flash-Plug-ins definieren und über <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> festlegen, ob der integrierte PDF-Viewer zum Öffnen von PDF-Dateien verwendet werden soll.
 
       Mit dieser Richtlinie wird eine Liste von Plug-ins angegeben, die in <ph name="PRODUCT_NAME" /> deaktiviert sind, und verhindert, dass Nutzer diese Einstellung ändern.
@@ -4312,6 +4356,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
       Wenn die Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, gibt es keine lokalen Gerätekonten.</translation>
 <translation id="6584541828182430328">Anzeige von Vollbild-Warnung deaktivieren</translation>
 <translation id="6598235178374410284">Nutzer-Avatarbild</translation>
+<translation id="6600377630856879433">Fenster- und Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="6603004149426829878">Beim Auflösen der Zeitzone immer verfügbare Standortsignale an den Server senden</translation>
 <translation id="6604049565198492174">Wenn die Richtlinie aktiviert ist, ermöglicht sie, Netzwerkkonfigurationen auf <ph name="PRODUCT_NAME" />-Geräten für einzelne Nutzer zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="660567106648774919">Diese Richtlinie ist veraltet. Bitte verwenden Sie stattdessen die Richtlinie <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
@@ -4781,6 +4826,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="7040229947030068419">Beispielwert</translation>
 <translation id="7041170641363384736">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Zurzeit gilt die Richtlinie nur für Geräte, auf denen „auto-launch app“ in der Kiosk-Sitzung aktiviert wurde. Sobald sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
+<translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
 <translation id="7060497964524144376">Wenn die Richtlinie aktiviert ist, vertraut Safe Browsing den Domains, die Sie festlegen. Es findet keine Prüfung auf gefährliche Ressourcen wie Phishing, Malware oder unerwünschte Software statt. Es findet keine Prüfung von in diesen Domains gehosteten Downloads durch den Downloadschutzdienst statt. Eine Wiederverwendung von Passwörtern wird nicht durch den Passwortschutzdienst geprüft.
 
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Safe Browsing-Standardschutz auf alle Ressourcen angewendet.
@@ -5284,6 +5330,9 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="7731026922044991970">Auf allen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7732907212083471072">Entfernte Richtlinien</translation>
+<translation id="7734212505800048991">
+          Anrufe für getDisplayMedia aus Kontexten, die nicht auf der Zulassungsliste aufgeführt sind,
+werden abgelehnt.</translation>
 <translation id="77379430721695807">Wenn Sie diese Richtlinie konfigurieren, geben Sie eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Videoaufnahmegeräte gewährt.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -5310,6 +5359,17 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="776110834126722255">Eingestellt</translation>
 <translation id="7763614521440615342">Inhaltsvorschläge auf der "Neuer Tab"-Seite anzeigen</translation>
 <translation id="7765879851993224640">Verwendung von Smart Lock zur Anmeldung erlauben.</translation>
+<translation id="7767066506143083523">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Tabaufnahme verwenden können.
+
+      Ist sie nicht konfiguriert, können Websites diese Aufnahmefunktion nicht nutzen.
+
+      Bitte beachten Sie, dass auch Chrome-Apps im Fenstermodus aufgenommen werden können.
+
+      Diese Richtlinie wird nicht berücksichtigt, wenn eine Website mit einem URL-Muster in der Richtlinie <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> übereinstimmt.
+
+      Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="7771298620150437359">Inhalt und Reihenfolge der bevorzugten Sprachen konfigurieren</translation>
 <translation id="7774768074957326919">System-Proxyeinstellungen verwenden</translation>
 <translation id="777734450201217641">Mit dieser Richtlinie aktivieren Sie auf dem Anmeldebildschirm die Tastenkombinationen für Bedienungshilfen.
@@ -5707,6 +5767,19 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8300992833374611099">Festlegen, wo Entwicklertools verwendet werden können</translation>
 <translation id="8301065459352777588">Nutzer verwalteter Gastsitzungen können Anzeigeeinstellungen für das ganze Gerät speichern</translation>
 <translation id="8306117673860983372">Anmeldeeinstellungen</translation>
+<translation id="830819203330820450">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist (Standard), können Webseiten
+      Bildschirmfreigabe-APIs (z. B. "getDisplayMedia()" oder die Desktop Capture-Erweiterungs-API) verwenden,
+      um den Nutzer aufzufordern, einen Tab, ein Fenster oder einen Desktop für die Aufnahme auszuwählen.
+
+      Wenn diese Richtlinie deaktiviert ist, treten beim Aufrufen von Bildschirmfreigabe-APIs
+      Fehler auf. Diese Richtlinie wird nicht berücksichtigt (und die jeweilige Website kann die
+      APIs zur Bildschirmfreigabe verwenden), wenn die Website mit einem Ursprungsmuster in
+      einer der folgenden Richtlinien übereinstimmt:
+      <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
+      <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
+      <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
+      <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
+      </translation>
 <translation id="8312129124898414409">Ermöglicht Ihnen, festzulegen, ob die Schlüsselgenerierung für Websites zugelassen wird. Die Schlüsselgenerierung kann entweder für alle Websites zugelassen oder für alle Websites verboten werden.
 
           Wenn diese Richtlinie nicht konfiguriert ist, wird "BlockKeygen" verwendet, kann jedoch vom Nutzer geändert werden.</translation>
@@ -5716,6 +5789,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8314214821702356835">Erlaubt es Nutzern, Medien wiederzugeben, während das Gerät gesperrt ist</translation>
 <translation id="8319678975002906774">Mit dieser Richtlinie legen Sie für bestimmte Ursprünge die Werte für die verwaltete Konfiguration fest</translation>
 <translation id="8320149248919453401">Akkulademodus</translation>
+<translation id="8327651196906278510">Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="8329434144708110">Authentifizierungsabläufe für die Synchronisierung von Passwörtern auslösen</translation>
 <translation id="8329984337216493753">Diese Richtlinie ist nur im Händlermodus aktiv.
 
@@ -6208,6 +6282,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8976248126101463034">Gnubby-Authentifizierung für Remotezugriff-Hosts zulassen</translation>
 <translation id="8976531594979650914">Standarddrucker des Betriebssystems als Standardeinstellung verwenden</translation>
 <translation id="8977192934280677167">Zugriff auf die Suche mit dem Standardsuchanbieter über das Kontextmenü erlauben</translation>
+<translation id="8983537551095611459">Die Liste der Erweiterungs-IDs konfigurieren, die von der Bereinigung eingeschränkter verwalteter Gastsitzungen ausgenommen sind</translation>
 <translation id="8992176907758534924">Anzeige von Bildern für alle Websites blockieren</translation>
 <translation id="9007632512838819703">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />".
 
@@ -6402,6 +6477,9 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Wenn diese Richtlinie nicht konfiguriert oder auf "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />" festgelegt ist, wird für die Einrichtung von Assistant der Standardmodus verwendet.
       Wenn diese Richtlinie auf "<ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />" festgelegt ist, wird für die Einrichtung von Assistant der EDU-Modus verwendet.</translation>
 <translation id="9194447412184412480">Legt die Einstellungen für Nutzer fest, die über SAML mit einer externen IdP authentifiziert sind</translation>
+<translation id="9194474490249548275">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet.
+      Wenn die Richtlinie konfiguriert ist, wird eine Liste mit Erweiterungs-IDs angegeben, die von der Bereinigung der eingeschränkten verwalteten Gastsitzungen ausgenommen sind (siehe <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
+Ist die Richtlinie nicht konfiguriert, sind keine Erweiterungen vom Zurücksetzen ausgenommen.</translation>
 <translation id="9197740283131855199">Prozentsatz für die Skalierung der Spanne für die Bildschirmabdunkelung, wenn der Nutzer nach der Abdunkelung aktiv wird</translation>
 <translation id="9200828125069750521">Parameter für URL der Bildsuche, die POST verwendet</translation>
 <translation id="9204863016826119209">Schlüssel für die geschäftliche Nutzung können von installierten und in dieser Richtlinie aufgeführten Android-Apps verwendet werden.</translation>

@@ -618,6 +618,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
+<translation id="5867217927013474703">Zbieram informacje o sieci</translation>
 <translation id="5876666360658629066">Wpisz kod rodzica</translation>
 <translation id="5881540930187678962">Skonfiguruj sterowanie telefonem później</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -692,6 +693,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6482559668224714696">Lupa pełnoekranowa</translation>
 <translation id="6490471652906364588">Urządzenie USB-C (prawy port)</translation>
 <translation id="649452524636452238">Kod PIN karty elektronicznej</translation>
+<translation id="6500818810472529210">Zobacz wynik w wyszukiwarce Google</translation>
 <translation id="6501401484702599040">Przesyłam ekran do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Wybierz okno, które chcesz przechwycić</translation>
 <translation id="652139407789908527">Podczas aktualizacji ekran wygaśnie na dłuższą chwilę (do minuty). W tym czasie nie naciskaj przycisku zasilania.</translation>
@@ -936,7 +938,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8413272770729657668">Nagrywanie rozpocznie się za 3, 2, 1</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8426708595819210923">Dobry wieczór <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">Dyktowanie wysyła Twój głos do Google, by umożliwić pisanie głosowe w dowolnym polu tekstowym.</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="8433977262951327081">Zmieniliśmy skrót, który pokazuje dymek menu opcji wejścia na półce. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
@@ -990,6 +991,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8818320199597151042">Usuwam profil. Odczekaj kilka minut.</translation>
 <translation id="8825863694328519386">Aby wrócić, przesuń palcem od lewej strony</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Przechwytywanie pakietów możesz w dowolnym momencie zatrzymać.</translation>
 <translation id="8841375032071747811">Przycisk Wstecz</translation>
 <translation id="8843682306134542540">Włącz lub wyłącz blokadę obracania. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>

@@ -3,6 +3,8 @@
 <translationbundle lang="bn">
 <translation id="1175958423215084756">লিঙ্ক শনাক্ত হয়েছে। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">গ্যালারির ছবি</translation>
+<translation id="1300209025925956156">আপনার ডকুমেন্ট স্ক্যান করুন</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। অ্যাক্সেস করতে Search কীয়ের সাথে 'বাঁদিকের তীরচিহ্ন' একসাথে প্রেস করুন।</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ করা হয়েছে।</translation>
 <translation id="1473110567575736769">৩ সেকেন্ডের টাইমার</translation>
@@ -63,8 +65,10 @@
 <translation id="5057360777601936059">আপনার ক্যামেরা বর্তমানে উপলভ্য নেই।
         ক্যামেরা ঠিকভাবে কানেক্ট করা আছে কিনা দেখুন।</translation>
 <translation id="5152121255775685072">গ্যালারিতে যান</translation>
+<translation id="520537883758714667">এখন ডকুমেন্ট স্ক্যান করা উপলভ্য</translation>
 <translation id="5268823927180092501">সব ক্যামেরার জন্য 'ডকুমেন্ট মোড' চালু করুন</translation>
 <translation id="5422455049771430511">আপনার ফটো ও ভিডিও সেভ করার নতুন জায়গা</translation>
+<translation id="5444515100983837161">ডকুমেন্টের সমস্ত প্রান্ত ফ্রেমের মধ্যে রাখুন। ডকুমেন্ট ও ব্যাকগ্রাউন্ডের রং আলাদা হলে, স্ক্যানিং সবচেয়ে ভাল কাজ করে।</translation>
 <translation id="5671277269877808209">চৌকো</translation>
 <translation id="5753488212459587150">এক্সপার্ট মোড চালু করুন</translation>
 <translation id="5759254179196327752">ডকুমেন্ট স্ক্যান করুন</translation>

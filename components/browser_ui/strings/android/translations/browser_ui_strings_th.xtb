@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ที่เว็บไซต์ต่างๆ หรือแอปในหน้าจอหลักจัดเก็บไว้รวมทั้งสิ้น <ph name="DATASIZE" /></translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
-<translation id="1195941046451948919">คุณแน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์นี้</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1242008676835033345">ฝังอยู่ใน <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">หยุด</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">รายละเอียด</translation>
 <translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
-<translation id="4708011789095599544">คุณแน่ใจไหมว่าต้องการล้างคุกกี้และข้อมูลเว็บไซต์อื่นๆ สำหรับเว็บไซต์นี้</translation>
 <translation id="4751476147751820511">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
 <translation id="4836046166855586901">ถามเมื่อเว็บไซต์ต้องการทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="4883854917563148705">รีเซ็ตการตั้งค่าที่มีการจัดการไม่ได้</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">สั่น</translation>
 <translation id="6388207532828177975">ล้างข้อมูลและรีเซ็ต</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
-<translation id="6423924377271166037">ล้างคุกกี้</translation>
 <translation id="6439114592976064011">บล็อกเว็บไซต์ไม่ให้ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6527303717912515753">แชร์</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="913657688200966289">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
+<translation id="9162462602695099906">หน้านี้อันตราย</translation>
 <translation id="930525582205581608">เลิกจำเว็บไซต์นี้ใช่ไหม</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>
 </translationbundle>

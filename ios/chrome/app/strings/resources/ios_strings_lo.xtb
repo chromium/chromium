@@ -112,7 +112,6 @@
 <translation id="1989112275319619282">ເປີດ​ເບິ່ງ</translation>
 <translation id="2015722694326466240">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກ່ອນອື່ນທາງຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2021670401941426298">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
-<translation id="2022352537516230970">ສ້າງມາສຳລັບ iPhone ຂອງທ່ານ</translation>
 <translation id="2073572773299281212">ນຳໃຊ້ເມື່ອ <ph name="DAYS" /> ກ່ອນ</translation>
 <translation id="2074131957428911366">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
@@ -284,6 +283,7 @@
 <translation id="3691593122358196899">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_TITLE" /> ແລ້ວ</translation>
 <translation id="3709582977625132201">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="3740397331642243698">ເປີດ URL ທີ່ປ້ອນເຂົ້າໃນ Google Chrome ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
+<translation id="3762232513783804601">ສ້າງມາສຳລັບ iPad ຂອງທ່ານ</translation>
 <translation id="3771033907050503522">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
 <translation id="3775743491439407556">ການຊິ້ງຂໍ້ມູນໃຊ້ບໍ່ໄດ້</translation>
 <translation id="3779810277399252432">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
@@ -323,7 +323,6 @@
 <translation id="4172051516777682613">ສະ​ແດງ​ຢູ່ສະ​ເຫມີ​</translation>
 <translation id="418156467088430727">ເບິ່ງເວີຊັນອອບລາຍຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
-<translation id="4184011057600693970">ສ້າງມາສຳລັບ iPad ຂອງທ່ານ</translation>
 <translation id="424315890655130736">ປ້ອນວະລີຜ່ານ</translation>
 <translation id="4263576668337963058">ສະແດງຄຳສັ່ງໃນໜ້າທີ່ໃຊ້ໄດ້</translation>
 <translation id="4267380167363222949">ແຖບຕໍ່ໄປ</translation>
@@ -341,6 +340,7 @@
 <translation id="4389019817280890563">ແຕະເພື່ອປ່ຽນພາສາ.</translation>
 <translation id="4454246407045105932">ເພີ່ມພາສາ</translation>
 <translation id="4469418912670346607">ສືບຕໍ່ການຕັ້ງຄ່າ</translation>
+<translation id="4474494258097106883">ສ້າງມາສຳລັບ iPhone ຂອງທ່ານ</translation>
 <translation id="4476574785019001431">ການຕັ້ງຄ່າ</translation>
 <translation id="4496373720959965247">ເພີ່ມແຖບ ແລະ ປ່ຽນໄປມາລະຫວ່າງໜ້າຕ່າງໆ</translation>
 <translation id="4502566650163919158">ກວດເບິ່ງດຽວນີ້</translation>

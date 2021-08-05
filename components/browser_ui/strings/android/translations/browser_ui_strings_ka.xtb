@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">ამ მოქმედებით გასუფთავდება საიტების ან აპების მიერ თქვენს მთავარ ეკრანზე შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
-<translation id="1195941046451948919">ნამდვილად გსურთ, ამ ვებსაიტის ყველა ნებართვის გადაყენება?</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ში ჩაშენებული</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">დეტალები</translation>
 <translation id="4645575059429386691">იმართება თქვენი მშობლის მიერ</translation>
 <translation id="4670064810192446073">ვირტუალური რეალობა</translation>
-<translation id="4708011789095599544">ნამდვილად გსურთ ამ ვებსაიტის ქუქი-ჩანაწერებისა და სხვა მონაცემების გასუფთავება?</translation>
 <translation id="4751476147751820511">მოძრაობის ან განათების სენსორები</translation>
 <translation id="4836046166855586901">შეკითხვა, როცა საიტებს სურთ ამ მოწყობილობის აქტიურად გამოყენების შესახებ ინფორმაციის მიღება</translation>
 <translation id="4883854917563148705">მართული პარამეტრების გადაყენება ვერ მოხერხდება</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">ვიბრაცია</translation>
 <translation id="6388207532828177975">გასუფთავება &amp; აღდგენა</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
-<translation id="6423924377271166037">ქუქი-ჩანაწერების გასუფთავება</translation>
 <translation id="6439114592976064011">საიტებისთვის თქვენი ვირტუალური რეალობის მოწყობილობების/მონაცემების გამოყენების დაბლოკვა</translation>
 <translation id="6447842834002726250">ქუქი ფაილები</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-ისთვის ნებართვების გააქტიურება <ph name="BEGIN_LINK" />Android-ის პარამეტრებში<ph name="END_LINK" /> შეგიძლიათ.</translation>
+<translation id="9162462602695099906">ეს გვერდი სახიფათოა</translation>
 <translation id="930525582205581608">გსურთ ამ საიტის დავიწყება?</translation>
 <translation id="967624055006145463">შენახული მონაცემები</translation>
 </translationbundle>

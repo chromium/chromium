@@ -635,6 +635,7 @@
 <translation id="3229041911291329567">Інформація про версії пристрою та веб-переглядача</translation>
 <translation id="323107829343500871">Ввести код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Завжди виявляти важливий вміст на цьому сайті</translation>
+<translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="3249845759089040423">Чудовий</translation>
 <translation id="3252266817569339921">Французька</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову подію в Google Календарі</translation>
@@ -809,6 +810,7 @@
 <translation id="3793574014653384240">Кількість і причини останніх аварійних завершень роботи</translation>
 <translation id="3797522431967816232">Prc3 (конверт)</translation>
 <translation id="3799805948399000906">Запит на шрифт</translation>
+<translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3807366285948165054">Горизонтальне положення зображення</translation>
 <translation id="3807873520724684969">Заблоковано шкідливий вміст.</translation>
 <translation id="3810973564298564668">Змінити</translation>
@@ -823,6 +825,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити новий документ Google</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Оновити дату й час</translation>
+<translation id="3858860766373142691">Назва</translation>
 <translation id="3881478300875776315">Показати менше рядків</translation>
 <translation id="3884278016824448484">Конфліктуючий ідентифікатор пристрою</translation>
 <translation id="3885155851504623709">Цивільний округ</translation>
@@ -1457,6 +1460,7 @@
 <translation id="6051221802930200923">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки цей веб-сайт використовує закріплення сертифікатів. Помилки мережі й атаки зазвичай тимчасові, тому ця сторінка, скоріш за все, запрацює пізніше.</translation>
 <translation id="6051898664905071243">Кількість сторінок:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">Нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="6058977677006700226">Використовувати картки на всіх ваших пристроях?</translation>
 <translation id="6059925163896151826">Пристрої USB</translation>
 <translation id="6060009363608157444">Недійсний режим DnsOverHttps.</translation>
@@ -1534,6 +1538,7 @@
 <translation id="6389470377220713856">Ім’я на картці</translation>
 <translation id="6390200185239044127">Зігнути гармошкою посередині</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6391700400718590966">Закрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="6393956493820063117">Адміністратор заблокував можливість вставляти сюди контент зі сторінки <ph name="ORIGIN_NAME" /></translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="6401136357288658127">Це правило не підтримується. Натомість потрібно застосувати правило <ph name="NEW_POLICY" />.</translation>
@@ -2037,6 +2042,7 @@
 <translation id="8190193880870196235">Дозволом керує розширення</translation>
 <translation id="8193086767630290324">Дії з конфіденційними даними</translation>
 <translation id="8194797478851900357">&amp;Відмінити переміщення</translation>
+<translation id="8199274926193258625">Сайт <ph name="HOSTNAME" /> може виконати додаткові дії, щоб підтвердити ваш платіж</translation>
 <translation id="8201077131113104583">Недійсна URL-адреса для оновлення розширення з ідентифікатором "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Підсумок замовлення</translation>
 <translation id="8202370299023114387">Конфлікт</translation>

@@ -112,7 +112,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="2021670401941426298">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
-<translation id="2022352537516230970">Dibuat untuk iPhone Anda</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Lalu</translation>
 <translation id="2074131957428911366">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja.</translation>
 <translation id="2079545284768500474">Urungkan</translation>
@@ -289,8 +288,10 @@ Ikuti langkah di bawah:</translation>
 <translation id="3779810277399252432">Tidak ada koneksi internet.</translation>
 <translation id="3783017676699494206">Simpan Gambar</translation>
 <translation id="3789841737615482174">Instal</translation>
+<translation id="380329542618494757">Nama</translation>
 <translation id="3803696231112616155">Tawarkan untuk menerjemahkan situs ini</translation>
 <translation id="385051799172605136">Kembali</translation>
+<translation id="3858860766373142691">Nama</translation>
 <translation id="3892144330757387737">Histori Anda akan ditampilkan di sini</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Login ke Chrome</translation>
@@ -321,7 +322,6 @@ Ikuti langkah di bawah:</translation>
 <translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="418156467088430727">Tampilkan Versi Offline di Tab Baru</translation>
 <translation id="4181841719683918333">Bahasa</translation>
-<translation id="4184011057600693970">Dibuat untuk iPad Anda</translation>
 <translation id="424315890655130736">Masukkan Frasa Sandi</translation>
 <translation id="4263576668337963058">Tampilkan tindakan halaman yang tersedia</translation>
 <translation id="4267380167363222949">Tab Berikutnya</translation>

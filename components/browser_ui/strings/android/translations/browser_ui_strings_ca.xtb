@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Amb aquesta acció s'esborraran dades i galetes emmagatzemades pels llocs web o les aplicacions de la pantalla d'inici (<ph name="DATASIZE" />).</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
-<translation id="1195941046451948919">Confirmes que vols restablir tots els permisos per a aquest lloc web?</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1242008676835033345">Incrustada a <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Atura</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Detalls</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
-<translation id="4708011789095599544">Confirmes que vols esborrar les galetes i altres dades d'aquest lloc web?</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
 <translation id="4836046166855586901">Pregunta'm quan un lloc web vulgui saber quan estic utilitzant aquest dispositiu de manera activa</translation>
 <translation id="4883854917563148705">Les opcions de configuració gestionades no es poden restablir</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Vibració</translation>
 <translation id="6388207532828177975">Esborra i restableix</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
-<translation id="6423924377271166037">Esborra les galetes</translation>
 <translation id="6439114592976064011">Impedeix que els llocs web utilitzin les teves dades i el teu dispositiu de realitat virtual</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6527303717912515753">Comparteix</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
 <translation id="930525582205581608">Vols oblidar aquest lloc web?</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
 </translationbundle>

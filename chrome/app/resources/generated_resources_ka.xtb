@@ -32,7 +32,6 @@
 <translation id="1032605640136438169">გთხოვთ, გადახედოთ ახალ პირობებს</translation>
 <translation id="103279545524624934">Android აპების გასაშვებად, გამოათავისუფლეთ მეხსიერება დისკზე.</translation>
 <translation id="1033780634303702874">წვდომა თქვენს სერიულ მოწყობილობებზე</translation>
-<translation id="1034942643314881546">მიმდინარეობს ADB-ის ჩართვა აპების ილუსტრაციის შესაქმნელად</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1036511912703768636">წვდომა ამ რომელიმე USB მოწყობილობაზე</translation>
 <translation id="1036982837258183574">სრულეკრანიანი რეჟიმიდან გამოსასვლელად, დააჭირეთ კლავიშზე |<ph name="ACCELERATOR" />|</translation>
@@ -690,7 +689,6 @@
 <translation id="1721312023322545264">ამ საიტის მოსანახულებლად, <ph name="NAME" />-ის ნებართვა გჭირდებათ</translation>
 <translation id="1722460139690167654">თქვენი <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> იმართება<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" />-ის მიერ</translation>
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
-<translation id="1725149567830788547">ჩვენება &amp;კონტროლი</translation>
 <translation id="1725562816265788801">ჩანართებში გადაადგილება</translation>
 <translation id="1727662110063605623">Parallels Desktop-თან ან Linux-თან <ph name="USB_DEVICE_NAME" /> რომ დააკავშიროთ, გახსენით პარამეტრები</translation>
 <translation id="1729533290416704613">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Omnibox-ში ძიების დროს.</translation>
@@ -1228,6 +1226,7 @@
 <translation id="2278668501808246459">მიმდინარეობს კონტეინერების მმართველის გაშვება</translation>
 <translation id="2280486287150724112">მარჯვენა ზღვარი</translation>
 <translation id="2282146716419988068">GPU პროცესი</translation>
+<translation id="2285109769884538519">{COUNT,plural, =0{ყველას გახსნა ჩანართების ა&amp;ხალ ჯგუფში}=1{ჩანართების ა&amp;ხალ ჯგუფში გახსნა}other{{COUNT}-ვეს გახსნა ჩანართების ა&amp;ხალ ჯგუფში}}</translation>
 <translation id="2285942871162473373">თითის ანაბეჭდის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="2287944065963043964">შესვლის ეკრანი</translation>
 <translation id="2288181517385084064">ვიდეოს ჩამწერზე გადართვა</translation>
@@ -2659,6 +2658,7 @@
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
 <translation id="3799903419983101749">გააგრძელეთ იქიდან, სადაც შეჩერდით: პარამეტრებიდან შეგიძლიათ დააყენოთ აპების ავტომატური აღდგენა.</translation>
 <translation id="3800806661949714323">ყველას ჩვენება (რეკომენდებულია)</translation>
+<translation id="380329542618494757">სახელი</translation>
 <translation id="3803345858388753269">ვიდეოს ხარისხი</translation>
 <translation id="380408572480438692">ეფექტურობის მონაცემების შეგროვების ჩართვის შემთხვევაში თქვენ დაეხმარებით Google-ს სისტემის გაუმჯობესებაში. მონაცემები არ გაიგზავნება, სანამ არ გაგზავნით შეფასების მოხსენებას (Alt-Shift-I) ეფექტურობის მონაცემებით. შეგიძლიათ ნებისმიერ დროს გამორთოთ შეგროვების ფუნქცია ამ ფანჯარაში.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (გაფართოების ID „<ph name="EXTENSION_ID" />“) არ არის ნებადართული შესვლის ეკრანზე.</translation>
@@ -2720,6 +2720,7 @@
 <translation id="3856096718352044181">დაადასტურეთ პროვაიდერის სისწორე ან ცადეთ მოგვიანებით</translation>
 <translation id="3856800405688283469">აირჩიეთ დროის სარტყელი</translation>
 <translation id="3857807444929313943">აიღეთ თითი, შემდეგ კი ხელახლა შეეხეთ</translation>
+<translation id="3858860766373142691">სახელი</translation>
 <translation id="3861638017150647085">მომხმარებლის სახელი „<ph name="USERNAME" />“ მიუწვდომელია</translation>
 <translation id="3861977424605124250">გაშვებისას ჩვენება</translation>
 <translation id="386239283124269513">ჯგუფის &amp;აღდგენა</translation>
@@ -3003,6 +3004,7 @@
 <translation id="4158364720893025815">საშვი</translation>
 <translation id="4159681666905192102">ეს არის ანგარიში ბავშვებისათვის, რომელიც იმართება <ph name="CUSTODIAN_EMAIL" />-სა და <ph name="SECOND_CUSTODIAN_EMAIL" />-ს მიერ.</translation>
 <translation id="4163560723127662357">უცნობი კლავიატურა</translation>
+<translation id="4165942112764990069"><ph name="USER_EMAIL" /> არ ეკუთვნის სწორ ორგანიზაციას. დაუკავშირდით თქვენს ადმინისტრატორს. თუ ადმინისტრატორი ხართ, ორგანიზაციის დასაყენებლად გადადით მისამართზე g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">როგორც წესი, საიტების მიერ JavaScript გამოიყენება ისეთი ინტერაქტიური ფუნქციების საჩვენებლად, როგორიცაა, მაგალითად, ვიდეოთამაშები ან ვებ-ფორმები</translation>
 <translation id="4168015872538332605">გაგიზიარეთ ზოგიერთი პარამეტრი რომელიც.მიეკუთვნება <ph name="PRIMARY_EMAIL" />. ეს პარამეტრები იმოქმედებს თქვენს ანგარიშზე მხოლოდ მაშინ, როდესაც გამოყენებთ მრავლობით შესვლას.</translation>
 <translation id="4169535189173047238">აკრძალვა</translation>
@@ -3392,7 +3394,6 @@
 <translation id="4602466770786743961">ყოველთვის მიეცით ნება <ph name="HOST" />-ს, მიიღოს წვდომა თქვენს კამერასა და მიკროფონზე</translation>
 <translation id="4606551464649945562">საიტებისთვის თქვენი გარემოს 3-განზომილებიანი რუკის შექმნის ან კამერის პოზიციისთვის თვალის მიდევნების აკრძალვა</translation>
 <translation id="4608500690299898628">ძ&amp;ებნა…</translation>
-<translation id="4608520674724523647">წარმატებული რეგისტრაციის ილუსტრაცია</translation>
 <translation id="4608703838363792434"><ph name="FILE_NAME" /> შეიცავს სენსიტიურ კონტენტს</translation>
 <translation id="4609987916561367134">დაშვებულია JavaScript-ის გამოყენება</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-ს შეექმნა ხარვეზი</translation>
@@ -4029,11 +4030,11 @@
 <translation id="5315738755890845852">დამატებითი ფიგურული ფრჩხილი: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319359161174645648">Google გირჩევთ Chrome-ს</translation>
+<translation id="5319712128756744240">ახალი მოწყობილობის დაწყვილება</translation>
 <translation id="5320135788267874712">მოწყობილობის ახალი სახელი</translation>
 <translation id="532247166573571973">სერვერი შეიძლება მიუწვდომელი იყოს. ცადეთ მოგვიანებით.</translation>
 <translation id="5324300749339591280">აპების სია</translation>
 <translation id="5324780743567488672">თქვენი მდებარეობის გამოყენებით, დროის სარტყელის ავტომატური დაყენება</translation>
-<translation id="5327248766486351172">სახელი</translation>
 <translation id="5327570636534774768">ეს მოწყობილობა მონიშნულია სხვა დომენის მიერ მართვისთვის. დემო-რეჟიმის დაყენებამდე გააუქმეთ მისი უზრუნველყოფა აღნიშნული დომენიდან.</translation>
 <translation id="5327912693242073631">ფუნქციები, რომლებიც შეტყობინებებს საჭიროებს, არ იმუშავებს</translation>
 <translation id="532943162177641444">შეეხეთ შეტყობინებას თქვენს <ph name="PHONE_NAME" />-ზე, რათა შექმნათ უსადენო მობილური ქსელი, რომლითაც ეს მოწყობილობა ისარგებლებს.</translation>
@@ -4132,6 +4133,7 @@
 <translation id="5442550868130618860">ავტომატური განახლების ჩართვა</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">ამ ორგანიზაციის სერტიფიკატების ჩვენება</translation>
+<translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> ერთეული</translation>
 <translation id="5448293924669608770">შესვლისას პრობლემა წარმოიქმნა</translation>
 <translation id="5449551289610225147">პაროლი არასწორია</translation>
 <translation id="5449588825071916739">ყველა ჩანართის სანიშნეებში დამატება</translation>
@@ -4637,6 +4639,7 @@
 <translation id="6007240208646052708">ხმოვანი ძიება თქვენს ენაზე მიუწვდომელია.</translation>
 <translation id="6011193465932186973">თითის ანაბეჭდი</translation>
 <translation id="6011449291337289699">საიტის მონაცემების გასუფთავება</translation>
+<translation id="6011908034087870826"><ph name="DEVICE_NAME" />-ზე იგზავნება ბმული</translation>
 <translation id="6013027779243312217">დაურთეთ სუბტიტრები თქვენს აუდიოსა და ვიდეოს</translation>
 <translation id="6015796118275082299">წელი</translation>
 <translation id="6016178549409952427">დამატებით კონტენტზე <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან გადასვლა</translation>
@@ -4815,6 +4818,7 @@
 <translation id="6208725777148613371">ვერ შეინახა შემდეგში „<ph name="WEB_DRIVE" />“ — <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">კომპონენტების განახლება</translation>
 <translation id="6209908325007204267">თქვენს მოწყობილობას მოჰყვება Chrome Enterprise-ზე განახლება, თუმცა თქვენი მომხმარებლის სახელი არ არის დაკავშირებული კორპორაციულ ანგარიშთან. კორპორაციული ანგარიშის შესაქმნელად სხვა მოწყობილობიდან გადადით შემდეგ მისამართზე: g.co/ChromeEnterpriseAccount.</translation>
+<translation id="621172521139737651">{COUNT,plural, =0{ყველას გახსნა ჩანართების ა&amp;ხალ ჯგუფში}=1{ჩანართების ა&amp;ხალ ჯგუფში გახსნა}other{{COUNT}-ვეს გახსნა ჩანართების ა&amp;ხალ ჯგუფში}}</translation>
 <translation id="6212039847102026977">ქსელის დამატებითი მახასიათებლების ჩვენება</translation>
 <translation id="6212168817037875041">ეკრანის გამორთვა</translation>
 <translation id="6212752530110374741">ბმულის ელფოსტით გაგზავნა</translation>
@@ -5065,7 +5069,6 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ფაილი</translation>
 <translation id="6469557521904094793">ფიჭური ქსელის ჩართვა</translation>
 <translation id="6472893788822429178">საწყისი გვერდის ღილაკის ჩვენება</translation>
-<translation id="6473842110411557830">Powerwash-ის ილუსტრაცია</translation>
 <translation id="6474498546677193336">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Linux-ის მომდევნო გათიშვისას.</translation>
 <translation id="6474884162850599008">Google Drive ანგარიშთან კავშირის გაწყვეტა</translation>
 <translation id="6475294023568239942">გაათავისუფლეთ მეხსიერება დისკზე, ან შეცვალეთ Linux-ის დისკის ზომა პარამეტრებიდან</translation>
@@ -5273,7 +5276,6 @@
 <translation id="6700480081846086223"><ph name="HOST_NAME" />-ის ტრანსლირება</translation>
 <translation id="6701535245008341853">პროფილის მიღება ვერ მოხერხდა.</translation>
 <translation id="6702639462873609204">&amp;რედაქტირება...</translation>
-<translation id="6703966911896067184">რეგისტრაციის შეცდომის ილუსტრაცია</translation>
 <translation id="6706210727756204531">არეალი</translation>
 <translation id="6707389671160270963">SSL კლიენტის სერთიფიკატი</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> და 1 სხვა ჩანართი}other{<ph name="PAGE_TITLE" /> და # სხვა ჩანართი}}</translation>
@@ -5653,6 +5655,7 @@
 <translation id="7109543803214225826">მალსახმობი ამოშლილია</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართების დამატება ჯგუფში}}</translation>
 <translation id="7111822978084196600">დაარქვით სახელი ამ ფანჯარას</translation>
+<translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> ერთეული</translation>
 <translation id="7113502843173351041">ეცოდინება თქვენი ელფოსტის მისამართი</translation>
 <translation id="7114054701490058191">პაროლები არ ემთხვევა</translation>
 <translation id="7114648273807173152">თქვენს Google ანგარიშში Smart Lock-ის მეშვეობით შესასვლელად გადადით აქ: პარამეტრები &gt; დაკავშირებული მოწყობილობები &gt; თქვენი ტელეფონი &gt; Smart Lock.</translation>
@@ -5816,7 +5819,6 @@
 <translation id="7307129035224081534">დაპაუზებულია</translation>
 <translation id="7308436126008021607">ფონური სინქრონიზაცია</translation>
 <translation id="7308643132139167865">ვებსაიტების ენები</translation>
-<translation id="7309257895202129721">ჩვენება &amp;კონტროლი</translation>
 <translation id="7310598146671372464">შესვლა ვერ მოხერხდა. Kerberos დაშიფვრის მითითებული ტიპები მხარდაუჭერელია სერვერის მიერ. დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="7320213904474460808">ნაგულისხმევი ქსელი</translation>
 <translation id="7321545336522791733">სერვერი მიუწვდომელია</translation>
@@ -6897,6 +6899,7 @@
 <translation id="8425492902634685834">ამოცანათა ზოლზე დამაგრება</translation>
 <translation id="8425768983279799676">PIN-კოდის მეშვეობით შეგიძლიათ თქვენი მოწყობილობის განბლოკვა.</translation>
 <translation id="8426713856918551002">მიმდინარეობს ჩართვა</translation>
+<translation id="8427213022735114808">ნებისმიერი ტექსტური ველის ხმით შესავსებად თქვენი ხმა კარნახის ფუნქციის მიერ გაიგზავნება Google-ში.</translation>
 <translation id="8427292751741042100">ჩაშენებული ნებისმიერ ჰოსტზე</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8428271547607112339">სასწავლებლის ანგარიშის დამატება</translation>
@@ -6916,7 +6919,6 @@
 <translation id="8448729345478502352">ეკრანზე ერთეულების დაპატარავება ან გადიდება</translation>
 <translation id="8449008133205184768">ჩასმა და შედარების სტილი</translation>
 <translation id="8449036207308062757">მეხსიერების მართვა</translation>
-<translation id="8455026683977728932">ADB ილუსტრაცია ვერ ჩაირთო</translation>
 <translation id="8456512334795994339">იპოვეთ აპები სამსახურისთვის და გასართობად</translation>
 <translation id="8456761643544401578">ავტომატური მუქი რეჟიმი</translation>
 <translation id="845702320058262034">დაკავშირება ვერ მოხერხდა. დარწმუნდით, რომ თქვენს ტელეფონზე ჩართულია Bluetooth.</translation>
@@ -7616,7 +7618,6 @@
 <translation id="917510707618656279">საიტების მიერ Bluetooth მოწყობილობებზე წვდომის მოთხოვნა</translation>
 <translation id="9176476835295860688">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ეს მოწყობილობა ამჟამად ავტომატურად უგზავნის Google-ს დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემებს. აღნიშნული მონაცემები დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. ეს <ph name="BEGIN_LINK1" />პარამეტრი<ph name="END_LINK1" /> არის იძულებით გააქტიურებული მფლობელის მიერ. თუ ჩართული გაქვთ ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს თქვენს Google ანგარიშში. <ph name="BEGIN_LINK2" />შეიტყვეთ მეტი<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> — დაკავშირებულია Bluetooth მოწყობილობა</translation>
-<translation id="9176817945195089764"><ph name="DOMAIN" /> არ არის სწორი ორგანიზაცია. დაუკავშირდით თქვენს ადმინისტრატორს. თუ ადმინისტრატორი ხართ, ორგანიზაციის დასაყენებლად გადადით მისამართზე g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">შესვლის ეკრანის მომხმარებლის სახელი</translation>
 <translation id="9180281769944411366">მიმდინარეობს Linux კონტეინერის გაშვება, რასაც შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="9180380851667544951">საიტს შეუძლია თქვენი ეკრანის გაზიარება</translation>

@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">Latenza DNS</translation>
 <translation id="123124571410524056">Portale sospetto</translation>
 <translation id="1238612778414822719">Latenza HTTPS</translation>
+<translation id="1264369926465113395">Dai un'occhiata alla nuova rivista digitale di Chromebook per i creator</translation>
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">Posiziona il documento sullo scanner e seleziona Scansiona per iniziare</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
-<translation id="2983662233540284543">Impara da un creatore di giochi, ricevi app per la progettazione di giochi e tanto altro ancora</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3540383942695635079">Indirizzo MAC</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
+<translation id="3582041541988388905">Nessuna connessione <ph name="NETWORK_NAME" /> rilevata</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Cancella tutta la cronologia</translation>
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3838338534323494292">Nuova password</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Condizioni batteria</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
-<translation id="519607504553633437">Progetta e realizza i tuoi giochi</translation>
 <translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
 Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -246,7 +247,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5691511426247308406">Famiglia</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Crea il tuo gioco</translation>
 <translation id="5760715441271661976">Stato portale</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
@@ -296,6 +296,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
 <translation id="6574762126505704998">Riempi</translation>
+<translation id="6579235177984085399">Scopri nuovi strumenti per il design e il disegno</translation>
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6603230386432466813">Hai problemi di connessione?</translation>
 <translation id="6618744767048954150">In corso</translation>
@@ -375,7 +376,9 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8214184102975786227">Scansiona più pagine creando un solo PDF</translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
 <translation id="8246209727385807362">Operatore sconosciuto</translation>
+<translation id="8286154143153872371">Connettiti a una rete e ricarica la pagina per visualizzare lo sfondo.</translation>
 <translation id="8291967909914612644">Paese del provider principale</translation>
+<translation id="829270796093605079">Strumenti per il design</translation>
 <translation id="8294431847097064396">Origine</translation>
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>

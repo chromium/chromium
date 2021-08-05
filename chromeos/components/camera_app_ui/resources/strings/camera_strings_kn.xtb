@@ -3,6 +3,8 @@
 <translationbundle lang="kn">
 <translation id="1175958423215084756">ಲಿಂಕ್ ಪತ್ತೆಯಾಗಿದೆ. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ಗ್ಯಾಲರಿ ಚಿತ್ರಗಳು</translation>
+<translation id="1300209025925956156">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ಪ್ರವೇಶಿಸಲು Search +ಲೆಫ್ಟ್ ಆ್ಯರೋ.</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ಅನ್‌ಪ್ಲಗ್ ಆಗಿದೆ.</translation>
 <translation id="1473110567575736769">3 ಸೆಕೆಂಡುಗಳ ಟೈಮರ್</translation>
@@ -63,8 +65,10 @@
 <translation id="5057360777601936059">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ.
         ಕ್ಯಾಮರಾ ಸರಿಯಾಗಿ ಸಂಪರ್ಕಗೊಂಡಿದೆಯೇ ಎಂಬುದನ್ನು ಪರೀಕ್ಷಿಸಿ.</translation>
 <translation id="5152121255775685072">ಗ್ಯಾಲರಿಗೆ ಹೋಗಿ</translation>
+<translation id="520537883758714667">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನಿಂಗ್ ಈಗ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5268823927180092501">ಎಲ್ಲಾ ಕ್ಯಾಮರಾಗಳಲ್ಲಿ ಡಾಕ್ಯುಮೆಂಟ್ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5422455049771430511">ನಿಮ್ಮ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು ಹೊಸ ಹೋಮ್ ಅನ್ನು ಹೊಂದಿವೆ</translation>
+<translation id="5444515100983837161">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ. ಡಾಕ್ಯುಮೆಂಟ್ ಮತ್ತು ಹಿನ್ನೆಲೆ ವಿಭಿನ್ನ ಬಣ್ಣಗಳಾಗಿದ್ದರೆ ಸ್ಕ್ಯಾನಿಂಗ್ ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="5671277269877808209">ಚೌಕ</translation>
 <translation id="5753488212459587150">ತಜ್ಞರ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5759254179196327752">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>

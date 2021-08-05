@@ -619,6 +619,7 @@
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
+<translation id="5867217927013474703">Се прибираат податоци за мрежата</translation>
 <translation id="5876666360658629066">Внесете го кодот на родител</translation>
 <translation id="5881540930187678962">Поставете ја Phone Hub подоцна</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -693,6 +694,7 @@
 <translation id="6482559668224714696">Лупа за цел екран</translation>
 <translation id="6490471652906364588">USB-Ц уред (десна порта)</translation>
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
+<translation id="6500818810472529210">Види го резултатот во „Пребарување на Google“</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Изберете прозорец за да сликате</translation>
 <translation id="652139407789908527">Вашиот екран ќе остане затемнет подолго од вообичаено (до една минута) при ова ажурирање. Не притискајте го копчето за вклучување додека ажурирањето е во тек.</translation>
@@ -937,7 +939,6 @@
 <translation id="8413272770729657668">Снимањето започнува за 3, 2, 1</translation>
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8426708595819210923">Добровечер <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">Диктирањето го испраќа вашиот глас во Google за да се дозволи пишување со глас во кое било поле за текст.</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8433186206711564395">Мрежни поставки</translation>
 <translation id="8433977262951327081">Кратенката за прикажување на балончето со мени со опции за внесување на полицата се промени. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,6 +992,7 @@
 <translation id="8818320199597151042">Се отстранува профилот. Почекајте неколку минути.</translation>
 <translation id="8825863694328519386">Повлечете одлево за да се вратите назад</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Може да го прекинете евидентирањето на пресретнатиот пакет во секое време.</translation>
 <translation id="8841375032071747811">Копче за назад</translation>
 <translation id="8843682306134542540">Заклучи/отклучи ротација. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Пребарај+Esc</translation>

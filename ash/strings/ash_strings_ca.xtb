@@ -618,6 +618,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
+<translation id="5867217927013474703">S'està recollint informació de les xarxes</translation>
 <translation id="5876666360658629066">Introdueix el codi parental</translation>
 <translation id="5881540930187678962">Configura El meu telèfon més tard</translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -692,6 +693,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositiu USB-C (port dret)</translation>
 <translation id="649452524636452238">PIN de la targeta intel·ligent</translation>
+<translation id="6500818810472529210">Consulta el resultat a la Cerca de Google</translation>
 <translation id="6501401484702599040">S'està emetent la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
 <translation id="652139407789908527">Durant l'actualització, la pantalla es quedarà en blanc més temps del que és habitual (fins a un minut). No premis el botó d'engegada fins que no acabi.</translation>
@@ -936,7 +938,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8426708595819210923">Bon vespre, <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">El dictat envia la teva veu a Google per permetre l'escriptura per veu en qualsevol camp de text.</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8433977262951327081">La drecera per mostrar el quadre d'ajuda amb el menú d'opcions d'introducció al prestatge ha canviat. Fes servir <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
@@ -990,6 +991,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8818320199597151042">S'està suprimint el perfil. Espera uns minuts.</translation>
 <translation id="8825863694328519386">Llisca des de l'esquerra per tornar enrere</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Pots aturar la captura de paquets en qualsevol moment.</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>

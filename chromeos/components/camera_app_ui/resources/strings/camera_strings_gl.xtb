@@ -3,6 +3,8 @@
 <translationbundle lang="gl">
 <translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imaxes da galería</translation>
+<translation id="1300209025925956156">Escanea o teu documento</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Para acceder a eles, preme Buscar + Frecha esquerda.</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">Desconectouse a cámara <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -63,8 +65,10 @@
 <translation id="5057360777601936059">A cámara non está dispoñible nestes momentos.
         Comproba se está conectada correctamente.</translation>
 <translation id="5152121255775685072">Ir á galería</translation>
+<translation id="520537883758714667">O escaneado de documentos xa está dispoñible</translation>
 <translation id="5268823927180092501">Activar modo de documento en todas as cámaras</translation>
 <translation id="5422455049771430511">As túas fotos e vídeos cambiaron de lugar</translation>
+<translation id="5444515100983837161">Coloca todos os bordos do documento no marco. O escaneado funciona mellor se o documento e o fondo son de cores diferentes.</translation>
 <translation id="5671277269877808209">Cadrado</translation>
 <translation id="5753488212459587150">Activar modo experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>

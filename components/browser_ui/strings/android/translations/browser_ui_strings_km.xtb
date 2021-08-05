@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">សកម្មភាពនេះនឹង​សម្អាតទិន្នន័យ និងខូគីទំហំ <ph name="DATASIZE" /> ដែលគេហទំព័រ ឬកម្មវិធី​បានរក្សាទុក​នៅលើ​អេក្រង់ដើម​របស់អ្នក។</translation>
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
-<translation id="1195941046451948919">តើ​អ្នក​ប្រាកដថា​ចង់​កំណត់​ការអនុញ្ញាត​ទាំងអស់​ឡើងវិញ​សម្រាប់​គេហទំព័រ​នេះ​ដែរទេ?</translation>
 <translation id="1201402288615127009">បន្ទាប់</translation>
 <translation id="1242008676835033345">បានបង្កប់​នៅលើ <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">ឈប់</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">ព័ត៌មាន​លម្អិត</translation>
 <translation id="4645575059429386691">គ្រប់គ្រងដោយឪពុកម្តាយរបស់អ្នក</translation>
 <translation id="4670064810192446073">VR</translation>
-<translation id="4708011789095599544">តើអ្នក​ពិតជាចង់​សម្អាតខូគី និងទិន្នន័យគេហទំព័រផ្សេងទៀតសម្រាប់គេហទំព័រនេះមែនឬ?</translation>
 <translation id="4751476147751820511">ឧបករណ៍​ចាប់​សញ្ញាពន្លឺ ឬ​ចលនា</translation>
 <translation id="4836046166855586901">សួរ​នៅពេល​គេហទំព័រ​ចង់ដឹងអំពីពេលវេលាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះយ៉ាងសកម្ម</translation>
 <translation id="4883854917563148705">មិនអាច​កំណត់​ការកំណត់​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង​ឡើងវិញ​បានទេ</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">ញ័រ</translation>
 <translation id="6388207532828177975">ជម្រះ និងកំណត់ឡើងវិញ</translation>
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
-<translation id="6423924377271166037">សម្អាត​ខូគី</translation>
 <translation id="6439114592976064011">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ប្រើទិន្នន័យ និង​ឧបករណ៍ VR របស់អ្នក</translation>
 <translation id="6447842834002726250">ខុកឃី</translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}}</translation>
 <translation id="913657688200966289">បើក​ការអនុញ្ញាត​សម្រាប់ <ph name="APP_NAME" /> នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" />។</translation>
+<translation id="9162462602695099906">ទំព័រនេះ​មានគ្រោះថ្នាក់</translation>
 <translation id="930525582205581608">បំភ្លេច​គេហទំព័រនេះឬ?</translation>
 <translation id="967624055006145463">​ទិន្នន័យដែល​បាន​រក្សា​ទុក</translation>
 </translationbundle>

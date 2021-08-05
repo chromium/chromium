@@ -158,6 +158,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Kutafuta kwenye intaneti</translation>
 <translation id="2056878612599315956">Tovuti imesimamishwa</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{Imeshindwa kupakua faili 1}other{Imeshindwa kupakua faili #}}</translation>
 <translation id="2067805253194386918">maandishi</translation>
 <translation id="2068748236079642969">Tazama video inayofuata</translation>
 <translation id="2074143993849053708">Kiolesura cha idhini ya kutafuta kwa kutamka kupitia programu ya Mratibu kimefungwa</translation>
@@ -195,7 +196,6 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="2276696007612801991">Ingia katika akaunti yako ya Google ili uangalie manenosiri yako</translation>
 <translation id="2278052315791335171">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Anwani ya kutoza</translation>
-<translation id="2294030144029925122">Sera ya Faragha ya Chrome</translation>
 <translation id="230115972905494466">Haikupata vifaa vyovyote vinavyooana</translation>
 <translation id="230155349749732438">Ili uweze kutumia mipangilio hii, ni lazima uwashe kipengele cha <ph name="BEGIN_LINK" />Kuboresha utafutaji na kuvinjari<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Gusa ili upige simu</translation>
@@ -213,6 +213,7 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="2345671828921229300">Ili utafute, gusa na ushikilie neno</translation>
 <translation id="2349710944427398404">Jumla ya data iliyotumiwa na Chrome, ikiwa ni pamoja na akaunti, alamisho na mipangilio iliyohifadhiwa</translation>
 <translation id="2353636109065292463">Inaangalia muunganisho wako wa intaneti</translation>
+<translation id="235789365079050412">Sera ya Faragha ya Google</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2369533728426058518">vichupo vilivyofunguliwa</translation>
 <translation id="2386938421315164605">Ficha na uonyeshe mada</translation>
@@ -314,6 +315,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="2979025552038692506">Kichupo Fiche Kilichochaguliwa</translation>
 <translation id="2979448359891869301">Huwezi kuendeleza picha ya skrini. Jaribu tena wakati simu yako haitumiki.</translation>
 <translation id="2979639724566107830">Fungua katika dirisha jipya</translation>
+<translation id="2981364137500752533">Unaweza kuwa na hadi madirisha matano.</translation>
 <translation id="2987620471460279764">Maandishi yaliyoshirikiwa kutoka kifaa kingine</translation>
 <translation id="2989523299700148168">Ulizotembelea hivi karibuni</translation>
 <translation id="2992473221983447149">Maelezo ya picha</translation>
@@ -445,6 +447,7 @@ Teknolojia ya Utaratibu wa kuwekea vikwazo vya faragha bado inaendelea kutengene
 <translation id="3819178904835489326">Vipakuliwa <ph name="NUMBER_OF_DOWNLOADS" /> vimefutwa</translation>
 <translation id="3845098929839618392">Fungua katika kichupo fiche</translation>
 <translation id="3856096718352044181">Tafadhali thibitisha kuwa huyu ni mtoa huduma sahihi au ujaribu tena baadaye</translation>
+<translation id="3858860766373142691">Jina</translation>
 <translation id="3861633093716975811">Video maarufu</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="3894427358181296146">Ongeza folda</translation>
@@ -980,6 +983,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7187993566681480880">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti.</translation>
 <translation id="718926126787620637">Orodha ya folda za alamisho imefunguliwa kwenye skrini nzima</translation>
 <translation id="7191430249889272776">Kichupo kimefunguliwa chini chini.</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{Inasubiri kupakua faili 1}other{Inasubri kupakua faili #}}</translation>
 <translation id="7233236755231902816">Ili uone tovuti katika lugha unayotumia, pata toleo jipya la Chrome</translation>
 <translation id="7242755609445462077">Maandishi yaliyoangaziwa yenye mitindo <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Hakikisha kuwa umewasha kipengele cha usawazishaji katika <ph name="TARGET_DEVICE_NAME" /> kwenye Chrome</translation>
@@ -1175,7 +1179,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8354977102499939946">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, nenda kwenye Mipangilio.</translation>
 <translation id="835847953965672673">Umerejesha vipakuliwa <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Ona tovuti maarufu</translation>
-<translation id="8372925856448695381"><ph name="LANG" /> iko tayari.</translation>
 <translation id="8387617938027387193">Thibitisha kuwa ni wewe</translation>
 <translation id="8393700583063109961">Tuma ujumbe</translation>
 <translation id="8410695015584479363">Fuatilia bei</translation>

@@ -112,7 +112,6 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="2021670401941426298">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
-<translation id="2022352537516230970">Vytvořeno pro iPhone</translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
@@ -289,8 +288,10 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="3779810277399252432">Nejste připojeni k internetu</translation>
 <translation id="3783017676699494206">Uložit obrázek</translation>
 <translation id="3789841737615482174">Instalovat</translation>
+<translation id="380329542618494757">Název</translation>
 <translation id="3803696231112616155">Nabízet překlad tohoto webu</translation>
 <translation id="385051799172605136">Zpět</translation>
+<translation id="3858860766373142691">Název</translation>
 <translation id="3892144330757387737">Zde najdete svou historii</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3913386780052199712">Jste přihlášeni do Chromu jako</translation>
@@ -321,7 +322,6 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="4172051516777682613">Vždy zobrazovat</translation>
 <translation id="418156467088430727">Zobrazit offline verzi na nové kartě</translation>
 <translation id="4181841719683918333">Jazyky</translation>
-<translation id="4184011057600693970">Vytvořeno pro iPad</translation>
 <translation id="424315890655130736">Zadání heslové fráze</translation>
 <translation id="4263576668337963058">Zobrazit dostupné akce stránky</translation>
 <translation id="4267380167363222949">Další karta</translation>

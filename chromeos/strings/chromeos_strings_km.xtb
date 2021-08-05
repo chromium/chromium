@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">ការពន្យារ DNS</translation>
 <translation id="123124571410524056">បានសន្មតថាជាច្រក</translation>
 <translation id="1238612778414822719">ការពន្យារ HTTPS</translation>
+<translation id="1264369926465113395">ពិនិត្យមើល​ទស្សនាវដ្ដី​ឌីជីថលថ្មី​របស់ Chromebook សម្រាប់​អ្នកបង្កើត</translation>
 <translation id="1270369111467284986">បានសន្មតថាជាច្រកចូលប្រើបណ្ដាញ</translation>
 <translation id="1290331692326790741">សេវាខ្សោយ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">ដាក់​ឯកសារ​របស់អ្នក​នៅលើ​ម៉ាស៊ីនស្កេន រួច​ជ្រើសរើស "ស្កេន" ដើម្បី​ចាប់ផ្ដើម</translation>
 <translation id="2872961005593481000">បិទ</translation>
 <translation id="2878387241690264070">បានឈប់សាកថ្ម <ph name="RATE" /> ក្នុងរយៈពេល <ph name="NUM_SECONDS" /> វិនាទី។</translation>
-<translation id="2983662233540284543">ស្វែងយល់ពី​អ្នកបង្កើតហ្គេម យកកម្មវិធីរចនាហ្គេម និងអ្វីៗ​ជាច្រើនទៀត</translation>
 <translation id="3008341117444806826">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">នៅសល់ប្រហែល <ph name="MIN_REMAINING" /> នាទីទៀត</translation>
 <translation id="3540383942695635079">អាសយដ្ឋាន MAC</translation>
 <translation id="357889014807611375">Wi-Fi តាមកម្រិត</translation>
+<translation id="3582041541988388905">រកមិនឃើញ​ការតភ្ជាប់ <ph name="NETWORK_NAME" /> ទេ</translation>
 <translation id="3595596368722241419">ថ្មពេញ</translation>
 <translation id="360565022852130722">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP 802.1x ប្រូតូកូលខ្សោយ</translation>
 <translation id="3689839747745352263">តេស្ត <ph name="TEST_NAME" /></translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">សម្អាត​ប្រវត្តិ​ទាំងអស់</translation>
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
 <translation id="3838338534323494292">ពាក្យសម្ងាត់ថ្មី</translation>
+<translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
 <translation id="3941014780699102620">មិនអាចដោះស្រាយម៉ាស៊ីនបានទេ</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">មេម៉ូរី</translation>
 <translation id="5168185087976003268">គុណភាព​ថ្ម</translation>
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
-<translation id="519607504553633437">រចនា និងបង្កើតហ្គេម​របស់អ្នក</translation>
 <translation id="5212543919916444558">ខ្ញុំរកមិនឃើញអ្វីដែលខ្ញុំអាចជួយបាននៅលើអេក្រង់របស់អ្នកទេ។ សាកល្បងចុចមីក្រូហ្វូន ដើម្បីសួរខ្ញុំអំពីអ្វីម្យ៉ាង។</translation>
 <translation id="5222676887888702881">ចាកចេញ</translation>
 <translation id="5252456968953390977">រ៉ូមីង</translation>
@@ -245,7 +246,6 @@
 <translation id="5691511426247308406">គ្រួសារ</translation>
 <translation id="5701381305118179107">កណ្តាល</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> នៃ <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">បង្កើត​ហ្គេមរបស់អ្នក</translation>
 <translation id="5760715441271661976">ស្ថានភាពច្រក</translation>
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
@@ -295,6 +295,7 @@
 <translation id="65587193855025101">ផ្ទៃ​កញ្ចក់</translation>
 <translation id="6564646048574748301">មិនបានសម្រេច - ​​មិនអាចភ្ជាប់​ម៉ាស៊ីនបោះពុម្ព​បាន</translation>
 <translation id="6574762126505704998">បំពេញ</translation>
+<translation id="6579235177984085399">ស្វែងយល់​អំពីឧបករណ៍​រចនា និង​គូរថ្មី</translation>
 <translation id="6596816719288285829">អាសយដ្ឋាន IP</translation>
 <translation id="6603230386432466813">មានបញ្ហា​ក្នុងការភ្ជាប់​មែនទេ?</translation>
 <translation id="6618744767048954150">កំពុងដំណើរការ</translation>
@@ -374,7 +375,9 @@
 <translation id="8214184102975786227">ស្កេនទំព័រច្រើន​ទៅជា PDF មួយ</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
 <translation id="8246209727385807362">ក្រុមហ៊ុនបម្រើសេវាទូរសព្ទ​ដែលមិនស្គាល់</translation>
+<translation id="8286154143153872371">សូមភ្ជាប់​បណ្ដាញ រួចផ្ទុកទំព័រ​ឡើងវិញ ដើម្បីមើល​ផ្ទាំងរូបភាព។</translation>
 <translation id="8291967909914612644">ប្រទេសនៃអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>
+<translation id="829270796093605079">ស្វែងយល់​អំពីឧបករណ៍​រចនា</translation>
 <translation id="8294431847097064396">ប្រភព</translation>
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8302368968391049045">ជញ្ជាំងភ្លើង HTTPS</translation>

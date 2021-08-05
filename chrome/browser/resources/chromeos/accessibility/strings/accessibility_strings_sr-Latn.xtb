@@ -425,6 +425,7 @@
 <translation id="3813387282697781382">Svetlocrvena</translation>
 <translation id="3816633764618089385">Sledeća medijska datoteka</translation>
 <translation id="3840823741487267909">Skraćenica</translation>
+<translation id="3841319830220785495">Podrazumevani prirodan glas</translation>
 <translation id="385383972552776628">Otvaranje stranice opcija</translation>
 <translation id="3856075812838139784">Samo za čitanje</translation>
 <translation id="3857141338659865495">Srednja tirkizna</translation>
@@ -982,6 +983,7 @@
 <translation id="7968340748835037139">Tamnozelena</translation>
 <translation id="7972507042926081808">Čokoladna</translation>
 <translation id="7974390230414479278">Stavka menija</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> glas <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">Reči</translation>
 <translation id="8004512796067398576">Povećanje</translation>
 <translation id="8007540374018858731">h3</translation>

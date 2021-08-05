@@ -158,6 +158,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /><ph name="SEPARATOR" /><ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Търсене в интернет</translation>
 <translation id="2056878612599315956">Сайтът е на пауза</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно}other{# изтегляния не бяха успешни}}</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Гледане на следващия видеоклип</translation>
 <translation id="2074143993849053708">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е затворен</translation>
@@ -195,7 +196,6 @@
 <translation id="2276696007612801991">Влезте в профила си в Google, за да бъдат проверени паролите ви</translation>
 <translation id="2278052315791335171">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адрес за фактуриране</translation>
-<translation id="2294030144029925122">Декларация за поверителност на Chrome</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
 <translation id="230155349749732438">За да използвате тази настройка, функцията <ph name="BEGIN_LINK" />Подобряване на търсенията и сърфирането<ph name="END_LINK" /> трябва да е включена</translation>
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
@@ -213,6 +213,7 @@
 <translation id="2345671828921229300">За да търсите, докоснете и задръжте дума</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
 <translation id="2353636109065292463">Връзката с интернет се проверява</translation>
+<translation id="235789365079050412">Декларация за поверителност на Google</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2369533728426058518">отваряне на раздели</translation>
 <translation id="2386938421315164605">Скриване и показване на теми</translation>
@@ -314,6 +315,7 @@
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2979448359891869301">Екранната снимка не може да се разшири. Опитайте отново, когато телефонът не се използва за други цели.</translation>
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
+<translation id="2981364137500752533">Можете да отворите до 5 прозореца.</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2992473221983447149">Описания на изображенията</translation>
@@ -445,6 +447,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
 <translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
+<translation id="3858860766373142691">Име</translation>
 <translation id="3861633093716975811">Популярни видеоклипове</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3894427358181296146">Добавяне на папка</translation>
@@ -980,6 +983,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7187993566681480880">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="718926126787620637">Списъкът с папките с отметки е отворен на пълната височина</translation>
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
 <translation id="7233236755231902816">За да виждате съдържанието в мрежата на своя език, изтеглете най-новата версия на Chrome</translation>
 <translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
@@ -1175,7 +1179,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8354977102499939946">Бързо търсене с гласа ви. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
 <translation id="8364299278605033898">Вижте популярните уебсайтове</translation>
-<translation id="8372925856448695381">Пакетът за <ph name="LANG" /> е готов.</translation>
 <translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8410695015584479363">Следене на цени</translation>

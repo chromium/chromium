@@ -32,7 +32,6 @@
 <translation id="1032605640136438169">Азнаёмцеся з новымі ўмовамі</translation>
 <translation id="103279545524624934">Каб запускаць праграмы Android, вызваліце месца на дыску.</translation>
 <translation id="1033780634303702874">Доступ да паслядоўных прылад</translation>
-<translation id="1034942643314881546">Уключэнне ADB для стварэння ілюстрацый для праграм</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1036511912703768636">Доступ да любой з гэтых прылад USB</translation>
 <translation id="1036982837258183574">Націсніце "<ph name="ACCELERATOR" />", каб выйсці з поўнаэкраннага рэжыму</translation>
@@ -693,7 +692,6 @@
 <translation id="1721312023322545264">Каб наведаць гэты сайт, вам патрабуецца дазвол ад карыстальніка <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
-<translation id="1725149567830788547">Паказаць &amp;элементы кіравання</translation>
 <translation id="1725562816265788801">Прагортка ўкладак</translation>
 <translation id="1727662110063605623">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />" да Parallels Desktop або Linux, адкрыйце Налады</translation>
 <translation id="1729533290416704613">Таксама вызначае, якая старонка паказваецца пры пошуку ў амнібоксе.</translation>
@@ -1231,6 +1229,7 @@
 <translation id="2278668501808246459">Запускаецца менеджар кантэйнераў</translation>
 <translation id="2280486287150724112">Правае поле</translation>
 <translation id="2282146716419988068">Працэс GPU</translation>
+<translation id="2285109769884538519">{COUNT,plural, =0{Адкрыць усе ў новай групе ўкладак}=1{Адкрыць у новай групе ўкладак}one{Адкрыць усе ({COUNT}) у новай групе ўкладак}few{Адкрыць усе ({COUNT}) у новай групе ўкладак}many{Адкрыць усе ({COUNT}) у новай групе ўкладак}other{Адкрыць усе ({COUNT}) у новай групе ўкладак}}</translation>
 <translation id="2285942871162473373">Не ўдалося распазнаць адбітак пальца. Паўтарыце спробу.</translation>
 <translation id="2287944065963043964">Экран уваходу</translation>
 <translation id="2288181517385084064">Пераключыцца на запіс відэа</translation>
@@ -2661,6 +2660,7 @@
 <translation id="3799128412641261490">Налады доступу праз пераключальнікі</translation>
 <translation id="3799903419983101749">Працягвайце работу з таго месца, на якім спыніліся. У Наладах можна задаць параметры аўтаматычнага аднаўлення праграм</translation>
 <translation id="3800806661949714323">Паказваць усе (рэкамендуецца)</translation>
+<translation id="380329542618494757">Імя</translation>
 <translation id="3803345858388753269">Якасць відэа</translation>
 <translation id="380408572480438692">Збор даных аб прадукцыйнасці дапаможа Google з цягам часу палепшыць сістэму. Даныя адпраўляюцца толькі пры адпраўцы справаздачы з водгукам (Alt-Shift-I), калі вы ўключаеце ў яе даныя аб прадукцыйнасці. У любы момант можна вярнуцца да гэтага экрана і выключыць збор даных.</translation>
 <translation id="3807249107536149332">Пашырэнне <ph name="EXTENSION_NAME" /> (ідэнтыфікатар "<ph name="EXTENSION_ID" />") не дазволена размяшчаць на экране ўваходу ў сістэму.</translation>
@@ -2722,6 +2722,7 @@
 <translation id="3856096718352044181">Праверце, ці сапраўдны гэта аператар, або паўтарыце спробу</translation>
 <translation id="3856800405688283469">Выберыце часавы пояс</translation>
 <translation id="3857807444929313943">Адніміце палец і дакраніцеся зноў</translation>
+<translation id="3858860766373142691">Назва</translation>
 <translation id="3861638017150647085">Імя карыстальніка "<ph name="USERNAME" />" недаступнае</translation>
 <translation id="3861977424605124250">Паказваць пры запуску</translation>
 <translation id="386239283124269513">Аднавіць групу</translation>
@@ -3005,6 +3006,7 @@
 <translation id="4158364720893025815">Праверка пройдзена</translation>
 <translation id="4159681666905192102">Гэта ўліковы запіс для дзяцей, якім кіруюць <ph name="CUSTODIAN_EMAIL" /> і <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Невядомая клавіятура</translation>
+<translation id="4165942112764990069">Электронны адрас <ph name="USER_EMAIL" /> не з'яўляецца электронным адрасам сапраўднай арганізацыі. Звярніцеся да адміністратара. Калі вы самі з'яўляецеся адміністратарам, вы можаце наладзіць сваю арганізацыю на старонцы g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Сайты звычайна выкарыстоўваюць змесціва JavaScript для работы інтэрактыўных функцый (напрыклад, для відэагульняў або вэб-форм)</translation>
 <translation id="4168015872538332605">Для вас дзейнічаюць некаторыя налады, зададзеныя карыстальнікам <ph name="PRIMARY_EMAIL" />. Гэтыя налады дзейнічаюць у вашым уліковым запісе, толькі калі ажыццёўлены ўваход у некалькі ўліковых запісаў.</translation>
 <translation id="4169535189173047238">Не дазваляць</translation>
@@ -3394,7 +3396,6 @@
 <translation id="4602466770786743961">Заўсёды даваць сайту <ph name="HOST" /> доступ да камеры і мікрафона</translation>
 <translation id="4606551464649945562">Не дазваляць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="4608500690299898628">&amp;Пошук...</translation>
-<translation id="4608520674724523647">Ілюстрацыя завершанай рэгістрацыі</translation>
 <translation id="4608703838363792434">Файл "<ph name="FILE_NAME" />" змяшчае канфідэнцыяльнае змесціва</translation>
 <translation id="4609987916561367134">Дазволена выкарыстоўваць змесціва JavaScript</translation>
 <translation id="4610162781778310380">У <ph name="PLUGIN_NAME" /> выяўлена памылка</translation>
@@ -4029,11 +4030,11 @@
 <translation id="5315738755890845852">Лішняя фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>
+<translation id="5319712128756744240">Спалучыць новую прыладу</translation>
 <translation id="5320135788267874712">Новая назва прылады</translation>
 <translation id="532247166573571973">Сервер можа быць недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="5324300749339591280">Спіс праграм</translation>
 <translation id="5324780743567488672">Задаваць часавы пояс аўтаматычна – з дапамогай даных пра месцазнаходжанне</translation>
-<translation id="5327248766486351172">Імя</translation>
 <translation id="5327570636534774768">Гэта прылада пазначана для кіравання іншым даменам. Выдаліце яе з гэтага дамена, перш чым наладжваць дэманстрацыйны рэжым.</translation>
 <translation id="5327912693242073631">Функцыі, для якіх патрэбны апавяшчэнні, не будуць працаваць</translation>
 <translation id="532943162177641444">Націсніце на апавяшчэнне на тэлефоне <ph name="PHONE_NAME" />, каб наладзіць мабільны хот-спот, які гэта прылада зможа выкарыстоўваць.</translation>
@@ -4132,6 +4133,7 @@
 <translation id="5442550868130618860">Уключыць аўтаабнаўленне</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Паказаць сертыфікаты для арганізацыі</translation>
+<translation id="5447384712203291074">Тавараў: <ph name="ITEM_COUNT_MULTIPLE" /></translation>
 <translation id="5448293924669608770">Узнікла праблема з уваходам ва ўліковы запіс</translation>
 <translation id="5449551289610225147">Несапраўдны пароль</translation>
 <translation id="5449588825071916739">Дадаванне ў закладкі ўсіх укладак</translation>
@@ -4637,6 +4639,7 @@
 <translation id="6007240208646052708">Галасавы пошук на вашай мове недаступны.</translation>
 <translation id="6011193465932186973">Лічбавы адбітак</translation>
 <translation id="6011449291337289699">Выдаленне даных сайта</translation>
+<translation id="6011908034087870826">Ідзе адпраўка спасылкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6013027779243312217">Уключыце стварэнне субцітраў для аўдыя і відэа</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перайсці да дадатковага змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4815,6 +4818,7 @@
 <translation id="6208725777148613371">Не ўдалося захаваць элемент у сэрвісе "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Абнаўленне кампанента</translation>
 <translation id="6209908325007204267">Прылада ўключае ў сябе ліцэнзію Chrome Enterprise, але ваша імя карыстальніка не звязана з карпаратыўным уліковым запісам. Стварыце карпаратыўны ўліковы запіс, наведаўшы старонку g.co/ChromeEnterpriseAccount з іншай прылады.</translation>
+<translation id="621172521139737651">{COUNT,plural, =0{Адкрыць усе ў новай групе ўкладак}=1{Адкрыць у новай групе ўкладак}one{Адкрыць усе ({COUNT}) у новай групе ўкладак}few{Адкрыць усе ({COUNT}) у новай групе ўкладак}many{Адкрыць усе ({COUNT}) у новай групе ўкладак}other{Адкрыць усе ({COUNT}) у новай групе ўкладак}}</translation>
 <translation id="6212039847102026977">Паказаць пашыраныя параметры сеткі</translation>
 <translation id="6212168817037875041">Выключыць дысплэй</translation>
 <translation id="6212752530110374741">Адправіць спасылку па пошце</translation>
@@ -5065,7 +5069,6 @@
 <translation id="6468773105221177474">Файлаў: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Уключыць сотавую сетку</translation>
 <translation id="6472893788822429178">Паказаць кнопку галоўнага экрана</translation>
-<translation id="6473842110411557830">Ілюстрацыя Powerwash</translation>
 <translation id="6474498546677193336">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага выключэння Linux.</translation>
 <translation id="6474884162850599008">Адключыць уліковы запіс Google Дыска</translation>
 <translation id="6475294023568239942">Вызваліце месца на дыску Linux або змяніце памер дыска ў наладах</translation>
@@ -5273,7 +5276,6 @@
 <translation id="6700480081846086223">Трансліраваць <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не ўдалося атрымаць профіль.</translation>
 <translation id="6702639462873609204">&amp;Змяніць...</translation>
-<translation id="6703966911896067184">Ілюстрацыя памылкі пры рэгістрацыі</translation>
 <translation id="6706210727756204531">Ахоп</translation>
 <translation id="6707389671160270963">Кліенцкі сертыфікат SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і яшчэ адна ўкладка}one{<ph name="PAGE_TITLE" /> і яшчэ # укладка}few{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}many{<ph name="PAGE_TITLE" /> і яшчэ # укладак}other{<ph name="PAGE_TITLE" /> і яшчэ # укладкі}}</translation>
@@ -5653,6 +5655,7 @@
 <translation id="7109543803214225826">Ярлык выдалены</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Дадаць укладку ў групу}one{Дадаць укладкі ў групу}few{Дадаць укладкі ў групу}many{Дадаць укладкі ў групу}other{Дадаць укладкі ў групу}}</translation>
 <translation id="7111822978084196600">Дайце назву гэтаму акну</translation>
+<translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> тавар</translation>
 <translation id="7113502843173351041">Прагляд вашага адраса электроннай пошты</translation>
 <translation id="7114054701490058191">Паролі не супадаюць</translation>
 <translation id="7114648273807173152">Каб карыстацца Разумнай блакіроўкай для ўваходу ва ўліковы запіс Google, перайдзіце ў раздзел "Налады &gt; Падключаныя прылады &gt; Ваш тэлефон &gt; Разумная блакіроўка".</translation>
@@ -5816,7 +5819,6 @@
 <translation id="7307129035224081534">Прыпынена</translation>
 <translation id="7308436126008021607">фонавая сінхранізацыя</translation>
 <translation id="7308643132139167865">Мовы вэб-сайтаў</translation>
-<translation id="7309257895202129721">Паказаць &amp;элементы кіравання</translation>
 <translation id="7310598146671372464">Не ўдалося ўвайсці. Сервер не падтрымлівае ўказаныя тыпы шыфравання Kerberos. Звярніцеся да адміністратара.</translation>
 <translation id="7320213904474460808">Стандартная сетка</translation>
 <translation id="7321545336522791733">Сервер недаступны</translation>
@@ -6897,6 +6899,7 @@
 <translation id="8425492902634685834">Замацаваць на панэлі заданняў</translation>
 <translation id="8425768983279799676">Вы можаце выкарыстоўваць свой PIN-код для разблакіроўкі прылады.</translation>
 <translation id="8426713856918551002">Уключэнне</translation>
+<translation id="8427213022735114808">Функцыя галасавога ўводу адпраўляе запісы вашага голасу сэрвісам Google, што дазваляе вам уводзіць тэкст голасам у тэкставых палях.</translation>
 <translation id="8427292751741042100">убудаваны на любым хосце</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8428271547607112339">Дадаць навучальны ўліковы запіс</translation>
@@ -6916,7 +6919,6 @@
 <translation id="8448729345478502352">Павелічэнне або памяншэнне элементаў на экране</translation>
 <translation id="8449008133205184768">Уставіць з улікам стылю</translation>
 <translation id="8449036207308062757">Кіраванне сховішчам</translation>
-<translation id="8455026683977728932">Не ўдалося ўключыць ілюстрацыю ADB</translation>
 <translation id="8456512334795994339">Знаходзьце праграмы для работы і адпачынку</translation>
 <translation id="8456761643544401578">Аўтаматычнае ўключэнне цёмнага рэжыму</translation>
 <translation id="845702320058262034">Не ўдалося падключыцца. Пераканайцеся, што Bluetooth на вашым тэлефоне ўключаны.</translation>
@@ -7616,7 +7618,6 @@
 <translation id="917510707618656279">Пытацца, калі сайт запытвае доступ да прылад Bluetooth</translation>
 <translation id="9176476835295860688">Адпраўка даных пра выкарыстанне і дыягностыку. Зараз прылада аўтаматычна адпраўляе ў Google даныя дыягностыкі і звесткі аб выкарыстанні прылады і праграм. Яны будуць карысныя для паляпшэння стабільнасці сістэмы і праграм і для іншых удасканаленняў. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта <ph name="BEGIN_LINK1" />налада<ph name="END_LINK1" /> ўключана ўладальнікам. Калі налада "Дадатковая гісторыя дзеянняў у інтэрнэце і праграмах" уключана, адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google. <ph name="BEGIN_LINK2" />Даведацца больш<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – падключана прылада Bluetooth</translation>
-<translation id="9176817945195089764"><ph name="DOMAIN" /> не з'яўляецца сапраўднай арганізацыяй. Звярніцеся да адміністратара. Калі вы з'яўляецеся адміністратарам, вы можаце наладзіць сваю арганізацыю на старонцы g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">Імя карыстальніка на экране ўваходу</translation>
 <translation id="9180281769944411366">Гэты працэс можа заняць некалькі хвілін. Ідзе запуск кантэйнера Linux.</translation>
 <translation id="9180380851667544951">Сайт можа абагульваць ваш экран</translation>

@@ -619,6 +619,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
+<translation id="5867217927013474703">Raccolta delle informazioni della rete in corso…</translation>
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
 <translation id="5881540930187678962">Configura Phone Hub in un secondo momento</translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -693,6 +694,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
 <translation id="649452524636452238">PIN della smart card</translation>
+<translation id="6500818810472529210">Visualizza i risultati nella Ricerca Google</translation>
 <translation id="6501401484702599040">Trasmissione dello schermo a <ph name="RECEIVER_NAME" /> in corso</translation>
 <translation id="6520517963145875092">Seleziona una finestra da acquisire</translation>
 <translation id="652139407789908527">Lo schermo sarà oscurato per più tempo del solito (fino a un minuto) durante questo aggiornamento. Non premere il tasto di accensione mentre è in corso l'aggiornamento.</translation>
@@ -937,7 +939,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8413272770729657668">Avvio registrazione tra 3, 2, 1</translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8426708595819210923">Buonasera <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">La dettatura invia i tuoi dati audio a Google per consentire la digitazione vocale in tutti i campi di testo.</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8433977262951327081">La scorciatoia per mostrare il fumetto del menu di opzioni di immissione nella barra delle app è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,6 +992,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8818320199597151042">Rimozione del profilo in corso… Attendi qualche minuto.</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Puoi fermare l'acquisizione del pacchetto in qualsiasi momento.</translation>
 <translation id="8841375032071747811">Pulsante Indietro</translation>
 <translation id="8843682306134542540">Attiva/disattiva blocco rotazione. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tasto di ricerca+ESC</translation>

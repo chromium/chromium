@@ -618,6 +618,7 @@
 <translation id="5837036133683224804">توقف <ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
+<translation id="5867217927013474703">درحال جمع‌آوری اطلاعات شبکه</translation>
 <translation id="5876666360658629066">کد ولی را وارد کنید</translation>
 <translation id="5881540930187678962">راه‌اندازی «مرکز کنترل تلفن» در زمانی دیگر</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
@@ -692,6 +693,7 @@
 <translation id="6482559668224714696">ذره‌بین تمام‌صفحه</translation>
 <translation id="6490471652906364588">‏دستگاه USB-C (درگاه سمت راست)</translation>
 <translation id="649452524636452238">پین کارت هوشمند</translation>
+<translation id="6500818810472529210">‏دیدن نتیجه در «جستجوی Google»</translation>
 <translation id="6501401484702599040">ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">پنجره‌ای را برای گرفتن عکس انتخاب کنید</translation>
 <translation id="652139407789908527">درطول این به‌روزرسانی، صفحه‌نمایش شما طولانی‌تر از معمول (حداکثر یک دقیقه) خالی می‌شود. لطفاً درحین انجام به‌روزرسانی، دکمه روشن/خاموش را فشار ندهید.</translation>
@@ -936,7 +938,6 @@
 <translation id="8413272770729657668">شروع ضبط با شمارش ۳، ۲، ۱</translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8426708595819210923">عصر به‌خیر <ph name="GIVEN_NAME" />،</translation>
-<translation id="8427213022735114808">‏با دیکته کردن، صدایتان به Google ارسال می‌شود تا بتوانید در هر فیلد نوشتاری تایپ صوتی انجام دهید.</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8433977262951327081">میان‌بر نمایش حبابک گزینه‌های ورودی در قفسه تغییر کرده است. لطفاً به‌جای <ph name="OLD_SHORTCUT" /> از <ph name="NEW_SHORTCUT" /> استفاده کنید.</translation>
@@ -990,6 +991,7 @@
 <translation id="8818320199597151042">درحال برداشتن نمایه. چند دقیقه صبر کنید.</translation>
 <translation id="8825863694328519386">برای برگشتن به عقب از سمت راست تند بکشید</translation>
 <translation id="8828714802988429505">۹۰°</translation>
+<translation id="8832757911363938552">هرزمان خواستید می‌توانید ضبط بسته را متوقف کنید.</translation>
 <translation id="8841375032071747811">دکمه برگشت</translation>
 <translation id="8843682306134542540">تغییر وضعیت قفل چرخش. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

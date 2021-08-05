@@ -618,6 +618,7 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
 <translation id="5876666360658629066">保護者のコードを入力してください</translation>
 <translation id="5881540930187678962">スマートフォン ハブを後で設定</translation>
 <translation id="5895138241574237353">再起動</translation>
@@ -692,6 +693,7 @@
 <translation id="6482559668224714696">全画面拡大鏡</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
+<translation id="6500818810472529210">Google 検索で結果を見る</translation>
 <translation id="6501401484702599040">画面を <ph name="RECEIVER_NAME" /> にキャスト中</translation>
 <translation id="6520517963145875092">キャプチャするウィンドウを選択してください</translation>
 <translation id="652139407789908527">更新中は、空白の画面が通常より長く表示されます（最長 1 分）。更新中は電源ボタンを押さないでください。</translation>
@@ -702,6 +704,7 @@
 <translation id="6559976592393364813">管理者に問い合わせる</translation>
 <translation id="6570902864550063460">USB 経由で充電しています</translation>
 <translation id="6585808820553845416">セッション終了まであと <ph name="SESSION_TIME_REMAINING" />です。</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />、<ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="6612802754306526077">画面の録画モードを選択しました</translation>
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
@@ -936,7 +939,6 @@
 <translation id="8413272770729657668">録画開始まで 3、2、1</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426708595819210923">こんばんは、<ph name="GIVEN_NAME" /> さん</translation>
-<translation id="8427213022735114808">音声入力では、テキスト欄で音声入力できるように Google に音声を送信します。</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8433977262951327081">シェルフに入力オプション メニューのふきだしを表示するためのショートカットが変わりました。今後は <ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> を使用してください。</translation>
@@ -990,6 +992,7 @@
 <translation id="8818320199597151042">プロファイルを削除しています。数分お待ちください。</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">パケット キャプチャはいつでも停止できます。</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

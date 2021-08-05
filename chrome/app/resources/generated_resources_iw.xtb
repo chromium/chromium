@@ -32,7 +32,6 @@
 <translation id="1032605640136438169">יש לקרוא את התנאים החדשים</translation>
 <translation id="103279545524624934">‏עליך לפנות נפח אחסון כדי להפעיל אפליקציות Android.</translation>
 <translation id="1033780634303702874">גישה להתקנים הסיריאליים שלך</translation>
-<translation id="1034942643314881546">‏המערכת מפעילה את ADB ליצירת איור של אפליקציות</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1036511912703768636">‏גישה לכל אחד מהתקני ה-USB האלה</translation>
 <translation id="1036982837258183574">יש ללחוץ על |<ph name="ACCELERATOR" />| כדי לצאת ממסך מלא</translation>
@@ -452,7 +451,7 @@
 <translation id="1477446329585670721">כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.</translation>
 <translation id="1478340334823509079">פרטים: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ההתקנה אינה מופעלת</translation>
-<translation id="1480571698637441426">‏כדי לקבל תשובות בהתאמה אישית לשאלות, צריך לאפשר ל-Assistant גישה לצילום מסך של מה שמופיע במסך. יכול להיות שהמידע יכלול גם פרטים על השירים או על הסרטונים שפועלים.</translation>
+<translation id="1480571698637441426">‏כדי לקבל תשובות בהתאמה אישית לשאלות, צריך לתת ל-Assistant גישה לצילום של תוכן המסך. יכול להיות שהמידע יכלול גם פרטים על השירים או על הסרטונים שפועלים.</translation>
 <translation id="1481537595330271162">אירעה שגיאה במהלך שינוי גודל הכונן</translation>
 <translation id="1482626744466814421">הוספת הכרטיסייה הזו לסימניות...</translation>
 <translation id="1483272013430662157">אפליקציות אינטרנט יכולות לבקש לפתוח סוגי קבצים</translation>
@@ -700,7 +699,6 @@
 <translation id="1721312023322545264">עליך לפנות אל <ph name="NAME" /> לקבלת הרשאה לביקור באתר הזה</translation>
 <translation id="1722460139690167654">מכשיר <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;חלון חדש</translation>
-<translation id="1725149567830788547">הצגת &amp;בקרים</translation>
 <translation id="1725562816265788801">גלילה בין כרטיסיות</translation>
 <translation id="1727662110063605623">‏יש לפתוח את ההגדרות כדי לחבר את <ph name="USB_DEVICE_NAME" /> אל Parallels Desktop או Linux</translation>
 <translation id="1729533290416704613">הגדרה זו גם קובעת איזה דף מוצג כשמחפשים מסרגל הכתובות.</translation>
@@ -1242,6 +1240,7 @@
 <translation id="2278668501808246459">המערכת מפעילה את מנהל המאגר</translation>
 <translation id="2280486287150724112">שוליים ימניים</translation>
 <translation id="2282146716419988068">‏תהליך GPU</translation>
+<translation id="2285109769884538519">{COUNT,plural, =0{פתיחת כל הכתובות ב&amp;קבוצת כרטיסיות חדשה}=1{פתיחת הכתובת ב&amp;קבוצת כרטיסיות חדשה}two{פתיחת כל הכתובות ({COUNT}) ב&amp;קבוצת כרטיסיות חדשה}many{פתיחת כל הכתובות ({COUNT}) ב&amp;קבוצת כרטיסיות חדשה}other{פתיחת כל הכתובות ({COUNT}) ב&amp;קבוצת כרטיסיות חדשה}}</translation>
 <translation id="2285942871162473373">לא ניתן לזהות את טביעת האצבע שלך. יש לנסות שוב.</translation>
 <translation id="2287944065963043964">מסך התחברות</translation>
 <translation id="2288181517385084064">מעבר למקליט וידאו</translation>
@@ -1268,7 +1267,7 @@
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ביקש אישורים נוספים.</translation>
 <translation id="23055578400314116">יש לבחור שם משתמש</translation>
 <translation id="2307462900900812319">הגדרת רשת</translation>
-<translation id="2307553512430195144">‏אם נקבל את הסכמתך, Google Assistant תיכנס למצב המתנה לאיתור השימוש ב-“Hey Google” ותוכל לזהות שהדיבור מתבצע על ידי <ph name="SUPERVISED_USER_NAME" /> באמצעות Voice Match.
+<translation id="2307553512430195144">‏אם נקבל את הסכמתך, Google Assistant תעבור למצב המתנה לזיהוי הפקודה “Hey Google” ותוכל לזהות באמצעות Voice Match שהפקודה נאמרה על ידי <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
     התכונה Voice Match עוזרת ל-Google Assistant לזהות את הקול של <ph name="SUPERVISED_USER_NAME" /> במכשיר ה-<ph name="DEVICE_TYPE" /> שלך ולהבדיל בינו לבין אחרים.
     <ph name="BR" />
@@ -1406,7 +1405,7 @@
 <translation id="2450849356604136918">אין תצוגות פעילות</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">אתרים מתחברים בדרך כלל ליציאות טוריות כדי לתמוך בתכונות של העברת נתונים, כמו הגדרת הרשת</translation>
-<translation id="2453706416476934374">‏כדי לקבל תשובות מותאמות אישית לשאלות של <ph name="SUPERVISED_USER_NAME" />, כדאי לאפשר ל-Assistant גישה לצילום מסך של מה שמופיע במסך של <ph name="SUPERVISED_USER_NAME" />. יכול להיות שהמידע יכלול גם פרטים על השירים או על הסרטונים שפועלים.</translation>
+<translation id="2453706416476934374">‏כדי לקבל תשובות מותאמות אישית לשאלות של <ph name="SUPERVISED_USER_NAME" />, כדאי לתת ל-Assistant גישה לצילום של תוכן המסך של <ph name="SUPERVISED_USER_NAME" />. יכול להיות שהמידע יכלול גם פרטים על השירים או על הסרטונים שפועלים.</translation>
 <translation id="2453860139492968684">סיום</translation>
 <translation id="2454247629720664989">מילת מפתח</translation>
 <translation id="2454264884354864965">המצלמה כבויה</translation>
@@ -2298,7 +2297,7 @@
 <translation id="3417836307470882032">שעון 24 שעות</translation>
 <translation id="3420501302812554910">צריך לאפס את מפתח האבטחה הפנימי</translation>
 <translation id="3421387094817716717">מפתח ציבורי עם עקומה אליפטית</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות שלך גם באמצעות קול דומה או הקלטה.</translation>
+<translation id="3421672904902642628">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת לתוצאות האישיות או ל-Assistant גם באמצעות קול דומה או הקלטה.</translation>
 <translation id="3422291238483866753">תוצג שאלה כשאתר ירצה ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
 <translation id="3423463006624419153">ב-'<ph name="PHONE_NAME_1" />' וב-'<ph name="PHONE_NAME_2" />' שלך:</translation>
 <translation id="3423858849633684918">הפעלה מחדש של <ph name="PRODUCT_NAME" /></translation>
@@ -2674,6 +2673,7 @@
 <translation id="3799128412641261490">הגדרות גישה באמצעות מתג</translation>
 <translation id="3799903419983101749">ממשיכים מהמקום שבו מפסיקים: מגדירים שחזור אוטומטי של אפליקציות ב'הגדרות'.</translation>
 <translation id="3800806661949714323">הצגת הכול (מומלץ)</translation>
+<translation id="380329542618494757">שם</translation>
 <translation id="3803345858388753269">איכות הווידאו</translation>
 <translation id="380408572480438692">‏הפעלת האפשרות לאיסוף נתוני ביצועים תסייע ל-Google לשפר את המערכת עם הזמן. הנתונים נשלחים רק לאחר שמגישים דוח משוב (Alt-Shift-I) וכוללים את נתוני הביצועים. ניתן לחזור למסך זה כדי להשבית את איסוף הנתונים בכל עת.</translation>
 <translation id="3807249107536149332">לא ניתן להשתמש ב-<ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") במסך התחברות.</translation>
@@ -2735,6 +2735,7 @@
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3856800405688283469">בחירת אזור זמן</translation>
 <translation id="3857807444929313943">יש להרים ולגעת בחיישן שוב</translation>
+<translation id="3858860766373142691">שם</translation>
 <translation id="3861638017150647085">שם המשתמש "<ph name="USERNAME" />" לא זמין</translation>
 <translation id="3861977424605124250">הצגה בעת ההפעלה</translation>
 <translation id="386239283124269513">&amp;שחזור הקבוצה</translation>
@@ -3018,6 +3019,7 @@
 <translation id="4158364720893025815">הצלחה</translation>
 <translation id="4159681666905192102">זהו חשבון לילדים המנוהל על-ידי <ph name="CUSTODIAN_EMAIL" /> ועל-ידי <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">מקלדת לא ידועה</translation>
+<translation id="4165942112764990069">‏החשבון <ph name="USER_EMAIL" /> לא שייך לארגון תקין. יש לפנות אל מנהל המערכת. מנהלי מערכת יכולים להגדיר את הארגון שלהם בכתובת: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">‏אתרים משתמשים בדרך כלל ב-JavaScript כדי להציג תכונות אינטראקטיביות, כמו משחקי וידאו או טפסים ברשת</translation>
 <translation id="4168015872538332605">חלק מההגדרות השייכות ל-<ph name="PRIMARY_EMAIL" /> משותפות איתך. ההגדרות האלה משפיעות על החשבון שלך רק בעת שימוש בכניסה עם מספר חשבונות.</translation>
 <translation id="4169535189173047238">לא לאפשר</translation>
@@ -3408,7 +3410,6 @@
 <translation id="4602466770786743961">אני רוצה תמיד להרשות ל-<ph name="HOST" /> לגשת למצלמה ולמיקרופון</translation>
 <translation id="4606551464649945562">אתרים לא יוכלו ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
 <translation id="4608500690299898628">&amp;חיפוש...</translation>
-<translation id="4608520674724523647">איור של הרשמה מוצלחת</translation>
 <translation id="4608703838363792434"><ph name="FILE_NAME" /> מכיל תוכן רגיש</translation>
 <translation id="4609987916561367134">‏מורשים להשתמש ב-JavaScript</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> נתקל בשגיאה</translation>
@@ -4045,11 +4046,11 @@
 <translation id="5315738755890845852">סוגריים מסולסלים מיותרים: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319359161174645648">‏Google ממליצה על Chrome</translation>
+<translation id="5319712128756744240">התאמת מכשיר חדש</translation>
 <translation id="5320135788267874712">השם החדש של המכשיר</translation>
 <translation id="532247166573571973">ייתכן שהשרת אינו נגיש. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="5324300749339591280">רשימת האפליקציות</translation>
 <translation id="5324780743567488672">היעזרות במיקום להגדרה אוטומטית של אזור הזמן</translation>
-<translation id="5327248766486351172">שם</translation>
 <translation id="5327570636534774768">המכשיר הזה מסומן כמנוהל על ידי דומיין אחר. צריך לבטל את ניהול התצורה שלו מהדומיין הזה לפני ההגדרה של מצב ההדגמה.</translation>
 <translation id="5327912693242073631">תכונות שצריכות התראות לא יפעלו</translation>
 <translation id="532943162177641444">יש להקיש על ההודעה בטלפון <ph name="PHONE_NAME" /> כדי להגדיר את הנקודה לשיתוף אינטרנט בנייד שבה המכשיר הזה יכול להשתמש.</translation>
@@ -4148,6 +4149,7 @@
 <translation id="5442550868130618860">הפעלת עדכון אוטומטי</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">הצגת אישורים של ארגון</translation>
+<translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> פריטים</translation>
 <translation id="5448293924669608770">אופס. משהו השתבש בכניסה לחשבון</translation>
 <translation id="5449551289610225147">סיסמה לא חוקית</translation>
 <translation id="5449588825071916739">הוספת סימנייה לכל הכרטיסיות</translation>
@@ -4653,6 +4655,7 @@
 <translation id="6007240208646052708">לא ניתן לבצע חיפוש קולי בשפה שלך.</translation>
 <translation id="6011193465932186973">טביעת אצבע</translation>
 <translation id="6011449291337289699">מחיקה של נתוני אתר</translation>
+<translation id="6011908034087870826">שליחת הקישור אל <ph name="DEVICE_NAME" /> מתבצעת</translation>
 <translation id="6013027779243312217">הפעלת כתוביות לאודיו ולווידאו</translation>
 <translation id="6015796118275082299">שנה</translation>
 <translation id="6016178549409952427">ניווט אל תוכן נוסף <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4701,7 +4704,7 @@
 <translation id="6059652578941944813">היררכיית אישורים</translation>
 <translation id="6059925163896151826">‏מכשירי USB</translation>
 <translation id="6061882183774845124">שליחת הקישור אל המכשירים שלך</translation>
-<translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות של <ph name="SUPERVISED_USER_NAME" /> גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות של Assistant של <ph name="SUPERVISED_USER_NAME" /> להפעיל את “Hey Google” רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
+<translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות של <ph name="SUPERVISED_USER_NAME" /> גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות Assistant של <ph name="SUPERVISED_USER_NAME" /> שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="6064217302520318294">נעילת מסך</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
 <translation id="6066794465984119824">‏לא הוגדר גיבוב (hash) של תמונה</translation>
@@ -4831,6 +4834,7 @@
 <translation id="6208725777148613371">נכשלה השמירה ב-<ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">עדכון רכיבים</translation>
 <translation id="6209908325007204267">‏המכשיר כולל אפשרות שדרוג ל-Chrome Enterprise, אבל שם המשתמש שלך לא משויך לחשבון ארגוני. כדי ליצור חשבון ארגוני, יש להיכנס לכתובת g.co/ChromeEnterpriseAccount במכשיר אחר.</translation>
+<translation id="621172521139737651">{COUNT,plural, =0{פתיחת כל הכתובות ב&amp;קבוצת כרטיסיות חדשה}=1{פתיחת הכתובת ב&amp;קבוצת כרטיסיות חדשה}two{פתיחת כל הכתובות ({COUNT}) ב&amp;קבוצת כרטיסיות חדשה}many{פתיחת כל הכתובות ({COUNT}) ב&amp;קבוצת כרטיסיות חדשה}other{פתיחת כל הכתובות ({COUNT}) ב&amp;קבוצת כרטיסיות חדשה}}</translation>
 <translation id="6212039847102026977">הצגת מאפייני רשת מתקדמים</translation>
 <translation id="6212168817037875041">כיבוי המסך</translation>
 <translation id="6212752530110374741">שליחת קישור באימייל</translation>
@@ -4976,7 +4980,7 @@
 <translation id="6345878117466430440">סימון כפריט שנקרא</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">‏עקומה אליפטית SECG מסוג secp256r1 (מוכרת גם בשם ANSI X9.62 prime256v1‏, NIST P-256)</translation>
-<translation id="6355789186038748882">דפדפן ניסיוני (באיכות אלפא)! חלק מהתכונות חסרות או חלקיות. אפשר לדווח על בעיות דרך: 'עזרה' &gt; "דיווח על בעיה…".</translation>
+<translation id="6355789186038748882">דפדפן ניסיוני (באיכות אלפא)! כמה מהתכונות חסרות או חלקיות. אפשר לדווח על בעיות דרך 'עזרה' &gt; "דיווח על בעיה…".</translation>
 <translation id="635609604405270300">אין לכבות את המכשיר</translation>
 <translation id="63566973648609420">‏רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם לא זוכרים את ביטוי הסיסמה או אם רוצים לשנות את ההגדרה הזו, יש <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">דרקון</translation>
@@ -5042,7 +5046,7 @@
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6434325376267409267">יש לעדכן את המכשיר כדי שאפשר יהיה להשתמש ב-<ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">הצגה בחנות אינטרנט</translation>
-<translation id="6436610005579237680">‏כדי לקבל תשובות שמותאמות לך, צריך לאפשר ל-Google Assistant גישה לצילום מסך של מה שמופיע במסך כששואלים שאלות. יכול להיות ש-Assistant תיעזר גם במידע על השירים או על הסרטונים שפועלים.</translation>
+<translation id="6436610005579237680">‏כדי לקבל תשובות ברמה גבוהה יותר של התאמה אישית, צריך לתת ל-Google Assistant גישה לצילום של תוכן המסך כששואלים שאלות. יכול להיות ש-Assistant תיעזר גם במידע על השירים או על הסרטונים שפועלים.</translation>
 <translation id="6438234780621650381">איפוס הגדרות</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - אודיו מופעל</translation>
 <translation id="6442187272350399447">מגניב</translation>
@@ -5081,7 +5085,6 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> קבצים</translation>
 <translation id="6469557521904094793">הפעלת רשת סלולרית</translation>
 <translation id="6472893788822429178">הצגת לחצן 'דף הבית'</translation>
-<translation id="6473842110411557830">‏איור Powerwash</translation>
 <translation id="6474498546677193336">‏לא ניתן לבטל את השיתוף כי אפליקציה משתמשת בתיקייה הזו. השיתוף של התיקייה הזו יבוטל בכיבוי הבא של Linux.</translation>
 <translation id="6474884162850599008">‏ניתוק חשבון Google Drive</translation>
 <translation id="6475294023568239942">‏עליך לפנות נפח אחסון או לשנות בהגדרות את גודל הנפח המיועד ל-Linux</translation>
@@ -5200,7 +5203,7 @@
 <translation id="6602937173026466876">גישה למדפסות שלך</translation>
 <translation id="6602956230557165253">אפשר להשתמש במקש החצים השמאלי והימני כדי לנווט.</translation>
 <translation id="6605847144724004692">עדיין לא דורג על-ידי משתמשים.</translation>
-<translation id="6606671997164410857">‏נראה שכבר הגדרת את Google Assistant במכשיר אחר. באמצעות הפעלה של הקשר המסך במכשיר הזה, תהיה אפשרות להפיק יותר תועלת מ-Assistant.</translation>
+<translation id="6606671997164410857">‏נראה שכבר הגדרת את Google Assistant במכשיר אחר. באמצעות הפעלה של הקשר המסך במכשיר הזה, תהיה לך אפשרות להפיק יותר תועלת מ-Assistant.</translation>
 <translation id="6607831829715835317">כלים &amp;נוספים</translation>
 <translation id="6607890859198268021">‏החשבון <ph name="USER_EMAIL" /> כבר מנוהל על ידי <ph name="DOMAIN" />. כדי להשתמש בבקרת הורים בחשבון Google אחר, יש לצאת לאחר ההגדרה ולבחור באפשרות "הוספת משתמש" במסך הכניסה.</translation>
 <translation id="6609478180749378879">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה ממצב אנונימי. מאוחר יותר תהיה לך אפשרות להיכנס שוב לחשבון באתר הזה באמצעות המכשיר.</translation>
@@ -5289,7 +5292,6 @@
 <translation id="6700480081846086223">העברה של <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">לא ניתן לקבל פרופיל.</translation>
 <translation id="6702639462873609204">&amp;עריכה...</translation>
-<translation id="6703966911896067184">איור של שגיאה בהרשמה</translation>
 <translation id="6706210727756204531">היקף</translation>
 <translation id="6707389671160270963">‏אישור לקוח SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> וכרטיסייה נוספת אחת}two{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}many{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}other{<ph name="PAGE_TITLE" /> ו-# כרטיסיות נוספות}}</translation>
@@ -5378,7 +5380,7 @@
 <translation id="6808039367995747522">כדי להמשיך, עליך לחבר את מפתח האבטחה ולגעת בו</translation>
 <translation id="6808193438228982088">שועל</translation>
 <translation id="6809470175540814047">פתיחה בחלון אנונימי</translation>
-<translation id="6809656734323672573">‏אם נקבל את הסכמתך, Google Assistant תיכנס למצב המתנה לאיתור השימוש ב-“Hey Google” ותוכל לזהות שהדיבור מתבצע על ידך באמצעות Voice Match.
+<translation id="6809656734323672573">‏אם נקבל את הסכמתך, Google Assistant תעבור למצב המתנה לזיהוי הפקודה “Hey Google” ותוכל לזהות באמצעות Voice Match שהפקודה היא ממך.
     <ph name="BR" />
     התכונה Voice Match מאפשרת ל-Assistant לזהות את הקול שלך ולהבדיל בינך לאחרים. Assistant משתמשת בקטעי קול שלך כדי ליצור תבנית קול ייחודית, המאוחסנת רק במכשיר שלך. יכול להיות שתבנית הקול שלך תישלח באופן זמני אל Google כדי לשפר את זיהוי הקול שלך.
     <ph name="BR" />
@@ -5669,6 +5671,7 @@
 <translation id="7109543803214225826">קיצור הדרך הוסר</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{הוספת כרטיסייה לקבוצה}two{הוספת כרטיסיות לקבוצה}many{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="7111822978084196600">יש לתת שם לחלון</translation>
+<translation id="7113102733263608554">פריט אחד (<ph name="ITEM_COUNT_ONE" />)</translation>
 <translation id="7113502843173351041">לדעת את כתובת האימייל שלך</translation>
 <translation id="7114054701490058191">הסיסמאות לא תואמות</translation>
 <translation id="7114648273807173152">‏כדי להשתמש ב-Smart Lock על מנת להיכנס אל חשבון Google צריך לעבור אל 'הגדרות' &gt; 'מכשירים מחוברים' &gt; 'הטלפון שלך' &gt; Smart Lock.</translation>
@@ -5832,7 +5835,6 @@
 <translation id="7307129035224081534">מושהה</translation>
 <translation id="7308436126008021607">סנכרון ברקע</translation>
 <translation id="7308643132139167865">שפות לאתרים</translation>
-<translation id="7309257895202129721">הצגת &amp;פקדים</translation>
 <translation id="7310598146671372464">‏ההתחברות נכשלה. השרת לא תומך בסוגי הצפנת Kerberos שצוינו. צריך לפנות אל מנהל המערכת.</translation>
 <translation id="7320213904474460808">הגדרת הרשת כברירת המחדל</translation>
 <translation id="7321545336522791733">השרת אינו נגיש</translation>
@@ -6378,7 +6380,7 @@
 <translation id="7847212883280406910">‏יש להקיש על Ctrl ‏+ Alt ‏+ S כדי לעבור אל <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">פתיחת &amp;תמונה בכרטיסייה חדשה</translation>
 <translation id="784934925303690534">טווח זמן</translation>
-<translation id="7851021205959621355">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות שלך גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות של Assistant להפעיל את “Hey Google” רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
+<translation id="7851021205959621355">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת לתוצאות האישיות או ל-Assistant גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לקבוע בהגדרות של Assistant שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="7851457902707056880">הכניסה הוגבלה לחשבון הבעלים בלבד. יש לבצע אתחול מחדש ולהיכנס באמצעות חשבון הבעלים. המערכת תבצע אתחול מחדש באופן אוטומטי בתוך 30 שניות.</translation>
 <translation id="7851716364080026749">אני רוצה לחסום תמיד גישה למצלמה ולמיקרופון</translation>
 <translation id="7851720427268294554">‏מנתח IPP</translation>
@@ -6916,6 +6918,7 @@
 <translation id="8425492902634685834">הצמדה לשורת המשימות</translation>
 <translation id="8425768983279799676">קוד האימות מאפשר לבטל את נעילת המכשיר.</translation>
 <translation id="8426713856918551002">ההפעלה מתבצעת</translation>
+<translation id="8427213022735114808">‏הכתבה שולחת הקלטה של הקול שלך אל Google כדי לאפשר הקלדה קולית בתיבת טקסט כלשהי.</translation>
 <translation id="8427292751741042100">מוטמע במארח כלשהו</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428271547607112339">הוספת חשבון בית ספרי</translation>
@@ -6935,7 +6938,6 @@
 <translation id="8448729345478502352">הגדלה או הקטנה של פריטים במסך</translation>
 <translation id="8449008133205184768">הדבקה והתאמה של סגנון</translation>
 <translation id="8449036207308062757">ניהול האחסון</translation>
-<translation id="8455026683977728932">‏ההפעלה של איור ADB נכשלה</translation>
 <translation id="8456512334795994339">חיפוש אפליקציות לעבודה ולפנאי</translation>
 <translation id="8456761643544401578">מצב כהה אוטומטי</translation>
 <translation id="845702320058262034">‏לא ניתן להתחבר. יש לוודא שה-Bluetooth של הטלפון מופעל.</translation>
@@ -7637,7 +7639,6 @@
 <translation id="917510707618656279">‏צריך לבקש ממני אישור כשאתר רוצה לגשת למכשירי Bluetooth</translation>
 <translation id="9176476835295860688">‏שליחה של נתוני אבחון ונתונים על השימוש. המכשיר הזה שולח עכשיו אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. ה<ph name="BEGIN_LINK1" />הגדרה<ph name="END_LINK1" /> הזו נאכפת על-ידי הבעלים. אם הופעלה האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלך. <ph name="BEGIN_LINK2" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349">‏<ph name="WINDOW_TITLE" /> - מכשיר Bluetooth מחובר</translation>
-<translation id="9176817945195089764">‏הארגון <ph name="DOMAIN" /> אינו ארגון תקין. עליך לפנות למנהל המערכת. מנהלי מערכת יכולים להגדיר את הארגון שלהם בכתובת: g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">הצגת שם המשתמש במסך הכניסה</translation>
 <translation id="9180281769944411366">‏הפעולה עשויה להימשך מספר דקות. מתבצעת הפעלה של הקונטיינר של Linux.</translation>
 <translation id="9180380851667544951">האתר רשאי לשתף את המסך</translation>

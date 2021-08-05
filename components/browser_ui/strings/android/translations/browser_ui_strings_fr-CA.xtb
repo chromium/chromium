@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites ou des applications sur votre écran d'accueil.</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
-<translation id="1195941046451948919">Voulez-vous vraiment réinitialiser toutes les autorisations pour ce site Web?</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1242008676835033345">Intégré sur <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Arrêter</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
-<translation id="4708011789095599544">Voulez-vous vraiment supprimer les témoins et les autres données de ce site Web?</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
 <translation id="4836046166855586901">Demander une autorisation lorsqu'un site veut savoir si vous êtes en train d'utiliser cet appareil</translation>
 <translation id="4883854917563148705">Les paramètres gérés ne peuvent pas être réinitialisés</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Vibrer</translation>
 <translation id="6388207532828177975">Effacer et réinitialiser</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
-<translation id="6423924377271166037">Effacer les témoins</translation>
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6527303717912515753">Partager</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres}}</translation>
 <translation id="913657688200966289">Vous pouvez activer les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Cette page est dangereuse</translation>
 <translation id="930525582205581608">Oublier ce site?</translation>
 <translation id="967624055006145463">Données stockées</translation>
 </translationbundle>

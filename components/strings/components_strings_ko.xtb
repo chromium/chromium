@@ -631,6 +631,7 @@
 <translation id="3229041911291329567">기기와 브라우저에 관한 버전 정보</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> 카드의 CVC를 입력하세요.</translation>
 <translation id="3234666976984236645">이 사이트에서 중요한 콘텐츠 항상 감지</translation>
+<translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
 <translation id="3249845759089040423">그루브</translation>
 <translation id="3252266817569339921">프랑스어</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Calendar에서 빠르게 새 일정 만들기</translation>
@@ -805,6 +806,7 @@
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
 <translation id="3797522431967816232">Prc3(봉투)</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
+<translation id="380329542618494757">이름</translation>
 <translation id="3807366285948165054">이미지 X 시프트</translation>
 <translation id="3807873520724684969">유해한 콘텐츠 차단됨</translation>
 <translation id="3810973564298564668">관리</translation>
@@ -819,6 +821,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 빠르게 새 Google 문서 만들기</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858027520442213535">시간과 날짜 업데이트</translation>
+<translation id="3858860766373142691">이름</translation>
 <translation id="3881478300875776315">자막 접기</translation>
 <translation id="3884278016824448484">기기 식별자 충돌</translation>
 <translation id="3885155851504623709">교구</translation>
@@ -1448,6 +1451,7 @@
 <translation id="6051221802930200923">현재 <ph name="SITE" />에서 인증서 고정을 사용하기 때문에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="6051898664905071243">페이지 수:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보</translation>
 <translation id="6058977677006700226">모든 기기에서 카드를 사용하고 싶으신가요?</translation>
 <translation id="6059925163896151826">USB 기기</translation>
 <translation id="6060009363608157444">잘못된 DnsOverHttps 모드입니다.</translation>
@@ -1525,6 +1529,7 @@
 <translation id="6389470377220713856">카드 명의</translation>
 <translation id="6390200185239044127">Z 폴드 하프</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6391700400718590966">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 닫힘</translation>
 <translation id="6393956493820063117">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 이 위치로 붙여넣는 작업이 차단되었습니다.</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="6401136357288658127">지원 중단된 정책입니다. <ph name="NEW_POLICY" /> 정책을 대신 사용해야 합니다.</translation>
@@ -2027,6 +2032,7 @@
 <translation id="8190193880870196235">확장 프로그램에서 관리</translation>
 <translation id="8193086767630290324">기밀로 표시된 데이터에 대한 작업</translation>
 <translation id="8194797478851900357">이동 실행 취소(&amp;U)</translation>
+<translation id="8199274926193258625">결제 인증을 위해 <ph name="HOSTNAME" />에서 추가 단계를 진행해야 할 수 있습니다.</translation>
 <translation id="8201077131113104583">ID가 '<ph name="EXTENSION_ID" />'인 확장 프로그램에 대한 잘못된 업데이트 URL</translation>
 <translation id="8202097416529803614">주문 요약</translation>
 <translation id="8202370299023114387">충돌</translation>

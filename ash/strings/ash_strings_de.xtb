@@ -618,6 +618,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
+<translation id="5867217927013474703">Netzwerkinformationen werden erfasst</translation>
 <translation id="5876666360658629066">Elterncode eingeben</translation>
 <translation id="5881540930187678962">Phone Hub später einrichten</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -692,6 +693,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6482559668224714696">Vollbildlupe</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
+<translation id="6500818810472529210">Ergebnis in der Google Suche anzeigen</translation>
 <translation id="6501401484702599040">Bildschirm wird an <ph name="RECEIVER_NAME" /> gestreamt</translation>
 <translation id="6520517963145875092">Fenster auswählen, das aufgenommen werden soll</translation>
 <translation id="652139407789908527">Der Bildschirm wird während dieses Updates länger schwarz als gewöhnlich (bis zu einer Minute). Bitte nicht auf die Ein-/Aus-Taste drücken, solange das Update installiert wird.</translation>
@@ -936,7 +938,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8413272770729657668">Aufzeichnung beginnt in 3, 2, 1</translation>
 <translation id="8425213833346101688">Ändern</translation>
 <translation id="8426708595819210923">Guten Abend <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">Die Diktierfunktion sendet Ihre Spracheingaben an Google, damit sie in das entsprechende Textfeld eingetragen werden können.</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8433977262951327081">Die Tastenkombination zum Aufrufen des Infofelds für die Eingabeoptionen in der Ablage hat sich geändert. Bitte drücken Sie <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
@@ -990,6 +991,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8818320199597151042">Profil wird entfernt. Warten Sie ein paar Minuten.</translation>
 <translation id="8825863694328519386">Von links nach rechts wischen, um zurückzugehen</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Sie können die Paketaufnahme jederzeit beenden.</translation>
 <translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
 <translation id="8843682306134542540">Rotationssperre an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Suche + Esc</translation>

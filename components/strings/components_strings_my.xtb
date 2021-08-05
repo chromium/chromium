@@ -637,6 +637,7 @@
 <translation id="3229041911291329567">သင့်စက်နှင့် ဘရောင်ဇာအကြောင်း ဗားရှင်းအချက်အလက်</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> အတွက် CVC ကို ထည့်ပါ</translation>
 <translation id="3234666976984236645">ဤအင်တာနက်စာမျက်နှာ‌ပေါ်တွင် အရေးကြီး‌သော မာတိကာများကို အစဉ် ထောက်လှမ်းပါ</translation>
+<translation id="3240791268468473923">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မဖွင့်ထားပါ</translation>
 <translation id="3249845759089040423">မိမိမိုက်မိုက်</translation>
 <translation id="3252266817569339921">ပြင်သစ်</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Calendar တွင် အစီအစဉ်အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
@@ -809,6 +810,7 @@
 <translation id="3793574014653384240">မကြာသေးမီက ဖြစ်ပွားခဲ့သည့် ရပ်တန့်သွားခြင်း အရေအတွက်များနှင့် အကြောင်းရင်းများ</translation>
 <translation id="3797522431967816232">Prc3 (စာအိတ်)</translation>
 <translation id="3799805948399000906">ဖောင့်တောင်းဆိုထားသည်</translation>
+<translation id="380329542618494757">အမည်</translation>
 <translation id="3807366285948165054">ပုံအလျားလိုက် အရွှေ့</translation>
 <translation id="3807873520724684969">အန္တရာယ်ရှိသည့် အကြောင်းအရာများကို ပိတ်ထားပါသည်။</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
@@ -823,6 +825,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Doc အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3858027520442213535">ရက်စွဲ နှင့် အချိန်ကို မွမ်းမံပါ</translation>
+<translation id="3858860766373142691">အမည်</translation>
 <translation id="3881478300875776315">စာကြောင်းလျှော့၍ပြရန်</translation>
 <translation id="3884278016824448484">စက်ပစ္စည်း မည်သူမည်ဝါဖြစ်ကြောင်း အသိမှတ်ပြုသူ ရှုပ်ထွေးနေ</translation>
 <translation id="3885155851504623709">နယ်​မြေ</translation>
@@ -1458,6 +1461,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> သည် အသိအမှတ်ပြုလက်မှတ်တုပခြင်းအား ခုခံကာကွယ်သည့်စနစ်ကို အသုံးပြုထားသောကြောင့် ၎င်းအား လောလောဆယ် ဖွင့်၍မရပါ။ ကွန်ရက်အမှားအယွင်းများနှင့် တိုက်ခိုက်မှုများမှာ ပုံမှန်အားဖြင့် ခဏတာသာ ဖြစ်သည့်အတွက် ဤစာမျက်နှာကို နောက်ပိုင်းတွင် ပြန်ဖွင့်၍ရနိုင်ပါသည်။</translation>
 <translation id="6051898664905071243">စာမျက်နှာအရေအတွက်-</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မရှိပါ</translation>
 <translation id="6058977677006700226">သင့်စက်များအားလုံးတွင် ကတ်များကို အသုံးပြုမလား။</translation>
 <translation id="6059925163896151826">USB စက်ပစ္စည်းများ</translation>
 <translation id="6060009363608157444">DnsOverHttps မုဒ် မမှန်ပါ။</translation>
@@ -1534,6 +1538,7 @@
 <translation id="6389470377220713856">ကဒ်ပေါ်ရှိ အမည်</translation>
 <translation id="6390200185239044127">Z ပုံစံ တစ်ဝက်ခေါက်ရန်</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6391700400718590966">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မပိတ်ထားပါ</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> မှ ဤနေရာသို့ ကူးထည့်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="6398765197997659313">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
 <translation id="6401136357288658127">ဤမူဝါဒကို ဆက်မသုံးတော့ပါ။ ၎င်းအစား <ph name="NEW_POLICY" /> မူဝါဒကို အသုံးပြုရပါမည်။</translation>
@@ -2039,6 +2044,7 @@
 <translation id="8190193880870196235">နောက်ဆက်တွဲက စီမံခန့်ခွဲသည်</translation>
 <translation id="8193086767630290324">လျှို့ဝှက်အဖြစ် အလံပြထားသော ဒေတာအတွက် လုပ်ဆောင်ချက်များ</translation>
 <translation id="8194797478851900357">&amp;ရွေ့ရှားမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
+<translation id="8199274926193258625"><ph name="HOSTNAME" /> က သင့်ပေးချေမှုကို အတည်ပြုရန်အတွက် ထပ်ဆောင်းအဆင့်များ လုပ်ဆောင်ရန် လိုအပ်နိုင်သည်</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" တိုးချဲ့လိုင်းအတွက် အဆင့်မြှင့်ထားသော URL သည် သုံးမရပါ။</translation>
 <translation id="8202097416529803614">မှာယူမှု စုစုပေါင်း</translation>
 <translation id="8202370299023114387">ပြဿနာ</translation>

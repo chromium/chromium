@@ -112,7 +112,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="2021670401941426298">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
-<translation id="2022352537516230970">Criado para o iPhone</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -289,8 +288,10 @@ Siga estas etapas:</translation>
 <translation id="3779810277399252432">Sem conexão com a Internet.</translation>
 <translation id="3783017676699494206">Salvar imagem</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Oferecer a opção de traduzir esse site</translation>
 <translation id="385051799172605136">Voltar</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3892144330757387737">Você verá seu histórico aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Conta conectada ao Chrome</translation>
@@ -321,7 +322,6 @@ Siga estas etapas:</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
 <translation id="418156467088430727">Ver versão off-line em uma nova guia</translation>
 <translation id="4181841719683918333">Idiomas</translation>
-<translation id="4184011057600693970">Criado para o iPad</translation>
 <translation id="424315890655130736">Informar senha longa</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267380167363222949">Próxima guia</translation>

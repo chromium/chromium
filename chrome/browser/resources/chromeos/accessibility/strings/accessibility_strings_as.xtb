@@ -425,6 +425,7 @@
 <translation id="3813387282697781382">পাতল প্ৰবালৰঙী</translation>
 <translation id="3816633764618089385">পৰৱৰ্তী মিডিয়া</translation>
 <translation id="3840823741487267909">সংক্ষিপ্ত শব্দ</translation>
+<translation id="3841319830220785495">ডিফ’ল্ট স্বাভাৱিক কণ্ঠধ্বনি</translation>
 <translation id="385383972552776628">বিকল্পসমূহৰ পৃষ্ঠা খোলক</translation>
 <translation id="3856075812838139784">কেৱল পঢ়িব পৰা</translation>
 <translation id="3857141338659865495">মধ্যমীয়া সেউজ নীলা</translation>
@@ -687,6 +688,7 @@
 <translation id="5748623122140342504">পূর্বৱর্তী স্তৰ ৫ৰ শিৰোনাম</translation>
 <translation id="5760594853119905566">পৰিশিষ্ট</translation>
 <translation id="5761219715606611783">বঢ়িয়া! আপুনি ChromeVoxৰ স্পৰ্শেৰে দিব পৰা নিৰ্দেশৰ বিষয়ে প্ৰাথমিক কথাবোৰ শিকিলে। আপুনি পুনৰ টিউট’ৰিয়েলটো চাব পাৰে অথবা তলত থকা বুটাম ব্যৱহাৰ কৰি এই টিউট’ৰিয়েলটোৰ পৰা বাহিৰ হ’ব পাৰে।</translation>
+<translation id="5776001898637896684">Google Enhanced Network text-to-speech extension</translation>
 <translation id="5805940204952508776">দুটা আঙুলিৰে টিপক</translation>
 <translation id="5819072574982403430">ট্ৰীত থকা বস্তু</translation>
 <translation id="5822819874379903994">গাঢ় সেউজ নীলা</translation>
@@ -980,6 +982,7 @@
 <translation id="7968340748835037139">গাঢ় সেউজীয়া</translation>
 <translation id="7972507042926081808">চকলেট</translation>
 <translation id="7974390230414479278">মেনুত থকা বস্তু</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" />ৰ কণ্ঠধ্বনি <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">শব্দসমূহ</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
 <translation id="8007540374018858731">h3</translation>

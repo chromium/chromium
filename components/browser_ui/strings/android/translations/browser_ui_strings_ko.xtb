@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">이렇게 하면 사이트 또는 홈 화면의 앱에서 저장한 <ph name="DATASIZE" />의 데이터 및 쿠키가 삭제됩니다.</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
-<translation id="1195941046451948919">이 웹사이트의 모든 권한을 재설정하시겠습니까?</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />에 삽입됨</translation>
 <translation id="1272079795634619415">중지</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">세부정보</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
-<translation id="4708011789095599544">이 웹사이트의 쿠키 및 기타 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4836046166855586901">사용자가 현재 기기를 사용 중인지 사이트에서 알고자 할 때 확인</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">진동</translation>
 <translation id="6388207532828177975">삭제 및 재설정</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
-<translation id="6423924377271166037">쿠키 삭제</translation>
 <translation id="6439114592976064011">사이트에서 내 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6527303717912515753">공유</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 허용하세요.</translation>
+<translation id="9162462602695099906">위험한 페이지입니다.</translation>
 <translation id="930525582205581608">사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 </translationbundle>

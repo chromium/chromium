@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Hatua hii itafuta <ph name="DATASIZE" /> ya data na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini ya kwanza.</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="1181037720776840403">Ondoa</translation>
-<translation id="1195941046451948919">Je, una uhakika ungependa kuweka upya ruhusa zote za tovuti hii?</translation>
 <translation id="1201402288615127009">Endelea</translation>
 <translation id="1242008676835033345">Imepachikwa kwenye <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Simamisha</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Maelezo</translation>
 <translation id="4645575059429386691">Inadhibitiwa na wazazi wako</translation>
 <translation id="4670064810192446073">Uhalisia pepe</translation>
-<translation id="4708011789095599544">Je, una uhakika unataka kufuta vidakuzi na data nyingine ya tovuti hii?</translation>
 <translation id="4751476147751820511">Vitambuzi vya mwendo au mwangaza</translation>
 <translation id="4836046166855586901">Tovuti ikuombe ruhusa inapotaka kujua wakati unatumia kifaa hiki</translation>
 <translation id="4883854917563148705">Huwezi kubadilisha mipangilio inayodhibitiwa</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Tetema</translation>
 <translation id="6388207532828177975">Futa na uweke upya</translation>
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
-<translation id="6423924377271166037">Futa vidakuzi</translation>
 <translation id="6439114592976064011">Zuia tovuti zisitumie data na vifaa vyako vya uhalisia pepe</translation>
 <translation id="6447842834002726250">Vidakuzi</translation>
 <translation id="6527303717912515753">Shiriki</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Washa ruhusa za <ph name="APP_NAME" /> katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Ukurasa huu ni hatari</translation>
 <translation id="930525582205581608">Ungependa kusahau tovuti hii?</translation>
 <translation id="967624055006145463">Data iliyohifadhiwa</translation>
 </translationbundle>

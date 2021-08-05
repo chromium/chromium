@@ -630,6 +630,7 @@
 <translation id="3229041911291329567">የእርስዎ መሣሪያ እና አሳሽ የስሪት መረጃ</translation>
 <translation id="323107829343500871">የ<ph name="CREDIT_CARD" /> ሲቪሲ ያስገቡ</translation>
 <translation id="3234666976984236645">ሁልጊዜ በዚህ ጣቢያ ላይ ያለ አስፈላጊ ይዘትን አግኝ</translation>
+<translation id="3240791268468473923">ደህንነቱ የተጠበቀ የመግቢያ ማስረጃ ምንም ተዛማጅ የመግቢያ ማስረጃ ሉህ አልተከፈተም</translation>
 <translation id="3249845759089040423">ቅጥ ያለው</translation>
 <translation id="3252266817569339921">ፈረንሳይኛ</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle ቀን መቁጠሪያ ውስጥ አዲስ ክስተት በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
@@ -804,6 +805,7 @@
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
 <translation id="3797522431967816232">Prc3 (የደብዳቤ ፖስታ)</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
+<translation id="380329542618494757">ስም</translation>
 <translation id="3807366285948165054">የምስል X ፈረቃ</translation>
 <translation id="3807873520724684969">ጎጂ ይዘት ታግዷል።</translation>
 <translation id="3810973564298564668">አቀናብር</translation>
@@ -818,6 +820,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ አዲስ Google ሰነድ በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3858027520442213535">ቀን እና ሰዓትን አዘምን</translation>
+<translation id="3858860766373142691">ስም</translation>
 <translation id="3881478300875776315">ያነሱ መስመሮችን አሳይ</translation>
 <translation id="3884278016824448484">የሚጋጭ የመሣሪያ ለዪ</translation>
 <translation id="3885155851504623709">ፓሪሽ</translation>
@@ -1449,6 +1452,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> የዕውቅና ማረጋገጫ ሚስማር መሰካትን ስለሚጠቀም ድር ጣቢያውን አሁን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች ብዙውን ጊዜ ጊዜያዊ ስለሆኑ ይህ ገጽ በኋላ ላይ ሊሠራ ይችላል።</translation>
 <translation id="6051898664905071243">የገጽ ብዛት፦</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">ደህንነቱ የተጠበቀ የመግቢያ ማስረጃ ምንም ተዛማጅ የመግቢያ ማስረጃ ሉህ የለም</translation>
 <translation id="6058977677006700226">በሁሉም የእርስዎ መሣሪያዎች ላይ የእርስዎ ኮርዶች ጥቅም ላይ ይዋሉ?</translation>
 <translation id="6059925163896151826">የዩኤስቢ መሣሪያዎች</translation>
 <translation id="6060009363608157444">ልክ ያልሆነ የDnsOverHttps ሁነታ።</translation>
@@ -1526,6 +1530,7 @@
 <translation id="6389470377220713856">በካርድ ላይ ያለ ስም</translation>
 <translation id="6390200185239044127">Z-እጥፋት ግማሽ</translation>
 <translation id="6390662030813198813">ምሕንድስና-E</translation>
+<translation id="6391700400718590966">ደህንነቱ የተጠበቀ የመግቢያ ማስረጃ ምንም ተዛማጅ የመግቢያ ማስረጃ ሉህ አልተዘጋም</translation>
 <translation id="6393956493820063117">ከ<ph name="ORIGIN_NAME" /> ወደዚህ አካባቢ መለጠፍ በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
 <translation id="6401136357288658127">ይህ መመሪያ ተቋርጧል። በምትኩ የ<ph name="NEW_POLICY" /> መመሪያውን መጠቀም አለብዎት።</translation>
@@ -2029,6 +2034,7 @@
 <translation id="8190193880870196235">በቅጥያ የሚተዳደር</translation>
 <translation id="8193086767630290324">ሚስጥራዊ ተብሎ በተጠቆመ ውሂብ ላይ የተወሰዱ እርምጃዎች</translation>
 <translation id="8194797478851900357">&amp;ውሰድን ቀልብስ</translation>
+<translation id="8199274926193258625"><ph name="HOSTNAME" /> ክፍያዎን ለማረጋገጥ ተጨማሪ እርምጃዎችን መውሰድ ሊፈልግ ይችላል</translation>
 <translation id="8201077131113104583">የማይሰራ የURL ዝማኔ ለቅጥያ ከመታወቂያ «<ph name="EXTENSION_ID" />» ጋር።</translation>
 <translation id="8202097416529803614">የትዕዛዝ ማጠቃለያ</translation>
 <translation id="8202370299023114387">ግጭት</translation>

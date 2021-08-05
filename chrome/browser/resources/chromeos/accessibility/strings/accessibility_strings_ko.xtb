@@ -425,6 +425,7 @@
 <translation id="3813387282697781382">라이트 코럴</translation>
 <translation id="3816633764618089385">다음 미디어</translation>
 <translation id="3840823741487267909">약어</translation>
+<translation id="3841319830220785495">기본 자연 음성</translation>
 <translation id="385383972552776628">옵션 페이지 열기</translation>
 <translation id="3856075812838139784">읽기 전용</translation>
 <translation id="3857141338659865495">미디엄 터코이즈</translation>
@@ -981,6 +982,7 @@
 <translation id="7968340748835037139">다크 그린</translation>
 <translation id="7972507042926081808">초콜릿</translation>
 <translation id="7974390230414479278">메뉴 항목</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 음성 <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">단어</translation>
 <translation id="8004512796067398576">올리기</translation>
 <translation id="8007540374018858731">h3</translation>

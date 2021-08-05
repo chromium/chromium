@@ -635,6 +635,7 @@
 <translation id="3229041911291329567">פרטי גרסה של המכשיר והדפדפן</translation>
 <translation id="323107829343500871">יש להזין את קוד האימות של הכרטיס <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">זהה תמיד תוכן חשוב באתר זה</translation>
+<translation id="3240791268468473923">הגיליון 'אין התאמה בין פרטי הכניסה לפרטי הכניסה לתשלום מאובטח' פתוח</translation>
 <translation id="3249845759089040423">מגניב</translation>
 <translation id="3252266817569339921">צרפתית</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אירוע חדש ביומן Google</translation>
@@ -809,6 +810,7 @@
 <translation id="3793574014653384240">כמות הקריסות שאירעו לאחרונה והסיבות שהובילו לקריסות האלה</translation>
 <translation id="3797522431967816232">Prc3 (Envelope)‎</translation>
 <translation id="3799805948399000906">גופן שהתבקש</translation>
+<translation id="380329542618494757">שם</translation>
 <translation id="3807366285948165054">‏הזזת תמונה על ציר X</translation>
 <translation id="3807873520724684969">תוכן מזיק נחסם.</translation>
 <translation id="3810973564298564668">ניהול</translation>
@@ -823,6 +825,7 @@
 <translation id="3848487483475744267">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות מסמך חדש ב-Google Docs</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3858027520442213535">עדכון התאריך והשעה</translation>
+<translation id="3858860766373142691">שם</translation>
 <translation id="3881478300875776315">אני רוצה לראות פחות שורות</translation>
 <translation id="3884278016824448484">מזהה מכשיר מתנגש</translation>
 <translation id="3885155851504623709">פאריש</translation>
@@ -1460,6 +1463,7 @@ Del</translation>
 <translation id="6051221802930200923">נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" />, מאחר שבאתר הזה נעשה שימוש בנעיצת אישורים. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
 <translation id="6051898664905071243">מספר דפים:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">הגיליון 'אין התאמה בין פרטי הכניסה לפרטי הכניסה לתשלום מאובטח'</translation>
 <translation id="6058977677006700226">רוצה להשתמש בכרטיסים בכל המכשירים שברשותך?</translation>
 <translation id="6059925163896151826">‏מכשירי USB</translation>
 <translation id="6060009363608157444">‏מצב DnsOverHttps לא חוקי.</translation>
@@ -1537,6 +1541,7 @@ Del</translation>
 <translation id="6389470377220713856">שם על הכרטיס</translation>
 <translation id="6390200185239044127">‏קיפול Z עד האמצע</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6391700400718590966">הגיליון 'אין התאמה בין פרטי הכניסה לפרטי הכניסה לתשלום מאובטח' סגור</translation>
 <translation id="6393956493820063117">אפשרות ההדבקה מ-<ph name="ORIGIN_NAME" /> במיקום הזה חסומה בהתאם למדיניות של מנהל המערכת</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="6401136357288658127">המדיניות הזו הוצאה משימוש. במקומה יש להשתמש במדיניות <ph name="NEW_POLICY" />.</translation>
@@ -2040,6 +2045,7 @@ Del</translation>
 <translation id="8190193880870196235">מנוהלת על-ידי תוסף</translation>
 <translation id="8193086767630290324">פעולות שנעשו בנתונים שמסומנים כסודיים</translation>
 <translation id="8194797478851900357">&amp;ביטול העברה</translation>
+<translation id="8199274926193258625">ייתכן שיידרשו שלבים נוספים לאימות התשלום שלך על ידי <ph name="HOSTNAME" /></translation>
 <translation id="8201077131113104583">כתובת אתר לא חוקית לעדכון עבור תוסף עם המזהה "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>

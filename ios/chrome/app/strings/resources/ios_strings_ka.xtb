@@ -112,7 +112,6 @@
 <translation id="1989112275319619282">დათვალიერება</translation>
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
 <translation id="2021670401941426298">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია.</translation>
-<translation id="2022352537516230970">შექმნილია iPhone-ისთვის</translation>
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -289,8 +288,10 @@
 <translation id="3779810277399252432">ინტერნეტთან კავშირი არ არის.</translation>
 <translation id="3783017676699494206">გამოსახულების შენახვა</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
+<translation id="380329542618494757">სახელი</translation>
 <translation id="3803696231112616155">ამ საიტის თარგმნის შემოთავაზება</translation>
 <translation id="385051799172605136">უკან</translation>
+<translation id="3858860766373142691">სახელი</translation>
 <translation id="3892144330757387737">აქ იპოვით თქვენს ისტორიას</translation>
 <translation id="3897092660631435901">მენიუ</translation>
 <translation id="3913386780052199712">შესული ხართ Chrome-ში</translation>
@@ -321,7 +322,6 @@
 <translation id="4172051516777682613">ყოველთვის ჩვენება</translation>
 <translation id="418156467088430727">ხაზგარეშე ვერსიის ახალ ჩანართში ნახვა</translation>
 <translation id="4181841719683918333">ენები</translation>
-<translation id="4184011057600693970">შექმნილია iPad-ისთვის</translation>
 <translation id="424315890655130736">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="4263576668337963058">გვერდთან დაკავშირებული ხელმისაწვდომი ქმედებების ჩვენება</translation>
 <translation id="4267380167363222949">შემდეგი ჩანართი</translation>

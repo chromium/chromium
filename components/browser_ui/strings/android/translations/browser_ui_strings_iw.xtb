@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">‏הפעולה הזאת תמחק <ph name="DATASIZE" /> של נתונים וקובצי cookie שאתרים ואפליקציות שמרו במסך הבית.</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
-<translation id="1195941046451948919">ההרשאות שניתנו לאתר הזה יאופסו להגדרת ברירת המחדל. להמשיך?</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">הפסקה</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">פרטים</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
-<translation id="4708011789095599544">‏האם למחוק את קובצי ה-cookie ונתוני אתר נוספים של אתר זה?</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
 <translation id="4836046166855586901">תוצג שאלה כשאתר יבקש לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6388207532828177975">ניקוי ואיפוס</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
-<translation id="6423924377271166037">‏ניקוי קובצי cookie</translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6527303717912515753">שיתוף</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}two{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">הדף הזה מסוכן</translation>
 <translation id="930525582205581608">לשכוח את האתר הזה?</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>
 </translationbundle>

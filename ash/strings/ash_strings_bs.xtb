@@ -618,6 +618,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
+<translation id="5867217927013474703">Prikupljanje informacija o mreži</translation>
 <translation id="5876666360658629066">Unesite kôd za roditelja</translation>
 <translation id="5881540930187678962">Kasnije postavite Phone Hub</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
@@ -692,6 +693,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6482559668224714696">Povećalo za cijeli ekran</translation>
 <translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
 <translation id="649452524636452238">PIN pametne kartice</translation>
+<translation id="6500818810472529210">Pogledajte rezultat u Google Pretraživanju</translation>
 <translation id="6501401484702599040">Emitiranje ekrana na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Odaberite prozor za snimanje</translation>
 <translation id="652139407789908527">Vaš ekran će se tokom ovog ažuriranja isključiti na duži period (do jedne minute). Nemojte pritisnuti dugme za uključivanje tokom ažuriranja.</translation>
@@ -936,7 +938,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8413272770729657668">Snimanje počinje za 3, 2, 1</translation>
 <translation id="8425213833346101688">Izmijeni</translation>
 <translation id="8426708595819210923">Dobro veče <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">Diktiranje šalje vaš glas Googleu kako bi se omogućilo pisanje glasom u bilo kojoj rubrici za tekst.</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8433186206711564395">Postavke mreže</translation>
 <translation id="8433977262951327081">Promijenjena je prečica za prikaz balona menija s opcijama unosa na polici. Koristite <ph name="NEW_SHORTCUT" /> umjesto <ph name="OLD_SHORTCUT" />.</translation>
@@ -990,6 +991,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8818320199597151042">Uklanjanje profila. Pričekajte nekoliko minuta.</translation>
 <translation id="8825863694328519386">Prevucite prstom slijeva nadesno da se vratite</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Možete bilo kada zaustaviti snimanje paketa.</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
 <translation id="8843682306134542540">Uključi/isključi zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

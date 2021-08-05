@@ -13,6 +13,7 @@
 <translation id="107147699690128016">Si cambias la extensión del archivo, el archivo podría abrirse en una aplicación diferente y convertirse en un riesgo potencial para tu dispositivo.</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir en pestaña nueva en grupo</translation>
+<translation id="1103142993930332957">¿Quieres ayudar a mejorar Chrome?</translation>
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1110914759170138831">Se ha recortado el texto destacado</translation>
 <translation id="1111673857033749125">Aquí aparecen los marcadores que hayas guardado en otros dispositivos.</translation>
@@ -157,6 +158,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Buscar en Internet</translation>
 <translation id="2056878612599315956">Sitio web en pausa</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se ha podido descargar 1 archivo}other{No se han podido descargar # archivos}}</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Ver el siguiente vídeo</translation>
 <translation id="2074143993849053708">Interfaz de consentimiento de la búsqueda por voz del Asistente cerrada</translation>
@@ -194,7 +196,6 @@ Toca cualquier palabra para buscarla. Para acotar la búsqueda, mantén pulsado 
 <translation id="2276696007612801991">Inicia sesión en tu cuenta de Google para comprobar tus contraseñas</translation>
 <translation id="2278052315791335171">Al eliminar esta contraseña, no se eliminará tu cuenta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
-<translation id="2294030144029925122">Política de Privacidad de Chrome</translation>
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="230155349749732438">Para usar este ajuste, la función <ph name="BEGIN_LINK" />Mejorar las búsquedas y la navegación<ph name="END_LINK" /> debe estar activada</translation>
 <translation id="2318045970523081853">Toca para llamar</translation>
@@ -212,6 +213,7 @@ Toca cualquier palabra para buscarla. Para acotar la búsqueda, mantén pulsado 
 <translation id="2345671828921229300">Para buscar, mantén pulsada una palabra.</translation>
 <translation id="2349710944427398404">Datos totales utilizados por Chrome, incluidos los marcadores, las cuentas y la configuración guardada</translation>
 <translation id="2353636109065292463">Comprobar tu conexión a Internet</translation>
+<translation id="235789365079050412">Política de Privacidad de Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2369533728426058518">pestañas abiertas</translation>
 <translation id="2386938421315164605">Ocultar y mostrar temas</translation>
@@ -313,6 +315,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2979448359891869301">No se puede ampliar la captura de pantalla. Vuelve a intentarlo cuando tu teléfono no esté realizando otras tareas.</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
+<translation id="2981364137500752533">Puedes tener hasta 5 ventanas.</translation>
 <translation id="2987620471460279764">Texto compartido desde otro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2992473221983447149">Descripciones de imágenes</translation>
@@ -444,6 +447,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="3819178904835489326">Descargas eliminadas: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3845098929839618392">Abrir en pestaña de incógnito</translation>
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
@@ -523,6 +527,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="4411535500181276704">Modo básico</translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y software malicioso.</translation>
+<translation id="4450672886426705087">Resultados de la Búsqueda de Google.</translation>
 <translation id="4452411734226507615">Cerrar la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador añadido a <ph name="FOLDER_NAME" /></translation>
 <translation id="4472118726404937099">Inicia sesión y activa la sincronización para sincronizar y personalizar todos tus dispositivos</translation>
@@ -978,6 +983,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="718926126787620637">Lista con carpetas de marcadores abierta a altura completa</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano.</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="7233236755231902816">Si quieres ver la Web en tu idioma, consigue la última versión de Chrome</translation>
 <translation id="7242755609445462077">Estilizado resaltado el <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Asegúrate de que la sincronización de tu <ph name="TARGET_DEVICE_NAME" /> está activada en Chrome</translation>
@@ -1173,7 +1179,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8354977102499939946">Busca rápidamente con la voz. Para editar esta combinación de teclas, ve a Configuración.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
 <translation id="8364299278605033898">Descubre los sitios web populares</translation>
-<translation id="8372925856448695381"><ph name="LANG" /> ya está listo.</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8410695015584479363">Seguir precios</translation>

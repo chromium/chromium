@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">此操作会清除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="1195941046451948919">确定要重置此网站的所有权限吗？</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1242008676835033345">嵌入来源：<ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">停止</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">详情</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4670064810192446073">虚拟实境</translation>
-<translation id="4708011789095599544">确定要清除此网站的 Cookie 和其他网站数据吗？</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
 <translation id="4883854917563148705">无法重置托管设置</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">振动</translation>
 <translation id="6388207532828177975">清除并重置</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
-<translation id="6423924377271166037">清除 Cookie</translation>
 <translation id="6439114592976064011">禁止网站使用您的虚拟实境设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
+<translation id="9162462602695099906">这是一个危险网页</translation>
 <translation id="930525582205581608">移除此网站？</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 </translationbundle>

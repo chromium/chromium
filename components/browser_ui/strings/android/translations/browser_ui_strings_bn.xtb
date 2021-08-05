@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">এটি করলে, আপনার হোম স্ক্রিনে সাইট বা অ্যাপের মাধ্যমে সেভ হওয়া <ph name="DATASIZE" /> ডেটা এবং কুকি মুছে যাবে।</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1181037720776840403">সরান</translation>
-<translation id="1195941046451948919">আপনি কি এই ওয়েবসাইটের জন্য সব অনুমতি সত্যিই রিসেট করতে চান?</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-এ এম্বেড করা হয়েছে</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">বিবরণ</translation>
 <translation id="4645575059429386691">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
-<translation id="4708011789095599544">আপনি কি সত্যিই এই ওয়েবসাইটে কুকি ও অন্যান্য সাইট ডেটা মুছে দিতে চান?</translation>
 <translation id="4751476147751820511">মোশন বা হালকা সেন্সর</translation>
 <translation id="4836046166855586901">সাইটকে এটি জানতে দিন যে এই ডিভাইসের ব্যবহার আপনি সক্রিয়ভাবে কখন করেন</translation>
 <translation id="4883854917563148705">ম্যানেজ করা সেটিংস রিসেট করা যায় না</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">কম্পন</translation>
 <translation id="6388207532828177975">পরিষ্কার এবং রিসেট করুন</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
-<translation id="6423924377271166037">কুকিজ মুছে দিন</translation>
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>
+<translation id="9162462602695099906">এই পৃষ্ঠাটি বিপজ্জনক</translation>
 <translation id="930525582205581608">এই সাইট সম্পর্কিত সবকিছু সরিয়ে দেবেন?</translation>
 <translation id="967624055006145463">ডেটা স্টোর করা হয়েছে</translation>
 </translationbundle>

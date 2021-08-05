@@ -635,6 +635,7 @@
 <translation id="3229041911291329567">Звесткі пра версію прылады і браўзера</translation>
 <translation id="323107829343500871">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Заўсёды выяўляць важнае змесціва на гэтым сайце</translation>
+<translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="3249845759089040423">Стыльны</translation>
 <translation id="3252266817569339921">Французская</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую падзею ў Google Календары, націсніце Tab, затым Enter</translation>
@@ -808,6 +809,7 @@
 <translation id="3793574014653384240">Колькасць і прычыны нядаўніх збояў</translation>
 <translation id="3797522431967816232">Prc3 (канверт)</translation>
 <translation id="3799805948399000906">Запытаны шрыфт</translation>
+<translation id="380329542618494757">Імя</translation>
 <translation id="3807366285948165054">Зрух відарыса па восі X</translation>
 <translation id="3807873520724684969">Заблакіравана шкоднае змесціва.</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
@@ -822,6 +824,7 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новы дакумент Google, націсніце Tab, затым Enter</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858027520442213535">Абнавіць дату і час</translation>
+<translation id="3858860766373142691">Назва</translation>
 <translation id="3881478300875776315">Паказваць менш радкоў</translation>
 <translation id="3884278016824448484">Канфлікт ідэнтыфікатара прылады</translation>
 <translation id="3885155851504623709">Прыход</translation>
@@ -1456,6 +1459,7 @@
 <translation id="6051221802930200923">Вы не можаце адкрыць вэб-сайт <ph name="SITE" />, бо ён выкарыстоўвае механізм замацоўвання сертыфікатаў. Сеткавыя памылкі і атакі звычайна маюць часовы характар. Хутчэй за ўсё, праз некаторы час вэб-сайт будзе працаваць зноў.</translation>
 <translation id="6051898664905071243">Колькасць старонак:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6055888660316801977">Аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="6058977677006700226">Выкарыстоўваць вашы карткі на ўсіх прыладах?</translation>
 <translation id="6059925163896151826">Прылады USB</translation>
 <translation id="6060009363608157444">Няправільны рэжым DnsOverHttps.</translation>
@@ -1533,6 +1537,7 @@
 <translation id="6389470377220713856">Імя на картцы</translation>
 <translation id="6390200185239044127">Z-падобны згіб напалову сагнутага аркуша</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
+<translation id="6391700400718590966">Быў закрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="6393956493820063117">Палітыка, зададзеная адміністратарам, блакіруе магчымасць устаўляць сюды элементы з сайта <ph name="ORIGIN_NAME" /></translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="6401136357288658127">Гэта палітыка састарэла – выкарыстоўвайце замест яе "<ph name="NEW_POLICY" />".</translation>
@@ -2037,6 +2042,7 @@
 <translation id="8190193880870196235">Пад кіраваннем пашырэння</translation>
 <translation id="8193086767630290324">Дзеянні з данымі, пазначанымі як канфідэнцыяльныя</translation>
 <translation id="8194797478851900357">&amp;Адрабіць перамяшчэнне</translation>
+<translation id="8199274926193258625">Каб спраўдзіць ваш плацеж, сайту <ph name="HOSTNAME" /> можа спатрэбіцца выканаць дадатковыя дзеянні</translation>
 <translation id="8201077131113104583">Недапушчальны URL-адрас абнаўлення для пашырэння з ідэнтыфікатарам "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Зводка па заказе</translation>
 <translation id="8202370299023114387">Канфлікт</translation>

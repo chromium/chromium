@@ -32,7 +32,6 @@
 <translation id="1032605640136438169">Ծանոթացեք նոր պայմաններին</translation>
 <translation id="103279545524624934">Android հավելվածները գործարկելու համար ազատեք սկավառակի տարածքը:</translation>
 <translation id="1033780634303702874">Մուտք գործել ձեր հաջորդական սարքեր</translation>
-<translation id="1034942643314881546">Միացրեք ADB-ն՝ հավելվածների պատկեր ստեղծելու համար</translation>
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1036511912703768636">Մտնել այս USB սարքերից ցանկացածը</translation>
 <translation id="1036982837258183574">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
@@ -692,7 +691,6 @@
 <translation id="1721312023322545264">Այս էջն այցելելու համար հարկավոր է <ph name="NAME" />-ի թույլտվությունը</translation>
 <translation id="1722460139690167654">Ձեր <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> կայքի կողմից</translation>
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
-<translation id="1725149567830788547">Ցույց տալ &amp;կառավարները</translation>
 <translation id="1725562816265788801">Ներդիրների ոլորում</translation>
 <translation id="1727662110063605623">Անցեք Կարգավորումներ՝ <ph name="USB_DEVICE_NAME" /> սարքը Parallels Desktop-ին կամ Լինուքսին միացնելու համար</translation>
 <translation id="1729533290416704613">Այն նաև վերահսկում է ցուցադրվող էջերը, երբ դուք որոնում եք կատարում Omnibox-ից:</translation>
@@ -1230,6 +1228,7 @@
 <translation id="2278668501808246459">Կոնտեյներների կառավարիչը գործարկվում է</translation>
 <translation id="2280486287150724112">Աջ լուսանցք</translation>
 <translation id="2282146716419988068">GPU գործընթացը</translation>
+<translation id="2285109769884538519">{COUNT,plural, =0{Բացել բոլորը &amp;նոր ներդիրների խմբում}=1{Բացել &amp;նոր ներդիրների խմբում}one{Բացել բոլորը ({COUNT}) &amp;նոր ներդիրների խմբում}other{Բացել բոլորը ({COUNT}) &amp;նոր ներդիրների խմբում}}</translation>
 <translation id="2285942871162473373">Չհաջողվեց ճանաչել ձեր մատնահետքը։ Նորից փորձեք։</translation>
 <translation id="2287944065963043964">Մուտքի էկրան</translation>
 <translation id="2288181517385084064">Փոխարկել տեսանյութի ռեժիմի</translation>
@@ -2660,6 +2659,7 @@
 <translation id="3799128412641261490">Switch Access-ի կարգավորումներ</translation>
 <translation id="3799903419983101749">Շարունակեք աշխատանքը այն տեղից, որտեղ կանգ էիք առել։ Կարգավորումներում դուք կարող եք սահմանել հավելվածների ավտոմատ վերականգնման պարամետրեր։</translation>
 <translation id="3800806661949714323">Ցույց տալ բոլորը (հանձնարարելի)</translation>
+<translation id="380329542618494757">Անուն</translation>
 <translation id="3803345858388753269">Տեսանյութի որակը</translation>
 <translation id="380408572480438692">Միացնելով կատարողականության տվյալների հավաքումը՝ Google-ին կօգնեք ժամանակի ընթացքում բարելավել համակարգը: Ոչ մի տվյալ չի ուղարկվի, մինչև դուք չուղարկեք արձագանքը (Alt-Shift-I) և չներառեք կատարողականության տվյալները: Ցանկացած պահի կարող եք վերադառնալ այս էկրանին և անջատել տվյալների հավաքումը:</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> ընդլայնումը (ID-ն՝ «<ph name="EXTENSION_ID" />») չի թույլատրվում մուտքի էկրանին։</translation>
@@ -2721,6 +2721,7 @@
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3856800405688283469">Ընտրեք ժամային գոտին</translation>
 <translation id="3857807444929313943">Բարձրացրեք մատը և նորից փորձեք</translation>
+<translation id="3858860766373142691">Անուն</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
 <translation id="3861977424605124250">Ցույց տալ գործարկման ժամանակ</translation>
 <translation id="386239283124269513">&amp;Վերականգնել խումբը</translation>
@@ -3004,6 +3005,7 @@
 <translation id="4158364720893025815">Ստուգումն անցել է</translation>
 <translation id="4159681666905192102">Սա երեխայի հաշիվ է, որը կառավարվում է <ph name="CUSTODIAN_EMAIL" />-ի և <ph name="SECOND_CUSTODIAN_EMAIL" />-ի կողմից:</translation>
 <translation id="4163560723127662357">Անհայտ ստեղնաշար</translation>
+<translation id="4165942112764990069"><ph name="USER_EMAIL" /> հասցեն չի պատկանում վավեր կազմակերպության։ Դիմեք ձեր ադմինիստրատորին։ Եթե դուք ադմինիստրատոր եք, կարող եք ձեր կազմակերպության հաշիվը կարգավորել այստեղ՝ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Կայքերը սովորաբար օգտագործում են JavaScript՝ ինտերակտիվ գործառույթների, օրինակ՝ տեսախաղերի կամ վեբ ձևերի համար</translation>
 <translation id="4168015872538332605">Որոշ կարգավորումներ, որոնք պատկանում են <ph name="PRIMARY_EMAIL" />-ին, համօգտագործվում են ձեզ հետ: Այս կարգավորումները ներգործում են ձեր հաշվի վրա միայն բազմակի մուտքի ժամանակ:</translation>
 <translation id="4169535189173047238">Չեղարկել</translation>
@@ -3393,7 +3395,6 @@
 <translation id="4602466770786743961">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել ձեր խոսափողը</translation>
 <translation id="4606551464649945562">Թույլ չտալ կայքերին ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="4608500690299898628">&amp;Գտնել…</translation>
-<translation id="4608520674724523647">«Գրանցումը հաջողվեց» պատկեր</translation>
 <translation id="4608703838363792434">«<ph name="FILE_NAME" />» ֆայլը պարունակում է խիստ անձնական բովանդակություն</translation>
 <translation id="4609987916561367134">Թույլատրվում է օգտագործել JavaScript</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> փլագինում սխալ է առաջացել</translation>
@@ -4033,11 +4034,11 @@
 <translation id="5315738755890845852">Ավելորդ ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319359161174645648">Google-ը խորհուրդ է տալիս Chrome դիտարկիչը</translation>
+<translation id="5319712128756744240">Նոր սարքի զուգակցում</translation>
 <translation id="5320135788267874712">Սարքի նոր անվանումը</translation>
 <translation id="532247166573571973">Սերվերն անհասանելի է: Փորձեք մի փոքր ուշ:</translation>
 <translation id="5324300749339591280">Հավելվածների ցանկ</translation>
 <translation id="5324780743567488672">Սահմանել ժամային գոտին ավտոմատ՝ ձեր տեղադրության հիման վրա</translation>
-<translation id="5327248766486351172">Անուն</translation>
 <translation id="5327570636534774768">Այս սարքը կառավարվում է մեկ այլ տիրույթի կողմից։ Նախքան դեմո ռեժիմը կարգավորելը անջատեք այդ կապը։</translation>
 <translation id="5327912693242073631">Գործառույթները, որոնց համար պահանջվում են ծանուցումներ, չեն աշխատի</translation>
 <translation id="532943162177641444"><ph name="PHONE_NAME" /> հեռախոսում հպեք ծանուցմանը՝ այս սարքի համար բջջային թեժ կետ ստեղծելու համար։</translation>
@@ -4136,6 +4137,7 @@
 <translation id="5442550868130618860">Միացնել ինքնաթարմացումը</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Ցուցադրել կազմակերպության վկայագրերը</translation>
+<translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> տարր</translation>
 <translation id="5448293924669608770">Խնդիր առաջացավ մուտք գործելու ընթացքում</translation>
 <translation id="5449551289610225147">Սխալ գաղտնաբառ</translation>
 <translation id="5449588825071916739">Բոլոր ներդիրների էջանշում</translation>
@@ -4641,6 +4643,7 @@
 <translation id="6007240208646052708">Ձայնային որոնումը ձեր լեզվով հասանելի չէ:</translation>
 <translation id="6011193465932186973">Մատնահետք</translation>
 <translation id="6011449291337289699">Մաքրել կայքի տվյալները</translation>
+<translation id="6011908034087870826">Հղումն ուղարկվում է <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="6013027779243312217">Ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="6015796118275082299">Տարի</translation>
 <translation id="6016178549409952427">Անցնել լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
@@ -4819,6 +4822,7 @@
 <translation id="6208725777148613371">Չհաջողվեց պահել «<ph name="WEB_DRIVE" />» ցուցակում – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Բաղադրիչի թարմացում</translation>
 <translation id="6209908325007204267">Ձեր սարքում առկա է Chrome Enterprise-ի արտոնագիր, բայց ձեր օգտանունը կապված չէ կազմակերպության հաշվի հետ։ Մեկ այլ սարքով անցեք g.co/ChromeEnterpriseAccount էջ և ստեղծեք կազմակերպության հաշիվ։</translation>
+<translation id="621172521139737651">{COUNT,plural, =0{Բացել բոլորը &amp;Նոր ներդիրների խմբում}=1{Բացել &amp;Նոր ներդիրների խմբում}one{Բացել բոլորը ({COUNT}) &amp;Նոր ներդիրների խմբում}other{Բացել բոլորը ({COUNT}) &amp;Նոր ներդիրների խմբում}}</translation>
 <translation id="6212039847102026977">Ցուցադրել ցանցի լրացուցիչ հատկությունները</translation>
 <translation id="6212168817037875041">Անջատել էկրանը</translation>
 <translation id="6212752530110374741">Ուղարկել հղումը էլփոստով</translation>
@@ -5069,7 +5073,6 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6469557521904094793">Միացնել բջջային ցանցը</translation>
 <translation id="6472893788822429178">Ցույց տալ Սկիզբ կոճակը</translation>
-<translation id="6473842110411557830">Powerwash պատկերազարդում</translation>
 <translation id="6474498546677193336">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Լինուքսը հաջորդ անգամ անջատվի։</translation>
 <translation id="6474884162850599008">Google Drive հաշվի անջատում</translation>
 <translation id="6475294023568239942">Սկավառակում տարածք ազատեք կամ կարգավորումներում փոխեք Լինուքսի սկավառակի չափսը</translation>
@@ -5277,7 +5280,6 @@
 <translation id="6700480081846086223">Հեռարձակել <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Չհաջողվեց ստանալ պրոֆիլը:</translation>
 <translation id="6702639462873609204">&amp;Փոփոխել...</translation>
-<translation id="6703966911896067184">Գրանցման սխալի օրինակ</translation>
 <translation id="6706210727756204531">Ընդգրկույթ</translation>
 <translation id="6707389671160270963">SSL սպասառուի վկայագիր</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> ու ևս 1 ներդիր}one{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}other{<ph name="PAGE_TITLE" /> ու ևս # ներդիր}}</translation>
@@ -5657,6 +5659,7 @@
 <translation id="7109543803214225826">Դյուրանցումը հեռացվեց</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիրներ խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
 <translation id="7111822978084196600">Անվանեք այս պատուհանը</translation>
+<translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> տարր</translation>
 <translation id="7113502843173351041">Տեսնել ձեր էլ․ հասցեն</translation>
 <translation id="7114054701490058191">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="7114648273807173152">Smart Lock-ն օգտագործելու համար մտեք ձեր Google հաշիվ, անցեք Կարգավորումներ &gt; Միացված սարքեր &gt; Ձեր հեռախոսը &gt; Smart Lock:</translation>
@@ -5820,7 +5823,6 @@
 <translation id="7307129035224081534">Դադարեցված է</translation>
 <translation id="7308436126008021607">ֆոնային համաժամացում</translation>
 <translation id="7308643132139167865">Կայքերի լեզուներ</translation>
-<translation id="7309257895202129721">Ցույց տալ &amp;կառավարները</translation>
 <translation id="7310598146671372464">Չհաջողվեց մտնել հաշիվ: Սերվերը չի աջակցում Kerberos գաղտնագրման նշված տեսակները: Կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="7320213904474460808">Կանխադրված ցանց</translation>
 <translation id="7321545336522791733">Սերվերն անհասանելի է</translation>
@@ -6900,6 +6902,7 @@
 <translation id="8425492902634685834">Ամրացնել խնդրագոտուն</translation>
 <translation id="8425768983279799676">Դուք կարող եք օգտագործել ձեր PIN կոդը՝ ձեր սարքն ապակողպելու համար:</translation>
 <translation id="8426713856918551002">Միացում</translation>
+<translation id="8427213022735114808">Թելադրելու գործառույթն ուղարկում է ձեր ձայնը Google-ին, ինչը թույլ է տալիս թելադրելով լրացնել տեքստային դաշտերը։</translation>
 <translation id="8427292751741042100">ներկառուցված է ցանկացած խնամորդում</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428271547607112339">Ավելացնել ուսումնական հաշիվ</translation>
@@ -6919,7 +6922,6 @@
 <translation id="8448729345478502352">Փոփոխեք էկրանի տարրերի չափը</translation>
 <translation id="8449008133205184768">Տեղադրել՝ ոճի համապատասխանությամբ</translation>
 <translation id="8449036207308062757">Կառավարել հիշողությունը</translation>
-<translation id="8455026683977728932">Չհաջողվեց միացնել ADB պատկերը</translation>
 <translation id="8456512334795994339">Գտեք հավելվածներ աշխատանքի և խաղալու համար</translation>
 <translation id="8456761643544401578">Ավոտմատ մուգ ռեժիմ</translation>
 <translation id="845702320058262034">Կապ չկա։ Համոզվեք, որ հեռախոսի Bluetooth-ը միացված է։</translation>
@@ -7620,7 +7622,6 @@
 <translation id="917510707618656279">Հարցնել, երբ որևէ կայք ուզում է օգտագործել Bluetooth սարքեր</translation>
 <translation id="9176476835295860688">Օգտագործման և դիագնոստիկ տվյալների ուղարկում Ներկայումս այս սարքը ախտորոշման, սարքի և հավելվածի օգտագործման տվյալներն ավտոմատ ուղարկում է Google-ին: Այս տեղեկությունները կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը: Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Այս <ph name="BEGIN_LINK1" />կարգավորումը<ph name="END_LINK1" /> պարտադրված է սեփականատիրոջ կողմից: Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է, այս տվյալները կպահվեն ձեր Google հաշվում։ <ph name="BEGIN_LINK2" />Մանրամասն<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth սարքը միացված է</translation>
-<translation id="9176817945195089764">Տիրույթը (<ph name="DOMAIN" />) վավեր կազմակերպություն չէ։ Դիմեք ձեր ադմինիստրատորին։ Եթե դուք ադմինիստրատոր եք, կարող եք ձեր կազմակերպության հաշիվը կարգավորել այստեղ՝ g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">Օգտանունը մուտքի էկրանին</translation>
 <translation id="9180281769944411366">Այս գործընթացը կարող է տևել մի քանի րոպե: Linux-ի կոնտեյները գործարկվում է:</translation>
 <translation id="9180380851667544951">Կայքը կարող է ցուցադրել ձեր սարքի էկրանը այլ մարդկանց</translation>

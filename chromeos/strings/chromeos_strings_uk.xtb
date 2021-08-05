@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">Затримка DNS</translation>
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
 <translation id="1238612778414822719">Затримка HTTPS</translation>
+<translation id="1264369926465113395">Перегляньте новий цифровий журнал Chromebook для авторів</translation>
 <translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">Щоб почати, покладіть документ і виберіть опцію "Сканувати"</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
-<translation id="2983662233540284543">Навчайтеся в авторів ігрового контенту й отримайте доступ до додатків для створення ігор та іншого матеріалу</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3540383942695635079">MAC-адреса</translation>
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
+<translation id="3582041541988388905">Підключення <ph name="NETWORK_NAME" /> не виявлено</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
+<translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
-<translation id="519607504553633437">Розробляйте власні ігри</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
 Торкніться значка мікрофона, щоб поставити запитання.</translation>
 <translation id="5222676887888702881">Вийти</translation>
@@ -246,7 +247,6 @@
 <translation id="5691511426247308406">Сім’я</translation>
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Створити власну гру</translation>
 <translation id="5760715441271661976">Стан порталу</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="583281660410589416">Невідомий</translation>
@@ -296,6 +296,7 @@
 <translation id="65587193855025101">Планшетний сканер</translation>
 <translation id="6564646048574748301">Не надруковано – принтер недоступний</translation>
 <translation id="6574762126505704998">Заповнення</translation>
+<translation id="6579235177984085399">Перегляньте нові інструменти для малювання та дизайну</translation>
 <translation id="6596816719288285829">ІР-адреса</translation>
 <translation id="6603230386432466813">Проблеми з підключенням?</translation>
 <translation id="6618744767048954150">Виконується</translation>
@@ -375,7 +376,9 @@
 <translation id="8214184102975786227">Сканувати кілька сторінок в один файл PDF</translation>
 <translation id="8230672074305416752">Не вдалося надіслати запит ping шлюзу мережі за умовчанням</translation>
 <translation id="8246209727385807362">Невідомий оператор</translation>
+<translation id="8286154143153872371">Щоб переглянути фоновий малюнок, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="8291967909914612644">Країна локального постачальника</translation>
+<translation id="829270796093605079">Інструменти для дизайну</translation>
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8302368968391049045">Брандмауер HTTPS</translation>

@@ -112,7 +112,6 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="2021670401941426298">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við.</translation>
-<translation id="2022352537516230970">Sérhannað fyrir iPhone</translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
@@ -289,8 +288,10 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3779810277399252432">Engin internettenging.</translation>
 <translation id="3783017676699494206">Vista mynd</translation>
 <translation id="3789841737615482174">Setja upp</translation>
+<translation id="380329542618494757">Nafn</translation>
 <translation id="3803696231112616155">Bjóðast til að þýða þetta vefsvæði</translation>
 <translation id="385051799172605136">Til baka</translation>
+<translation id="3858860766373142691">Heiti</translation>
 <translation id="3892144330757387737">Þú finnur ferilinn þinn hér</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3913386780052199712">Skráð(ur) inn á Chrome</translation>
@@ -321,7 +322,6 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4172051516777682613">Sýna alltaf</translation>
 <translation id="418156467088430727">Skoða skrá án nettengingar í nýjum flipa</translation>
 <translation id="4181841719683918333">Tungumál</translation>
-<translation id="4184011057600693970">Sérhannað fyrir iPad</translation>
 <translation id="424315890655130736">Sláðu inn aðgangsorð</translation>
 <translation id="4263576668337963058">Sýna tiltækar aðgerðir fyrir síðu</translation>
 <translation id="4267380167363222949">Næsti flipi</translation>

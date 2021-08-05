@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">Opóźnienie DNS</translation>
 <translation id="123124571410524056">Podejrzany portal</translation>
 <translation id="1238612778414822719">Opóźnienie HTTPS</translation>
+<translation id="1264369926465113395">Poznaj nowe cyfrowe czasopismo Chromebooka dla twórców</translation>
 <translation id="1270369111467284986">Podejrzany portal przechwytujący</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1314565355471455267">VPN na Androida</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">Na początek umieść dokument na skanerze i wybierz Skanuj</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2878387241690264070">Rozładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> sekund.</translation>
-<translation id="2983662233540284543">Ucz się od twórcy gier, korzystaj z aplikacji do ich projektowania i nie tylko</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3540383942695635079">Adres MAC</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
+<translation id="3582041541988388905">Nie wykryto połączenia z siecią <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Wyczyść całą historię</translation>
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
+<translation id="3858860766373142691">Nazwa</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">Pamięć</translation>
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
-<translation id="519607504553633437">Projektuj i twórz własne gry</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
@@ -246,7 +247,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5691511426247308406">Rodzina</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Stwórz własną grę</translation>
 <translation id="5760715441271661976">Stan portalu</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="583281660410589416">Nieznany</translation>
@@ -296,6 +296,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="65587193855025101">Szyba</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
 <translation id="6574762126505704998">Wypełnienie</translation>
+<translation id="6579235177984085399">Odkryj nowe narzędzia do rysowania i projektowania</translation>
 <translation id="6596816719288285829">Adres IP</translation>
 <translation id="6603230386432466813">Masz kłopoty z nawiązaniem połączenia?</translation>
 <translation id="6618744767048954150">W toku</translation>
@@ -375,7 +376,9 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8214184102975786227">Zeskanuj kilka stron do 1 pliku PDF</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
+<translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>
+<translation id="829270796093605079">Narzędzia do projektowania</translation>
 <translation id="8294431847097064396">Źródło</translation>
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8302368968391049045">Zapora sieciowa HTTPS</translation>

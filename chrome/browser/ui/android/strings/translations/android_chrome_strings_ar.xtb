@@ -158,6 +158,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">البحث في الإنترنت</translation>
 <translation id="2056878612599315956">تم إيقاف الموقع الإلكتروني مؤقتًا</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{أخفق تنزيل واحد}zero{أخفق # تنزيل}two{أخفق تنزيلان (#)}few{أخفقت # تنزيلات}many{أخفق # تنزيلاً}other{أخفق # تنزيل}}</translation>
 <translation id="2067805253194386918">نص</translation>
 <translation id="2068748236079642969">مشاهدة الفيديو التالي</translation>
 <translation id="2074143993849053708">‏تم إغلاق واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google".</translation>
@@ -195,7 +196,6 @@
 <translation id="2276696007612801991">‏يُرجى تسجيل الدخول إلى حسابك على Google للتحقُّق من كلمات المرور.</translation>
 <translation id="2278052315791335171">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">عنوان الفاتورة</translation>
-<translation id="2294030144029925122">‏سياسة خصوصية Chrome</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
 <translation id="230155349749732438">لاستخدام هذا الإعداد، يجب تفعيل الخيار <ph name="BEGIN_LINK" />تحسين عمليات البحث والتصفُّح<ph name="END_LINK" />.</translation>
 <translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
@@ -213,6 +213,7 @@
 <translation id="2345671828921229300">للبحث، انقر مع الاستمرار على كلمة معيّنة.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
 <translation id="2353636109065292463">التحقُّق من اتصال الإنترنت</translation>
+<translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2369533728426058518">علامات التبويب المفتوحة</translation>
 <translation id="2386938421315164605">إخفاء المواضيع وإظهارها</translation>
@@ -314,6 +315,7 @@
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
 <translation id="2979448359891869301">يتعذّر توسيع نافذة لقطة الشاشة. حاوِل مرة أخرى عندما يتوفّر قدر كافٍ من الذاكرة.</translation>
 <translation id="2979639724566107830">فتح الإشارة في نافذة جديدة</translation>
+<translation id="2981364137500752533">يمكنك فتح 5 نوافذ بحد أقصى.</translation>
 <translation id="2987620471460279764">النصوص التي تمت مشاركتها من جهاز آخر</translation>
 <translation id="2989523299700148168">تم الانتقال إليها مؤخرًا</translation>
 <translation id="2992473221983447149">أوصاف الصور</translation>
@@ -445,6 +447,7 @@
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
 <translation id="3845098929839618392">فتح في علامة تبويب تصفّح متخفي</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
+<translation id="3858860766373142691">الاسم</translation>
 <translation id="3861633093716975811">الفيديوهات الرائجة</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="3894427358181296146">إضافة مجلد</translation>
@@ -980,6 +983,7 @@
 <translation id="7187993566681480880">‏يوفِّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول.</translation>
 <translation id="718926126787620637">تم فتح قائمة مجلدات الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="7191430249889272776">تم فتح علامة التبويب في الخلفية.</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{هناك تنزيل واحد مُعلَّق}zero{هناك # تنزيل مُعلَّق}two{هناك تنزيلان (#) مُعلَّقان}few{هناك # عمليات تنزيل مُعلَّقة}many{هناك # تنزيلًا مُعلَّقًا}other{هناك # تنزيل مُعلَّق}}</translation>
 <translation id="7233236755231902816">‏للاطّلاع على الويب بلغتك، يمكنك الحصول على أحدث إصدار من Chrome.</translation>
 <translation id="7242755609445462077">ملاحظة مميّزة تم تنميطها بتاريخ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">‏يُرجى التأكّد من تفعيل مزامنة <ph name="TARGET_DEVICE_NAME" /> في Chrome.</translation>
@@ -1175,7 +1179,6 @@
 <translation id="8354977102499939946">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
 <translation id="835847953965672673">تمّت استعادة <ph name="NUMBER_OF_DOWNLOADS" /> عملية تنزيل.</translation>
 <translation id="8364299278605033898">عرض المواقع الإلكترونية الشائعة</translation>
-<translation id="8372925856448695381">تم تنزيل حزمة اللغة <ph name="LANG" />.</translation>
 <translation id="8387617938027387193">إثبات هويتك</translation>
 <translation id="8393700583063109961">إرسال رسالة</translation>
 <translation id="8410695015584479363">تتبُّع الأسعار</translation>

@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez stronę lub aplikacje na ekranie głównym.</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
-<translation id="1195941046451948919">Czy na pewno chcesz zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1242008676835033345">Umieszczono na <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Szczegóły</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
-<translation id="4708011789095599544">Czy na pewno chcesz wyczyścić pliki cookie i inne dane tej witryny?</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Wibracje</translation>
 <translation id="6388207532828177975">Wyczyść i zresetuj</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
-<translation id="6423924377271166037">Usuń pliki cookie</translation>
 <translation id="6439114592976064011">Nie zezwalaj stronom na korzystanie z urządzenia ani danych rzeczywistości wirtualnej</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="930525582205581608">Zapomnieć tę stronę?</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
 </translationbundle>

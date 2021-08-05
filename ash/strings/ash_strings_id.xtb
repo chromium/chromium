@@ -618,6 +618,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
+<translation id="5867217927013474703">Mengumpulkan informasi jaringan</translation>
 <translation id="5876666360658629066">Masukkan kode orang tua</translation>
 <translation id="5881540930187678962">Siapkan Phone Hub nanti</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
@@ -692,6 +693,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="649452524636452238">PIN kartu smart</translation>
+<translation id="6500818810472529210">Lihat hasil di Google Penelusuran</translation>
 <translation id="6501401484702599040">Mentransmisi layar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Pilih jendela untuk diambil gambarnya</translation>
 <translation id="652139407789908527">Layar Anda akan kosong lebih lama dari biasanya (hingga satu menit) selama update ini berlangsung. Jangan tekan tombol daya saat proses update berlangsung.</translation>
@@ -936,7 +938,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8413272770729657668">Perekaman dimulai dalam 3, 2, 1</translation>
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8426708595819210923">Selamat sore <ph name="GIVEN_NAME" />,</translation>
-<translation id="8427213022735114808">Fitur Pengetikan suara mengirimkan suara Anda ke Google untuk memungkinkan pengetikan menggunakan suara ke kolom teks.</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="8433977262951327081">Pintasan untuk menampilkan balon menu opsi masukan di rak telah diubah. Harap gunakan <ph name="NEW_SHORTCUT" />, bukan <ph name="OLD_SHORTCUT" />.</translation>
@@ -990,6 +991,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8818320199597151042">Menghapus profil. Tunggu beberapa menit.</translation>
 <translation id="8825863694328519386">Geser dari kiri untuk kembali</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8832757911363938552">Anda dapat menghentikan penangkapan paket kapan saja.</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

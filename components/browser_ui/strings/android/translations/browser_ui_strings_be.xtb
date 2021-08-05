@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі або размешчанымі на галоўным экране праграмамі.</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
-<translation id="1195941046451948919">Сапраўды скінуць усе дазволы для гэтага сайта?</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1242008676835033345">Убудавана на сайце <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Спыніць</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Падрабязныя звесткі</translation>
 <translation id="4645575059429386691">Пад кіраваннем вашых бацькоў</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
-<translation id="4708011789095599544">Вы ўпэўненыя, што хочаце выдаліць файлы cookie і іншыя даныя сайта для гэтага вэб-сайта?</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
 <translation id="4836046166855586901">Дазволіць сайтам запытваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4883854917563148705">Налады, якія знаходзяцца пад кіраваннем, скінуць нельга</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Вібрацыя</translation>
 <translation id="6388207532828177975">Ачысціць і скінуць</translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
-<translation id="6423924377271166037">Выдаліць файлы cookie</translation>
 <translation id="6439114592976064011">Забараніць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Уключыце для праграмы "<ph name="APP_NAME" />" дазволы ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Гэта старонка небяспечная</translation>
 <translation id="930525582205581608">Забыць гэты сайт?</translation>
 <translation id="967624055006145463">Захаваныя даныя</translation>
 </translationbundle>

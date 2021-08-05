@@ -112,7 +112,6 @@
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="2021670401941426298">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
-<translation id="2022352537516230970">Създаден за вашия iPhone</translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
@@ -289,8 +288,10 @@
 <translation id="3779810277399252432">Няма връзка с интернет.</translation>
 <translation id="3783017676699494206">Запазване на изобрaжението</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
+<translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3858860766373142691">Име</translation>
 <translation id="3892144330757387737">Тук ще се показва историята ви</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3913386780052199712">Влязохте в Chrome</translation>
@@ -321,7 +322,6 @@
 <translation id="4172051516777682613">Показване винаги</translation>
 <translation id="418156467088430727">Преглед на офлайн версията в нов раздел</translation>
 <translation id="4181841719683918333">Езици</translation>
-<translation id="4184011057600693970">Създаден за вашия iPad</translation>
 <translation id="424315890655130736">Въвеждане на пропуск</translation>
 <translation id="4263576668337963058">Показване на наличните действия за страницата</translation>
 <translation id="4267380167363222949">Следващият раздел</translation>
