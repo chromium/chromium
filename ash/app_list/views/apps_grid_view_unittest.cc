@@ -500,8 +500,11 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
 
     view->InitiateDrag(root_from, root_from);
     current_drag_location_ = root_from;
-    // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state.
-    UpdateDrag(pointer, from, apps_grid_view);
+    // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state -
+    // the cardified state starts only once the drag distance exceeds a drag
+    // threshold, so the pointer has to sufficiently move from the original
+    // position.
+    UpdateDrag(pointer, from + gfx::Vector2d(10, 10), apps_grid_view);
     return view;
   }
 

@@ -1390,8 +1390,10 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   event_generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressLeftButton();
   dragged_view->FireMouseDragTimerForTest();
-  // Move mouse to switch to cardified state.
-  event_generator->MoveMouseBy(1, 1);
+  // Move mouse to switch to cardified state -the cardified state starts only
+  // once the drag distance exceeds a drag threshold, so the pointer has to
+  // sufficiently move from the original position.
+  event_generator->MoveMouseBy(10, 10);
   event_generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(apps_grid_view_->FireFolderDroppingTimerForTest());

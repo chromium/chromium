@@ -500,8 +500,6 @@ bool AppsGridView::UpdateDragFromItem(bool is_touch,
   if (!drag_view_)
     return false;  // Drag canceled.
 
-  MaybeStartCardifiedView();
-
   gfx::Point drag_point_in_grid_view;
   ExtractDragLocation(event.root_location(), &drag_point_in_grid_view);
   const Pointer pointer = is_touch ? TOUCH : MOUSE;
@@ -530,8 +528,11 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
 
   gfx::Vector2d drag_vector(point - drag_start_grid_view_);
 
-  if (!IsDragging() && ExceededDragThreshold(drag_vector))
-    TryStartDragAndDropHostDrag(pointer);
+  if (ExceededDragThreshold(drag_vector)) {
+    if (!IsDragging())
+      TryStartDragAndDropHostDrag(pointer);
+    MaybeStartCardifiedView();
+  }
 
   if (drag_pointer_ != pointer)
     return;
