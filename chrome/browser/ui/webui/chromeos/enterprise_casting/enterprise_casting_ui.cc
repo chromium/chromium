@@ -37,6 +37,15 @@ void EnterpriseCastingUI::BindInterface(
   factory_receiver_.Bind(std::move(receiver));
 }
 
+void EnterpriseCastingUI::CreatePageHandler(
+    mojo::PendingRemote<enterprise_casting::mojom::Page> page,
+    mojo::PendingReceiver<enterprise_casting::mojom::PageHandler> receiver) {
+  DCHECK(page);
+
+  page_handler_ = std::make_unique<EnterpriseCastingHandler>(
+      std::move(receiver), std::move(page));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseCastingUI)
 
 }  // namespace chromeos

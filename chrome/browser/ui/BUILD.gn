@@ -2351,6 +2351,8 @@ static_library("ui") {
       "webui/chromeos/emoji/emoji_page_handler.h",
       "webui/chromeos/emoji/emoji_ui.cc",
       "webui/chromeos/emoji/emoji_ui.h",
+      "webui/chromeos/enterprise_casting/enterprise_casting_handler.cc",
+      "webui/chromeos/enterprise_casting/enterprise_casting_handler.h",
       "webui/chromeos/enterprise_casting/enterprise_casting_ui.cc",
       "webui/chromeos/enterprise_casting/enterprise_casting_ui.h",
       "webui/chromeos/image_source.cc",

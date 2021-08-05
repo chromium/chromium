@@ -4,8 +4,22 @@
 
 module enterprise_casting.mojom;
 
-// Interface for creating enterprise_casting handlers. Implemented by the WebUI
-// controller and used by chrome://enterprise-casting.
+// Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
-  // TODO(b/193421383): Add a CreatePageHandler method.
+  // The WebUI page's |BrowserProxy| singleton calls this method when the page
+  // is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Triggers a call to |SetPin|.
+  UpdatePin();
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Sets the page with a new casting pin.
+  SetPin(string pin);
 };
