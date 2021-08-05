@@ -526,8 +526,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,
 // If the device does not have any payment apps installed,
 // hasEnrolledInstrument() queries for both payment apps and basic-card depend
 // only on what cards the user has on file.
+// TODO(https://crbug.com/1233940): The test is flaky.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryPMITest,
-                       QueryQuotaForPaymentAppsAndCards) {
+                       DISABLED_QueryQuotaForPaymentAppsAndCards) {
   NavigateTo("/payment_request_payment_method_identifier_test.html");
 
   CallCanMakePayment(CheckFor::BOB_PAY_AND_VISA);
