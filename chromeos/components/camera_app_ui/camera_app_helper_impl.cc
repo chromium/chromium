@@ -298,6 +298,7 @@ void CameraAppHelperImpl::ScanDocumentCorners(
   if (!memory.IsValid()) {
     LOG(ERROR) << "Failed to map memory";
     std::move(callback).Run({});
+    return;
   }
   memcpy(memory.mapping.memory(), jpeg_data.data(), jpeg_data.size());
 
@@ -319,6 +320,7 @@ void CameraAppHelperImpl::ConvertToDocument(
   if (!IsValidCorners(corners)) {
     LOG(ERROR) << "Failed to convert to document due to invalid corners";
     std::move(callback).Run({});
+    return;
   }
 
   base::MappedReadOnlyRegion memory =
@@ -326,6 +328,7 @@ void CameraAppHelperImpl::ConvertToDocument(
   if (!memory.IsValid()) {
     LOG(ERROR) << "Failed to map memory";
     std::move(callback).Run({});
+    return;
   }
   memcpy(memory.mapping.memory(), jpeg_data.data(), jpeg_data.size());
 
