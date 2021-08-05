@@ -538,7 +538,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
   EWhiteSpace whitespace = style.WhiteSpace();
   unsigned start = 0;
   for (unsigned offset : iter->value) {
-    DCHECK_LT(offset, string.length());
+    DCHECK_LE(offset, string.length());
     if (start < offset) {
       if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
         AppendPreserveWhitespace(string.Substring(start, offset - start),
@@ -551,6 +551,8 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
     ExitAndEnterSvgTextChunk(layout_text);
     start = offset;
   }
+  if (start >= string.length())
+    return true;
   if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
     AppendPreserveWhitespace(string.Substring(start), &style, &layout_text);
   } else {

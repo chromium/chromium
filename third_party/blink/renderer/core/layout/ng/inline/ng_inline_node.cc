@@ -1086,6 +1086,14 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
           ifc_text_view.NextCodePointOffset(text_content_offset);
     }
     const auto* unit = mapping->GetLastMappingUnit(text_content_offset);
+    // |text_content_offset| might point a control character not in any
+    // DOM nodes.
+    while (!unit) {
+      text_content_offset =
+          ifc_text_view.NextCodePointOffset(text_content_offset);
+      DCHECK_LT(text_content_offset, ifc_text_view.length());
+      unit = mapping->GetLastMappingUnit(text_content_offset);
+    }
     auto result = data.svg_node_data_->chunk_offsets.insert(
         To<LayoutText>(&unit->GetLayoutObject()), Vector<unsigned>());
     result.stored_value->value.push_back(

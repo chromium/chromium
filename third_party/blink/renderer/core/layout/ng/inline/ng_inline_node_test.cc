@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
@@ -1600,6 +1601,40 @@ TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
 
   EXPECT_EQ(0, font_description.LetterSpacing());
   EXPECT_EQ(0, font_description.WordSpacing());
+}
+
+// crbug.com/1034464 bad.svg
+TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash1) {
+  ScopedSVGTextNGForTest enable_svg_text_ng(true);
+  SetBodyInnerHTML(
+      "<svg><text id='text' xml:space='preserve'>"
+      "<tspan unicode-bidi='embed' x='0'>(</tspan>"
+      "<tspan y='-2' unicode-bidi='embed' x='3'>)</tspan>"
+      "<tspan y='-2' x='6'>&#x05d2;</tspan>"
+      "<tspan y='-2' unicode-bidi='embed' x='10'>(</tspan>"
+      "</text></svg>");
+
+  auto* block_flow = To<LayoutNGSVGText>(GetLayoutObjectByElementId("text"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  EXPECT_TRUE(data);
+  // Pass if no null pointer dereferences.
+}
+
+// crbug.com/1034464 good.svg
+TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash2) {
+  ScopedSVGTextNGForTest enable_svg_text_ng(true);
+  SetBodyInnerHTML(
+      "<svg><text id='text' xml:space='preserve'>\n"
+      "<tspan unicode-bidi='embed' x='0'>(</tspan>\n"
+      "<tspan y='-2' unicode-bidi='embed' x='3'>)</tspan>\n"
+      "<tspan y='-2' x='6'>&#x05d2;</tspan>\n"
+      "<tspan y='-2' unicode-bidi='embed' x='10'>(</tspan>\n"
+      "</text></svg>");
+
+  auto* block_flow = To<LayoutNGSVGText>(GetLayoutObjectByElementId("text"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  EXPECT_TRUE(data);
+  // Pass if no DCHECK() failures.
 }
 
 }  // namespace blink
