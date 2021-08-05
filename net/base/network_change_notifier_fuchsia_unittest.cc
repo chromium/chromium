@@ -78,9 +78,9 @@ std::vector<T> MakeSingleItemVec(T item) {
 
 fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
     fuchsia::hardware::network::DeviceClass device_class =
-        fuchsia::hardware::network::DeviceClass::UNKNOWN) {
-  // For most tests a live interface with an IPv4 address and an unknown class
-  // is sufficient.
+        fuchsia::hardware::network::DeviceClass::ETHERNET) {
+  // For most tests a live interface with an IPv4 address and ethernet class is
+  // sufficient.
   fuchsia::net::interfaces::Properties interface;
   interface.set_id(kDefaultInterfaceId);
   interface.set_online(true);
@@ -94,15 +94,15 @@ fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
 }
 
 fuchsia::net::interfaces::Properties SecondaryInterfaceProperties() {
-  // For most tests a live interface with an IPv4 address and an unknown class
-  // is sufficient.
+  // For most tests a live interface with an IPv4 address and ethernet class is
+  // sufficient.
   fuchsia::net::interfaces::Properties interface;
   interface.set_id(kSecondaryInterfaceId);
   interface.set_online(true);
   interface.set_has_default_ipv4_route(false);
   interface.set_has_default_ipv6_route(false);
   interface.set_device_class(fuchsia::net::interfaces::DeviceClass::WithDevice(
-      fuchsia::hardware::network::DeviceClass::UNKNOWN));
+      fuchsia::hardware::network::DeviceClass::ETHERNET));
   interface.set_addresses(MakeSingleItemVec(
       InterfaceAddressFrom(kSecondaryIPv4Address, kSecondaryIPv4Prefix)));
   return interface;
@@ -434,7 +434,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, NoChange) {
   // Set a live interface with an IP address and create the notifier.
   watcher_.SetInitial(DefaultInterfaceProperties());
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
   // Push an event with no side-effects.
   watcher_.PushEvent(MakeChangeEvent(kDefaultInterfaceId, [](auto*) {}));
@@ -477,7 +477,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, MultiV6IPNoChange) {
 TEST_F(NetworkChangeNotifierFuchsiaTest, IpChange) {
   watcher_.SetInitial(DefaultInterfaceProperties());
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
 
   watcher_.PushEvent(MakeChangeEvent(
@@ -496,7 +496,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, IpChangeV6) {
       InterfaceAddressFrom(kDefaultIPv6Address, kDefaultIPv6Prefix)));
   watcher_.SetInitial(std::move(props));
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
 
   watcher_.PushEvent(MakeChangeEvent(
@@ -516,7 +516,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, MultiV6IPChanged) {
 
   watcher_.SetInitial(std::move(props));
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
 
   watcher_.PushEvent(MakeChangeEvent(
@@ -536,7 +536,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, MultiV6IPChanged) {
 TEST_F(NetworkChangeNotifierFuchsiaTest, Ipv6AdditionalIpChange) {
   watcher_.SetInitial(DefaultInterfaceProperties());
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
 
   watcher_.PushEvent(MakeChangeEvent(
@@ -556,7 +556,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, Ipv6AdditionalIpChange) {
 TEST_F(NetworkChangeNotifierFuchsiaTest, InterfaceDown) {
   watcher_.SetInitial(DefaultInterfaceProperties());
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
 
   watcher_.PushEvent(MakeChangeEvent(
@@ -583,14 +583,14 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InterfaceUp) {
       }));
 
   EXPECT_TRUE(type_observer_->RunAndExpectConnectionTypes(
-      {NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN}));
+      {NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET}));
   EXPECT_TRUE(ip_observer_->RunAndExpectCallCount(1));
 }
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, InterfaceDeleted) {
   watcher_.SetInitial(DefaultInterfaceProperties());
   CreateNotifier();
-  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET,
             notifier_->GetCurrentConnectionType());
 
   watcher_.PushEvent(
