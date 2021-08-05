@@ -791,6 +791,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Network.Radio.PossibleWakeupTrigger"
+    units="TrafficAnnotationUniqueIdHash" expires_after="2022-02-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records a traffic annotation ID hash when a URLLoader is created and the
+    radio state is dormant. Only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.3GPPRegistrationDelayedDrop"
     enum="NetworkCellular3GPPRegistrationDelayedDrop"
     expires_after="2022-01-30">

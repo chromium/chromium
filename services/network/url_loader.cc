@@ -28,6 +28,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/isolation_info.h"
@@ -87,6 +88,10 @@
 #include "services/network/url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
+
+#if defined(OS_ANDROID)
+#include "services/network/radio_monitor_android.h"
+#endif
 
 namespace network {
 
@@ -632,6 +637,13 @@ URLLoader::URLLoader(
     keepalive_statistics_recorder_->OnLoadStarted(
         *factory_params_->top_frame_id, keepalive_request_size_);
   }
+
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger)) {
+    RadioMonitorAndroid::GetInstance().MaybeRecordRadioWakeupTrigger(
+        traffic_annotation);
+  }
+#endif
 
   // Resolve elements from request_body and prepare upload data.
   if (request.request_body.get()) {

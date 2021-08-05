@@ -273,6 +273,11 @@ component("network_service") {
       "//crypto",
       "//third_party/boringssl",
     ]
+
+    sources += [
+      "radio_monitor_android.cc",
+      "radio_monitor_android.h",
+    ]
   }
 
   if (is_win) {

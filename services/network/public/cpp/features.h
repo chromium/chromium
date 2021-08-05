@@ -94,6 +94,9 @@ extern uint32_t GetDataPipeDefaultAllocationSize();
 COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kRecordRadioWakeupTrigger;
+
 }  // namespace features
 }  // namespace network
 

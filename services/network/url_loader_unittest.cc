@@ -110,6 +110,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/radio_utils.h"
+#include "services/network/radio_monitor_android.h"
+#endif
+
 namespace network {
 
 namespace {
@@ -561,7 +566,10 @@ class URLLoaderTest : public testing::Test {
     net::QuicSimpleTestServer::Start();
     net::URLRequestFailedJob::AddUrlHandler();
 
-    scoped_feature_list_.InitAndEnableFeature(features::kAcceptCHFrame);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAcceptCHFrame,
+                              features::kRecordRadioWakeupTrigger},
+        /*disabled_features=*/{});
   }
   ~URLLoaderTest() override {
     net::URLRequestFilter::GetInstance()->ClearHandlers();
@@ -6910,4 +6918,48 @@ TEST_F(URLLoaderFakeTransportInfoTest, AcceptCHFrameIgnoreMalformed) {
   EXPECT_THAT(Load(url), IsError(net::OK));
   EXPECT_FALSE(accept_ch_frame_observer.called());
 }
+
+#if defined(OS_ANDROID)
+
+TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_Record) {
+  base::HistogramTester histograms;
+
+  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
+      base::android::RadioDataActivity::kDormant);
+  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+      base::android::RadioConnectionType::kCell);
+
+  LoadAndCompareFile("simple_page.html");
+
+  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTrigger, 1);
+}
+
+TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
+  base::HistogramTester histograms;
+
+  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
+      base::android::RadioDataActivity::kDormant);
+  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+      base::android::RadioConnectionType::kWifi);
+
+  LoadAndCompareFile("simple_page.html");
+
+  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTrigger, 0);
+}
+
+TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
+  base::HistogramTester histograms;
+
+  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
+      base::android::RadioDataActivity::kInOut);
+  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+      base::android::RadioConnectionType::kCell);
+
+  LoadAndCompareFile("simple_page.html");
+
+  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTrigger, 0);
+}
+
+#endif  // defined(OS_ANDROID)
+
 }  // namespace network
