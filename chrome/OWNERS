@@ -33,3 +33,6 @@ per-file MAJOR_BRANCH_DATE=chrome-official-brancher@chops-service-accounts.iam.g
 per-file VERSION=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=govind@chromium.org
 per-file VERSION=mmoss@chromium.org
+
+# Fuchsia integration owners:
+per-file *fuchsia*=file://build/fuchsia/OWNERS
