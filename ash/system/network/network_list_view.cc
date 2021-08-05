@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -86,8 +85,7 @@ bool IsManagedByPolicy(const NetworkInfo& info) {
 
 bool ShouldShowActivateCellularNetwork(const NetworkInfo& info) {
   return NetworkTypeMatchesType(info.type, NetworkType::kCellular) &&
-         info.activation_state == ActivationStateType::kNotActivated &&
-         chromeos::features::IsCellularActivationUiEnabled();
+         info.activation_state == ActivationStateType::kNotActivated;
 }
 
 gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info) {
@@ -117,7 +115,7 @@ gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info) {
 
 bool ShouldShowUnlockCellularNetwork(const NetworkInfo& info) {
   return NetworkTypeMatchesType(info.type, NetworkType::kCellular) &&
-         info.sim_locked && chromeos::features::IsCellularActivationUiEnabled();
+         info.sim_locked;
 }
 
 // returns 0 if there is no cellular subtext
@@ -590,13 +588,11 @@ std::u16string NetworkListView::GenerateAccessibilityDescription(
           base::FormatPercent(info.signal_strength));
     }
     case NetworkType::kCellular:
-      if (info.activation_state == ActivationStateType::kNotActivated &&
-          chromeos::features::IsCellularActivationUiEnabled()) {
+      if (info.activation_state == ActivationStateType::kNotActivated) {
         return l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE);
       }
-      if (info.sim_locked &&
-          chromeos::features::IsCellularActivationUiEnabled()) {
+      if (info.sim_locked) {
         if (Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
           return l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK);

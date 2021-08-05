@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -300,8 +299,6 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
     // If the network is locked and is cellular show SIM unlock dialog in OS
     // Settings.
     if (network->type == NetworkType::kCellular &&
-        base::FeatureList::IsEnabled(
-            chromeos::features::kUpdatedCellularActivationUi) &&
         network->type_state->get_cellular()->sim_locked) {
       if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
         return;

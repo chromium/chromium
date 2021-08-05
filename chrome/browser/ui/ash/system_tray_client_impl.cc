@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/public/cpp/update_types.h"
@@ -128,8 +127,7 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
   const chromeos::NetworkState* network_state = GetNetworkState(network_id);
   return network_state && network_state->type() == shill::kTypeCellular &&
          network_state->activation_state() ==
-             shill::kActivationStateNotActivated &&
-         chromeos::features::IsCellularActivationUiEnabled();
+             shill::kActivationStateNotActivated;
 }
 
 }  // namespace
@@ -477,17 +475,7 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
 
 void SystemTrayClientImpl::ShowNetworkCreate(const std::string& type) {
   if (type == ::onc::network_type::kCellular) {
-    if (chromeos::features::IsCellularActivationUiEnabled()) {
-      ShowSettingsCellularSetup(/*show_psim_flow=*/false);
-      return;
-    }
-    const chromeos::NetworkState* cellular =
-        chromeos::NetworkHandler::Get()
-            ->network_state_handler()
-            ->FirstNetworkByType(
-                chromeos::onc::NetworkTypePatternFromOncType(type));
-    std::string network_id = cellular ? cellular->guid() : "";
-    ShowNetworkSettingsHelper(network_id, false /* show_configure */);
+    ShowSettingsCellularSetup(/*show_psim_flow=*/false);
     return;
   }
   chromeos::InternetConfigDialog::ShowDialogForNetworkType(type);
@@ -566,10 +554,9 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
   }
 
   if (ShouldOpenCellularSetupPsimFlowOnClick(network_id)) {
-    // Special case: Clicking on "click to activate" on a psim network item
-    // should open cellular setup dialogs' psim flow if the device has
-    // |kUpdatedCellularActivationUi| feature enabled and is a non-activated
-    // cellular network
+    // Special case: clicking "click to activate" on a network item should open
+    // the cellular setup dialogs' pSIM flow if the network is a non-activated
+    // cellular network.
     ShowSettingsCellularSetup(/*show_psim_flow=*/true);
     return;
   }

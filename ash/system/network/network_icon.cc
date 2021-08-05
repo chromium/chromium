@@ -566,12 +566,7 @@ std::u16string GetLabelForNetworkList(const NetworkStateProperties* network) {
     }
     if (activation_state == ActivationStateType::kNotActivated ||
         activation_state == ActivationStateType::kPartiallyActivated) {
-      if (chromeos::features::IsCellularActivationUiEnabled())
-        return base::UTF8ToUTF16(network->name);
-
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATE,
-          base::UTF8ToUTF16(network->name));
+      return base::UTF8ToUTF16(network->name);
     }
   }
   // Otherwise just show the network name or 'Ethernet'.

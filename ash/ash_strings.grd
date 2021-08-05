@@ -2127,15 +2127,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR" desc="Message for the status area when initializing the cellular device.">
         Initializing...
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_SIM_CARD_MISSING" desc="Message for the status area when a SIM card is missing.">
-        Missing SIM card
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED" desc="Message for the status area when a SIM card is locked.">
-        SIM card is locked
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATE" desc="Message for the network list to activate the network.">
-        Activate <ph name="NETWORKSERVICE">$1<ex>YBH Cellular</ex></ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATING" desc="Message for the network list when activating a network.">
         <ph name="NAME">$1<ex>YBH Cellular</ex></ph>: Activating...
       </message>

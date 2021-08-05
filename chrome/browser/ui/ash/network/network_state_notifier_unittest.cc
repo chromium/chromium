@@ -32,6 +32,7 @@
 #include "testing/platform_test.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace chromeos {
@@ -248,11 +249,10 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
 
-  EXPECT_EQ(
-      notification->message(),
-      l10n_util::GetStringFUTF16(
-          IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kCellular1NetworkName16,
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED)));
+  EXPECT_EQ(notification->message(),
+            l10n_util::GetStringFUTF16(
+                IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kCellular1NetworkName16,
+                l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED)));
 
   // Clicking the notification should open SIM unlock settings.
   notification->delegate()->Click(/*button_index=*/absl::nullopt,
@@ -274,11 +274,10 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
 
-  EXPECT_EQ(
-      notification->message(),
-      l10n_util::GetStringFUTF16(
-          IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kTestEsimProfileName16,
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED)));
+  EXPECT_EQ(notification->message(),
+            l10n_util::GetStringFUTF16(
+                IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kTestEsimProfileName16,
+                l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED)));
 
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();

@@ -4,7 +4,6 @@
 
 #include "ash/system/network/network_section_header_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -226,16 +225,6 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
       return IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR;
     }
 
-    const DeviceStateProperties* cellular_device =
-        model()->GetDevice(NetworkType::kCellular);
-
-    if (!base::FeatureList::IsEnabled(
-            chromeos::features::kUpdatedCellularActivationUi) &&
-        cellular_device && cellular_device->sim_absent) {
-      SetToggleVisibility(false);
-      return IDS_ASH_STATUS_TRAY_SIM_CARD_MISSING;
-    }
-
     if (IsCellularDeviceInhibited()) {
       // When a device is inhibited, it cannot process any new operations. Thus,
       // keep the toggle on to show users that the device is active, but set it
@@ -255,15 +244,6 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
     if (cellular_state == DeviceStateType::kDisabling) {
       return IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING;
     }
-
-    if (!chromeos::features::IsCellularActivationUiEnabled() &&
-        cellular_device->sim_lock_status &&
-        !cellular_device->sim_lock_status->lock_type.empty()) {
-      return IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED;
-    }
-    if (!chromeos::features::IsCellularActivationUiEnabled() &&
-        cellular_device->scanning)
-      return IDS_ASH_STATUS_TRAY_MOBILE_SCANNING;
 
     if (cellular_enabled) {
       if (mobile_has_networks)
@@ -352,9 +332,6 @@ void MobileSectionHeaderView::OnToggleToggled(bool is_on) {
 }
 
 void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
-  if (!chromeos::features::IsCellularActivationUiEnabled())
-    return;
-
   // The button navigates to Settings, only add it if this can occur.
   if (!TrayPopupUtils::CanOpenWebUISettings())
     return;
