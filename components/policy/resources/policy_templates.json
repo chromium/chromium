@@ -7145,7 +7145,7 @@
     },
     {
       'name': 'LegacySameSiteCookieBehaviorEnabled',
-      'owners': [ 'chlily@chromium.org', ],
+      'owners': [ 'bingler@chromium.org', 'file://net/cookies/OWNERS', ],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -7183,7 +7183,7 @@
     },
     {
       'name': 'LegacySameSiteCookieBehaviorEnabledForDomainList',
-      'owners': [ 'chlily@chromium.org', ],
+      'owners': [ 'bingler@chromium.org', 'file://net/cookies/OWNERS', ],
       'type': 'list',
       'schema': {
         'type': 'array',
