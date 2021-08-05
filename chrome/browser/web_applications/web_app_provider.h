@@ -29,7 +29,7 @@ namespace web_app {
 
 // Forward declarations of generalized interfaces.
 class AppRegistryController;
-class AppIconManager;
+class WebAppIconManager;
 class PreinstalledWebAppManager;
 class InstallFinalizer;
 class ManifestUpdateManager;
@@ -114,7 +114,7 @@ class WebAppProvider : public KeyedService {
   WebAppAudioFocusIdMap& audio_focus_id_map();
 
   // Implements fetching of app icons.
-  AppIconManager& icon_manager();
+  WebAppIconManager& icon_manager();
 
   SystemWebAppManager& system_web_app_manager();
 
@@ -162,7 +162,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<AppRegistryController> registry_controller_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
-  std::unique_ptr<AppIconManager> icon_manager_;
+  std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<InstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;

@@ -40,7 +40,7 @@ class WebAppProvider;
 // Class to encapsulate logic to control the browser UI for
 // web apps.
 // App information is obtained from the WebAppRegistrar.
-// Icon information is obtained from the AppIconManager.
+// Icon information is obtained from the WebAppIconManager.
 // Note: Much of the functionality in HostedAppBrowserController
 // will move to this class.
 class WebAppBrowserController : public AppBrowserController,

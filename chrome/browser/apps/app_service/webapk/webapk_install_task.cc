@@ -18,8 +18,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
@@ -326,7 +326,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   webapk->set_android_abi(GetArcAbi(arc_features.value()));
 
   auto& icon_manager = web_app_provider_->icon_manager();
-  absl::optional<web_app::AppIconManager::IconSizeAndPurpose>
+  absl::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
           app_id_, {IconPurpose::MASKABLE, IconPurpose::ANY}, kMinimumIconSize);
 

@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -47,7 +47,7 @@ AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {}
 
 AppShortcutManager::~AppShortcutManager() = default;
 
-void AppShortcutManager::SetSubsystems(AppIconManager* icon_manager,
+void AppShortcutManager::SetSubsystems(WebAppIconManager* icon_manager,
                                        WebAppRegistrar* registrar) {
   icon_manager_ = icon_manager;
   registrar_ = registrar;

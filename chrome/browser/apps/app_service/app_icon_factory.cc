@@ -27,7 +27,7 @@
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -303,7 +303,7 @@ void LoadCompressedDataFromExtension(
 
 absl::optional<IconPurpose> GetIconPurpose(
     const std::string& web_app_id,
-    const web_app::AppIconManager& icon_manager,
+    const web_app::WebAppIconManager& icon_manager,
     int size_hint_in_dip) {
   // Get the max supported pixel size.
   int max_icon_size_in_px = 0;
@@ -449,7 +449,7 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
 
   void LoadWebAppIcon(const std::string& web_app_id,
                       const GURL& launch_url,
-                      const web_app::AppIconManager& icon_manager,
+                      const web_app::WebAppIconManager& icon_manager,
                       Profile* profile);
 
   void LoadExtensionIcon(const extensions::Extension* extension,
@@ -635,7 +635,7 @@ void IconLoadingPipeline::ApplyBadges(apps::IconEffects icon_effects,
 void IconLoadingPipeline::LoadWebAppIcon(
     const std::string& web_app_id,
     const GURL& launch_url,
-    const web_app::AppIconManager& icon_manager,
+    const web_app::WebAppIconManager& icon_manager,
     Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

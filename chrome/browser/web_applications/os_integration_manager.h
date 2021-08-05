@@ -33,7 +33,7 @@ class WebContents;
 namespace web_app {
 
 class WebAppRegistrar;
-class AppIconManager;
+class WebAppIconManager;
 class TestOsIntegrationManager;
 class WebAppUiManager;
 
@@ -83,7 +83,7 @@ class OsIntegrationManager {
 
   void SetSubsystems(WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
-                     AppIconManager* icon_manager);
+                     WebAppIconManager* icon_manager);
 
   void Start();
 

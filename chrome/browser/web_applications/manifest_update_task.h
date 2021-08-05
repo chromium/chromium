@@ -7,10 +7,10 @@
 
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -27,7 +27,7 @@ namespace web_app {
 enum class AppIdentityUpdate;
 struct IconDiff;
 
-class AppIconManager;
+class WebAppIconManager;
 class WebAppRegistrar;
 class WebAppUiManager;
 class WebAppInstallManager;
@@ -82,7 +82,7 @@ class ManifestUpdateTask final
                      StoppedCallback stopped_callback,
                      bool hang_for_testing,
                      const WebAppRegistrar& registrar,
-                     const AppIconManager& icon_manager,
+                     const WebAppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallManager* install_manager,
                      OsIntegrationManager& os_integration_manager);
@@ -138,7 +138,7 @@ class ManifestUpdateTask final
   void DestroySelf(ManifestUpdateResult result);
 
   const WebAppRegistrar& registrar_;
-  const AppIconManager& icon_manager_;
+  const WebAppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
   WebAppInstallManager& install_manager_;
   OsIntegrationManager& os_integration_manager_;

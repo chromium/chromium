@@ -107,7 +107,7 @@ OsIntegrationManager::~OsIntegrationManager() = default;
 
 void OsIntegrationManager::SetSubsystems(WebAppRegistrar* registrar,
                                          WebAppUiManager* ui_manager,
-                                         AppIconManager* icon_manager) {
+                                         WebAppIconManager* icon_manager) {
   registrar_ = registrar;
   ui_manager_ = ui_manager;
   file_handler_manager_->SetSubsystems(registrar);

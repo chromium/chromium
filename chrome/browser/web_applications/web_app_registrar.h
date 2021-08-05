@@ -142,7 +142,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   base::Time GetAppLastLaunchTime(const AppId& app_id) const;
   base::Time GetAppInstallTime(const AppId& app_id) const;
 
-  // Returns the "icons" field from the app manifest, use |AppIconManager| to
+  // Returns the "icons" field from the app manifest, use |WebAppIconManager| to
   // load icon bitmap data.
   std::vector<WebApplicationIconInfo> GetAppIconInfos(
       const AppId& app_id) const;
@@ -150,8 +150,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Represents which icon sizes we successfully downloaded from the IconInfos.
   SortedSizesPx GetAppDownloadedIconSizesAny(const AppId& app_id) const;
 
-  // Returns the "shortcuts" field from the app manifest, use |AppIconManager|
-  // to load shortcuts menu icons bitmaps data.
+  // Returns the "shortcuts" field from the app manifest, use
+  // |WebAppIconManager| to load shortcuts menu icons bitmaps data.
   std::vector<WebApplicationShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
       const AppId& app_id) const;
 

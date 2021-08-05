@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -122,7 +122,7 @@ ManifestUpdateTask::ManifestUpdateTask(
     StoppedCallback stopped_callback,
     bool hang_for_testing,
     const WebAppRegistrar& registrar,
-    const AppIconManager& icon_manager,
+    const WebAppIconManager& icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallManager* install_manager,
     OsIntegrationManager& os_integration_manager)

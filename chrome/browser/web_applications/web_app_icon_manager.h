@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -31,7 +30,7 @@ class WebAppRegistrar;
 using SquareSizeDip = int;
 
 // Exclusively used from the UI thread.
-class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
+class WebAppIconManager : public AppRegistrarObserver {
  public:
   using FaviconReadCallback =
       base::RepeatingCallback<void(const AppId& app_id)>;
@@ -55,39 +54,96 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
                  WriteDataCallback callback);
   void DeleteData(AppId app_id, WriteDataCallback callback);
 
-  // AppIconManager:
-  WebAppIconManager* AsWebAppIconManager() override;
-  void Start() override;
-  void Shutdown() override;
+  void Start();
+  void Shutdown();
+
+  WebAppIconManager* AsWebAppIconManager();
+
+  // Returns false if any icon in |icon_sizes_in_px| is missing from downloaded
+  // icons for a given app and |purpose|.
   bool HasIcons(const AppId& app_id,
                 IconPurpose purpose,
-                const SortedSizesPx& icon_sizes) const override;
+                const SortedSizesPx& icon_sizes) const;
+  struct IconSizeAndPurpose {
+    SquareSizePx size_px = 0;
+    IconPurpose purpose = IconPurpose::ANY;
+  };
+  // For each of |purposes|, in the given order, looks for an icon with size at
+  // least |min_icon_size|. Returns information on the first icon found.
   absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
-      SquareSizePx min_size) const override;
+      SquareSizePx min_size) const;
+  // Returns whether there is a downloaded icon of at least |min_size| for any
+  // of the given |purposes|.
   bool HasSmallestIcon(const AppId& app_id,
                        const std::vector<IconPurpose>& purposes,
-                       SquareSizePx min_size) const override;
+                       SquareSizePx min_size) const;
+
+  using ReadIconsCallback =
+      base::OnceCallback<void(std::map<SquareSizePx, SkBitmap> icon_bitmaps)>;
+  // Reads specified icon bitmaps for an app and |purpose|. Returns empty map in
+  // |callback| if IO error.
   void ReadIcons(const AppId& app_id,
                  IconPurpose purpose,
                  const SortedSizesPx& icon_sizes,
-                 ReadIconsCallback callback) const override;
+                 ReadIconsCallback callback) const;
+
+  // TODO (crbug.com/1102701): Callback with const ref instead of value.
+  using ReadIconBitmapsCallback =
+      base::OnceCallback<void(IconBitmaps icon_bitmaps)>;
+  // Reads all icon bitmaps for an app. Returns empty |icon_bitmaps| in
+  // |callback| if IO error.
   void ReadAllIcons(const AppId& app_id,
-                    ReadIconBitmapsCallback callback) const override;
-  void ReadAllShortcutsMenuIcons(
-      const AppId& app_id,
-      ReadShortcutsMenuIconsCallback callback) const override;
+                    ReadIconBitmapsCallback callback) const;
+
+  using ReadShortcutsMenuIconsCallback = base::OnceCallback<void(
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps)>;
+  // Reads bitmaps for all shortcuts menu icons for an app. Returns a vector of
+  // map<SquareSizePx, SkBitmap>. The index of a map in the vector is the same
+  // as that of its corresponding shortcut in the manifest's shortcuts vector.
+  // Returns empty vector in |callback| if we hit any error.
+  void ReadAllShortcutsMenuIcons(const AppId& app_id,
+                                 ReadShortcutsMenuIconsCallback callback) const;
+
+  using ReadIconWithPurposeCallback =
+      base::OnceCallback<void(IconPurpose, SkBitmap)>;
+  // For each of |purposes|, in the given order, looks for an icon with size at
+  // least |min_icon_size|. Returns the first icon found, as a bitmap. Returns
+  // an empty SkBitmap in |callback| if IO error.
   void ReadSmallestIcon(const AppId& app_id,
                         const std::vector<IconPurpose>& purposes,
                         SquareSizePx min_size_in_px,
-                        ReadIconWithPurposeCallback callback) const override;
+                        ReadIconWithPurposeCallback callback) const;
+
+  using ReadCompressedIconWithPurposeCallback =
+      base::OnceCallback<void(IconPurpose, std::vector<uint8_t> data)>;
+  // For each of |purposes|, in the given order, looks for an icon with size at
+  // least |min_icon_size|. Returns the first icon found, compressed as PNG.
+  // Returns empty |data| in |callback| if IO error.
   void ReadSmallestCompressedIcon(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size_in_px,
-      ReadCompressedIconWithPurposeCallback callback) const override;
-  SkBitmap GetFavicon(const AppId& app_id) const override;
+      ReadCompressedIconWithPurposeCallback callback) const;
+
+  using ReadIconCallback = base::OnceCallback<void(SkBitmap)>;
+  // Convenience method for |ReadSmallestIcon| with IconPurpose::ANY only.
+  void ReadSmallestIconAny(const AppId& app_id,
+                           SquareSizePx min_icon_size,
+                           ReadIconCallback callback) const;
+
+  using ReadCompressedIconCallback =
+      base::OnceCallback<void(std::vector<uint8_t> data)>;
+  // Convenience method for |ReadSmallestCompressedIcon| with IconPurpose::ANY
+  // only.
+  void ReadSmallestCompressedIconAny(const AppId& app_id,
+                                     SquareSizePx min_icon_size,
+                                     ReadCompressedIconCallback callback) const;
+
+  // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
+  // found.
+  SkBitmap GetFavicon(const AppId& app_id) const;
 
   gfx::ImageSkia GetFaviconImageSkia(const AppId& app_id) const;
   gfx::ImageSkia GetMonochromeFavicon(const AppId& app_id) const;
@@ -123,6 +179,11 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   std::vector<std::string>* error_log() { return error_log_.get(); }
 
  private:
+  static void WrapReadIconWithPurposeCallback(
+      ReadIconWithPurposeCallback callback,
+      IconPurpose purpose,
+      SkBitmap bitmap);
+
   absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,

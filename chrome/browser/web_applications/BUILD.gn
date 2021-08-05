@@ -15,8 +15,6 @@ group("web_app_test_group") {
 source_set("web_applications") {
   sources = [
     "app_shortcut_manager.cc",
-    "components/app_icon_manager.cc",
-    "components/app_icon_manager.h",
     "components/app_registrar_observer.h",
     "components/app_registry_controller.cc",
     "components/app_registry_controller.h",

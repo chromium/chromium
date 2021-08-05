@@ -19,7 +19,7 @@ class Profile;
 
 namespace web_app {
 
-class AppIconManager;
+class WebAppIconManager;
 class WebAppRegistrar;
 struct ShortcutInfo;
 
@@ -40,7 +40,8 @@ class AppShortcutManager {
   AppShortcutManager& operator=(const AppShortcutManager&) = delete;
   virtual ~AppShortcutManager();
 
-  void SetSubsystems(AppIconManager* icon_manager, WebAppRegistrar* registrar);
+  void SetSubsystems(WebAppIconManager* icon_manager,
+                     WebAppRegistrar* registrar);
 
   void Start();
   void Shutdown();
@@ -139,7 +140,7 @@ class AppShortcutManager {
   bool suppress_shortcuts_for_testing_ = false;
 
   WebAppRegistrar* registrar_ = nullptr;
-  AppIconManager* icon_manager_ = nullptr;
+  WebAppIconManager* icon_manager_ = nullptr;
   Profile* const profile_;
 
   base::WeakPtrFactory<AppShortcutManager> weak_ptr_factory_{this};

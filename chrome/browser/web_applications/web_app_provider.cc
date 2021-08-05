@@ -174,7 +174,7 @@ WebAppAudioFocusIdMap& WebAppProvider::audio_focus_id_map() {
   return *audio_focus_id_map_;
 }
 
-AppIconManager& WebAppProvider::icon_manager() {
+WebAppIconManager& WebAppProvider::icon_manager() {
   CheckIsConnected();
   return *icon_manager_;
 }

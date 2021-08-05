@@ -635,7 +635,7 @@ Result<std::vector<uint8_t>> ReadCompressedIconBlocking(
 }
 
 void WrapReadCompressedIconWithPurposeCallback(
-    AppIconManager::ReadCompressedIconWithPurposeCallback callback,
+    WebAppIconManager::ReadCompressedIconWithPurposeCallback callback,
     IconPurpose purpose,
     std::vector<uint8_t> data) {
   std::move(callback).Run(purpose, std::move(data));
@@ -677,6 +677,19 @@ gfx::ImageSkia ConvertUiScaleFactorsBitmapsToImageSkia(
 constexpr base::TaskTraits kTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
+
+void WrapReadIconCallback(WebAppIconManager::ReadIconCallback callback,
+                          IconPurpose ignored,
+                          SkBitmap bitmap) {
+  std::move(callback).Run(std::move(bitmap));
+}
+
+void WrapReadCompressedIconCallback(
+    WebAppIconManager::ReadCompressedIconCallback callback,
+    IconPurpose ignored,
+    std::vector<uint8_t> data) {
+  std::move(callback).Run(std::move(data));
+}
 
 }  // namespace
 
@@ -749,7 +762,7 @@ bool WebAppIconManager::HasIcons(const AppId& app_id,
                                 icon_sizes);
 }
 
-absl::optional<AppIconManager::IconSizeAndPurpose>
+absl::optional<WebAppIconManager::IconSizeAndPurpose>
 WebAppIconManager::FindIconMatchBigger(const AppId& app_id,
                                        const std::vector<IconPurpose>& purposes,
                                        SquareSizePx min_size) const {
@@ -886,6 +899,25 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
                      weak_ptr_factory_.GetWeakPtr(), std::move(wrapped)));
 }
 
+void WebAppIconManager::ReadSmallestIconAny(const AppId& app_id,
+                                            SquareSizePx min_icon_size,
+                                            ReadIconCallback callback) const {
+  ReadIconWithPurposeCallback wrapped =
+      base::BindOnce(WrapReadIconCallback, std::move(callback));
+  ReadSmallestIcon(app_id, {IconPurpose::ANY}, min_icon_size,
+                   std::move(wrapped));
+}
+
+void WebAppIconManager::ReadSmallestCompressedIconAny(
+    const AppId& app_id,
+    SquareSizePx min_icon_size,
+    ReadCompressedIconCallback callback) const {
+  ReadCompressedIconWithPurposeCallback wrapped =
+      base::BindOnce(WrapReadCompressedIconCallback, std::move(callback));
+  ReadSmallestCompressedIcon(app_id, {IconPurpose::ANY}, min_icon_size,
+                             std::move(wrapped));
+}
+
 SkBitmap WebAppIconManager::GetFavicon(const AppId& app_id) const {
   auto iter = favicon_cache_.find(app_id);
   if (iter == favicon_cache_.end())
@@ -995,7 +1027,15 @@ void WebAppIconManager::SetFaviconMonochromeReadCallbackForTesting(
   favicon_monochrome_read_callback_ = std::move(callback);
 }
 
-absl::optional<AppIconManager::IconSizeAndPurpose>
+// static
+void WebAppIconManager::WrapReadIconWithPurposeCallback(
+    ReadIconWithPurposeCallback callback,
+    IconPurpose purpose,
+    SkBitmap bitmap) {
+  std::move(callback).Run(purpose, std::move(bitmap));
+}
+
+absl::optional<WebAppIconManager::IconSizeAndPurpose>
 WebAppIconManager::FindIconMatchSmaller(
     const AppId& app_id,
     const std::vector<IconPurpose>& purposes,

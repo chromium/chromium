@@ -46,7 +46,7 @@ namespace web_app {
 
 namespace {
 
-using IconSizeAndPurpose = AppIconManager::IconSizeAndPurpose;
+using IconSizeAndPurpose = WebAppIconManager::IconSizeAndPurpose;
 
 }  // namespace
 
