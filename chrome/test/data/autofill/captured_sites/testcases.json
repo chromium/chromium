@@ -180,7 +180,7 @@
     { "site_name": "sweet_water" },
     { "site_name": "talbots" },
     { "site_name": "tennis_warehouse" },
-    { "site_name": "therealreal" },
+    { "site_name": "therealreal", "bug_number":1236799 },
     { "site_name": "threadless" },
     { "site_name": "ticket_master" },
     { "site_name": "ticketmaster_uk" },
@@ -211,7 +211,7 @@
     { "site_name": "williams_sonoma" },
     { "site_name": "worldmarket", "disabled":true, "bug_number":1173040 },
     { "site_name": "zappos", "bug_number":1223946 },
-    { "site_name": "zenni_optical" },
+    { "site_name": "zenni_optical", "bug_number":1236798 },
     { "site_name": "zulily" }
   ]
 }
