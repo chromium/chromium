@@ -56,9 +56,9 @@ class HoldingSpaceDownloadsDelegate
  private:
   class InProgressDownload;
   class InProgressAshDownload;
+  class InProgressLacrosDownload;
 
   // HoldingSpaceKeyedServiceDelegate:
-  void Init() override;
   void OnPersistenceRestored() override;
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
@@ -74,8 +74,15 @@ class HoldingSpaceDownloadsDelegate
                          download::DownloadItem* download_item) override;
 
   // crosapi::DownloadControllerAsh::DownloadControllerObserver:
+  void OnLacrosDownloadCreated(
+      const crosapi::mojom::DownloadItem& mojo_download_item) override;
   void OnLacrosDownloadUpdated(
-      const crosapi::mojom::DownloadItem& download) override;
+      const crosapi::mojom::DownloadItem& mojo_download_item) override;
+
+  // Invoked when the initial collection of `mojo_download_items` are synced
+  // from Lacros. Downloads are sorted chronologically by start time.
+  void OnLacrosDownloadsSynced(
+      std::vector<crosapi::mojom::DownloadItemPtr> mojo_download_items);
 
   // Invoked when the specified `in_progress_download` is updated.
   void OnDownloadUpdated(InProgressDownload* in_progress_download);

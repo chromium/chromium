@@ -75,9 +75,34 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
   return mojo_download_item;
 }
 
+// Returns the singleton `crosapi::DownloadControllerAsh` if it exists.
+crosapi::DownloadControllerAsh* GetDownloadControllerAsh() {
+  return crosapi::CrosapiManager::IsInitialized()
+             ? crosapi::CrosapiManager::Get()
+                   ->crosapi_ash()
+                   ->download_controller_ash()
+             : nullptr;
+}
+
+// Returns the download manager to use for the given `profile`.
+content::DownloadManager* GetDownloadManager(Profile* profile) {
+  return download_manager_for_testing ? download_manager_for_testing
+                                      : profile->GetDownloadManager();
+}
+
 // Returns whether the specified `mojo_download_item` is complete.
 bool IsComplete(const crosapi::mojom::DownloadItem* mojo_download_item) {
   return mojo_download_item->state == crosapi::mojom::DownloadState::kComplete;
+}
+
+// Returns whether or not the specified `mojo_download_item` is eligible for
+// in-progress downloads integration.
+bool IsEligibleForInProgressIntegration(
+    const crosapi::mojom::DownloadItem* mojo_download_item) {
+  // The `start_time` field was the last field to be implemented in Lacros. Its
+  // presence indicates that other required APIs (e.g. pause/resume/cancel/...)
+  // are also implemented and is therefore used to gate eligibility.
+  return mojo_download_item->start_time.has_value();
 }
 
 // Returns whether the specified `mojo_download_item` is in progress.
@@ -104,9 +129,16 @@ bool IsInProgress(const download::DownloadItem* download_item) {
 // removed from the model.
 class HoldingSpaceDownloadsDelegate::InProgressDownload {
  public:
-  InProgressDownload(HoldingSpaceDownloadsDelegate* delegate,
+  enum class Type {
+    kAsh,     // See `InProgressAshDownload`.
+    kLacros,  // See `InProgressLacrosDownload`.
+  };
+
+  InProgressDownload(Type type,
+                     HoldingSpaceDownloadsDelegate* delegate,
                      crosapi::mojom::DownloadItemPtr mojo_download_item)
-      : delegate_(delegate),
+      : type_(type),
+        delegate_(delegate),
         mojo_download_item_(std::move(mojo_download_item)) {
     DCHECK(IsInProgress(mojo_download_item_.get()));
   }
@@ -114,6 +146,9 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   InProgressDownload(const InProgressDownload&) = delete;
   InProgressDownload& operator=(const InProgressDownload&) = delete;
   virtual ~InProgressDownload() = default;
+
+  // Returns the specific type of `InProgressDownload` that this is.
+  Type GetType() const { return type_; }
 
   // Cancels the underlying download. NOTE: This is expected to be invoked in
   // direct response to an explicit user action and will result in the
@@ -130,15 +165,16 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // Marks the underlying download to be opened when complete.
   virtual void OpenWhenComplete() = 0;
 
-  // Returns the number of bytes received for the underlying download.
-  int64_t GetReceivedBytes() const {
-    return mojo_download_item_->received_bytes;
-  }
-
   // Returns the file path associated with the underlying download.
   // NOTE: The file path may be empty before a target file path has been picked.
   base::FilePath GetFilePath() const {
     return mojo_download_item_->full_path.value_or(base::FilePath());
+  }
+
+  // Returns the GUID which uniquely identifies the underlying download.
+  // NOTE: The existence of `this` implies that GUID is present.
+  const std::string& GetGuid() const {
+    return mojo_download_item_->guid.value();
   }
 
   // Returns the target file path associated with the underlying download.
@@ -153,6 +189,11 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
       return HoldingSpaceProgress();
     return HoldingSpaceProgress(GetReceivedBytes(), GetTotalBytes(),
                                 /*complete=*/false);
+  }
+
+  // Returns the number of bytes received for the underlying download.
+  int64_t GetReceivedBytes() const {
+    return mojo_download_item_->received_bytes;
   }
 
   // Returns the number of total bytes for the underlying download.
@@ -286,6 +327,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   }
 
  private:
+  const Type type_;
   HoldingSpaceDownloadsDelegate* const delegate_;  // NOTE: Owns `this`.
   crosapi::mojom::DownloadItemPtr mojo_download_item_;
 
@@ -310,7 +352,9 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
  public:
   InProgressAshDownload(HoldingSpaceDownloadsDelegate* delegate,
                         download::DownloadItem* download_item)
-      : InProgressDownload(delegate, ConvertToMojoDownloadItem(download_item)),
+      : InProgressDownload(Type::kAsh,
+                           delegate,
+                           ConvertToMojoDownloadItem(download_item)),
         download_item_(download_item) {
     download_item_observation_.Observe(download_item);
   }
@@ -347,6 +391,78 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
       download_item_observation_{this};
 };
 
+// HoldingSpaceDownloadsDelegate::InProgressLacrosDownload ---------------------
+
+// A wrapper around an in-progress `crosapi::mojom::DownloadItem` originating
+// from the Lacros Chrome browser. NOTE: Instances of this class are immediately
+// destroyed when the underlying download is no longer in-progress or when the
+// associated in-progress holding space item is removed from the model.
+class HoldingSpaceDownloadsDelegate::InProgressLacrosDownload
+    : public HoldingSpaceDownloadsDelegate::InProgressDownload,
+      public crosapi::DownloadControllerAsh::DownloadControllerObserver {
+ public:
+  InProgressLacrosDownload(HoldingSpaceDownloadsDelegate* delegate,
+                           crosapi::mojom::DownloadItemPtr mojo_download_item)
+      : InProgressDownload(Type::kLacros,
+                           delegate,
+                           std::move(mojo_download_item)) {
+    auto* const download_controller_ash = GetDownloadControllerAsh();
+    if (download_controller_ash)
+      download_controller_ash->AddObserver(this);
+  }
+
+  InProgressLacrosDownload(const InProgressLacrosDownload&) = delete;
+  InProgressLacrosDownload& operator=(const InProgressLacrosDownload&) = delete;
+
+  ~InProgressLacrosDownload() override {
+    auto* const download_controller_ash = GetDownloadControllerAsh();
+    if (download_controller_ash)
+      download_controller_ash->RemoveObserver(this);
+  }
+
+ private:
+  // InProgressDownload:
+  void Cancel() override {
+    auto* const download_controller_ash = GetDownloadControllerAsh();
+    if (download_controller_ash)
+      download_controller_ash->Cancel(GetGuid(), /*user_cancel=*/true);
+  }
+
+  void Pause() override {
+    auto* const download_controller_ash = GetDownloadControllerAsh();
+    if (download_controller_ash)
+      download_controller_ash->Pause(GetGuid());
+  }
+
+  void Resume() override {
+    auto* const download_controller_ash = GetDownloadControllerAsh();
+    if (download_controller_ash)
+      download_controller_ash->Resume(GetGuid(), /*user_resume=*/true);
+  }
+
+  void OpenWhenComplete() override {
+    auto* const download_controller_ash = GetDownloadControllerAsh();
+    if (download_controller_ash)
+      download_controller_ash->SetOpenWhenComplete(GetGuid(), true);
+  }
+
+  // crosapi::DownloadControllerAsh::DownloadControllerObserver:
+  void OnLacrosDownloadUpdated(
+      const crosapi::mojom::DownloadItem& mojo_download_item) override {
+    if (mojo_download_item.guid != GetGuid())
+      return;
+    // NOTE: This method invocation may result in destruction of `this`,
+    // depending on the state of the underlying download.
+    UpdateMojoDownloadItem(mojo_download_item.Clone());
+  }
+
+  void OnLacrosDownloadDestroyed(
+      const crosapi::mojom::DownloadItem& mojo_download_item) override {
+    if (mojo_download_item.guid == GetGuid())
+      UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
+  }
+};
+
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
 
 HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
@@ -356,12 +472,9 @@ HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
 
 HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
   // Lacros Chrome downloads.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->download_controller_ash()
-        ->RemoveObserver(this);
-  }
+  auto* const download_controller_ash = GetDownloadControllerAsh();
+  if (download_controller_ash)
+    download_controller_ash->RemoveObserver(this);
 }
 
 // static
@@ -370,7 +483,6 @@ void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
   download_manager_for_testing = download_manager;
 }
 
-// TODO(crbug.com/1184438): Handle Lacros downloads.
 void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
@@ -381,7 +493,6 @@ void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item) {
   }
 }
 
-// TODO(crbug.com/1184438): Handle Lacros downloads.
 void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
@@ -392,7 +503,6 @@ void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item) {
   }
 }
 
-// TODO(crbug.com/1184438): Handle Lacros downloads.
 void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
@@ -403,7 +513,6 @@ void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item) {
   }
 }
 
-// TODO(crbug.com/1184438): Handle Lacros downloads.
 bool HoldingSpaceDownloadsDelegate::OpenWhenComplete(
     const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
@@ -416,7 +525,7 @@ bool HoldingSpaceDownloadsDelegate::OpenWhenComplete(
   return false;
 }
 
-void HoldingSpaceDownloadsDelegate::Init() {
+void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   // ARC downloads.
   if (features::IsHoldingSpaceArcIntegrationEnabled()) {
     // NOTE: The `arc_intent_helper_bridge` may be `nullptr` if the `profile()`
@@ -428,26 +537,18 @@ void HoldingSpaceDownloadsDelegate::Init() {
   }
 
   // Ash Chrome downloads.
-  download_manager_observation_.Observe(download_manager_for_testing
-                                            ? download_manager_for_testing
-                                            : profile()->GetDownloadManager());
-
-  // Lacros Chrome downloads.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->download_controller_ash()
-        ->AddObserver(this);
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
-  content::DownloadManager* download_manager =
-      download_manager_for_testing ? download_manager_for_testing
-                                   : profile()->GetDownloadManager();
-
+  auto* const download_manager = GetDownloadManager(profile());
+  download_manager_observation_.Observe(download_manager);
   if (download_manager->IsManagerInitialized())
     OnManagerInitialized();
+
+  // Lacros Chrome downloads.
+  auto* const download_controller_ash = GetDownloadControllerAsh();
+  if (download_controller_ash) {
+    download_controller_ash->GetAllDownloads(
+        base::BindOnce(&HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
@@ -491,10 +592,7 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
   if (is_restoring_persistence())
     return;
 
-  content::DownloadManager* download_manager =
-      download_manager_for_testing ? download_manager_for_testing
-                                   : profile()->GetDownloadManager();
-
+  content::DownloadManager* download_manager = GetDownloadManager(profile());
   DCHECK(download_manager->IsManagerInitialized());
 
   download::SimpleDownloadManager::DownloadVector downloads;
@@ -511,7 +609,9 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
 void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
     content::DownloadManager* manager) {
   download_manager_observation_.Reset();
-  in_progress_downloads_.clear();
+  base::EraseIf(in_progress_downloads_, [](const auto& in_progress_download) {
+    return in_progress_download->GetType() == InProgressDownload::Type::kAsh;
+  });
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
@@ -528,18 +628,46 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   }
 }
 
-// TODO(crbug.com/1184438): Support in-progress downloads.
+void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
+    const crosapi::mojom::DownloadItem& mojo_download_item) {
+  if (mojo_download_item.is_from_incognito_profile &&
+      !features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
+    return;
+  }
+  // NOTE: If ineligible for in-progress download handling, the download will
+  // still be added to holding space on completion.
+  if (IsInProgress(&mojo_download_item) &&
+      IsEligibleForInProgressIntegration(&mojo_download_item)) {
+    in_progress_downloads_.emplace(std::make_unique<InProgressLacrosDownload>(
+        this, mojo_download_item.Clone()));
+  }
+}
+
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
     const crosapi::mojom::DownloadItem& mojo_download_item) {
   if (mojo_download_item.is_from_incognito_profile &&
       !features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     return;
   }
-
-  if (mojo_download_item.state == crosapi::mojom::DownloadState::kComplete) {
-    service()->AddDownload(ash::HoldingSpaceItem::Type::kLacrosDownload,
+  // NOTE: It is only necessary to add a holding space item on completion here
+  // if the download was ineligible for in-progress download handling.
+  if (IsComplete(&mojo_download_item) &&
+      !IsEligibleForInProgressIntegration(&mojo_download_item)) {
+    service()->AddDownload(HoldingSpaceItem::Type::kLacrosDownload,
                            mojo_download_item.target_file_path);
   }
+}
+
+void HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced(
+    std::vector<crosapi::mojom::DownloadItemPtr> mojo_download_items) {
+  // After the initial sync, observe updates to Lacros downloads.
+  auto* const download_controller_ash = GetDownloadControllerAsh();
+  if (download_controller_ash)
+    download_controller_ash->AddObserver(this);
+
+  // Sync `in_progress_downloads_` with `mojo_download_items` state.
+  for (const auto& mojo_download_item : mojo_download_items)
+    OnLacrosDownloadCreated(*mojo_download_item);
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
@@ -593,13 +721,21 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
 
   // Create.
   if (!item) {
+    HoldingSpaceItem::Type type;
+    switch (in_progress_download->GetType()) {
+      case InProgressDownload::Type::kAsh:
+        type = HoldingSpaceItem::Type::kDownload;
+        break;
+      case InProgressDownload::Type::kLacros:
+        type = HoldingSpaceItem::Type::kLacrosDownload;
+        break;
+    }
     service()->AddDownload(
-        HoldingSpaceItem::Type::kDownload, in_progress_download->GetFilePath(),
+        type, in_progress_download->GetFilePath(),
         in_progress_download->GetProgress(),
         in_progress_download->GetPlaceholderImageSkiaResolver());
     in_progress_download->SetHoldingSpaceItem(
-        item = model()->GetItem(HoldingSpaceItem::Type::kDownload,
-                                in_progress_download->GetFilePath()));
+        item = model()->GetItem(type, in_progress_download->GetFilePath()));
     // NOTE: This code intentionally falls through so as to update metadata for
     // the newly created holding space item.
   }

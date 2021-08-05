@@ -319,6 +319,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
     chromeos::disks::DiskMountManager::Shutdown();
+    HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(nullptr);
   }
 
   TestingProfile* CreateProfile() override {
