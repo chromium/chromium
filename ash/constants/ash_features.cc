@@ -1102,11 +1102,6 @@ const base::Feature kVerticalSplitScreen{"VerticalSplitScreen",
 const base::Feature kVirtualKeyboardApi{"VirtualKeyboardApi",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable using the floating virtual keyboard as the default option
-// on Chrome OS.
-const base::Feature kVirtualKeyboardFloatingDefault{
-    "VirtualKeyboardFloatingDefault", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable or disable bordered key for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardBorderedKey{
     "VirtualKeyboardBorderedKey", base::FEATURE_DISABLED_BY_DEFAULT};
