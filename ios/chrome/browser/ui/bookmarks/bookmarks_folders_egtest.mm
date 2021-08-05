@@ -183,7 +183,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Swipe action to try to delete the newly created folder while its name its
   // being edited.
   [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"New Folder")]
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"New Folder"),
+                                          grey_minimumVisiblePercent(0.7),
+                                          nil)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
   // Verify the delete confirmation button doesn't show up.
