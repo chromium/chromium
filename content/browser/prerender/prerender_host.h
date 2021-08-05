@@ -78,7 +78,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kStop = 24,
     kSslCertificateError = 25,
     kLoginAuthRequested = 26,
-    kMaxValue = kLoginAuthRequested,
+    kUaChangeRequiresReload = 27,
+    kMaxValue = kUaChangeRequiresReload,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

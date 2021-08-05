@@ -1707,6 +1707,7 @@ void WebContentsImpl::SetUserAgentOverride(
   renderer_preferences_.user_agent_override = ua_override;
 
   // Send the new override string to all renderers in the current page.
+  // TODO(https://crbug.com/1235984): Sync for all FrameTree instance.
   SyncRendererPrefs();
 
   // Reload the page if a load is currently in progress to avoid having
@@ -1714,12 +1715,28 @@ void WebContentsImpl::SetUserAgentOverride(
   // No need to reload if the current entry matches that of the
   // NavigationRequest supplied to DidStartNavigation() as NavigationRequest
   // handles it.
-  NavigationEntry* entry = GetController().GetVisibleEntry();
-  if (IsLoading() && entry != nullptr && entry->GetIsOverridingUserAgent() &&
-      (!frame_tree_.root()->navigation_request() ||
-       frame_tree_.root()->navigation_request()->ua_change_requires_reload())) {
-    GetController().Reload(ReloadType::BYPASSING_CACHE, true);
-  }
+  ForEachFrameTree(base::BindRepeating([](FrameTree* frame_tree) {
+    if (!frame_tree->IsLoading())
+      return;
+    NavigationEntry* entry = frame_tree->controller().GetVisibleEntry();
+    if (!entry || !entry->GetIsOverridingUserAgent())
+      return;
+    if (frame_tree->root()->navigation_request() &&
+        !frame_tree->root()
+             ->navigation_request()
+             ->ua_change_requires_reload()) {
+      return;
+    }
+    if (frame_tree->is_prerendering()) {
+      // Just cancel if the FrameTree is for prerendering, as prerendered
+      // page may not allow another navigation including a reload, depending
+      // on conditions.
+      frame_tree->GetMainFrame()->CancelPrerendering(
+          PrerenderHost::FinalStatus::kUaChangeRequiresReload);
+    } else {
+      frame_tree->controller().Reload(ReloadType::BYPASSING_CACHE, true);
+    }
+  }));
 
   observers_.NotifyObservers(&WebContentsObserver::UserAgentOverrideSet,
                              ua_override);
