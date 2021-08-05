@@ -123,10 +123,9 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE,
-                                resources.getString(R.string.update_password_dialog_title, origin))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                R.string.password_manager_update_button)
+                        .with(ModalDialogProperties.TITLE, resources,
+                                R.string.confirm_username_dialog_title)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.done)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.password_generation_dialog_cancel_button)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)

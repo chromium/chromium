@@ -39,6 +39,7 @@ namespace {
 constexpr char kDefaultUrl[] = "http://example.com";
 constexpr char16_t kOrigin[] = u"example.com";
 constexpr char16_t kUsername[] = u"username";
+constexpr char16_t kUsername2[] = u"username2";
 constexpr char16_t kPassword[] = u"password";
 constexpr char kAccountEmail[] = "account@example.com";
 constexpr char16_t kAccountEmail16[] = u"account@example.com";
@@ -70,7 +71,9 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& password_form_url,
       const std::vector<const PasswordForm*>* best_matches);
-  void SetUsernameAndPassword(std::u16string username, std::u16string password);
+  void SetPendingCredentials(std::u16string username, std::u16string password);
+  static PasswordForm CreatePasswordForm(std::u16string username,
+                                         std::u16string password);
 
   void EnqueueMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                       bool user_signed_in,
@@ -114,10 +117,18 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
     return &kEmptyBestMatches;
   }
 
- private:
-  const std::vector<const PasswordForm*> kEmptyBestMatches = {};
+  const std::vector<const PasswordForm*>* two_forms_best_matches() {
+    return &kTwoFormsBestMatches;
+  }
 
-  PasswordForm password_form_;
+ private:
+  const PasswordForm kPasswordForm1 = CreatePasswordForm(kUsername, kPassword);
+  const PasswordForm kPasswordForm2 = CreatePasswordForm(kUsername2, kPassword);
+  const std::vector<const PasswordForm*> kEmptyBestMatches = {};
+  const std::vector<const PasswordForm*> kTwoFormsBestMatches = {
+      &kPasswordForm1, &kPasswordForm2};
+
+  PasswordForm pending_credentials_;
   std::unique_ptr<SavePasswordMessageDelegate> delegate_;
   GURL password_form_url_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
@@ -141,7 +152,6 @@ void SavePasswordMessageDelegateTest::SetUp() {
   ukm_source_id_ = ukm::UkmRecorder::GetNewSourceID();
   metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
       true /*is_main_frame_secure*/, ukm_source_id_, nullptr /*pref_service*/);
-
   NavigateAndCommit(GURL(kDefaultUrl));
 
   messages::MessageDispatcherBridge::SetInstanceForTesting(
@@ -161,7 +171,7 @@ SavePasswordMessageDelegateTest::CreateFormManager(
   auto form_manager =
       std::make_unique<testing::NiceMock<MockPasswordFormManagerForUI>>();
   ON_CALL(*form_manager, GetPendingCredentials())
-      .WillByDefault(ReturnRef(password_form_));
+      .WillByDefault(ReturnRef(pending_credentials_));
   ON_CALL(*form_manager, GetCredentialSource())
       .WillByDefault(Return(password_manager::metrics_util::
                                 CredentialSourceType::kPasswordManager));
@@ -176,11 +186,21 @@ SavePasswordMessageDelegateTest::CreateFormManager(
   return form_manager;
 }
 
-void SavePasswordMessageDelegateTest::SetUsernameAndPassword(
+void SavePasswordMessageDelegateTest::SetPendingCredentials(
     std::u16string username,
     std::u16string password) {
-  password_form_.username_value = std::move(username);
-  password_form_.password_value = std::move(password);
+  pending_credentials_.username_value = std::move(username);
+  pending_credentials_.password_value = std::move(password);
+}
+
+// static
+PasswordForm SavePasswordMessageDelegateTest::CreatePasswordForm(
+    std::u16string username,
+    std::u16string password) {
+  PasswordForm password_form;
+  password_form.username_value = std::move(username);
+  password_form.password_value = std::move(password);
+  return password_form;
 }
 
 void SavePasswordMessageDelegateTest::EnqueueMessage(
@@ -199,6 +219,8 @@ void SavePasswordMessageDelegateTest::EnqueueMessage(
 
 void SavePasswordMessageDelegateTest::TriggerActionClick() {
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  // Simulate call from Java to dismiss message on primary button click.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
 }
 
 void SavePasswordMessageDelegateTest::TriggerPasswordEditDialog() {
@@ -285,7 +307,7 @@ void SavePasswordMessageDelegateTest::VerifyUkmMetrics(
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for save password message.
 TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_SavePassword) {
-  SetUsernameAndPassword(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
@@ -316,7 +338,7 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_SavePassword) {
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for update password message.
 TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_UpdatePassword) {
-  SetUsernameAndPassword(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
@@ -333,15 +355,35 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_UpdatePassword) {
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
-// Tests that the description is set correctly when the user is signed.
-TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
-  SetUsernameAndPassword(kUsername, kPassword);
+// Tests that the description is set correctly when signed-in user saves a
+// password.
+TEST_F(SavePasswordMessageDelegateTest, SignedInDescription_SavePassword) {
+  SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/false);
 
+  EXPECT_EQ(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kUsername));
+  EXPECT_EQ(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kPassword));
   EXPECT_NE(std::u16string::npos,
+            GetMessageWrapper()->GetDescription().find(kAccountEmail16));
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the description is set correctly when signed-in user updates a
+// password.
+TEST_F(SavePasswordMessageDelegateTest, SignedInDescription_UpdatePassword) {
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+
+  EXPECT_EQ(std::u16string::npos,
             GetMessageWrapper()->GetDescription().find(kUsername));
   EXPECT_EQ(std::u16string::npos,
             GetMessageWrapper()->GetDescription().find(kPassword));
@@ -353,7 +395,7 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
 TEST_F(SavePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
-  SetUsernameAndPassword(kUsername, kPassword);
+  SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
@@ -380,8 +422,6 @@ TEST_F(SavePasswordMessageDelegateTest, SaveOnActionClick) {
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick();
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
   CommitPasswordFormMetrics();
@@ -441,22 +481,46 @@ TEST_F(SavePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
       password_manager::metrics_util::NO_DIRECT_INTERACTION, 1);
 }
 
-TEST_F(SavePasswordMessageDelegateTest, DialogProperties) {
-  SetUsernameAndPassword(kUsername, kPassword);
-  PasswordForm password_form;
-  password_form.username_value = kUsername;
-  password_form.password_value = kPassword;
-  const std::vector<const PasswordForm*> best_matches = {&password_form};
-  auto form_manager = CreateFormManager(GURL(kDefaultUrl), &best_matches);
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  // Verify parameters to Show() call.
-  EXPECT_CALL(*mock_dialog, Show(ElementsAre(std::u16string(kUsername)), 0,
-                                 std::u16string(kPassword),
-                                 std::u16string(kOrigin), kAccountEmail));
+// Tests that update password message with a single PasswordForm immediately
+// saves the form on Update button tap and doesn't display confirmation dialog.
+TEST_F(SavePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  SetPendingCredentials(kUsername, kPassword);
+  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
+  std::vector<const PasswordForm*> single_form_best_matches = {&password_form};
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+  EXPECT_CALL(*form_manager, Save());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
-  ExpectDismissMessageCall();
-  TriggerPasswordEditDialog();
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  CommitPasswordFormMetrics();
+  VerifyUkmMetrics(
+      test_ukm_recorder,
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+  histogram_tester.ExpectUniqueSample(
+      kDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+TEST_F(SavePasswordMessageDelegateTest, DialogProperties) {
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  // Verify parameters to Show() call.
+  EXPECT_CALL(*mock_dialog, Show(ElementsAre(std::u16string(kUsername),
+                                             std::u16string(kUsername2)),
+                                 0, std::u16string(kPassword),
+                                 std::u16string(kOrigin), std::string()));
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  TriggerActionClick();
   TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
 }
 
@@ -467,15 +531,14 @@ TEST_F(SavePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
   EXPECT_CALL(*form_manager, Save());
   MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
   EXPECT_CALL(*mock_dialog, Show);
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  ExpectDismissMessageCall();
-  TriggerPasswordEditDialog();
+  TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
   TriggerDialogAcceptedCallback(/*selected_username_index=*/0);
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
@@ -496,15 +559,14 @@ TEST_F(SavePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
   EXPECT_CALL(*form_manager, Save).Times(0);
   MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
   EXPECT_CALL(*mock_dialog, Show);
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  ExpectDismissMessageCall();
-  TriggerPasswordEditDialog();
+  TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
   TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
 

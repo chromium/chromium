@@ -71,7 +71,9 @@ class SavePasswordMessageDelegate {
   // Following methods handle events associated with user interaction with UI.
   void HandleSaveButtonClicked();
   void HandleNeverSaveClicked();
-  void HandleDisplayEditDialog();
+  void HandleUpdateButtonClicked();
+  void DisplayUsernameConfirmDialog(std::vector<std::u16string> usernames,
+                                    int selected_username_index);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   void HandleSavePasswordFromDialog(int selected_username);
   void HandleDialogDismissed(bool dialogAccepted);

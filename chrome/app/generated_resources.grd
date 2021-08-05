@@ -5167,7 +5167,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Update password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>?
       </message>
       <message name="IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT" desc="The description of save password message when the user is signed in.">
-        <ph name="USERNAME">$1<ex>Username</ex></ph> <ph name="MASKED_PASSWORD">$2<ex>*****</ex></ph> will be saved to your Google Account, <ph name="ACCOUNT">$3<ex>user@gmail.com</ex></ph>
+        Save it in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT" desc="The description of update password message when the signed-in user updates the password.">
+        Update it in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
       </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the bubble that offers user to save a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device
@@ -6585,7 +6588,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Never remember for this site' option">
           Never
         </message>
-        <message name="IDS_PASSWORD_MANAGER_UPDATE_BUTTON" desc="Label for the 'update' button in the Update Password infobar. This infobar asks if the user wishes to update the saved password for a site to a new password the user has just entered; the button applies the suggested update." formatter_data="android_java">
+        <message name="IDS_PASSWORD_MANAGER_UPDATE_BUTTON" desc="Label for the 'update' button in the Update Password infobar. This infobar asks if the user wishes to update the saved password for a site to a new password the user has just entered; the button applies the suggested update.">
           Update
         </message>
         <message name="IDS_PASSWORD_SAVING_STATUS_TOGGLE" desc="Label for the toggle that shows whether saving passwords for the current site is enabled or disabled.">
@@ -6612,8 +6615,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE" desc="Text for the button used to generate a password.">
           Suggest strong password
         </message>
-        <message name="IDS_UPDATE_PASSWORD_DIALOG_TITLE" desc="The title of the update password dialog." formatter_data="android_java">
-          Update password for <ph name="ORIGIN">%1$s<ex>example.com</ex></ph>
+        <message name="IDS_CONFIRM_USERNAME_DIALOG_TITLE" desc="The title of the confirm username dialog." formatter_data="android_java">
+          Confirm your username
         </message>
         <message name="IDS_UPDATE_PASSWORD_DIALOG_SIGNED_IN_DESCRIPTION" desc="The description at the bottom of update password dialog when the user is signed in." formatter_data="android_java">
           Passwords are saved in your Google Account (<ph name="ACCOUNT">%1$s<ex>user@gmail.com</ex></ph>) so you can use them on any device
