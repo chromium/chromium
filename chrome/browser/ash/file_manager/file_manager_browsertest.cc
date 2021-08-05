@@ -895,12 +895,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexOpenDialogDownloads").WithBrowser(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser().InGuestMode()
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
-#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
-            ,
-        TestCase("tabindexSaveFileDialogDrive").WithBrowser(),
-        TestCase("tabindexSaveFileDialogDownloads").WithBrowser(),
-        TestCase("tabindexSaveFileDialogDownloads").WithBrowser().InGuestMode()
-#endif
+//      ,
+//      TestCase("tabindexSaveFileDialogDrive").WithBrowser(),
+//      TestCase("tabindexSaveFileDialogDownloads").WithBrowser(),
+//      TestCase("tabindexSaveFileDialogDownloads").WithBrowser().InGuestMode()
             ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
