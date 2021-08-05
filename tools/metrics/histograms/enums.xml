@@ -49314,6 +49314,7 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="87886288" label="DiagnosticsApp:enabled"/>
+  <int value="88249612" label="CalendarView:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="89357752" label="PdfXfaSupport:enabled"/>
   <int value="89758831" label="FontAccessChooser:enabled"/>
@@ -50235,6 +50236,7 @@ from previous Chrome versions.
   <int value="835726069" label="NtpWebUI:disabled"/>
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
   <int value="837350465" label="SystemProxyForSystemServices:enabled"/>
+  <int value="838300788" label="CalendarView:disabled"/>
   <int value="838887742" label="manual-enhanced-bookmarks"/>
   <int value="839230937" label="AutofillEnableCardNicknameUpstream:disabled"/>
   <int value="839798268" label="SafeBrowsingTelemetryForApkDownloads:disabled"/>

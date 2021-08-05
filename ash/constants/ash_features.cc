@@ -215,6 +215,10 @@ const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
 const base::Feature kButtonARCNetworkDiagnostics{
     "ButtonARCNetworkDiagnostics", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable calendar view from the system tray.
+const base::Feature kCalendarView{"CalendarView",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{
@@ -1240,6 +1244,10 @@ bool IsBluetoothAdvertisementMonitoringEnabled() {
 
 bool IsBluetoothRevampEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothRevamp);
+}
+
+bool IsCalendarViewEnabled() {
+  return base::FeatureList::IsEnabled(kCalendarView);
 }
 
 bool IsCellularActivationUiEnabled() {

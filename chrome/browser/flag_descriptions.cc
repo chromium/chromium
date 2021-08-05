@@ -4239,6 +4239,12 @@ const char kButtonARCNetworkDiagnosticsDescription[] =
     "Enables the display of a button on the ARC Provisioning failure dialog "
     "that opens the connectivity section of the diagnostics app.";
 
+const char kCalendarViewName[] =
+    "Productivity experiment: Monthly Calendar View";
+const char kCalendarViewDescription[] =
+    "Show Monthly Calendar View with Google Calendar events to increase "
+    "productivity by helping users view their schedules more quickly.";
+
 const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "

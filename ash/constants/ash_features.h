@@ -93,6 +93,8 @@ extern const base::Feature kBorealisDiskManagement;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kButtonARCNetworkDiagnostics;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCalendarView;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraPrivacySwitchNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularAllowPerNetworkRoaming;
