@@ -228,19 +228,4 @@ content::GetServiceSandboxType<quarantine::mojom::Quarantine>() {
 }
 #endif  // defined(OS_WIN)
 
-// sharing::mojom::Sharing
-#if !defined(OS_MAC)
-namespace sharing {
-namespace mojom {
-class Sharing;
-}
-}  // namespace sharing
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<sharing::mojom::Sharing>() {
-  return sandbox::policy::SandboxType::kService;
-}
-#endif  // !defined(OS_MAC)
-
 #endif  // CHROME_BROWSER_SERVICE_SANDBOX_TYPE_H_
