@@ -274,6 +274,7 @@ public class TracingSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableIf.Build(sdk_is_less_than = 24, message = "crbug.com/1233456")
     public void testSelectCategories() throws Exception {
         // We need a renderer so that its tracing categories will be populated.
         mActivityTestRule.startMainActivityOnBlankPage();
