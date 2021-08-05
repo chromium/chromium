@@ -5472,6 +5472,8 @@ static_library("browser") {
       "memory_details_fuchsia.cc",
       "obsolete_system/obsolete_system_stub.cc",
       "platform_util_fuchsia.cc",
+      "policy/browser_dm_token_storage_fuchsia.cc",
+      "policy/browser_dm_token_storage_fuchsia.h",
       "process_singleton_fuchsia.cc",
       "shell_integration_fuchsia.cc",
       "upgrade_detector/get_installed_version_fuchsia.cc",

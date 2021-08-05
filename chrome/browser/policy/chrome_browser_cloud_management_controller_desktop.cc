@@ -54,9 +54,8 @@
 #endif  // defined(OS_WIN)
 
 #if defined(OS_FUCHSIA)
-#include "base/notreached.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#endif
+#include "chrome/browser/policy/browser_dm_token_storage_fuchsia.h"
+#endif  // defined(OS_FUCHSIA)
 
 namespace policy {
 
@@ -85,6 +84,8 @@ void ChromeBrowserCloudManagementControllerDesktop::
   storage_delegate = std::make_unique<BrowserDMTokenStorageLinux>();
 #elif defined(OS_WIN)
   storage_delegate = std::make_unique<BrowserDMTokenStorageWin>();
+#elif defined(OS_FUCHSIA)
+  storage_delegate = std::make_unique<BrowserDMTokenStorageFuchsia>();
 #else
   NOTREACHED();
 #endif
