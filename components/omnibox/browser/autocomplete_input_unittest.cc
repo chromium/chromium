@@ -384,6 +384,14 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
       {u"127.0.0.1:8080", GURL("http://127.0.0.1:8080"), false},
       // Non-unique hostnames shouldn't be upgraded.
       {u"site.test", GURL("http://site.test"), false},
+      // This non-unique hostname is a regression test for
+      // https://crbug.com/1224724. The slash is provided at the end of the
+      // input query since otherwise the input gets classified as a non-URL and
+      // the autocomplete code doesn't progress to the HTTPS upgrading logic
+      // where the bug was.
+      {u"dotlesshostname/", GURL("http://dotlesshostname/"), false},
+      {u"http://dotlesshostname/", GURL("http://dotlesshostname/"), false},
+      {u"https://dotlesshostname/", GURL("https://dotlesshostname/"), false},
       // Fully typed URLs shouldn't be upgraded.
       {u"http://example.com", GURL("http://example.com"), false},
       {u"HTTP://EXAMPLE.COM", GURL("http://example.com"), false},
