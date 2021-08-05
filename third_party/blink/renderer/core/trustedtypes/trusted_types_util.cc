@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
@@ -184,6 +187,11 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
     execution_context->GetTrustedTypes()->CountTrustedTypeAssignmentError();
 
   String prefix = GetSamplePrefix(exception_state.GetContext(), value);
+  // This issue_id is used to generate a link in the DevTools front-end from
+  // the JavaScript TypeError to the inspector issue which is reported by
+  // ContentSecurityPolicy::ReportViolation via the call to
+  // AllowTrustedTypeAssignmentFailure below.
+  base::UnguessableToken issue_id = base::UnguessableToken::Create();
   bool allow =
       execution_context->GetContentSecurityPolicy()
           ->AllowTrustedTypeAssignmentFailure(
@@ -191,7 +199,7 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
               prefix == "Function" ? value.Substring(static_cast<wtf_size_t>(
                                          strlen(kAnonymousPrefix)))
                                    : value,
-              prefix);
+              prefix, issue_id);
 
   // TODO(1087743): Add a console message for Trusted Type-related Function
   // constructor failures, to warn the developer of the outstanding issues
@@ -215,6 +223,15 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
 
   if (!allow) {
     exception_state.ThrowTypeError(GetMessage(kind));
+    v8::Local<v8::Value> exception = exception_state.GetException();
+    if (!exception.IsEmpty()) {
+      v8::Isolate* isolate = execution_context->GetIsolate();
+      ThreadDebugger* debugger = ThreadDebugger::From(isolate);
+      debugger->GetV8Inspector()->associateExceptionData(
+          v8::Local<v8::Context>(), exception,
+          V8AtomicString(isolate, "issueId"),
+          V8String(isolate, IdentifiersFactory::IdFromToken(issue_id)));
+    }
   }
   return !allow;
 }

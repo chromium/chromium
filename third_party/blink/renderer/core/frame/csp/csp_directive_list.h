@@ -45,7 +45,8 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
     ContentSecurityPolicy* policy,
     const String& message,
     const String& sample,
-    const String& sample_prefix);
+    const String& sample_prefix,
+    absl::optional<base::UnguessableToken> issue_id);
 
 CORE_EXPORT
 bool CSPDirectiveListAllowTrustedTypePolicy(

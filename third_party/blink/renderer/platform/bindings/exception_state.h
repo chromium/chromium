@@ -206,7 +206,7 @@ class PLATFORM_EXPORT ExceptionState {
 
   const String& Message() const { return message_; }
 
-  v8::Local<v8::Value> GetException() {
+  virtual v8::Local<v8::Value> GetException() {
     DCHECK(!exception_.IsEmpty());
     return exception_.NewLocal(isolate_);
   }
@@ -319,6 +319,9 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
   void ThrowWasmCompileError(const String& message) override;
   void RethrowV8Exception(v8::Local<v8::Value>) override;
   ExceptionState& ReturnThis() { return *this; }
+  v8::Local<v8::Value> GetException() override {
+    return v8::Local<v8::Value>();
+  }
 };
 
 // Syntax sugar for DummyExceptionStateForTesting.

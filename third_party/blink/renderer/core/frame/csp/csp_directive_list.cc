@@ -163,17 +163,19 @@ CSPOperativeDirective OperativeDirective(
                    original_type);
 }
 
-void ReportViolation(const network::mojom::blink::ContentSecurityPolicy& csp,
-                     ContentSecurityPolicy* policy,
-                     const String& directive_text,
-                     CSPDirectiveName effective_type,
-                     const String& console_message,
-                     const KURL& blocked_url,
-                     ResourceRequest::RedirectStatus redirect_status,
-                     ContentSecurityPolicy::ContentSecurityPolicyViolationType
-                         violation_type = ContentSecurityPolicy::kURLViolation,
-                     const String& sample = String(),
-                     const String& sample_prefix = String()) {
+void ReportViolation(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    const String& directive_text,
+    CSPDirectiveName effective_type,
+    const String& console_message,
+    const KURL& blocked_url,
+    ResourceRequest::RedirectStatus redirect_status,
+    ContentSecurityPolicy::ContentSecurityPolicyViolationType violation_type =
+        ContentSecurityPolicy::kURLViolation,
+    const String& sample = String(),
+    const String& sample_prefix = String(),
+    absl::optional<base::UnguessableToken> issue_id = absl::nullopt) {
   String message = CSPDirectiveListIsReportOnly(csp)
                        ? "[Report Only] " + console_message
                        : console_message;
@@ -187,7 +189,7 @@ void ReportViolation(const network::mojom::blink::ContentSecurityPolicy& csp,
                           nullptr,  // localFrame
                           redirect_status,
                           nullptr,  // Element*
-                          sample, sample_prefix);
+                          sample, sample_prefix, issue_id);
 }
 
 void ReportViolationWithLocation(
@@ -570,7 +572,8 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
     ContentSecurityPolicy* policy,
     const String& message,
     const String& sample,
-    const String& sample_prefix) {
+    const String& sample_prefix,
+    absl::optional<base::UnguessableToken> issue_id) {
   if (!CSPDirectiveListRequiresTrustedTypes(csp))
     return true;
 
@@ -580,7 +583,7 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
                   CSPDirectiveName::RequireTrustedTypesFor, message, KURL(),
                   RedirectStatus::kNoRedirect,
                   ContentSecurityPolicy::kTrustedTypesSinkViolation, sample,
-                  sample_prefix);
+                  sample_prefix, issue_id);
   return CSPDirectiveListIsReportOnly(csp);
 }
 

@@ -31,6 +31,7 @@
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -294,7 +295,8 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool AllowTrustedTypeAssignmentFailure(
       const String& message,
       const String& sample = String(),
-      const String& sample_prefix = String());
+      const String& sample_prefix = String(),
+      absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
 
   void UsesScriptHashAlgorithms(uint8_t content_security_policy_hash_algorithm);
   void UsesStyleHashAlgorithms(uint8_t content_security_policy_hash_algorithm);
@@ -319,21 +321,26 @@ class CORE_EXPORT ContentSecurityPolicy final
   // available).
   // If |sourceLocation| is not set, the source location will be the context's
   // current location.
-  void ReportViolation(const String& directive_text,
-                       CSPDirectiveName effective_type,
-                       const String& console_message,
-                       const KURL& blocked_url,
-                       const Vector<String>& report_endpoints,
-                       bool use_reporting_api,
-                       const String& header,
-                       network::mojom::ContentSecurityPolicyType,
-                       ContentSecurityPolicyViolationType,
-                       std::unique_ptr<SourceLocation>,
-                       LocalFrame* = nullptr,
-                       RedirectStatus = RedirectStatus::kFollowedRedirect,
-                       Element* = nullptr,
-                       const String& source = g_empty_string,
-                       const String& source_prefix = g_empty_string);
+  // If an inspector issue is reported, and |issue_id| is present, it will be
+  // reported on the issue. This is useful to provide a link from the
+  // JavaScript TypeError to the inspector issue in the DevTools front-end.
+  void ReportViolation(
+      const String& directive_text,
+      CSPDirectiveName effective_type,
+      const String& console_message,
+      const KURL& blocked_url,
+      const Vector<String>& report_endpoints,
+      bool use_reporting_api,
+      const String& header,
+      network::mojom::ContentSecurityPolicyType,
+      ContentSecurityPolicyViolationType,
+      std::unique_ptr<SourceLocation>,
+      LocalFrame* = nullptr,
+      RedirectStatus = RedirectStatus::kFollowedRedirect,
+      Element* = nullptr,
+      const String& source = g_empty_string,
+      const String& source_prefix = g_empty_string,
+      absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
 
   // Called when mixed content is detected on a page; will trigger a violation
   // report if the 'block-all-mixed-content' directive is specified for a
@@ -483,7 +490,8 @@ class CORE_EXPORT ContentSecurityPolicy final
       ContentSecurityPolicyViolationType violation_type,
       LocalFrame*,
       Element*,
-      SourceLocation*);
+      SourceLocation*,
+      absl::optional<base::UnguessableToken> issue_id);
 
   Member<ContentSecurityPolicyDelegate> delegate_;
   bool override_inline_style_allowed_ = false;

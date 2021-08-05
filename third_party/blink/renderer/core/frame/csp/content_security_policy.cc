@@ -31,6 +31,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -763,11 +764,12 @@ bool ContentSecurityPolicy::AllowTrustedTypePolicy(
 bool ContentSecurityPolicy::AllowTrustedTypeAssignmentFailure(
     const String& message,
     const String& sample,
-    const String& sample_prefix) {
+    const String& sample_prefix,
+    absl::optional<base::UnguessableToken> issue_id) {
   bool allow = true;
   for (const auto& policy : policies_) {
     allow &= CSPDirectiveListAllowTrustedTypeAssignmentFailure(
-        *policy, this, message, sample, sample_prefix);
+        *policy, this, message, sample, sample_prefix, issue_id);
   }
   return allow;
 }
@@ -988,7 +990,8 @@ void ContentSecurityPolicy::ReportViolation(
     RedirectStatus redirect_status,
     Element* element,
     const String& source,
-    const String& source_prefix) {
+    const String& source_prefix,
+    absl::optional<base::UnguessableToken> issue_id) {
   DCHECK(violation_type == kURLViolation || blocked_url.IsEmpty());
 
   // TODO(lukasza): Support sending reports from OOPIFs -
@@ -1042,7 +1045,7 @@ void ContentSecurityPolicy::ReportViolation(
 
   ReportContentSecurityPolicyIssue(*violation_data, header_type, violation_type,
                                    context_frame, element,
-                                   source_location.get());
+                                   source_location.get(), issue_id);
 }
 
 void ContentSecurityPolicy::PostViolationReport(
@@ -1174,7 +1177,8 @@ void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
     ContentSecurityPolicyViolationType violation_type,
     LocalFrame* frame_ancestor,
     Element* element,
-    SourceLocation* source_location) {
+    SourceLocation* source_location,
+    absl::optional<base::UnguessableToken> issue_id) {
   auto cspDetails = mojom::blink::ContentSecurityPolicyIssueDetails::New();
   cspDetails->is_report_only =
       header_type == ContentSecurityPolicyType::kReport;
@@ -1209,6 +1213,9 @@ void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
 
   auto details = mojom::blink::InspectorIssueDetails::New();
   details->csp_issue_details = std::move(cspDetails);
+  if (issue_id) {
+    details->issue_id = issue_id;
+  }
 
   mojom::blink::InspectorIssueInfoPtr info =
       mojom::blink::InspectorIssueInfo::New(

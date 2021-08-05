@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -431,10 +432,15 @@ ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
     issueDetails.setLowTextContrastIssueDetails(std::move(lowContrastDetails));
   }
 
-  return protocol::Audits::InspectorIssue::create()
-      .setCode(InspectorIssueCodeValue(issue->Code()))
-      .setDetails(issueDetails.build())
-      .build();
+  auto final_issue = protocol::Audits::InspectorIssue::create()
+                         .setCode(InspectorIssueCodeValue(issue->Code()))
+                         .setDetails(issueDetails.build())
+                         .build();
+  if (issue->Details()->issue_id) {
+    String issue_id = String::FromUTF8(issue->Details()->issue_id->ToString());
+    final_issue->setIssueId(issue_id);
+  }
+  return final_issue;
 }
 
 }  // namespace blink
