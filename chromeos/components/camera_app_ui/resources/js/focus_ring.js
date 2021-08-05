@@ -8,7 +8,6 @@ import {
 } from './chrome_util.js';
 import {cssStyle} from './css.js';
 import * as dom from './dom.js';
-import {getStyleValueInPx} from './util.js';
 
 /**
  * Focus ring element.
@@ -53,7 +52,7 @@ export function setUIRect(rect) {
 function onFocus({target}) {
   const el = assertInstanceof(target, HTMLElement);
   const style = el.computedStyleMap();
-  const size = getStyleValueInPx(style, '--focus-ring-size');
+  const size = style.get('--focus-ring-size').value;
   const ringStyleValue = `${style.get('--focus-ring-style')}`;
   for (const v of ringStyleValues) {
     ring.classList.toggle(v, ringStyleValue.includes(v));

@@ -79,7 +79,7 @@ class Line {
     }
     for (const transform of transforms) {
       if (transform instanceof CSSRotate) {
-        return transform.angle.to('rad').value;
+        return transform.angle.value;
       }
     }
     return null;

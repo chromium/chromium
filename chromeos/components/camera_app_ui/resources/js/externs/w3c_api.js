@@ -107,8 +107,15 @@ OverconstrainedError.prototype.name;
 /** @type {string} */
 OverconstrainedError.prototype.message;
 
+/**
+ * @constructor
+ */
+function CSSStyleValue() {}
 
-// CSS Typed OM Level 1: https://drafts.css-houdini.org/css-typed-om/
+/**
+ * @type {number}
+ */
+CSSStyleValue.prototype.value;
 
 /**
  * @constructor
@@ -132,10 +139,6 @@ StylePropertyMapReadOnly.prototype.has = function(property) {};
  */
 Element.prototype.computedStyleMap = function() {};
 
-// The base StylePropertyMap is defined in
-// third_party/closure_compiler/externs/pending.js, but missing extend for
-// StylePropertyMapReadOnly.
-
 /**
  * @param {string} property
  * @return {?CSSStyleValue}
@@ -150,8 +153,61 @@ StylePropertyMap.prototype.has = function(property) {};
 
 /**
  * @constructor
+ * @extends {CSSStyleValue}
+ * @param {!CSSStyleValue} x
+ * @param {!CSSStyleValue} y
  */
-function CSSStyleValue() {}
+function CSSTranslate(x, y) {}
+
+/**
+ * @constructor
+ * @extends {CSSStyleValue}
+ * @param {!CSSStyleValue} x
+ */
+function CSSRotate(x) {}
+
+/**
+ * @type {!CSSStyleValue}
+ */
+CSSRotate.prototype.angle;
+
+/**
+ * @constructor
+ * @extends {CSSStyleValue}
+ * @param {!CSSStyleValue} x
+ * @param {!CSSStyleValue} y
+ */
+function CSSScale(x, y) {}
+
+/**
+ * @typedef {(CSSTranslate|CSSRotate|CSSScale)}
+ */
+let CSSTransformComponent;
+
+/**
+ * @constructor
+ * @implements {Iterable<!CSSTransformComponent>}
+ * @param {!Array<!CSSTransformComponent>} transforms
+ */
+function CSSTransformValue(transforms) {}
+
+/**
+ * @param {number} px
+ * @return {!CSSStyleValue}
+ */
+CSS.px;
+
+/**
+ * @param {number} rad
+ * @return {!CSSStyleValue}
+ */
+CSS.rad;
+
+/**
+ * @param {number} number
+ * @return {!CSSStyleValue}
+ */
+CSS.number;
 
 /**
  * @constructor
@@ -160,90 +216,7 @@ function CSSStyleValue() {}
 function CSSNumericValue() {}
 
 /**
- * @param {string} cssText
- * @return {!CSSNumericValue}
+ * @param {string} str
+ * @return {!CSSStyleValue}
  */
 CSSNumericValue.parse;
-
-/**
- * @param {string} unit
- * @return {!CSSUnitValue}
- */
-CSSNumericValue.prototype.to;
-
-/**
- * @typedef {number|CSSNumericValue}
- */
-let CSSNumberish;
-
-/**
- * @typedef {Object}
- */
-let CSSTransformComponent;
-
-/**
- * @constructor
- * @extends {CSSTransformComponent}
- * @param {!CSSNumericValue} x
- * @param {!CSSNumericValue} y
- */
-function CSSTranslate(x, y) {}
-
-/**
- * @constructor
- * @extends {CSSTransformComponent}
- * @param {!CSSNumericValue} angle
- */
-function CSSRotate(angle) {}
-
-/**
- * @type {!CSSNumericValue}
- */
-CSSRotate.prototype.angle;
-
-/**
- * @constructor
- * @extends {CSSTransformComponent}
- * @param {!CSSNumberish} x
- * @param {!CSSNumberish} y
- */
-function CSSScale(x, y) {}
-
-/**
- * @constructor
- * @extends {CSSStyleValue}
- * @implements {Iterable<!CSSTransformComponent>}
- * @param {!Array<!CSSTransformComponent>} transforms
- */
-function CSSTransformValue(transforms) {}
-
-/**
- * @constructor
- * @extends {CSSNumericValue}
- * @param {number} value
- * @param {string} unit
- */
-function CSSUnitValue(value, unit) {}
-
-/**
- * @type {number}
- */
-CSSUnitValue.prototype.value;
-
-/**
- * @param {number} px
- * @return {!CSSUnitValue}
- */
-CSS.px;
-
-/**
- * @param {number} rad
- * @return {!CSSUnitValue}
- */
-CSS.rad;
-
-/**
- * @param {number} number
- * @return {!CSSUnitValue}
- */
-CSS.number;
