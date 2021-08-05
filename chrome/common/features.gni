@@ -40,7 +40,7 @@ declare_args() {
   enable_basic_print_dialog = enable_basic_printing && !is_chromeos_ash
 
   # Enables usage of notifications via Chrome's MessageCenter.
-  enable_chrome_notifications = is_mac || is_win || is_linux
+  enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 
   # Disable Click to Call on Fuchsia.
   enable_click_to_call = !is_fuchsia
