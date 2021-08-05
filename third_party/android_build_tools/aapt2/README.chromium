@@ -9,7 +9,24 @@ License file: NOT_SHIPPED
 Description:
 The Linux host aapt2 tool is now released on Google Maven, however as a .jar
 file that contains host-specific binaries, which must be extracted. They are
-distributed here as a CIPD package instead. See cipd.yaml for details.
+distributed here as a CIPD package instead.
+
+How To Update:
+ 1. Go to maven.google.com and search for "aapt2" to find the
+    "com.android.tools.build > aapt2" package.
+ 2. Find the latest version you would like to update to.
+ 3. Replace the version in 3pp/fetch.py with the new version.
+ 4. Land the a CL with the changes in step 3 and wait for a new instance to be
+    uploaded.
+    * These instances are uploaded by the build bot:
+      https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+    * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev
+      to trigger it if you need it sooner:
+      https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+ 5. Copy this instance ID to the third_party/android_build_tools/aapt2 entry in
+    //DEPS.
+ 6. Update this file with the new version string for that instance and submit.
+    * We mostly care about the string after @.
 
 Local Modifications:
 Fetched prebuilt from go/aapt2-6466991 (version not yet published to maven).
