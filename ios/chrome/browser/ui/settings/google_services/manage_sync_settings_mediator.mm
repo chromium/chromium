@@ -141,7 +141,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   BOOL shouldSyncEverythingBeEditable =
       (self.syncSetupService->CanSyncFeatureStart() ||
        base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) &&
-      (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed);
+      (!self.disabledBecauseOfSyncError);
   BOOL shouldSyncEverythingItemBeOn =
       self.syncSetupService->CanSyncFeatureStart() &&
       self.syncSetupService->IsSyncingAllDataTypes();
@@ -390,23 +390,17 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 #pragma mark - Properties
 
-- (BOOL)syncSettingsNotConfirmed {
-  SyncSetupService::SyncServiceState state =
-      self.syncSetupService->GetSyncServiceState();
-  return state == SyncSetupService::kSyncSettingsNotConfirmed;
-}
-
 - (BOOL)disabledBecauseOfSyncError {
   switch (self.syncSetupService->GetSyncServiceState()) {
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
     case SyncSetupService::kSyncServiceCouldNotConnect:
     case SyncSetupService::kSyncServiceServiceUnavailable:
       return YES;
     case SyncSetupService::kNoSyncServiceError:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+    case SyncSetupService::kSyncSettingsNotConfirmed:
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return NO;
   }
@@ -417,16 +411,17 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
     return (!self.syncSetupService->IsSyncingAllDataTypes() ||
             !self.syncSetupService->IsSyncRequested()) &&
-           (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed);
+           (!self.disabledBecauseOfSyncError);
   }
   return (!self.syncSetupService->IsSyncingAllDataTypes() &&
           self.syncSetupService->CanSyncFeatureStart() &&
-          (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed));
+          (!self.disabledBecauseOfSyncError));
 }
 
+// Only requires Sync-the-feature to not have any disable reasons and for the
+// user to be signed-in. Sync-the-transport may still be initializing.
 - (BOOL)shouldEncryptionItemBeEnabled {
-  return self.syncService->IsEngineInitialized() &&
-         self.syncSetupService->CanSyncFeatureStart() &&
+  return self.syncSetupService->CanSyncFeatureStart() &&
          !self.disabledBecauseOfSyncError &&
          self.syncSetupService->GetSyncServiceState() !=
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
