@@ -239,7 +239,14 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TabsAutomationBooleanActions) {
+// Flaky on Mac: crbug.com/1235249
+#if defined(OS_MAC)
+#define MAYBE_TabsAutomationBooleanActions \
+  DISABLED_TabsAutomationBooleanActions
+#else
+#define MAYBE_TabsAutomationBooleanActions TabsAutomationBooleanActions
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_TabsAutomationBooleanActions) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_boolean",
                                {.page_url = "actions.html"}))
