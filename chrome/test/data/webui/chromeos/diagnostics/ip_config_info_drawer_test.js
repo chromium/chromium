@@ -6,7 +6,8 @@ import 'chrome://diagnostics/ip_config_info_drawer.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
+import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkEmptyNameServers, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
+
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
@@ -147,8 +148,19 @@ export function ipConfigInfoDrawerTestSuite() {
     return initializeIpConfigInfoDrawerElement(fakeWifiNetworkNoNameServers)
         .then(() => getDrawerToggle().click())
         .then(() => {
-          dx_utils.assertTextContains(
-              getNameServersHeaderText(), 'Name Servers');
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#nameServers', 'Name Servers',
+              ipConfigInfoDrawerElement.i18n('networkDnsNotConfigured'));
+        });
+  });
+
+  test('CorrectHeaderShownWithEmptyNameServers', () => {
+    return initializeIpConfigInfoDrawerElement(fakeWifiNetworkEmptyNameServers)
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#nameServers', 'Name Servers',
+              ipConfigInfoDrawerElement.i18n('networkDnsNotConfigured'));
         });
   });
 
