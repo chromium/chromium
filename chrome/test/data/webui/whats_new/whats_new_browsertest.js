@@ -36,6 +36,7 @@ var WhatsNewAppTest = class extends WhatsNewBrowserTest {
   }
 };
 
-TEST_F('WhatsNewAppTest', 'All', function() {
+// TODO(https://crbug.com/1236879): Re-enable once flakiness is fixed.
+TEST_F('WhatsNewAppTest', 'DISABLED_All', function() {
   mocha.run();
 });
