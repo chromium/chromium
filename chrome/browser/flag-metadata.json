@@ -5079,7 +5079,7 @@
   {
     "name": "send-webui-javascript-error-reports",
     "owners": ["iby", "cros-telemetry@google.com"],
-    "expiry_milestone": 93
+    "expiry_milestone": 97
   },
   {
     "name": "service-worker-subresource-filter",
