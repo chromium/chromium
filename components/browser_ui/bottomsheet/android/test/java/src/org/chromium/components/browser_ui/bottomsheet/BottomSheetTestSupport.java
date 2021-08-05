@@ -122,7 +122,6 @@ public class BottomSheetTestSupport {
      * @param state The state to wait for.
      */
     public static void waitForState(BottomSheetController controller, @SheetState int state) {
-        if (controller.getSheetState() == state) return;
         CallbackHelper stateChangeHelper = new CallbackHelper();
         final BottomSheetObserver observer = new EmptyBottomSheetObserver() {
             @Override
@@ -131,7 +130,13 @@ public class BottomSheetTestSupport {
             }
         };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> controller.addObserver(observer));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (controller.getSheetState() == state) {
+                stateChangeHelper.notifyCalled();
+            } else {
+                controller.addObserver(observer);
+            }
+        });
 
         try {
             stateChangeHelper.waitForFirst();
@@ -148,10 +153,6 @@ public class BottomSheetTestSupport {
      * @param controller The controller for the bottom sheet.
      */
     public static void waitForOpen(BottomSheetController controller) {
-        if (controller.getSheetState() == BottomSheetController.SheetState.HALF
-                || controller.getSheetState() == BottomSheetController.SheetState.FULL) {
-            return;
-        }
         CallbackHelper stateChangeHelper = new CallbackHelper();
 
         final BottomSheetObserver observer = new EmptyBottomSheetObserver() {
@@ -164,12 +165,20 @@ public class BottomSheetTestSupport {
             }
         };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> controller.addObserver(observer));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (controller.getSheetState() == BottomSheetController.SheetState.HALF
+                    || controller.getSheetState() == BottomSheetController.SheetState.FULL) {
+                stateChangeHelper.notifyCalled();
+            } else {
+                controller.addObserver(observer);
+            }
+        });
 
         try {
             stateChangeHelper.waitForFirst();
         } catch (TimeoutException ex) {
-            assert false : "Bottom sheet state never half or full";
+            assert false : "Bottom sheet state never half or full. Current State: "
+                           + sheetStateToString(controller.getSheetState());
         }
 
         TestThreadUtils.runOnUiThreadBlocking(() -> controller.removeObserver(observer));
