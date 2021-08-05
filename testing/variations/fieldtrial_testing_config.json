@@ -7815,6 +7815,64 @@
             ]
         }
     ],
+    "SubframeShutdownDelay": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledConstant",
+                    "params": {
+                        "type": "constant"
+                    },
+                    "enable_features": [
+                        "SubframeShutdownDelay"
+                    ]
+                },
+                {
+                    "name": "EnabledConstantLong",
+                    "params": {
+                        "type": "constant-long"
+                    },
+                    "enable_features": [
+                        "SubframeShutdownDelay"
+                    ]
+                },
+                {
+                    "name": "EnabledHistoryBased",
+                    "params": {
+                        "type": "history-based"
+                    },
+                    "enable_features": [
+                        "SubframeShutdownDelay"
+                    ]
+                },
+                {
+                    "name": "EnabledHistoryBasedLong",
+                    "params": {
+                        "type": "history-based-long"
+                    },
+                    "enable_features": [
+                        "SubframeShutdownDelay"
+                    ]
+                },
+                {
+                    "name": "EnabledMemoryBased",
+                    "params": {
+                        "type": "memory-based"
+                    },
+                    "enable_features": [
+                        "SubframeShutdownDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "SubresourceRedirect": [
         {
             "platforms": [
