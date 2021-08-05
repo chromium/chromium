@@ -973,9 +973,12 @@ namespace autotestPrivate {
     // Send WM event to change the app window's window state.
     // |id|: the id of the window
     // |change|: WM event type to send to the app window.
-    // |callback|: called when the window state is changed.
+    // |wait|: whether the method should wait for the window state to change before returning.
+    // |callback|: called when the window state is changed if |wait| is true.
+    //             Otherwise, called right after the WM event is sent.
     static void setAppWindowState(long id,
                                   WindowStateChangeDict change,
+                                  optional boolean wait,
                                   WindowStateCallback callback);
 
     // Activate app window given by "id".

@@ -3941,14 +3941,23 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
     }
   }
 
-  window_state_observer_ = std::make_unique<WindowStateChangeObserver>(
-      window, expected_state,
-      base::BindOnce(
-          &AutotestPrivateSetAppWindowStateFunction::WindowStateChanged, this,
-          expected_state));
+  const bool wait = params->wait && *params->wait;
+
+  if (wait) {
+    window_state_observer_ = std::make_unique<WindowStateChangeObserver>(
+        window, expected_state,
+        base::BindOnce(
+            &AutotestPrivateSetAppWindowStateFunction::WindowStateChanged, this,
+            expected_state));
+  }
 
   const ash::WMEvent event(ToWMEventType(params->change.event_type));
   ash::WindowState::Get(window)->OnWMEvent(&event);
+
+  if (!wait) {
+    return RespondNow(OneArgument(base::Value(
+        api::autotest_private::ToString(ToWindowStateType(expected_state)))));
+  }
 
   return RespondLater();
 }
