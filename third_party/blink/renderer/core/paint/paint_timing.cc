@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -215,6 +216,8 @@ void PaintTiming::Trace(Visitor* visitor) const {
 PaintTiming::PaintTiming(Document& document)
     : Supplement<Document>(document),
       fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)),
+      excludes_out_of_view_frame_(base::FeatureList::IsEnabled(
+          features::kPaintTimingNoOutOfViewFrames)),
       clock_(base::DefaultTickClock::GetInstance()) {}
 
 LocalFrame* PaintTiming::GetFrame() const {

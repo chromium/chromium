@@ -86,7 +86,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   // FirstPaint returns the first time that anything was painted for the
   // current document.
-  base::TimeTicks FirstPaint() const { return first_paint_presentation_; }
+  base::TimeTicks FirstPaint() const {
+    return ExcludeOutOfViewFrame(first_paint_presentation_);
+  }
 
   // Times when the first paint happens after the page is restored from the
   // back-forward cache. If the element value is zero time tick, the first paint
@@ -104,29 +106,29 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // painted. For instance, the first time that text or image content was
   // painted.
   base::TimeTicks FirstContentfulPaint() const {
-    return first_contentful_paint_presentation_;
+    return ExcludeOutOfViewFrame(first_contentful_paint_presentation_);
   }
 
   // FirstImagePaint returns the first time that image content was painted.
   base::TimeTicks FirstImagePaint() const {
-    return first_image_paint_presentation_;
+    return ExcludeOutOfViewFrame(first_image_paint_presentation_);
   }
 
   // FirstEligibleToPaint returns the first time that the frame is not
   // throttled and is eligible to paint. A null value indicates throttling.
   base::TimeTicks FirstEligibleToPaint() const {
-    return first_eligible_to_paint_;
+    return ExcludeOutOfViewFrame(first_eligible_to_paint_);
   }
 
   // FirstMeaningfulPaint returns the first time that page's primary content
   // was painted.
   base::TimeTicks FirstMeaningfulPaint() const {
-    return first_meaningful_paint_presentation_;
+    return ExcludeOutOfViewFrame(first_meaningful_paint_presentation_);
   }
 
   // The time that the first paint happened after a portal activation.
   base::TimeTicks LastPortalActivatedPaint() const {
-    return last_portal_activated_presentation_;
+    return ExcludeOutOfViewFrame(last_portal_activated_presentation_);
   }
 
   // FirstMeaningfulPaintCandidate indicates the first time we considered a
@@ -134,7 +136,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // firstMeaningfulPaint, this signal is available in real time, but it may be
   // an optimistic (i.e., too early) estimate.
   base::TimeTicks FirstMeaningfulPaintCandidate() const {
-    return first_meaningful_paint_candidate_;
+    return ExcludeOutOfViewFrame(first_meaningful_paint_candidate_);
   }
 
   FirstMeaningfulPaintDetector& GetFirstMeaningfulPaintDetector() {
@@ -154,6 +156,13 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void SetTickClockForTesting(const base::TickClock* clock);
 
   void OnRestoredFromBackForwardCache();
+
+  void SetFrameIsOutOfView(bool out_of_view) {
+    if (!frame_initial_out_of_view_is_set_) {
+      frame_is_initially_out_of_view_ = out_of_view;
+      frame_initial_out_of_view_is_set_ = true;
+    }
+  }
 
   void Trace(Visitor*) const override;
 
@@ -197,10 +206,17 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
       wtf_size_t index);
 
-  base::TimeTicks FirstPaintRendered() const { return first_paint_; }
-
+  base::TimeTicks FirstPaintRendered() const {
+    return ExcludeOutOfViewFrame(first_paint_);
+  }
   base::TimeTicks FirstContentfulPaintRendered() const {
-    return first_contentful_paint_;
+    return ExcludeOutOfViewFrame(first_contentful_paint_);
+  }
+
+  base::TimeTicks ExcludeOutOfViewFrame(base::TimeTicks time) const {
+    return excludes_out_of_view_frame_ && frame_is_initially_out_of_view_
+               ? base::TimeTicks()
+               : time;
   }
 
   // TODO(crbug/738235): Non first_*_presentation_ variables are only being
@@ -227,6 +243,10 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // The callback ID for requestAnimationFrame to record its time after the page
   // is restored from the back-forward cache.
   int raf_after_bfcache_restore_measurement_callback_id_ = 0;
+
+  bool excludes_out_of_view_frame_ = false;
+  bool frame_is_initially_out_of_view_ = true;
+  bool frame_initial_out_of_view_is_set_ = false;
 
   const base::TickClock* clock_;
 

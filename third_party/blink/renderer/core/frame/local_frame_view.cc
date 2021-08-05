@@ -4384,6 +4384,15 @@ void LocalFrameView::CrossOriginToParentFrameChanged() {
   }
 }
 
+void LocalFrameView::SetViewportIntersection(
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
+  if (frame_ && frame_->GetDocument()) {
+    PaintTiming::From(*frame_->GetDocument())
+        .SetFrameIsOutOfView(
+            intersection_state.viewport_intersection.IsEmpty());
+  }
+}
+
 void LocalFrameView::VisibilityForThrottlingChanged() {
   if (FrameScheduler* frame_scheduler = frame_->GetFrameScheduler()) {
     // TODO(szager): Per crbug.com/994443, maybe this should be:

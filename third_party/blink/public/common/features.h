@@ -452,6 +452,12 @@ BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
 // detect the properties and attributes required.
 BLINK_COMMON_EXPORT extern const base::Feature kReportAllJavascriptFrameworks;
 
+// Whether to exclude out-of-view frames for paint timing, to make paint timing
+// actually measure user experience instead of depending on paint implementation
+// (e.g. whether to paint out-of-view frames) and arbitrary user actions (e.g.
+// scrolling a frame into view making it eligible for paint).
+BLINK_COMMON_EXPORT extern const base::Feature kPaintTimingNoOutOfViewFrames;
+
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
