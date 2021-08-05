@@ -518,12 +518,12 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       // to reuse. In this case, only use the part of the texture that is within
       // the bounds.
       gfx::PointF uv_bottom_right(1.f, 1.f);
-      if (in_flight_resource_.size() != bounds()) {
+      if (in_flight_resource_.size() != internal_content_bounds_) {
         uv_bottom_right.set_x(
-            static_cast<double>(bounds().width()) /
+            static_cast<double>(internal_content_bounds_.width()) /
             static_cast<double>(in_flight_resource_.size().width()));
         uv_bottom_right.set_y(
-            static_cast<double>(bounds().height()) /
+            static_cast<double>(internal_content_bounds_.height()) /
             static_cast<double>(in_flight_resource_.size().height()));
       }
       const float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
