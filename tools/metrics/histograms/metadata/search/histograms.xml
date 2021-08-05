@@ -1447,6 +1447,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.RelatedSearches.CarouselLastVisibleItemPosition"
+    units="position" expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    The last visible position index for a chip in the carousel. the index is 0
+    based. Ex. There are 10 chips, and only 2 chips are shown completely, and 1
+    chip is shown half, in this case, 2 will be reported. Recorded every time
+    the carousel is shown, or the carousel content is updated. Implemented for
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.CarouselScrollAndClick"
+    enum="ScrollAndClickStatus" expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    Records whether and how the user interacted with the carousel. Recorded when
+    the presentation UI is dismissed while the carousel is shown. Implemented
+    for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.RelatedSearches.CarouselScrolled" enum="Boolean"
+    expires_after="M95">
+  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>related-searches-vteam@google.com</owner>
+  <summary>
+    Records whether the user scrolled the carousel when it was shown, this can
+    help us to find users who discover carousel scroll gesture. Recorded when
+    the presentation UI is dismissed while the carousel is shown. Implemented
+    for Android.
+  </summary>
+</histogram>
+
 <histogram name="Search.RelatedSearches.CTR" enum="BooleanClicked"
     expires_after="M95">
   <owner>donnd@chromium.org</owner>

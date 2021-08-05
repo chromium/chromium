@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
@@ -100,6 +103,9 @@ public class RelatedSearchesControl {
 
     /** Which chip is selected (if any) */
     private int mSelectedChip = NO_SELECTED_CHIP;
+
+    /** Whether the carousel is scrolled. */
+    private boolean mScrolled;
 
     /**
      * @param panel             The panel.
@@ -317,8 +323,15 @@ public class RelatedSearchesControl {
             RelatedSearchesUma.logNumberOfSuggestionsClicked(mChipsSelected);
             if (mDidShowAnySuggestions) RelatedSearchesUma.logCtr(mChipsSelected > 0);
         }
-        if (mControlView != null) mControlView.destroy();
-        mControlView = null;
+
+        if (mControlView != null) {
+            if (mDidShowAnySuggestions) {
+                RelatedSearchesUma.logCarouselScrolled(mScrolled);
+                RelatedSearchesUma.logCarouselScrollAndClickStatus(mScrolled, mChipsSelected > 0);
+            }
+            mControlView.destroy();
+            mControlView = null;
+        }
     }
 
     /** Invalidates the view. */
@@ -574,6 +587,14 @@ public class RelatedSearchesControl {
             // Setup Chips handling
             mChipsProvider = new RelatedSearchesChipsProvider();
             mChipsCoordinator = new ChipsCoordinator(context, mChipsProvider);
+
+            RecyclerView recyclerView = (RecyclerView) mChipsCoordinator.getView();
+            recyclerView.addOnScrollListener(new OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) mScrolled = true;
+                }
+            });
         }
 
         /** Returns the view for this control. */
@@ -602,6 +623,15 @@ public class RelatedSearchesControl {
             if (parent != null) parent.removeView(coordinatorView);
             relatedSearchesViewGroup.addView(coordinatorView);
             invalidate(false);
+
+            // Log carousel visible item position
+            RecyclerView recyclerView = (RecyclerView) mChipsCoordinator.getView();
+            LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
+            int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+            if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
+                RelatedSearchesUma.logCarouselLastVisibleItemPosition(lastVisibleItemPosition);
+            }
         }
 
         /** Un-selects any currently selected chip. */

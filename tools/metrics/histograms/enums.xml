@@ -73089,6 +73089,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="FAILED_BAD_SELECTOR"/>
 </enum>
 
+<enum name="ScrollAndClickStatus">
+  <int value="0" label="NO_SCROLL_NO_CLICK"/>
+  <int value="1" label="NO_SCROLL_CLICKED"/>
+  <int value="2" label="SCROLLED_NO_CLICK"/>
+  <int value="3" label="SCROLLED_CLICKED"/>
+</enum>
+
 <enum name="ScrollingThreadStatus">
   <int value="0" label="SCROLLING_ON_COMPOSITOR"/>
   <int value="1" label="SCROLLING_ON_COMPOSITOR_BLOCKED_ON_MAIN"/>

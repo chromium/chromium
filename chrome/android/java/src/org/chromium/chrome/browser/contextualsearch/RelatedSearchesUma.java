@@ -31,6 +31,24 @@ public class RelatedSearchesUma {
         int NUM_ENTRIES = 4;
     }
 
+    // Constants with ScrollAndClickStatus in enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+            ScrollAndClickStatus.NO_SCROLL_NO_CLICK,
+            ScrollAndClickStatus.NO_SCROLL_CLICKED,
+            ScrollAndClickStatus.SCROLLED_NO_CLICK,
+            ScrollAndClickStatus.SCROLLED_CLICKED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ScrollAndClickStatus {
+        int NO_SCROLL_NO_CLICK = 0;
+        int NO_SCROLL_CLICKED = 1;
+        int SCROLLED_NO_CLICK = 2;
+        int SCROLLED_CLICKED = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     /**
      * Logs a histogram indicating which privacy permissions are available that Related Searches
      * cares about. This ignores any language constraint.
@@ -111,5 +129,41 @@ public class RelatedSearchesUma {
     public static void logNumberOfSuggestionsClicked(int numberOfSuggestionsClicked) {
         RecordHistogram.recordCountHistogram(
                 "Search.RelatedSearches.NumberOfSuggestionsClicked", numberOfSuggestionsClicked);
+    }
+
+    /**
+     * Logs that the last visible item position in a carousel when a carousel shows.
+     * @param position The last visible item position in the carousel.
+     */
+    public static void logCarouselLastVisibleItemPosition(int position) {
+        RecordHistogram.recordCountHistogram(
+                "Search.RelatedSearches.CarouselLastVisibleItemPosition", position);
+    }
+
+    /**
+     * Logs weather the users scrolled the carousel or not.
+     * @param scrolled Whether the user scrolled the carousel after chips were presented.
+     */
+    public static void logCarouselScrolled(boolean scrolled) {
+        RecordHistogram.recordBooleanHistogram("Search.RelatedSearches.CarouselScrolled", scrolled);
+    }
+
+    /**
+     * Logs weather the users scrolled and clicked the carousel.
+     * @param scrolled Whether the user scrolled the carousel after chips were presented.
+     * @param clicked Whether the user clicked any suggestion or not after they were presented.
+     */
+    public static void logCarouselScrollAndClickStatus(boolean scrolled, boolean clicked) {
+        @ScrollAndClickStatus
+        int scrollAndClickStatus;
+        if (scrolled) {
+            scrollAndClickStatus = clicked ? ScrollAndClickStatus.SCROLLED_CLICKED
+                                           : ScrollAndClickStatus.SCROLLED_NO_CLICK;
+        } else {
+            scrollAndClickStatus = clicked ? ScrollAndClickStatus.NO_SCROLL_CLICKED
+                                           : ScrollAndClickStatus.NO_SCROLL_NO_CLICK;
+        }
+        RecordHistogram.recordEnumeratedHistogram("Search.RelatedSearches.CarouselScrollAndClick",
+                scrollAndClickStatus, Permissions.NUM_ENTRIES);
     }
 }
