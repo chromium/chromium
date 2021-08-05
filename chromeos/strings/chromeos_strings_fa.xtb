@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">تأخیر ساناد</translation>
 <translation id="123124571410524056">احتمالاً درگاهی وجود دارد</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
+<translation id="1264369926465113395">‏مجله دیجیتال جدید Chromebook برای سازندگان محتوا را بررسی کنید</translation>
 <translation id="1270369111467284986">احتمالاً درگاه مهمان وجود دارد</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">برای شروع به کار، سندتان را روی اسکنر قرار دهید و «اسکن» را انتخاب کنید</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
-<translation id="2983662233540284543">نکاتی را از محتواساز بازی یاد بگیرید، برنامه‌های طراحی را دریافت کنید، و از امکانات دیگر استفاده کنید</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
 <translation id="3540383942695635079">‏نشانی MAC</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
+<translation id="3582041541988388905">اتصال <ph name="NETWORK_NAME" /> شناسایی نشد</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
+<translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">وضوح</translation>
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">حافظه</translation>
 <translation id="5168185087976003268">سلامت باتری</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
-<translation id="519607504553633437">خودتان بازی طراحی کنید و بسازید</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
 برای درخواست از من، روی میکروفون ضربه بزنید.</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
@@ -246,7 +247,6 @@
 <translation id="5691511426247308406">خانواده</translation>
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">بازی خودتان را بسازید</translation>
 <translation id="5760715441271661976">وضعیت درگاه</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="583281660410589416">ناشناس</translation>
@@ -296,6 +296,7 @@
 <translation id="65587193855025101">صفحه مسطح</translation>
 <translation id="6564646048574748301">انجام نشد - دسترسی به چاپگر ممکن نیست</translation>
 <translation id="6574762126505704998">پر کردن</translation>
+<translation id="6579235177984085399">کاوش ابزارهای جدید طراحی و نقاشی</translation>
 <translation id="6596816719288285829">‏نشانی IP</translation>
 <translation id="6603230386432466813">هنگام متصل شدن با مشکل روبه‌رو هستید؟</translation>
 <translation id="6618744767048954150">درحال اجرا</translation>
@@ -375,7 +376,9 @@
 <translation id="8214184102975786227">‏چند صفحه را در یک PDF اسکن کنید</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
+<translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را تازه‌سازی کنید.</translation>
 <translation id="8291967909914612644">کشور ارائه‌دهنده اصلی</translation>
+<translation id="829270796093605079">کاوش ابزارهای طراحی</translation>
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8297006494302853456">ضعیف</translation>
 <translation id="8302368968391049045">‏دیواره آتش HTTPS</translation>

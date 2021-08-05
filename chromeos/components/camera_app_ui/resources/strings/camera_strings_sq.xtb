@@ -3,6 +3,8 @@
 <translationbundle lang="sq">
 <translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imazhet e galerisë</translation>
+<translation id="1300209025925956156">Skano dokumentin tënd</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Kërko + Shigjeta majtas për t'u qasur.</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> është shkëputur.</translation>
 <translation id="1473110567575736769">Kohëmatësi me 3 sekonda</translation>
@@ -63,8 +65,10 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="5057360777601936059">Kamera jote nuk ofrohet aktualisht.
         Kontrollo nëse kamera është lidhur si duhet.</translation>
 <translation id="5152121255775685072">Shko te galeria</translation>
+<translation id="520537883758714667">Skanimi i dokumenteve ofrohet tani</translation>
 <translation id="5268823927180092501">Aktivizo modalitetin e dokumenteve në të gjitha kamerat</translation>
 <translation id="5422455049771430511">Fotografitë dhe videot e tua kanë një shtëpi të re</translation>
+<translation id="5444515100983837161">Vendos të gjitha anët e dokumentit brenda kuadrit Skanimi funksionon më mirë nëse dokumenti dhe sfondi kanë ngjyra të ndryshme.</translation>
 <translation id="5671277269877808209">Katror</translation>
 <translation id="5753488212459587150">Aktivizo modalitetin e ekspertit</translation>
 <translation id="5759254179196327752">Skano dokumentin</translation>

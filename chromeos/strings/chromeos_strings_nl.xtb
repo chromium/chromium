@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">DNS-latentie</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
 <translation id="1238612778414822719">HTTPS-latentie</translation>
+<translation id="1264369926465113395">Bekijk het nieuwe digitale tijdschrift van Chromebook voor makers</translation>
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">Leg je document op de scanner en selecteer Scannen om aan de slag te gaan</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
-<translation id="2983662233540284543">Leer van een game-creator, download apps voor gamedesign en meer</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
 <translation id="3540383942695635079">MAC-adres</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
+<translation id="3582041541988388905">Geen <ph name="NETWORK_NAME" />-verbinding gevonden</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
+<translation id="3858860766373142691">Naam</translation>
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">Geheugen</translation>
 <translation id="5168185087976003268">Batterijprestaties</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
-<translation id="519607504553633437">Ontwerp en ontwikkel je eigen games</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
@@ -246,7 +247,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5691511426247308406">Gezin</translation>
 <translation id="5701381305118179107">Centreren</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Maak je eigen game</translation>
 <translation id="5760715441271661976">Status van portal</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="583281660410589416">Onbekend</translation>
@@ -296,6 +296,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Mislukt - Printer is niet bereikbaar</translation>
 <translation id="6574762126505704998">Uitvullen</translation>
+<translation id="6579235177984085399">Ontdek nieuwe teken- en ontwerptools</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6603230386432466813">Heb je problemen met verbinding maken?</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
@@ -375,7 +376,9 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8214184102975786227">Meerdere pagina's scannen in 1 pdf-bestand</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
 <translation id="8246209727385807362">Onbekende provider</translation>
+<translation id="8286154143153872371">Maak verbinding met een netwerk en laad de pagina opnieuw om de achtergrond te bekijken.</translation>
 <translation id="8291967909914612644">Land thuisprovider</translation>
+<translation id="829270796093605079">Ontwerptools ontdekken</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>

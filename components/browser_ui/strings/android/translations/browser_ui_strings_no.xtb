@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Dette sletter <ph name="DATASIZE" /> med data og informasjonskapsler som er lagret av nettsteder eller apper på startskjermen.</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1181037720776840403">Fjern</translation>
-<translation id="1195941046451948919">Er du sikker på at du vil tilbakestille alle tillatelser for dette nettstedet?</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1242008676835033345">Innebygd på <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stopp</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">Detaljer</translation>
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>
-<translation id="4708011789095599544">Er du sikker på at du vil slette informasjonskapsler og andre nettstedsdata for dette nettstedet?</translation>
 <translation id="4751476147751820511">Bevegelses- eller lyssensorer</translation>
 <translation id="4836046166855586901">Spør når nettsteder vil vite når du bruker denne enheten aktivt</translation>
 <translation id="4883854917563148705">Administrerte innstillinger kan ikke tilbakestilles</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">Vibrering</translation>
 <translation id="6388207532828177975">Slett alt og tilbakestill</translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
-<translation id="6423924377271166037">Slett informasjonskapsler</translation>
 <translation id="6439114592976064011">Blokkér nettsteder fra å bruke virtuell virkelighet-enheten din og -dataene dine</translation>
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6527303717912515753">Del</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}}</translation>
 <translation id="913657688200966289">Slå på tillatelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Denne siden er farlig</translation>
 <translation id="930525582205581608">Vil du glemme dette nettstedet?</translation>
 <translation id="967624055006145463">Lagrede data</translation>
 </translationbundle>

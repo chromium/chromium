@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
+<translation id="1264369926465113395">Ta en kikk på Chromebooks nye digitale magasin for skapere</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">Legg dokumentet på skanneren, og velg Skann for å komme i gang</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
-<translation id="2983662233540284543">Lær av en spillskaper, hent apper for spilldesign med mer</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
 <translation id="3540383942695635079">MAC-adresse</translation>
 <translation id="357889014807611375">Wi-Fi med datamåling</translation>
+<translation id="3582041541988388905">Fant ingen <ph name="NETWORK_NAME" />-tilkobling</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Tøm hele loggen</translation>
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
+<translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
-<translation id="519607504553633437">Design og utvikle dine egne spill</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5222676887888702881">Logg av</translation>
@@ -246,7 +247,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Lag ditt eget spill</translation>
 <translation id="5760715441271661976">Portaltilstand</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="583281660410589416">Ukjent</translation>
@@ -269,6 +269,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
 <translation id="6122191549521593678">Pålogget</translation>
+<translation id="6125438912510167220">Tilkoblingsfart</translation>
 <translation id="6137767437444130246">Brukersertifikat</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -295,6 +296,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="65587193855025101">Planskanner</translation>
 <translation id="6564646048574748301">Mislykket – skriveren kan ikke nås</translation>
 <translation id="6574762126505704998">Fyll</translation>
+<translation id="6579235177984085399">Oppdag nye tegne- og designverktøy</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6603230386432466813">Har du problemer med å koble til?</translation>
 <translation id="6618744767048954150">Kjører</translation>
@@ -374,7 +376,9 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8214184102975786227">Skann flere sider til én PDF-fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
+<translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>
 <translation id="8291967909914612644">Land for leverandøren av hjemmeenheten</translation>
+<translation id="829270796093605079">Oppdag designverktøy</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8297006494302853456">Svakt</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>

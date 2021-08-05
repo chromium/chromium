@@ -88,7 +88,6 @@
 <translation id="2862104018715411648">Placez votre document sur le scanner, puis sélectionnez Scanner pour commencer</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
-<translation id="2983662233540284543">Apprenez auprès d'un créateur, installez des applis de conception et plus</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,6 +119,7 @@
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
 <translation id="3540383942695635079">Adresse MAC</translation>
 <translation id="357889014807611375">Wi-Fi facturé à l'usage</translation>
+<translation id="3582041541988388905">Aucune connexion <ph name="NETWORK_NAME" /> détectée</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
@@ -130,6 +130,7 @@
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">Code incorrect.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
+<translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
@@ -212,7 +213,6 @@
 <translation id="5154917547274118687">Mémoire</translation>
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
-<translation id="519607504553633437">Concevez et créez vos propres jeux</translation>
 <translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
 Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
@@ -246,7 +246,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5691511426247308406">Famille</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Créer votre propre jeu</translation>
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
@@ -269,7 +268,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
 <translation id="6122191549521593678">En ligne</translation>
-<translation id="6125438912510167220">Vitesse des liens</translation>
+<translation id="6125438912510167220">Vitesse de la liaison</translation>
 <translation id="6137767437444130246">Certificat utilisateur</translation>
 <translation id="6146993107019042706">Pour terminer, saisissez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -375,6 +374,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8214184102975786227">Scanner plusieurs pages en un seul PDF</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8286154143153872371">Connectez-vous à un réseau et actualisez la page pour voir le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du fournisseur personnel</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297006494302853456">Faible</translation>

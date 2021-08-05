@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Настана неочекувана грешка. Пријавете го проблемот кај програмерите.</translation>
 <translation id="1697532407822776718">Подготвени сте.</translation>
 <translation id="1742469581923031760">Се поврзува…</translation>
+<translation id="177040763384871009">За да дозволите линковите кликнати на далечинскиот уред да се отвораат во прелистувачот на клиентот, треба да го промените прелистувачот на системот во „<ph name="URL_FORWARDER_NAME" />“.</translation>
 <translation id="177096447311351977">ИП на канал за клиент: <ph name="CLIENT_GAIA_IDENTIFIER" /> ип=„<ph name="CLIENT_IP_ADDRESS_AND_PORT" />“ ип_на_домаќин=„<ph name="HOST_IP_ADDRESS_AND_PORT" />“ канал=„<ph name="CHANNEL_TYPE" />“ поврзување=„<ph name="CONNECTION_TYPE" />“.</translation>
 <translation id="1897488610212723051">Избриши</translation>
 <translation id="2009755455353575666">Поврзувањето не успеа</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">Офлајн.</translation>
 <translation id="3695446226812920698">Дознајте како</translation>
 <translation id="3776024066357219166">Сесијата на Chrome Remote Desktop заврши.</translation>
+<translation id="3858860766373142691">Име</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3905196214175737742">Неважечки домен на сопственикот на домаќинот.</translation>
 <translation id="3931191050278863510">Домаќинот запре.</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453">Одбиен е пристапот за клиентот: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Клиентот е поврзан: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Променете ја сметката</translation>
+<translation id="7535110896613603182">Отвори ги поставките за стандардните апликации</translation>
 <translation id="7628469622942688817">Запомни го мојот PIN на уредов.</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7658239707568436148">Откажи</translation>

@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">ഇത് നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ സൈറ്റുകളോ ആപ്പുകളോ സംഭരിച്ച <ph name="DATASIZE" /> ഡാറ്റയും കുക്കികളും മായ്‌ക്കും.</translation>
 <translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
-<translation id="1195941046451948919">ഈ വെബ്‌സൈറ്റിനുള്ള എല്ലാ അനുമതികളും റീസെറ്റ് ചെയ്യണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ൽ ഉൾച്ചേർത്തത്</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
@@ -130,7 +129,6 @@
 <translation id="4570913071927164677">വിശദാംശങ്ങൾ</translation>
 <translation id="4645575059429386691">നിങ്ങളുടെ രക്ഷിതാവ് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4670064810192446073">വെർച്വൽ റിയാലിറ്റി</translation>
-<translation id="4708011789095599544">ഈ വെബ്‌സൈറ്റിന്റെ കുക്കികളും മറ്റ് സൈറ്റ് ഡാറ്റയും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="4751476147751820511">ചലന അല്ലെങ്കിൽ വെളിച്ച സെൻസറുകൾ</translation>
 <translation id="4836046166855586901">നിങ്ങൾ ഈ ഉപകരണം സജീവമായി ഉപയോഗിക്കുന്നത് ഒരു സൈറ്റിന് അറിയണമെന്നുള്ളപ്പോൾ ചോദിക്കുക</translation>
 <translation id="4883854917563148705">മാനേജ് ചെയ്യുന്ന ക്രമീകരണം പുനഃസജ്ജീകരിക്കാനാവില്ല</translation>
@@ -201,7 +199,6 @@
 <translation id="6320088164292336938">വൈബ്രേറ്റുചെയ്യുക</translation>
 <translation id="6388207532828177975">മായ്‌ച്ച് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6398765197997659313">പൂര്‍ണ്ണ സ്ക്രീനില്‍ നിന്ന് പുറത്തുകടക്കുക</translation>
-<translation id="6423924377271166037">കുക്കികൾ മായ്‌ക്കുക</translation>
 <translation id="6439114592976064011">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണവും ഡാറ്റയും ഉപയോഗിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="6447842834002726250">കുക്കികള്‍</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
@@ -313,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> <ph name="APP_NAME" /> ആപ്പിനായി അനുമതികൾ ഓണാക്കുക.</translation>
+<translation id="9162462602695099906">ഈ പേജ് അപകടകരമാണ്</translation>
 <translation id="930525582205581608">ഈ സൈറ്റ് മറക്കണോ?</translation>
 <translation id="967624055006145463">ഡാറ്റ സംഭരിച്ചു</translation>
 </translationbundle>

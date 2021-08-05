@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Der opstod en uventet fejl. Rapportér dette problem til udviklerne.</translation>
 <translation id="1697532407822776718">Fuldført</translation>
 <translation id="1742469581923031760">Opretter forbindelse...</translation>
+<translation id="177040763384871009">Hvis du vil tillade, at links, der klikkes på via fjernenheden, kan åbnes i klientens browser, skal du skifte systemets webbrowser til "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">Kanal-IP for klient: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Slet</translation>
 <translation id="2009755455353575666">Der kunne ikke etableres forbindelse</translation>
@@ -56,6 +57,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Få flere oplysninger om, hvordan du gør</translation>
 <translation id="3776024066357219166">Din session med Chrome Fjernskrivebord er afsluttet.</translation>
+<translation id="3858860766373142691">Navn</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Ejerdomænet for hosten er ugyldigt.</translation>
 <translation id="3931191050278863510">Hosten er stoppet.</translation>
@@ -141,6 +143,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7434397035092923453">Adgang nægtet for klient: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Tilsluttet klient: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7526139040829362392">Skift konto</translation>
+<translation id="7535110896613603182">Åbn indstillinger for standardapps</translation>
 <translation id="7628469622942688817">Husk min pinkode på denne enhed.</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>

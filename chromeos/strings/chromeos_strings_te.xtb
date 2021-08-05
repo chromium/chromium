@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
 <translation id="123124571410524056">పోర్టల్‌తో సమస్య ఉన్నట్టుగా ఉంది</translation>
 <translation id="1238612778414822719">HTTPS ప్రతిస్పందన సమయం</translation>
+<translation id="1264369926465113395">ప్రత్యేకంగా క్రియేటర్‌ల కోసం తయారుచేసిన Chromebook కొత్త డిజిటల్ మ్యాగజైన్‌ను చూడండి</translation>
 <translation id="1270369111467284986">క్యాప్టివ్ పోర్టల్ అనుమానించబడింది</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">ప్రారంభించడానికి మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి, స్కాన్ చేయిని ఎంచుకోండి</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చెయ్యండి</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
-<translation id="2983662233540284543">గేమ్ క్రియేటర్ నుండి తెలుసుకోండి, గేమ్ డిజైన్ యాప్‌లను పొందండి, ఇంకా మరెన్నో ప్రయోజనాలను పొందండి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
 <translation id="3540383942695635079">MAC అడ్రస్</translation>
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
+<translation id="3582041541988388905"><ph name="NETWORK_NAME" /> కనెక్షన్ కనుగొనబడలేదు</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> పరీక్ష</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">చరిత్ర మొత్తాన్ని క్లియర్ చేయి</translation>
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
+<translation id="3858860766373142691">పేరు</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">మెమరీ</translation>
 <translation id="5168185087976003268">బ్యాటరీ సామర్థ్యం</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
-<translation id="519607504553633437">మీ గేమ్‌లను మీరే డిజైన్ చేసి, క్రియేట్ చేసుకోండి</translation>
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5252456968953390977">రోమింగ్</translation>
@@ -245,7 +246,6 @@
 <translation id="5691511426247308406">కుటుంబం</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" /></translation>
-<translation id="5752751666635965375">మీ స్వంత గేమ్‌ను చేయండి</translation>
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
 <translation id="583281660410589416">తెలియని</translation>
@@ -295,6 +295,7 @@
 <translation id="65587193855025101">ఫ్లాట్‌బెడ్</translation>
 <translation id="6564646048574748301">విఫలమైంది - ప్రింటర్‌ను చేరుకోవడం సాధ్యపడలేదు</translation>
 <translation id="6574762126505704998">నింపండి</translation>
+<translation id="6579235177984085399">కొత్త డ్రాయింగ్‌ను, డిజైన్ టూల్స్‌ను డిస్కవర్ చేయండి</translation>
 <translation id="6596816719288285829">IP చిరునామా</translation>
 <translation id="6603230386432466813">కనెక్ట్ చేయడంలో సమస్య ఉందా?</translation>
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
@@ -374,7 +375,9 @@
 <translation id="8214184102975786227">పలు పేజీలను ఒక PDFగా స్కాన్ చేయండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
+<translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="8291967909914612644">స్వస్థల నెట్‌వర్క్ ప్రదాత దేశం</translation>
+<translation id="829270796093605079">డిజైన్ టూల్స్ కనుగొనండి</translation>
 <translation id="8294431847097064396">సోర్స్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8302368968391049045">HTTPS ఫైర్‌వాల్</translation>

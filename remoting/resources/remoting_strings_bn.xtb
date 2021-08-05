@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">একটি অপ্রত্যাশিত ত্রুটি ঘটেছে৷ দয়া করে বিকাশকারীদের কাছে এই সমস্যাটির বিষয়ে জানান৷</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
 <translation id="1742469581923031760">সংযুক্ত হচ্ছে...</translation>
+<translation id="177040763384871009">রিমোট ডিভাইসে ক্লিক করা লিঙ্কটি ক্লায়েন্ট ব্রাউজারে খোলার অনুমতি দিতে আপনাকে সিস্টেমের ওয়েব ব্রাউজার "<ph name="URL_FORWARDER_NAME" />"-এ বদলাতে হবে।</translation>
 <translation id="177096447311351977">এই ক্লায়েন্টের জন্য চ্যানেল IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">মুছুন</translation>
 <translation id="2009755455353575666">সংযোগ ব্যর্থ হয়েছে</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">অফলাইন।</translation>
 <translation id="3695446226812920698">কীভাবে করবেন তা জানুন</translation>
 <translation id="3776024066357219166">আপনার Chrome রিমোট ডেস্কটপ সেশন শেষ হয়েছে৷</translation>
+<translation id="3858860766373142691">নাম</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3905196214175737742">ভুল হোস্ট মালিক ডোমেন।</translation>
 <translation id="3931191050278863510">হোস্ট থেমে গেছে।</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453">এই ক্লায়েন্টের জন্য অ্যাক্সেস স্বীকৃত নয়: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ক্লায়েন্ট সংযুক্ত: <ph name="CLIENT_USERNAME" />৷</translation>
 <translation id="7526139040829362392">অ্যাকাউন্ট পরিবর্তন করুন</translation>
+<translation id="7535110896613603182">ডিফল্ট অ্যাপ সেটিংস খুলুন</translation>
 <translation id="7628469622942688817">এই ডিভাইসে আমার পিন মনে রাখুন।</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7658239707568436148">বাতিল</translation>

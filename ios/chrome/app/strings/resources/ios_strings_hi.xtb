@@ -112,7 +112,6 @@
 <translation id="1989112275319619282">ब्राउज़ करें</translation>
 <translation id="2015722694326466240">पासवर्ड देखने के लिए, आपको सबसे पहले अपने डिवाइस पर एक पासवर्ड सेट करना होगा.</translation>
 <translation id="2021670401941426298">अपना खोज इतिहास मिटाने के लिए, सर्च इंजन के निर्देश देखें.</translation>
-<translation id="2022352537516230970">आपके iPhone के लिए बनाया गया</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिन पहले चालू था</translation>
 <translation id="2074131957428911366">आप जब चाहें तब <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर किसी भी चीज़ को सिंक करने का विकल्प चुन सकते हैं.</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
@@ -289,8 +288,10 @@
 <translation id="3779810277399252432">कोई इंटरनेट कनेक्शन नहीं.</translation>
 <translation id="3783017676699494206">इमेज सेव करें</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
+<translation id="380329542618494757">नाम</translation>
 <translation id="3803696231112616155">इस साइट का अनुवाद करने के लिए पूछें</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
+<translation id="3858860766373142691">नाम</translation>
 <translation id="3892144330757387737">आपको अपनी गतिविधि का इतिहास यहां मिलेगा</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3913386780052199712">आप Chrome में साइन इन हैं</translation>
@@ -321,7 +322,6 @@
 <translation id="4172051516777682613">हमेशा दिखाएं</translation>
 <translation id="418156467088430727">ऑफ़लाइन वर्शन को नए टैब में देखें</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
-<translation id="4184011057600693970">आपके iPad के लिए बनाया गया</translation>
 <translation id="424315890655130736">पासफ़्रेज़ डालें</translation>
 <translation id="4263576668337963058">उपलब्ध पेज की कार्रवाइयां दिखाएं</translation>
 <translation id="4267380167363222949">अगला टैब</translation>

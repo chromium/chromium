@@ -3,6 +3,8 @@
 <translationbundle lang="ja">
 <translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ギャラリー画像</translation>
+<translation id="1300209025925956156">ドキュメントをスキャンします</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。アクセスするには検索+左矢印キーを押します。</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> が外されました。</translation>
 <translation id="1473110567575736769">3 秒タイマー</translation>
@@ -63,8 +65,10 @@
 <translation id="5057360777601936059">カメラを使用できません。
         カメラが正しく接続されているかご確認ください。</translation>
 <translation id="5152121255775685072">ギャラリーに移動</translation>
+<translation id="520537883758714667">ドキュメント スキャンをご利用いただけるようになりました</translation>
 <translation id="5268823927180092501">すべてのカメラでドキュメント モードを有効にする</translation>
 <translation id="5422455049771430511">画像と動画の保存先が変わりました</translation>
+<translation id="5444515100983837161">ドキュメントのすべての端をフレーム内に収めてください。ドキュメントと背景を異なる色にすると、うまくスキャンできます。</translation>
 <translation id="5671277269877808209">スクエア</translation>
 <translation id="5753488212459587150">エキスパート モードを有効にする</translation>
 <translation id="5759254179196327752">ドキュメント スキャン</translation>

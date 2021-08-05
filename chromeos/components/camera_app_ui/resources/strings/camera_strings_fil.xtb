@@ -3,6 +3,8 @@
 <translationbundle lang="fil">
 <translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Mga larawan sa gallery</translation>
+<translation id="1300209025925956156">I-scan ang iyong dokumento</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Kaliwang arrow para i-access.</translation>
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
@@ -63,8 +65,10 @@
 <translation id="5057360777601936059">Kasalukuyang hindi available ang iyong camera.
         Pakitingnan kung maayos na nakakonekta ang camera.</translation>
 <translation id="5152121255775685072">Pumunta sa gallery</translation>
+<translation id="520537883758714667">Available na ang pag-scan ng dokumento</translation>
 <translation id="5268823927180092501">I-enable ang document mode sa lahat ng camera</translation>
 <translation id="5422455049771430511">May bago nang lugar para sa iyong mga larawan at video</translation>
+<translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
 <translation id="5671277269877808209">Parisukat</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>
 <translation id="5759254179196327752">I-scan ang dokumento</translation>

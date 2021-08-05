@@ -14,6 +14,7 @@
 <translation id="1204296502688602597">DNSaren itxarote-denbora</translation>
 <translation id="123124571410524056">Atari bat dagoela dirudi</translation>
 <translation id="1238612778414822719">HTTPS eskaeren itxarote-denbora</translation>
+<translation id="1264369926465113395">Ikusi Chromebook-ei buruzko aldizkari digital berria sortzaileentzat</translation>
 <translation id="1270369111467284986">Sare-zerbitzuaren ataria dirudi</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1314565355471455267">Android VPN sarea</translation>
@@ -88,7 +89,6 @@
 <translation id="2862104018715411648">Hasteko, kokatu dokumentua eskanerrean eta hautatu Eskaneatu</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundoan.</translation>
-<translation id="2983662233540284543">Ikasi joko-sortzaileengandik, lortu jokoak diseinatzeko aplikazioak, eta beste</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,6 +120,7 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
 <translation id="3540383942695635079">MAC helbidea</translation>
 <translation id="357889014807611375">wifi neurtua</translation>
+<translation id="3582041541988388905">Ez da hauteman <ph name="NETWORK_NAME" /> bidezko konexiorik</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
+<translation id="3858860766373142691">Izena</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
@@ -212,7 +214,6 @@
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Bateriaren egoera</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
-<translation id="519607504553633437">Diseinatu eta sortu zeure jokoak</translation>
 <translation id="5212543919916444558">Ezin dizut lagundu pantailako ezerekin.
 Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
@@ -246,7 +247,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5701381305118179107">Erdiratu</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
-<translation id="5752751666635965375">Sortu zeure jokoa</translation>
 <translation id="5760715441271661976">Atariaren egoera</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
@@ -269,7 +269,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
 <translation id="6122191549521593678">Konektatu</translation>
-<translation id="6125438912510167220">Konexio-abiadura</translation>
+<translation id="6125438912510167220">Lotura-abiadura</translation>
 <translation id="6137767437444130246">Erabiltzaile-ziurtagiria</translation>
 <translation id="6146993107019042706">Amaitzeko, idatzi pasahitz berria</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -296,6 +296,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="65587193855025101">Eskaner horizontala</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
 <translation id="6574762126505704998">Bete</translation>
+<translation id="6579235177984085399">Ezagutu marrazketa- eta diseinu-tresna berriak</translation>
 <translation id="6596816719288285829">IP helbidea</translation>
 <translation id="6603230386432466813">Arazoak dituzu konektatzeko?</translation>
 <translation id="6618744767048954150">Abian</translation>
@@ -375,7 +376,9 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8214184102975786227">Eskaneatu hainbat orri PDF bakar batean</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8246209727385807362">Operadore ezezaguna</translation>
+<translation id="8286154143153872371">Konektatu sare batera eta kargatu orria berriro horma-papera ikusteko.</translation>
 <translation id="8291967909914612644">Hasierako hornitzailearen herrialdea</translation>
+<translation id="829270796093605079">Ezagutu diseinu-tresnak</translation>
 <translation id="8294431847097064396">Iturburua</translation>
 <translation id="8297006494302853456">Ahula</translation>
 <translation id="8302368968391049045">HTTPSrako suebakia</translation>
