@@ -1057,7 +1057,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
             current_spatial_layer_resolutions_[spatial_index].height();
 
         vp9.first_frame_in_picture = spatial_index == 0;
-        vp9.inter_pic_predicted = metadata.vp9->has_reference;
+        vp9.inter_pic_predicted = metadata.vp9->inter_pic_predicted;
         vp9.non_ref_for_inter_layer_pred =
             !metadata.vp9->referenced_by_upper_spatial_layers;
         vp9.temporal_idx = metadata.vp9->temporal_idx;

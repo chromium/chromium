@@ -270,7 +270,7 @@ class RTCVideoEncoderTest
       // TL1:     /_____[#2]
       // TL0: [#0]-----------------[#4]
       media::Vp9Metadata vp9;
-      vp9.has_reference = frame_num != 0 && !force_keyframe;
+      vp9.inter_pic_predicted = frame_num != 0 && !force_keyframe;
       constexpr int kNumTemporalLayers = 3;
       vp9.temporal_up_switch = frame_num != kNumTemporalLayers;
       switch (frame_num) {

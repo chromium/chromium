@@ -201,7 +201,7 @@ struct Vp8Metadata {
 };
 
 struct Vp9Metadata {
-  bool has_reference;
+  bool inter_pic_predicted;
   bool temporal_up_switch;
   bool referenced_by_upper_spatial_layers;
   bool reference_lower_spatial_layers;

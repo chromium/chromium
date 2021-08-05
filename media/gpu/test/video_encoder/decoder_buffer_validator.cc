@@ -354,9 +354,9 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
   }
 
   if (metadata.vp9 &&
-      metadata.vp9->has_reference != !metadata.vp9->p_diffs.empty()) {
-    LOG(ERROR)
-        << "Inconsistent metadata, has_reference implies p_diffs is non-empty.";
+      metadata.vp9->inter_pic_predicted != !metadata.vp9->p_diffs.empty()) {
+    LOG(ERROR) << "Inconsistent metadata, inter_pic_predicted implies p_diffs "
+                  "is non-empty.";
     return false;
   }
 

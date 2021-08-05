@@ -135,7 +135,7 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   input_metadata.vp8.reset();
 
   Vp9Metadata vp9;
-  vp9.has_reference = true;
+  vp9.inter_pic_predicted = true;
   vp9.temporal_up_switch = true;
   vp9.referenced_by_upper_spatial_layers = true;
   vp9.reference_lower_spatial_layers = true;

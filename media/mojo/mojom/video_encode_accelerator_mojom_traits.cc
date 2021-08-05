@@ -167,7 +167,7 @@ bool StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata>::Read(
 bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
     media::mojom::Vp9MetadataDataView data,
     media::Vp9Metadata* out_metadata) {
-  out_metadata->has_reference = data.has_reference();
+  out_metadata->inter_pic_predicted = data.inter_pic_predicted();
   out_metadata->temporal_up_switch = data.temporal_up_switch();
   out_metadata->referenced_by_upper_spatial_layers =
       data.referenced_by_upper_spatial_layers();

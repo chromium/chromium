@@ -68,8 +68,7 @@ struct MEDIA_EXPORT Vp9Metadata final {
   Vp9Metadata(const Vp9Metadata&);
 
   // True iff this layer frame is dependent on previously coded frame(s).
-  // TODO: rename |has_reference| to |inter_pic_predicted| follow webrtc.
-  bool has_reference = false;
+  bool inter_pic_predicted = false;
   // True iff this frame only references TL0 frames.
   bool temporal_up_switch = false;
   // True iff frame is referenced by upper spatial layer frame.

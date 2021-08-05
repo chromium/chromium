@@ -201,7 +201,7 @@ bool operator==(const Vp8Metadata& l, const Vp8Metadata& r) {
 }
 
 bool operator==(const Vp9Metadata& l, const Vp9Metadata& r) {
-  return l.has_reference == r.has_reference &&
+  return l.inter_pic_predicted == r.inter_pic_predicted &&
          l.temporal_up_switch == r.temporal_up_switch &&
          l.referenced_by_upper_spatial_layers ==
              r.referenced_by_upper_spatial_layers &&

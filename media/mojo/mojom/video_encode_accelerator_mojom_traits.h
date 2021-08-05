@@ -173,8 +173,8 @@ class StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata> {
 template <>
 class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
  public:
-  static bool has_reference(const media::Vp9Metadata& vp9) {
-    return vp9.has_reference;
+  static bool inter_pic_predicted(const media::Vp9Metadata& vp9) {
+    return vp9.inter_pic_predicted;
   }
   static bool temporal_up_switch(const media::Vp9Metadata& vp9) {
     return vp9.temporal_up_switch;
