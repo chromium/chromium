@@ -91,6 +91,8 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
+  void LogRestoreData();
+
   bool should_restore_ = false;
 
   // Specifies whether it is the first time to run the full restore feature.

@@ -92,6 +92,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
     // release. Restore browsers and web apps by the browser session restore.
     first_run_full_restore_ = true;
     SetDefaultRestorePrefIfNecessary(prefs);
+    VLOG(1) << "No restore pref! First time to run full restore.";
   }
 }
 
@@ -219,8 +220,10 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
   if (id == kRestoreForCrashNotificationId) {
     title = l10n_util::GetStringFUTF16(IDS_RESTORE_CRASH_NOTIFICATION_TITLE,
                                        ui::GetChromeOSDeviceName());
+    VLOG(1) << "Show the restore notification for crash.";
   } else {
     title = l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_TITLE);
+    VLOG(1) << "Show the restore notification for the normal startup.";
   }
 
   int message_id;

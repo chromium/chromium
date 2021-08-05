@@ -144,6 +144,7 @@ FullRestoreAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
 void FullRestoreAppLaunchHandler::OnGetRestoreData(
     std::unique_ptr<::full_restore::RestoreData> restore_data) {
   restore_data_ = std::move(restore_data);
+  LogRestoreData();
 
   // FullRestoreAppLaunchHandler could be created multiple times in browser
   // tests, and used by the desk template. Only when it is created by
@@ -183,6 +184,7 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
     should_launch_browser_ = false;
   }
 
+  VLOG(1) << "Restore apps";
   if (FullRestoreArcTaskHandler::GetForProfile(profile_)) {
     FullRestoreArcTaskHandler::GetForProfile(profile_)
         ->arc_app_launch_handler()
@@ -204,6 +206,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end())
     return;
 
+  VLOG(1) << "Restore browser";
   RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
 
   restore_data_->RemoveApp(extension_misc::kChromeAppId);
@@ -266,6 +269,37 @@ void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
                                 app_type_name);
+}
+
+void FullRestoreAppLaunchHandler::LogRestoreData() {
+  if (!restore_data_ || restore_data_->app_id_to_launch_list().empty()) {
+    VLOG(1) << "There is no restore data.";
+    return;
+  }
+
+  int arc_app_count = 0;
+  int other_app_count = 0;
+  for (const auto& it : restore_data_->app_id_to_launch_list()) {
+    if (it.first == extension_misc::kChromeAppId || it.second.empty())
+      continue;
+
+    if (it.second.begin()->second->event_flag.has_value()) {
+      ++arc_app_count;
+      continue;
+    }
+
+    ++other_app_count;
+  }
+  VLOG(1) << "There is restore data: Browser("
+          << (::full_restore::HasAppTypeBrowser(profile_->GetPath())
+                  ? " has app type browser "
+                  : " no app type browser")
+          << ","
+          << (::full_restore::HasBrowser(profile_->GetPath())
+                  ? " has normal browser "
+                  : " no normal ")
+          << ") ARC(" << arc_app_count << ") other apps(" << other_app_count
+          << ")";
 }
 
 ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {
