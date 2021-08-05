@@ -5,7 +5,6 @@
 #include "components/optimization_guide/core/hint_cache.h"
 
 #include <string>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"

@@ -5,7 +5,6 @@
 #include "components/optimization_guide/core/store_update_data.h"
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/time/time.h"
