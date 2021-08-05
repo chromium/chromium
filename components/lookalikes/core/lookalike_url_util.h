@@ -204,4 +204,9 @@ bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
 void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
                                       const std::vector<std::string>& hosts);
 
+// Returns true if |str1| and |str2| are identical except that two adjacent
+// characters are swapped. E.g. example.com vs exapmle.com.
+bool HasOneCharacterSwap(const std::u16string& str1,
+                         const std::u16string& str2);
+
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

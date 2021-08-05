@@ -395,3 +395,46 @@ TEST(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
     EXPECT_EQ(GetETLDPlusOne(test_case.hostname), test_case.expected_etldp1);
   }
 }
+
+// Tests for the character swap heuristic.
+TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
+  const struct TestCase {
+    const wchar_t* str1;
+    const wchar_t* str2;
+    bool expected;
+  } kTestCases[] = {{L"", L"", false},
+                    {L"", L"a", false},
+                    {L"", L"ab", false},
+                    {L"a", L"ab", false},
+                    {L"a", L"ba", false},
+                    {L"abc.com", L"abc.com", false},
+                    {L"abc.com", L"abcd.com", false},
+                    {L"domain.com", L"nomaid.com", false},
+                    // Two swaps (ab to ba, ba to ab):
+                    {L"abba", L"baab", false},
+
+                    {L"ab", L"ba", true},
+                    {L"abba", L"baba", true},
+
+                    {L"abaaa", L"baaaa", true},
+                    {L"abcaa", L"bacaa", true},
+
+                    {L"aaaab", L"aaaba", true},
+                    {L"aacab", L"aacba", true},
+
+                    {L"aabaa", L"abaaa", true},
+                    {L"aabcc", L"abacc", true},
+
+                    {L"aabaa", L"aaaba", true},
+                    {L"ccbaa", L"ccaba", true},
+
+                    {L"domain.com", L"doamin.com", true},
+                    {L"gmail.com", L"gmailc.om", true},
+                    {L"gmailc.om", L"gmail.com", true}};
+  for (const TestCase& test_case : kTestCases) {
+    bool result = HasOneCharacterSwap(base::WideToUTF16(test_case.str1),
+                                      base::WideToUTF16(test_case.str2));
+    EXPECT_EQ(test_case.expected, result)
+        << "when comparing " << test_case.str1 << " with " << test_case.str2;
+  }
+}

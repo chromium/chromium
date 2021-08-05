@@ -954,3 +954,38 @@ void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
   }
   pref_service->Set(prefs::kLookalikeWarningAllowlistDomains, std::move(list));
 }
+
+bool HasOneCharacterSwap(const std::u16string& str1,
+                         const std::u16string& str2) {
+  if (str1.size() != str2.size()) {
+    return false;
+  }
+  if (str1 == str2) {
+    return false;
+  }
+  bool has_swap = false;
+  std::u16string::const_iterator i = str1.begin();
+  std::u16string::const_iterator j = str2.begin();
+  while (i != str1.end()) {
+    DCHECK(j < str2.end());
+    wchar_t left1 = *i;
+    wchar_t right1 = *j;
+    i++;
+    j++;
+    if (left1 == right1) {
+      continue;
+    }
+    wchar_t left2 = *i;
+    wchar_t right2 = *j;
+    if (!has_swap && (left1 == right2 && right1 == left2)) {
+      has_swap = true;
+      i++;
+      j++;
+      continue;
+    }
+    // Either there are multiple swaps, or strings have completely different
+    // characters.
+    return false;
+  }
+  return has_swap;
+}
