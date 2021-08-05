@@ -2905,7 +2905,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  // Initialize a MockWebContentsObserver and ensure that DidFailLoad is not
+  // Initialize a MockWebContentsObserver and ensure that DidFinishLoad is not
   // invoked inside prerender frame tree.
   testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
   EXPECT_CALL(observer, DidFailLoad(testing::_, testing::_, testing::_))
@@ -3061,91 +3061,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   activation_observer.WaitForNavigationFinished();
   EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
-}
-
-// Test that WebContentsObserver::DidFinishLoad is not invoked when the page
-// gets loaded while prerendering but it is deferred and invoked on prerender
-// activation.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       DidFinishLoadInvokedAfterActivation) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/simple_page.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Initialize a MockWebContentsObserver and ensure that DidFinishLoad is not
-  // invoked while prerendering.
-  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
-  EXPECT_CALL(observer, DidFinishLoad(testing::_, testing::_)).Times(0);
-
-  // Start a prerender.
-  int prerender_host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHost* prerender_frame_host =
-      GetPrerenderedMainFrameHost(prerender_host_id);
-  EXPECT_EQ(prerender_frame_host->GetFramesInSubtree().size(), 1u);
-
-  // Verify and clear all expectations on the mock observer before setting new
-  // ones.
-  testing::Mock::VerifyAndClearExpectations(&observer);
-  testing::InSequence s;
-
-  // Activate the prerendered page. This should result in invoking DidFinishLoad
-  // once for root RenderFrameHost `prerender_frame_host`.
-  {
-    // Verify that DidFinishNavigation is invoked before DidFinishLoad on
-    // activation.
-    EXPECT_CALL(observer, DidFinishNavigation(testing::_));
-
-    EXPECT_CALL(observer,
-                DidFinishLoad(prerender_frame_host, kPrerenderingUrl));
-  }
-  NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
-}
-
-// Test that WebContentsObserver::DidFinishLoad is not invoked when the page
-// gets loaded while prerendering but it is deferred and invoked on prerender
-// activation for both main and sub-frames.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       DidFinishLoadInvokedAfterActivationWithSubframes) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Initialize a MockWebContentsObserver and ensure that DidFinishLoad is not
-  // invoked while prerendering.
-  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
-  testing::InSequence s;
-  EXPECT_CALL(observer, DidFinishLoad(testing::_, testing::_)).Times(0);
-
-  // Start a prerender.
-  int prerender_host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHost* prerender_main_frame_host =
-      GetPrerenderedMainFrameHost(prerender_host_id);
-  RenderFrameHost* child_frame = ChildFrameAt(prerender_main_frame_host, 0);
-  EXPECT_EQ(prerender_main_frame_host->GetFramesInSubtree().size(), 2u);
-
-  // Verify and clear all expectations on the mock observer before setting new
-  // ones.
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  // Activate the prerendered page. This should result in invoking DidFinishLoad
-  // twice once for root and once for child RenderFrameHosts.
-  {
-    // Verify that DidFinishNavigation is invoked before DidFinishLoad.
-    EXPECT_CALL(observer, DidFinishNavigation(testing::_));
-
-    EXPECT_CALL(observer,
-                DidFinishLoad(prerender_main_frame_host, kPrerenderingUrl));
-
-    EXPECT_CALL(observer,
-                DidFinishLoad(child_frame, child_frame->GetLastCommittedURL()));
-  }
-  NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
 }
 
 // Tests that cross-origin subframe navigations in a prerendered page are

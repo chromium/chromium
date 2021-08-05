@@ -147,7 +147,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) {}
 
-  // Called when blink.mojom.LocalFrameHost::DidFinishLoad() is invoked.
+  // Notifies the browser that a frame finished loading.
   virtual void OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
                                const GURL& url) {}
 
