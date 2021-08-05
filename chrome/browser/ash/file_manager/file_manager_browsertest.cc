@@ -416,10 +416,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("keyboardCopyDownloads"),
         TestCase("keyboardCopyDownloads").EnableTrash(),
         TestCase("keyboardCopyDrive"),
+// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("keyboardFocusOutlineVisible"),
         TestCase("keyboardFocusOutlineVisible").EnableTrash(),
         TestCase("keyboardFocusOutlineVisibleMouse"),
         TestCase("keyboardFocusOutlineVisibleMouse").EnableTrash(),
+#endif
         TestCase("keyboardSelectDriveDirectoryTree"),
         TestCase("keyboardDisableCopyWhenDialogDisplayed"),
         TestCase("keyboardOpenNewWindow"),
@@ -767,10 +770,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDragDropActiveDrop").FilesSwa(),
         TestCase("transferDragDropTreeItemAccepts"),
         TestCase("transferDragDropTreeItemAccepts").FilesSwa(),
+// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("transferDragDropTreeItemDenies"),
         TestCase("transferDragDropTreeItemDenies").FilesSwa(),
+#endif
         TestCase("transferDragAndHoverTreeItemEntryList"),
         TestCase("transferDragAndHoverTreeItemEntryList").FilesSwa(),
+// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("transferDragAndHoverTreeItemFakeEntry"),
         TestCase("transferDragAndHoverTreeItemFakeEntry").FilesSwa(),
         TestCase("transferDragAndHoverTreeItemFakeEntry")
@@ -778,6 +786,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDragAndHoverTreeItemFakeEntry")
             .EnableSinglePartitionFormat()
             .FilesSwa(),
+#endif
         TestCase("transferDragFileListItemSelects"),
         TestCase("transferDragFileListItemSelects").FilesSwa(),
         TestCase("transferDragAndDrop"),
@@ -884,12 +893,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexFocusDirectorySelectedSharesheetEnabled")
             .EnableSharesheet(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser(),
-        TestCase("tabindexOpenDialogDownloads").WithBrowser().InGuestMode(),
+        TestCase("tabindexOpenDialogDownloads").WithBrowser().InGuestMode()
+// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
+            ,
         TestCase("tabindexSaveFileDialogDrive").WithBrowser(),
         TestCase("tabindexSaveFileDialogDownloads").WithBrowser(),
-        TestCase("tabindexSaveFileDialogDownloads")
-            .WithBrowser()
-            .InGuestMode()));
+        TestCase("tabindexSaveFileDialogDownloads").WithBrowser().InGuestMode()
+#endif
+            ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FileDialog, /* file_dialog.js */
@@ -905,7 +917,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveFileDialogDownloads").WithBrowser(),
         TestCase("saveFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),
+// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
+#endif
         TestCase("saveFileDialogPanelsDisabled").WithBrowser(),
         TestCase("openFileDialogCancelDownloads").WithBrowser(),
         TestCase("openFileDialogEscapeDownloads").WithBrowser(),
