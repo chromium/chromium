@@ -539,6 +539,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
+      "target_cpu": "arm",
+      "target_os": "chromeos",
       "use_goma": true
     }
   },
@@ -547,6 +549,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
+      "target_cpu": "arm64",
+      "target_os": "chromeos",
       "use_goma": true
     }
   },
