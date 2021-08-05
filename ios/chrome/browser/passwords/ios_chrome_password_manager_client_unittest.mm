@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,7 +35,8 @@ class IOSChromePasswordManagerClientTest : public ChromeWebTest {
  public:
   IOSChromePasswordManagerClientTest()
       : ChromeWebTest(std::make_unique<ChromeWebClient>()),
-        store_(new testing::NiceMock<password_manager::MockPasswordStore>()) {}
+        store_(new testing::NiceMock<
+               password_manager::MockPasswordStoreInterface>()) {}
 
   ~IOSChromePasswordManagerClientTest() override {
     store_->ShutdownOnUIThread();
@@ -59,7 +60,7 @@ class IOSChromePasswordManagerClientTest : public ChromeWebTest {
   // PasswordController for testing.
   PasswordController* passwordController_;
 
-  scoped_refptr<password_manager::MockPasswordStore> store_;
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
 };
 
 // Tests that saving password behaves properly with the

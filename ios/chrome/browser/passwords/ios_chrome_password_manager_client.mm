@@ -55,6 +55,7 @@ using password_manager::metrics_util::PasswordType;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::SyncState;
 
 namespace {
@@ -187,6 +188,19 @@ PasswordStore* IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
 }
 
 PasswordStore* IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
+  // AccountPasswordStore is currenly not supported on iOS.
+  return nullptr;
+}
+
+PasswordStoreInterface*
+IOSChromePasswordManagerClient::GetProfilePasswordStoreInterface() const {
+  return IOSChromePasswordStoreFactory::GetForBrowserState(
+             bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
+      .get();
+}
+
+PasswordStoreInterface*
+IOSChromePasswordManagerClient::GetAccountPasswordStoreInterface() const {
   // AccountPasswordStore is currenly not supported on iOS.
   return nullptr;
 }
