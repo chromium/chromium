@@ -224,7 +224,10 @@ void BaseRenderingContext2D::endLayer() {
 }
 
 void BaseRenderingContext2D::PopAndRestore() {
-  DCHECK_GT(state_stack_.size(), 1u);
+  if (state_stack_.size() <= 1) {
+    NOTREACHED();
+    return;
+  }
 
   state_stack_.pop_back();
   state_stack_.back()->ClearResolvedFilter();
