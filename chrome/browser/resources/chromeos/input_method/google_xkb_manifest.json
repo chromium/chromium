@@ -19,6 +19,7 @@
     "input",
     "inputMethodPrivate",
     "metricsPrivate",
+    "notifications",
     "system.display",
     "tabs",
     "tts",
