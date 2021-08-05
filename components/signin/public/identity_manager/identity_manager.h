@@ -436,11 +436,12 @@ class IdentityManager : public KeyedService,
   // Provide the reference on the java IdentityMutator.
   base::android::ScopedJavaLocalRef<jobject> GetIdentityMutatorJavaObject();
 
-  // This method has the contractual assumption that the account is a known
-  // account and has as its semantics that it fetches the account info for the
-  // account, triggering an OnExtendedAccountInfoUpdated() callback if the info
-  // was successfully fetched.
-  void ForceRefreshOfExtendedAccountInfo(const CoreAccountId& account_id);
+  // This method refreshes the AccountInfo associated with |account_id|,
+  // when the existing account info is stale, otherwise it doesn't fetch the
+  // account info if it is valid.
+  // This method triggers an OnExtendedAccountInfoUpdated()
+  // callback if the info was successfully fetched.
+  void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
 
   // Overloads for calls from java:
   bool HasPrimaryAccount(JNIEnv* env) const;
@@ -460,9 +461,8 @@ class IdentityManager : public KeyedService,
   base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
       JNIEnv* env) const;
 
-  // Forces refreshing extended account info with image for the given
-  // core account id.
-  void ForceRefreshOfExtendedAccountInfo(
+  // Refreshes account info with image for the given core account id.
+  void RefreshAccountInfoIfStale(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_core_account_id);
 #endif
@@ -587,8 +587,7 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest,
                            CallbackSentOnAccountsCookieDeletedByUserAction);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, OnNetworkInitialized);
-  FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest,
-                           ForceRefreshOfExtendedAccountInfo);
+  FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, RefreshAccountInfoIfStale);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
 
   // Only caller to FindExtendedPrimaryAccountInfo().

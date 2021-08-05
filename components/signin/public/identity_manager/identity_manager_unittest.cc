@@ -2439,7 +2439,7 @@ TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
 }
 
 #if defined(OS_ANDROID)
-TEST_F(IdentityManagerTest, ForceRefreshOfExtendedAccountInfo) {
+TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   // The flow of this test results in an interaction with
   // ChildAccountInfoFetcherAndroid, which requires initialization of
   // AccountManagerFacade in java code to avoid a crash.
@@ -2448,8 +2448,7 @@ TEST_F(IdentityManagerTest, ForceRefreshOfExtendedAccountInfo) {
   identity_manager()->GetAccountFetcherService()->OnNetworkInitialized();
   AccountInfo account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  identity_manager()->ForceRefreshOfExtendedAccountInfo(
-      account_info.account_id);
+  identity_manager()->RefreshAccountInfoIfStale(account_info.account_id);
 
   SimulateSuccessfulFetchOfAccountInfo(
       identity_manager(), account_info.account_id, account_info.email,

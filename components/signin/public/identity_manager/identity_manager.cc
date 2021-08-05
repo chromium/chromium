@@ -444,7 +444,7 @@ IdentityManager::GetIdentityMutatorJavaObject() {
       identity_mutator_.GetJavaObject());
 }
 
-void IdentityManager::ForceRefreshOfExtendedAccountInfo(
+void IdentityManager::RefreshAccountInfoIfStale(
     const CoreAccountId& account_id) {
   DCHECK(HasAccountWithRefreshToken(account_id));
   AccountInfo account_info =
@@ -452,13 +452,13 @@ void IdentityManager::ForceRefreshOfExtendedAccountInfo(
   if (account_info.account_image.IsEmpty()) {
     account_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
   }
-  account_fetcher_service_->ForceRefreshOfAccountInfo(account_id);
+  account_fetcher_service_->RefreshAccountInfoIfStale(account_id);
 }
 
-void IdentityManager::ForceRefreshOfExtendedAccountInfo(
+void IdentityManager::RefreshAccountInfoIfStale(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_core_account_id) {
-  ForceRefreshOfExtendedAccountInfo(
+  RefreshAccountInfoIfStale(
       ConvertFromJavaCoreAccountId(env, j_core_account_id));
 }
 

@@ -109,12 +109,6 @@ bool AccountFetcherService::AreAllAccountCapabilitiesFetched() const {
   return account_capabilities_requests_.empty();
 }
 
-void AccountFetcherService::ForceRefreshOfAccountInfo(
-    const CoreAccountId& account_id) {
-  DCHECK(network_fetches_enabled_);
-  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/false);
-}
-
 void AccountFetcherService::OnNetworkInitialized() {
   DCHECK(!network_initialized_);
   DCHECK(!network_fetches_enabled_);
@@ -154,6 +148,12 @@ void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
 // single account. This is possible since we only support a single account to be
 // a child anyway.
 #if defined(OS_ANDROID)
+void AccountFetcherService::RefreshAccountInfoIfStale(
+    const CoreAccountId& account_id) {
+  DCHECK(network_fetches_enabled_);
+  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
+}
+
 void AccountFetcherService::UpdateChildInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<CoreAccountId> accounts = token_service_->GetAccounts();

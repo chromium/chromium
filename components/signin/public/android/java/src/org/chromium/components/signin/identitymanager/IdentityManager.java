@@ -165,12 +165,12 @@ public class IdentityManager {
     }
 
     /**
-     * Forces refreshing extended {@link AccountInfo} with image for the given
-     * list of {@link CoreAccountInfo}.
+     * Refreshes extended {@link AccountInfo} with image for the given
+     * list of {@link CoreAccountInfo} if the existing ones are stale.
      */
-    public void forceRefreshOfExtendedAccountInfo(List<CoreAccountInfo> accountInfos) {
+    public void refreshAccountInfoIfStale(List<CoreAccountInfo> accountInfos) {
         for (CoreAccountInfo accountInfo : accountInfos) {
-            IdentityManagerJni.get().forceRefreshOfExtendedAccountInfo(
+            IdentityManagerJni.get().refreshAccountInfoIfStale(
                     mNativeIdentityManager, accountInfo.getId());
         }
     }
@@ -208,7 +208,6 @@ public class IdentityManager {
         @Nullable
         AccountInfo findExtendedAccountInfoByEmailAddress(long nativeIdentityManager, String email);
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
-        void forceRefreshOfExtendedAccountInfo(
-                long nativeIdentityManager, CoreAccountId coreAccountId);
+        void refreshAccountInfoIfStale(long nativeIdentityManager, CoreAccountId coreAccountId);
     }
 }
