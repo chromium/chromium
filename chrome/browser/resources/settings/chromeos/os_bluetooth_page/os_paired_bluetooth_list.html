@@ -6,11 +6,11 @@
 <!-- TODO(crbug.com/1010321): Populate with real data. -->
 <div id="container" class="layout vertical flex" scrollable
     no-bottom-scroll-border>
-  <iron-list items="[[devices]]" scroll-target="container" preserve-focus>
+  <iron-list items="[[devices_]]" scroll-target="container" preserve-focus>
     <template>
-      <!-- TODO(crbug.com/1010321): Fix focus behavior. -->
-      <os-settings-paired-bluetooth-list-item
-          tabindex="[[tabIndex]]">
+      <!-- TODO(crbug.com/1010321): Add focus behavior,
+           fix not all elements rendering in large lists. -->
+      <os-settings-paired-bluetooth-list-item>
       </os-settings-paired-bluetooth-list-item>
     </template>
   </iron-list>
