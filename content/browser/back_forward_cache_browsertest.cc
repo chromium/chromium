@@ -9038,6 +9038,63 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   presentation_service.OnDelegateDestroyed();
 }
 
+namespace {
+
+// Subclass of DocumentServiceBase for test.
+class EchoImpl final : public DocumentServiceBase<mojom::Echo> {
+ public:
+  EchoImpl(RenderFrameHost* render_frame_host,
+           mojo::PendingReceiver<mojom::Echo> receiver,
+           bool* deleted)
+      : DocumentServiceBase(render_frame_host, std::move(receiver)),
+        deleted_(deleted) {}
+  ~EchoImpl() final { *deleted_ = true; }
+
+  // mojom::Echo implementation
+  void EchoString(const std::string& input, EchoStringCallback callback) final {
+    std::move(callback).Run(input);
+  }
+
+ private:
+  bool* deleted_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DocumentServiceBase) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  mojo::Remote<mojom::Echo> echo_remote;
+  bool echo_deleted = false;
+  new EchoImpl(rfh_a, echo_remote.BindNewPipeAndPassReceiver(), &echo_deleted);
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // - Page A should be in the cache.
+  ASSERT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_FALSE(echo_deleted);
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_FALSE(echo_deleted);
+
+  // 4) Prevent caching and navigate to B.
+  DisableBFCacheForRFHForTesting(rfh_a);
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  delete_observer_rfh_a.WaitUntilDeleted();
+  EXPECT_TRUE(echo_deleted);
+}
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, OutstandingFetchNotCached) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/fetch");
