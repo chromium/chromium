@@ -32,7 +32,6 @@ extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
 extern const char kDisableCheckingUserPermissionsForTesting[];
 extern const char kDisableModelDownloadVerificationForTesting[];
 extern const char kModelOverride[];
-extern const char kModelValidate[];
 
 // Returns whether the hint component should be processed.
 // Available hint components are only processed if a proto override isn't being
@@ -81,9 +80,6 @@ bool ShouldSkipModelDownloadVerificationForTesting();
 
 // Returns whether at least one model was provided via command-line.
 bool IsModelOverridePresent();
-
-// Returns whether the model validation should happen.
-bool ShouldValidateModel();
 
 // Returns the file path string and metadata for the model provided via
 // command-line for |optimization_target|, if applicable.

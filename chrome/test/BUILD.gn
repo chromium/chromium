@@ -1640,7 +1640,6 @@ if (!is_android) {
       "../browser/optimization_guide/browser_test_util.cc",
       "../browser/optimization_guide/browser_test_util.h",
       "../browser/optimization_guide/hints_fetcher_browsertest.cc",
-      "../browser/optimization_guide/model_validator_browsertest.cc",
       "../browser/optimization_guide/optimization_guide_keyed_service_browsertest.cc",
       "../browser/optimization_guide/page_content_annotations_service_browsertest.cc",
       "../browser/optimization_guide/page_text_observer_browsertest.cc",
