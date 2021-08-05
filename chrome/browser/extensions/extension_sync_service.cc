@@ -179,6 +179,23 @@ ExtensionSyncService::MergeDataAndStartSyncing(
     }
   }
 
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
+  std::unique_ptr<ExtensionSet> all_extensions =
+      registry->GenerateInstalledExtensionsSet();
+  for (const auto& extension : *all_extensions) {
+    if (extension->from_bookmark()) {
+      // Deleting deprecated bookmark apps.
+      const std::string& id = extension->id();
+      std::u16string error;
+      bool uninstalled = extension_service()->UninstallExtension(
+          id, extensions::UNINSTALL_REASON_SYNC, &error);
+      if (!uninstalled) {
+        LOG(WARNING) << "Failed to uninstall bookmark apps with id '" << id
+                     << "' : " << error;
+      }
+    }
+  }
+
   // Now push the local state to sync.
   // Note: We'd like to only send out changes for extensions which have
   // NeedsSync set. However, we can't tell if our changes ever made it to the
