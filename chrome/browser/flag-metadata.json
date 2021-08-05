@@ -610,7 +610,7 @@
   {
     "name": "chrome-labs",
     "owners": ["elainechien", "robliao"],
-    "expiry_milestone": 96
+    "expiry_milestone": 107
   },
   {
     "name": "chrome-share-highlights-android",

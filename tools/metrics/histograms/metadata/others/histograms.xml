@@ -17325,7 +17325,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Toolbar.ChromeLabs.AshOwnerCheckTime" units="ms"
-    expires_after="M98">
+    expires_after="M107">
   <owner>elainechien@chromium.org</owner>
   <owner>labs-on-chrome@google.com</owner>
   <summary>
@@ -17338,7 +17338,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Toolbar.ChromeLabs.{State}LabAction"
-    enum="ChromeLabsSelectedLab" expires_after="M96">
+    enum="ChromeLabsSelectedLab" expires_after="M107">
   <owner>elainechien@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
