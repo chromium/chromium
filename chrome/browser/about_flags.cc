@@ -7661,6 +7661,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(net::features::kSamePartyCookiesConsideredFirstParty)},
 
+    {"partitioned-cookies", flag_descriptions::kPartitionedCookiesName,
+     flag_descriptions::kPartitionedCookiesDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBorealisDiskManagementInternalName,
      flag_descriptions::kBorealisDiskManagementName,

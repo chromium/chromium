@@ -259,5 +259,8 @@ const base::Feature kCookieSameSiteConsidersRedirectChain{
 const base::Feature kSamePartyCookiesConsideredFirstParty{
     "SamePartyCookiesConsideredFirstParty", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPartitionedCookies{"PartitionedCookies",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

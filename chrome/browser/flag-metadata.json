@@ -4483,6 +4483,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "partitioned-cookies",
+    "owners": [ "dylancutler" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "password-change-in-settings",
     "owners": [ "kolos" ],
     "expiry_milestone": 95

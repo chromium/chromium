@@ -47416,6 +47416,7 @@ from previous Chrome versions.
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
   <int value="-1456627355" label="EnableEmojiContextMenu:disabled"/>
   <int value="-1456538122" label="SCTAuditing:enabled"/>
+  <int value="-1456449932" label="PartitionedCookies:enabled"/>
   <int value="-1456004000" label="VrShell:disabled"/>
   <int value="-1455852875" label="WebAuthentication:disabled"/>
   <int value="-1455559065"
@@ -51126,6 +51127,7 @@ from previous Chrome versions.
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
   <int value="1553777815" label="enable-search-prefetch-service"/>
   <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
+  <int value="1557680135" label="PartitionedCookies:disabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
   <int value="1559034872" label="AutofillPrefilledFields:enabled"/>
   <int value="1560188739" label="reader-mode-heuristics"/>

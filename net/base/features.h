@@ -381,6 +381,12 @@ NET_EXPORT extern const base::Feature kCookieSameSiteConsidersRedirectChain;
 // privacy mode is disabled in same-party contexts.)
 NET_EXPORT extern const base::Feature kSamePartyCookiesConsideredFirstParty;
 
+// When enabled, sites can opt-in to having their cookies partitioned by
+// top-level site with the Partitioned attribute. Partitioned cookies will only
+// be sent when the browser is on the same top-level site that it was on when
+// the cookie was set.
+NET_EXPORT extern const base::Feature kPartitionedCookies;
+
 }  // namespace features
 }  // namespace net
 

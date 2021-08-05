@@ -2310,6 +2310,10 @@ const char kSamePartyCookiesConsideredFirstPartyDescription[] =
     "If enabled, SameParty cookies will not be blocked even if third-party "
     "cookies are blocked.";
 
+const char kPartitionedCookiesName[] = "Partitioned cookies";
+const char kPartitionedCookiesDescription[] =
+    "Controls if the Partitioned cookie attribute is enabled.";
+
 const char kSchemefulSameSiteName[] = "Schemeful Same-Site";
 const char kSchemefulSameSiteDescription[] =
     "Modify the same-site computation such that origins with the same "
