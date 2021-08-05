@@ -13,9 +13,12 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_model_utils.h"
 
 namespace ash {
@@ -24,16 +27,28 @@ namespace {
 // TODO(crbug.com/1211608): Add this to AppListConfig.
 const int kVerticalTilePadding = 8;
 
+// Vertical margin in DIPs at top and bottom of scroll view where auto-scroll
+// will be triggered during drags.
+constexpr int kAutoScrollMargin = 32;
+
+// How often to auto-scroll when the mouse is held in the auto-scroll margin.
+constexpr base::TimeDelta kAutoScrollInterval = base::TimeDelta::FromHz(60.0);
+
+// How much to auto-scroll the view per second. Empirically chosen.
+const int kAutoScrollDipsPerSecond = 400;
+
 }  // namespace
 
 ScrollableAppsGridView::ScrollableAppsGridView(
     AppListA11yAnnouncer* a11y_announcer,
     AppListViewDelegate* view_delegate,
-    AppsGridViewFolderDelegate* folder_delegate)
+    AppsGridViewFolderDelegate* folder_delegate,
+    views::ScrollView* parent_scroll_view)
     : AppsGridView(/*contents_view=*/nullptr,
                    a11y_announcer,
                    view_delegate,
-                   folder_delegate) {
+                   folder_delegate),
+      scroll_view_(parent_scroll_view) {
   view_structure_.Init(PagedViewStructure::Mode::kSinglePage);
 }
 
@@ -132,6 +147,100 @@ void ScrollableAppsGridView::CalculateIdealBounds() {
     ++model_index;
     ++grid_index;
   }
+}
+
+bool ScrollableAppsGridView::MaybeAutoScroll() {
+  ScrollDirection direction;
+  if (!IsPointInAutoScrollMargin(last_drag_point(), &direction)) {
+    // Drag isn't in auto-scroll margin.
+    StopAutoScroll();
+    return false;
+  }
+
+  if (!CanAutoScrollView(direction)) {
+    // Scroll view already at top or bottom.
+    StopAutoScroll();
+    return false;
+  }
+
+  if (auto_scroll_timer_.IsRunning()) {
+    // The user triggered a drag update while the mouse was in the auto-scroll
+    // zone. Don't scroll for this drag update, but keep auto-scroll going.
+    return true;
+  }
+
+  // Scroll at a constant rate, regardless of when the timer actually fired.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta time_delta = last_auto_scroll_time_.is_null()
+                                         ? kAutoScrollInterval
+                                         : now - last_auto_scroll_time_;
+  const int y_offset = time_delta.InSecondsF() * kAutoScrollDipsPerSecond;
+
+  // Scroll by `y_offset` in the appropriate direction.
+  const int old_scroll_y = scroll_view_->GetVisibleRect().y();
+  const int target_scroll_y = direction == ScrollDirection::kUp
+                                  ? old_scroll_y - y_offset
+                                  : old_scroll_y + y_offset;
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 target_scroll_y);
+
+  // The final scroll position may not match the target scroll position because
+  // the scroll might have been clamped to the top or bottom.
+  int final_scroll_y = scroll_view_->GetVisibleRect().y();
+
+  // Adjust the last drag point because scrolling has changed the position of
+  // the apps grid. This ensures that auto-scrolling continues to happen even if
+  // the user doesn't move the mouse.
+  gfx::Point drag_point = last_drag_point();
+  drag_point.Offset(0, final_scroll_y - old_scroll_y);
+  set_last_drag_point(drag_point);
+
+  // Auto-scroll again after `kAutoScrollInterval`.
+  last_auto_scroll_time_ = now;
+  auto_scroll_timer_.Start(
+      FROM_HERE, kAutoScrollInterval,
+      base::BindOnce(
+          base::IgnoreResult(&ScrollableAppsGridView::MaybeAutoScroll),
+          base::Unretained(this)));
+  return true;
+}
+
+void ScrollableAppsGridView::StopAutoScroll() {
+  auto_scroll_timer_.Stop();
+  last_auto_scroll_time_ = {};
+}
+
+bool ScrollableAppsGridView::IsPointInAutoScrollMargin(
+    const gfx::Point& point_in_grid_view,
+    ScrollDirection* direction) const {
+  gfx::Point point_in_scroll_view = point_in_grid_view;
+  ConvertPointToTarget(this, scroll_view_, &point_in_scroll_view);
+
+  // Points to the left or right of the scroll view do not autoscroll.
+  if (point_in_scroll_view.x() < 0 ||
+      point_in_scroll_view.x() > scroll_view_->width()) {
+    return false;
+  }
+  if (point_in_scroll_view.y() < kAutoScrollMargin) {
+    *direction = ScrollDirection::kUp;
+    return true;
+  }
+  if (point_in_scroll_view.y() > scroll_view_->height() - kAutoScrollMargin) {
+    *direction = ScrollDirection::kDown;
+    return true;
+  }
+  return false;
+}
+
+bool ScrollableAppsGridView::CanAutoScrollView(
+    ScrollDirection direction) const {
+  const gfx::Rect visible_rect = scroll_view_->GetVisibleRect();
+  if (direction == ScrollDirection::kUp) {
+    // Can scroll up if the visible rect is not at the top of the contents.
+    return visible_rect.y() > 0;
+  }
+  // Can scroll down if the visible rect is not at the bottom of the contents.
+  return visible_rect.bottom() < scroll_view_->contents()->height();
 }
 
 void ScrollableAppsGridView::RecordAppMovingTypeMetrics(

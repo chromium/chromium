@@ -8,7 +8,13 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+namespace views {
+class ScrollView;
+}
 
 namespace ash {
 
@@ -16,14 +22,17 @@ class AppListViewDelegate;
 
 // An apps grid that shows all the apps in a long scrolling list. Used for
 // the clamshell mode bubble launcher. Implemented as a single "page" of apps.
-// GridIndex in this class always has a page of 0.
+// GridIndex in this class always has a page of 0. Supports "auto-scroll", a
+// feature where the user can drag an app icon to the top or bottom of the
+// containing ScrollView and the view will be scrolled automatically.
 class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
  public:
   METADATA_HEADER(ScrollableAppsGridView);
 
   ScrollableAppsGridView(AppListA11yAnnouncer* a11y_announcer,
                          AppListViewDelegate* view_delegate,
-                         AppsGridViewFolderDelegate* folder_delegate);
+                         AppsGridViewFolderDelegate* folder_delegate,
+                         views::ScrollView* scroll_view);
   ScrollableAppsGridView(const ScrollableAppsGridView&) = delete;
   ScrollableAppsGridView& operator=(const ScrollableAppsGridView&) = delete;
   ~ScrollableAppsGridView() override;
@@ -39,11 +48,42 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetPaddingBetweenPages() const override;
   bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
+  bool MaybeAutoScroll() override;
+  void StopAutoScroll() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override;
+
+  views::ScrollView* scroll_view_for_test() { return scroll_view_; }
+  base::OneShotTimer* auto_scroll_timer_for_test() {
+    return &auto_scroll_timer_;
+  }
+
+ private:
+  enum class ScrollDirection { kUp, kDown };
+
+  // Returns true if a drag to `point_in_grid_view` should trigger auto-scroll.
+  // If so, sets `scroll_direction`.
+  bool IsPointInAutoScrollMargin(const gfx::Point& point_in_grid_view,
+                                 ScrollDirection* direction) const;
+
+  // Returns true if `scroll_view_` can be scrolled (i.e. it is not already at
+  // the top or the bottom).
+  bool CanAutoScrollView(ScrollDirection direction) const;
+
+  // Returns the number of DIPs to auto-scroll.
+  int GetAutoScrollOffset() const;
+
+  // The scroll view that contains this view (and other views).
+  views::ScrollView* const scroll_view_;
+
+  // Timer to scroll the `scroll_view_`.
+  base::OneShotTimer auto_scroll_timer_;
+
+  // When the last auto-scroll happened.
+  base::TimeTicks last_auto_scroll_time_;
 };
 
 }  // namespace ash

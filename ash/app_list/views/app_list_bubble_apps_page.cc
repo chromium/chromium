@@ -46,7 +46,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       AddChildView(std::make_unique<views::View>()));
 
   // The entire page scrolls.
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetHorizontalScrollBarMode(
@@ -78,7 +79,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_.get(), view_delegate,
-          /*folder_delegate=*/nullptr));
+          /*folder_delegate=*/nullptr, scroll_view_));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
   scrollable_apps_grid_view_->Init();

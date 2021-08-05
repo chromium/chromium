@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,6 +25,8 @@
 #include "base/guid.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 namespace {
@@ -51,7 +54,8 @@ void PopulateApps(int n) {
 
 class ScrollableAppsGridViewTest : public AshTestBase {
  public:
-  ScrollableAppsGridViewTest() {
+  ScrollableAppsGridViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
   }
   ~ScrollableAppsGridViewTest() override = default;
@@ -77,7 +81,20 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     GetScrollableAppsGridView()->OnKeyReleased(key_event);
   }
 
-  void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
+  void ShowAppList() {
+    GetAppListTestHelper()->ShowAppList();
+
+    apps_grid_view_ = GetAppListTestHelper()->GetScrollableAppsGridView();
+    scroll_view_ = apps_grid_view_->scroll_view_for_test();
+  }
+
+  void StartDragOnItemViewAt(int item_index) {
+    AppListItemView* item = apps_grid_view_->GetItemViewAt(item_index);
+    auto* generator = GetEventGenerator();
+    generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
+    generator->PressLeftButton();
+    item->FireMouseDragTimerForTest();
+  }
 
   ScrollableAppsGridView* GetScrollableAppsGridView() {
     return GetAppListTestHelper()->GetScrollableAppsGridView();
@@ -85,6 +102,10 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAppListClient app_list_client_;
+
+  // Cache some view pointers to make the tests more concise.
+  ScrollableAppsGridView* apps_grid_view_ = nullptr;
+  views::ScrollView* scroll_view_ = nullptr;
 };
 
 TEST_F(ScrollableAppsGridViewTest, PageBreaksDoNotCauseExtraRowsInLayout) {
@@ -125,15 +146,11 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   ShowAppList();
 
   // Start dragging the first item.
-  ScrollableAppsGridView* view = GetScrollableAppsGridView();
-  AppListItemView* item = view->GetItemViewAt(0);
-  auto* generator = GetEventGenerator();
-  generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
-  generator->PressLeftButton();
-  item->FireMouseDragTimerForTest();
+  StartDragOnItemViewAt(0);
 
   // Drag to the right of the second item.
-  gfx::Size tile_size = view->GetTileViewSize();
+  gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  auto* generator = GetEventGenerator();
   generator->MoveMouseBy(tile_size.width() * 2, 0);
   generator->ReleaseLeftButton();
 
@@ -217,6 +234,99 @@ TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   // The last 2 items were reordered.
   EXPECT_EQ("bbb", item_list->item_at(21)->id()) << item_list->ToString();
   EXPECT_EQ("aaa", item_list->item_at(22)->id()) << item_list->ToString();
+}
+
+TEST_F(ScrollableAppsGridViewTest, AutoScrollDown) {
+  PopulateApps(30);
+  ShowAppList();
+
+  // Scroll view starts at the top.
+  const int initial_scroll_offset = scroll_view_->GetVisibleRect().y();
+  EXPECT_EQ(initial_scroll_offset, 0);
+
+  // Drag an item into the bottom auto-scroll margin.
+  StartDragOnItemViewAt(0);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(scroll_view_->GetBoundsInScreen().bottom_center());
+
+  // The scroll view scrolls immediately.
+  const int scroll_offset1 = scroll_view_->GetVisibleRect().y();
+  EXPECT_GT(scroll_offset1, 0);
+
+  // Scroll timer is running.
+  EXPECT_TRUE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+
+  // Reordering is paused.
+  EXPECT_FALSE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
+
+  // Holding the mouse in place for a while scrolls down more.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  const int scroll_offset2 = scroll_view_->GetVisibleRect().y();
+  EXPECT_GT(scroll_offset2, scroll_offset1);
+
+  // Move the mouse back into the center of the view (not in the scroll margin).
+  generator->MoveMouseTo(scroll_view_->GetBoundsInScreen().CenterPoint());
+
+  // Scroll position didn't change, auto-scrolling is stopped, and reordering
+  // started again.
+  EXPECT_EQ(scroll_offset2, scroll_view_->GetVisibleRect().y());
+  EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+  EXPECT_TRUE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
+}
+
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
+  PopulateApps(30);
+  ShowAppList();
+
+  // Drag an item into the top auto-scroll margin and wait a while.
+  StartDragOnItemViewAt(0);
+  GetEventGenerator()->MoveMouseTo(
+      scroll_view_->GetBoundsInScreen().top_center());
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+
+  // View did not scroll.
+  int scroll_offset = scroll_view_->GetVisibleRect().y();
+  EXPECT_EQ(scroll_offset, 0);
+  EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+}
+
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
+  PopulateApps(30);
+  ShowAppList();
+
+  // Scroll the view to the bottom.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 std::numeric_limits<int>::max());
+  int initial_scroll_offset = scroll_view_->GetVisibleRect().y();
+
+  // Drag an item into the bottom auto-scroll margin and wait a while.
+  StartDragOnItemViewAt(29);
+  GetEventGenerator()->MoveMouseTo(
+      scroll_view_->GetBoundsInScreen().bottom_center());
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+
+  // View did not scroll.
+  int scroll_offset = scroll_view_->GetVisibleRect().y();
+  EXPECT_EQ(scroll_offset, initial_scroll_offset);
+  EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+}
+
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
+  PopulateApps(30);
+  ShowAppList();
+
+  // Drag an item outside the bottom-right corner of the scroll view (i.e.
+  // towards the shelf).
+  StartDragOnItemViewAt(0);
+  gfx::Point point = scroll_view_->GetBoundsInScreen().bottom_right();
+  point.Offset(10, 10);
+  GetEventGenerator()->MoveMouseTo(point);
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+
+  // View did not scroll.
+  int scroll_offset = scroll_view_->GetVisibleRect().y();
+  EXPECT_EQ(scroll_offset, 0);
+  EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
 }
 
 TEST_F(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {

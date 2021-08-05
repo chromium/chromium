@@ -449,6 +449,7 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   DCHECK(view);
   if (drag_view_ || pulsing_blocks_model_.view_size())
     return false;
+  DVLOG(1) << "Initiate drag";
 
   drag_start_callback_ = std::move(drag_start_callback);
   drag_end_callback_ = std::move(drag_end_callback);
@@ -545,6 +546,15 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
   UpdateDropTargetRegion();
 
   MaybeStartPageFlip();
+
+  bool is_scrolling = MaybeAutoScroll();
+  if (is_scrolling) {
+    // Don't do reordering while auto-scrolling, otherwise there is too much
+    // motion during the drag.
+    reorder_timer_.Stop();
+    folder_dropping_timer_.Stop();
+    return;
+  }
 
   if (last_drop_target != drop_target_ ||
       last_drop_target_region != drop_target_region_) {
@@ -718,6 +728,7 @@ void AppsGridView::EndDrag(bool cancel) {
   // within |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
+  StopAutoScroll();
 
   AnimateDragIconToTargetPosition(reparented_into_folder, released_drag_view,
                                   drag_item, folder_item_view);
@@ -1766,6 +1777,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
+  StopAutoScroll();
 
   AnimateDragIconToTargetPosition(
       /*dropping_into_folder=*/cancel_reparent || folder_item_view,
@@ -1972,6 +1984,7 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
     host_drag_start_timer_.Start(FROM_HERE, kShelfHandleIconDragDelay, this,
                                  &AppsGridView::OnHostDragStartTimerFired);
     MaybeStopPageFlip();
+    StopAutoScroll();
   }
 }
 

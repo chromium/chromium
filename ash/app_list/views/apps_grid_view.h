@@ -182,7 +182,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
-
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const OSExchangeData& data) override;
@@ -321,6 +320,8 @@ class ASH_EXPORT AppsGridView : public views::View,
     return bounds_animator_.get();
   }
 
+  base::OneShotTimer* reorder_timer_for_test() { return &reorder_timer_; }
+
  protected:
   // The cardified apps grid should be scaled down by this factor.
   static constexpr float kCardifiedScale = 0.84f;
@@ -363,6 +364,15 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Stops a page flip (by ending its timer) if the subclass supports it.
   virtual void MaybeStopPageFlip() {}
+
+  // Scrolls the container view up or down if the drag point is in the correct
+  // location. Returns true if auto-scroll was started or an existing
+  // auto-scroll is in-progress. Auto-scroll and page-flip are mutually
+  // exclusive. TODO(tbarzic): Unify the two APIs.
+  virtual bool MaybeAutoScroll() = 0;
+
+  // Stops auto-scroll (by stopping its timer) if the subclass supports it.
+  virtual void StopAutoScroll() = 0;
 
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBounds();
@@ -410,6 +420,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   }
   int reorder_placeholder_slot() const { return reorder_placeholder_.slot; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
+  void set_last_drag_point(const gfx::Point& p) { last_drag_point_ = p; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }
 
   AppListViewDelegate* app_list_view_delegate() const {

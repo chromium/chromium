@@ -565,6 +565,11 @@ void PagedAppsGridView::MaybeStopPageFlip() {
   StopPageFlipTimer();
 }
 
+bool PagedAppsGridView::MaybeAutoScroll() {
+  // Paged view does not auto-scroll.
+  return false;
+}
+
 void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListAppMovingType", type,
                             kMaxAppListAppMovingType);

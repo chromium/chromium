@@ -80,6 +80,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void MaybeEndCardifiedView() override;
   void MaybeStartPageFlip() override;
   void MaybeStopPageFlip() override;
+  bool MaybeAutoScroll() override;
+  void StopAutoScroll() override {}
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:
