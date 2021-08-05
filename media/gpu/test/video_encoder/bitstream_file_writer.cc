@@ -135,7 +135,7 @@ void BitstreamFileWriter::ProcessBitstream(
     const uint8_t spatial_idx = original_spatial_indices_[metadata.spatial_idx];
     if (spatial_idx > *spatial_layer_index_to_write_ ||
         (spatial_idx < *spatial_layer_index_to_write_ &&
-         metadata.referenced_by_upper_spatial_layers)) {
+         !metadata.referenced_by_upper_spatial_layers)) {
       // Skip |bitstream| because it contains a frame not needed by desired
       // spatial layers.
       return;
