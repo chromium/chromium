@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">سيؤدي هذا الإجراء إلى محو <ph name="DATASIZE" /> من البيانات وملفات تعريف الارتباط المُخزّنة من خلال المواقع الإلكترونية أو التطبيقات على الشاشة الرئيسية.</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1195941046451948919">هل تريد فعلاً إعادة ضبط كافّة الأذونات لهذا الموقع الإلكتروني؟</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">إيقاف</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">التفاصيل</translation>
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4670064810192446073">الواقع الافتراضي</translation>
+<translation id="4708011789095599544">هل أنت متأكّد أنك تريد محو ملفات تعريف الارتباط والبيانات الأخرى لهذا الموقع الإلكتروني؟</translation>
 <translation id="4751476147751820511">أجهزة استشعار الإضاءة أو الحركة</translation>
 <translation id="4836046166855586901">طلب الإذن عندما يحاول أحد المواقع الإلكترونية رصد استخدامك النشط لهذا الجهاز</translation>
 <translation id="4883854917563148705">يتعذّر إعادة ضبط الإعدادات التي تمت إدارتها</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">اهتزاز</translation>
 <translation id="6388207532828177975">المحو وإعادة الضبط</translation>
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
+<translation id="6423924377271166037">محو ملفات تعريف الارتباط</translation>
 <translation id="6439114592976064011">منع المواقع الإلكترونية من استخدام جهاز الواقع الافتراضي وبياناته.</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
 <translation id="6527303717912515753">مشاركة</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">هذه الصفحة غير آمنة.</translation>
 <translation id="930525582205581608">هل تريد محو سجلّ هذا الموقع الإلكتروني؟</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>
 </translationbundle>

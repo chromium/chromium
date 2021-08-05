@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
 <translation id="1238612778414822719">Latência de HTTPS</translation>
-<translation id="1264369926465113395">Veja a nova revista digital do Chromebook para criadores</translation>
 <translation id="1270369111467284986">Portal cativo suspeito</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">Coloque o documento no scanner e selecione Digitalizar para começar.</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="2983662233540284543">Aprenda com um criador de videojogos, obtenha apps de criação de videojogos e muito mais</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
 <translation id="3540383942695635079">Endereço MAC</translation>
 <translation id="357889014807611375">Wi-Fi com acesso limitado</translation>
-<translation id="3582041541988388905">Nenhuma ligação <ph name="NETWORK_NAME" /> detetada</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
-<translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">Memória</translation>
 <translation id="5168185087976003268">Condição da bateria</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
+<translation id="519607504553633437">Conceba e desenvolva os seus próprios jogos</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
 Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
@@ -247,6 +246,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5691511426247308406">Família</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">Criar o seu próprio jogo</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="583281660410589416">Desconhecido</translation>
@@ -296,7 +296,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="65587193855025101">Plano</translation>
 <translation id="6564646048574748301">Falha – Impressora inacessível</translation>
 <translation id="6574762126505704998">Preenchimento</translation>
-<translation id="6579235177984085399">Descubra novas ferramentas de desenho e design</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6603230386432466813">Está a ter problemas com a ligação?</translation>
 <translation id="6618744767048954150">Em execução</translation>
@@ -376,9 +375,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8214184102975786227">Digitalizar várias páginas para um PDF</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
 <translation id="8246209727385807362">Operador desconhecido</translation>
-<translation id="8286154143153872371">Estabeleça ligação a uma rede e atualize a página para ver a imagem de fundo.</translation>
 <translation id="8291967909914612644">País do fornecedor base</translation>
-<translation id="829270796093605079">Descobrir ferram. design</translation>
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8297006494302853456">Fraca</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>

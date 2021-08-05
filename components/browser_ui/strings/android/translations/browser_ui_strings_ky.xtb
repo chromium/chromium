@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Ушуну менен сайттар жана колдонмолор Башкы экраныңызда сактаган маалымат менен cookie файлдар ээлеп турган <ph name="DATASIZE" /> орун бошотулат.</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
+<translation id="1195941046451948919">Сайттагы бардык уруксаттар баштапкы абалга келтирилсинби?</translation>
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> кыналган</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Чоо-жайы</translation>
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
+<translation id="4708011789095599544">Бул вебсайттын cookie файлдары жана башка маалыматы чын эле тазалансынбы?</translation>
 <translation id="4751476147751820511">Кыймыл же жарык сенсорлору</translation>
 <translation id="4836046166855586901">Сайт түзмөктү активдүү колдонуп жаткан учур тууралуу билгиси келгенде уруксат суралсын</translation>
 <translation id="4883854917563148705">Башкарылган жөндөөлөрдү баштапкы абалга келтирүүгө болбойт</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Дирилдөө</translation>
 <translation id="6388207532828177975">Тазалоо жана баштапкы абалга келтирүү</translation>
 <translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
+<translation id="6423924377271166037">Cookie файлдарын тазалоо</translation>
 <translation id="6439114592976064011">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана маалыматты колдонууга тыюу салуу</translation>
 <translation id="6447842834002726250">Кукилер</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> колдонмосу үчүн уруксаттарды <ph name="BEGIN_LINK" />Android Жөндөөлөрүнөн<ph name="END_LINK" /> күйгүзүңүз.</translation>
-<translation id="9162462602695099906">Бул кооптуу барак</translation>
 <translation id="930525582205581608">Бул сайт унутулсунбу?</translation>
 <translation id="967624055006145463">Сакталган дайындар</translation>
 </translationbundle>

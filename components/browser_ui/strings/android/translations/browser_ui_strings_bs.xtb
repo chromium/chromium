@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Ovim će se obrisati <ph name="DATASIZE" /> podataka i kolačića koje su pohranile web lokacije ili aplikacije na početnom ekranu.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
+<translation id="1195941046451948919">Jeste li sigurni da želite poništiti sva odobrenja za ovu web lokaciju?</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1242008676835033345">Ugrađeno na <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zaustavi</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Detalji</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
+<translation id="4708011789095599544">Jeste li sigurni da želite obrisati kolačiće i druge podatke za ovu web lokaciju?</translation>
 <translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
 <translation id="4836046166855586901">Traži odobrenje kada web lokacija želi pristupiti informacijama o mom aktivnom korištenju ovog uređaja</translation>
 <translation id="4883854917563148705">Upravljane postavke se ne mogu poništiti</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6388207532828177975">Obriši i vrati na zadano</translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
+<translation id="6423924377271166037">Obriši kolačiće</translation>
 <translation id="6439114592976064011">Blokira web lokacijama korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6527303717912515753">Dijeli</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Uključite odobrenja za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">Ova stranica je opasna</translation>
 <translation id="930525582205581608">Zaboraviti ovu web lokaciju?</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 </translationbundle>

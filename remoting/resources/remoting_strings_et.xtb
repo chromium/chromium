@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Ilmnes ootamatu viga. Teatage sellest probleemist arendajatele.</translation>
 <translation id="1697532407822776718">Kõik on valmis!</translation>
 <translation id="1742469581923031760">Ühendamine ...</translation>
-<translation id="177040763384871009">Selleks et lubada kaugseadmes klõpsatud linkide kliendi brauseris avamine, peate süsteemi veebibrauseri valikule „<ph name="URL_FORWARDER_NAME" />“ muutma.</translation>
 <translation id="177096447311351977">Kanali IP kliendi jaoks: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Kustuta</translation>
 <translation id="2009755455353575666">Ühendamine ebaõnnestus</translation>
@@ -57,7 +56,6 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="369442766917958684">Võrguühenduseta.</translation>
 <translation id="3695446226812920698">Lisateave</translation>
 <translation id="3776024066357219166">Teie Chrome Remote Desktopi seanss on lõppenud.</translation>
-<translation id="3858860766373142691">Nimi</translation>
 <translation id="3897092660631435901">Menüü</translation>
 <translation id="3905196214175737742">Sobimatu hosti omaniku domeen.</translation>
 <translation id="3931191050278863510">Hostimine peatati.</translation>
@@ -143,7 +141,6 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="7434397035092923453">Järgmisele kliendile on juurdepääs keelatud: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Ühendatud klient: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Konto vahetamine</translation>
-<translation id="7535110896613603182">Ava leht Vaikerakenduste seaded</translation>
 <translation id="7628469622942688817">Jäta mu PIN-kood selles seadmes meelde.</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>

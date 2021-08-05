@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Astfel, se vor șterge <ph name="DATASIZE" /> din datele și cookie-urile stocate de site-uri sau aplicații de pe ecranul de pornire.</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
+<translation id="1195941046451948919">Sigur vrei să resetezi toate permisiunile pentru acest site?</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1242008676835033345">Încorporat în <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Oprește</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Detalii</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
+<translation id="4708011789095599544">Sigur vrei să ștergi cookie-urile și alte date privind site-ul pentru acest site?</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
 <translation id="4836046166855586901">Anunță-mă dacă un site vrea să afle când folosesc activ dispozitivul</translation>
 <translation id="4883854917563148705">Setările gestionate nu pot fi resetate</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Vibrații</translation>
 <translation id="6388207532828177975">Șterge și resetează</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
+<translation id="6423924377271166037">Șterge cookie-urile</translation>
 <translation id="6439114592976064011">Împiedică site-urile să folosească dispozitivul de realitate virtuală și datele conexe</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6527303717912515753">Trimite</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="930525582205581608">Elimini acest site?</translation>
 <translation id="967624055006145463">Date stocate</translation>
 </translationbundle>

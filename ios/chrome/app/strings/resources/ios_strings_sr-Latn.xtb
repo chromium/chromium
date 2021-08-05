@@ -112,6 +112,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="2021670401941426298">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
+<translation id="2022352537516230970">Napravljeno za iPhone</translation>
 <translation id="2073572773299281212">Poslednja aktivnost: pre <ph name="DAYS" /> dan/a</translation>
 <translation id="2074131957428911366">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Opozovi</translation>
@@ -288,10 +289,8 @@ Pratite korake u nastavku:</translation>
 <translation id="3779810277399252432">Nema internet veze.</translation>
 <translation id="3783017676699494206">Sačuvaj sliku</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
-<translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod ovog sajta</translation>
 <translation id="385051799172605136">Nazad</translation>
-<translation id="3858860766373142691">Naziv</translation>
 <translation id="3892144330757387737">Ovde ćete pronaći istoriju</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3913386780052199712">Prijavljen/a u Chrome</translation>
@@ -322,6 +321,7 @@ Pratite korake u nastavku:</translation>
 <translation id="4172051516777682613">Uvek prikaži</translation>
 <translation id="418156467088430727">Prikaži oflajn verziju na novoj kartici</translation>
 <translation id="4181841719683918333">Jezici</translation>
+<translation id="4184011057600693970">Napravljeno za iPad</translation>
 <translation id="424315890655130736">Unesite pristupnu frazu</translation>
 <translation id="4263576668337963058">Prikaži dostupne radnje za stranicu</translation>
 <translation id="4267380167363222949">Sledeća kartica</translation>

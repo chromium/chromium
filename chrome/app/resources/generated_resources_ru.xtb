@@ -32,6 +32,7 @@
 <translation id="1032605640136438169">Просим вас ознакомиться с изменениями.</translation>
 <translation id="103279545524624934">Чтобы запускать Android-приложения, освободите пространство на диске.</translation>
 <translation id="1033780634303702874">Доступ к последовательным устройствам</translation>
+<translation id="1034942643314881546">Включение ADB для создания иллюстраций</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1036511912703768636">Доступ к этим USB-устройствам</translation>
 <translation id="1036982837258183574">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|</translation>
@@ -691,6 +692,7 @@
 <translation id="1721312023322545264">Для доступа к этой странице требуется разрешение пользователя <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваше <ph name="BEGIN_LINK" />устройство <ph name="DEVICE_TYPE" /> находится под управлением<ph name="END_LINK" /> домена <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="1723824996674794290">&amp;Новое окно</translation>
+<translation id="1725149567830788547">Показать &amp;управление</translation>
 <translation id="1725562816265788801">Прокрутка вкладок</translation>
 <translation id="1727662110063605623">Откройте настройки, чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />" к Parallels Desktop или Linux.</translation>
 <translation id="1729533290416704613">Кроме того, расширение изменило поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
@@ -1228,7 +1230,6 @@
 <translation id="2278668501808246459">Запуск менеджера контейнеров</translation>
 <translation id="2280486287150724112">Правое поле</translation>
 <translation id="2282146716419988068">Процесс GPU</translation>
-<translation id="2285109769884538519">{COUNT,plural, =0{Открыть все URL в &amp;новой группе вкладок}=1{Открыть в &amp;новой группе вкладок}one{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}few{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}many{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}other{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}}</translation>
 <translation id="2285942871162473373">Не удалось распознать отпечаток пальца. Повторите попытку.</translation>
 <translation id="2287944065963043964">Экран входа</translation>
 <translation id="2288181517385084064">Перейти в режим видео</translation>
@@ -2659,7 +2660,6 @@
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
 <translation id="3799903419983101749">Продолжайте работу с того места, на котором закончили. Вы можете задать параметры автоматического восстановления приложений в настройках.</translation>
 <translation id="3800806661949714323">Показать все (рекомендуется)</translation>
-<translation id="380329542618494757">Имя</translation>
 <translation id="3803345858388753269">Качество видео</translation>
 <translation id="380408572480438692">Сбор данных о производительности помогает Google улучшать работу системы. Данные отправляются только тогда, когда пользователь отправляет отзыв (Alt-Shift-I) и решает приложить к нему данные о производительности. В любое время можно вернуться на эту страницу и отключить сбор данных.</translation>
 <translation id="3807249107536149332">Расширение "<ph name="EXTENSION_NAME" />" (ID <ph name="EXTENSION_ID" />) запрещено использовать на экране входа</translation>
@@ -2721,7 +2721,6 @@
 <translation id="3856096718352044181">Убедитесь, что это действительный поставщик услуг, или повторите попытку позже.</translation>
 <translation id="3856800405688283469">Выберите часовой пояс</translation>
 <translation id="3857807444929313943">Коснитесь несколько раз</translation>
-<translation id="3858860766373142691">Название</translation>
 <translation id="3861638017150647085">Имя пользователя "<ph name="USERNAME" />" недоступно.</translation>
 <translation id="3861977424605124250">Показывать при запуске</translation>
 <translation id="386239283124269513">&amp;Восстановить группу</translation>
@@ -3005,7 +3004,6 @@
 <translation id="4158364720893025815">Проверка пройдена</translation>
 <translation id="4159681666905192102">Этим детским аккаунтом управляют <ph name="CUSTODIAN_EMAIL" /> и <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Неизвестная клавиатура</translation>
-<translation id="4165942112764990069">Адрес <ph name="USER_EMAIL" /> не принадлежит действительной организации. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/ChromeEnterpriseAccount и настройте аккаунт организации.</translation>
 <translation id="4167686856635546851">Обычно сайты используют JavaScript, чтобы показывать интерактивный контент.</translation>
 <translation id="4168015872538332605">Некоторые настройки пользователя <ph name="PRIMARY_EMAIL" /> влияют на ваш аккаунт, когда используется система множественного входа.</translation>
 <translation id="4169535189173047238">Запретить</translation>
@@ -3395,6 +3393,7 @@
 <translation id="4602466770786743961">Всегда предоставлять сайту <ph name="HOST" /> доступ к камере и микрофону</translation>
 <translation id="4606551464649945562">Запретить сайтам создавать 3D-карту места, в котором вы находитесь, и отслеживать положение камеры</translation>
 <translation id="4608500690299898628">&amp;Найти...</translation>
+<translation id="4608520674724523647">Пример с завершенной регистрацией</translation>
 <translation id="4608703838363792434">Файл <ph name="FILE_NAME" /> содержит конфиденциальный контент.</translation>
 <translation id="4609987916561367134">Разрешить сайтам использовать JavaScript</translation>
 <translation id="4610162781778310380">Ошибка в плагине <ph name="PLUGIN_NAME" /></translation>
@@ -4031,11 +4030,11 @@
 <translation id="5315738755890845852">Лишняя фигурная скобка: <ph name="ERROR_LINE" />.</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319359161174645648">Google рекомендует браузер Chrome</translation>
-<translation id="5319712128756744240">Подключить новое устройство</translation>
 <translation id="5320135788267874712">Введите название</translation>
 <translation id="532247166573571973">Сервер недоступен. Повторите попытку позже.</translation>
 <translation id="5324300749339591280">Список приложений</translation>
 <translation id="5324780743567488672">Автоматически определять часовой пояс на основе геоданных</translation>
+<translation id="5327248766486351172">Имя</translation>
 <translation id="5327570636534774768">Это устройство находится под управлением другого домена. Отключите это соединение, прежде чем настроить демонстрационный режим.</translation>
 <translation id="5327912693242073631">Функции, которые используют уведомления, не будут работать</translation>
 <translation id="532943162177641444">Откройте уведомление на телефоне <ph name="PHONE_NAME" />, чтобы настроить точку доступа, к которой сможет подключиться это устройство.</translation>
@@ -4134,7 +4133,6 @@
 <translation id="5442550868130618860">Включить автообновление</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Показать сертификаты для организаций</translation>
-<translation id="5447384712203291074">Товаров: <ph name="ITEM_COUNT_MULTIPLE" /></translation>
 <translation id="5448293924669608770">Произошла ошибка входа</translation>
 <translation id="5449551289610225147">Неправильный пароль</translation>
 <translation id="5449588825071916739">Добавить все вкладки в закладки</translation>
@@ -4640,7 +4638,6 @@
 <translation id="6007240208646052708">Голосовой поиск на вашем языке недоступен.</translation>
 <translation id="6011193465932186973">Отпечатки пальцев</translation>
 <translation id="6011449291337289699">Удаление данных сайтов</translation>
-<translation id="6011908034087870826">Отправка ссылки на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6013027779243312217">Включите субтитры для аудио и видео</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перейти к дополнительному контенту на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4819,7 +4816,6 @@
 <translation id="6208725777148613371">Не удалось сохранить список "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Обновление компонента</translation>
 <translation id="6209908325007204267">На этом устройстве есть лицензия Chrome Enterprise, но ваше имя пользователя не связано с корпоративным аккаунтом. Создайте корпоративный аккаунт на странице g.co/ChromeEnterpriseAccount, используя другое устройство.</translation>
-<translation id="621172521139737651">{COUNT,plural, =0{Открыть все URL в &amp;новой группе вкладок}=1{Открыть в &amp;новой группе вкладок}one{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}few{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}many{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}other{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}}</translation>
 <translation id="6212039847102026977">Показать дополнительные свойства сети</translation>
 <translation id="6212168817037875041">Выключать экран</translation>
 <translation id="6212752530110374741">Отправить ссылку по эл. почте</translation>
@@ -5070,6 +5066,7 @@
 <translation id="6468773105221177474">Файлов: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Включить мобильную сеть</translation>
 <translation id="6472893788822429178">Показывать кнопку "Главная страница"</translation>
+<translation id="6473842110411557830">Иллюстрация Powerwash</translation>
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>
 <translation id="6475294023568239942">Освободите пространство на диске Linux или увеличьте его размер в настройках.</translation>
@@ -5277,6 +5274,7 @@
 <translation id="6700480081846086223">Трансляция <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не удалось получить профиль.</translation>
 <translation id="6702639462873609204">&amp;Изменить</translation>
+<translation id="6703966911896067184">Пример ошибки при регистрации</translation>
 <translation id="6706210727756204531">Область применения</translation>
 <translation id="6707389671160270963">Клиентский сертификат SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{"<ph name="PAGE_TITLE" />" и ещё 1 вкладка}one{"<ph name="PAGE_TITLE" />" и ещё # вкладка}few{"<ph name="PAGE_TITLE" />" и ещё # вкладки}many{"<ph name="PAGE_TITLE" />" и ещё # вкладок}other{"<ph name="PAGE_TITLE" />" и ещё # вкладки}}</translation>
@@ -5656,7 +5654,6 @@
 <translation id="7109543803214225826">Ярлык удален</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="7111822978084196600">Добавьте название окна</translation>
-<translation id="7113102733263608554">Товаров: <ph name="ITEM_COUNT_ONE" /></translation>
 <translation id="7113502843173351041">Доступ к вашему адресу электронной почты</translation>
 <translation id="7114054701490058191">Пароли не совпадают</translation>
 <translation id="7114648273807173152">Чтобы использовать Smart Lock для входа в аккаунт Google, нажмите "Настройки &gt; Подключенные устройства &gt; Телефон &gt; Smart Lock".</translation>
@@ -5820,6 +5817,7 @@
 <translation id="7307129035224081534">Приостановлена</translation>
 <translation id="7308436126008021607">Фоновая синхронизация</translation>
 <translation id="7308643132139167865">Языки сайтов</translation>
+<translation id="7309257895202129721">Показать &amp;элементы управления</translation>
 <translation id="7310598146671372464">Не удалось выполнить вход. Сервер не поддерживает выбранные типы шифрования Kerberos. Обратитесь к администратору.</translation>
 <translation id="7320213904474460808">Выбрать сеть по умолчанию</translation>
 <translation id="7321545336522791733">Сервер недоступен</translation>
@@ -6901,7 +6899,6 @@
 <translation id="8425492902634685834">Закрепить на панели задач</translation>
 <translation id="8425768983279799676">Вы можете использовать PIN-код, чтобы разблокировать устройство.</translation>
 <translation id="8426713856918551002">Включение</translation>
-<translation id="8427213022735114808">Запись вашего голоса отправляется в Google. Это позволяет использовать голосовой набор для любого текстового поля.</translation>
 <translation id="8427292751741042100">встроено на любом хосте</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428271547607112339">Добавить учебный аккаунт</translation>
@@ -6921,6 +6918,7 @@
 <translation id="8448729345478502352">Уменьшить или увеличить объекты на экране</translation>
 <translation id="8449008133205184768">Вставить с соблюдением стиля</translation>
 <translation id="8449036207308062757">Управление хранилищем</translation>
+<translation id="8455026683977728932">Не удалось включить ADB для создания иллюстраций</translation>
 <translation id="8456512334795994339">Приложения для работы и отдыха</translation>
 <translation id="8456761643544401578">Автоматическая тёмная тема</translation>
 <translation id="845702320058262034">Не удается подключиться к телефону. Убедитесь, что на нем включен Bluetooth.</translation>
@@ -7622,6 +7620,7 @@
 <translation id="917510707618656279">Запрашивать разрешение на доступ сайтов к Bluetooth-устройствам</translation>
 <translation id="9176476835295860688">Отправка данных о работе устройства. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти данные нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Эта <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> принудительно применяется владельцем. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в вашем аккаунте. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: подключено устройство Bluetooth</translation>
+<translation id="9176817945195089764">Домен <ph name="DOMAIN" /> не является действительной организацией. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/ChromeEnterpriseAccount и настройте аккаунт организации.</translation>
 <translation id="9179524979050048593">Имя пользователя на экране входа</translation>
 <translation id="9180281769944411366">Подождите несколько минут. Запуск контейнера Linux…</translation>
 <translation id="9180380851667544951">Сайт может открыть доступ к вашему экрану</translation>

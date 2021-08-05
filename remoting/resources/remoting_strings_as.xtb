@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">কোনো অপ্ৰত্যাশিত আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি এই সমস্যা সম্পর্কে বিকাশকর্তাক অভিযোগ কৰক।</translation>
 <translation id="1697532407822776718">আপুনি সম্পূৰ্ণ সাজু!</translation>
 <translation id="1742469581923031760">সংযোগ কৰি থকা হৈছে…</translation>
-<translation id="177040763384871009">ৰিম’ট ডিভাইচত ক্লিক কৰা লিংক ক্লায়েণ্টৰ ব্ৰাউজাৰত খোল খোৱাৰ অনুমতি দিবলৈ আপুনি ছিষ্টেমৰ ৱেব ব্ৰাউজাৰ "<ph name="URL_FORWARDER_NAME" />"লৈ সলনি কৰিব লাগিব।</translation>
 <translation id="177096447311351977">ক্লাইণ্টৰ চেনেল আইপি: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip=’<ph name="CLIENT_IP_ADDRESS_AND_PORT" />’ host_ip=’<ph name="HOST_IP_ADDRESS_AND_PORT" />’ চেনেল=’<ph name="CHANNEL_TYPE" />’ সংযোগ=’<ph name="CONNECTION_TYPE" />’।</translation>
 <translation id="1897488610212723051">মচক</translation>
 <translation id="2009755455353575666">সংযোগ কৰিব পৰা নগ’ল</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">অফলাইন।</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3776024066357219166">আপোনাৰ Chrome ৰিম’ট ডেস্কটপ ছেশ্বন অন্ত পৰিছে।</translation>
-<translation id="3858860766373142691">নাম</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3905196214175737742">অমান্য হ’ষ্টৰ গৰাকীৰ ড’মেইন।</translation>
 <translation id="3931191050278863510">হ’ষ্ট বন্ধ হ’ল৷</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">ক্লায়েণ্টৰ বাবে এক্সেছ প্ৰত্যাখ্যান কৰা হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7444276978508498879">এইজন ক্লায়েণ্ট সংযোজিত হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7526139040829362392">একাউণ্ট সলনি কৰক</translation>
-<translation id="7535110896613603182">ডিফ’ল্ট এপৰ ছেটিং খোলক</translation>
 <translation id="7628469622942688817">এই ডিভাইচটোত মোৰ পিনটো মনত ৰাখিব।</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>

@@ -3,8 +3,6 @@
 <translationbundle lang="zh-CN">
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">图库图片</translation>
-<translation id="1300209025925956156">扫描您的文件</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按搜索键 + 向左键即可访问。</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
@@ -65,10 +63,8 @@
 <translation id="5057360777601936059">您的摄像头目前不可用。
         请检查此摄像头是否连接正确。</translation>
 <translation id="5152121255775685072">打开图库</translation>
-<translation id="520537883758714667">文件扫描功能现已推出</translation>
 <translation id="5268823927180092501">为所有摄像头启用文档模式</translation>
 <translation id="5422455049771430511">您的照片和视频有新家了</translation>
-<translation id="5444515100983837161">请将文件的各个边置于框内。当文件的颜色与背景的颜色不同时，扫描效果最佳。</translation>
 <translation id="5671277269877808209">方形</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
 <translation id="5759254179196327752">扫描文件</translation>

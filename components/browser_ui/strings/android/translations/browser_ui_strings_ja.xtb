@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータおよび Cookie が削除されます。</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
+<translation id="1195941046451948919">このウェブサイトのすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> に埋め込まれたページ</translation>
 <translation id="1272079795634619415">中止</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">詳細</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
+<translation id="4708011789095599544">このウェブサイトの Cookie とその他のサイトデータを削除してもよろしいですか？</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
 <translation id="4836046166855586901">サイトからこのデバイスのアクティブ状態の検出を求められたときに確認する</translation>
 <translation id="4883854917563148705">管理者による設定はリセットできません</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">バイブレーション</translation>
 <translation id="6388207532828177975">データを削除してリセット</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
+<translation id="6423924377271166037">Cookie を消去</translation>
 <translation id="6439114592976064011">サイトによるバーチャル リアリティ デバイスとデータの使用をブロックする</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">共有</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
-<translation id="9162462602695099906">このページは危険です</translation>
 <translation id="930525582205581608">このサイトに関する情報をすべて削除しますか？</translation>
 <translation id="967624055006145463">保存データ</translation>
 </translationbundle>

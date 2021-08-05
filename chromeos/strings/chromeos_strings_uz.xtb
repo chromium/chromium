@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS kechikishi</translation>
 <translation id="123124571410524056">Portal muzlatildi</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
-<translation id="1264369926465113395">Chromebook qurilmasining ijodkorlar uchun yangi raqamli jurnali bilan tanishing</translation>
 <translation id="1270369111467284986">Kirish portali muzlatildi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">Hujjatni skanerga joylang va boshlash uchun Skanerlash tugmasini bosing</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
+<translation id="2983662233540284543">Oʻyin muallifidan saboq olish, oʻyin chizish ilovalari va boshqalar</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,11 +120,9 @@
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
 <translation id="3540383942695635079">MAC manzil</translation>
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
-<translation id="3582041541988388905"><ph name="NETWORK_NAME" /> tarmogʻiga ulanish aniqlanmadi</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> sinovi</translation>
-<translation id="3708186454126126312">Avval ulangan qurilmalar</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Sahifani qayta skanerlash}=1{{PAGE_NUMBER} ta sahifani qayta skanerlash}other{{PAGE_NUMBER} ta sahifani qayta skanerlash}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
@@ -132,7 +130,6 @@
 <translation id="38114475217616659">Tarixni tozalash</translation>
 <translation id="3820172043799983114">PIN kod xato.</translation>
 <translation id="3838338534323494292">Yangi parol</translation>
-<translation id="3858860766373142691">Ism</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
@@ -215,6 +212,7 @@
 <translation id="5154917547274118687">Operativ xotira</translation>
 <translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
+<translation id="519607504553633437">Oʻz oʻyinlaringizni chizing va ishlab chiqing</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
 Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
@@ -248,6 +246,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5691511426247308406">Oilaviy</translation>
 <translation id="5701381305118179107">Markaz bo‘yicha tartiblash</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">Shaxsiy oʻyin quring</translation>
 <translation id="5760715441271661976">Portal holati</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
 <translation id="583281660410589416">Noma’lum</translation>
@@ -297,7 +296,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="65587193855025101">Planshetli</translation>
 <translation id="6564646048574748301">Bajarilmadi - Printer ulanmagan</translation>
 <translation id="6574762126505704998">Toʻldirish</translation>
-<translation id="6579235177984085399">Yangi chizish va dizayn asboblarini kashf eting</translation>
 <translation id="6596816719288285829">IP manzil</translation>
 <translation id="6603230386432466813">Ulanishda muammo bormi?</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
@@ -377,9 +375,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8214184102975786227">Bir nechta sahifani bitta PDF qilib skanerlash</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
-<translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>
-<translation id="829270796093605079">Dizayn asboblari</translation>
 <translation id="8294431847097064396">Manba</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8302368968391049045">HTTPS Fayrvol</translation>
@@ -416,7 +412,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8798441408945964110">Ta’minotchi nomi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fon rasmi</translation>
-<translation id="8834539327799336565">Hozirda ulangan</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>

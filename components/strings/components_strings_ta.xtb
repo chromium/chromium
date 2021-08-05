@@ -632,7 +632,6 @@
 <translation id="3229041911291329567">உங்கள் சாதனம் மற்றும் உலாவியின் பதிப்புத் தகவல்</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> இன் CVC எண்ணை உள்ளிடவும்</translation>
 <translation id="3234666976984236645">இந்தத் தளத்தின் முக்கிய உள்ளடக்கத்தை எப்போதும் இயக்கவும்</translation>
-<translation id="3240791268468473923">பாதுகாப்பான பேமெண்ட் அனுமதிச் சான்றுகள் பொருந்தவில்லை என்பதற்கான தாள் திறக்கப்பட்டது</translation>
 <translation id="3249845759089040423">க்ரூவி</translation>
 <translation id="3252266817569339921">பிரெஞ்ச்</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarரில் புதிய நிகழ்வை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -806,7 +805,6 @@
 <translation id="3793574014653384240">சமீபத்தில் நிகழ்ந்த சிதைவுகளின் எண்ணிக்கைகளும் காரணங்களும்</translation>
 <translation id="3797522431967816232">Prc3 (என்வலப்)</translation>
 <translation id="3799805948399000906">கோரப்பட்ட எழுத்துரு</translation>
-<translation id="380329542618494757">பெயர்</translation>
 <translation id="3807366285948165054">இமேஜ் X ஷிஃப்ட்</translation>
 <translation id="3807873520724684969">தீங்கிழைக்கும் உள்ளடக்கம் தடுக்கப்பட்டது.</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
@@ -821,7 +819,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, புதிய Google ஆவணத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3858027520442213535">தேதியையும் நேரத்தையும் புதுப்பி</translation>
-<translation id="3858860766373142691">பெயர்</translation>
 <translation id="3881478300875776315">குறைவான வரிகளைக் காட்டும்</translation>
 <translation id="3884278016824448484">முரண்பாடான சாதன அடையாளங்காட்டி</translation>
 <translation id="3885155851504623709">வட்டாரம்</translation>
@@ -1456,7 +1453,6 @@
 <translation id="6051221802930200923"><ph name="SITE" /> தளமானது சர்டிஃபிகேட் பின்னிங்கைப் பயன்படுத்துவதால், தற்போது அதைப் பார்க்க முடியாது. பொதுவாக நெட்வொர்க் பிழைகளும் பாதிப்புகளும் தற்காலிகமானவை என்பதால், இந்தப் பக்கம் பின்னர் சரியாகச் செயல்படக்கூடும்.</translation>
 <translation id="6051898664905071243">பக்க எண்ணிக்கை:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6055888660316801977">பாதுகாப்பான பேமெண்ட் அனுமதிச் சான்றுகள் பொருந்தவில்லை என்பதற்கான தாள்</translation>
 <translation id="6058977677006700226">உங்கள் சாதனங்கள் அனைத்திலும் உங்கள் கார்டுகளைப் பயன்படுத்தவா?</translation>
 <translation id="6059925163896151826">USB சாதனங்கள்</translation>
 <translation id="6060009363608157444">தவறான DnsOverHttps பயன்முறை.</translation>
@@ -1533,7 +1529,6 @@
 <translation id="6389470377220713856">அட்டையிலுள்ள பெயர்</translation>
 <translation id="6390200185239044127">Z-ஃபோல்டு ஹாஃப்</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
-<translation id="6391700400718590966">பாதுகாப்பான பேமெண்ட் அனுமதிச் சான்றுகள் பொருந்தவில்லை என்பதற்கான தாள் மூடப்பட்டது</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> என்ற தளத்திலிருந்து நகலெடுத்து இங்கே ஒட்டுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="6401136357288658127">இது நிறுத்தப்பட்ட கொள்கை. இதற்குப் பதிலாக <ph name="NEW_POLICY" /> கொள்கையைப் பயன்படுத்த வேண்டும்.</translation>
@@ -2037,7 +2032,6 @@
 <translation id="8190193880870196235">நீட்டிப்பு மூலம் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8193086767630290324">ரகசியமானது எனக் கொடியிடப்பட்ட தரவில் மேற்கொள்ளப்பட்ட செயல்கள்</translation>
 <translation id="8194797478851900357">&amp;நகர்த்தலைச் செயல்தவிர்</translation>
-<translation id="8199274926193258625">உங்கள் பேமெண்ட்டை உறுதிப்படுத்த <ph name="HOSTNAME" /> தளத்திற்குக் கூடுதல் படிகள் தேவைப்படலாம்</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ஐடியுடன் கூடிய நீட்டிப்பிற்கான தவறான புதுப்பிப்பு URL.</translation>
 <translation id="8202097416529803614">ஆர்டர் பற்றிய சுருக்கவிவரம்</translation>
 <translation id="8202370299023114387">முரண்பாடு</translation>

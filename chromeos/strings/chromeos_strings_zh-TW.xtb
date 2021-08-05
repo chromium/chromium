@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS 延遲</translation>
 <translation id="123124571410524056">可能有網路入口</translation>
 <translation id="1238612778414822719">HTTPS 延遲</translation>
-<translation id="1264369926465113395">查看 Chromebook 為創作者提供的全新數位雜誌</translation>
 <translation id="1270369111467284986">可疑的網頁認證入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">將文件放到掃描器上，並選取 [掃描] 即可開始掃描</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878387241690264070">在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
+<translation id="2983662233540284543">向遊戲創作者學習、取得遊戲設計應用程式等等</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="3540383942695635079">Mac 位址</translation>
 <translation id="357889014807611375">計量付費的 Wi-Fi</translation>
-<translation id="3582041541988388905">未偵測到<ph name="NETWORK_NAME" />連線</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3838338534323494292">新密碼</translation>
-<translation id="3858860766373142691">名稱</translation>
 <translation id="3865414814144988605">解析度</translation>
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">記憶體</translation>
 <translation id="5168185087976003268">電池壽命</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
+<translation id="519607504553633437">親手設計並打造遊戲</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>
 <translation id="5222676887888702881">登出</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">家用</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">自製遊戲</translation>
 <translation id="5760715441271661976">入口網站狀態</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">未知</translation>
@@ -296,7 +296,6 @@
 <translation id="65587193855025101">平台式</translation>
 <translation id="6564646048574748301">失敗 - 無法連上印表機</translation>
 <translation id="6574762126505704998">填滿</translation>
-<translation id="6579235177984085399">探索新的繪圖和設計工具</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6603230386432466813">連線時遇到問題嗎？</translation>
 <translation id="6618744767048954150">檢查中</translation>
@@ -376,9 +375,7 @@
 <translation id="8214184102975786227">掃描多個頁面並合併為一個 PDF 檔</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8246209727385807362">不明電信業者</translation>
-<translation id="8286154143153872371">如要查看桌布，請連上網路並重新載入網頁。</translation>
 <translation id="8291967909914612644">家用提供者國家/地區</translation>
-<translation id="829270796093605079">探索設計工具</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8302368968391049045">HTTPS 防火牆</translation>

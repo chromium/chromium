@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">हे साइट किंवा तुमच्या होम स्क्रीनवरील अ‍ॅप्सनी स्टोअर केलेला <ph name="DATASIZE" /> डेटा आणि कुकी साफ करेल.</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
+<translation id="1195941046451948919">तुम्हाला नक्की या वेबसाइटसाठी सर्व परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> वर एम्बेड केले</translation>
 <translation id="1272079795634619415">थांबा</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">तपशील</translation>
 <translation id="4645575059429386691">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
 <translation id="4670064810192446073">आभासी वास्तविकता</translation>
+<translation id="4708011789095599544">तुम्हाला या वेबसाइटच्या कुकी आणि इतर साइट डेटा नक्की साफ करायचा आहे का?</translation>
 <translation id="4751476147751820511">मोशन किंवा प्रकाश सेन्सर</translation>
 <translation id="4836046166855586901">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटला जाणून घ्यायचे असते तेव्हा विचारा</translation>
 <translation id="4883854917563148705">व्यवस्थापित केलेल्या सेटिंग्ज रीसेट करता येत नाहीत</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">कंपन</translation>
 <translation id="6388207532828177975">साफ आणि रीसेट करा</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
+<translation id="6423924377271166037">कुकी साफ करा</translation>
 <translation id="6439114592976064011">साइटना तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्यापासून ब्लॉक करा</translation>
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्‍ये <ph name="APP_NAME" /> साठी परवानग्या सुरू करा.</translation>
-<translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
 <translation id="930525582205581608">ही साइट विसरायची का?</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 </translationbundle>

@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="123124571410524056">पोर्टल असल्याची शक्यता आहे</translation>
 <translation id="1238612778414822719">HTTPS लेटन्सी</translation>
-<translation id="1264369926465113395">Chromebook चे निर्माणकर्त्यांसाठीचे नवीन डिजिटल मासिक पहा</translation>
 <translation id="1270369111467284986">संशयास्पद कॅप्टिव्ह पोर्टल</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">सुरुवात करण्यासाठी तुमचा दस्तऐवज स्कॅनरवर ठेवा आणि स्कॅन करा निवडा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
+<translation id="2983662233540284543">गेम निर्माणकर्त्याकडून शिका, गेम डिझाइन अ‍ॅप्स मिळवा आणि आणखी बऱ्याच गोष्टी करा</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
 <translation id="3540383942695635079">MAC ॲड्रेस</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
-<translation id="3582041541988388905">कोणतेही <ph name="NETWORK_NAME" /> कनेक्‍शन आढळले नाही</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
-<translation id="3858860766373142691">नाव</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
 <translation id="3941014780699102620">होस्टचे निराकरण करता आले नाही</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">मेमरी</translation>
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
+<translation id="519607504553633437">तुमचे स्वत:चे गेम डिझाइन करा आणि तयार करा</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
 मला काहीही विचारण्यासाठी माइकवर टॅप करून पाहा.</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">कुटुंब</translation>
 <translation id="5701381305118179107">मध्यभागी</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /></translation>
+<translation id="5752751666635965375">तुमच्या स्वतःचा गेम बनवा</translation>
 <translation id="5760715441271661976">पोर्टलची स्थिती</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
@@ -269,7 +269,6 @@
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
-<translation id="6125438912510167220">लिंकची गती</translation>
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -296,7 +295,6 @@
 <translation id="65587193855025101">फ्लॅटबेड</translation>
 <translation id="6564646048574748301">अयशस्वी झाले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
 <translation id="6574762126505704998">भरा</translation>
-<translation id="6579235177984085399">ड्रॉइंग आणि डिझाइनची नवीन टूल शोधा</translation>
 <translation id="6596816719288285829">IP पत्ता</translation>
 <translation id="6603230386432466813">कनेक्ट करताना समस्या येत आहे का?</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
@@ -376,9 +374,7 @@
 <translation id="8214184102975786227">एका PDF मध्ये एकाहून अधिक पेज स्कॅन करा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8246209727385807362">माहीत नसलेला वाहक</translation>
-<translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>
 <translation id="8291967909914612644">होम पुरवठादार देश</translation>
-<translation id="829270796093605079">डिझाइनची नवीन टूल शोधा</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8302368968391049045">HTTPS फायरवॉल</translation>

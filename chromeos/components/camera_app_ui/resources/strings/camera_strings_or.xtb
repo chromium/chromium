@@ -3,8 +3,6 @@
 <translationbundle lang="or">
 <translation id="1175958423215084756">ଲିଙ୍କଟି ଚିହ୍ନଟ କରାଯାଇଛି। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ଗ୍ୟାଲେରୀ ଛବିଗୁଡ଼ିକ</translation>
-<translation id="1300209025925956156">ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟ ସ୍କାନ୍ କରନ୍ତୁ</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। ଆକ୍ସେସ୍ କରିବାକୁ ସନ୍ଧାନ କରନ୍ତୁ + ବାମ ତୀର କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />କୁ ଅନପ୍ଲଗ୍ କରାଯାଇଛି।</translation>
 <translation id="1473110567575736769">3 ସେକେଣ୍ଡର ଟାଇମର୍</translation>
@@ -65,10 +63,8 @@
 <translation id="5057360777601936059">ସମ୍ପ୍ରତି, ଆପଣଙ୍କର କ୍ୟାମେରା ଉପଲବ୍ଧ ନାହିଁ।
         କ୍ୟାମେରା ଠିକ୍ ଭାବରେ ସଂଯୁକ୍ତ ଅଛି କି ନାହିଁ ଦୟାକରି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5152121255775685072">ଗ୍ୟାଲେରୀକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="520537883758714667">ଡକ୍ୟୁମେଣ୍ଟ ସ୍କାନ୍ କରିବା ସୁବିଧା ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5268823927180092501">ସବୁ କ୍ୟାମେରାରେ ଡକ୍ୟୁମେଣ୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5422455049771430511">ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଫଟୋ ଏବଂ ଭିଡିଓଗୁଡ଼ିକ ପାଇଁ ଏକ ନୂଆ ସ୍ଥାନ ଉପଲବ୍ଧ ଅଛି</translation>
-<translation id="5444515100983837161">ଡକ୍ୟୁମେଣ୍ଟର ସମସ୍ତ ଧାରକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ। ଯଦି ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ପୃଷ୍ଠପଟ ଭିନ୍ନ ରଙ୍ଗର ହୋଇଥାଏ ତେବେ ସ୍କାନିଂ ଭଲ କାମ କରେ।</translation>
 <translation id="5671277269877808209">ବର୍ଗାକାର</translation>
 <translation id="5753488212459587150">ଏକ୍ସପର୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5759254179196327752">ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନ୍ କରନ୍ତୁ</translation>

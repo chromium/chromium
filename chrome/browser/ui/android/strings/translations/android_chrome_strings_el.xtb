@@ -158,7 +158,6 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Αναζήτηση στο διαδίκτυο</translation>
 <translation id="2056878612599315956">Ο ιστότοπος τέθηκε σε παύση</translation>
-<translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 λήψη απέτυχε}other{# λήψεις απέτυχαν}}</translation>
 <translation id="2067805253194386918">κείμενο</translation>
 <translation id="2068748236079642969">Παρακολούθηση επόμενου βίντεο</translation>
 <translation id="2074143993849053708">Κλειστή διεπαφή χρήστη για παροχή συναίνεσης σχετικά με τη φωνητική αναζήτηση μέσω του Βοηθού</translation>
@@ -196,6 +195,7 @@
 <translation id="2276696007612801991">Συνδεθείτε στον Λογαριασμό σας Google για να ελέγξετε τους κωδικούς πρόσβασής σας.</translation>
 <translation id="2278052315791335171">Η κατάργηση αυτού του κωδικού πρόσβασης δεν θα διαγράψει τον λογαριασμό σας στον ιστότοπο <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Διεύθυνση τιμολόγησης</translation>
+<translation id="2294030144029925122">Πολιτική απορρήτου του Chrome</translation>
 <translation id="230115972905494466">Δεν βρέθηκαν συμβατές συσκευές</translation>
 <translation id="230155349749732438">Για να χρησιμοποιήσετε αυτήν τη ρύθμιση, θα πρέπει να ενεργοποιήσετε τη ρύθμιση <ph name="BEGIN_LINK" />Βελτίωση αναζητήσεων και περιήγησης<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Πατήστε για πραγματοποίηση κλήσης</translation>
@@ -213,7 +213,6 @@
 <translation id="2345671828921229300">Για αναζήτηση, αγγίξτε παρατεταμένα μια λέξη</translation>
 <translation id="2349710944427398404">Σύνολο δεδομένων που χρησιμοποιούνται από το Chrome, συμπεριλαμβανομένων των λογαριασμών, των σελιδοδεικτών και των αποθηκευμένων ρυθμίσεων</translation>
 <translation id="2353636109065292463">Έλεγχος της σύνδεσής σας στο διαδίκτυο</translation>
-<translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2369533728426058518">ανοικτές καρτέλες</translation>
 <translation id="2386938421315164605">Απόκρυψη και κατάργηση απόκρυψης θεμάτων</translation>
@@ -315,7 +314,6 @@
 <translation id="2979025552038692506">Επιλεγμένη καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="2979448359891869301">Δεν είναι δυνατή η επέκταση του στιγμιότυπου οθόνης. Δοκιμάστε ξανά όταν το τηλέφωνό σας δεν είναι απασχολημένο.</translation>
 <translation id="2979639724566107830">Άνοιγμα σε νέο παράθυρο</translation>
-<translation id="2981364137500752533">Μπορείτε να έχετε έως 5 παράθυρα.</translation>
 <translation id="2987620471460279764">Κοινόχρηστο κείμενο από άλλη συσκευή</translation>
 <translation id="2989523299700148168">Πραγματοποιήθηκε επίσκεψη πρόσφατα</translation>
 <translation id="2992473221983447149">Περιγραφές εικόνας</translation>
@@ -447,7 +445,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> λήψεις διαγράφηκαν</translation>
 <translation id="3845098929839618392">Άνοιγμα σε ανών. περιήγ.</translation>
 <translation id="3856096718352044181">Βεβαιωθείτε ότι πρόκειται για έγκυρο πάροχο ή δοκιμάστε ξανά αργότερα</translation>
-<translation id="3858860766373142691">Όνομα</translation>
 <translation id="3861633093716975811">Δημοφιλή βίντεο</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
 <translation id="3894427358181296146">Προσθήκη φακέλου…</translation>
@@ -983,7 +980,6 @@
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
-<translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα}other{# λήψεις σε εκκρεμότητα}}</translation>
 <translation id="7233236755231902816">Για να δείτε τον ιστό στη γλώσσα σας, κατεβάστε την πιο πρόσφατη έκδοση του Chrome</translation>
 <translation id="7242755609445462077">Στιλιζαρισμένη επισήμανση <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Βεβαιωθείτε ότι ο συγχρονισμός στο Chrome έχει ενεργοποιηθεί για τη συσκευή <ph name="TARGET_DEVICE_NAME" />.</translation>
@@ -1179,6 +1175,7 @@
 <translation id="8354977102499939946">Κάντε γρήγορη αναζήτηση με φωνητικές εντολές. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="835847953965672673">Έγινε επαναφορά <ph name="NUMBER_OF_DOWNLOADS" /> λήψεων.</translation>
 <translation id="8364299278605033898">Δείτε δημοφιλείς ιστοτόπους</translation>
+<translation id="8372925856448695381">Η γλώσσα <ph name="LANG" /> είναι έτοιμη.</translation>
 <translation id="8387617938027387193">Επαλήθευση ταυτότητας</translation>
 <translation id="8393700583063109961">Αποστολή μηνύματος</translation>
 <translation id="8410695015584479363">Παρακολούθηση τιμών</translation>

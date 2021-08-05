@@ -851,7 +851,6 @@
         このポリシーは M72 でサポート終了となりました。代わりに CloudManagementEnrollmentToken を使用してください。
         </translation>
 <translation id="2113068765175018713">自動再起動を行ってデバイスの稼働時間を制限する</translation>
-<translation id="2116169546538119304"> このポリシーはサポートが終了しています。代わりに Kerberos ポリシーを構成して、ログイン パスワードを再利用するようにしてください。</translation>
 <translation id="2117990069872855599">アバター画像をダウンロードすることのできる URL です。</translation>
 <translation id="2124881675920287921">このポリシーは、M82 でサポートが終了し、M85 で削除されました。代わりに <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> を使用してください。<ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> を無効にした場合は、<ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> を無効にした場合と同じになります。<ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> を有効にした場合や未設定のままにした場合は、<ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> を未設定のままにした場合と同じになります。
 
@@ -1209,16 +1208,6 @@
 
        このポリシーを未設定のままにした場合、電力ピークシフトは無効になります。</translation>
 <translation id="2502467045153796624">チャンネル ダウングレードの動作</translation>
-<translation id="2505351097561237268">
-      ディスプレイ キャプチャ許可ポリシーでは、仕様（https://www.w3.org/TR/screen-capture/#feature-policy-integration）に沿って、getDisplayMedia(), へのアクセスをゲートします。
-ただし、このポリシーを無効に設定した場合、この要件は適用されず、本来禁止されているコンテキストからの getDisplayMedia() の呼び出しが許可されます。このエンタープライズ ポリシーは一時的なものであり、
-<ph name="PRODUCT_NAME" /> バージョン 100 以降で削除される予定です。
-      仕様を満たしていないため修正する時間が必要なアプリケーションを使用しているエンタープライズ ユーザーのブロックを解除することを目的としています。
-
-      このポリシーを有効に設定するか未設定のままにした場合、サイトはディスプレイ キャプチャ許可ポリシーで許可リストに登録されたコンテキストからのみ getDisplayMedia() を呼び出すことができます。
-
-      このポリシーを無効に設定した場合、サイトはディスプレイ キャプチャ許可ポリシーで許可リストに登録されていないコンテキストからでも getDisplayMedia() を呼び出すことができます。
-      ただし、他の制限が適用される可能性があります。</translation>
 <translation id="250670737672448119">「テキストカーソルによるハイライト表示」のユーザー補助機能を有効にします。
 
           この機能は、編集時にテキストカーソルの周辺領域をハイライト表示します。
@@ -1717,15 +1706,6 @@
 <translation id="3110248563985502478">このポリシーは M88 でサポートが終了しています。Flash は Chrome でご利用いただけなくなりました。このポリシーを有効に設定した場合、古いプラグインが通常のプラグインとして使用されます。このポリシーを無効に設定した場合、古いプラグインは使用されません。
 
       このポリシーを未設定のままにした場合、古いプラグインの実行の許可を確認するメッセージがユーザーに表示されます。</translation>
-<translation id="3110373701407677290">このポリシーでは、同じオリジンでのタブキャプチャを許可する URL パターンのリストを設定できます。
-
-      このポリシーを未設定のままにした場合、このレベルのキャプチャでサイトのオーバーライドは考慮されません。
-
-      なお、このサイトをキャプチャすることは引き続き許可されるため、同じオリジンでウィンドウ表示の Chrome アプリをキャプチャすることは可能です。
-
-      サイトの URL がこのポリシーで指定した URL パターンと一致した場合、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> のポリシーは無視されます。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="3117676313396757089">警告: DHE は <ph name="PRODUCT_NAME" /> のバージョン 57 以後に完全に削除されます（2017 年 3 月頃）。また、このポリシーもその時点で機能しなくなります。
 
       このポリシーが未設定であるか false に設定されている場合、TLS の DHE 暗号スイートは有効化されません。DHE 暗号スイートを有効にして古いサーバーに対応するために、このポリシーを true に設定することもできます。これは暫定的な措置であり、サーバーの再設定が必要です。
@@ -1840,7 +1820,6 @@
 <translation id="3251500716404598358">ブラウザ切り替えのポリシーを設定します。
 
       設定したウェブサイトは、<ph name="PRODUCT_NAME" /> ではなく別のブラウザで自動的に表示されるようになります。</translation>
-<translation id="3252724033247471310">指定オリジンによる同じオリジンのタブキャプチャを許可する</translation>
 <translation id="3255624750680556186">このポリシーを有効に設定するか未設定のままにした場合、デバイスは Powerwash を実行できます。このポリシーを無効に設定した場合、デバイスは Powerwash を実行できません。ただし、<ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> が TPM ファームウェアの更新を許可する値に設定され、TPM ファームウェアがまだ更新されていない場合は、Powerwash を実行できる例外が発生することがあります。</translation>
 <translation id="3255762580838224124">このポリシーを設定した場合、各ディスプレイは再起動のたびに指定した方向に回転します。ポリシーの値を変更した後、初めて接続したときにも、指定した方向に回転します。ユーザーはログイン後に設定ページからディスプレイの回転方法を変更することができますが、次に再起動したときにはポリシーの値に戻ります。このポリシーは、メインと予備のディスプレイに適用されます。
 
@@ -2093,8 +2072,6 @@
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、Chrome ブラウザ クラウド管理に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、この機能は MDM を介して管理されるか MCX を介してドメインに追加されたインスタンスでのみ使用できます。</translation>
 <translation id="356579196325389849">ユーザーにより Chrome OS のリリース チャンネルが設定されることがあります</translation>
-<translation id="35668690622495904">
-          許可リストにないコンテキストで発生したという理由で呼び出しをブロックしない （その他の理由によりブロックされる可能性はあります）。</translation>
 <translation id="3575011234198230041">HTTP 認証</translation>
 <translation id="3577251398714997599">煩わしい広告を含むサイトでの広告表示に関する設定</translation>
 <translation id="3577628175311752799">デフォルトのリファラー ポリシー「no-referrer-when-downgrade」を使用します。</translation>
@@ -2367,8 +2344,6 @@
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを設定しない場合、仮想キーボードは初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
-<translation id="3913680877415932969">サイトでのキャプチャを許可する画面共有 API（getDisplayMedia() や Desktop Capture extension API など）の
-      レベル（タブ、ウィンドウ、またはデスクトップ）を管理するためのポリシーを設定します。</translation>
 <translation id="3915395663995367577">プロキシ .pac ファイルへの URL</translation>
 <translation id="3915587396318773837">このポリシーを設定した場合、リモート アクセス ホストは、認証するクライアントに対し、接続するためにこの URL から認証トークンを取得することを要求します。
 
@@ -2385,7 +2360,6 @@
           このポリシーを設定した場合、ユーザーが設定を変更またはオーバーライドすることはできません。
 
           このポリシーを設定しない場合、ログイン画面において固定キーは初期設定で無効になりますが、ユーザーはいつでも設定を有効にできます。</translation>
-<translation id="3927291637826333102">指定オリジンによるデスクトップ、ウィンドウ、タブのキャプチャを許可する</translation>
 <translation id="3932553013632130433">
       クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定します。ウェブの互換性に関する理由から、Chrome 91 以降（2021-05-25）では、SharedArrayBuffers を使用する際にクロスオリジン分離が必要となります。詳しくはこちらをご覧ください。
       https://developer.chrome.com/blog/enabling-shared-array-buffer/
@@ -3106,6 +3080,10 @@
       * <ph name="MODE_ENUM_DROP_DOWN" />: <ph name="SHARE_URL_FIELD_NAME" /> が共有の検出の一覧リストに追加されます。
 
       * <ph name="MODE_ENUM_PRE_MOUNT" />: <ph name="SHARE_URL_FIELD_NAME" /> がマウントされます。</translation>
+<translation id="5023555740504506178">有効にするか、未設定のままにした場合（デフォルト）、ウェブページでは、画面共有 API（getDisplayMedia() や Desktop Capture extension API など）を使用して、キャプチャ対象（タブ、ウィンドウ、デスクトップ）の選択を促すメッセージを表示できます。
+
+
+      このポリシーを無効に設定した場合、画面共有 API の呼び出しは失敗し、エラーが表示されます。</translation>
 <translation id="5025239932007658691">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は正確なタイムスタンプを取得するため、Google サーバーに不定期のクエリを送信します。このポリシーを無効に設定すると、<ph name="PRODUCT_NAME" /> がこれらのクエリを送信するのを停止できます。</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>
 <translation id="5052278640307929670">このポリシーでは、選択したポリシーのソースが異なる場合に、これらのポリシーを同じスコープとレベルで統合できるようにします。
@@ -3299,15 +3277,6 @@
 <translation id="5307432759655324440">シークレット モードが利用可能かどうかを設定する</translation>
 <translation id="5311275381462687162">Cookie に関する以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作のデフォルト設定</translation>
 <translation id="5312253627576569499">画面が暗くなっているか、オフになった直後にユーザーの操作が検出されたときに、画面を暗くするまでの時間を調整する比率</translation>
-<translation id="5317852436044398288">このポリシーでは、ウィンドウとタブのキャプチャの使用を許可する URL パターンのリストを設定できます。
-
-      このポリシーを未設定のままにした場合、このレベルのキャプチャでサイトのオーバーライドは考慮されません。
-
-      サイトの URL が <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> または <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> のいずれかのポリシーで指定された URL パターンと一致している場合、このポリシーは無視されます。
-
-      サイトの URL がこのポリシーで指定した URL パターンと一致した場合、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> と <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> のポリシーは無視されます。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="5318185076587284965">リモート アクセス ホストで中継サーバーを使用できるようにする</translation>
 <translation id="5323128137188992869"><ph name="PRODUCT_NAME" /> を使用してデバイスにコンテンツをキャストすることを許可します。
 
@@ -3711,7 +3680,6 @@
       このポリシーを設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更できません。未設定の場合、認証情報の漏洩チェックは実行可能ですが、ユーザーが無効にすることもできます。 
 
       セーフ ブラウジングが（ポリシーまたはユーザーによって）無効に設定されている場合、この処理は行われません。セーフ ブラウジングを強制的に有効にするには、<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ポリシーまたは <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> ポリシーを使用してください。</translation>
-<translation id="5835312413892670446">スクリーン キャプチャの設定</translation>
 <translation id="5836064773277134605">リモート アクセス ホストが使用する UDP ポートの範囲を制限する</translation>
 <translation id="5837898601525273156"><ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> が設定されている場合に、<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> を有効に設定すると、詳細なバッテリー充電モードの電力管理ポリシーが有効になります（デバイスが対応している場合）。このモードでは、使用頻度の低い時間帯に、標準の充電アルゴリズムや他の技術を使用することでバッテリーの消耗を抑えます。使用頻度の高い時間帯は、急速充電によりバッテリー充電を高速化します。曜日ごとに、システムが最もよく使われている時間帯を、開始時間とその継続時間で指定します。
 
@@ -4220,15 +4188,6 @@
 <translation id="6561396069801924653">システム トレイ メニューにユーザー補助オプションを表示</translation>
 <translation id="6562889469672829421">ユーザー入力が行われなくなってから画面を暗くするまでの時間（ミリ秒）</translation>
 <translation id="6563458316362153786">802.11r 高速切り替えを有効にする</translation>
-<translation id="6563462845077594854">このポリシーでは、デスクトップ、ウィンドウ、タブのキャプチャの使用を許可する URL パターンのリストを設定できます。
-
-      このポリシーを未設定のままにした場合、このレベルのキャプチャでサイトのオーバーライドは考慮されません。
-
-      サイトの URL が <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> のいずれかのポリシーで指定された URL パターンと一致している場合、このポリシーは無視されます。
-
-      サイトの URL がこのポリシーで指定した URL パターンと一致した場合、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="6568977718979857253">このポリシーはサポートを終了しました。Flash プラグインを使用できるかどうかを管理するには <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> を使用してください。また、PDF ファイルを開く際に組み込みの PDF ビューアを使用するかどうかを管理するには <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> を使用してください。
 
       <ph name="PRODUCT_NAME" /> で無効にするプラグインのリストを指定し、ユーザーがこの設定を変更できないようにします。
@@ -4246,7 +4205,6 @@
       このポリシーを未設定のままにするか、空のリストを指定した場合、デバイスのローカル アカウントは表示されません。</translation>
 <translation id="6584541828182430328">全画面表示の警告を無効にする</translation>
 <translation id="6598235178374410284">ユーザーのアバター画像</translation>
-<translation id="6600377630856879433">指定オリジンによるウィンドウとタブのキャプチャを許可する</translation>
 <translation id="6603004149426829878">タイムゾーンを解決する際、常に利用可能な位置情報の信号をサーバーに送信する</translation>
 <translation id="6604049565198492174">このポリシーでは、各 <ph name="PRODUCT_NAME" /> デバイスのユーザーごとにプッシュ型ネットワーク設定を許可します。ネットワーク設定は、Open Network Configuration 形式で定義された JSON 形式の文字列です。</translation>
 <translation id="660567106648774919">このポリシーはサポートが終了しています。代わりに <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> ポリシーを使用してください。
@@ -4687,7 +4645,6 @@
 <translation id="7040229947030068419">サンプル値:</translation>
 <translation id="7041170641363384736">デバイス再起動のカスタム スケジュールの設定を許可します。現時点では、このポリシーはキオスク セッションで自動起動アプリが許可されているデバイスにのみ適用されます。このポリシーを True に設定した場合、デバイスはスケジュールに基づいて再起動されます。スケジュールに基づく再起動を停止するには、このポリシーを削除する必要があります。</translation>
 <translation id="7044883996351280650">Android のバックアップと復元サービスを制御する</translation>
-<translation id="7047495632846973438">ディスプレイ キャプチャ許可ポリシーを照会するかスキップするかを指定します。</translation>
 <translation id="7060497964524144376">このポリシーを有効に設定した場合、セーフ ブラウジングでは指定ドメインが信頼され、危険なリソース（フィッシング、不正なソフトウェア、迷惑ソフトウェアなど）の確認は行われません。セーフ ブラウジングのダウンロード保護サービスでは指定ドメインでホストされているダウンロードの確認は行われず、パスワード保護サービスでもパスワード再利用の確認は行われません。
 
       このポリシーを未設定のままにした場合、デフォルトのセーフ ブラウジング保護がすべてのリソースに適用されます。
@@ -5180,8 +5137,6 @@
       このポリシーを未設定のままにした場合、<ph name="BLOCK_POPUPS_POLICY_NAME" /> は適用されますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="7731026922044991970">すべてのサイトの Cookie を以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作に戻す</translation>
 <translation id="7732907212083471072">削除済みのポリシー</translation>
-<translation id="7734212505800048991">
-          許可リストに登録されていないコンテキストからの getDisplayMedia の呼び出しをブロックする。</translation>
 <translation id="77379430721695807">このポリシーでは、リクエスト元 URL のセキュリティ オリジンと照合する URL パターン リストを指定できます。一致するものについては、動画キャプチャ デバイスへのアクセスが許可されます。その際、確認のメッセージは表示されません。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
@@ -5208,17 +5163,6 @@
 <translation id="776110834126722255">廃止</translation>
 <translation id="7763614521440615342">[新しいタブ] ページにおすすめのコンテンツを表示します</translation>
 <translation id="7765879851993224640">Smart Lock Signin の使用を許可する</translation>
-<translation id="7767066506143083523">このポリシーでは、タブキャプチャの使用を許可する URL パターンのリストを設定できます。
-
-      このポリシーを未設定のままにした場合、このレベルのキャプチャでサイトのオーバーライドは考慮されません。
-
-      なお、ウィンドウ表示の Chrome アプリをキャプチャすることは引き続き可能です。
-
-      サイトの URL が <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> ポリシーで指定された URL パターンと一致している場合、このポリシーは無視されます。
-
-      サイトの URL がこのポリシーで指定した URL パターンと一致した場合、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> のポリシーは無視されます。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
 <translation id="7771298620150437359">使用言語の内容と順序を設定する</translation>
 <translation id="7774768074957326919">システムのプロキシ設定を使用する</translation>
 <translation id="777734450201217641">ログイン画面でユーザー補助機能のショートカットを有効にします。
@@ -5611,19 +5555,6 @@
 <translation id="8300992833374611099">デベロッパー ツールの使用を許可する状況を管理する</translation>
 <translation id="8301065459352777588">管理対象のゲスト セッションのユーザーにデバイスのディスプレイ設定の保存を許可する</translation>
 <translation id="8306117673860983372">ログイン設定</translation>
-<translation id="830819203330820450">有効にするか、未設定のままにした場合（デフォルト）、
-      ウェブページでは、画面共有 API（getDisplayMedia() や Desktop Capture extension API など）を使用して、
-      キャプチャ対象（タブ、ウィンドウ、デスクトップ）の選択を促すメッセージを表示できます。
-
-      このポリシーを無効に設定した場合、画面共有 API の呼び出しは失敗し、
-      エラーが表示されます。ただし、サイトが次のいずれかのポリシーで指定された
-      オリジンのパターンと一致している場合、このポリシーは無視されます
-      （サイトによる画面共有 API の使用が許可されます）。
-      <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、
-      <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、
-      <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、
-      <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />
-      </translation>
 <translation id="8312129124898414409">ウェブサイトがキー生成を使用できるかどうかを設定します。すべてのサイトを対象に、キー生成の使用を許可または禁止できます。
 
           このポリシーが未設定の場合は「BlockKeygen」が使用されます。ユーザーはこの設定を変更できます。</translation>
@@ -5633,7 +5564,6 @@
 <translation id="8314214821702356835">デバイスのロック時にユーザーのメディア再生を許可する</translation>
 <translation id="8319678975002906774">Managed Configuration API で特定のオリジンのウェブサイトに返す値を設定します</translation>
 <translation id="8320149248919453401">バッテリー充電モード</translation>
-<translation id="8327651196906278510">指定オリジンによるタブキャプチャを許可する</translation>
 <translation id="8329434144708110">認証フローをトリガーしてパスワードを SSO プロバイダと同期する</translation>
 <translation id="8329984337216493753">このポリシーは小売りモードでのみアクティブになります。
 
@@ -6122,7 +6052,6 @@
 <translation id="8976248126101463034">リモート アクセス ホストに対して gnubby 認証を許可する</translation>
 <translation id="8976531594979650914">システムのデフォルト プリンタをデフォルトとして使用</translation>
 <translation id="8977192934280677167">デフォルトの検索プロバイダのコンテキスト メニュー検索アクセスを許可する</translation>
-<translation id="8983537551095611459">制限付きの管理対象ゲスト セッションのクリーンアップ手順から除外する拡張機能 ID のリストを設定する</translation>
 <translation id="8992176907758534924">すべてのサイトに対して画像表示を許可しない</translation>
 <translation id="9007632512838819703">このポリシーはサポートが終了しています。代わりに <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> を使用してください。
 
@@ -6316,9 +6245,6 @@
       このポリシーを未設定のままにするか <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" /> に設定した場合、アシスタントのオンボーディング エクスペリエンスではデフォルトのモードが使用されます。
       このポリシーを <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" /> に設定した場合、アシスタントのオンボーディング エクスペリエンスでは EDU モードが使用されます。</translation>
 <translation id="9194447412184412480">外部 IdP を使用して SAML で認証されたユーザーの設定を管理します</translation>
-<translation id="9194474490249548275">このポリシーは、管理対象ゲスト セッションにのみ適用されます。
-      このポリシーでは、制限付きの管理対象ゲスト セッションのクリーンアップ手順から除外する拡張機能 ID のリストを指定します（<ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" /> を参照）。
-このポリシーを未設定のままにした場合は、再設定の手順から拡張機能を除外しません。</translation>
 <translation id="9197740283131855199">画面が暗くなった後でユーザーが操作を行ったときに画面を暗くするまでの時間に掛ける倍率</translation>
 <translation id="9200828125069750521">POST を使用する画像 URL のパラメータ</translation>
 <translation id="9204863016826119209">このポリシーで指定されているインストール済みの Android アプリは企業キーを使用できます。</translation>

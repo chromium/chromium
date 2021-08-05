@@ -617,7 +617,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /> বন্ধ কৰক</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
-<translation id="5867217927013474703">নেটৱৰ্কৰ তথ্য সংগ্ৰহ কৰি থকা হৈছে</translation>
 <translation id="5876666360658629066">অভিভাৱকীয় ক’ডটো দিয়ক</translation>
 <translation id="5881540930187678962">ফ’ন হাব পাছত ছেট আপ কৰক</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
@@ -692,7 +691,6 @@
 <translation id="6482559668224714696">সম্পূর্ণ স্ক্ৰীণৰ বিৱৰ্ধক</translation>
 <translation id="6490471652906364588">USB-C ডিভাইচ (সোঁফালৰ পর্ট)</translation>
 <translation id="649452524636452238">স্মার্ট কার্ডৰ পিন</translation>
-<translation id="6500818810472529210">Google Searchত ফলাফল চাওক</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />লৈ স্ক্ৰীণ কাষ্টিং কৰি থকা হৈছে</translation>
 <translation id="6520517963145875092">কেপচাৰ কৰিবলৈ এখন ৱিণ্ড’ বাছনি কৰক</translation>
 <translation id="652139407789908527">এই আপডে’টটোৰ সময়ত আপোনাৰ স্ক্ৰীনখনত স্বাভাৱিকতকৈ বেছি সময়ৰ বাবে (এক মিনিট পৰ্যন্ত) একো নোহোৱা হৈ পৰিব। অনুগ্ৰহ কৰি আপডে’ট হৈ থকাৰ সময়ত পাৱাৰ বুটামটো নিটিপিব।</translation>
@@ -703,7 +701,6 @@
 <translation id="6559976592393364813">প্ৰশাসকক সোধক</translation>
 <translation id="6570902864550063460">ইউএছবিৰে চাৰ্জ হৈ আছে</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />ত ছেশ্বন অন্ত পৰিব।</translation>
-<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6612802754306526077">স্ক্ৰীন ৰেকৰ্ডিঙৰ ম'ডটো বাছনি কৰা হ'ল</translation>
 <translation id="6614169507485700968">গোপনীয়তাৰ স্ক্ৰীনখন অন আছে</translation>
@@ -934,6 +931,7 @@
 <translation id="8413272770729657668">ৰেকৰ্ডিং আৰম্ভ হ'ব ৩, ২, ১</translation>
 <translation id="8425213833346101688">সলনি কৰক</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">শ্ৰুতলিপিয়ে আপোনাৰ কণ্ঠস্বৰ Googleলৈ পঠিয়ায় যাৰ দ্বাৰা যিকোনো পাঠ ক্ষেত্ৰত ভইচ টাইপ কৰিব পৰা যায়।</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8433186206711564395">নেটৱর্ক ছেটিংসমূহ</translation>
 <translation id="8433977262951327081">শ্বেল্ফত ইনপুট বিকল্পৰ মেনু বাব্‌ল দেখুওৱা শ্বৰ্টকাটটো সলনি কৰা হৈছে। অনুগ্ৰহ কৰি <ph name="OLD_SHORTCUT" />ৰ পৰিৱৰ্তে <ph name="NEW_SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
@@ -987,7 +985,6 @@
 <translation id="8818320199597151042">প্ৰ’ফাইলটো আঁতৰাই থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="8825863694328519386">উভতি যাবলৈ বাওঁফালৰ পৰা ছোৱাইপ কৰক</translation>
 <translation id="8828714802988429505">৯০°</translation>
-<translation id="8832757911363938552">আপুনি পেকেট কেপচাৰ কৰাটো যিকোনো সময়তে বন্ধ কৰিব পাৰে।</translation>
 <translation id="8841375032071747811">পূর্বৱর্তী পৃষ্ঠালৈ যোৱা বুটাম</translation>
 <translation id="8843682306134542540">ঘূৰ্ণন লক ট’গল কৰক৷<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

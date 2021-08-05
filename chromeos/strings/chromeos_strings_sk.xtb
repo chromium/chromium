@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">Latencia DNS</translation>
 <translation id="123124571410524056">Podozrenie na portál</translation>
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
-<translation id="1264369926465113395">Pozrite si nový digitálny časopis Chromebooku pre autorov</translation>
 <translation id="1270369111467284986">Predpokladá sa prihlasovací portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">Položte dokument na skener a začnite výberom možnosti Skenovať</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
+<translation id="2983662233540284543">Naučte sa od autora herného obsahu, získajte aplikácie na navrhovanie hier a viac</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3540383942695635079">Adresa MAC</translation>
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
-<translation id="3582041541988388905">Nezistili sa žiadne pripojenia k sieti <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
-<translation id="3858860766373142691">Názov</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">Pamäť</translation>
 <translation id="5168185087976003268">Stav batérie</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
+<translation id="519607504553633437">Navrhujte a vytvárajte vlastné hry</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
@@ -247,6 +246,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5691511426247308406">Rodina</translation>
 <translation id="5701381305118179107">Na stred</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">Vytvorte si vlastnú hru</translation>
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
 <translation id="583281660410589416">Neznáme</translation>
@@ -296,7 +296,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="65587193855025101">Reflektívny skener</translation>
 <translation id="6564646048574748301">Nepodarilo sa – nedostupné</translation>
 <translation id="6574762126505704998">Výplň</translation>
-<translation id="6579235177984085399">Objavte nové nástroje na kreslenie a dizajn</translation>
 <translation id="6596816719288285829">Adresa IP</translation>
 <translation id="6603230386432466813">Máte problémy s pripojením?</translation>
 <translation id="6618744767048954150">Beží</translation>
@@ -376,9 +375,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8214184102975786227">Skenovať viacero stránok do jedného súboru PDF</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
-<translation id="8286154143153872371">Pripojte sa k sieti a opätovným načítaním stránky zobrazte tapetu.</translation>
 <translation id="8291967909914612644">Krajina poskytovateľa domácej siete</translation>
-<translation id="829270796093605079">Objavte nástr. na dizajn</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8297006494302853456">Slabé</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>

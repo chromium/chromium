@@ -635,7 +635,6 @@
 <translation id="3229041911291329567">Πληροφορίες έκδοσης σχετικά με τη συσκευή και το πρόγραμμα περιήγησης</translation>
 <translation id="323107829343500871">Εισαγάγετε τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Να εντοπίζεται πάντα σημαντικό περιεχόμενο σε αυτόν τον ιστότοπο</translation>
-<translation id="3240791268468473923">Έχει ανοίξει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="3249845759089040423">Μοδάτο</translation>
 <translation id="3252266817569339921">Γαλλικά
 </translation>
@@ -811,7 +810,6 @@
 <translation id="3793574014653384240">Αριθμοί και αιτίες των σφαλμάτων που παρουσιάστηκαν πρόσφατα</translation>
 <translation id="3797522431967816232">Prc3 (Φάκελος)</translation>
 <translation id="3799805948399000906">Ζητήθηκε γραμματοσειρά</translation>
-<translation id="380329542618494757">Όνομα</translation>
 <translation id="3807366285948165054">Μετατόπιση εικόνας στον άξονα X</translation>
 <translation id="3807873520724684969">Το επιβλαβές περιεχόμενο αποκλείστηκε.</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
@@ -826,7 +824,6 @@
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Έγγραφο Google</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3858027520442213535">Ενημέρωση ημερομηνίας και ώρας</translation>
-<translation id="3858860766373142691">Όνομα</translation>
 <translation id="3881478300875776315">Εμφάνιση λιγότερων γραμμών</translation>
 <translation id="3884278016824448484">Αναγνωριστικό συσκευής που προκαλεί διένεξη</translation>
 <translation id="3885155851504623709">Ενορία</translation>
@@ -1464,7 +1461,6 @@
 <translation id="6051221802930200923">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος χρησιμοποιεί certificate pinning (κλείδωμα πιστοποιητικών). Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="6051898664905071243">Πλήθος σελίδων:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6055888660316801977">Φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="6058977677006700226">Χρήση των καρτών σας σε όλες τις συσκευές σας;</translation>
 <translation id="6059925163896151826">Συσκευές USB</translation>
 <translation id="6060009363608157444">Μη έγκυρη λειτουργία DnsOverHttps.</translation>
@@ -1542,7 +1538,6 @@
 <translation id="6389470377220713856">Όνομα σε κάρτα</translation>
 <translation id="6390200185239044127">Δίπλωμα Z στη μέση</translation>
 <translation id="6390662030813198813">Engineering-E</translation>
-<translation id="6391700400718590966">Έχει κλείσει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="6393956493820063117">Η επικόλληση από το <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
 <translation id="6398765197997659313">Έξοδος από πλήρη οθόνη</translation>
 <translation id="6401136357288658127">Αυτή η πολιτική έχει καταργηθεί. Θα πρέπει να χρησιμοποιήσετε εναλλακτικά την πολιτική <ph name="NEW_POLICY" />.</translation>
@@ -2046,7 +2041,6 @@
 <translation id="8190193880870196235">Υπό τη διαχείριση μιας επέκτασης</translation>
 <translation id="8193086767630290324">Ενέργειες με δεδομένα που έχουν επισημανθεί ως εμπιστευτικά</translation>
 <translation id="8194797478851900357">&amp;Αναίρεση μετακίνησης</translation>
-<translation id="8199274926193258625">Ενδέχεται να χρειαστούν επιπλέον βήματα από το <ph name="HOSTNAME" /> για την επαλήθευση της πληρωμής σας</translation>
 <translation id="8201077131113104583">Η διεύθυνση URL ενημέρωσης για την επέκταση με αναγνωριστικό ID "<ph name="EXTENSION_ID" />", δεν είναι έγκυρη.</translation>
 <translation id="8202097416529803614">Σύνοψη παραγγελίας</translation>
 <translation id="8202370299023114387">Διένεξη</translation>

@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови или апликације на почетном екрану.</translation>
 <translation id="1178581264944972037">Паузирај</translation>
 <translation id="1181037720776840403">Уклони</translation>
+<translation id="1195941046451948919">Желите ли стварно да ресетујете све дозволе за овај веб-сајт?</translation>
 <translation id="1201402288615127009">Даље</translation>
 <translation id="1242008676835033345">Уграђено у сајт <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Заустави</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Детаљи</translation>
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
+<translation id="4708011789095599544">Желите ли стварно да обришете колачиће и друге податке о сајту за овај веб-сајт?</translation>
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
 <translation id="4836046166855586901">Питај када сајт жели да зна када активно користим овај уређај</translation>
 <translation id="4883854917563148705">Подешавања којима се управља не могу да се ресетују</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Вибрација</translation>
 <translation id="6388207532828177975">Обриши и ресетуј</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
+<translation id="6423924377271166037">Обриши колачиће</translation>
 <translation id="6439114592976064011">Не дозвољава сајтовима да користе уређај и податке виртуелне реалности</translation>
 <translation id="6447842834002726250">Колачићи</translation>
 <translation id="6527303717912515753">Дели</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Укључите дозволе за апликацију <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">Ова страница је опасна</translation>
 <translation id="930525582205581608">Желите да заборавите овај сајт?</translation>
 <translation id="967624055006145463">Сачувани подаци</translation>
 </translationbundle>

@@ -618,7 +618,6 @@
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
-<translation id="5867217927013474703">Събира се информация за мрежата</translation>
 <translation id="5876666360658629066">Въведете код на родител</translation>
 <translation id="5881540930187678962">Настройте Phone Hub по-късно</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -693,7 +692,6 @@
 <translation id="6482559668224714696">Лупа за увеличаване на целия екран</translation>
 <translation id="6490471652906364588">USB-C устройство (десният порт)</translation>
 <translation id="649452524636452238">ПИН за смарткартата</translation>
-<translation id="6500818810472529210">Вижте резултата в Google Търсене</translation>
 <translation id="6501401484702599040">Екранът се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6520517963145875092">Изберете прозореца, който да се заснеме</translation>
 <translation id="652139407789908527">По време на тази актуализация екранът ще остане празен по-дълго от обичайното (до една минута). Моля, не натискайте бутона за захранване, докато тя се извършва.</translation>
@@ -938,6 +936,7 @@
 <translation id="8413272770729657668">Записването започва след 3, 2, 1</translation>
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Функцията за диктуване изпраща гласа ви до Google, за да даде възможност за гласово въвеждане във всяко текстово поле.</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="8433977262951327081">Комбинацията за показване в лавицата на балончето с менюто за опциите за въвеждане е променена. Моля, използвайте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@
 <translation id="8818320199597151042">Профилът за мобилна мрежа се премахва. Изчакайте няколко минути.</translation>
 <translation id="8825863694328519386">Прекарайте пръст от ляво, за да се върнете назад</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Можете да спрете улавянето на пакети по всяко време.</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
 <translation id="8843682306134542540">Превключване на функцията за заключване на завъртането. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">търсене + Esc</translation>

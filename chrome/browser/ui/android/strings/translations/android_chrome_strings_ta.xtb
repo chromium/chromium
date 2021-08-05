@@ -158,7 +158,6 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">இணையத்தில் தேடுதல்</translation>
 <translation id="2056878612599315956">தளம் இடைநிறுத்தப்பட்டுள்ளது</translation>
-<translation id="2065944887543506430">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் தோல்வியடைந்தது}other{# பதிவிறக்கங்கள் தோல்வியடைந்தன}}</translation>
 <translation id="2067805253194386918">உரை</translation>
 <translation id="2068748236079642969">அடுத்த வீடியோவைக் காட்டு</translation>
 <translation id="2074143993849053708">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் UI மூடப்பட்டது</translation>
@@ -196,6 +195,7 @@
 <translation id="2276696007612801991">கடவுச்சொற்களைச் சரிபார்க்க, உங்கள் Google கணக்கில் உள்நுழையவும்</translation>
 <translation id="2278052315791335171">இந்தக் கடவுச்சொல்லை நீக்கினால் <ph name="SITE" /> இணையதளத்தில் உள்ள உங்கள் கணக்கு நீக்கப்படாது</translation>
 <translation id="2286841657746966508">பில்லிங் முகவரி</translation>
+<translation id="2294030144029925122">Chrome தனியுரிமைக் கொள்கை</translation>
 <translation id="230115972905494466">இணக்கமான சாதனங்கள் இல்லை</translation>
 <translation id="230155349749732438">இந்த அமைப்பைப் பயன்படுத்த, <ph name="BEGIN_LINK" />தேடலையும் உலாவலையும் இன்னும் சிறப்பாக்கு<ph name="END_LINK" /> என்ற விருப்பத்தை இயக்க வேண்டும்</translation>
 <translation id="2318045970523081853">அழைக்க தட்டவும்</translation>
@@ -213,7 +213,6 @@
 <translation id="2345671828921229300">தேட, சொல்லைத் தொட்டுப் பிடிக்கவும்</translation>
 <translation id="2349710944427398404">கணக்குகள், புக்மார்க்குகள், சேமித்த அமைப்புகள் உள்பட Chrome பயன்படுத்தும் மொத்தத் தரவு</translation>
 <translation id="2353636109065292463">உங்கள் இணைய இணைப்பைச் சரிபார்க்கிறது</translation>
-<translation id="235789365079050412">Google தனியுரிமைக் கொள்கை</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2369533728426058518">திறக்கப்பட்டுள்ள தாவல்கள்</translation>
 <translation id="2386938421315164605">தலைப்புகளை மறைக்கும் &amp; காட்டும்</translation>
@@ -315,7 +314,6 @@
 <translation id="2979025552038692506">தேர்ந்தெடுத்த மறைநிலைத் தாவல்</translation>
 <translation id="2979448359891869301">ஸ்கிரீன்ஷாட்டை இதற்குமேல் நீட்டிக்க முடியாது. ஃபோன் பிசியாக இல்லாதபோது மீண்டும் முயலவும்.</translation>
 <translation id="2979639724566107830">புதிய சாளரத்தில் திற</translation>
-<translation id="2981364137500752533">5 சாளரங்கள் வரை மட்டுமே பயன்படுத்த முடியும்.</translation>
 <translation id="2987620471460279764">பிற சாதனத்திலிருந்து உரை பகிரப்பட்டது</translation>
 <translation id="2989523299700148168">சமீபத்தில் பார்த்தவை</translation>
 <translation id="2992473221983447149">பட விளக்கங்கள்</translation>
@@ -447,7 +445,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் உள்ளன</translation>
 <translation id="3845098929839618392">மறைநிலைத் தாவலில் திற</translation>
 <translation id="3856096718352044181">இது சரியான வழங்குநர்தான் என்பதைச் சரிபார்க்கவும் அல்லது பிறகு முயலவும்</translation>
-<translation id="3858860766373142691">பெயர்</translation>
 <translation id="3861633093716975811">பிரபலமான வீடியோக்கள்</translation>
 <translation id="3892148308691398805">உரையை நகலெடு</translation>
 <translation id="3894427358181296146">கோப்புறையைச் சேர்</translation>
@@ -983,7 +980,6 @@
 <translation id="7187993566681480880">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="718926126787620637">புக்மார்க் கோப்புறைகளின் பட்டியல் முழுத் திரையில் காட்டப்படுகிறது</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
-<translation id="7227218174981371415">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் நிலுவையில் உள்ளது}other{# பதிவிறக்கங்கள் நிலுவையில் உள்ளன}}</translation>
 <translation id="7233236755231902816">உங்கள் மொழியில் இணையதளங்களைப் பார்க்க Chromeமின் சமீபத்திய பதிப்பைப் பெறுங்கள்</translation>
 <translation id="7242755609445462077">மெருகூட்டப்பட்ட ஹைலைட் <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeமில் <ph name="TARGET_DEVICE_NAME" /> சாதன ஒத்திசைவு ஆன் செய்யப்பட்டுள்ளதை உறுதி செய்யவும்</translation>
@@ -1179,6 +1175,7 @@
 <translation id="8354977102499939946">குரல் மூலம் உடனடியாகத் தேடலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் மீட்டெடுக்கப்பட்டன</translation>
 <translation id="8364299278605033898">பிரபல இணையதளங்களைப் பாருங்கள்</translation>
+<translation id="8372925856448695381"><ph name="LANG" /> மொழித்தொகுப்பு தயாராக உள்ளது.</translation>
 <translation id="8387617938027387193">நீங்கள்தான் என்பதை உறுதிசெய்யுங்கள்</translation>
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8410695015584479363">விலைகளைக் கண்காணி</translation>

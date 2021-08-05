@@ -3,8 +3,6 @@
 <translationbundle lang="no">
 <translation id="1175958423215084756">Oppdaget link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galleribilder</translation>
-<translation id="1300209025925956156">Skann dokumentet</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Trykk på søketasten + venstrepil for å se dem.</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er koblet fra.</translation>
 <translation id="1473110567575736769">Tre sekunders nedtelling</translation>
@@ -65,10 +63,8 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="5057360777601936059">Kameraet er ikke tilgjengelig akkurat nå.
         Sjekk om kameraet er koblet til riktig.</translation>
 <translation id="5152121255775685072">Gå til galleriet</translation>
-<translation id="520537883758714667">Dokumentskanning er nå tilgjengelig</translation>
 <translation id="5268823927180092501">Slå på dokumentmodus på alle kameraer</translation>
 <translation id="5422455049771430511">Bildene og videoene dine har fått et nytt hjem</translation>
-<translation id="5444515100983837161">Plassér alle hjørnene av dokumentet innenfor rammen. Skanning fungerer best hvis dokumentet og bakgrunnen har ulik farge.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5753488212459587150">Slå på ekspertmodus</translation>
 <translation id="5759254179196327752">Skann dokument</translation>

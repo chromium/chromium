@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">इससे वे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगे जिन्हें साइटों या ऐप्लिकेशन ने आपकी होम स्क्रीन पर सेव किया है.</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1181037720776840403">हटाएं</translation>
+<translation id="1195941046451948919">क्या आप वाकई में इस वेबसाइट के लिए सभी अनुमतियों को रीसेट करना चाहते हैं?</translation>
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> पर एम्बेड किया गया</translation>
 <translation id="1272079795634619415">रोकें</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">विवरण</translation>
 <translation id="4645575059429386691">आपके अभिभावक द्वारा प्रबंधित</translation>
 <translation id="4670064810192446073">वर्चुअल रिएलिटी</translation>
+<translation id="4708011789095599544">क्या आप वाकई इस वेबसाइट के लिए, कुकी और साइट का अन्य डेटा मिटाना चाहते हैं?</translation>
 <translation id="4751476147751820511">गति या लाइट सेंसर</translation>
 <translation id="4836046166855586901">साइटों को यह पूछने दें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="4883854917563148705">प्रबंधित सेटिंग रीसेट नहीं की जा सकती हैं</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">कंपन</translation>
 <translation id="6388207532828177975">साफ़ करें और रीसेट करें</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
+<translation id="6423924377271166037">कुकी मिटाएं</translation>
 <translation id="6439114592976064011">साइटों को अपने वर्चुअल रिएलिटी वाले डिवाइस और डेटा का इस्तेमाल करने से रोकें</translation>
 <translation id="6447842834002726250">कुकी</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाएं}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर, <ph name="APP_NAME" /> के लिए अनुमतियां चालू करें.</translation>
-<translation id="9162462602695099906">यह पेज सुरक्षित नहीं है</translation>
 <translation id="930525582205581608">क्या आप इस साइट की सेव की गई जानकारी मिटाना चाहते हैं?</translation>
 <translation id="967624055006145463">डेटा संग्रहित किया गया</translation>
 </translationbundle>

@@ -618,7 +618,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
-<translation id="5867217927013474703">Đang thu thập thông tin mạng</translation>
 <translation id="5876666360658629066">Nhập mã dành cho cha mẹ</translation>
 <translation id="5881540930187678962">Thiết lập Trung tâm điều khiển điện thoại sau</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
@@ -693,7 +692,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
-<translation id="6500818810472529210">Xem kết quả trên Google Tìm kiếm</translation>
 <translation id="6501401484702599040">Đang truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Chọn một cửa sổ để chụp</translation>
 <translation id="652139407789908527">Màn hình của bạn sẽ trống lâu hơn bình thường (tối đa là 1 phút) trong quá trình cập nhật này. Vui lòng không nhấn nút nguồn trong khi đang cập nhật.</translation>
@@ -938,6 +936,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8413272770729657668">Bắt đầu ghi sau 3, 2, 1</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
+<translation id="8427213022735114808">Tính năng nhập bằng giọng nói gửi giọng nói của bạn tới Google để cho phép nhập liệu bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8433186206711564395">Cài đặt mạng</translation>
 <translation id="8433977262951327081">Phím tắt để hiển thị bong bóng menu tùy chọn nhập trong giá đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay cho <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8818320199597151042">Đang xóa hồ sơ. Hãy chờ ít phút.</translation>
 <translation id="8825863694328519386">Vuốt từ trái sang để quay lại</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Bạn có thể dừng quá trình thu thập gói dữ liệu bất kỳ lúc nào.</translation>
 <translation id="8841375032071747811">Nút quay lại</translation>
 <translation id="8843682306134542540">Bật/tắt khóa xoay. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

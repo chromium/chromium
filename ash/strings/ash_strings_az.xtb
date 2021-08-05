@@ -618,7 +618,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /> dayandırma düyməsi</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
-<translation id="5867217927013474703">Şəbəkə məlumatları toplanır</translation>
 <translation id="5876666360658629066">Valideyn kodunu daxil edin</translation>
 <translation id="5881540930187678962">Telefon Mərkəzini daha sonra ayarlayın</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
@@ -693,7 +692,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6482559668224714696">Tam ekran böyüdücüsü</translation>
 <translation id="6490471652906364588">USB-C cihazı (sağ port)</translation>
 <translation id="649452524636452238">Smart kart PIN-i</translation>
-<translation id="6500818810472529210">Google Axtarışda nəticəyə baxın</translation>
 <translation id="6501401484702599040">Ekran <ph name="RECEIVER_NAME" /> üzərinə yayımlanır</translation>
 <translation id="6520517963145875092">Çəkmək üçün pəncərə seçin</translation>
 <translation id="652139407789908527">Ekranınız bu yeniləmə ərzində həmişəkindən daha uzun müddət (bir dəqiqəyə qədər) boş qalacaq. Güncəlləmə davam etdiyi zaman yandırıb-söndürmə düyməsinə basmayın.</translation>
@@ -938,6 +936,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8413272770729657668">Yazma başlayır: 3, 2, 1</translation>
 <translation id="8425213833346101688">Dəyişin</translation>
 <translation id="8426708595819210923">Axşamınız xeyir, <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Diktant istənilən mətn sahəsində səs yazmağa icazə vermək üçün səsinizi Google'a göndərir.</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8433186206711564395">Şəbəkə ayarları</translation>
 <translation id="8433977262951327081">Daxiletmə seçimləri menyu qutusunu rəfdə göstərmək üçün qısayol dəyişilib. <ph name="OLD_SHORTCUT" /> əvəzinə <ph name="NEW_SHORTCUT" /> qısayolunu istifadə edin.</translation>
@@ -991,7 +990,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8818320199597151042">Profil silinir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="8825863694328519386">Geri qayıtmaq üçün soldan sürüşdürün</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">İstənilən vaxt şəbəkə paketini dayandıra bilərsiniz.</translation>
 <translation id="8841375032071747811">"Geri" düyməsi</translation>
 <translation id="8843682306134542540">Fırlanma kilidini aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

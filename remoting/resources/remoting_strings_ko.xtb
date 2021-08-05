@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">예기치 않은 오류가 발생했습니다. 개발자에게 문제를 신고해 주세요.</translation>
 <translation id="1697532407822776718">설정 완료</translation>
 <translation id="1742469581923031760">연결 중...</translation>
-<translation id="177040763384871009">원격 기기에서 클릭한 링크가 클라이언트 브라우저에서 열리도록 허용하려면 시스템 웹브라우저를 "<ph name="URL_FORWARDER_NAME" />"(으)로 변경해야 합니다.</translation>
 <translation id="177096447311351977">클라이언트용 채널 IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'</translation>
 <translation id="1897488610212723051">삭제</translation>
 <translation id="2009755455353575666">연결 실패</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">오프라인.</translation>
 <translation id="3695446226812920698">자세히 알아보기</translation>
 <translation id="3776024066357219166">Chrome 원격 데스크톱 세션이 종료되었습니다.</translation>
-<translation id="3858860766373142691">이름</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3905196214175737742">잘못된 호스트 소유자 도메인입니다.</translation>
 <translation id="3931191050278863510">호스트가 중지되었습니다.</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> 클라이언트의 액세스가 거부되었습니다.</translation>
 <translation id="7444276978508498879">연결된 클라이언트: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7526139040829362392">계정 변경</translation>
-<translation id="7535110896613603182">기본 앱 설정 열기</translation>
 <translation id="7628469622942688817">이 기기에 내 PIN을 저장합니다.</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>

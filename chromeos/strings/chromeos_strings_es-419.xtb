@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
-<translation id="1264369926465113395">Conoce la nueva revista digital de Chromebook para creadores.</translation>
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">Para comenzar, coloca el documento en el escáner y selecciona Escanear</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878387241690264070">Se descargó el <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="2983662233540284543">Aprende de un creador de videojuegos, obtén apps diseñadas para juegos y mucho más.</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">Quedan aproximadamente <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3540383942695635079">Dirección MAC</translation>
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
-<translation id="3582041541988388905">No se detectó ninguna conexión a una red <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
-<translation id="3858860766373142691">Nombre</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
 <translation id="3941014780699102620">no se pudo resolver el host</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
+<translation id="519607504553633437">Diseña y compila tus propios juegos</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5222676887888702881">Salir</translation>
@@ -247,6 +246,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">Hacer tu propio juego</translation>
 <translation id="5760715441271661976">Estado del portal</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -296,7 +296,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="65587193855025101">Cristal del escáner</translation>
 <translation id="6564646048574748301">Error: No se puede acceder a la impresora</translation>
 <translation id="6574762126505704998">Completar</translation>
-<translation id="6579235177984085399">Descubre nuevas herramientas de dibujo y diseño</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6603230386432466813">¿Tienes problemas para conectarte?</translation>
 <translation id="6618744767048954150">En ejecución</translation>
@@ -376,9 +375,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8214184102975786227">Escanear varias páginas en un PDF</translation>
 <translation id="8230672074305416752">no se pudo hacer ping en la puerta de enlace de la red predeterminada</translation>
 <translation id="8246209727385807362">El proveedor es desconocido</translation>
-<translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>
 <translation id="8291967909914612644">País del proveedor de origen</translation>
-<translation id="829270796093605079">Herramientas de diseño</translation>
 <translation id="8294431847097064396">Fuente</translation>
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8302368968391049045">Firewall de HTTPS</translation>

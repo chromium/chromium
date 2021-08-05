@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">এইটোৱে আপোনাৰ গৃহ স্ক্রীনত ছাইট অথবা এপ্‌সমূহে ষ্ট’ৰ কৰা <ph name="DATASIZE" /> ডেটা আৰু কুকি মচিব।</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
+<translation id="1195941046451948919">আপুনি এই ৱেবছাইটটোৰ বাবে আটাইবোৰ অনুমতি ৰিছেট কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />ত এম্বেড কৰা হৈছে</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">সবিশেষ</translation>
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
+<translation id="4708011789095599544">আপুনি এই ৱেবছাইটটোৰ বাবে কুকি আৰু ছাইটৰ অন্য ডেটা মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="4751476147751820511">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="4836046166855586901">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে কোনো ছাইটে সেয়া জানিব বিচাৰিলে সোধক</translation>
 <translation id="4883854917563148705">পৰিচালিত ছেটিংসমূহ ৰিছেট কৰিব নোৱাৰি</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">কম্পন</translation>
 <translation id="6388207532828177975">মচক আৰু ৰিছেট কৰক</translation>
 <translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="6423924377271166037">কুকিসমূহ মচক</translation>
 <translation id="6439114592976064011">ছাইটসমূহে আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰাটো অৱৰোধ কৰক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
@@ -309,7 +312,6 @@
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতিসমূহ অন কৰক।</translation>
-<translation id="9162462602695099906">এই পৃষ্ঠাখন বিপজ্জনক</translation>
 <translation id="930525582205581608">এই ছাইটটো পাহৰি যাব নেকি?</translation>
 <translation id="967624055006145463">ডেটা সঞ্চয় কৰা হ’ল</translation>
 </translationbundle>

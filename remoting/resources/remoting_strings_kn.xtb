@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">ಅನಿರೀಕ್ಷಿತ ದೋಷವೊಂದು ಸಂಭವಿಸಿದೆ. ಈ ಸಮಸ್ಯೆಯನ್ನು ಡೆವಲಪರ್‌ಗಳಿಗೆ ವರದಿ ಮಾಡಿ.</translation>
 <translation id="1697532407822776718">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿರುವಿರಿ!</translation>
 <translation id="1742469581923031760">ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="177040763384871009">ರಿಮೋಟ್ ಸಾಧನದಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿದ ಲಿಂಕ್‌ಗಳನ್ನು ಕ್ಲೈಂಟ್ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, ನೀವು ಸಿಸ್ಟಂನ ವೆಬ್ ಬ್ರೌಸರ್ ಅನ್ನು "<ph name="URL_FORWARDER_NAME" />" ಗೆ ಬದಲಾಯಿಸುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="177096447311351977">ಕ್ಲೈಂಟ್‌ಗಾಗಿ ಚಾನಲ್ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ಅಳಿಸಿ</translation>
 <translation id="2009755455353575666">ಸಂಪರ್ಕ ವಿಫಲವಾಗಿದೆ</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">ಆಫ್‌ಲೈನ್.</translation>
 <translation id="3695446226812920698">ಹೇಗೆ ಎಂಬುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="3776024066357219166">ನಿಮ್ಮ Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅವಧಿಯು ಕೊನೆಗೊಂಡಿದೆ.</translation>
-<translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
 <translation id="3905196214175737742">ಅಮಾನ್ಯ ಹೋಸ್ಟ್ ಮಾಲೀಕರ ಡೊಮೇನ್.</translation>
 <translation id="3931191050278863510">ಹೋಸ್ಟ್ ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">ಕ್ಲೈಂಟ್‌ಗೆ ಪ್ರವೇಶ ನಿರಾಕರಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ಕ್ಲೈಂಟ್ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ಖಾತೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
-<translation id="7535110896613603182">ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7628469622942688817">ಈ ಸಾಧನದಲ್ಲಿ ನನ್ನ ಪಿನ್‌ ಅನ್ನು ನೆನಪಿಡಿ.</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>

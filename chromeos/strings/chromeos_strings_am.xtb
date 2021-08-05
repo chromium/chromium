@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">የዲኤንስ የሥርዓት ምላሽ ጊዜ</translation>
 <translation id="123124571410524056">መግቢያ ተጠርጥሯል</translation>
 <translation id="1238612778414822719">የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
-<translation id="1264369926465113395">ለፈጣሪዎች የሆነውን የChromebookን አዲሱ የዲጂታል መጽሔትን ይመልከቱ</translation>
 <translation id="1270369111467284986">ተያዥ መግቢያ ተጠርጥሯል</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">ሰነድዎን በመቃኛው ላይ ያስቀምጡትና ለመጀመር ቃኝን ይምረጡ</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
+<translation id="2983662233540284543">ከጨዋታ ፈጣሪ ይማሩ፣ የጨዋታ ንድፍ መተግበሪያዎችን እና ሌሎችንም ያግኙ</translation>
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
 <translation id="3540383942695635079">የማክ አድራሻ</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
-<translation id="3582041541988388905">ምንም የ<ph name="NETWORK_NAME" /> ግንኙነት አልተገኘም።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">ሁሉንም የዕይታ ታሪክ አፅዳ</translation>
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
-<translation id="3858860766373142691">ስም</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">ማህደረ ትውስታ</translation>
 <translation id="5168185087976003268">የባትሪ ጤንነት</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
+<translation id="519607504553633437">የራስዎን ጨዋታዎች ይንደፉ እና ይገንቡ</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">ቤተሰብ</translation>
 <translation id="5701381305118179107">መሃከል</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ከ<ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">የራስዎን ጨዋታ ይፍጠሩ</translation>
 <translation id="5760715441271661976">የመተላለፊያ ሁኔታ</translation>
 <translation id="5832805196449965646">ሰው አክል</translation>
 <translation id="583281660410589416">ያልታወቀ </translation>
@@ -296,7 +296,6 @@
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>
 <translation id="6564646048574748301">አልተሳካም - አታሚ የማይደረስበት ነው</translation>
 <translation id="6574762126505704998">ሙሌት</translation>
-<translation id="6579235177984085399">አዲስ የስዕል እና የንድፍ መሳሪያዎችን ያግኙ</translation>
 <translation id="6596816719288285829">IP አድራሻ</translation>
 <translation id="6603230386432466813">መገናኘት ላይ ችግር እያጋጠመዎት ነው?</translation>
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
@@ -376,9 +375,7 @@
 <translation id="8214184102975786227">ብዙ ገጾችን ወደ አንድ PDF ይቃኙ</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="8246209727385807362">የማይታወቅ አገልግሎት አቅራቢ</translation>
-<translation id="8286154143153872371">ልጣፍን ለማየት እባክዎን ከአውታረ መረብ ጋር ይገናኙ እና ገጹን እንደገና ይጫኑ።</translation>
 <translation id="8291967909914612644">የመነሻ አቅራቢ አገር</translation>
-<translation id="829270796093605079">የንድፍ መሳሪያዎችን ያግኙ</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
 <translation id="8297006494302853456">ደካማ</translation>
 <translation id="8302368968391049045">የHTTPS ኬላ</translation>

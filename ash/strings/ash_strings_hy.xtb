@@ -618,7 +618,6 @@
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
-<translation id="5867217927013474703">Ցանցի մասին տեղեկությունների հավաքում</translation>
 <translation id="5876666360658629066">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="5881540930187678962">Կարգավորեք Հեռախոսի կառավարման կենտրոնն ավելի ուշ</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
@@ -693,7 +692,6 @@
 <translation id="6482559668224714696">Լիաէկրան խոշորացույց</translation>
 <translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
 <translation id="649452524636452238">Խելացի քարտի PIN կոդը</translation>
-<translation id="6500818810472529210">Դիտեք արդյունքները Google Որոնում ծառայությունում</translation>
 <translation id="6501401484702599040">Էկրանի հեռարձակում <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="6520517963145875092">Լուսանկարելու համար ընտրեք պատուհան</translation>
 <translation id="652139407789908527">Թարմացման ընթացքում էկրանը սովորականից ավելի երկար կմնա անջատված (մինչև մեկ րոպե)։ Մի՛ սեղմեք սնուցման կոճակը, մինչև որ թարմացումը չավարտվի։</translation>
@@ -938,6 +936,7 @@
 <translation id="8413272770729657668">Տեսագրումը կսկսվի 3, 2, 1</translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8426708595819210923">Բարի երեկո, <ph name="GIVEN_NAME" /></translation>
+<translation id="8427213022735114808">Թելադրելու գործառույթն ուղարկում է ձեր ձայնը Google-ին, ինչը թույլ է տալիս թելադրելով լրացնել տեքստային դաշտերը։</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="8433977262951327081">Ներածման ընտրանքների պղպջակը դարակում ցուցադրելու դյուրանցումը փոխվել է։ <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />։</translation>
@@ -991,7 +990,6 @@
 <translation id="8818320199597151042">Պրոֆիլը հեռացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="8825863694328519386">Սահեցրեք մատը ձախից՝ հետ գնալու համար</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Ցանկացած ժամանակ կարող եք կանգնեցնել փաթեթների գրանցումը։</translation>
 <translation id="8841375032071747811">«Հետ» կոճակ</translation>
 <translation id="8843682306134542540">Միացնել/անջատել պտտման կողպումը: <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Որոնել+Esc</translation>

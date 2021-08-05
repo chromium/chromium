@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Tiks notīrīti dati un sīkfaili (<ph name="DATASIZE" />), ko glabā vietnes vai lietotnes jūsu sākuma ekrānā.</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
+<translation id="1195941046451948919">Vai tiešām vēlaties atiestatīt visas atļaujas šai vietnei?</translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1242008676835033345">Iegults vietnē <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Apturēt</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Detalizēta informācija</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4670064810192446073">Virtuālā realitāte</translation>
+<translation id="4708011789095599544">Vai tiešām vēlaties notīrīt šīs vietnes sīkfailus un citus datus?</translation>
 <translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
 <translation id="4836046166855586901">Vaicāt, ja vietne vēlas zināt, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="4883854917563148705">Pārvaldītos iestatījumus nevar atiestatīt</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Vibrācija</translation>
 <translation id="6388207532828177975">Notīrīt un atiestatīt</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
+<translation id="6423924377271166037">Notīrīt sīkfailus</translation>
 <translation id="6439114592976064011">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīci un datus</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>
-<translation id="9162462602695099906">Šī lapa ir bīstama.</translation>
 <translation id="930525582205581608">Vai aizmirst šo vietni?</translation>
 <translation id="967624055006145463">Dati saglabāti</translation>
 </translationbundle>

@@ -13,7 +13,6 @@
 <translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को एपमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
 <translation id="1095761715416917775">तपाईं आफूले सिंक गरेको डेटा जुनसुकै बेला प्रयोग गर्न तथा हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="1100066534610197918">समूहमा नयाँ ट्याबमा खोल्नुहोस्</translation>
-<translation id="1103142993930332957">Chrome को गुणस्तर सुधार्न सघाउने हो?</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
 <translation id="1110914759170138831">हाइलाइट गरिएको पाठ छोट्याइएको छ</translation>
 <translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
@@ -158,7 +157,6 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">इन्टरनेटमा खोज्ने तरिका</translation>
 <translation id="2056878612599315956">साइट पज गरियो</translation>
-<translation id="2065944887543506430">{FILE_COUNT,plural, =1{१ वटा डाउनलोड गर्न सकिएन}other{# वटा डाउनलोडहरू गर्न सकिएन}}</translation>
 <translation id="2067805253194386918">पाठ</translation>
 <translation id="2068748236079642969">अर्को भिडियो हेर्नुहोस्</translation>
 <translation id="2074143993849053708">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI बन्द गरिएको छ</translation>
@@ -196,6 +194,7 @@
 <translation id="2276696007612801991">आफ्ना पासवर्डहरू जाँच गर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
 <translation id="2278052315791335171">तपाईंले यो पासवर्ड मेटाउनुभयो भने पनि <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन</translation>
 <translation id="2286841657746966508">बिल पठाउने ठेगाना</translation>
+<translation id="2294030144029925122">Chrome को गोपनीयता नीति</translation>
 <translation id="230115972905494466">कुनै पनि मिल्दाजुल्दा यन्त्र भेटिएनन्</translation>
 <translation id="230155349749732438"><ph name="BEGIN_LINK" />खोज्ने तथा ब्राउज गर्ने कार्य अझ राम्रो बनाउने<ph name="END_LINK" /> सुविधा अन गरेपछि मात्र यो सेटिङ प्रयोग गर्न सकिन्छ</translation>
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
@@ -213,7 +212,6 @@
 <translation id="2345671828921229300">कुनै शब्दबारे जानकारी खोज्न त्यसलाई टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
 <translation id="2353636109065292463">तपाईंको इन्टरनेट जडानको जाँच गर्दै</translation>
-<translation id="235789365079050412">Google को गोपनीयता नीति</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2369533728426058518">ट्याबहरू खोल्नुहोस्</translation>
 <translation id="2386938421315164605">विषयहरू लुकाउनुहोस् तथा देखाउनुहोस्</translation>
@@ -315,7 +313,6 @@
 <translation id="2979025552038692506">चयन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2979448359891869301">योभन्दा ठुलो स्क्रिनसट खिच्न मिल्दैन। तपाईंको फोन प्रयोग नभएका बेला फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2979639724566107830">नयाँ विन्डोमा खोल्नुहोस्</translation>
-<translation id="2981364137500752533">तपाईं बढीमा ५ वटा विन्डो खोल्न सक्नुहुन्छ।</translation>
 <translation id="2987620471460279764">अर्को यन्त्रबाट आदान प्रदान गरिएको टेक्स्ट म्यासेज</translation>
 <translation id="2989523299700148168">भर्खरै हेरिएका</translation>
 <translation id="2992473221983447149">फोटोका वर्णन</translation>
@@ -447,7 +444,6 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोडहरूलाई मेटाइयो</translation>
 <translation id="3845098929839618392">इन्कोग्निटो ट्याबमा खोलियोस्</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
-<translation id="3858860766373142691">नाम</translation>
 <translation id="3861633093716975811">लोकप्रिय भिडियोहरू</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="3894427358181296146">फोल्डर थप्नुहोस्</translation>
@@ -527,7 +523,6 @@
 <translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4427306783828095590">परिष्कृत सुरक्षा प्रयोग गरी फिसिङ तथा मालवेयरमाथि अझ राम्रोसँग रोक लगाउन सकिन्छ</translation>
-<translation id="4450672886426705087">Google मा खोज्दा भेटिएका परिणामहरू।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
 <translation id="4472118726404937099">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
@@ -982,7 +977,6 @@
 <translation id="7187993566681480880">यस सुविधाले तपाईं Chrome मा साइन इन भएका बेला तपाईंको जानकारी सुरक्षित राख्छ। Google का अन्य एपहरूको सुरक्षा स्तर सुधार गर्न पनि यसको प्रयोग गरिन सक्छ।</translation>
 <translation id="718926126787620637">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची स्क्रिनको पूरा भागमा खोलियो</translation>
 <translation id="7191430249889272776">पृष्ठभूमिमा ट्याब खुला छ।</translation>
-<translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
 <translation id="7233236755231902816">आफ्नो भाषामा वेब हेर्न Chrome को नवीनतम संस्करण प्राप्त गर्नुहोस्</translation>
 <translation id="7242755609445462077">शैलीबद्ध हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
@@ -1178,6 +1172,7 @@
 <translation id="8354977102499939946">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> वटा डाउनलोड रिस्टोर गरिए</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
+<translation id="8372925856448695381"><ph name="LANG" /> भाषा प्याक तयार छ।</translation>
 <translation id="8387617938027387193">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8393700583063109961">सन्देश पठाउनुहोस्</translation>
 <translation id="8410695015584479363">मूल्यहरू ट्र्याक गर्नुहोस्</translation>

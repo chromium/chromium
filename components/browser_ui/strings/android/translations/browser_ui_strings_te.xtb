@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">ఇది మీ హోమ్ స్క్రీన్‌పై ఉన్న, సైట్‌లు లేదా యాప్‌ల ద్వారా స్టోర్ చేయబడిన <ph name="DATASIZE" /> డేటా, కుక్కీలను క్లియర్ చేస్తుంది.</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
+<translation id="1195941046451948919">మీరు ఖచ్చితంగా ఈ వెబ్‌సైట్‌కు సంబంధించిన అన్ని అనుమతులను రీసెట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="1201402288615127009">తరువాత</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />లో పొందుపరచబడింది</translation>
 <translation id="1272079795634619415">ఆపు</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">వివరాలు</translation>
 <translation id="4645575059429386691">మీ తల్లి/తండ్రి ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="4670064810192446073">వర్చువల్ రియాలిటీ</translation>
+<translation id="4708011789095599544">మీరు ఖచ్చితంగా ఈ వెబ్‌సైట్‌కు సంబంధించిన కుక్కీలు అలాగే ఇతర సైట్ డేటాను క్లియర్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4751476147751820511">కదలిక లేదా కాంతి సెన్సార్‌లు</translation>
 <translation id="4836046166855586901">మీరు ఈ పరికరాన్ని యాక్టివ్‌గా ఉపయోగిస్తున్నప్పుడు ఆ విషయాన్ని సైట్ తెలుసుకోవాలంటే సైట్ మీ అనుమతిని అడగాలి</translation>
 <translation id="4883854917563148705">నిర్వహిత సెట్టింగ్‌లు రీసెట్ చేయబడవు</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">వైబ్రేట్ చేయి</translation>
 <translation id="6388207532828177975">క్లియర్ చేసి, రీసెట్ చేయి</translation>
 <translation id="6398765197997659313">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="6423924377271166037">కుక్కీలను క్లియర్ చేయి</translation>
 <translation id="6439114592976064011">మీ వర్చువల్ రియాలిటీ పరికరాన్ని, డేటాను ఉపయోగించనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6527303717912515753">భాగస్వామ్యం చేయి</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">బ్లూటూత్</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో <ph name="APP_NAME" /> కోసం అనుమతులను ఆన్ చేయండి.</translation>
-<translation id="9162462602695099906">ఈ పేజీ ప్రమాదకరం</translation>
 <translation id="930525582205581608">ఈ సైట్‌ను విస్మరించాలా?</translation>
 <translation id="967624055006145463">నిల్వ చేయబడిన డేటా</translation>
 </translationbundle>

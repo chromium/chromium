@@ -618,7 +618,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
-<translation id="5867217927013474703">Ağ bilgileri toplanıyor</translation>
 <translation id="5876666360658629066">Ebeveyn kodunu girin</translation>
 <translation id="5881540930187678962">Telefon Merkezi'ni sonra kurun</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
@@ -694,7 +693,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="649452524636452238">Akıllı kart PIN'i</translation>
-<translation id="6500818810472529210">Sonucu Google Arama'da göster</translation>
 <translation id="6501401484702599040">Ekran, <ph name="RECEIVER_NAME" /> üzerinde yayınlanıyor</translation>
 <translation id="6520517963145875092">Ekran görüntüsünü almak için pencere seçin</translation>
 <translation id="652139407789908527">Bu güncelleme sırasında normalden daha uzun süre (bir dakikaya kadar) boş ekran görüntülenebilir. Güncelleme devam ederken lütfen güç düğmesine basmayın.</translation>
@@ -939,6 +937,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8413272770729657668">Kayıt başlıyor 3, 2, 1</translation>
 <translation id="8425213833346101688">Değiştir</translation>
 <translation id="8426708595819210923">İyi akşamlar <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Dikte özelliği, konuşarak herhangi bir metin alanına yazı yazabilmenizi sağlamak için sesinizi Google'a gönderir.</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8433186206711564395">Ağ ayarları</translation>
 <translation id="8433977262951327081">Giriş seçenekleri menüsü balonunu rafta görüntüleme kısa yolu değişti. <ph name="OLD_SHORTCUT" /> yerine <ph name="NEW_SHORTCUT" /> kısayolunu kullanın.</translation>
@@ -992,7 +991,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8818320199597151042">Profil kaldırılıyor. Birkaç dakika bekleyin.</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Paket yakalama işlemini dilediğiniz zaman durdurabilirsiniz.</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Ara+Esc</translation>

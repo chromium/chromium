@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
 <translation id="123124571410524056">প’ৰ্টেলৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="1238612778414822719">HTTPSৰ বিলম্বতা</translation>
-<translation id="1264369926465113395">সৃষ্টিকৰ্তাৰ বাবে প্ৰস্তুত কৰা Chromebookৰ নতুন ডিজিটেল আলোচনী চাওক</translation>
 <translation id="1270369111467284986">কেপটিভ প’র্টেলৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1314565355471455267">Android ভিপিএন</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">আপোনাৰ নথিখন স্কেনাৰটোত ৰাখক আৰু আৰম্ভ কৰিবলৈ স্কেন কৰক বাছনি কৰক</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
+<translation id="2983662233540284543">এগৰাকী গে'ম সম্পৰ্কীয় ভিডিঅ' সৃষ্টিকর্তাৰ পৰা জানক, গে'ম ডিজাইন কৰা এপ্ আৰু বহুতো পাওক</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
 <translation id="3540383942695635079">MAC ঠিকনা</translation>
 <translation id="357889014807611375">নিৰিখ-নিৰ্দিষ্ট ৱাই-ফাই</translation>
-<translation id="3582041541988388905">কোনো <ph name="NETWORK_NAME" /> সংযোগ চিনাক্ত কৰা হোৱা নাই</translation>
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">সকলো ইতিহাস মচক</translation>
 <translation id="3820172043799983114">অমান্য পিন।</translation>
 <translation id="3838338534323494292">নতুন পাছৱৰ্ড</translation>
-<translation id="3858860766373142691">নাম</translation>
 <translation id="3865414814144988605">ৰিজ'লিউশ্বন</translation>
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
 <translation id="3941014780699102620">হ’ষ্ট সম্পৰ্কীয় সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">মেম’ৰি</translation>
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
+<translation id="519607504553633437">আপোনাৰ নিজৰ গে'মৰ ডিজাইন কৰক আৰু গঢ়ক</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
 মোক কিবা সুধিবলৈ মাইকটো টিপক।</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">পৰিয়াল</translation>
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
+<translation id="5752751666635965375">নিজৰ গে'ম প্ৰস্তুত কৰক</translation>
 <translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
@@ -269,7 +269,6 @@
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
-<translation id="6125438912510167220">লিংকৰ বেগ</translation>
 <translation id="6137767437444130246">ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -296,7 +295,6 @@
 <translation id="65587193855025101">ফ্লে'টবেড</translation>
 <translation id="6564646048574748301">বিফল হৈছে - প্ৰিণ্টাৰৰ সৈতে সংযোগ কৰিব পৰা নাই</translation>
 <translation id="6574762126505704998">সম্পূৰ্ণ স্ক্ৰীনজুৰি</translation>
-<translation id="6579235177984085399">অংকন আৰু ডিজাইন কৰাৰ নতুন সঁজুলি বিচাৰক</translation>
 <translation id="6596816719288285829">আইপি ঠিকনা</translation>
 <translation id="6603230386432466813">সংযোগ কৰোঁতে সমস্যাৰ সৃষ্টি হৈছে নেকি?</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
@@ -376,9 +374,7 @@
 <translation id="8214184102975786227">একাধিক পৃষ্ঠা স্কেন কৰি এটা PDF সৃষ্টি কৰক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
-<translation id="8286154143153872371">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু ৱালপেপাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>
 <translation id="8291967909914612644">গৃহ প্ৰদানকাৰী দেশ</translation>
-<translation id="829270796093605079">ডিজাইনৰ সঁজুলি বিচাৰক</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8297006494302853456">দুৰ্বল</translation>
 <translation id="8302368968391049045">HTTPSৰ ফায়াৰৱাল</translation>

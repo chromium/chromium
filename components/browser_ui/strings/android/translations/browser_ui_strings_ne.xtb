@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">यस कार्यले साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> बराबरका डेटा र कुकीहरू मेटाउने छ।</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1195941046451948919">तपाईं साँच्चिकै यो वेबसाइटलाई दिइएका सम्पूर्ण अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> मा इम्बेड गरिएको</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">विवरणहरू</translation>
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
+<translation id="4708011789095599544">तपाईं साँच्चिकै यो वेबसाइटका कुकी र अन्य डेटा हटाउन चाहनुहुन्छ?</translation>
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
 <translation id="4836046166855586901">कुनै साइटले मैले यो डिभाइस चलाइरहेको छु कि छुइनँ भन्ने कुराको जानकारी माग्दा मलाई सोधियोस्</translation>
 <translation id="4883854917563148705">व्यवस्थित सेटिङ रिसेट गर्न सकिँदैन</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">कम्पन</translation>
 <translation id="6388207532828177975">खाली गरेर रिसेट गर्नुहोस्</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
+<translation id="6423924377271166037">कुकीहरू मेटाउनुहोस्</translation>
 <translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई <ph name="APP_NAME" /> लाई अनुमति दिनुहोस्।</translation>
-<translation id="9162462602695099906">यो पेज खतरनाक छ</translation>
 <translation id="930525582205581608">यो साइटसम्बन्धी जानकारी मेटाउने हो?</translation>
 <translation id="967624055006145463">डेटा भण्डारण गरियो</translation>
 </translationbundle>

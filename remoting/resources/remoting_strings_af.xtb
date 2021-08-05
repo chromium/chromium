@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">'n Onverwagse fout het voorgekom. Meld asseblief hierdie probleem by die ontwikkelaars aan.</translation>
 <translation id="1697532407822776718">Als is nou reg!</translation>
 <translation id="1742469581923031760">Koppel tans …</translation>
-<translation id="177040763384871009">Jy moet die stelsel se webblaaier na "<ph name="URL_FORWARDER_NAME" />" verander om toe te laat dat skakels wat op die afstandbeheerder geklik word in die kliënt se blaaier oopmaak.</translation>
 <translation id="177096447311351977">Kanaal-IP vir kliënt: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' gasheer_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' kanaal='<ph name="CHANNEL_TYPE" />' verbinding='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Vee uit</translation>
 <translation id="2009755455353575666">Kon nie koppel nie</translation>
@@ -57,7 +56,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="369442766917958684">Vanlyn.</translation>
 <translation id="3695446226812920698">Vind uit hoe</translation>
 <translation id="3776024066357219166">Jou Chrome-afstandwerkskermsessie is verby.</translation>
-<translation id="3858860766373142691">Naam</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3905196214175737742">Ongeldige gasheereienaardomein.</translation>
 <translation id="3931191050278863510">Gasheer gestop.</translation>
@@ -143,7 +141,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="7434397035092923453">Toegang geweier vir kliënt: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Kliënt gekoppel: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Verander rekening</translation>
-<translation id="7535110896613603182">Maak verstekprograminstellings oop</translation>
 <translation id="7628469622942688817">Onthou my PIN op hierdie toestel.</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>

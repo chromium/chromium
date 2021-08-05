@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">這會清除網站或主畫面上的應用程式所儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1195941046451948919">確定要重設這個網站的所有權限嗎？</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1242008676835033345">嵌入至 <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">停止</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4645575059429386691">你的家長已停用這項功能</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4708011789095599544">確定要清除這個網站的 Cookie 和其他網站資料嗎？</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">震動</translation>
 <translation id="6388207532828177975">清除並重設</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
+<translation id="6423924377271166037">清除 Cookie</translation>
 <translation id="6439114592976064011">禁止網站使用你的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">分享</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
-<translation id="9162462602695099906">這是危險網頁</translation>
 <translation id="930525582205581608">要清除這個網站的資料嗎？</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 </translationbundle>

@@ -619,7 +619,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
-<translation id="5867217927013474703">Mengumpulkan maklumat rangkaian</translation>
 <translation id="5876666360658629066">Masukkan kod ibu bapa</translation>
 <translation id="5881540930187678962">Sediakan Hab Telefon kemudian</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
@@ -694,7 +693,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
 <translation id="6490471652906364588">Peranti USB-C (port kanan)</translation>
 <translation id="649452524636452238">PIN kad pintar</translation>
-<translation id="6500818810472529210">Lihat hasil dalam Google Search</translation>
 <translation id="6501401484702599040">Menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Pilih tetingkap untuk menangkap imej</translation>
 <translation id="652139407789908527">Skrin anda akan menjadi kosong lebih lama daripada biasa (sehingga seminit) semasa kemas kini ini. Jangan tekan butang kuasa semasa kemas kini sedang berlangsung.</translation>
@@ -939,6 +937,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8413272770729657668">Rakaman akan bermula dalam masa 3, 2, 1</translation>
 <translation id="8425213833346101688">Tukar</translation>
 <translation id="8426708595819210923">Selamat petang <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Pengimlakan menghantar suara anda kepada Google untuk membolehkan penaipan suara dalam mana-mana medan teks.</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8433186206711564395">Tetapan rangkaian</translation>
 <translation id="8433977262951327081">Pintasan untuk menunjukkan gelembung menu pilihan input dalam rak telah berubah. Sila gunakan <ph name="NEW_SHORTCUT" /> dan bukannya <ph name="OLD_SHORTCUT" />.</translation>
@@ -992,7 +991,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8818320199597151042">Mengalih keluar profil. Tunggu beberapa minit.</translation>
 <translation id="8825863694328519386">Leret dari kiri untuk kembali</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Anda boleh menghentikan tangkapan paket pada bila-bila masa.</translation>
 <translation id="8841375032071747811">Butang kembali</translation>
 <translation id="8843682306134542540">Togol kunci putaran. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Carian+Esc</translation>

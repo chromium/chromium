@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS தாமதம்</translation>
 <translation id="123124571410524056">போர்டல் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
-<translation id="1264369926465113395">Chromebookகின், கிரியேட்டர்களுக்கான புதிய டிஜிட்டல் பத்திரிகையைப் பார்க்கவும்</translation>
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">ஸ்கேன் செய்ய, ஸ்கேனரில் ஆவணத்தை வைத்துவிட்டு ஸ்கேன் செய் என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
+<translation id="2983662233540284543">கேம் கிரியேட்டரிடம் இருந்து கற்றுக்கொள்ளலாம், கேமை வடிவமைப்பதற்கான ஆப்ஸைப் பதிவிறக்கலாம், மேலும் பல பலன்களைப் பெறலாம்</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான கோப்புறையைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="3540383942695635079">MAC முகவரி</translation>
 <translation id="357889014807611375">கட்டண வைஃபை</translation>
-<translation id="3582041541988388905">எந்த <ph name="NETWORK_NAME" /> இணைப்பும் கண்டறியப்படவில்லை</translation>
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
 <translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
-<translation id="3858860766373142691">பெயர்</translation>
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="387301095347517405">உங்கள் பேட்டரி முழுமையாகச் சார்ஜ் செய்யப்பட்ட எண்ணிக்கை</translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">நினைவகம்</translation>
 <translation id="5168185087976003268">பேட்டரி நிலை</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
+<translation id="519607504553633437">கேம்களை வடிவமைத்து உருவாக்குங்கள்</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>
 <translation id="5222676887888702881">வெளியேறு</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">குடும்பம்</translation>
 <translation id="5701381305118179107">மையம்</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">சொந்த கேமை உருவாக்குக</translation>
 <translation id="5760715441271661976">போர்டல் நிலை</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
@@ -296,7 +296,6 @@
 <translation id="65587193855025101">ஃபிளாட்பெட்</translation>
 <translation id="6564646048574748301">பிரிண்டரை அணுக முடியாததால் அச்சிட முடியவில்லை</translation>
 <translation id="6574762126505704998">முழுத் திரை</translation>
-<translation id="6579235177984085399">வரைபடம் &amp; வடிவமைப்பிற்கான புதிய கருவிகளைக் கண்டறியுங்கள்</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6603230386432466813">இணைப்பதில் சிக்கலா?</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
@@ -376,9 +375,7 @@
 <translation id="8214184102975786227">பல பக்கங்களை ஒரே PDF ஃபைலாக ஸ்கேன் செய்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
-<translation id="8286154143153872371">வால்பேப்பரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="8291967909914612644">உள்நாட்டு மொபைல் சேவை வழங்குநரின் நாடு</translation>
-<translation id="829270796093605079">வடிவமைப்புக் கருவிகள்</translation>
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8297006494302853456">வலுவாக இல்லை</translation>
 <translation id="8302368968391049045">HTTPS ஃபயர்வால்</translation>

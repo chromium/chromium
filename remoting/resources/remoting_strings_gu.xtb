@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">અનપેક્ષિત ભૂલ આવી. કૃપા કરીને વિકાસકર્તાઓને આ સમસ્યાની જાણ કરો.</translation>
 <translation id="1697532407822776718">તમારું બધું સેટ છે!</translation>
 <translation id="1742469581923031760">કનેક્ટ કરી રહ્યું છે...</translation>
-<translation id="177040763384871009">રિમોટ ડિવાઇસ પર ક્લિક કરેલી લિંકને ક્લાયન્ટ બ્રાઉઝર પર ખોલવાની મંજૂરી આપવા માટે, તમારે સિસ્ટમના વેબ બ્રાઉઝરને "<ph name="URL_FORWARDER_NAME" />"માં બદલવાની જરૂર છે.</translation>
 <translation id="177096447311351977">ક્લાઇન્ટ માટે ચેનલ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ચેનલ='<ph name="CHANNEL_TYPE" />' કનેક્શન='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ડિલીટ કરો</translation>
 <translation id="2009755455353575666">કનેક્શન નિષ્ફળ થયું</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">ઑફલાઇન.</translation>
 <translation id="3695446226812920698">જાણો કેવી રીતે</translation>
 <translation id="3776024066357219166">તમારું Chrome રીમોટ ડેસ્કટૉપ સત્ર સમાપ્ત થયું.</translation>
-<translation id="3858860766373142691">નામ</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
 <translation id="3905196214175737742">અમાન્ય હોસ્ટ માલિક ડોમેન.</translation>
 <translation id="3931191050278863510">હોસ્ટ રોક્યું.</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">ક્લાઇન્ટ માટે ઍક્સેસ નકારી: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ક્લાઇન્ટ કનેક્ટ થયાં: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">એકાઉન્ટ બદલો</translation>
-<translation id="7535110896613603182">ડિફૉલ્ટ ઍપના સેટિંગ ખોલો</translation>
 <translation id="7628469622942688817">આ ઉપકરણ પર મારો પિન યાદ રાખો.</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7658239707568436148">રદ કરો</translation>

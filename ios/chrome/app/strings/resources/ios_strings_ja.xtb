@@ -112,6 +112,7 @@
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
 <translation id="2021670401941426298">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
+<translation id="2022352537516230970">iPhone 向けの設計</translation>
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -288,10 +289,8 @@
 <translation id="3779810277399252432">インターネットに接続されていません。</translation>
 <translation id="3783017676699494206">画像を保存</translation>
 <translation id="3789841737615482174">インストール</translation>
-<translation id="380329542618494757">名前</translation>
 <translation id="3803696231112616155">このサイトを翻訳するか尋ねる</translation>
 <translation id="385051799172605136">戻る</translation>
-<translation id="3858860766373142691">名前</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3913386780052199712">Chrome にログイン</translation>
@@ -322,6 +321,7 @@
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
 <translation id="4181841719683918333">言語</translation>
+<translation id="4184011057600693970">iPad 向けの設計</translation>
 <translation id="424315890655130736">パスフレーズの入力</translation>
 <translation id="4263576668337963058">利用可能なページ操作を表示</translation>
 <translation id="4267380167363222949">次のタブ</translation>

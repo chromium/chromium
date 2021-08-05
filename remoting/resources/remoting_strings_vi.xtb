@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Đã xảy ra lỗi không mong muốn. Vui lòng báo cáo vấn đề này cho nhà phát triển.</translation>
 <translation id="1697532407822776718">Bạn đã hoàn tất!</translation>
 <translation id="1742469581923031760">Đang kết nối...</translation>
-<translation id="177040763384871009">Để cho phép trình duyệt trên máy khách mở các đường liên kết được nhấp vào trên thiết bị từ xa, bạn cần thay đổi trình duyệt web của hệ thống thành "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP kênh dành cho ứng dụng khách: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' kênh='<ph name="CHANNEL_TYPE" />' kết nối='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Xóa</translation>
 <translation id="2009755455353575666">Không kết nối được</translation>
@@ -57,7 +56,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="369442766917958684">Ngoại tuyến.</translation>
 <translation id="3695446226812920698">Tìm hiểu cách thức</translation>
 <translation id="3776024066357219166">Phiên Chrome Remote Desktop của bạn đã kết thúc.</translation>
-<translation id="3858860766373142691">Tên</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Miền của chủ sở hữu máy chủ không hợp lệ.</translation>
 <translation id="3931191050278863510">Máy chủ đã dừng lại.</translation>
@@ -143,7 +141,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="7434397035092923453">Truy cập bị từ chối đối với ứng dụng khách: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Ứng dụng khách đã kết nối: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Thay đổi tài khoản</translation>
-<translation id="7535110896613603182">Mở phần Cài đặt ứng dụng mặc định</translation>
 <translation id="7628469622942688817">Nhớ mã PIN của tôi trên thiết bị này.</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Hủy</translation>

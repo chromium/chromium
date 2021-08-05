@@ -618,7 +618,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
-<translation id="5867217927013474703">Nätverksinformation samlas in</translation>
 <translation id="5876666360658629066">Ange föräldrakod</translation>
 <translation id="5881540930187678962">Konfigurera Phone Hub senare</translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -693,7 +692,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6482559668224714696">Helskärmsförstoring</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="649452524636452238">Pinkod till smartkort</translation>
-<translation id="6500818810472529210">Visa resultat på Google Sök</translation>
 <translation id="6501401484702599040">Skärmen castas till <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Välj ett fönster att ta en bild av</translation>
 <translation id="652139407789908527">Det är tomt på skärmen längre än vanligt (i upp till en minut) under den här uppdateringen. Tryck inte på strömbrytaren medan uppdateringen pågår.</translation>
@@ -938,6 +936,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8413272770729657668">Inspelningen startar om 3, 2, 1</translation>
 <translation id="8425213833346101688">Ändra</translation>
 <translation id="8426708595819210923">Hej <ph name="GIVEN_NAME" />!</translation>
+<translation id="8427213022735114808">Med diktering skickas det du säger till Google så att du kan tala in text i vilket textfält som helst.</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8433186206711564395">Nätverksinställningar</translation>
 <translation id="8433977262951327081">Kortkommandot för att visa menybubblan för inmatningsalternativ i hyllan har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8818320199597151042">Tar bort profilen. Vänta några minuter.</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Du kan avsluta paketanalysen när som helst.</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>

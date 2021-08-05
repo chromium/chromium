@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Þetta hreinsar <ph name="DATASIZE" /> af gögnum og fótsporum sem geymd eru af vefsvæðum og forritum á heimaskjánum.</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
+<translation id="1195941046451948919">Viltu örugglega endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1242008676835033345">Fellt inn á <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stöðva</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Nánar</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
+<translation id="4708011789095599544">Viltu örugglega hreinsa fótspor og önnur gögn fyrir þetta vefsvæði?</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
 <translation id="4836046166855586901">Spyrja þegar vefsvæði vill vita hvenær þú notar þetta tæki</translation>
 <translation id="4883854917563148705">Ekki er hægt að endurstilla stýrðar stillingar</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6388207532828177975">Hreinsa og endurstilla</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
+<translation id="6423924377271166037">Hreinsa fótspor</translation>
 <translation id="6439114592976064011">Loka á að vefsvæði fái að nota sýndarveruleikatækið og -gögnin þín</translation>
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6527303717912515753">Deila</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="930525582205581608">Gleyma þessu vefsvæði?</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 </translationbundle>

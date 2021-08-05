@@ -88,6 +88,7 @@
 <translation id="2862104018715411648">将您的文件放置在扫描仪上，然后选择“扫描”即可开始扫描</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
+<translation id="2983662233540284543">向游戏创作者学习、获取游戏设计应用，等等</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -119,7 +120,6 @@
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3540383942695635079">MAC 地址</translation>
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
-<translation id="3582041541988388905">未检测到<ph name="NETWORK_NAME" />连接</translation>
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
@@ -130,7 +130,6 @@
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
 <translation id="3838338534323494292">新密码</translation>
-<translation id="3858860766373142691">名称</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
@@ -213,6 +212,7 @@
 <translation id="5154917547274118687">内存</translation>
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
+<translation id="519607504553633437">设计和构建您自己的游戏</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
 请尝试通过点按麦克风图标向我提问。</translation>
 <translation id="5222676887888702881">退出</translation>
@@ -246,6 +246,7 @@
 <translation id="5691511426247308406">家用</translation>
 <translation id="5701381305118179107">居中</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">打造您自己的游戏</translation>
 <translation id="5760715441271661976">门户状态</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="583281660410589416">未知</translation>
@@ -268,7 +269,6 @@
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
 <translation id="6122191549521593678">在线</translation>
-<translation id="6125438912510167220">连接速度</translation>
 <translation id="6137767437444130246">用户证书</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -374,7 +374,6 @@
 <translation id="8214184102975786227">将多个页面扫描成 1 个 PDF 文件</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8246209727385807362">未知运营商</translation>
-<translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>
 <translation id="8291967909914612644">家用移动网络提供商所属国家/地区</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8297006494302853456">弱</translation>

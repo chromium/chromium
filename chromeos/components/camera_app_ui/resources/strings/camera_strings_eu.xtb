@@ -4,7 +4,7 @@
 <translation id="1175958423215084756">Esteka bat hauteman da. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galeriako irudiak</translation>
 <translation id="1300209025925956156">Eskaneatu dokumentua</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Atzitzeko, sakatu bilaketa-tekla + ezkerrera egiteko gezi-tekla.</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Atzitzeko, sakatu bilaketa-tekla + ezkerrera.</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> deskonektatuta dago.</translation>
 <translation id="1473110567575736769">Hiru segundoko tenporizadorea</translation>
@@ -65,7 +65,7 @@
 <translation id="5057360777601936059">Kamera ez dago erabilgarri une honetan.
         Egiaztatu kamera ongi konektatuta dagoela.</translation>
 <translation id="5152121255775685072">Joan galeriara</translation>
-<translation id="520537883758714667">Dokumentuak eskaneatzeko eginbidea eskuragarri dago</translation>
+<translation id="520537883758714667">Dokumentuak eskaneatzeko eskuragarri daude</translation>
 <translation id="5268823927180092501">Gaitu dokumentu modua kamera guztietan</translation>
 <translation id="5422455049771430511">Etxe berria dute zure argazki eta bideoek</translation>
 <translation id="5444515100983837161">Jarri dokumentuaren ertz guztiak markoaren barruan. Hobeto eskaneatzen da dokumentuaren eta hondoaren koloreak ezberdinak badira.</translation>

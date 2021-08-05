@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS 지연 시간</translation>
 <translation id="123124571410524056">포털 의심됨</translation>
 <translation id="1238612778414822719">HTTPS 지연 시간</translation>
-<translation id="1264369926465113395">크리에이터를 위한 Chromebook 활용 방법을 소개하는 새로운 디지털 잡지를 확인하세요.</translation>
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">시작하려면 스캐너에 문서를 놓고 스캔을 선택하세요.</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
+<translation id="2983662233540284543">게임 크리에이터에게 배우기, 게임 디자인 앱 받기 등</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="3540383942695635079">MAC 주소</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
-<translation id="3582041541988388905"><ph name="NETWORK_NAME" /> 연결이 감지되지 않음</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
-<translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">메모리</translation>
 <translation id="5168185087976003268">배터리 상태</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
+<translation id="519607504553633437">나만의 게임 디자인 및 개발하기</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
 마이크를 탭하여 무엇이든지 물어보세요.</translation>
 <translation id="5222676887888702881">로그아웃</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">가족</translation>
 <translation id="5701381305118179107">가운데</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">게임 직접 만들기</translation>
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -296,7 +296,6 @@
 <translation id="65587193855025101">평판</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
 <translation id="6574762126505704998">채우기</translation>
-<translation id="6579235177984085399">새로운 그리기 및 디자인 도구 살펴보기</translation>
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6603230386432466813">연결하는 데 문제가 있나요?</translation>
 <translation id="6618744767048954150">실행 중</translation>
@@ -376,9 +375,7 @@
 <translation id="8214184102975786227">여러 장의 페이지를 스캔하여 하나의 PDF 만들기</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>
-<translation id="8286154143153872371">배경화면을 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="8291967909914612644">홈 공급자 국가</translation>
-<translation id="829270796093605079">디자인 도구 살펴보기</translation>
 <translation id="8294431847097064396">출처</translation>
 <translation id="8297006494302853456">약함</translation>
 <translation id="8302368968391049045">HTTPS 방화벽</translation>

@@ -618,7 +618,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
-<translation id="5867217927013474703">Zhromažďujú sa informácie o sieti</translation>
 <translation id="5876666360658629066">Zadajte kód rodiča</translation>
 <translation id="5881540930187678962">Nastavte si Telefónne centrum neskôr</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
@@ -693,7 +692,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
-<translation id="6500818810472529210">Zobrazte si výsledok vo Vyhľadávaní Google</translation>
 <translation id="6501401484702599040">Prenášanie obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Vyberte okno, ktoré chcete nasnímať</translation>
 <translation id="652139407789908527">Počas tejto aktualizácie bude vaša obrazovka prázdna dlhšie ako zvyčajne (maximálne minútu). V priebehu aktualizácie nestláčajte vypínač.</translation>
@@ -938,6 +936,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8413272770729657668">Nahrávanie sa začne o 3, 2, 1</translation>
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Diktovanie odosiela váš hlas do Googlu a umožňuje tak hlasové zadávanie do všetkých textových polí.</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8433186206711564395">Nastavenia siete</translation>
 <translation id="8433977262951327081">Klávesová skratka na zobrazenie bubliny s možnosťami vstupu na poličke sa zmenila. Namiesto skratky <ph name="OLD_SHORTCUT" /> použite skratku <ph name="NEW_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8818320199597151042">Odstraňuje sa profil. Počkajte niekoľko minút.</translation>
 <translation id="8825863694328519386">Vrátite sa potiahnutím zľava</translation>
 <translation id="8828714802988429505">90 °</translation>
-<translation id="8832757911363938552">Snímanie balíka môžete kedykoľvek zastaviť.</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>
 <translation id="8843682306134542540">Prepnúť uzamknutie otočenia. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Hľadať+Esc</translation>

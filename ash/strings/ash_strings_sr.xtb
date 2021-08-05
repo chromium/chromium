@@ -618,7 +618,6 @@
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
-<translation id="5867217927013474703">Прикупљају се информације о мрежи</translation>
 <translation id="5876666360658629066">Унесите кôд родитеља</translation>
 <translation id="5881540930187678962">Подесите Phone Hub касније</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -693,7 +692,6 @@
 <translation id="6482559668224714696">Лупа за цео екран</translation>
 <translation id="6490471652906364588">Уређај са USB прикључком типа C (десни порт)</translation>
 <translation id="649452524636452238">PIN паметне картице</translation>
-<translation id="6500818810472529210">Погледајте резултат у Google претрази</translation>
 <translation id="6501401484702599040">Екран се пребацује на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Изаберите прозор за снимање</translation>
 <translation id="652139407789908527">Током овог ажурирања екран ће бити празан дуже него обично (и до минут). Не притискајте дугме за укључивање док је ажурирање у току.</translation>
@@ -938,6 +936,7 @@
 <translation id="8413272770729657668">Снимање почиње за 3, 2, 1</translation>
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8426708595819210923">Добро вече, <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Диктирање шаље глас Google-у да би се омогућило писање гласом у пољима за текст.</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8433186206711564395">Мрежна подешавања</translation>
 <translation id="8433977262951327081">Промењена је пречица за приказивање облачића за мени Опције уноса на полици. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@
 <translation id="8818320199597151042">Профил се уклања. Сачекајте неколико минута.</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Снимање пакета можете да зауставите у сваком тренутку.</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

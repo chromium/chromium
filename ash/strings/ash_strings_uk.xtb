@@ -618,7 +618,6 @@
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
-<translation id="5867217927013474703">Збір інформації про мережу</translation>
 <translation id="5876666360658629066">Введіть батьківський код</translation>
 <translation id="5881540930187678962">Налаштуйте функцію "Керування телефоном" пізніше</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
@@ -693,7 +692,6 @@
 <translation id="6482559668224714696">Лупа для всього екрана</translation>
 <translation id="6490471652906364588">Пристрій із портом USB типу C (праворуч)</translation>
 <translation id="649452524636452238">PIN-код розумної картки</translation>
-<translation id="6500818810472529210">Переглянути результати в Пошуку Google</translation>
 <translation id="6501401484702599040">Вміст екрана транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6520517963145875092">Виберіть вікно, знімок якого потрібно зробити</translation>
 <translation id="652139407789908527">Під час цього оновлення зображення на екрані зникне на довше, ніж зазвичай (до хвилини). Не натискайте кнопку живлення, поки триває оновлення.</translation>
@@ -938,6 +936,7 @@
 <translation id="8413272770729657668">Зараз почнеться запис: 3, 2, 1</translation>
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8426708595819210923">Доброго вечора, <ph name="GIVEN_NAME" />!</translation>
+<translation id="8427213022735114808">Диктування надсилає зразок вашого голосу в Google, щоб дозволити голосовий ввід у будь-якому текстовому полі.</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="8433977262951327081">Комбінація клавіш для виклику спливаючої підказки з опціями введення змінилась. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@
 <translation id="8818320199597151042">Видаляється профіль. Зачекайте кілька хвилин.</translation>
 <translation id="8825863694328519386">Щоб повернутися, проведіть пальцем від лівого краю</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Ви можете будь-коли зупинити захоплення пакетів.</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Заблокувати/розблокувати обертання. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search (Пошук)+Esc</translation>

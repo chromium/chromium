@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Radās neparedzēta kļūda. Lūdzu, ziņojiet par šo problēmu izstrādātājiem.</translation>
 <translation id="1697532407822776718">Gatavs!</translation>
 <translation id="1742469581923031760">Notiek savienojuma izveide…</translation>
-<translation id="177040763384871009">Lai klienta pārlūkā varētu atvērt saites, uz kurām tiek noklikšķināts attālajā ierīcē, jums ir jāmaina sistēmas pārlūks uz “<ph name="URL_FORWARDER_NAME" />”.</translation>
 <translation id="177096447311351977">Klienta kanāla IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Dzēst</translation>
 <translation id="2009755455353575666">Savienojuma kļūme</translation>
@@ -57,7 +56,6 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="369442766917958684">Bezsaistē.</translation>
 <translation id="3695446226812920698">Uzzināt vairāk</translation>
 <translation id="3776024066357219166">Jūsu Chrome attālās darbvirsmas sesija ir pārtraukta.</translation>
-<translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3897092660631435901">Izvēlne</translation>
 <translation id="3905196214175737742">Saimniekdatora īpašnieka domēns nav derīgs.</translation>
 <translation id="3931191050278863510">Saimniekdatora darbība ir apturēta.</translation>
@@ -143,7 +141,6 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="7434397035092923453">Piekļuve liegta šim klientam: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klients, kas izveidojis savienojumu: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Mainīt kontu</translation>
-<translation id="7535110896613603182">Atvērt noklusējuma lietotņu iestatījumus</translation>
 <translation id="7628469622942688817">Atcerēties manu PIN šajā ierīcē.</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7658239707568436148">Atcelt</translation>

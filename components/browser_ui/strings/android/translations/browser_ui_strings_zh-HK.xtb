@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">此操作會清除 <ph name="DATASIZE" /> 主畫面上各個網站或應用程式儲存的資料和 Cookie。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1195941046451948919">確定要重設此網站的所有權限嗎？</translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1242008676835033345">嵌入至 <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">停止</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4708011789095599544">確定要清除此網站的 Cookie 和其他網站資料嗎？</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4836046166855586901">在網站要求知道您是否正在使用此裝置時詢問您</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">震動</translation>
 <translation id="6388207532828177975">清除並重設</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
+<translation id="6423924377271166037">清除 Cookie</translation>
 <translation id="6439114592976064011">禁止網站使用您的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">分享</translation>

@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
 <translation id="123124571410524056">تم الاشتباه في مدخل.</translation>
 <translation id="1238612778414822719">‏وقت استجابة بروتوكول HTTPS</translation>
-<translation id="1264369926465113395">‏اطّلِع على المجلة الرقمية الجديدة المخصّصة لمنشئي المحتوى على أجهزة Chromebook.</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">للبدء، يُرجى وضع المستند على الماسح الضوئي واختيار "المسح ضوئيًا".</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
+<translation id="2983662233540284543">يمكنك تعلّم تصميم الألعاب من أحد منشئي الألعاب والحصول على التطبيقات الخاصة بتصميم الألعاب وغير ذلك.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
 <translation id="3540383942695635079">‏عنوان MAC</translation>
 <translation id="357889014807611375">‏شبكة Wi-Fi تفرض تكلفة استخدام</translation>
-<translation id="3582041541988388905">لم يتم اكتشاف اتصال <ph name="NETWORK_NAME" />.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
-<translation id="3858860766373142691">الاسم</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">الذاكرة</translation>
 <translation id="5168185087976003268">حالة البطارية</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
+<translation id="519607504553633437">تصميم ألعابك وإنشاؤها بنفسك</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
@@ -247,6 +246,7 @@
 <translation id="5691511426247308406">العائلة</translation>
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> من <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">أنشئ لعبتك</translation>
 <translation id="5760715441271661976">حالة المدخل</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
 <translation id="583281660410589416">غير معروف</translation>
@@ -296,7 +296,6 @@
 <translation id="65587193855025101">المسطَّح</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
 <translation id="6574762126505704998">تعبئة</translation>
-<translation id="6579235177984085399">الاطّلاع على أدوات الرسم والتصميم الجديدة</translation>
 <translation id="6596816719288285829">‏عنوان IP</translation>
 <translation id="6603230386432466813">هل تواجه مشكلة أثناء الاتصال؟</translation>
 <translation id="6618744767048954150">قيد التشغيل</translation>
@@ -376,9 +375,7 @@
 <translation id="8214184102975786227">‏مسح صفحات متعدّدة ضوئيًا وتحويلها إلى ملف PDF واحد</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
-<translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
 <translation id="8291967909914612644">بلد مقدم الخدمة الرئيسي</translation>
-<translation id="829270796093605079">التعرّف على أدوات التصميم</translation>
 <translation id="8294431847097064396">المصدر</translation>
 <translation id="8297006494302853456">ضعيفة</translation>
 <translation id="8302368968391049045">‏الجدار الناري لبروتوكول HTTPS</translation>

@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Овa ќе ги избрише податоците и колачињата (<ph name="DATASIZE" />) складирани од сајтови или апликации на почетниот екран.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
+<translation id="1195941046451948919">Дали сигурно сакате да ги ресетирате сите дозволи за веб-сајтов?</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1242008676835033345">Вметнато во <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Запри</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Детали</translation>
 <translation id="4645575059429386691">Управувано од вашиот родител</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
+<translation id="4708011789095599544">Дали сте сигурни дека сакате да ги исчистите колачињата и другите податоците од сајтот за овој веб-сајт?</translation>
 <translation id="4751476147751820511">Сензори за движење или светлина</translation>
 <translation id="4836046166855586901">Прашувај кога некој сајт ќе сака да знае дали активно го користам уредов</translation>
 <translation id="4883854917563148705">Управуваните поставки не може да се ресетираат</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Вибрации</translation>
 <translation id="6388207532828177975">Исчисти и ресетирај</translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
+<translation id="6423924377271166037">Избриши ги колачињата</translation>
 <translation id="6439114592976064011">Не дозволувај сајтовите да ги користат уредот и податоците за виртуелна реалност</translation>
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6527303717912515753">Сподели</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> друго}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> друго}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> други}}</translation>
 <translation id="913657688200966289">Вклучете ги дозволите за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">Страницава е опасна</translation>
 <translation id="930525582205581608">Да се заборави сајтов?</translation>
 <translation id="967624055006145463">Складирани податоци</translation>
 </translationbundle>

@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="123124571410524056">Mahdollinen portaali</translation>
 <translation id="1238612778414822719">HTTPS-viive</translation>
-<translation id="1264369926465113395">Tutustu Chromebookin uuteen, sisällöntuottajille tarkoitettuun digitaaliseen lehteen</translation>
 <translation id="1270369111467284986">Mahdollinen captive portal</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">Aseta dokumentti skanneriin ja aloita valitsemalla Skannaa</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
+<translation id="2983662233540284543">Opi pelikehittäjältä, asenna pelisuunnittelusovelluksia ym.</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3540383942695635079">MAC-osoite</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
-<translation id="3582041541988388905">Yhteyttä ei havaittu: <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">Tyhjennä koko historia</translation>
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
-<translation id="3858860766373142691">Nimi</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">Muisti</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
+<translation id="519607504553633437">Suunnittele ja luo omia pelejäsi</translation>
 <translation id="5212543919916444558">En löydä näytöltä mitään, minkä kanssa voisin auttaa sinua.
 Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
@@ -247,6 +246,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5691511426247308406">Perhe</translation>
 <translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">Luo oma peli</translation>
 <translation id="5760715441271661976">Portaalitila</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="583281660410589416">Tuntematon</translation>
@@ -296,7 +296,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="65587193855025101">Tasoskanneri</translation>
 <translation id="6564646048574748301">Epäonnistui – Ei yhteyttä tulostimeen</translation>
 <translation id="6574762126505704998">Täytä</translation>
-<translation id="6579235177984085399">Löydä uusia piirto- ja suunnittelutyökaluja</translation>
 <translation id="6596816719288285829">IP-osoite</translation>
 <translation id="6603230386432466813">Eikö yhdistäminen onnistu?</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
@@ -376,9 +375,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8214184102975786227">Skannaa useita sivuja yhteen PDF-tiedostoon</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
-<translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>
 <translation id="8291967909914612644">Kotiverkon palveluntarjoajan maa</translation>
-<translation id="829270796093605079">Suunnittelutyökaluja</translation>
 <translation id="8294431847097064396">Lähde</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8302368968391049045">HTTPS-palomuuri</translation>

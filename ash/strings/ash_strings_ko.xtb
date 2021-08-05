@@ -618,7 +618,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
-<translation id="5867217927013474703">네트워크 정보 수집 중</translation>
 <translation id="5876666360658629066">부모 코드 입력</translation>
 <translation id="5881540930187678962">휴대전화 허브 나중에 설정하기</translation>
 <translation id="5895138241574237353">다시 시작</translation>
@@ -693,7 +692,6 @@
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="649452524636452238">스마트 카드 PIN</translation>
-<translation id="6500818810472529210">Google 검색에서 결과 보기</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />(으)로 화면 전송 중</translation>
 <translation id="6520517963145875092">캡처할 창을 선택하세요.</translation>
 <translation id="652139407789908527">업데이트 중에 평소보다 오래(최대 1분) 화면에 아무 내용도 나타나지 않을 수 있습니다. 업데이트가 진행되는 동안에는 전원 버튼을 누르지 마시기 바랍니다.</translation>
@@ -938,6 +936,7 @@
 <translation id="8413272770729657668">녹화가 곧 시작됩니다. 3, 2, 1</translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8426708595819210923">편안한 저녁 보내세요, <ph name="GIVEN_NAME" />님</translation>
+<translation id="8427213022735114808">음성기록을 사용하면 모든 텍스트 입력란에서 음성 입력 기능을 지원하기 위해 Google에 음성이 전송됩니다.</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8433977262951327081">실행기에서 입력 옵션 메뉴 도움말 풍선을 표시하는 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
@@ -991,7 +990,6 @@
 <translation id="8818320199597151042">프로필을 삭제하는 중입니다. 잠시만 기다려 주세요.</translation>
 <translation id="8825863694328519386">돌아가려면 왼쪽에서 스와이프하세요.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">언제든지 패킷 캡처를 중단할 수 있습니다.</translation>
 <translation id="8841375032071747811">뒤로 버튼</translation>
 <translation id="8843682306134542540">회전 잠금을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

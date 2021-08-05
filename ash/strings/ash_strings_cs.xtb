@@ -618,7 +618,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
-<translation id="5867217927013474703">Shromažďování informací o síti</translation>
 <translation id="5876666360658629066">Zadejte rodičovský kód</translation>
 <translation id="5881540930187678962">Nastavte Telefonní centrum později</translation>
 <translation id="5895138241574237353">Restartovat</translation>
@@ -693,7 +692,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6482559668224714696">Lupa celé obrazovky</translation>
 <translation id="6490471652906364588">Zařízení USB Type-C (pravý port)</translation>
 <translation id="649452524636452238">PIN chytré karty</translation>
-<translation id="6500818810472529210">Zobrazit výsledek ve Vyhledávání Google</translation>
 <translation id="6501401484702599040">Odesílání obrazovky do zařízení <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Vyberte okno, které chcete zachytit</translation>
 <translation id="652139407789908527">Během této aktualizace bude obrazovka prázdná delší dobu než obvykle (až minutu). V průběhu aktualizace nemačkejte vypínač.</translation>
@@ -938,6 +936,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8413272770729657668">Nahrávání začne za 3, 2, 1</translation>
 <translation id="8425213833346101688">Změnit</translation>
 <translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">Diktování odesílá váš hlas do Googlu, aby bylo možné hlasově zadávat do libovolného textového pole.</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8433186206711564395">Nastavení sítě</translation>
 <translation id="8433977262951327081">Klávesová zkratka k zobrazení bubliny s možnostmi vstupu na poličce se změnila. Namísto zkratky <ph name="OLD_SHORTCUT" /> používejte zkratku <ph name="NEW_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8818320199597151042">Odstraňování profilu. Několik minut počkejte.</translation>
 <translation id="8825863694328519386">Chcete-li se vrátit, přejeďte prstem zleva</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Záznam paketů lze kdykoli ukončit.</translation>
 <translation id="8841375032071747811">Tlačítko Zpět</translation>
 <translation id="8843682306134542540">Přepnout zámek otáčení. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Hledat+Esc</translation>

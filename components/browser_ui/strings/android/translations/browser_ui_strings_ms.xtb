@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Tindakan ini akan mengosongkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh tapak atau apl pada Skrin utama anda.</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
+<translation id="1195941046451948919">Betulkah anda mahu menetapkan semula semua kebenaran untuk tapak web ini?</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Berhenti</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Butiran</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
+<translation id="4708011789095599544">Adakah anda pasti anda ingin mengosongkan kuki dan data tapak lain bagi tapak web ini?</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
 <translation id="4836046166855586901">Tanya apabila laman ingin mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4883854917563148705">Tetapan yang diurus tidak dapat ditetapkan semula</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Getar</translation>
 <translation id="6388207532828177975">Kosongkan &amp; tetapkan semula</translation>
 <translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
+<translation id="6423924377271166037">Padam kuki</translation>
 <translation id="6439114592976064011">Sekat tapak daripada menggunakan peranti dan data realiti maya anda</translation>
 <translation id="6447842834002726250">Kuki</translation>
 <translation id="6527303717912515753">Kongsi</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}}</translation>
 <translation id="913657688200966289">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
-<translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="930525582205581608">Lupakan laman ini?</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 </translationbundle>

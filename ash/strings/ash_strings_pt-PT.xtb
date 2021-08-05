@@ -618,7 +618,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
-<translation id="5867217927013474703">A recolher informações da rede</translation>
 <translation id="5876666360658629066">Introduza o código parental</translation>
 <translation id="5881540930187678962">Configure o Phone Hub mais tarde</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -693,7 +692,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6482559668224714696">Lupa de ecrã inteiro</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
 <translation id="649452524636452238">PIN do cartão inteligente</translation>
-<translation id="6500818810472529210">Veja o resultado na Pesquisa Google</translation>
 <translation id="6501401484702599040">A transmitir o ecrã para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Selecione uma janela para capturar.</translation>
 <translation id="652139407789908527">O ecrã vai ficar em branco durante mais tempo do que o habitual (até um minuto) durante esta atualização. Não prima o botão ligar/desligar enquanto a atualização estiver em curso.</translation>
@@ -938,6 +936,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8413272770729657668">A gravação vai começar em 3, 2, 1</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8426708595819210923">Boa noite, <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">A introdução por voz envia a sua voz para o Google para permitir a digitação por voz em qualquer campo de texto.</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8433186206711564395">Definições de rede</translation>
 <translation id="8433977262951327081">O atalho para mostrar o balão do menu de opções de introdução na prateleira foi alterado. Utilize <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +990,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8818320199597151042">A remover o perfil. Aguarde alguns minutos.</translation>
 <translation id="8825863694328519386">Deslize rapidamente a partir da esquerda para retroceder.</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Pode parar a captura de pacotes em qualquer altura.</translation>
 <translation id="8841375032071747811">Botão Anterior</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>

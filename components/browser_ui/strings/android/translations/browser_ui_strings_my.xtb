@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">၎င်းက သင့် 'ပင်မစာမျက်နှာ' ပေါ်ရှိ ဝဘ်ဆိုက် သို့မဟုတ် အက်ပ်များက သိမ်းထားသည့် ဒေတာနှင့် ကွတ်ကီး <ph name="DATASIZE" /> ကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
+<translation id="1195941046451948919">ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုချက်အားလုံးကို ပြင်ဆင်သတ်မှတ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> တွင် မြှုပ်သွင်းထားသည်</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">အသေးစိတ်</translation>
 <translation id="4645575059429386691">သင့်မိဘမှ စီမံသည်</translation>
 <translation id="4670064810192446073">ပကတိအသွင်</translation>
+<translation id="4708011789095599544">ဤဝဘ်ဆိုက်အတွက် ကွတ်ကီးများနှင့် အခြားဝဘ်ဆိုက်ဒေတာများကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="4751476147751820511">လှုပ်ရှားမှု သို့မဟုတ် အလင်းအာရုံခံကိရိယာများ</translation>
 <translation id="4836046166855586901">ဤကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်ကသိလိုသည့်အခါ ခွင့်တောင်းရန်</translation>
 <translation id="4883854917563148705">စီမံထားသော ဆက်တင်များကို ပြင်ဆင်သတ်မှတ်၍ မရပါ</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">တုန်ခါခြင်း</translation>
 <translation id="6388207532828177975">ရှင်းလင်းပြီး ပြန်လည်သတ်မှတ်မည်</translation>
 <translation id="6398765197997659313">မျက်နှာပြင် အပြည့်မှ ထွက်ရန်</translation>
+<translation id="6423924377271166037">ကွတ်ကီးများ ရှင်းပစ်ရန်</translation>
 <translation id="6439114592976064011">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်အောင် ပိတ်ထားရန်</translation>
 <translation id="6447842834002726250">ကူကီးများ</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်များကို ဖွင့်ပါ။</translation>
-<translation id="9162462602695099906">ဤစာမျက်နှာသည် အန္တရာယ်ရှိသည်</translation>
 <translation id="930525582205581608">ဤဝဘ်ဆိုက်ကို မေ့ပစ်မလား။</translation>
 <translation id="967624055006145463">သိမ်းဆည်းထားသည့် ဒေတာ</translation>
 </translationbundle>

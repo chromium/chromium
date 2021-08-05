@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Bunda saytlar maʼlumotlari, cookie fayllar va Bosh ekrandagi ilovalar egallagan <ph name="DATASIZE" /> joy tozalanadi.</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
+<translation id="1195941046451948919">Bu sayt uchun barcha ruxsatlar asliga qaytarilsinmi?</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> saytiga joylangan</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
@@ -69,7 +70,6 @@
 <translation id="2687403674020088961">Barcha cookie fayllarini taqiqlash (tavsiya etilmaydi)</translation>
 <translation id="2704606927547763573">Nusxa olindi</translation>
 <translation id="2717722538473713889">Email manzillar</translation>
-<translation id="2785051990912111074">Bunda <ph name="WEBSITE" /> cookie fayllari tozalanadi</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> uchun barcha sayt ruxsatnomalari ilk holatga qaytarilsinmi?</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
@@ -130,6 +130,7 @@
 <translation id="4570913071927164677">Tafsilotlar</translation>
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>
+<translation id="4708011789095599544">Bu sayt uchun cookie fayllar va boshqa sayt maʼlumotlari tozalansinmi?</translation>
 <translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
 <translation id="4836046166855586901">Sayt bu qurilmadan faol foydalanishingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
@@ -139,7 +140,6 @@
 <translation id="4976702386844183910">Oxirgi tashrif: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Hech qanday kontakt topilmadi</translation>
 <translation id="4996978546172906250">Yuborish usuli</translation>
-<translation id="5014906230196386306">Cookie fayllari tozalansinmi?</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5048398596102334565">Saytlarga harakat sensorlaridan foydalanish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="5050380848339752099">Bu sayt inkognito oynasidan tashqaridagi ilova bilan axborot ulashmoqchi.</translation>
@@ -159,7 +159,6 @@
 <translation id="5354152178998424783">Saytlar joylagan <ph name="DATASIZE" /> maʼlumot va cookie fayllar tozalab tashlanadi.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(yana 1 ta)}other{(yana # ta)}}</translation>
 <translation id="5403592356182871684">Ismlar</translation>
-<translation id="5438097262470833822">Bunda <ph name="WEBSITE" /> ruxsatlari tiklanadi</translation>
 <translation id="5489227211564503167">Ijro etilgan vaqt: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Saytlarda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin</translation>
 <translation id="5502860503640766021">Ruxsat berildi: <ph name="PERMISSION_1" />, bloklandi:<ph name="PERMISSION_2" /></translation>
@@ -202,6 +201,7 @@
 <translation id="6320088164292336938">Tebranish</translation>
 <translation id="6388207532828177975">Tozalash va asl holiga qaytarish</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
+<translation id="6423924377271166037">Cookie fayllarni tozalash</translation>
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6527303717912515753">Ulashish</translation>
@@ -216,7 +216,6 @@
 <translation id="6689172468748959065">Profil rasmlari</translation>
 <translation id="6697925417670533197">Faol yuklanmalar</translation>
 <translation id="6746124502594467657">Pastga tushish</translation>
-<translation id="6749077623962119521">Ruxsatlar tiklansinmi?</translation>
 <translation id="6766622839693428701">Yopish uchun pastga suring.</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6818926723028410516">Fayllarni tanlang</translation>
@@ -314,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
-<translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="930525582205581608">Bu sayt olib tashlansinmi?</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>
 </translationbundle>

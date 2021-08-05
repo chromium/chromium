@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">DNS várakozási ideje</translation>
 <translation id="123124571410524056">Portál valószínűsíthető</translation>
 <translation id="1238612778414822719">Várakozási idő HTTPS esetén</translation>
-<translation id="1264369926465113395">Olvassa el a Chromebook új, alkotóknak szóló digitális magazinját</translation>
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">A kezdéshez helyezze a dokumentumot a szkennerre, és válassza a Scan (Beolvasás) gombot.</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
+<translation id="2983662233540284543">Tanuljon játékkészítőktől, töltsön le játéktervező alkalmazásokat, stb.</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
 <translation id="3540383942695635079">MAC-cím</translation>
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
-<translation id="3582041541988388905">Nincs <ph name="NETWORK_NAME" />-kapcsolat</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">Minden előzmény törlése</translation>
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
 <translation id="3838338534323494292">Új jelszó</translation>
-<translation id="3858860766373142691">Név</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="387301095347517405">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">Memória</translation>
 <translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
+<translation id="519607504553633437">Tervezze meg és készítse el saját játékait</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
@@ -247,6 +246,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5691511426247308406">Család</translation>
 <translation id="5701381305118179107">Középre</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
+<translation id="5752751666635965375">Készítsen saját játékot</translation>
 <translation id="5760715441271661976">Portál állapota</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
@@ -296,7 +296,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
 <translation id="6574762126505704998">Kitöltés</translation>
-<translation id="6579235177984085399">Az új rajz- és tervezőeszközök felfedezése</translation>
 <translation id="6596816719288285829">IP-cím</translation>
 <translation id="6603230386432466813">Problémába ütközött a kapcsolódás során?</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
@@ -376,9 +375,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8214184102975786227">Több oldal szkennelése egyetlen PDF-fájlba</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
-<translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>
-<translation id="829270796093605079">Tervezőeszközök felfedezése</translation>
 <translation id="8294431847097064396">Forrás</translation>
 <translation id="8297006494302853456">Gyenge</translation>
 <translation id="8302368968391049045">HTTPS-tűzfal</translation>

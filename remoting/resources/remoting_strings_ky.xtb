@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Күтүлбөгөн ката кетти. Бул көйгөй жөнүндө иштеп чыгуучуларга кабарлаңыз.</translation>
 <translation id="1697532407822776718">Баары даяр!</translation>
 <translation id="1742469581923031760">Туташууда…</translation>
-<translation id="177040763384871009">Шилтемелерди пульт менен басып, кардардын серепчисинде ачуу үчүн тутумдун веб-серепчисин төмөнкүгө өзгөртүшүңүз керек: "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">Кардар үчүн IP каналы: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' хост_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' канал='<ph name="CHANNEL_TYPE" />' туташуу='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Жок кылуу</translation>
 <translation id="2009755455353575666">Туташпай койду</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">Оффлайн.</translation>
 <translation id="3695446226812920698">Үйрөнүп алыңыз</translation>
 <translation id="3776024066357219166">Chrome Алыскы иштакта сеансыңыз аяктады.</translation>
-<translation id="3858860766373142691">Аталышы</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3905196214175737742">Хост ээсинин жараксыз домени.</translation>
 <translation id="3931191050278863510">Хост токтотулду.</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">Төмөнкү кардарга колдонуу мүмкүнчүлүгү берилген жок: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Туташкан кардар: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Аккаунтту өзгөртүү</translation>
-<translation id="7535110896613603182">Колдонмонун демейки жөндөөлөрүн ачуу</translation>
 <translation id="7628469622942688817">Бул түзмөктө PIN кодду эске сактап коюу.</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>

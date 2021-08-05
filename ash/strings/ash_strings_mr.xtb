@@ -618,7 +618,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
-<translation id="5867217927013474703">नेटवर्कसंबंधित माहिती गोळा करत आहे</translation>
 <translation id="5876666360658629066">पालक कोड एंटर करा</translation>
 <translation id="5881540930187678962">नंतर फोन हब सेट करा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
@@ -693,7 +692,6 @@
 <translation id="6482559668224714696">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
 <translation id="649452524636452238">स्मार्ट कार्डाचा पिन</translation>
-<translation id="6500818810472529210">Google Search मधील परिणाम पहा</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करीत आहे</translation>
 <translation id="6520517963145875092">कॅप्चर करण्यासाठी विंडो निवडा</translation>
 <translation id="652139407789908527">तुमची स्क्रीन या अपडेटदरम्यान नेहमीपेक्षा (एका मिनिटापर्यंत) जास्त वेळ बंद राहील. कृपया अपडेट सुरू असताना पॉवर बटण दाबू नका.</translation>
@@ -704,7 +702,6 @@
 <translation id="6559976592393364813">अ‍ॅडमिनिस्ट्रेटरला विचारा</translation>
 <translation id="6570902864550063460">USB वापरून चार्ज करत आहे</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> मध्ये सेशन समाप्त होते.</translation>
-<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="6612802754306526077">स्क्रीन रेकॉर्डिंग मोड निवडला आहे</translation>
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
@@ -938,6 +935,7 @@
 <translation id="8413272770729657668">रेकॉर्डिंग सुरू होणार आहे ३, २, १</translation>
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8426708595819210923">शुभ संध्याकाळ <ph name="GIVEN_NAME" />,</translation>
+<translation id="8427213022735114808">कोणत्याही मजकूर फील्डमध्ये व्हॉइस टायपिंगची अनुमती देण्यासाठी डिक्टेशन तुमचा व्हॉइस Google ला पाठवेल.</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग्ज</translation>
 <translation id="8433977262951327081">शेल्फमधील इनपुट पर्याय मेनू दर्शविण्यासाठीचा शॉर्टकट बदलला आहे. कृपया <ph name="OLD_SHORTCUT" /> ऐवजी <ph name="NEW_SHORTCUT" /> वापरा.</translation>
@@ -991,7 +989,6 @@
 <translation id="8818320199597151042">प्रोफाइल काढून टाकत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="8825863694328519386">मागे जाण्यासाठी डावीकडून स्वाइप करा</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">तुम्ही पॅकेट कॅप्चर कधीही थांबवू शकता.</translation>
 <translation id="8841375032071747811">मागे जा बटण</translation>
 <translation id="8843682306134542540">रोटेशन लॉक टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

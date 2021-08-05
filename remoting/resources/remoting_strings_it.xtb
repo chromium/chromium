@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Si è verificato un errore imprevisto. Segnala il problema agli sviluppatori.</translation>
 <translation id="1697532407822776718">Ecco fatto!</translation>
 <translation id="1742469581923031760">Connessione in corso...</translation>
-<translation id="177040763384871009">Per consentire ai link cliccati sul dispositivo remoto di essere aperti sul browser del client, è necessario cambiare il browser web del sistema con "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP canale per client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" ip_host="<ph name="HOST_IP_ADDRESS_AND_PORT" />" canale="<ph name="CHANNEL_TYPE" />" connessione="<ph name="CONNECTION_TYPE" />".</translation>
 <translation id="1897488610212723051">Elimina</translation>
 <translation id="2009755455353575666">Connessione non riuscita</translation>
@@ -57,7 +56,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Scopri come</translation>
 <translation id="3776024066357219166">La sessione Chrome Remote Desktop è terminata.</translation>
-<translation id="3858860766373142691">Nome</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Dominio proprietario host non valido.</translation>
 <translation id="3931191050278863510">Host interrotto.</translation>
@@ -143,7 +141,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="7434397035092923453">Accesso negato per client: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client connesso: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Cambia account</translation>
-<translation id="7535110896613603182">Apri le impostazioni delle app predefinite</translation>
 <translation id="7628469622942688817">Memorizza il PIN su questo dispositivo.</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7658239707568436148">Annulla</translation>

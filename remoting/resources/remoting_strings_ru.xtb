@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Непредвиденная ошибка. Сообщите об этой проблеме разработчикам.</translation>
 <translation id="1697532407822776718">Готово!</translation>
 <translation id="1742469581923031760">Подключение…</translation>
-<translation id="177040763384871009">Чтобы ссылки, выбираемые на удаленном устройстве, открывались в браузере клиента, необходимо настроить приложение <ph name="URL_FORWARDER_NAME" />.</translation>
 <translation id="177096447311351977">IP-адрес канала для клиента: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Удалить</translation>
 <translation id="2009755455353575666">Ошибка подключения</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">Офлайн.</translation>
 <translation id="3695446226812920698">Подробнее</translation>
 <translation id="3776024066357219166">Сеанс Удаленного рабочего стола Chrome завершен.</translation>
-<translation id="3858860766373142691">Название</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3905196214175737742">Владелец хоста использует недопустимый домен</translation>
 <translation id="3931191050278863510">Хост остановлен.</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">Запрещен доступ для клиента: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Подключен клиент: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Сменить аккаунт</translation>
-<translation id="7535110896613603182">Открыть настройки приложений по умолчанию</translation>
 <translation id="7628469622942688817">Запомнить PIN-код на этом устройстве.</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>

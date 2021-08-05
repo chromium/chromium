@@ -618,7 +618,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
-<translation id="5867217927013474703">Samler inn nettverksinformasjon</translation>
 <translation id="5876666360658629066">Angi foreldrekoden</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
@@ -693,7 +692,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>
-<translation id="6500818810472529210">Se resultat i Google Søk</translation>
 <translation id="6501401484702599040">Caster skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Velg et vindu du vil ta bilde av</translation>
 <translation id="652139407789908527">Skjermen blir tom i et lengre tidsrom enn vanlig (inntil et minutt) under denne oppdateringen. Ikke trykk på av/på-knappen mens oppdateringen pågår.</translation>
@@ -704,7 +702,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6559976592393364813">Spør administratoren</translation>
 <translation id="6570902864550063460">Lader via USB</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
-<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="6612802754306526077">Skjermopptaksmodus er valgt</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
@@ -938,6 +935,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8413272770729657668">Opptaket starter om 3, 2, 1</translation>
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8426708595819210923">God kveld, <ph name="GIVEN_NAME" /></translation>
+<translation id="8427213022735114808">Diktat sender stemmen din til Google for å muliggjøre stemmestyrt skriving i alle tekstfelt.</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8433186206711564395">Nettverksinnstillinger</translation>
 <translation id="8433977262951327081">Hurtigtasten for å vise boblen med menyen for valg av inndataalternativer på hyllen er endret. Bruk <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
@@ -991,7 +989,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8818320199597151042">Fjerner profilen. Vent i noen minutter.</translation>
 <translation id="8825863694328519386">Sveip fra venstre for å gå tilbake</translation>
 <translation id="8828714802988429505">90°</translation>
-<translation id="8832757911363938552">Du kan stoppe pakkeregistreringen når som helst.</translation>
 <translation id="8841375032071747811">Tilbakeknapp</translation>
 <translation id="8843682306134542540">Slå av/på rotasjonslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søk+Esc</translation>

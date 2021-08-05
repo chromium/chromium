@@ -14,7 +14,6 @@
 <translation id="1204296502688602597">Latency ng DNS</translation>
 <translation id="123124571410524056">May pinaghihinalaang portal</translation>
 <translation id="1238612778414822719">Latency ng HTTPS</translation>
-<translation id="1264369926465113395">Tingnan ang bagong digital na magazine ng Chromebook para sa mga creator</translation>
 <translation id="1270369111467284986">May pinaghihinalaang captive portal</translation>
 <translation id="1290331692326790741">Mahina ang signal</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -89,6 +88,7 @@
 <translation id="2862104018715411648">Ilagay ang iyong dokumento sa scanner at piliin ang I-scan para makapagsimula</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
+<translation id="2983662233540284543">Matuto mula sa isang game creator, makakuha ng mga game design app, at higit pa</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -120,7 +120,6 @@
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3540383942695635079">MAC Address</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
-<translation id="3582041541988388905">Walang na-detect na koneksyon sa <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
@@ -131,7 +130,6 @@
 <translation id="38114475217616659">I-clear ang lahat ng history</translation>
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
 <translation id="3838338534323494292">Bagong password</translation>
-<translation id="3858860766373142691">Pangalan</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
@@ -214,6 +212,7 @@
 <translation id="5154917547274118687">Memorya</translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
+<translation id="519607504553633437">Magdisenyo at bumuo ng mga sarili mong laro</translation>
 <translation id="5212543919916444558">Wala akong makitang kahit ano sa iyong screen kung saan ako makakatulong.
 Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
@@ -247,6 +246,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5691511426247308406">Pamilya</translation>
 <translation id="5701381305118179107">Gitna</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
+<translation id="5752751666635965375">Gumawa ng sariling laro</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
@@ -269,7 +269,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
 <translation id="6108689792487843350">Hindi makakonekta sa gateway</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6125438912510167220">Bilis ng Link</translation>
 <translation id="6137767437444130246">Certificate ng user</translation>
 <translation id="6146993107019042706">Para tapusin, ilagay ang bago mong password</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -296,7 +295,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Hindi na-print - Hindi makakonekta sa printer</translation>
 <translation id="6574762126505704998">Fill</translation>
-<translation id="6579235177984085399">Tumuklas ng mga bagong tool sa pagguhit at disenyo</translation>
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6603230386432466813">Nagkakaproblema sa pagkonekta?</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
@@ -376,9 +374,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8214184102975786227">Mag-scan ng maraming page sa isang PDF</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
 <translation id="8246209727385807362">Hindi kilalang carrier</translation>
-<translation id="8286154143153872371">Kumonekta sa network at i-reload ang page para makita ang wallpaper.</translation>
 <translation id="8291967909914612644">Bansa ng home provider</translation>
-<translation id="829270796093605079">Tumuklas ng design tools</translation>
 <translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8302368968391049045">Firewall ng HTTPS</translation>

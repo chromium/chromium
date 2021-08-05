@@ -6,6 +6,7 @@
 <translation id="1124090076051167250">Bu işlem, Ana ekranınızdaki siteler veya uygulamalar tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizleyecek.</translation>
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1181037720776840403">Kaldır</translation>
+<translation id="1195941046451948919">Bu web sitesi için tüm izinleri sıfırlamak istiyor musunuz?</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> adresinde yerleşik</translation>
 <translation id="1272079795634619415">Durdur</translation>
@@ -129,6 +130,7 @@
 <translation id="4570913071927164677">Ayrıntılar</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
+<translation id="4708011789095599544">Bu web sitesi için çerezleri ve diğer site verilerini temizlemek istediğinizden emin misiniz?</translation>
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
 <translation id="4836046166855586901">Bir site bu cihazı etkin olarak kullandığımı bilmek istediğinde sor</translation>
 <translation id="4883854917563148705">Yönetilen ayarlar sıfırlanamaz</translation>
@@ -199,6 +201,7 @@
 <translation id="6320088164292336938">Titreşim</translation>
 <translation id="6388207532828177975">Temizle ve sıfırla</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
+<translation id="6423924377271166037">Çerezleri sil</translation>
 <translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazımı ve verilerimi kullanmasını engelle</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6527303717912515753">Paylaş</translation>
@@ -310,7 +313,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>
-<translation id="9162462602695099906">Bu sayfa tehlikeli</translation>
 <translation id="930525582205581608">Bu site unutulsun mu?</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 </translationbundle>
