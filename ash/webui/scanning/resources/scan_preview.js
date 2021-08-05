@@ -175,6 +175,12 @@ Polymer({
     this.showCancelingProgress_ = this.appState === AppState.CANCELING;
     this.showHelperText_ = !this.showScanProgress_ &&
         !this.showCancelingProgress_ && !this.showScannedImages_;
+
+    // If no longer showing the scanned images, reset |scannedImagesLoaded_| so
+    // it can be used again for the next scan job.
+    if (!this.showScannedImages_) {
+      this.scannedImagesLoaded_ = false;
+    }
   },
 
   /** @private */
