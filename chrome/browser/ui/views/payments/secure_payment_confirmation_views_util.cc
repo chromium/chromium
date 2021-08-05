@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -38,13 +39,21 @@ int GetSecurePaymentConfirmationHeaderWidth() {
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
 }
 
+const gfx::ImageSkia GetHeaderImageSkia(bool dark_mode) {
+  return ui::ResourceBundle::GetSharedInstance()
+      .GetImageNamed(dark_mode ? IDR_SAVE_CARD_DARK : IDR_SAVE_CARD)
+      .AsImageSkia();
+}
+
 class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
  public:
   METADATA_HEADER(SecurePaymentConfirmationIconView);
 
-  SecurePaymentConfirmationIconView() {
-    const gfx::Size header_size(GetSecurePaymentConfirmationHeaderWidth(),
-                                kHeaderIconHeight);
+  explicit SecurePaymentConfirmationIconView(bool use_cart_image = false)
+      : use_cart_image_{use_cart_image} {
+    const gfx::Size header_size(
+        GetSecurePaymentConfirmationHeaderWidth(),
+        use_cart_image_ ? kShoppingCartHeaderIconHeight : kHeaderIconHeight);
     SetSize(header_size);
     SetPreferredSize(header_size);
     SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -54,9 +63,14 @@ class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
   // NonAccessibleImageView:
   void OnThemeChanged() override {
     NonAccessibleImageView::OnThemeChanged();
-    SetImage(gfx::CreateVectorIcon(
-        GetPlatformVectorIcon(GetNativeTheme()->ShouldUseDarkColors())));
+    SetImage(use_cart_image_
+                 ? GetHeaderImageSkia(GetNativeTheme()->ShouldUseDarkColors())
+                 : gfx::CreateVectorIcon(GetPlatformVectorIcon(
+                       GetNativeTheme()->ShouldUseDarkColors())));
   }
+
+ private:
+  bool use_cart_image_;
 };
 
 BEGIN_METADATA(SecurePaymentConfirmationIconView, NonAccessibleImageView)
@@ -79,7 +93,8 @@ CreateSecurePaymentConfirmationProgressBarView() {
 
 std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
     int progress_bar_id,
-    int header_icon_id) {
+    int header_icon_id,
+    bool use_cart_image) {
   auto header = std::make_unique<views::View>();
 
   views::GridLayout* layout =
@@ -98,8 +113,11 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kHeaderIconTopPadding);
 
   // Header icon
-  layout->StartRow(views::GridLayout::kFixedSize, 0, kHeaderIconHeight);
-  auto image_view = std::make_unique<SecurePaymentConfirmationIconView>();
+  layout->StartRow(
+      views::GridLayout::kFixedSize, 0,
+      use_cart_image ? kShoppingCartHeaderIconHeight : kHeaderIconHeight);
+  auto image_view =
+      std::make_unique<SecurePaymentConfirmationIconView>(use_cart_image);
   image_view->SetID(header_icon_id);
   layout->AddView(std::move(image_view));
 

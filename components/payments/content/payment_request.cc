@@ -19,6 +19,7 @@
 #include "components/payments/content/payment_details_converter.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
+#include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/core/can_make_payment_query.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
@@ -633,6 +634,23 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
   if (is_show_called_ && spec_ && spec_->IsInitialized() &&
       observer_for_testing_) {
     observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());
+  }
+
+  if (web_contents() && spec_->IsSecurePaymentConfirmationRequested() &&
+      state()->available_apps().empty() &&
+      base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
+      base::FeatureList::IsEnabled(
+          ::features::kSecurePaymentConfirmationAPIV3)) {
+    std::unique_ptr<SecurePaymentConfirmationNoCreds> no_creds_ui =
+        SecurePaymentConfirmationNoCreds::Create();
+    no_creds_ui->ShowDialog(
+        web_contents(),
+        url_formatter::FormatUrlForSecurityDisplay(
+            state_->GetTopOrigin(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+        base::BindOnce(&PaymentRequest::OnUserCancelled,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 
   if (methods_supported) {

@@ -4252,6 +4252,8 @@ static_library("ui") {
       "views/payments/profile_list_view_controller.h",
       "views/payments/secure_payment_confirmation_dialog_view.cc",
       "views/payments/secure_payment_confirmation_dialog_view.h",
+      "views/payments/secure_payment_confirmation_no_creds_dialog_view.cc",
+      "views/payments/secure_payment_confirmation_no_creds_dialog_view.h",
       "views/payments/secure_payment_confirmation_views_util.cc",
       "views/payments/secure_payment_confirmation_views_util.h",
       "views/payments/shipping_address_editor_view_controller.cc",

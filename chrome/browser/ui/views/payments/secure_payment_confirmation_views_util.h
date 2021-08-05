@@ -20,8 +20,9 @@ class ImageView;
 
 namespace payments {
 
-// Height of the header icon.
+// Height of the header icons.
 constexpr int kHeaderIconHeight = 148;
+constexpr int kShoppingCartHeaderIconHeight = 114;
 
 // Padding above the header icon.
 constexpr int kHeaderIconTopPadding = 12;
@@ -61,7 +62,8 @@ CreateSecurePaymentConfirmationProgressBarView();
 // +------------------------------------------+
 std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
     int progress_bar_id,
-    int header_icon_id);
+    int header_icon_id,
+    bool use_cart_image = false);
 
 // Creates the label view for the SPC title text.
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
