@@ -20,7 +20,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
@@ -113,7 +114,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 @interface GoogleServicesSettingsMediator () <
     BooleanObserver,
-    ChromeIdentityServiceObserver,
+    ChromeAccountManagerServiceObserver,
     IdentityManagerObserverBridgeDelegate,
     SyncObserverModelBridge> {
   // Sync observer.
@@ -121,8 +122,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   // Identity manager observer.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
-  // Chrome identity observer.
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
+  // account manager observer.
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
 }
 
 // Returns YES if the user is authenticated.
@@ -191,6 +193,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // policies.
 @property(nonatomic, assign, readonly) PrefService* localPrefService;
 
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
 @end
 
 @implementation GoogleServicesSettingsMediator
@@ -200,6 +205,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
                        syncSetupService:(SyncSetupService*)syncSetupService
+                  accountManagerService:
+                      (ChromeAccountManagerService*)accountManagerService
                                    mode:(GoogleServicesSettingsMode)mode {
   self = [super init];
   if (self) {
@@ -237,6 +244,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                                 kUrlKeyedAnonymizedDataCollectionEnabled];
     _anonymizedDataCollectionPreference.observer = self;
     _resizedAvatarCache = [[ResizedAvatarCache alloc] init];
+    _accountManagerService = accountManagerService;
   }
   return self;
 }
@@ -978,7 +986,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       new signin::IdentityManagerObserverBridge(self.identityManager, self));
   DCHECK(self.syncService);
   _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
-  _identityServiceObserver.reset(new ChromeIdentityServiceObserverBridge(self));
+  _accountManagerServiceObserver.reset(
+      new ChromeAccountManagerServiceObserverBridge(
+          self, self.accountManagerService));
 }
 
 #pragma mark - GoogleServicesSettingsServiceDelegate
@@ -1149,15 +1159,11 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   [self updateNonPersonalizedSectionWithNotification:YES];
 }
 
-#pragma mark - ChromeIdentityServiceObserver
+#pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   [self updateIdentitySectionAndNotifyConsumer];
   [self updateLeakCheckItemAndReload];
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 @end

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller_model_delegate.h"
 
 class AuthenticationService;
+class ChromeAccountManagerService;
 @protocol GoogleServicesSettingsCommandHandler;
 @class GoogleServicesSettingsViewController;
 class PrefService;
@@ -57,6 +58,8 @@ class IdentityManager;
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
                        syncSetupService:(SyncSetupService*)syncSetupService
+                  accountManagerService:
+                      (ChromeAccountManagerService*)accountManagerService
                                    mode:(GoogleServicesSettingsMode)mode
     NS_DESIGNATED_INITIALIZER;
 
