@@ -1436,7 +1436,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation"
-    enum="PrerenderHostFinalStatus" expires_after="2022-01-27">
+    enum="PrerenderHostFinalStatus" expires_after="2021-08-06">
+  <obsolete>
+    Removed from code in July 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
@@ -1450,7 +1453,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Prerender.Experimental.PrerenderHostCancelReasonDuringActivation"
-    enum="PrerenderHostFinalStatus" expires_after="2022-01-27">
+    enum="PrerenderHostFinalStatus" expires_after="2022-08-06">
+  <obsolete>
+    Removed from code in July 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
