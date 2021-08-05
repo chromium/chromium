@@ -24,19 +24,21 @@ bool PathProvider(int key, base::FilePath* result) {
   base::FilePath cur;
   switch (key) {
     case DIR_LOCALES:
+#if defined(OS_ANDROID)
+      if (!base::PathService::Get(DIR_RESOURCE_PAKS_ANDROID, &cur))
+        return false;
+#elif defined(OS_APPLE)
       if (!base::PathService::Get(base::DIR_MODULE, &cur))
         return false;
-#if defined(OS_APPLE)
       // On Mac, locale files are in Contents/Resources, a sibling of the
       // App dir.
       cur = cur.DirName();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"));
-#elif defined(OS_ANDROID)
-      if (!base::PathService::Get(DIR_RESOURCE_PAKS_ANDROID, &cur))
+#else   // !defined(OS_APPLE)
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
         return false;
-#else
       cur = cur.Append(FILE_PATH_LITERAL("locales"));
-#endif
+#endif  // !defined(OS_APPLE)
       create_dir = true;
       break;
     // The following are only valid in the development environment, and

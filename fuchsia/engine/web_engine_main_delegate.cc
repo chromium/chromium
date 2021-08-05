@@ -33,13 +33,8 @@ void InitializeResources() {
   constexpr char kWebUiGeneratedResourcesPakPath[] =
       "ui/resources/webui_generated_resources.pak";
 
-  // TODO(1164990): Update //ui's DIR_LOCALES to use DIR_ASSETS, rather than
-  // using Override() here.
   base::FilePath asset_root;
   bool result = base::PathService::Get(base::DIR_ASSETS, &asset_root);
-  DCHECK(result);
-  const base::FilePath locales_path = asset_root.AppendASCII("locales");
-  result = base::PathService::Override(ui::DIR_LOCALES, locales_path);
   DCHECK(result);
 
   // Initialize common locale-agnostic resources.
