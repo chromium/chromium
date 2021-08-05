@@ -1813,6 +1813,22 @@ TEST(MultipleStarterTest, HeuristicUsedByMultipleInstances) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
+  auto enable_fake_heuristic =
+      std::make_unique<base::test::ScopedFeatureList>();
+  enable_fake_heuristic->InitAndEnableFeatureWithParameters(
+      features::kAutofillAssistantUrlHeuristics, {{"json_parameters",
+                                                   R"(
+          {
+            "heuristics":[
+              {
+                "intent":"FAKE_INTENT_CART",
+                "conditionSet":{
+                  "urlContains":"cart"
+                }
+              }
+            ]
+          }
+          )"}});
   Starter starter_01(web_contents_01.get(), &fake_platform_delegate_01,
                      &ukm_recorder, mock_runtime_manager.GetWeakPtr(),
                      task_environment.GetMockTickClock());
