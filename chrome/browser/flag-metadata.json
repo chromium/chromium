@@ -5013,8 +5013,8 @@
   },
   {
     "name": "scroll-unification",
-    "owners": [ "bokan@chromium.org", "input-dev@chromium.org" ],
-    "expiry_milestone": 93
+    "owners": [ "skobes@chromium.org", "input-dev@chromium.org" ],
+    "expiry_milestone": 100
   },
   {
     "name": "scrollable-tabstrip",
