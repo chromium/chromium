@@ -27,6 +27,9 @@ enum ResultType {
 
   // Ads.
   kAds,
+
+  // Related searches.
+  kRelatedSearches
 };
 
 // A logically related group of search results with a label. E.g. ads, organic,

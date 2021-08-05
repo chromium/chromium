@@ -262,11 +262,130 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsOnly) {
       std::move(expected_results));
 }
 
+TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractRelatedSearches) {
+  auto result1 = mojom::SearchResult::New();
+  result1->link = GURL("https://www.example1.com/");
+  result1->title = u"Related 1";
+
+  auto result2 = mojom::SearchResult::New();
+  result2->link = GURL("https://www.example2.com/");
+  result2->title = u"Related 2";
+
+  auto related_searches_group = mojom::ResultGroup::New();
+  related_searches_group->type = mojom::ResultType::kRelatedSearches;
+  related_searches_group->results.push_back(std::move(result1));
+  related_searches_group->results.push_back(std::move(result2));
+
+  auto expected_results = mojom::CategoryResults::New();
+  expected_results->category_type = mojom::Category::kOrganic;
+  expected_results->groups.push_back(std::move(related_searches_group));
+
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div id="w3bYAd">
+             <div class="foo">
+               <a href="https://www.example1.com/" class="k8XOCe bar">
+                 <div class="s75CSd bar">
+                   <span>Related 1</span>
+                 </div>
+               </a>
+               <a href="https://www.example2.com/" class="k8XOCe baz">
+                 <div class="s75CSd baz">
+                   <span>Related 2</span>
+                 </div>
+               </a>
+             </div>
+             <div class="mnr-c bar">
+               <a href="https://www.example1.com/" class="k8XOCe buz">
+                 <div>
+                   <span>Skipped</span>
+                 </div>
+               </a>
+             </div>
+           </div>
+         </body>)",
+      {mojom::ResultType::kRelatedSearches},
+      mojom::SearchResultExtractor::Status::kSuccess,
+      std::move(expected_results));
+}
+
 // The tests below this line are intended to test the branching of the
 // extractor. The goal is to ensure there are no scenarios where the extraction
 // might crash/fail if an almost correct result is presented.
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestNoRso) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractRelatedSearchesNoId) {
+  // No id="w3bYAd".
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div>
+             <a href="https://www.example1.com/" class="k8XOCe bar">
+               <div class="s75CSd bar">
+                 <span>Related 1</span>
+               </div>
+             </a>
+           </div>
+         </body>)",
+      {mojom::ResultType::kRelatedSearches},
+      mojom::SearchResultExtractor::Status::kNoResults,
+      mojom::CategoryResults::New());
+}
+
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractRelatedSearchesNoAnchors) {
+  // No anchors.
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div id="w3bYAd">
+           </div>
+         </body>)",
+      {mojom::ResultType::kRelatedSearches},
+      mojom::SearchResultExtractor::Status::kNoResults,
+      mojom::CategoryResults::New());
+}
+
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractRelatedSearchesNoAnchorClass) {
+  // No "k8XOCe" class on anchors.
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div id="w3bYAd">
+             <a href="https://www.example1.com/" class="bar">
+               <div class="s75CSd bar">
+                 <span>Related 1</span>
+               </div>
+             </a>
+           </div>
+         </body>)",
+      {mojom::ResultType::kRelatedSearches},
+      mojom::SearchResultExtractor::Status::kNoResults,
+      mojom::CategoryResults::New());
+}
+
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractRelatedSearchesNoTitleClass) {
+  // No "s75CSd" class on title div.
+  LoadHtmlAndExpectExtractedOutput(
+      R"(<!doctype html>
+         <body>
+           <div id="w3bYAd">
+             <a href="https://www.example1.com/" class="k8XOCe bar">
+               <div class="bar">
+                 <span>Related 1</span>
+               </div>
+             </a>
+           </div>
+         </body>)",
+      {mojom::ResultType::kRelatedSearches},
+      mojom::SearchResultExtractor::Status::kNoResults,
+      mojom::CategoryResults::New());
+}
+
+TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsNoRso) {
   // No class="rso".
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -284,7 +403,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestNoRso) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoDivs) {
+TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractResultsNoDivs) {
   // No divs inside "rso".
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -300,7 +419,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoDivs) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoMnrCardNoClass) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoMnrCardNoClass) {
   // No class attribute on inner divs.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -337,7 +457,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest,
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkNoAnchor) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoLinkNoAnchor) {
   // No anchor inside mnr-c.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -355,7 +476,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkNoAnchor) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkNoHref) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoLinkNoHref) {
   // No href for the anchor.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -373,7 +495,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkNoHref) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkEmptyHref) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoLinkEmptyHref) {
   // Empty href.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -391,7 +514,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkEmptyHref) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkWrongScheme) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoLinkWrongScheme) {
   // href is not http/https.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -409,7 +533,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoLinkWrongScheme) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoDiv) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoTitleNoDiv) {
   // No inner div.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -427,7 +552,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoDiv) {
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoRole) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoTitleNoRole) {
   // Inner div has no role.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -446,7 +572,7 @@ TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoRole) {
 }
 
 TEST_F(SearchResultExtractorImplRenderViewTest,
-       TestExtractNoTitleNotDivHeading) {
+       TestExtractResultsNoTitleNotDivHeading) {
   // Not a div, but role="heading".
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
@@ -464,7 +590,8 @@ TEST_F(SearchResultExtractorImplRenderViewTest,
       mojom::CategoryResults::New());
 }
 
-TEST_F(SearchResultExtractorImplRenderViewTest, TestExtractNoTitleNoText) {
+TEST_F(SearchResultExtractorImplRenderViewTest,
+       TestExtractResultsNoTitleNoText) {
   // No text.
   LoadHtmlAndExpectExtractedOutput(
       R"(<!doctype html>
