@@ -90,9 +90,6 @@ extern const char kCSSContainerQueriesDescription[];
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
-extern const char kConversionMeasurementApiName[];
-extern const char kConversionMeasurementApiDescription[];
-
 extern const char kConversionMeasurementDebugModeName[];
 extern const char kConversionMeasurementDebugModeDescription[];
 

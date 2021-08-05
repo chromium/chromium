@@ -6719,10 +6719,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kServiceWorkerSubresourceFilterDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kServiceWorkerSubresourceFilter)},
 
-    {"conversion-measurement-api",
-     flag_descriptions::kConversionMeasurementApiName,
-     flag_descriptions::kConversionMeasurementApiDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kConversionMeasurement)},
     {"conversion-measurement-debug-mode",
      flag_descriptions::kConversionMeasurementDebugModeName,
      flag_descriptions::kConversionMeasurementDebugModeDescription, kOsAll,

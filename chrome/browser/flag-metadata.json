@@ -812,14 +812,9 @@
     "expiry_milestone": 94
   },
   {
-    "name": "conversion-measurement-api",
-    "owners": [ "//content/browser/conversions/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "conversion-measurement-debug-mode",
     "owners": [ "//content/browser/conversions/OWNERS" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 98
   },
   {
     "name": "copy-link-to-text",
