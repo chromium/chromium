@@ -2993,6 +2993,8 @@ static_library("browser") {
       "download/android/available_offline_content_provider.h",
       "download/android/chrome_duplicate_download_infobar_delegate.cc",
       "download/android/chrome_duplicate_download_infobar_delegate.h",
+      "download/android/dangerous_download_dialog_bridge.cc",
+      "download/android/dangerous_download_dialog_bridge.h",
       "download/android/dangerous_download_infobar_delegate.cc",
       "download/android/dangerous_download_infobar_delegate.h",
       "download/android/download_controller.cc",

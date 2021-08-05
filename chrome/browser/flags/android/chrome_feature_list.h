@@ -82,6 +82,7 @@ extern const base::Feature kDownloadProgressMessage;
 extern const base::Feature kDownloadRename;
 extern const base::Feature kDuetTabStripIntegrationAndroid;
 extern const base::Feature kDynamicColorAndroid;
+extern const base::Feature kEnableDangerousDownloadDialog;
 extern const base::Feature kEnhancedProtectionPromoCard;
 extern const base::Feature kExperimentsForAgsa;
 extern const base::Feature kExploreSites;

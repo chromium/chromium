@@ -24,6 +24,7 @@ android_library("file_provider_java") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadConstants.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridge.java",
@@ -37,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
     "java/src/org/chromium/chrome/browser/download/StringUtils.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DangerousDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialogImpl.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialogProperties.java",
@@ -124,6 +126,7 @@ android_library_factory("factory_java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
     "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",

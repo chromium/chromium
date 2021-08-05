@@ -567,6 +567,9 @@ const base::Feature kDuetTabStripIntegrationAndroid{
 const base::Feature kDynamicColorAndroid{"DynamicColorAndroid",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableDangerousDownloadDialog{
+    "EnableDangerousDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnhancedProtectionPromoCard{
     "EnhancedProtectionPromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 

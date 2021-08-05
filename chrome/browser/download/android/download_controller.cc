@@ -440,6 +440,20 @@ void DownloadController::OnDangerousDownload(DownloadItem* item) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kEnableDangerousDownloadDialog)) {
+    ui::ViewAndroid* view_android =
+        web_contents ? web_contents->GetNativeView() : nullptr;
+    ui::WindowAndroid* window_android =
+        view_android ? view_android->GetWindowAndroid() : nullptr;
+    if (!dangerous_download_bridge_) {
+      dangerous_download_bridge_ =
+          std::make_unique<DangerousDownloadDialogBridge>();
+    }
+    dangerous_download_bridge_->Show(item, window_android);
+    return;
+  }
+
   DangerousDownloadInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), item);
 }

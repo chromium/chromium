@@ -1432,6 +1432,17 @@ Your Google account may have other forms of browsing history like searches and a
         Chrome has saved you <ph name="gigabytes">%1$d<ex>10</ex></ph> GB
       </message>
 
+       <!-- Dangerous download -->
+      <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
+        Download anyway
+      </message>
+      <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to validate the download of a dangerous file.">
+        Do you want to download <ph name="FILE_NAME">%1$s<ex>malware.exe</ex></ph> anyway?
+      </message>
+      <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm a dangerous download">
+        File might be harmful
+      </message>
+
       <!-- Download later -->
       <message name="IDS_DOWNLOAD_LATER_DIALOG_TITLE" desc="Title of the download later dialog that let the user to choose the time to download.">
         Download later instead?
