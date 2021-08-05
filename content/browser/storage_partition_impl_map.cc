@@ -464,27 +464,7 @@ void StoragePartitionImplMap::PostCreateInitialization(
             partition->GetPath().Append(kAppCacheDirname)));
   }
 
-  // Check first to avoid memory leak in unittests.
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    // Use PostTask() because not posting a task causes it to run before the
-    // CacheStorageManager has been initialized, and then
-    // CacheStorageContextImpl::CacheManager() ends up returning null instead of
-    // using the CrossSequenceCacheStorageManager in unit tests that don't use a
-    // real IO thread, violating the DCHECK in
-    // BackgroundFetchDataManager::InitializeOnCoreThread().
-    // TODO(crbug.com/960012): This workaround should be unnecessary after
-    // CacheStorage moves off the IO thread to the thread pool.
-    BrowserThread::GetTaskRunnerForThread(BrowserThread::UI)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&BackgroundFetchContext::Initialize,
-                                  partition->GetBackgroundFetchContext()));
-
-    // We do not call InitializeURLRequestContext() for media contexts because,
-    // other than the HTTP cache, the media contexts share the same backing
-    // objects as their associated "normal" request context.  Thus, the previous
-    // call serves to initialize the media request context for this storage
-    // partition as well.
-  }
+  partition->GetBackgroundFetchContext()->Initialize();
 }
 
 }  // namespace content
