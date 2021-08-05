@@ -154,33 +154,13 @@ class ArcAccessibilityTreeTracker::WindowsObserver
   void OnWindowDestroying(aura::Window* window) override {
     if (window_observations_.IsObservingSource(window))
       window_observations_.RemoveObservation(window);
+    owner_->OnWindowDestroying(window);
   }
 
  private:
   ArcAccessibilityTreeTracker* owner_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
-};
-
-class ArcAccessibilityTreeTracker::AppListPrefsObserver
-    : public ArcAppListPrefs::Observer {
- public:
-  AppListPrefsObserver(ArcAccessibilityTreeTracker* owner,
-                       Profile* const profile)
-      : owner_(owner) {
-    auto* app_list_prefs = ArcAppListPrefs::Get(profile);
-    if (app_list_prefs)
-      app_list_observation_.Observe(app_list_prefs);
-  }
-
-  void OnTaskDestroyed(int32_t task_id) override {
-    owner_->OnTaskDestroyed(task_id);
-  }
-
- private:
-  ArcAccessibilityTreeTracker* owner_;
-  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
-      app_list_observation_{this};
 };
 
 class ArcAccessibilityTreeTracker::ArcInputMethodManagerServiceObserver
@@ -269,8 +249,6 @@ ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
       tree_source_delegate_(tree_source_delegate),
       accessibility_helper_instance_(accessibility_helper_instance),
       windows_observer_(std::make_unique<WindowsObserver>(this)),
-      app_list_prefs_observer_(
-          std::make_unique<AppListPrefsObserver>(this, profile)),
       input_manager_service_observer_(
           std::make_unique<ArcInputMethodManagerServiceObserver>(this,
                                                                  profile)),
@@ -299,7 +277,12 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
     DispatchCustomSpokenFeedbackToggled(gained_arc);
 }
 
-void ArcAccessibilityTreeTracker::OnTaskDestroyed(int32_t task_id) {
+void ArcAccessibilityTreeTracker::OnWindowDestroying(aura::Window* window) {
+  const auto& task_id_opt = arc::GetWindowTaskId(window);
+  if (!task_id_opt.has_value())
+    return;
+
+  int32_t task_id = task_id_opt.value();
   task_id_to_window_.erase(task_id);
   trees_.erase(KeyForTaskId(task_id));
   base::EraseIf(window_id_to_task_id_,
@@ -308,7 +291,6 @@ void ArcAccessibilityTreeTracker::OnTaskDestroyed(int32_t task_id) {
 
 void ArcAccessibilityTreeTracker::Shutdown() {
   input_manager_service_observer_.reset();
-  app_list_prefs_observer_.reset();
 }
 
 void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(

@@ -60,7 +60,7 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
 
   void OnWindowFocused(aura::Window* gained_focus, aura::Window* lost_focus);
 
-  void OnTaskDestroyed(int32_t task_id);
+  void OnWindowDestroying(aura::Window* window);
 
   void Shutdown();
 
@@ -111,7 +111,6 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
  private:
   class FocusChangeObserver;
   class WindowsObserver;
-  class AppListPrefsObserver;
   class ArcInputMethodManagerServiceObserver;
   class MojoConnectionObserver;
   class ArcNotificationSurfaceManagerObserver;
@@ -140,7 +139,6 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
 
   std::unique_ptr<FocusChangeObserver> focus_change_observer_;
   std::unique_ptr<WindowsObserver> windows_observer_;
-  std::unique_ptr<AppListPrefsObserver> app_list_prefs_observer_;
   std::unique_ptr<ArcInputMethodManagerServiceObserver>
       input_manager_service_observer_;
   std::unique_ptr<MojoConnectionObserver> connection_observer_;
