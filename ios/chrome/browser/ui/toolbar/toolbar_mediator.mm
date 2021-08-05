@@ -6,16 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #include "ios/chrome/browser/policy/policy_features.h"
-#include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -31,10 +25,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ToolbarMediator () <BookmarkModelBridgeObserver,
-                               CRWWebStateObserver,
+@interface ToolbarMediator () <CRWWebStateObserver,
                                OverlayPresenterObserving,
-                               PrefObserverDelegate,
                                WebStateListObserving>
 
 // The current web state associated with the toolbar.
@@ -49,12 +41,6 @@
 @implementation ToolbarMediator {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-  // Bridge to register for bookmark changes.
-  std::unique_ptr<bookmarks::BookmarkModelBridge> _bookmarkModelBridge;
-  // Pref observer to track changes to prefs.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
-  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
 }
 
@@ -77,7 +63,6 @@
 - (void)updateConsumerForWebState:(web::WebState*)webState {
   [self updateNavigationBackAndForwardStateForWebState:webState];
   [self updateShareMenuForWebState:webState];
-  [self updateBookmarksForWebState:webState];
 }
 
 - (void)disconnect {
@@ -94,9 +79,6 @@
     _webStateObserver.reset();
     _webState = nullptr;
   }
-  _bookmarkModelBridge.reset();
-  _prefChangeRegistrar.reset();
-  _prefObserverBridge.reset();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -234,29 +216,6 @@
   }
 }
 
-- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
-  _bookmarkModel = bookmarkModel;
-  if (self.webState && self.consumer) {
-    [self updateConsumer];
-  }
-  _bookmarkModelBridge.reset();
-  if (bookmarkModel) {
-    _bookmarkModelBridge =
-        std::make_unique<bookmarks::BookmarkModelBridge>(self, bookmarkModel);
-  }
-}
-
-- (void)setPrefService:(PrefService*)prefService {
-  _prefService = prefService;
-  _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-  _prefChangeRegistrar->Init(prefService);
-  _prefObserverBridge.reset(new PrefObserverBridge(self));
-  _prefObserverBridge->ObserveChangesForPreference(
-      bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
-
-  [self.consumer setBookmarkEnabled:[self isEditBookmarksEnabled]];
-}
-
 - (void)setWebContentAreaOverlayPresenter:
     (OverlayPresenter*)webContentAreaOverlayPresenter {
   if (_webContentAreaOverlayPresenter)
@@ -292,7 +251,6 @@
     [self.consumer
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
-  [self updateBookmarksForWebState:self.webState];
   [self updateShareMenuForWebState:self.webState];
 }
 
@@ -303,15 +261,6 @@
   [self.consumer
       setCanGoForward:webState->GetNavigationManager()->CanGoForward()];
   [self.consumer setCanGoBack:webState->GetNavigationManager()->CanGoBack()];
-}
-
-// Updates the bookmark state of the consumer.
-- (void)updateBookmarksForWebState:(web::WebState*)webState {
-  if (self.webState) {
-    GURL URL = webState->GetVisibleURL();
-    [self.consumer setPageBookmarked:self.bookmarkModel &&
-                                     self.bookmarkModel->IsBookmarked(URL)];
-  }
 }
 
 // Updates the Share Menu button of the consumer.
@@ -327,47 +276,6 @@
                                      !self.webContentAreaShowingOverlay];
 }
 
-#pragma mark - Other private methods
-
-// Returns YES if user is allowed to edit any bookmarks.
-- (BOOL)isEditBookmarksEnabled {
-    return self.prefService->GetBoolean(
-        bookmarks::prefs::kEditBookmarksEnabled);
-}
-
-#pragma mark - BookmarkModelBridgeObserver
-
-// If an added or removed bookmark is the same as the current url, update the
-// toolbar so the star highlight is kept in sync.
-- (void)bookmarkNodeChildrenChanged:
-    (const bookmarks::BookmarkNode*)bookmarkNode {
-  [self updateBookmarksForWebState:self.webState];
-}
-
-// If all bookmarks are removed, update the toolbar so the star highlight is
-// kept in sync.
-- (void)bookmarkModelRemovedAllNodes {
-  [self updateBookmarksForWebState:self.webState];
-}
-
-// In case we are on a bookmarked page before the model is loaded.
-- (void)bookmarkModelLoaded {
-  [self updateBookmarksForWebState:self.webState];
-}
-
-- (void)bookmarkNodeChanged:(const bookmarks::BookmarkNode*)bookmarkNode {
-  // No-op -- required by BookmarkModelBridgeObserver but not used.
-}
-- (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
-     movedFromParent:(const bookmarks::BookmarkNode*)oldParent
-            toParent:(const bookmarks::BookmarkNode*)newParent {
-  // No-op -- required by BookmarkModelBridgeObserver but not used.
-}
-- (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
-                 fromFolder:(const bookmarks::BookmarkNode*)folder {
-  // No-op -- required by BookmarkModelBridgeObserver but not used.
-}
-
 #pragma mark - OverlayPresesenterObserving
 
 - (void)overlayPresenter:(OverlayPresenter*)presenter
@@ -379,13 +287,6 @@
 - (void)overlayPresenter:(OverlayPresenter*)presenter
     didHideOverlayForRequest:(OverlayRequest*)request {
   self.webContentAreaShowingOverlay = NO;
-}
-
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == bookmarks::prefs::kEditBookmarksEnabled)
-    [self.consumer setBookmarkEnabled:[self isEditBookmarksEnabled]];
 }
 
 @end

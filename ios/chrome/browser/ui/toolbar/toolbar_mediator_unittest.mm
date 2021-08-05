@@ -9,13 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
@@ -40,9 +33,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using bookmarks::BookmarkNode;
-using bookmarks::BookmarkModel;
 
 namespace {
 
@@ -100,7 +90,6 @@ namespace {
 
 static const int kNumberOfWebStates = 3;
 static const char kTestUrl[] = "http://www.chromium.org";
-static const char kTestUrl2[] = "http://www.notChromium.org";
 
 class ToolbarMediatorTest : public PlatformTest {
  public:
@@ -109,15 +98,7 @@ class ToolbarMediatorTest : public PlatformTest {
             std::make_unique<TestToolbarMediatorChromeBrowserProvider>()) {
     TestChromeBrowserState::Builder test_cbs_builder;
 
-    bool success = state_dir_.CreateUniqueTempDir();
-    DCHECK(success);
-    test_cbs_builder.SetPath(state_dir_.GetPath());
-
     chrome_browser_state_ = test_cbs_builder.Build();
-    chrome_browser_state_->CreateBookmarkModel(false);
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
-    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
@@ -130,11 +111,6 @@ class ToolbarMediatorTest : public PlatformTest {
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
     strict_consumer_ = OCMStrictProtocolMock(@protocol(ToolbarConsumer));
     SetUpWebStateList();
-
-    prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_->registry()->RegisterBooleanPref(
-        bookmarks::prefs::kEditBookmarksEnabled,
-        /*default_value=*/true);
   }
 
   // Explicitly disconnect the mediator so there won't be any WebStateList
@@ -142,11 +118,6 @@ class ToolbarMediatorTest : public PlatformTest {
   ~ToolbarMediatorTest() override { [mediator_ disconnect]; }
 
  protected:
-  // A state directory that outlives |task_environment_| is needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir state_dir_;
-
   web::WebTaskEnvironment task_environment_;
   void SetUpWebStateList() {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
@@ -156,15 +127,6 @@ class ToolbarMediatorTest : public PlatformTest {
     for (int i = 1; i < kNumberOfWebStates; i++) {
       InsertNewWebState(i);
     }
-  }
-
-  void SetUpBookmarks() {
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
-    GURL URL = GURL(kTestUrl);
-    const BookmarkNode* defaultFolder = bookmark_model_->mobile_node();
-    bookmark_model_->AddURL(defaultFolder, defaultFolder->children().size(),
-                            base::SysNSStringToUTF16(@"Test bookmark 1"), URL);
   }
 
   void InsertNewWebState(int index) {
@@ -196,144 +158,11 @@ class ToolbarMediatorTest : public PlatformTest {
   id consumer_;
   id strict_consumer_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  BookmarkModel* bookmark_model_;
-  std::unique_ptr<TestingPrefServiceSimple> prefs_;
 
  private:
   std::unique_ptr<ToolbarTestWebState> test_web_state_;
 };
 
-// Test that the consumer bookmarks status is only updated when the page is
-// added to the bookmark model.
-TEST_F(ToolbarMediatorTest, TestToolbarAddedToBookmarks) {
-  web_state_->SetCurrentURL(GURL(kTestUrl));
-  mediator_.webStateList = web_state_list_.get();
-  SetUpActiveWebState();
-  mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
-
-  // Add a different bookmark and verify it is not set as bookmarked.
-  OCMExpect([consumer_ setPageBookmarked:NO]);
-  bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-      chrome_browser_state_.get());
-  GURL URL = GURL(kTestUrl2);
-  const BookmarkNode* defaultFolder = bookmark_model_->mobile_node();
-  bookmark_model_->AddURL(defaultFolder, defaultFolder->children().size(),
-                          base::SysNSStringToUTF16(@"Test bookmark 1"), URL);
-  EXPECT_OCMOCK_VERIFY(consumer_);
-
-  // Bookmark the page and check it is set.
-  OCMExpect([consumer_ setPageBookmarked:YES]);
-  bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-      chrome_browser_state_.get());
-  URL = GURL(kTestUrl);
-  bookmark_model_->AddURL(defaultFolder, defaultFolder->children().size(),
-                          base::SysNSStringToUTF16(@"Test bookmark 2"), URL);
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  bookmark_model_->RemoveAllUserBookmarks();
-}
-
-// Test that the consumer bookmarks status is only updated when the page is
-// removed from the bookmark model.
-TEST_F(ToolbarMediatorTest, TestToolbarRemovedFromBookmarks) {
-  SetUpBookmarks();
-  bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-      chrome_browser_state_.get());
-  GURL URL = GURL(kTestUrl2);
-  const BookmarkNode* defaultFolder = bookmark_model_->mobile_node();
-  bookmark_model_->AddURL(defaultFolder, defaultFolder->children().size(),
-                          base::SysNSStringToUTF16(@"Test bookmark 1"), URL);
-  web_state_->SetCurrentURL(GURL(kTestUrl));
-  mediator_.webStateList = web_state_list_.get();
-  SetUpActiveWebState();
-  mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
-
-  // Removes another bookmark and check it is still bookmarked.
-  OCMExpect([consumer_ setPageBookmarked:YES]);
-  std::vector<const BookmarkNode*> vec;
-  bookmark_model_->GetNodesByURL(GURL(kTestUrl2), &vec);
-  bookmark_model_->Remove(vec.front());
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  vec.clear();
-
-  // Removes the page from the bookmarks and check it is updated.
-  OCMExpect([consumer_ setPageBookmarked:NO]);
-  bookmark_model_->GetNodesByURL(GURL(kTestUrl), &vec);
-  bookmark_model_->Remove(vec.front());
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  bookmark_model_->RemoveAllUserBookmarks();
-}
-
-// Test that the consumer bookmarks status is updated when the page is
-// bookmarked.
-TEST_F(ToolbarMediatorTest, TestToolbarBookmarked) {
-  SetUpBookmarks();
-  OCMExpect([consumer_ setPageBookmarked:YES]);
-
-  web_state_->SetCurrentURL(GURL(kTestUrl));
-  mediator_.bookmarkModel = bookmark_model_;
-  mediator_.webStateList = web_state_list_.get();
-  SetUpActiveWebState();
-  mediator_.consumer = consumer_;
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  bookmark_model_->RemoveAllUserBookmarks();
-}
-
-// Test that the consumer bookmarks status is updated when the page is
-// bookmarked, when the bookmarkModel is set last.
-TEST_F(ToolbarMediatorTest, TestToolbarBookmarkedModelSetLast) {
-  SetUpBookmarks();
-  OCMExpect([consumer_ setPageBookmarked:NO]);
-  OCMExpect([consumer_ setShareMenuEnabled:YES]);
-
-  web_state_->SetCurrentURL(GURL(kTestUrl));
-  mediator_.webStateList = web_state_list_.get();
-  SetUpActiveWebState();
-  mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  bookmark_model_->RemoveAllUserBookmarks();
-}
-
-// Test that the consumer bookmarks status is updated when the page is
-// NOT bookmarked.
-TEST_F(ToolbarMediatorTest, TestToolbarNotBookmarked) {
-  SetUpBookmarks();
-  OCMExpect([consumer_ setPageBookmarked:NO]);
-
-  web_state_->SetCurrentURL(GURL(kTestUrl2));
-  mediator_.bookmarkModel = bookmark_model_;
-  mediator_.webStateList = web_state_list_.get();
-  SetUpActiveWebState();
-  mediator_.consumer = consumer_;
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  bookmark_model_->RemoveAllUserBookmarks();
-}
-
-// Tests that the bookmark button is disabled when the EditBookmarksEnabled pref
-// is false.
-TEST_F(ToolbarMediatorTest, TestBookmarkDisabled) {
-  OCMExpect([consumer_ setBookmarkEnabled:YES]);
-  SetUpBookmarks();
-  mediator_.consumer = consumer_;
-  mediator_.prefService = prefs_.get();
-  EXPECT_OCMOCK_VERIFY(consumer_);
-
-  OCMExpect([consumer_ setBookmarkEnabled:NO]);
-  prefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
-  EXPECT_OCMOCK_VERIFY(consumer_);
-
-  OCMExpect([consumer_ setBookmarkEnabled:YES]);
-  prefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, true);
-  EXPECT_OCMOCK_VERIFY(consumer_);
-
-  bookmark_model_->RemoveAllUserBookmarks();
-}
 
 // Test no setup is being done on the Toolbar if there's no Webstate.
 TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoWebstate) {
@@ -346,15 +175,12 @@ TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoWebstate) {
 
 // Test no setup is being done on the Toolbar if there's no active Webstate.
 TEST_F(ToolbarMediatorTest, TestToolbarSetupWithNoActiveWebstate) {
-  SetUpBookmarks();
   mediator_.webStateList = web_state_list_.get();
   mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
 
   [[consumer_ reject] setCanGoForward:NO];
   [[consumer_ reject] setCanGoBack:NO];
   [[consumer_ reject] setLoadingState:YES];
-  [[consumer_ reject] setPageBookmarked:NO];
 }
 
 // Test no WebstateList related setup is being done on the Toolbar if there's no
@@ -451,11 +277,9 @@ TEST_F(ToolbarMediatorTest, TestDidStartLoadingNTP) {
 // Tests the Toolbar is updated when the Webstate observer method
 // DidLoadPageWithSuccess is triggered by OnPageLoaded.
 TEST_F(ToolbarMediatorTest, TestDidLoadPageWithSucess) {
-  SetUpBookmarks();
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
 
   navigation_manager_->set_can_go_forward(true);
   navigation_manager_->set_can_go_back(true);
@@ -465,18 +289,15 @@ TEST_F(ToolbarMediatorTest, TestDidLoadPageWithSucess) {
 
   [[consumer_ verify] setCanGoForward:YES];
   [[consumer_ verify] setCanGoBack:YES];
-  [[consumer_ verify] setPageBookmarked:YES];
   [[consumer_ verify] setShareMenuEnabled:YES];
 }
 
 // Tests the Toolbar is updated when the Webstate observer method
 // didFinishNavigation is called.
 TEST_F(ToolbarMediatorTest, TestDidFinishNavigation) {
-  SetUpBookmarks();
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
 
   navigation_manager_->set_can_go_forward(true);
   navigation_manager_->set_can_go_back(true);
@@ -487,18 +308,15 @@ TEST_F(ToolbarMediatorTest, TestDidFinishNavigation) {
 
   [[consumer_ verify] setCanGoForward:YES];
   [[consumer_ verify] setCanGoBack:YES];
-  [[consumer_ verify] setPageBookmarked:YES];
   [[consumer_ verify] setShareMenuEnabled:YES];
 }
 
 // Tests the Toolbar is updated when the Webstate observer method
 // didChangeVisibleSecurityState is called.
 TEST_F(ToolbarMediatorTest, TestDidChangeVisibleSecurityState) {
-  SetUpBookmarks();
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
 
   navigation_manager_->set_can_go_forward(true);
   navigation_manager_->set_can_go_back(true);
@@ -508,7 +326,6 @@ TEST_F(ToolbarMediatorTest, TestDidChangeVisibleSecurityState) {
 
   [[consumer_ verify] setCanGoForward:YES];
   [[consumer_ verify] setCanGoBack:YES];
-  [[consumer_ verify] setPageBookmarked:YES];
   [[consumer_ verify] setShareMenuEnabled:YES];
 }
 
@@ -583,11 +400,9 @@ TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderNotEnabled) {
 TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
   VoiceSearchProvider provider;
 
-  SetUpBookmarks();
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;
-  mediator_.bookmarkModel = bookmark_model_;
 
   auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
   navigation_manager->set_can_go_forward(true);
@@ -600,7 +415,6 @@ TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
 
   OCMExpect([consumer_ setCanGoForward:YES]);
   OCMExpect([consumer_ setCanGoBack:YES]);
-  OCMExpect([consumer_ setPageBookmarked:YES]);
   OCMExpect([consumer_ setShareMenuEnabled:YES]);
 
   [mediator_ updateConsumerForWebState:test_web_state.get()];

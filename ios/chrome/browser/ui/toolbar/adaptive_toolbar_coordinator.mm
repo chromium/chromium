@@ -62,9 +62,6 @@
   self.mediator.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
   self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
 }

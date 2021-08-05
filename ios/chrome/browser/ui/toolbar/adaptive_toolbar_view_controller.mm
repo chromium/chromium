@@ -199,14 +199,6 @@ const CGFloat kTabGridAnimationsTotalDuration = 0.5;
                             completion:nil];
 }
 
-- (void)setPageBookmarked:(BOOL)bookmarked {
-  self.view.bookmarkButton.spotlighted = bookmarked;
-}
-
-- (void)setBookmarkEnabled:(BOOL)enabled {
-  self.view.bookmarkButton.enabled = enabled;
-}
-
 - (void)setVoiceSearchEnabled:(BOOL)enabled {
   // No-op, should be handled by the location bar.
 }
@@ -367,8 +359,6 @@ const CGFloat kTabGridAnimationsTotalDuration = 0.5;
     base::RecordAction(base::UserMetricsAction("MobileToolbarReload"));
   } else if (sender == self.view.stopButton) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
-  } else if (sender == self.view.bookmarkButton) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarToggleBookmark"));
   } else if (sender == self.view.toolsMenuButton) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
   } else if (sender == self.view.tabGridButton) {

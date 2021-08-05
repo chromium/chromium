@@ -53,10 +53,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 namespace chrome_test_util {
 
-id<GREYMatcher> StarButton() {
-  return ButtonWithAccessibilityLabelId(IDS_TOOLTIP_STAR);
-}
-
 id<GREYMatcher> BookmarksContextMenuEditButton() {
   // Making sure the edit button we're selecting is not on the bottom bar via
   // exclusion by accessibility ID and ancestry.

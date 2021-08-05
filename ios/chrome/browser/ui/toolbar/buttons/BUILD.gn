@@ -31,8 +31,6 @@ source_set("buttons") {
     "resources:tab_toolbar_button_halo_color",
     "resources:tab_toolbar_button_halo_color_incognito",
     "resources:toolbar_back",
-    "resources:toolbar_bookmark",
-    "resources:toolbar_bookmark_active",
     "resources:toolbar_forward",
     "resources:toolbar_new_tab_page",
     "resources:toolbar_reload",

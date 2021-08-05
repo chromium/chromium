@@ -145,26 +145,6 @@
   return stopButton;
 }
 
-- (ToolbarButton*)bookmarkButton {
-  ToolbarButton* bookmarkButton = [ToolbarButton
-      toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_bookmark"]];
-  [bookmarkButton setImage:[UIImage imageNamed:@"toolbar_bookmark_active"]
-                  forState:kControlStateSpotlighted];
-  [self configureButton:bookmarkButton width:kAdaptiveToolbarButtonWidth];
-  bookmarkButton.adjustsImageWhenHighlighted = NO;
-  [bookmarkButton
-      setImage:[bookmarkButton imageForState:UIControlStateHighlighted]
-      forState:UIControlStateSelected];
-  bookmarkButton.accessibilityLabel = l10n_util::GetNSString(IDS_TOOLTIP_STAR);
-  [bookmarkButton addTarget:self.actionHandler
-                     action:@selector(bookmarkAction)
-           forControlEvents:UIControlEventTouchUpInside];
-
-  bookmarkButton.visibilityMask =
-      self.visibilityConfiguration.bookmarkButtonVisibility;
-  return bookmarkButton;
-}
-
 - (ToolbarButton*)openNewTabButton {
   ToolbarNewTabButton* newTabButton = [ToolbarNewTabButton
       toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_new_tab_page"]];
