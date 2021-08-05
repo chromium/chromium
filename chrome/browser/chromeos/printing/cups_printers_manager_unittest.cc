@@ -424,7 +424,14 @@ class CupsPrintersManagerTest : public testing::Test,
 
  protected:
   // Everything from PrintServersProvider must be called on Chrome_UIThread
-  content::BrowserTaskEnvironment task_environment_;
+  // Note: MainThreadType::IO is strictly about requesting a specific
+  // MessagePumpType for the main thread. It has nothing to do with
+  // BrowserThread::UI or BrowserThread::IO which are named threads in the
+  // //content/browser code.
+  // See
+  // //docs/threading_and_tasks_testing.md#mainthreadtype-trait
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   // Captured printer lists from observer callbacks.
   base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;
