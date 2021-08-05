@@ -33,6 +33,7 @@ class NetworkDeviceHandler;
 namespace policy {
 
 class PolicyService;
+class NetworkRoamingStateMigrationHandler;
 
 // Implements addtional special handling of ONC device policies, which requires
 // listening for notifications from CrosSettings.
@@ -77,6 +78,11 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   chromeos::NetworkDeviceHandler* network_device_handler_;
   ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription data_roaming_setting_subscription_;
+
+  // This is only instantiated when the |kCellularAllowPerNetworkRoaming|
+  // feature flag is disabled.
+  std::unique_ptr<NetworkRoamingStateMigrationHandler>
+      network_roaming_state_migration_handler_;
 
   // Returns the device's administrator-set asset id.
   DeviceAssetIDFetcher device_asset_id_fetcher_;
