@@ -43,15 +43,12 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     int allowed_operations,
     ui::mojom::DragEventSource source) {
   drag_drop_in_progress_ = true;
+  gfx::Point touch_screen_point;
   if (source == ui::mojom::DragEventSource::kTouch) {
-    gfx::Point screen_point = display::win::ScreenWin::DIPToScreenPoint(
-        {screen_location.x(), screen_location.y()});
-    // Send a mouse down and mouse move before do drag drop runs its own event
-    // loop. This is required for ::DoDragDrop to start the drag.
-    ui::SendMouseEvent(screen_point,
-                       MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_ABSOLUTE);
-    ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
-    desktop_host_->SetInTouchDrag(true);
+    touch_screen_point =
+        screen_location + source_window->GetBoundsInScreen().OffsetFromOrigin();
+    source_window->GetHost()->ConvertDIPToPixels(&touch_screen_point);
+    desktop_host_->StartTouchDrag(touch_screen_point);
     // Gesture state gets left in a state where you can't start
     // another drag, unless it's cleaned up. Cleaning it up before starting
     // drag drop also fixes an issue with getting two kGestureScrollBegin events
@@ -89,8 +86,8 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     // it's called when it gets a mouse move event as well. (::DoDragDrop
     // doesn't support touch, so Chrome synthesizes mouse events from touch
     // events during drag drop.)
-    // In the touch failure case, when ::DoDragDrop blocks waiting for a right
-    // mouse button down event to start the drag, it only calls
+    // In the touch failure case, when ::DoDragDrop blocks waiting for a mouse
+    // button down event to start the drag, it only calls
     // QueryContinueDrag once, when it gets an event that terminates the blocked
     // drag drop, e.g., a swipe gesture from outside the Chrome window. So, we
     // detect the failure case when a drag drop lasts more than one second, and
@@ -100,7 +97,10 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
                           drag_source_->num_query_continues() > 1 ||
                               (base::TimeTicks::Now() - start_time <
                                base::TimeDelta::FromSeconds(1)));
-    desktop_host_->SetInTouchDrag(false);
+    desktop_host_->FinishTouchDrag(touch_screen_point);
+    // Move the mouse cursor to where the drag drop started, to avoid issues
+    // when the drop is outside of the Chrome window.
+    ::SetCursorPos(touch_screen_point.x(), touch_screen_point.y());
   }
   drag_source_copy->set_data(nullptr);
 

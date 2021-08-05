@@ -150,10 +150,20 @@ aura::Window* DesktopWindowTreeHostWin::GetContentWindowForHWND(HWND hwnd) {
   return host ? host->window()->GetProperty(kContentWindowForRootWindow) : NULL;
 }
 
-void DesktopWindowTreeHostWin::SetInTouchDrag(bool in_touch_drag) {
-  in_touch_drag_ = in_touch_drag;
+void DesktopWindowTreeHostWin::StartTouchDrag(gfx::Point screen_point) {
+  // Send a mouse down and mouse move before do drag drop runs its own event
+  // loop. This is required for ::DoDragDrop to start the drag.
+  ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE);
+  ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
+  in_touch_drag_ = true;
 }
 
+void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
+  if (in_touch_drag_) {
+    in_touch_drag_ = false;
+    ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE);
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
@@ -1019,7 +1029,6 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
   // by the time we attempt to process them.
   if (!GetWidget()->GetNativeView())
     return;
-
   if (in_touch_drag_) {
     POINT event_point;
     event_point.x = event->location().x();
@@ -1031,10 +1040,19 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
     if (event->type() == ui::ET_TOUCH_MOVED) {
       ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
     } else if (event->type() == ui::ET_TOUCH_RELEASED) {
-      ui::SendMouseEvent(screen_point,
-                         MOUSEEVENTF_RIGHTUP | MOUSEEVENTF_ABSOLUTE);
+      FinishTouchDrag(screen_point);
     }
   }
+  // TODO(crbug.com/229301) Calling ::SetCursorPos for ui::ET_TOUCH_PRESSED
+  // events here would fix web ui tab strip drags when the cursor is not over
+  // the Chrome window - The TODO is to figure out if that's reasonable, since
+  // it would change the cursor pos on every touch event. Or figure out if there
+  // is a less intrusive way of fixing the cursor position. If we can do that,
+  // we can remove the call to ::SetCursorPos in
+  // DesktopDragDropClientWin::StartDragAndDrop. Note that calling SetCursorPos
+  // at the start of StartDragAndDrop breaks touch drag and drop, so it has to
+  // be called some time before we get to StartDragAndDrop.
+
   // Currently we assume the window that has capture gets touch events too.
   aura::WindowTreeHost* host =
       aura::WindowTreeHost::GetForAcceleratedWidget(GetCapture());
