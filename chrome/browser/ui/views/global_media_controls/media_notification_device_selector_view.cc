@@ -451,6 +451,9 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
   if (sink.state == media_router::UIMediaSinkState::AVAILABLE) {
     DoStartCastSession(sink);
   } else if (sink.state == media_router::UIMediaSinkState::CONNECTED) {
+    // We record stopping casting here even if we are starting casting, because
+    // the existing session is being stopped and replaced by a new session.
+    RecordStopCastingMetrics();
     if (sink.provider == media_router::mojom::MediaRouteProviderId::DIAL) {
       DCHECK(sink.route);
       cast_controller_->StopCasting(sink.route->media_route_id());
@@ -480,6 +483,24 @@ void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics() {
       break;
     case GlobalMediaControlsEntryPoint::kSystemTray:
       action = GlobalMediaControlsCastActionAndEntryPoint::kStartViaSystemTray;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
+      action);
+}
+
+void MediaNotificationDeviceSelectorView::RecordStopCastingMetrics() {
+  GlobalMediaControlsCastActionAndEntryPoint action;
+  switch (entry_point_) {
+    case GlobalMediaControlsEntryPoint::kToolbarIcon:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaToolbarIcon;
+      break;
+    case GlobalMediaControlsEntryPoint::kPresentation:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaPresentation;
+      break;
+    case GlobalMediaControlsEntryPoint::kSystemTray:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaSystemTray;
       break;
   }
   base::UmaHistogramEnumeration(
