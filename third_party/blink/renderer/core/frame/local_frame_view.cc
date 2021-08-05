@@ -2932,7 +2932,9 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     if (paint_controller_->ShouldForcePaintForBenchmark() ||
         GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() ||
         visual_viewport_or_overlay_needs_repaint_) {
+      paint_controller_->ReserveCapacity();
       GraphicsContext graphics_context(*paint_controller_);
+
       if (Settings* settings = frame_->GetSettings()) {
         graphics_context.SetDarkModeEnabled(
             settings->GetForceDarkModeEnabled() &&

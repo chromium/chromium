@@ -20,7 +20,9 @@ PaintRecordBuilder::PaintRecordBuilder(GraphicsContext& containing_context)
 }
 
 PaintRecordBuilder::PaintRecordBuilder(PaintController& paint_controller)
-    : paint_controller_(&paint_controller), context_(*paint_controller_) {}
+    : paint_controller_(&paint_controller), context_(*paint_controller_) {
+  paint_controller.ReserveCapacity();
+}
 
 PaintRecordBuilder::~PaintRecordBuilder() = default;
 

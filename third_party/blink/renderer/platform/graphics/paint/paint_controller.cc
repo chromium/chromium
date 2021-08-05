@@ -46,6 +46,24 @@ PaintController::~PaintController() {
 #endif
 }
 
+void PaintController::ReserveCapacity() {
+  static constexpr wtf_size_t kDefaultDisplayItemListCapacity = 16;
+  auto display_item_list_capacity = kDefaultDisplayItemListCapacity;
+  if (current_paint_artifact_) {
+    if (current_paint_artifact_->GetDisplayItemList().size()) {
+      display_item_list_capacity =
+          current_paint_artifact_->GetDisplayItemList().size();
+    }
+    new_paint_artifact_->PaintChunks().ReserveCapacity(
+        current_paint_artifact_->PaintChunks().size());
+    new_subsequences_.tree.ReserveCapacity(current_subsequences_.tree.size());
+    new_subsequences_.map.ReserveCapacityForSize(
+        current_subsequences_.map.size());
+  }
+  new_paint_artifact_->GetDisplayItemList().ReserveCapacity(
+      display_item_list_capacity);
+}
+
 void PaintController::EnsureChunk() {
   if (paint_chunker_.EnsureChunk())
     CheckNewChunk();
@@ -579,9 +597,7 @@ void PaintController::CommitNewDisplayItems() {
 
   current_paint_artifact_ = std::move(new_paint_artifact_);
   if (usage_ == kMultiplePaints) {
-    new_paint_artifact_ = base::MakeRefCounted<PaintArtifact>(
-        current_paint_artifact_->GetDisplayItemList().size(),
-        current_paint_artifact_->PaintChunks().size());
+    new_paint_artifact_ = base::MakeRefCounted<PaintArtifact>();
     paint_chunker_.ResetChunks(&new_paint_artifact_->PaintChunks());
   } else {
     new_paint_artifact_ = nullptr;

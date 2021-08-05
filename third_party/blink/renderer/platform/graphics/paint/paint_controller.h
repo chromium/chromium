@@ -82,6 +82,11 @@ class PLATFORM_EXPORT PaintController {
   PaintController& operator=(const PaintController&) = delete;
   ~PaintController();
 
+  // Called before painting to optimize memory allocation by reserving space in
+  // |new_paint_artifact_| and |new_subsequences_| based on the size of the
+  // previous ones (|current_paint_artifact_| and |current_subsequences_|).
+  void ReserveCapacity();
+
 #if DCHECK_IS_ON()
   Usage GetUsage() const { return usage_; }
 #endif

@@ -365,6 +365,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                 paint_controller.ClientCacheIsValid(*this) &&
                 previous_interest_rect_ == new_interest_rect;
   if (!cached) {
+    paint_controller.ReserveCapacity();
     GraphicsContext context(paint_controller);
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
     paint_controller.UpdateCurrentPaintChunkProperties(

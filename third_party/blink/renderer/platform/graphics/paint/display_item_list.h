@@ -21,19 +21,17 @@ class JSONArray;
 // A container for a list of display items of various types.
 class PLATFORM_EXPORT DisplayItemList {
  public:
-  static constexpr wtf_size_t kDefaultCapacity = 16;
-
-  // Using 0 as the default value to make 0 also fall back to kDefaultCapacity.
-  // The initial capacity will be allocated when the first item is appended.
-  explicit DisplayItemList(wtf_size_t initial_capacity = 0)
-      : initial_capacity_(initial_capacity ? initial_capacity
-                                           : kDefaultCapacity) {}
+  DisplayItemList() = default;
   ~DisplayItemList();
 
   DisplayItemList(const DisplayItemList&) = delete;
   DisplayItemList& operator=(const DisplayItemList&) = delete;
   DisplayItemList(DisplayItemList&&) = delete;
   DisplayItemList& operator=(DisplayItemList&&) = delete;
+
+  void ReserveCapacity(wtf_size_t initial_capacity) {
+    items_.ReserveCapacity(initial_capacity);
+  }
 
   // This private section is before the public APIs because some inline public
   // methods depend on the private definitions.
@@ -226,16 +224,9 @@ class PLATFORM_EXPORT DisplayItemList {
                 "DisplayItemList uses `memcpy` in several member functions; "
                 "the `value_type` used by it must be trivially copyable");
 
-  ItemSlot* AllocateItemSlot() {
-    if (items_.IsEmpty())
-      items_.ReserveCapacity(initial_capacity_);
-    items_.emplace_back();
-    return &items_.back();
-  }
+  ItemSlot* AllocateItemSlot() { return &items_.emplace_back(); }
 
   ItemSlot* AllocateItemSlots(wtf_size_t count) {
-    if (items_.IsEmpty())
-      items_.ReserveCapacity(initial_capacity_);
     items_.Grow(size() + count);
     return &items_.back() - (count - 1);
   }
@@ -257,7 +248,6 @@ class PLATFORM_EXPORT DisplayItemList {
   }
 
   ItemVector items_;
-  wtf_size_t initial_capacity_;
 };
 
 using DisplayItemIterator = DisplayItemList::const_iterator;
