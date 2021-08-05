@@ -72,6 +72,10 @@ export class PrefsManager {
             !voice.eventTypes.includes(chrome.tts.EventType.CANCELLED)) {
           return;
         }
+        if (voice.extensionId === PrefsManager.ENHANCED_TTS_EXTENSION_ID) {
+          // Don't consider network voices when computing default.
+          return;
+        }
         if (voice.voiceName) {
           this.validVoiceNames_.add(voice.voiceName);
         }
@@ -332,13 +336,6 @@ export class PrefsManager {
     // loaded. If no voices are found, leave the voiceName option
     // unset to let the browser try to route the speech request
     // anyway if possible.
-    var valid = '';
-    this.validVoiceNames_.forEach(function(voiceName) {
-      if (valid) {
-        valid += ',';
-      }
-      valid += voiceName;
-    });
     if (this.voiceNameFromPrefs_ &&
         this.validVoiceNames_.has(this.voiceNameFromPrefs_)) {
       options['voiceName'] = this.voiceNameFromPrefs_;
