@@ -9,6 +9,7 @@ import os
 import sys
 import time
 
+from devil.android.sdk import version_codes
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
@@ -385,9 +386,14 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   def _GpuProcess_visibility(self, test_path):
     os_name = self.browser.platform.GetOSName()
-    os_version = self.browser.platform.GetOSVersionName()
-    if os_name != 'android' or os_version == 'M':
-      logging.info('Skipping test because not running on Android M+')
+    if os_name != 'android':
+      logging.info('Skipping test because not running on Android')
+      return
+
+    sdk_version = \
+        self.browser.platform._platform_backend.device.build_version_sdk
+    if sdk_version <= version_codes.MARSHMALLOW:
+      logging.info('Skipping test because not running on Android N+')
       return
 
     has_gpu_process = self.tab.EvaluateJavaScript(
