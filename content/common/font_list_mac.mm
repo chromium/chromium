@@ -58,8 +58,6 @@ class FontFamilyResolver {
     base::ScopedCFTypeRef<CFArrayRef> normalized_descriptors(
         CTFontDescriptorCreateMatchingFontDescriptors(
             raw_descriptor, mandatory_attributes_.get()));
-    DCHECK(normalized_descriptors != nullptr)
-        << "CTFontDescriptorCreateMatchingFontDescriptors returned null";
     return CopyLocalizedFamilyNameFrom(family_name,
                                        normalized_descriptors.get());
   }
@@ -82,18 +80,21 @@ class FontFamilyResolver {
  private:
   // Returns the first font descriptor matching the given family name.
   //
-  // |descriptors| must be an array of CTFontDescriptors whose font family name
+  // `descriptors` must be an array of CTFontDescriptors whose font family name
   // attribute is populated.
+  //
+  // `descriptors` may be null, representing an empty array. This case is
+  // handled because CTFontDescriptorCreateMatchingFontDescriptors() may
+  // return null, even on macOS 11. Discovery documented in crbug.com/1235042.
   //
   // Returns null if none of the descriptors match.
   static base::ScopedCFTypeRef<CTFontDescriptorRef> FindFirstWithFamilyName(
       CFStringRef family_name,
       CFArrayRef descriptors) {
     DCHECK(family_name != nullptr);
-    DCHECK(descriptors != nullptr);
 
-    CFIndex normalized_descriptor_count = CFArrayGetCount(descriptors);
-    for (CFIndex i = 0; i < normalized_descriptor_count; ++i) {
+    CFIndex descriptor_count = descriptors ? CFArrayGetCount(descriptors) : 0;
+    for (CFIndex i = 0; i < descriptor_count; ++i) {
       CTFontDescriptorRef descriptor =
           base::mac::CFCastStrict<CTFontDescriptorRef>(
               CFArrayGetValueAtIndex(descriptors, i));
@@ -114,8 +115,12 @@ class FontFamilyResolver {
 
   // Returns a localized font family name for the given family name.
   //
-  // |descriptors| must be an array of CTFontDescriptors representing all
-  // descriptors on the system matching the given family name.
+  // `descriptors` must be an array of normalized CTFontDescriptors representing
+  // all the font descriptors on the system matching the given family name.
+  //
+  // `descriptors` may be null, representing an empty array. This case is
+  // handled because CTFontDescriptorCreateMatchingFontDescriptors() may
+  // return null, even on macOS 11. Discovery documented in crbug.com/1235042.
   //
   // The given family name is returned as a fallback, if none of the descriptors
   // match the desired font family name.
@@ -123,7 +128,6 @@ class FontFamilyResolver {
       CFStringRef family_name,
       CFArrayRef descriptors) {
     DCHECK(family_name != nullptr);
-    DCHECK(descriptors != nullptr);
 
     base::ScopedCFTypeRef<CTFontDescriptorRef> descriptor =
         FindFirstWithFamilyName(family_name, descriptors);
@@ -139,8 +143,20 @@ class FontFamilyResolver {
             CTFontDescriptorCopyLocalizedAttribute(descriptor,
                                                    kCTFontFamilyNameAttribute,
                                                    /*language=*/nullptr)));
-    DCHECK(localized_family_name != nullptr)
-        << "CTFontDescriptorCopyLocalizedAttribute returned null";
+    // CTFontDescriptorCopyLocalizedAttribute() is only supposed to return null
+    // if the desired attribute (family name) is not present.
+    //
+    // We found that the function may return null, even when given a normalized
+    // font descriptor whose attribute (family name) exists --
+    // FindFirstWithFamilyName() only returns descriptors whose non-localized
+    // family name attribute is equal to a given string. Discovery documented in
+    // crbug.com/1235090.
+    if (localized_family_name == nullptr) {
+      DLOG(WARNING) << "Will use non-localized family name for font family: "
+                    << family_name;
+      return base::ScopedCFTypeRef<CFStringRef>(family_name,
+                                                base::scoped_policy::RETAIN);
+    }
     return localized_family_name;
   }
 
@@ -202,7 +218,7 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
         continue;
 
       base::ScopedCFTypeRef<CFStringRef> cf_normalized_family_name =
-          resolver.CopyLocalizedFamilyName(base::mac::NSToCFCast(family_name));
+          resolver.CopyLocalizedFamilyName(family_name_cf);
       DCHECK(cf_normalized_family_name != nullptr)
           << "FontFamilyResolver::CopyLocalizedFamilyName returned null";
       family_name_map[base::mac::CFToNSCast(cf_normalized_family_name)] =
