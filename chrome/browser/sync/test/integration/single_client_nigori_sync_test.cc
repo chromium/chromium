@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/cookie_helper.h"
@@ -30,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -801,23 +803,23 @@ IN_PROC_BROWSER_TEST_F(
           .Wait());
   EXPECT_TRUE(keys_fetched_checker.Wait());
 
+  // TrustedVaultClient handles IdentityManager state changes after refresh
+  // tokens are loaded.
+  // TODO(crbug.com/1148328): |keys_cleared_checker| should be sufficient alone
+  // once test properly manipulates AccountsInCookieJarInfo (this likely
+  // involves using FakeGaia).
+  signin::WaitForRefreshTokensLoaded(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)));
+
   // Mimic signin cookie clearing.
   TrustedVaultKeysChangedStateChecker keys_cleared_checker(GetSyncService(0));
   cookie_helper::DeleteSigninCookies(GetProfile(0));
   EXPECT_TRUE(keys_cleared_checker.Wait());
 }
 
-// Failing on Mac 10.11 (See http://crbug.com/1235658)
-#if defined(OS_MAC)
-#define MAYBE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared \
-    DISABLED_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared
-#else
-#define MAYBE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared \
-    ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared
-#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    MAYBE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
+    ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
 
   // Mimic the account being already using a trusted vault passphrase.
