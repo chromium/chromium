@@ -7,20 +7,15 @@
 
 #include <atk/atk.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/strings/utf_offset_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_position.h"
-#include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
 // This deleter is used in order to ensure that we properly always free memory
