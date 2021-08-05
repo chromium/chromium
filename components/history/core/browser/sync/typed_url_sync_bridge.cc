@@ -304,8 +304,10 @@ void TypedURLSyncBridge::GetData(StorageKeyList storage_keys,
     }
 
     VisitVector visits_vector;
-    if (!FixupURLAndGetVisits(&url_row, &visits_vector))
+    if (!FixupURLAndGetVisits(&url_row, &visits_vector) ||
+        visits_vector.empty()) {
       continue;
+    }
     std::unique_ptr<syncer::EntityData> entity_data =
         CreateEntityData(url_row, visits_vector);
     if (!entity_data) {
@@ -332,8 +334,9 @@ void TypedURLSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<MutableDataBatch>();
   for (URLRow& url : typed_urls) {
     VisitVector visits_vector;
-    if (!FixupURLAndGetVisits(&url, &visits_vector))
+    if (!FixupURLAndGetVisits(&url, &visits_vector) || visits_vector.empty()) {
       continue;
+    }
     std::unique_ptr<syncer::EntityData> entity_data =
         CreateEntityData(url, visits_vector);
     if (!entity_data) {
@@ -818,7 +821,11 @@ void TypedURLSyncBridge::MergeURLWithSync(
     if (is_existing_url) {
       // Add a new entry to `local_typed_urls`, and set the iterator to it.
       VisitVector untyped_visits;
-      if (!FixupURLAndGetVisits(&untyped_url, &untyped_visits)) {
+      // TODO(crbug.com/1075573): We early return on urls with all visits
+      // expired. It does not feel right as we might get new non-expired visits
+      // through sync.
+      if (!FixupURLAndGetVisits(&untyped_url, &untyped_visits) ||
+          untyped_visits.empty()) {
         return;
       }
       (*local_visit_vectors)[untyped_url.url()] = untyped_visits;
@@ -925,7 +932,11 @@ void TypedURLSyncBridge::UpdateFromSync(
   if (existing_url) {
     // This URL already exists locally - fetch the visits so we can
     // merge them below.
-    if (!FixupURLAndGetVisits(&new_url, &existing_visits)) {
+    // TODO(crbug.com/1075573): We early return on urls with all visits
+    // expired. It does not feel right as we might get new non-expired visits
+    // through sync.
+    if (!FixupURLAndGetVisits(&new_url, &existing_visits) ||
+        existing_visits.empty()) {
       return;
     }
   }
@@ -959,11 +970,13 @@ void TypedURLSyncBridge::UpdateSyncFromLocal(
     return;
   }
 
-  std::string storage_key = GetStorageKeyFromURLRow(row);
-
+  // We want to also deal with URLs that have all visits expired (that return
+  // empty `visit_vector` from FixupURLAndGetVisits()) so that these get expired
+  // or deleted.
   if (HasTypedUrl(visit_vector)) {
     SendTypedURLToProcessor(row, visit_vector, metadata_change_list);
   } else {
+    std::string storage_key = GetStorageKeyFromURLRow(row);
     // If the URL has no typed visits any more we should get rid of it. It is
     // possible that this URL never had typed visits and thus it has no sync
     // entity and no sync metadata. We do not need to check for this case
@@ -1136,9 +1149,9 @@ bool TypedURLSyncBridge::FixupURLAndGetVisits(URLRow* url,
     DVLOG(1) << "Found empty visits for URL: " << url->url();
     if (url->last_visit().is_null()) {
       // If modified URL is bookmarked, history backend treats it as modified
-      // even if all its visits are deleted. Return false to stop further
-      // processing because sync expects valid visit time for modified entry.
-      return false;
+      // even if all its visits are deleted. Return empty visits to stop further
+      // processing.
+      return true;
     }
 
     VisitRow visit(url->id(), url->last_visit(), /*referring_visit=*/0,
@@ -1174,7 +1187,7 @@ bool TypedURLSyncBridge::FixupURLAndGetVisits(URLRow* url,
     if (num_expired_visits == visits->size()) {
       DVLOG(1) << "All visits are expired for url: " << url->url();
       visits->clear();
-      return false;
+      return true;
     }
     visits->erase(visits->begin(), visits->begin() + num_expired_visits);
   }

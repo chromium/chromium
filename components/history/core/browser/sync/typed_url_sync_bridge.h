@@ -204,9 +204,9 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // expired visits that are not deleted by `ExpireHistoryBackend`, etc) by
   // modifying the passed `url` object and `visits` vector. The order of
   // `visits` will be from the oldest to the newest order.
-  // Returns false in two cases.
-  // 1. we could not fetch the visits for the passed URL, DB error.
-  // 2. No visits for the passed url, or all the visits are expired.
+  // Returns false if we could not fetch the visits for the passed URL, DB
+  // error. If there are no visits for the passed url, or all the visits are
+  // expired, it returns true but `visits` is empty.
   bool FixupURLAndGetVisits(URLRow* url, VisitVector* visits);
 
   // Create an EntityData by URL `row` and its visits `visits`.
