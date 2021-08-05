@@ -180,7 +180,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
             LanguagesManager.recordImpression(
                     LanguagesManager.LanguageSettingsPageType.ADVANCED_LANGUAGE_SETTINGS);
         });
-        translationAdvancedSection.setEnabled(
+        translationAdvancedSection.setVisible(
                 getPrefService().getBoolean(Pref.OFFER_TRANSLATE_ENABLED));
 
         // Setup target language preference.
@@ -225,7 +225,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 boolean enabled = (boolean) newValue;
                 getPrefService().setBoolean(Pref.OFFER_TRANSLATE_ENABLED, enabled);
                 contentLanguagesPreference.notifyPrefChanged();
-                translationAdvancedSection.setEnabled(enabled);
+                translationAdvancedSection.setVisible(enabled);
                 LanguagesManager.recordAction(enabled ? LanguagesManager.LanguageSettingsActionType
                                                                 .ENABLE_TRANSLATE_GLOBALLY
                                                       : LanguagesManager.LanguageSettingsActionType
