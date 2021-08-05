@@ -139,10 +139,9 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
 }
 
 IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, DISABLED_BigFile) {
-  // Prepare big file.
-  // TODO(crbug.com/1207737) Increase size to 5'000'000'000.
+  // Prepare big file (ie bigger than 4GB).
   const base::FilePath kFile("big");
-  const int64_t kSize = 4'000'000'000;
+  const int64_t kSize = 5'000'000'000;
 
   {
     const base::ScopedAllowBlockingForTesting allow_io;
