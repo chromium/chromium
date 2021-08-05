@@ -169,7 +169,7 @@ UserData.
 In order to inject JavaScript, //ios/chrome features must be registered at
 application launch time in `ChromeWebClient::GetJavaScriptFeatures`.
 
-### Best Practices for JavaScript Messaging
+## Best Practices for JavaScript Messaging
 
 Messaging between JavaScript code in a renderer process and native code in
 the browser process is a form of inter-process communication (IPC). Since
@@ -183,7 +183,7 @@ introducing security bugs. These best practices are inspired by the security
 guidelines for [Chromium legacy IPC][legacy IPC docs] and
 [Mojo IPC][Mojo IPC docs].
 
-#### Documentation
+### Documentation
 
 Message handlers should include comments describing their purpose and the
 arguments they take, including the expected type of each argument.
@@ -202,7 +202,7 @@ void MyJavaScriptFeature::ScriptMessageReceived(
 }
 ```
 
-#### Trust only the browser process
+### Trust only the browser process
 
 JavaScript messages are sent from WebContent (WebKit renderer) processes, which
 may have been compromised. Messages should be treated as if they might have been
@@ -212,7 +212,7 @@ Determine the origin of a message using trusted data rather than the content of
 the message. For example, use `web::ScriptMessage`’s `request_url`_ field, or
 `WKScriptMessage.frameInfo.request.URL`.
 
-#### Sanitize and validate messages
+### Sanitize and validate messages
 
 Do not assume that any part of the message is formatted in a particular way or
 is of a particular type. Instead, validate the format of each part of the
@@ -241,7 +241,7 @@ void MyJavaScriptFeature::ScriptMessageReceived(
 }
 ```
 
-#### Safely handle known-bad input
+### Safely handle known-bad input
 
 When validating a message, don’t simply use `CHECK`. We do not want the input
 validation mechanism to become an easy way for malicious JavaScript to kill the
@@ -255,7 +255,7 @@ If there is no graceful way to handle a particular invalid message, a
 become compromised. Importantly, a `DCHECK` is not appropriate in this situation,
 since it will not protect users on official builds.
 
-#### Be aware of the subtleties of value types returned by WKWebView
+### Be aware of the subtleties of value types returned by WKWebView
 
 In JavaScript messaging, all numbers are represented as doubles, even if they
 have no fractional part. Make sure parsing logic handles all possible double
