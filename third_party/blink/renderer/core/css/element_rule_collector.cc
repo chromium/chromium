@@ -193,7 +193,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     context.is_inside_visited_link =
         rule_data->LinkMatchType() == CSSSelector::kMatchVisited;
     DCHECK(!context.is_inside_visited_link ||
-           inside_link_ == EInsideLink::kInsideVisitedLink);
+           inside_link_ != EInsideLink::kNotInsideLink);
     if (!checker.Match(context, result)) {
       rejected++;
       continue;
@@ -278,7 +278,11 @@ void ElementRuleCollector::CollectMatchingRules(
     CollectMatchingRulesForList(match_request.rule_set->LinkPseudoClassRules(),
                                 match_request);
   }
-  if (inside_link_ == EInsideLink::kInsideVisitedLink) {
+  if (inside_link_ != EInsideLink::kNotInsideLink) {
+    // Collect rules for visited links regardless of whether they affect
+    // rendering to prevent sniffing of visited links via CSS transitions.
+    // If the visited or unvisited style changes and an affected property has a
+    // transition rule, we create a transition even if it has no visible effect.
     CollectMatchingRulesForList(match_request.rule_set->VisitedDependentRules(),
                                 match_request);
   }

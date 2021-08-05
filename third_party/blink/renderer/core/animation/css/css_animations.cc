@@ -1113,7 +1113,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
     }
   }
 
-  // In the default configutation (transition: all 0s) we continue and cancel
+  // In the default configuration (transition: all 0s) we continue and cancel
   // transitions but do not start them.
   if (!state.transition_data)
     return;

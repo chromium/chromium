@@ -110,7 +110,7 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(link, "#foo"), base::nullopt);
 
   EXPECT_EQ(Match(foo, "#foo"), kMatchLink);
-  EXPECT_EQ(Match(link, ":visited"), base::nullopt);
+  EXPECT_EQ(Match(link, ":visited"), kMatchVisited);
   EXPECT_EQ(Match(link, ":link"), kMatchLink);
   // Note that for elements that are not inside links at all, we always
   // expect kMatchLink, since kMatchLink represents the regular (non-visited)
@@ -242,9 +242,9 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
     EXPECT_EQ(Match(element, ":host-context(a) div", scope), kMatchAll);
     EXPECT_EQ(Match(element, ":host-context(:link) div", scope), kMatchLink);
     EXPECT_EQ(Match(element, ":host-context(:visited) div", scope),
-              base::nullopt);
+              kMatchVisited);
     EXPECT_EQ(Match(element, ":host-context(:is(:visited, :link)) div", scope),
-              kMatchLink);
+              kMatchAll);
   }
 }
 
