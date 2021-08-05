@@ -91,7 +91,7 @@ void UmaHistogramEnumeration(const char* name, T sample) {
                                  static_cast<int>(T::kMaxValue) + 1);
 }
 
-// Some legacy histograms may manually specify a max value, with a kCount,
+// Some legacy histograms may manually specify the enum size, with a kCount,
 // COUNT, kMaxValue, or MAX_VALUE sentinel like so:
 //   // These values are persisted to logs. Entries should not be renumbered and
 //   // numeric values should never be reused.
@@ -100,12 +100,12 @@ void UmaHistogramEnumeration(const char* name, T sample) {
 //     kClickTitle = 1,
 //     // kUseSearchbox = 2,  // no longer used, combined into omnibox
 //     kOpenBookmark = 3,
-//     kMaxValue,
+//     kCount,
 //   };
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kUseSearchbox,
-//                                 kMaxValue);
-// Note: The value in |sample| must be strictly less than |kMaxValue|. This is
+//                                 kCount);
+// Note: The value in |sample| must be strictly less than |enum_size|. This is
 // otherwise functionally equivalent to the above.
 template <typename T>
 void UmaHistogramEnumeration(const std::string& name, T sample, T enum_size) {
