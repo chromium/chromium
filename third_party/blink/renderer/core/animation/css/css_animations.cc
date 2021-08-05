@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -118,8 +119,8 @@ StringKeyframeVector ProcessKeyframesRule(
     for (unsigned j = 0; j < properties.PropertyCount(); j++) {
       CSSPropertyValueSet::PropertyReference property_reference =
           properties.PropertyAt(j);
-      // TODO(crbug.com/980160): Remove access to static Variable instance.
-      const CSSProperty& property = CSSProperty::Get(property_reference.Id());
+      CSSPropertyRef ref(property_reference.Name(), document);
+      const CSSProperty& property = ref.GetProperty();
       if (property.PropertyID() == CSSPropertyID::kAnimationTimingFunction) {
         const CSSValue& value = property_reference.Value();
         scoped_refptr<TimingFunction> timing_function;
@@ -138,20 +139,7 @@ StringKeyframeVector ProcessKeyframesRule(
         const CSSProperty& physical_property =
             property.ResolveDirectionAwareProperty(text_direction,
                                                    writing_mode);
-
-        // Calling ResolveDirectionAwareProperty on the static Variable instance
-        // must return the same instance.
-        DCHECK((&physical_property == &property) ||
-               !Variable::IsStaticInstance(property));
-        // We can not call GetCSSPropertyName on the static Variable instance,
-        // but since (&physical_property == &property), we can get the name from
-        // the original |property_reference|.
-        //
-        // TODO(crbug.com/980160): Remove static Variable instance.
-        const CSSPropertyName& name =
-            Variable::IsStaticInstance(physical_property)
-                ? property_reference.Name()
-                : physical_property.GetCSSPropertyName();
+        const CSSPropertyName& name = physical_property.GetCSSPropertyName();
         keyframe->SetCSSPropertyValue(name, property_reference.Value());
       }
     }
