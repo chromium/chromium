@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
+import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
@@ -20,6 +24,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
@@ -31,8 +36,11 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
+import org.chromium.webapk.lib.runtime_library.IWebApkApi;
 
 import java.util.concurrent.TimeoutException;
 
@@ -113,5 +121,52 @@ public class WebApkIntegrationTest {
         String postDataJson = JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 tab.getWebContents(), "document.getElementsByTagName('pre')[0].innerText");
         assertEquals("\"title=Fun+tea+parties\\ntext=Boston\\n\"", postDataJson);
+    }
+
+    /**
+     * Integration test for the WebAPK service loading logic. The WebAPK service loads its
+     * implementation from a dex stored in Chrome's APK.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Webapps"})
+    public void testWebApkServiceIntegration() throws Exception {
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        // Launch WebAPK in order to cache host browser.
+        Intent intent = new Intent(
+                Intent.ACTION_VIEW, Uri.parse("https://pwa-directory.appspot.com/defaultresponse"));
+        intent.setPackage("org.chromium.webapk.test");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+        ChromeActivityTestRule.waitFor(WebappActivity.class);
+
+        // Extract small icon id from WebAPK resources.
+        Resources res =
+                context.getPackageManager().getResourcesForApplication("org.chromium.webapk.test");
+        final int expectedSmallIconId =
+                res.getIdentifier("notification_badge", "drawable", "org.chromium.webapk.test");
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        WebApkServiceConnectionManager connectionManager =
+                new WebApkServiceConnectionManager(UiThreadTaskTraits.DEFAULT,
+                        WebApkServiceClient.CATEGORY_WEBAPK_API, null /* action */);
+        connectionManager.connect(InstrumentationRegistry.getTargetContext(),
+                "org.chromium.webapk.test",
+                new WebApkServiceConnectionManager.ConnectionCallback() {
+                    @Override
+                    public void onConnected(IBinder api) {
+                        try {
+                            int actualSmallIconId =
+                                    IWebApkApi.Stub.asInterface(api).getSmallIconId();
+                            assertEquals(actualSmallIconId, expectedSmallIconId);
+                            callbackHelper.notifyCalled();
+                        } catch (Exception e) {
+                            fail("WebApkService binder call threw exception");
+                        }
+                    }
+                });
+
+        callbackHelper.waitForNext();
     }
 }
