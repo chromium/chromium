@@ -249,24 +249,6 @@ SdpSemanticRequested GetSdpSemanticRequested(
   return kSdpSemanticRequestedDefault;
 }
 
-enum class OfferExtmapAllowMixedSetting {
-  kDefault,
-  kEnabled,
-  kDisabled,
-  kMaxValue = kDisabled
-};
-
-OfferExtmapAllowMixedSetting GetOfferExtmapAllowMixedSetting(
-    const blink::RTCConfiguration* configuration) {
-  if (!configuration->hasOfferExtmapAllowMixed()) {
-    return OfferExtmapAllowMixedSetting::kDefault;
-  }
-
-  return configuration->offerExtmapAllowMixed()
-             ? OfferExtmapAllowMixedSetting::kEnabled
-             : OfferExtmapAllowMixedSetting::kDisabled;
-}
-
 webrtc::PeerConnectionInterface::IceTransportsType IceTransportPolicyFromString(
     const String& policy) {
   if (policy == "relay")
@@ -367,20 +349,6 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     } else {
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
     }
-  }
-
-  if (configuration->hasOfferExtmapAllowMixed()) {
-    web_configuration.offer_extmap_allow_mixed =
-        configuration->offerExtmapAllowMixed();
-    if (!web_configuration.offer_extmap_allow_mixed) {
-      // Only show a deprecation warning when set to false. The default
-      // is "true" as of M91.
-      Deprecation::CountDeprecation(
-          context, WebFeature::kRTCPeerConnectionOfferAllowExtmapMixedFalse);
-    }
-  } else {
-    web_configuration.offer_extmap_allow_mixed =
-        base::FeatureList::IsEnabled(features::kRTCOfferExtmapAllowMixed);
   }
 
   if (configuration->hasIceServers()) {
@@ -789,9 +757,6 @@ RTCPeerConnection* RTCPeerConnection::Create(
     UseCounter::Count(context,
                       WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan);
   }
-
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.PeerConnection.OfferExtmapAllowMixed",
-                            GetOfferExtmapAllowMixedSetting(rtc_configuration));
 
   return peer_connection;
 }

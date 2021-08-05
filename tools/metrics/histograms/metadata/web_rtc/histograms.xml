@@ -1592,6 +1592,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.PeerConnection.OfferExtmapAllowMixed"
     enum="PeerConnectionOfferExtmapAllowMixed" expires_after="2022-01-02">
+  <obsolete>
+    Removed as of 2021-08-03.
+  </obsolete>
   <owner>kron@chromium.org</owner>
   <summary>
     What setting for the SDP attribute extmap-allow-mixed has been asked for by

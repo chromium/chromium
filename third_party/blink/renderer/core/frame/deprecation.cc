@@ -574,15 +574,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "contexts, and will start blocking them in Chrome 92 (July "
               "2021). See https://chromestatus.com/feature/5436853517811712 "
               "for more details."};
-    case WebFeature::kRTCPeerConnectionOfferAllowExtmapMixedFalse:
-      return {"RTCPeerConnectionOfferExtmapAllowMixedFalse", kM93,
-              "The RTCPeerConnection offerAllowExtmapMixed option is a "
-              "non-standard feature. This feature will be removed in M93 "
-              "(Canary: July 15, 2021; Stable: August 24, 2021). For "
-              "interoperability with legacy WebRTC versions that throw "
-              "errors when attempting to parse the a=extmap-allow-mixed "
-              "line in the SDP remove the line from the SDP during "
-              "signalling."};
     case WebFeature::kXHRJSONEncodingDetection:
       return {"XHRJSONEncodingDetection", kM93,
               "UTF-16 is not supported by response json in XMLHttpRequest"};

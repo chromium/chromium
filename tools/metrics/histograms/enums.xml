@@ -64401,6 +64401,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PeerConnectionOfferExtmapAllowMixed">
+  <obsolete>
+    Removed as of 2021-07-30.
+  </obsolete>
   <int value="0" label="Default"/>
   <int value="1" label="Enabled"/>
   <int value="2" label="Disabled"/>
