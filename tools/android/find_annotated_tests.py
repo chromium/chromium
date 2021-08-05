@@ -30,7 +30,7 @@ from pylib.instrumentation import instrumentation_test_instance
 _CRBUG_ID_PATTERN = re.compile(r'crbug(?:.com)?/(\d+)')
 _EXPORT_TIME_FORMAT = '%Y%m%dT%H%M%S'
 _GIT_LOG_TIME_PATTERN = re.compile(r'\d+')
-_GIT_LOG_MESSAGE_PATTERN = r'Cr-Commit-Position: refs/heads/master@{#(\d+)}'
+_GIT_LOG_MESSAGE_PATTERN = r'Cr-Commit-Position: refs/heads/(?:master|main)@{#(\d+)}'
 _GIT_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
