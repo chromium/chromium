@@ -54,7 +54,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   void Attach();
   void Detach();
 
-  content::WebContents* web_contents();
+  virtual content::WebContents* web_contents();
 
   base::Value WaitForNotification(const std::string& notification);
   base::Value WaitForMatchingNotification(const std::string& notification,
