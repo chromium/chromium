@@ -66,9 +66,6 @@ class DownloadControllerClientLacrosBrowserTest : public InProcessBrowserTest {
     profile()->GetDownloadManager()->Shutdown();
     profile()->SetDownloadManagerForTesting(std::move(download_manager));
 
-    ON_CALL(*download_manager_, IsManagerInitialized())
-        .WillByDefault(testing::Return(true));
-
     // Download controller client.
     download_controller_client_ =
         std::make_unique<DownloadControllerClientLacros>();
@@ -97,19 +94,40 @@ IN_PROC_BROWSER_TEST_F(DownloadControllerClientLacrosBrowserTest,
 
   // Mock `download_manager()` response for `GetAllDownloads()`.
   EXPECT_CALL(*download_manager(), GetAllDownloads)
-      .WillOnce(testing::Invoke(
+      .WillRepeatedly(testing::Invoke(
           [&](std::vector<download::DownloadItem*>* download_ptrs) {
             for (auto& download : downloads)
               download_ptrs->push_back(download.get());
           }));
 
-  // Invoke `GetAllDownloads()`.
-  base::RunLoop run_loop;
-  download_controller_client()->GetAllDownloads(base::BindLambdaForTesting(
-      [&](std::vector<crosapi::mojom::DownloadItemPtr> downloads) {
-        EXPECT_EQ(downloads.size(), 2u);
-        EXPECT_TRUE(IsSortedChronologicallyByStartTime(downloads));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  // Initially indicate that `download_manager()` is uninitialized.
+  ON_CALL(*download_manager(), IsManagerInitialized())
+      .WillByDefault(testing::Return(false));
+
+  {
+    // Invoke `GetAllDownloads()`.
+    base::RunLoop run_loop;
+    download_controller_client()->GetAllDownloads(base::BindLambdaForTesting(
+        [&](std::vector<crosapi::mojom::DownloadItemPtr> downloads) {
+          EXPECT_EQ(downloads.size(), 0u);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Now indicate that `download_manager()` is initialized.
+  ON_CALL(*download_manager(), IsManagerInitialized())
+      .WillByDefault(testing::Return(true));
+
+  {
+    // Invoke `GetAllDownloads()`.
+    base::RunLoop run_loop;
+    download_controller_client()->GetAllDownloads(base::BindLambdaForTesting(
+        [&](std::vector<crosapi::mojom::DownloadItemPtr> downloads) {
+          EXPECT_EQ(downloads.size(), 2u);
+          EXPECT_TRUE(IsSortedChronologicallyByStartTime(downloads));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }

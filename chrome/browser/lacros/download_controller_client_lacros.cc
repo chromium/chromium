@@ -80,13 +80,14 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   // Returns all downloads, no matter the type or state.
   std::vector<download::DownloadItem*> GetAllDownloads() {
     download::SimpleDownloadManager::DownloadVector downloads;
-    manager_->GetAllDownloads(&downloads);
+    if (manager_->IsManagerInitialized())
+      manager_->GetAllDownloads(&downloads);
     return downloads;
   }
 
   // Pauses the download associated with the specified `download_guid`.
   void Pause(const std::string& download_guid) {
-    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    auto* download = manager_->GetDownloadByGuid(download_guid);
     if (download)
       download->Pause();
   }
@@ -95,7 +96,7 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   // `user_resume` is `true`, it signifies that this invocation was triggered by
   // an explicit user action.
   void Resume(const std::string& download_guid, bool user_resume) {
-    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    auto* download = manager_->GetDownloadByGuid(download_guid);
     if (download)
       download->Resume(user_resume);
   }
@@ -104,7 +105,7 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   // `user_cancel` is `true`, it signifies that this invocation was triggered by
   // an explicit user action.
   void Cancel(const std::string& download_guid, bool user_cancel) {
-    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    auto* download = manager_->GetDownloadByGuid(download_guid);
     if (download)
       download->Cancel(user_cancel);
   }
@@ -113,7 +114,7 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   // `open_when_complete`.
   void SetOpenWhenComplete(const std::string& download_guid,
                            bool open_when_complete) {
-    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    auto* download = manager_->GetDownloadByGuid(download_guid);
     if (download)
       download->SetOpenWhenComplete(open_when_complete);
   }
@@ -160,16 +161,6 @@ class DownloadControllerClientLacros::ObservableDownloadManager
     if (download_item_observer_.IsObservingSource(item))
       download_item_observer_.RemoveObservation(item);
     controller_client_->OnDownloadDestroyed(item);
-  }
-
-  download::DownloadItem* GetDownloadByGuid(const std::string& guid) {
-    download::SimpleDownloadManager::DownloadVector downloads;
-    manager_->GetAllDownloads(&downloads);
-    for (auto* download : downloads) {
-      if (download->GetGuid() == guid)
-        return download;
-    }
-    return nullptr;
   }
 
   DownloadControllerClientLacros* const controller_client_;
