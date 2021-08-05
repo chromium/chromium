@@ -55,7 +55,8 @@ OsSettingsManager::OsSettingsManager(
                                           sections_.get(),
                                           hierarchy_.get(),
                                           local_search_service_proxy)),
-      app_notification_handler_(std::make_unique<AppNotificationHandler>()) {}
+      app_notification_handler_(
+          std::make_unique<AppNotificationHandler>(app_service_proxy)) {}
 
 OsSettingsManager::~OsSettingsManager() = default;
 

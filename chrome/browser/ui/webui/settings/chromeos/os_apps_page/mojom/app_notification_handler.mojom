@@ -4,6 +4,24 @@
 
 module chromeos.settings.app_notification.mojom;
 
+import "components/services/app_service/public/mojom/types.mojom";
+
+// Implementation of App
+// Contains the app's id, title, and only the notification permission, as this
+// is the only permission used in the AppNotificationsHandler.
+// Only represents Apps with an app_type of kArc or kWeb (Pwa).
+struct App {
+  // Unique identifier of the App.
+  string id;
+
+  // The title of the app,
+  // this field may be null when this struct is used to signal updates.
+  string? title;
+
+  // Contains the current permission state of the App's notification.
+  apps.mojom.Permission notification_permission;
+};
+
 // Browser interface.
 // Interface for for fetching and setting App notification
 // properties in OSSettings.
