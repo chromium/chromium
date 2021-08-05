@@ -385,6 +385,14 @@ void ProfilePickerView::ShowScreen(
   contents->GetController().LoadURL(url, content::Referrer(),
                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                     std::string());
+
+  // Special-case the first ever screen to make sure the WebView has a contents
+  // assigned in the moment when it gets displayed. This avoids a black flash on
+  // Win (and potentially other GPU artifacts on other platforms). The rest of
+  // the work can still be done asynchronously in ShowScreenFinished().
+  if (web_view_->GetWebContents() == nullptr)
+    web_view_->SetWebContents(contents);
+
   // Binding as Unretained as `this` outlives member
   // `show_screen_finished_observer_`. If ShowScreen gets called twice in a
   // short period of time, the first callback may never get called as the first
