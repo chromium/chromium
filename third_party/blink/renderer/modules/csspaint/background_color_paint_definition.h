@@ -18,6 +18,7 @@ namespace blink {
 
 class Image;
 class LocalFrame;
+class Node;
 class PaintWorkletProxyClient;
 
 class MODULES_EXPORT BackgroundColorPaintDefinition final

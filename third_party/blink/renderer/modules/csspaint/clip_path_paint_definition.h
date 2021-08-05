@@ -15,6 +15,7 @@ namespace blink {
 class FloatRect;
 class Image;
 class LocalFrame;
+class Node;
 class PaintWorkletProxyClient;
 
 class MODULES_EXPORT ClipPathPaintDefinition final
