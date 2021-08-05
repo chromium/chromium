@@ -1,0 +1,41 @@
+{
+    include: [ "syslog/client.shard.cml" ],
+    program: {
+        runner: "elf",
+        binary: "chrome",
+    },
+    capabilities: [
+        {
+            protocol: [
+                "fuchsia.ui.app.ViewProvider",
+                "fuchsia.ui.app.TemporaryFlatlandViewProvider",
+            ],
+        },
+    ],
+    use: [
+        {
+            protocol: [
+                "fuchsia.deprecatedtimezone.Timezone",
+                "fuchsia.device.NameProvider",
+                "fuchsia.fonts.Provider",
+                "fuchsia.memorypressure.Provider",
+                "fuchsia.net.NameLookup",
+                "fuchsia.net.interfaces.State",
+                "fuchsia.net.name.Lookup",
+                "fuchsia.posix.socket.Provider",
+                "fuchsia.process.Launcher",
+                "fuchsia.sysmem.Allocator",
+                "fuchsia.vulkan.loader.Loader",
+            ],
+        },
+    ],
+    expose: [
+        {
+            protocol: [
+                "fuchsia.ui.app.ViewProvider",
+                "fuchsia.ui.app.TemporaryFlatlandViewProvider",
+            ],
+            from: "self",
+        },
+    ],
+}

@@ -1,0 +1,27 @@
+{
+  "program": {
+    "binary": "chrome"
+  },
+  "sandbox": {
+    "features": [
+      "config-data",
+      "deprecated-ambient-replace-as-executable",
+      "root-ssl-certificates",
+      "vulkan"
+    ],
+    "services": [
+      "fuchsia.deprecatedtimezone.Timezone",
+      "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",
+      "fuchsia.logger.LogSink",
+      "fuchsia.memorypressure.Provider",
+      "fuchsia.net.NameLookup",
+      "fuchsia.net.interfaces.State",
+      "fuchsia.net.name.Lookup",
+      "fuchsia.posix.socket.Provider",
+      "fuchsia.process.Launcher",
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.vulkan.loader.Loader",
+    ]
+  }
+}
