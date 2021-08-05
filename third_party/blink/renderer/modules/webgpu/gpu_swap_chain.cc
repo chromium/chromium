@@ -214,10 +214,6 @@ bool GPUSwapChain::CopyToResourceProvider(
 
 // gpu_swap_chain.idl
 GPUTexture* GPUSwapChain::getCurrentTexture() {
-  if (!swap_buffers_) {
-    return GPUTexture::CreateError(device_);
-  }
-
   // As we are getting a new texture, we need to tell the canvas context that
   // there will be a need to send a new frame to the offscreencanvas.
   if (context_->IsOffscreenCanvas())
@@ -231,12 +227,20 @@ GPUTexture* GPUSwapChain::getCurrentTexture() {
     return texture_;
   }
 
+  if (!swap_buffers_) {
+    texture_ = GPUTexture::CreateError(device_);
+    return texture_;
+  }
+
   // A negative size indicates we're on the deprecated path which automatically
   // adjusts to the canvas width/height attributes.
   // TODO(bajones@chromium.org): Remove automatic path after deprecation period.
   IntSize texture_size = size_.Width() >= 0 ? size_ : context_->CanvasSize();
   WGPUTexture dawn_client_texture = swap_buffers_->GetNewTexture(texture_size);
-  DCHECK(dawn_client_texture);
+  if (!dawn_client_texture) {
+    texture_ = GPUTexture::CreateError(device_);
+    return texture_;
+  }
   // SwapChain buffer are 2d.
   texture_ = MakeGarbageCollected<GPUTexture>(
       device_, dawn_client_texture, WGPUTextureDimension_2D, format_, usage_);

@@ -152,12 +152,10 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
 
 WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   DCHECK(!current_swap_buffer_);
-
   auto context_provider = GetContextProviderWeakPtr();
-
-  // The context provider should never be null because GPUCanvasContext observes
-  // the ContextDestroyed event and will destroy the WebGPUSwapBufferProvider.
-  DCHECK(context_provider);
+  if (!context_provider) {
+    return nullptr;
+  }
 
   gpu::webgpu::WebGPUInterface* webgpu =
       context_provider->ContextProvider()->WebGPUInterface();
