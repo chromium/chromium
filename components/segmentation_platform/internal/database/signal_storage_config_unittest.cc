@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -78,7 +79,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Add a user action feature to the both models.
   proto::Feature* feature = metadata.add_features();
-  uint64_t name_hash = 234;
+  uint64_t name_hash = base::HashMetricName("some user action");
   feature->set_type(proto::SignalType::USER_ACTION);
   feature->set_name_hash(name_hash);
   feature->set_bucket_count(1);
@@ -181,7 +182,7 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
 
   // Expired.
   proto::SignalStorageConfig* signal1 = config.add_signals();
-  signal1->set_name_hash(1);
+  signal1->set_name_hash(base::HashMetricName("1"));
   signal1->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
   signal1->set_collection_start_time_s(
       (test_clock_.Now() - base::TimeDelta::FromDays(3))
@@ -191,7 +192,7 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
 
   // Unknown.
   proto::SignalStorageConfig* signal2 = config.add_signals();
-  signal2->set_name_hash(2);
+  signal2->set_name_hash(base::HashMetricName("2"));
   signal2->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
   signal2->set_collection_start_time_s(
       (test_clock_.Now() - base::TimeDelta::FromDays(3))
@@ -201,7 +202,7 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
 
   // Known.
   proto::SignalStorageConfig* signal3 = config.add_signals();
-  signal3->set_name_hash(3);
+  signal3->set_name_hash(base::HashMetricName("3"));
   signal3->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
   signal3->set_collection_start_time_s(
       (test_clock_.Now() - base::TimeDelta::FromDays(3))
@@ -223,16 +224,20 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
   std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>> result;
   signal_storage_config_->GetSignalsForCleanup(known_signals, result);
   EXPECT_EQ(1u, result.size());
-  EXPECT_EQ(1u, std::get<0>(result[0]));
+  // The first element in result tuple is the name hash.
+  EXPECT_EQ(base::HashMetricName("1"), std::get<0>(result[0]));
   EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[0]));
 
   // Run cleanup to find expired and unknown signals.
   result.clear();
-  known_signals.insert({1, proto::SignalType::HISTOGRAM_VALUE});
-  known_signals.insert({3, proto::SignalType::HISTOGRAM_VALUE});
+  known_signals.insert(
+      {base::HashMetricName("1"), proto::SignalType::HISTOGRAM_VALUE});
+  known_signals.insert(
+      {base::HashMetricName("3"), proto::SignalType::HISTOGRAM_VALUE});
   signal_storage_config_->GetSignalsForCleanup(known_signals, result);
   EXPECT_EQ(2u, result.size());
-  EXPECT_EQ(2u, std::get<0>(result[1]));
+  // The first element in result tuple is the name hash.
+  EXPECT_EQ(base::HashMetricName("2"), std::get<0>(result[1]));
   EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[1]));
 
   // Cleanup the signals from this DB. The collection start time should be
