@@ -181,10 +181,8 @@ bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
 
 class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
-  explicit CaptureTerminatedDialogDelegate(content::WebContents* web_contents,
-                                           const GURL& capturer_origin)
-      : TabModalConfirmDialogDelegate(web_contents),
-        capturer_origin_(capturer_origin) {}
+  explicit CaptureTerminatedDialogDelegate(content::WebContents* web_contents)
+      : TabModalConfirmDialogDelegate(web_contents) {}
   ~CaptureTerminatedDialogDelegate() override = default;
   std::u16string GetTitle() override {
     return l10n_util::GetStringUTF16(
@@ -196,9 +194,6 @@ class CaptureTerminatedDialogDelegate : public TabModalConfirmDialogDelegate {
   }
 
   int GetDialogButtons() const override { return ui::DIALOG_BUTTON_OK; }
-
- private:
-  const GURL capturer_origin_;
 };
 
 // static
@@ -578,7 +573,5 @@ void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
   // We use |contents| rather than |shared_tab_| here because |shared_tab_| is
   // cleared by the call to StopSharing().
   TabModalConfirmDialog::Create(
-      std::make_unique<CaptureTerminatedDialogDelegate>(contents,
-                                                        capturer_origin_),
-      contents);
+      std::make_unique<CaptureTerminatedDialogDelegate>(contents), contents);
 }
