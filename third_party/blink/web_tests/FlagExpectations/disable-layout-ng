@@ -919,7 +919,6 @@ crbug.com/958381 external/wpt/css/css-tables/border-writing-mode-dynamic-001.htm
 ### Should we rebase virtuals too?
 crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Failure ]
 crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video.html [ Failure ]
-crbug.com/958381 virtual/synchronous_html_parser/fast/css/bidi-override-in-anonymous-block.html [ Failure ]
 crbug.com/958381 virtual/text-antialias/textIteratorNilRenderer.html [ Failure ]
 crbug.com/958381 virtual/text-antialias/basic/generic-family-reset.html [ Failure ]
 crbug.com/958381 virtual/text-antialias/international/bidi-layout-across-linebreak.html [ Failure ]

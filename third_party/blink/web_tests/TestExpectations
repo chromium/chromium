@@ -97,20 +97,31 @@ crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/i
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-csp.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
 
-crbug.com/901056 virtual/synchronous_html_parser/fast/css/focus-display-block-inline.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/fast/css/fontfaceset-multiple-families.html [ Failure Pass ]
-
 # Unknown media state problem (probably due to layout occuring earlier than expected)
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
-crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
 # These tests fail on the baseline parser, pass on the foreground, but foreground versions cannot be rebaselined due to path length restrictions.
 crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Pass ]
+crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Pass ]
+
+# Flaky - possible filter paint invalidation bug.
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Failure Pass ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Failure Pass ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Failure Pass ]
+crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
+
+# These two were marked as flaky crashes on Win/Mac.
+crbug.com/626703 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Crash Failure Timeout ]
+crbug.com/1167095 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Crash Failure ]
+
+# ====== Synchronous, budgeted HTML parser tests to here ======
 
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
 
@@ -590,14 +601,6 @@ crbug.com/1050993 [ Linux ] virtual/gpu-rasterization/images/drag-image-descenda
 
 # Flaky test.
 crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Failure Pass ]
-
-# Flaky - possible filter paint invalidation bug.
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-offset-attr.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-offset-prop.html [ Failure Pass ]
-crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Failure Pass ]
 
 # Fixed in CompositeAfterPaint.
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
@@ -2879,7 +2882,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/getcredential-large-blob-not-
 crbug.com/626703 [ Win ] external/wpt/websockets/remove-own-iframe-during-onerror.window.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.serviceworker.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.worker.html?wss [ Failure Timeout ]
-crbug.com/626703 [ Win ] virtual/synchronous_html_parser/external/wpt/content-security-policy/reporting/report-only-in-meta.sub.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/content-security-policy/reporting/report-only-in-meta.sub.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/cache-storage/worker/cache-abort.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Failure Timeout ]
@@ -3061,14 +3063,12 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/dom/xslt/transformToFragment.tentative
 crbug.com/626703 [ Mac11.0 ] external/wpt/editing/other/editing-around-select-element.tentative.html?insertText [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/fetch/api/basic/request-upload.any.serviceworker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/html/semantics/embedded-content/media-elements/interfaces/TextTrackCue/endTime.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/shadow-dom/accesskey.tentative.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/script-metadata-transform.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/script-write-twice-transform.https.html [ Failure Timeout ]
 # crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/sframe-transform-buffer-source.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/basic-auth.any.sharedworker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webvtt/api/VTTCue/constructor.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/synchronous_html_parser/external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/stream/tentative/backpressure-send.any.worker.html?wpt_flags=h2 [ Crash Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/stream/tentative/backpressure-send.any.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/stream/tentative/backpressure-receive.any.html?wpt_flags=h2 [ Failure Pass ]
@@ -3104,29 +3104,22 @@ crbug.com/626703 external/wpt/webrtc-encoded-transform/script-transform.https.ht
 crbug.com/626703 [ Mac10.15 ] external/wpt/shadow-dom/accesskey.tentative.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.1909 ] external/wpt/websockets/stream/tentative/backpressure-send.any.sharedworker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/websockets/stream/tentative/backpressure-send.any.sharedworker.html?wpt_flags=h2 [ Failure Timeout ]
-crbug.com/1167095 [ Linux ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.1909 ] external/wpt/webrtc-encoded-transform/sframe-keys.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/websockets/stream/tentative/backpressure-send.any.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/shared-workers.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.1909 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/parsing/background-image-computed.sub.html [ Crash Pass ]
-crbug.com/1167095 [ Mac ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Failure Pass Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/sframe-transform-buffer-source.html [ Crash Failure Timeout ]
 crbug.com/626703 external/wpt/websockets/stream/tentative/close.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Failure Pass ]
 crbug.com/626703 [ Mac10.15 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/http-response-code.any.html [ Crash Failure ]
 crbug.com/626703 [ Win10.1909 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/http-response-code.any.html [ Crash Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Crash Failure ]
-crbug.com/626703 [ Win10.1909 ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Crash Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/api/basic/http-response-code.any.sharedworker.html [ Crash Failure ]
 crbug.com/626703 [ Win10.1909 ] external/wpt/fetch/api/basic/http-response-code.any.sharedworker.html [ Crash Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Failure Timeout ]
-crbug.com/626703 [ Win10.1909 ] external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Crash Failure ]
 crbug.com/626703 [ Win10.1909 ] external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Crash Failure ]
 crbug.com/626703 [ Win10.1909 ] external/wpt/url/a-element.html [ Crash Failure ]
-crbug.com/1167095 [ Mac ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Crash Failure Pass ]
-crbug.com/1167095 [ Win10.1909 ] virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Crash Failure ]
 crbug.com/626703 [ Mac ] external/wpt/FileAPI/file/send-file-formdata-controls.html [ Crash Failure ]
 crbug.com/626703 [ Win ] external/wpt/FileAPI/file/send-file-formdata-controls.html [ Crash Failure ]
 crbug.com/626703 [ Mac ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Crash Failure Pass ]
@@ -3497,8 +3490,7 @@ crbug.com/626703 [ Linux ] external/wpt/css/css-color/color-function-parsing.htm
 crbug.com/626703 [ Linux ] external/wpt/css/css-fonts/animations/font-stretch-interpolation.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-text/text-justify/distribute-alias.tentative.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/custom-elements/form-associated/ElementInternals-setFormValue.html [ Failure ]
-crbug.com/1167095 [ Linux ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/html/semantics/forms/form-submission-0/text-plain.window.html [ Failure ]
+crbug.com/1167095 external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/cross-origin-start-end-time-with-redirects.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/a-element.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/websockets/Create-protocols-repeated-case-insensitive.any.worker.html?wpt_flags=h2 [ Failure ]
@@ -3513,7 +3505,6 @@ crbug.com/626703 [ Linux ] virtual/system-color-compute/external/wpt/css/css-col
 crbug.com/626703 [ Mac ] external/wpt/css/css-color/color-function-parsing.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/resource-timing/cross-origin-start-end-time-with-redirects.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure ]
-crbug.com/1167095 [ Win ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/resource-timing/cross-origin-start-end-time-with-redirects.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-url-with-space.any.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/plz-dedicated-worker/external/wpt/resource-timing/cross-origin-start-end-time-with-redirects.html [ Failure ]
