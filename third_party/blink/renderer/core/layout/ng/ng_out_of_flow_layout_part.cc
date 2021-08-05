@@ -301,6 +301,8 @@ void NGOutOfFlowLayoutPart::HandleFragmentation() {
                                      column_inline_progression);
     }
   }
+  for (auto& descendant : delayed_descendants_)
+    container_builder_->AddOutOfFlowFragmentainerDescendant(descendant);
 }
 
 // Retrieve the stored ContainingBlockInfo needed for placing positioned nodes.
@@ -992,6 +994,21 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     // Sort the descendants by fragmentainer index in |descendants_to_layout|.
     // This will ensure that the descendants are laid out in the correct order.
     for (auto& descendant : *descendants) {
+      auto* containing_block = To<LayoutBox>(
+          descendant.containing_block.fragment->GetLayoutObject());
+      DCHECK(containing_block);
+
+      // We may try to lay out an OOF once we reach a column spanner. However,
+      // if the containing block has not finished lay out, we should wait to
+      // lay out the OOF in case its position is dependent on its containing
+      // block's final size.
+      if (containing_block
+              ->GetPhysicalFragment(containing_block->PhysicalFragmentCount() -
+                                    1)
+              ->BreakToken()) {
+        delayed_descendants_.push_back(descendant);
+        continue;
+      }
       NodeInfo node_info = SetupNodeInfo(descendant);
       NodeToLayout node_to_layout = {
           node_info, CalculateOffset(node_info, /* only_layout */ nullptr)};
