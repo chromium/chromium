@@ -1593,6 +1593,8 @@ crbug.com/1170052 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElemen
 crbug.com/1174937 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 crbug.com/1174937 external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 
+crbug.com/1178292 fast/mediacapturefromelement/CanvasCaptureMediaStream-canvas-initially-too-large.html [ Crash ]
+
 crbug.com/766135 fast/dom/Window/redirect-with-timer.html [ Pass Timeout ]
 
 # Ref tests that needs investigation.

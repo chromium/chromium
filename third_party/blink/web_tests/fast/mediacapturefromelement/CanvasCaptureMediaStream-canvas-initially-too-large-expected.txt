@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL captureStream() throws Exception with invalid frame size assert_throws_dom: video frame width too large function "function() { canvas.captureStream() }" did not throw
+Harness: the test ran to completion.
+
