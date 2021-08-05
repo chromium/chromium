@@ -29,20 +29,23 @@ import org.chromium.chrome.tab_ui.R;
 public class TabUiThemeProvider {
     private static final String TAG = "TabUiThemeProvider";
     /**
-     * Returns the {@link ColorStateList} to use for the tab grid card view background based on
-     * incognito mode.
+     * Returns the color to use for the tab grid card view background based on incognito mode.
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param isSelected Whether the tab is currently selected.
-     * @return The {@link ColorStateList} for tab grid card view background.
+     * @return The {@link ColorInt} for tab grid card view background.
      */
-    public static ColorStateList getCardViewTintList(
+    @ColorInt
+    public static int getCardViewBackgroundColor(
             Context context, boolean isIncognito, boolean isSelected) {
         if (!themeRefactorEnabled()) {
-            return AppCompatResources.getColorStateList(context,
-                    isIncognito ? R.color.tab_grid_card_view_tint_color_incognito
-                                : R.color.tab_grid_card_view_tint_color);
+            // Use #getColorStateList to take advantage of reading resource with attributes.
+            return AppCompatResources
+                    .getColorStateList(context,
+                            isIncognito ? R.color.tab_grid_card_view_tint_color_incognito
+                                        : R.color.tab_grid_card_view_tint_color)
+                    .getDefaultColor();
         }
 
         if (isIncognito) {
@@ -50,7 +53,7 @@ public class TabUiThemeProvider {
             @ColorRes
             int colorRes = isSelected ? R.color.incognito_tab_bg_selected_color
                                       : R.color.incognito_tab_bg_color;
-            return AppCompatResources.getColorStateList(context, colorRes);
+            return ContextCompat.getColor(context, colorRes);
         } else {
             float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
             @ColorInt
@@ -58,7 +61,7 @@ public class TabUiThemeProvider {
                     ? MaterialColors.getColor(context, R.attr.colorPrimary, TAG)
                     : new ElevationOverlayProvider(context)
                               .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
-            return ColorStateList.valueOf(colorInt);
+            return colorInt;
         }
     }
 

@@ -102,7 +102,8 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
             public void onAnimationEnd(Animator animation) {
                 if (!isZoomIn) {
                     backgroundView.setVisibility(View.GONE);
-                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1
+                            && !TabUiThemeProvider.themeRefactorEnabled()) {
                         selectedViewBelowLollipop.setVisibility(
                                 isSelected ? View.VISIBLE : View.GONE);
                     }
