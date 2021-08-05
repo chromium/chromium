@@ -13,9 +13,6 @@
 namespace web {
 namespace features {
 
-const base::Feature kReduceSessionSize{"ReduceSessionSize",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kCrashOnUnexpectedURLChange{
     "CrashOnUnexpectedURLChange", base::FEATURE_ENABLED_BY_DEFAULT};
 

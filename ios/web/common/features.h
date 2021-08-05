@@ -10,10 +10,6 @@
 namespace web {
 namespace features {
 
-// Reduces the size of the session to persist when enabled. Specific size is
-// obtained from "session-size" Finch parameter.
-extern const base::Feature kReduceSessionSize;
-
 // Used to crash the browser if unexpected URL change is detected.
 // https://crbug.com/841105.
 extern const base::Feature kCrashOnUnexpectedURLChange;

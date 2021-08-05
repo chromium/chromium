@@ -41,22 +41,9 @@ int GetSafeItemRange(int last_committed_item_index,
                      int item_count,
                      int* offset,
                      int* size) {
-  int max_session_size = kMaxSessionSize;
-  if (base::FeatureList::IsEnabled(features::kReduceSessionSize)) {
-    if (@available(iOS 14.0, *)) {
-      // IOS.MetricKit.ForegroundExitData is supported starting from iOS 14, and
-      // it's the only good metric to track effect of the session size on OOM
-      // crashes.
-      max_session_size = base::GetFieldTrialParamByFeatureAsInt(
-          features::kReduceSessionSize, "session-size", kMaxSessionSize);
-      max_session_size = MIN(max_session_size, kMaxSessionSize);
-      max_session_size = MAX(max_session_size, 40);
-    }
-  }
-
-  *size = std::min(max_session_size, item_count);
-  *offset = std::min(last_committed_item_index - max_session_size / 2,
-                     item_count - max_session_size);
+  *size = std::min(kMaxSessionSize, item_count);
+  *offset = std::min(last_committed_item_index - kMaxSessionSize / 2,
+                     item_count - kMaxSessionSize);
   *offset = std::max(*offset, 0);
   return last_committed_item_index - *offset;
 }

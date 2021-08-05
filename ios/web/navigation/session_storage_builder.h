@@ -11,9 +11,6 @@ namespace web {
 
 class WebStateImpl;
 
-// Allow navigation items up to ~63k (like components/sessions/core)
-const int kMaxNavigationItemSize = 63 * 1024;
-
 // Class that can serialize and deserialize session information.
 class SessionStorageBuilder {
  public:

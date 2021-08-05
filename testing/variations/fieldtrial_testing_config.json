@@ -4234,33 +4234,6 @@
             ]
         }
     ],
-    "IOSReduceSessionSize": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled40_11",
-                    "params": {
-                        "session-size": "40"
-                    },
-                    "enable_features": [
-                        "ReduceSessionSize"
-                    ]
-                },
-                {
-                    "name": "Enabled50_11",
-                    "params": {
-                        "session-size": "50"
-                    },
-                    "enable_features": [
-                        "ReduceSessionSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSRequestDesktopByDefault": [
         {
             "platforms": [

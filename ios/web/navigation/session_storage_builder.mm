@@ -58,17 +58,6 @@ CRWSessionStorage* SessionStorageBuilder::BuildStorage(
       }
       continue;
     }
-    if (base::FeatureList::IsEnabled(features::kReduceSessionSize)) {
-      // Go through the builder who's a friend of web::NavigationItemImpl
-      // and has access to raw fields, so for example url is not
-      // counted twice if virtyual url is empty.
-      if (item_storage_builder.ItemStoredSize(item) > kMaxNavigationItemSize) {
-        if (index <= originalIndex) {
-          session_storage.lastCommittedItemIndex--;
-        }
-        continue;
-      }
-    }
 
     [item_storages addObject:item_storage_builder.BuildStorage(item)];
   }
