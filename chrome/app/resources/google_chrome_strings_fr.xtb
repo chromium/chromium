@@ -220,7 +220,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6967962315388095737">Règle de trafic entrant pour la version bêta de Google Chrome autorisant le trafic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a été mis à jour, mais vous ne l'avez pas utilisé depuis plus de 30 jours.</translation>
 <translation id="7025800014283535195">Vous pouvez passer d'un profil Chrome à un autre ici</translation>
-<translation id="7062128746136194023">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas ajouter cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7062128746136194023">Ton parent a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas ajouter cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7098166902387133879">Votre micro est en cours d'utilisation dans Google Chrome.</translation>
 <translation id="7106741999175697885">Gestionnaire de tâches - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
@@ -264,7 +264,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="8255190535488645436">Votre webcam et votre micro sont en cours d'utilisation dans Google Chrome.</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
-<translation id="828798499196665338">L'un de tes parents a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="828798499196665338">Ton parent a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome est bloqué. Voulez-vous le relancer maintenant ?</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car ce dernier est dangereux.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>

@@ -1321,7 +1321,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2390347491606624519">Impossible de se connecter au proxy, veuillez vous connecter de nouveau</translation>
 <translation id="2390782873446084770">Sync Wi-Fi</translation>
 <translation id="2391419135980381625">Police standard</translation>
-<translation id="2392163307141705938">Tu as atteint la limite de temps définie par l'un de tes parents pour <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
+<translation id="2392163307141705938">Tu as atteint la limite de temps définie par un parent pour <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Activer</translation>
 <translation id="2393136602862631930">Configurer <ph name="APP_NAME" /> sur votre Chromebook</translation>
 <translation id="2395616325548404795">Votre <ph name="DEVICE_TYPE" /> a bien été enregistré pour bénéficier de la gestion d'entreprise, mais l'envoi d'informations concernant ses éléments et sa position a échoué. Veuillez saisir ces informations manuellement depuis la console d'administration de cet appareil.</translation>
@@ -2876,7 +2876,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4050534976465737778">Assurez-vous que les deux appareils sont déverrouillés, qu'ils sont proches l'un de l'autre et que le Bluetooth est activé sur les deux. Si vous partagez des fichiers avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que l'option "Visibilité à proximité" est activée sur celui-ci. Pour cela, ouvrez la zone d'état, puis sélectionnez "Visibilité à proximité". <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Très petite</translation>
 <translation id="4054070260844648638">Visible par tous</translation>
-<translation id="4056908315660577142">Tu as atteint la limite de temps fixée par l'un de tes parents pour l'application Chrome <ph name="APP_NAME" />. Tu pourras l'utiliser demain pendant <ph name="TIME_LIMIT" />.</translation>
+<translation id="4056908315660577142">Tu as atteint la limite de temps fixée par un parent pour l'application Chrome <ph name="APP_NAME" />. Tu pourras l'utiliser demain pendant <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Afficher dans la boutique</translation>
 <translation id="4057991113334098539">Activation...</translation>
@@ -3039,7 +3039,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="426564820080660648">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet, Wi-Fi ou de données mobiles.</translation>
 <translation id="4266679478228765574">Si vous retirez des dossiers, les fichiers ne seront plus partagés, mais ne seront pas supprimés.</translation>
 <translation id="4267455501101322486">Pour ajouter un compte afin d'accéder à des ressources pédagogiques, demande à un de tes parents de t'accorder l'autorisation</translation>
-<translation id="4267924571297947682">Demande à l'un de tes parents de t'accorder l'autorisation</translation>
+<translation id="4267924571297947682">Demande à un parent de t'accorder l'autorisation</translation>
 <translation id="4267953847983678297">Se connecter automatiquement au réseau mobile</translation>
 <translation id="4268025649754414643">Chiffrement de la clé</translation>
 <translation id="4268670020635416342">Ajoutez un nom ou un libellé comme "Travail", "Personnel" ou "Enfants"</translation>
@@ -3155,7 +3155,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4403775189117163360">Choisir un autre dossier</translation>
 <translation id="4404136731284211429">Analyser de nouveau</translation>
-<translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par l'un de tes parents. Tu as besoin de leur autorisation pour l'utiliser.</translation>
+<translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par un parent. Tu as besoin de leur autorisation pour l'utiliser.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="440653823335387109">PAGES LUES</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
@@ -6261,7 +6261,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Le système redémarre au cours de ce processus.</translation>
 <translation id="7828731929332799387">Cette action supprimera l'ensemble des cookies et données de sites disponibles dans des contextes tiers. Voulez-vous continuer ?</translation>
-<translation id="7829877209233347340">Demande à l'un de tes parents de t'autoriser à ajouter un compte scolaire</translation>
+<translation id="7829877209233347340">Demande à un parent de t'autoriser à ajouter un compte scolaire</translation>
 <translation id="7831491651892296503">Erreur lors de la configuration du réseau</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Heure de fin</translation>
@@ -7160,7 +7160,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8812593354822910461">Effacer également les données de navigation (<ph name="URL" />), ce qui vous déconnectera de <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Plus tard</translation>
 <translation id="8813698869395535039">Impossible de se connecter au compte <ph name="USERNAME" /></translation>
-<translation id="8813872945700551674">Demande à l'un de tes parents d'approuver l'extension "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="8813872945700551674">Demande à un parent d'approuver l'extension "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8814190375133053267">Wi-Fi </translation>
 <translation id="8814319344131658221">Les langues utilisées par le correcteur orthographique sont basées sur vos préférences linguistiques</translation>
 <translation id="8814644416678422095">Disque dur</translation>
@@ -7510,7 +7510,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9170061643796692986">Le paramètre actuel de visibilité s'applique à tous les contacts</translation>
 <translation id="9170848237812810038">Ann&amp;uler</translation>
 <translation id="9170884462774788842">Un autre programme sur votre ordinateur a ajouté un thème qui risque de modifier le fonctionnement de Google Chrome.</translation>
-<translation id="917350715406657904">Tu as atteint la limite de temps définie par l'un de tes parents pour <ph name="APP_NAME" />. Tu pourras de nouveau l'utiliser demain pendant <ph name="TIME_LIMIT" />.</translation>
+<translation id="917350715406657904">Tu as atteint la limite de temps définie par un parent pour <ph name="APP_NAME" />. Tu pourras de nouveau l'utiliser demain pendant <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données liées à l'utilisation de l'appareil et des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
 <translation id="917510707618656279">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth</translation>
 <translation id="9176476835295860688">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ce processus permettra d'améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
