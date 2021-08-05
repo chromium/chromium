@@ -568,6 +568,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsConfig.AdditionalDnsQueryTypesEnabled"
+    enum="BooleanEnabled" expires_after="2022-08-14">
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether or not `prefs::kAdditionalDnsQueryTypesEnabled` is enabled. Recorded
+    at startup if disabled or whenever Chrome is believed to be
+    enterprise-managed (per the same detection as the default disabling of DoH).
+    Measures whether or not enterprise admins are setting the disable,
+    potentially due to issues encoutered with HTTPS/INTEGRITY query experiments.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.Nsswitch.Compatible" enum="BooleanValid"
     expires_after="2022-01-15">
   <owner>ericorth@chromium.org</owner>
