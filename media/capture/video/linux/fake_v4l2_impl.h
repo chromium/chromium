@@ -10,6 +10,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/synchronization/lock.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/linux/v4l2_capture_device.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -52,11 +53,13 @@ class CAPTURE_EXPORT FakeV4L2Impl : public V4L2CaptureDevice {
  private:
   class OpenedDevice;
 
-  int next_id_to_return_from_open_;
-  std::map<std::string, FakeV4L2DeviceConfig> device_configs_;
-  std::map<std::string, int> device_name_to_open_id_map_;
+  base::Lock lock_;
+
+  int next_id_to_return_from_open_ GUARDED_BY(lock_);
+  std::map<std::string, FakeV4L2DeviceConfig> device_configs_ GUARDED_BY(lock_);
+  std::map<std::string, int> device_name_to_open_id_map_ GUARDED_BY(lock_);
   std::map<int /*value returned by open()*/, std::unique_ptr<OpenedDevice>>
-      opened_devices_;
+      opened_devices_ GUARDED_BY(lock_);
 };
 
 }  // namespace media
