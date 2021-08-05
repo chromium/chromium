@@ -560,12 +560,7 @@ class TestRunner(object):
 
     LOGGER.debug('Processing test results.')
     for test in parser.FailedTests(include_flaky=True):
-      # Test cases are named as <test group>.<test case>. If the test case
-      # is prefixed with "FLAKY_", it should be reported as flaked not failed.
-      if '.' in test and test.split('.', 1)[1].startswith('FLAKY_'):
-        result.flaked_tests[test] = parser.FailureDescription(test)
-      else:
-        result.failed_tests[test] = parser.FailureDescription(test)
+      result.failed_tests[test] = parser.FailureDescription(test)
 
     result.passed_tests.extend(parser.PassedTests(include_flaky=True))
 

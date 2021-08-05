@@ -472,7 +472,7 @@ PasswordForm MakeSimpleForm() {
 
 // TODO(crbug.com/403705) This test is flaky.
 // Check that HTML forms are converted correctly into FormDatas.
-TEST_F(PasswordControllerTest, FLAKY_FindPasswordFormsInView) {
+TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
   // clang-format off
   FindPasswordFormTestData test_data[] = {
      // Normal form: a username and a password element.

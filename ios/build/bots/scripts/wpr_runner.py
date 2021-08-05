@@ -320,14 +320,8 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
           # name to the test suite.
           testWithRecipeName = "{}.{}".format(base_name, test)
 
-          # Test cases are named as <test group>.<test case>. If the test case
-          # is prefixed w/"FLAKY_", it should be reported as flaked not failed
-          if '.' in test and test.split('.', 1)[1].startswith('FLAKY_'):
-            result.flaked_tests[testWithRecipeName] = parser.FailureDescription(
-                test)
-          else:
-            result.failed_tests[testWithRecipeName] = parser.FailureDescription(
-                test)
+          result.failed_tests[testWithRecipeName] = parser.FailureDescription(
+              test)
 
         for test in parser.PassedTests(include_flaky=True):
           testWithRecipeName = "{}.{}".format(base_name, test)

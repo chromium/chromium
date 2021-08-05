@@ -2104,7 +2104,7 @@ TEST_F(WebStateObserverTest, DownloadNavigation) {
 // Tests failed load after the navigation is sucessfully finished.
 // TODO(crbug.com/954232): this test is flaky on device, and as of iOS14
 // simulator as well.
-TEST_F(WebStateObserverTest, FLAKY_FailedLoad) {
+TEST_F(WebStateObserverTest, DISABLED_FailedLoad) {
   GURL url = test_server_->GetURL("/exabyte_response");
 
   NavigationContext* context = nullptr;
