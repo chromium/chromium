@@ -12,8 +12,8 @@
 #import "base/test/ios/wait_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -33,13 +33,13 @@ using chrome_test_util::SetUpAndReturnMockReauthenticationModuleForExport;
 
 namespace {
 
-scoped_refptr<password_manager::PasswordStore> GetPasswordStore() {
+scoped_refptr<password_manager::PasswordStoreInterface> GetPasswordStore() {
   // ServiceAccessType governs behaviour in Incognito: only modifications with
   // EXPLICIT_ACCESS, which correspond to user's explicit gesture, succeed.
   // This test does not deal with Incognito, and should not run in Incognito
   // context. Therefore IMPLICIT_ACCESS is used to let the test fail if in
   // Incognito context.
-  return IOSChromePasswordStoreFactory::GetForBrowserState(
+  return IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
       chrome_test_util::GetOriginalBrowserState(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }
