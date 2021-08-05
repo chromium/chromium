@@ -849,6 +849,11 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
 const base::Feature kWebAppEnableIsolatedStorage{
     "WebAppEnableIsolatedStorage", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the "launch_handler" manifest field for web apps.
+// Explainer: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+const base::Feature kWebAppEnableLaunchHandler{
+    "WebAppEnableLaunchHandler", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables declarative link capturing in web apps.
 // Explainer:
 // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md

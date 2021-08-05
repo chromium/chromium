@@ -2277,6 +2277,10 @@
       status: "experimental",
     },
     {
+      name: "WebAppLaunchHandler",
+      status: "experimental",
+    },
+    {
       name: "WebAppLinkCapturing",
       origin_trial_feature_name: "WebAppLinkCapturing",
       origin_trial_os: ["chromeos"],

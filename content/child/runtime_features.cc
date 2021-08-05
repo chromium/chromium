@@ -395,6 +395,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", blink::features::kUserAgentClientHint},
+          {"WebAppLaunchHandler", blink::features::kWebAppEnableLaunchHandler},
           {"WebAppLinkCapturing", blink::features::kWebAppEnableLinkCapturing},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WebAppWindowControlsOverlay",
