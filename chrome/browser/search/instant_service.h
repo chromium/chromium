@@ -17,8 +17,8 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/search/background/ntp_background_service.h"
-#include "chrome/browser/search/background/ntp_background_service_observer.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,7 +56,7 @@ class RenderProcessHost;
 // necessary information (most visited tiles and theme info) updated in those
 // renderer processes.
 class InstantService : public KeyedService,
-                       public NtpBackgroundServiceObserver,
+                       public NtpCustomBackgroundServiceObserver,
                        public content::NotificationObserver,
                        public ntp_tiles::MostVisitedSites::Observer,
                        public ui::NativeThemeObserver,
@@ -107,10 +107,6 @@ class InstantService : public KeyedService,
 
   // Invoked to update theme information for the NTP.
   virtual void UpdateNtpTheme();
-
-  // Invoked when a background pref update is received via sync, triggering
-  // an update of theme info.
-  void UpdateBackgroundFromSync();
 
   // Invoked by the InstantController to update most visited items details for
   // NTP.
@@ -172,11 +168,9 @@ class InstantService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // NtpBackgroundServiceObserver:
-  void OnCollectionInfoAvailable() override {}
-  void OnCollectionImagesAvailable() override {}
-  void OnNextCollectionImageAvailable() override;
-  void OnNtpBackgroundServiceShuttingDown() override;
+  // NtpCustomBackgroundServiceObserver:
+  void OnCustomBackgroundImageUpdated() override;
+  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -202,31 +196,16 @@ class InstantService : public KeyedService,
 
   void ApplyOrResetCustomBackgroundNtpTheme();
 
-  void ApplyCustomBackgroundNtpTheme();
-
   // Marked virtual for mocking in tests.
   virtual void ResetCustomBackgroundNtpTheme();
 
   void FallbackToDefaultNtpTheme();
-
-  void RemoveLocalBackgroundImageCopy();
-
-  // Returns false if the custom background pref cannot be parsed, otherwise
-  // returns true and sets custom_background_url to the value in the pref.
-  bool IsCustomBackgroundPrefValid(GURL& custom_background_url);
-
-  // Update the background pref to point to
-  // chrome://new-tab-page/background.jpg.
-  void SetBackgroundToLocalResource();
 
   void SetClockForTesting(base::Clock* clock);
 
   base::TimeTicks GetBackgroundUpdatedTimestampForTesting() {
     return background_updated_timestamp_;
   }
-
-  // Requests a new background image if it hasn't been updated in >24 hours.
-  void RefreshBackgroundIfNeeded();
 
   // Sets NTP elements theme info that are overridden when custom
   // background is used.
@@ -258,16 +237,15 @@ class InstantService : public KeyedService,
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
 
-  base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
-      background_service_observation_{this};
+  base::ScopedObservation<NtpCustomBackgroundService,
+                          NtpCustomBackgroundServiceObserver>
+      custom_background_service_observation_{this};
 
   ui::NativeTheme* native_theme_;
 
-  NtpBackgroundService* background_service_;
+  NtpCustomBackgroundService* custom_background_service_;
 
   base::TimeTicks background_updated_timestamp_;
-
-  base::Clock* clock_;
 
   base::WeakPtrFactory<InstantService> weak_ptr_factory_{this};
 

@@ -22,7 +22,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/instant_service_observer.h"
@@ -58,79 +58,12 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
-namespace {
-
-const char kNtpCustomBackgroundURL[] = "background_url";
-const char kNtpCustomBackgroundAttributionLine1[] = "attribution_line_1";
-const char kNtpCustomBackgroundAttributionLine2[] = "attribution_line_2";
-const char kNtpCustomBackgroundAttributionActionURL[] =
-    "attribution_action_url";
-const char kNtpCustomBackgroundCollectionId[] = "collection_id";
-const char kNtpCustomBackgroundResumeToken[] = "resume_token";
-const char kNtpCustomBackgroundRefreshTimestamp[] = "refresh_timestamp";
-
-base::DictionaryValue GetBackgroundInfoAsDict(
-    const GURL& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const GURL& action_url,
-    const absl::optional<std::string>& collection_id,
-    const absl::optional<std::string>& resume_token,
-    const absl::optional<int> refresh_timestamp) {
-  base::DictionaryValue background_info;
-  background_info.SetKey(kNtpCustomBackgroundURL,
-                         base::Value(background_url.spec()));
-  background_info.SetKey(kNtpCustomBackgroundAttributionLine1,
-                         base::Value(attribution_line_1));
-  background_info.SetKey(kNtpCustomBackgroundAttributionLine2,
-                         base::Value(attribution_line_2));
-  background_info.SetKey(kNtpCustomBackgroundAttributionActionURL,
-                         base::Value(action_url.spec()));
-  background_info.SetKey(kNtpCustomBackgroundCollectionId,
-                         base::Value(collection_id.value_or("")));
-  background_info.SetKey(kNtpCustomBackgroundResumeToken,
-                         base::Value(resume_token.value_or("")));
-  background_info.SetKey(kNtpCustomBackgroundRefreshTimestamp,
-                         base::Value(refresh_timestamp.value_or(0)));
-
-  return background_info;
-}
-
-base::Value NtpCustomBackgroundDefaults() {
-  base::Value defaults(base::Value::Type::DICTIONARY);
-  defaults.SetKey(kNtpCustomBackgroundURL,
-                  base::Value(base::Value::Type::STRING));
-  defaults.SetKey(kNtpCustomBackgroundAttributionLine1,
-                  base::Value(base::Value::Type::STRING));
-  defaults.SetKey(kNtpCustomBackgroundAttributionLine2,
-                  base::Value(base::Value::Type::STRING));
-  defaults.SetKey(kNtpCustomBackgroundAttributionActionURL,
-                  base::Value(base::Value::Type::STRING));
-  defaults.SetKey(kNtpCustomBackgroundCollectionId,
-                  base::Value(base::Value::Type::STRING));
-  defaults.SetKey(kNtpCustomBackgroundResumeToken,
-                  base::Value(base::Value::Type::STRING));
-  defaults.SetKey(kNtpCustomBackgroundRefreshTimestamp,
-                  base::Value(base::Value::Type::INTEGER));
-  return defaults;
-}
-
-void CopyFileToProfilePath(const base::FilePath& from_path,
-                           const base::FilePath& profile_path) {
-  base::CopyFile(from_path,
-                 profile_path.AppendASCII(
-                     chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
-}
-
-}  // namespace
-
 InstantService::InstantService(Profile* profile)
     : profile_(profile),
       most_visited_info_(std::make_unique<InstantMostVisitedInfo>()),
       pref_service_(profile_->GetPrefs()),
       native_theme_(ui::NativeTheme::GetInstanceForNativeUi()),
-      background_updated_timestamp_(base::TimeTicks::Now()),
-      clock_(base::DefaultClock::GetInstance()) {
+      background_updated_timestamp_(base::TimeTicks::Now()) {
   // The initialization below depends on a typical set of browser threads. Skip
   // it if we are running in a unit test without the full suite.
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
@@ -150,7 +83,8 @@ InstantService::InstantService(Profile* profile)
         this, ntp_tiles::kMaxNumMostVisited);
   }
 
-  background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
+  custom_background_service_ =
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
 
   // Listen for theme installation.
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
@@ -169,17 +103,10 @@ InstantService::InstantService(Profile* profile)
   content::URLDataSource::Add(profile_,
                               std::make_unique<MostVisitedIframeSource>());
 
-  // Update theme info when the pref is changed via Sync.
-  pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kNtpCustomBackgroundDict,
-      base::BindRepeating(&InstantService::UpdateBackgroundFromSync,
-                          weak_ptr_factory_.GetWeakPtr()));
-
   theme_observation_.Observe(native_theme_);
 
-  if (background_service_)
-    background_service_observation_.Observe(background_service_);
+  if (custom_background_service_)
+    custom_background_service_observation_.Observe(custom_background_service_);
 }
 
 InstantService::~InstantService() = default;
@@ -236,20 +163,14 @@ void InstantService::UpdateNtpTheme() {
   NotifyAboutNtpTheme();
 }
 
-void InstantService::UpdateBackgroundFromSync() {
-  // Any incoming change to synced background data should clear the local image.
-  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
-  RemoveLocalBackgroundImageCopy();
-  UpdateNtpTheme();
-}
-
 void InstantService::UpdateMostVisitedInfo() {
   NotifyAboutMostVisitedInfo();
 }
 
 void InstantService::ResetCustomBackgroundInfo() {
-  SetCustomBackgroundInfo(GURL(), std::string(), std::string(), GURL(),
-                          std::string());
+  if (custom_background_service_) {
+    custom_background_service_->ResetCustomBackgroundInfo();
+  }
 }
 
 void InstantService::SetCustomBackgroundInfo(
@@ -258,64 +179,23 @@ void InstantService::SetCustomBackgroundInfo(
     const std::string& attribution_line_2,
     const GURL& action_url,
     const std::string& collection_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (IsCustomBackgroundDisabledByPolicy()) {
-    return;
-  }
-  bool is_backdrop_collection =
-      background_service_ &&
-      background_service_->IsValidBackdropCollection(collection_id);
-  bool is_backdrop_url =
-      background_service_ &&
-      background_service_->IsValidBackdropUrl(background_url);
-
-  bool need_forced_refresh =
-      pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice) &&
-      pref_service_->FindPreference(prefs::kNtpCustomBackgroundDict)
-          ->IsDefaultValue();
-  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
-  RemoveLocalBackgroundImageCopy();
-
-  background_updated_timestamp_ = base::TimeTicks::Now();
-
-  if (!collection_id.empty() && is_backdrop_collection) {
-    background_service_->FetchNextCollectionImage(collection_id, absl::nullopt);
-  } else if (background_url.is_valid() && is_backdrop_url) {
-    base::DictionaryValue background_info = GetBackgroundInfoAsDict(
+  if (custom_background_service_) {
+    custom_background_service_->SetCustomBackgroundInfo(
         background_url, attribution_line_1, attribution_line_2, action_url,
-        absl::nullopt, absl::nullopt, absl::nullopt);
-    pref_service_->Set(prefs::kNtpCustomBackgroundDict, background_info);
-  } else {
-    pref_service_->ClearPref(prefs::kNtpCustomBackgroundDict);
-
-    // If this device was using a local image and did not have a non-local
-    // background saved, UpdateBackgroundFromSync will not fire. Therefore, we
-    // need to force a refresh here.
-    if (need_forced_refresh) {
-      UpdateNtpTheme();
-    }
+        collection_id);
   }
-}
-
-void InstantService::SetBackgroundToLocalResource() {
-  background_updated_timestamp_ = base::TimeTicks::Now();
-  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
-  UpdateNtpTheme();
 }
 
 void InstantService::SelectLocalBackgroundImage(const base::FilePath& path) {
-  if (IsCustomBackgroundDisabledByPolicy()) {
-    return;
+  if (custom_background_service_) {
+    custom_background_service_->SelectLocalBackgroundImage(path);
   }
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
-      base::BindOnce(&InstantService::SetBackgroundToLocalResource,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 NtpTheme* InstantService::GetInitializedNtpTheme() {
-  RefreshBackgroundIfNeeded();
+  if (custom_background_service_) {
+    custom_background_service_->RefreshBackgroundIfNeeded();
+  }
 
   if (!theme_)
     BuildNtpTheme();
@@ -338,30 +218,15 @@ void InstantService::Shutdown() {
   ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
 }
 
-void InstantService::OnNextCollectionImageAvailable() {
-  auto image = background_service_->next_image();
-  std::string attribution1;
-  std::string attribution2;
-  if (image.attribution.size() > 0)
-    attribution1 = image.attribution[0];
-  if (image.attribution.size() > 1)
-    attribution2 = image.attribution[1];
-
-  std::string resume_token = background_service_->next_image_resume_token();
-  int64_t timestamp = (clock_->Now() + base::TimeDelta::FromDays(1)).ToTimeT();
-
-  base::DictionaryValue background_info = GetBackgroundInfoAsDict(
-      image.image_url, attribution1, attribution2, image.attribution_action_url,
-      image.collection_id, resume_token, timestamp);
-
+void InstantService::OnCustomBackgroundImageUpdated() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  pref_service_->Set(prefs::kNtpCustomBackgroundDict, background_info);
+  UpdateNtpTheme();
 }
 
-void InstantService::OnNtpBackgroundServiceShuttingDown() {
+void InstantService::OnNtpCustomBackgroundServiceShuttingDown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  background_service_observation_.Reset();
-  background_service_ = nullptr;
+  custom_background_service_observation_.Reset();
+  custom_background_service_ = nullptr;
 }
 
 void InstantService::Observe(int type,
@@ -511,84 +376,32 @@ void InstantService::ApplyOrResetCustomBackgroundNtpTheme() {
     return;
   }
 
-  if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
-    // Add a timestamp to the url to prevent the browser from using a cached
-    // version when "Upload an image" is used multiple times.
-    std::string time_string = std::to_string(base::Time::Now().ToTimeT());
-    std::string local_string(chrome::kChromeUIUntrustedNewTabPageBackgroundUrl);
-    GURL timestamped_url(local_string + "?ts=" + time_string);
-    GetInitializedNtpTheme()->custom_background_url = timestamped_url;
-    GetInitializedNtpTheme()->custom_background_attribution_line_1 =
-        std::string();
-    GetInitializedNtpTheme()->custom_background_attribution_line_2 =
-        std::string();
-    GetInitializedNtpTheme()->custom_background_attribution_action_url = GURL();
-    return;
-  }
+  auto custom_background =
+      custom_background_service_
+          ? custom_background_service_->GetCustomBackground()
+          : absl::optional<CustomBackground>();
 
-  // Attempt to get custom background URL from preferences.
-  GURL custom_background_url;
-  if (!IsCustomBackgroundPrefValid(custom_background_url)) {
+  if (!custom_background) {
     ResetCustomBackgroundNtpTheme();
     return;
   }
 
-  ApplyCustomBackgroundNtpTheme();
-}
-
-void InstantService::ApplyCustomBackgroundNtpTheme() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* background_info =
-      pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict);
-  GURL custom_background_url(
-      background_info->FindKey(kNtpCustomBackgroundURL)->GetString());
-
-  std::string collection_id;
-  const base::Value* id_value =
-      background_info->FindKey(kNtpCustomBackgroundCollectionId);
-  if (id_value)
-    collection_id = id_value->GetString();
-
-  // Set custom background information in theme info (attributions are
-  // optional).
-  const base::Value* attribution_line_1 =
-      background_info->FindKey(kNtpCustomBackgroundAttributionLine1);
-  const base::Value* attribution_line_2 =
-      background_info->FindKey(kNtpCustomBackgroundAttributionLine2);
-  const base::Value* attribution_action_url =
-      background_info->FindKey(kNtpCustomBackgroundAttributionActionURL);
-  NtpTheme* theme = GetInitializedNtpTheme();
-  theme->custom_background_url = custom_background_url;
-  theme->collection_id = collection_id;
-
-  if (attribution_line_1) {
-    theme->custom_background_attribution_line_1 =
-        background_info->FindKey(kNtpCustomBackgroundAttributionLine1)
-            ->GetString();
-  }
-  if (attribution_line_2) {
-    theme->custom_background_attribution_line_2 =
-        background_info->FindKey(kNtpCustomBackgroundAttributionLine2)
-            ->GetString();
-  }
-  if (attribution_action_url) {
-    GURL action_url(
-        background_info->FindKey(kNtpCustomBackgroundAttributionActionURL)
-            ->GetString());
-
-    if (!action_url.SchemeIsCryptographic()) {
-      theme->custom_background_attribution_action_url = GURL();
-    } else {
-      theme->custom_background_attribution_action_url = action_url;
-    }
-  }
+  GetInitializedNtpTheme()->custom_background_url =
+      custom_background->custom_background_url;
+  GetInitializedNtpTheme()->custom_background_attribution_line_1 =
+      custom_background->custom_background_attribution_line_1;
+  GetInitializedNtpTheme()->custom_background_attribution_line_2 =
+      custom_background->custom_background_attribution_line_2;
+  GetInitializedNtpTheme()->custom_background_attribution_action_url =
+      custom_background->custom_background_attribution_action_url;
+  GetInitializedNtpTheme()->collection_id = custom_background->collection_id;
 }
 
 void InstantService::ResetCustomBackgroundNtpTheme() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  pref_service_->ClearPref(prefs::kNtpCustomBackgroundDict);
-  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
-  RemoveLocalBackgroundImageCopy();
+  if (custom_background_service_) {
+    custom_background_service_->ResetCustomBackgroundNtpTheme();
+  }
   FallbackToDefaultNtpTheme();
 }
 
@@ -602,78 +415,37 @@ void InstantService::FallbackToDefaultNtpTheme() {
 }
 
 bool InstantService::IsCustomBackgroundDisabledByPolicy() {
-  // |prefs::kNtpCustomBackgroundDict| is managed by policy only if
-  // |policy::key::kNTPCustomBackgroundEnabled| is set to false and therefore
-  // should be empty.
-  bool managed =
-      pref_service_->IsManagedPreference(prefs::kNtpCustomBackgroundDict);
-  if (managed) {
-    DCHECK(
-        pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict)->DictEmpty());
-  }
-  return managed;
+  return custom_background_service_ &&
+         custom_background_service_->IsCustomBackgroundDisabledByPolicy();
 }
 
 bool InstantService::IsCustomBackgroundSet() {
-  if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice))
-    return true;
-
-  GURL custom_background_url;
-  if (!IsCustomBackgroundPrefValid(custom_background_url))
-    return false;
-
-  return true;
+  return custom_background_service_ &&
+         custom_background_service_->IsCustomBackgroundSet();
 }
 
 void InstantService::ResetToDefault() {
   ResetCustomBackgroundNtpTheme();
 }
 
-bool InstantService::IsCustomBackgroundPrefValid(GURL& custom_background_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* background_info =
-      profile_->GetPrefs()->GetDictionary(prefs::kNtpCustomBackgroundDict);
-  if (!background_info)
-    return false;
-
-  const base::Value* background_url =
-      background_info->FindKey(kNtpCustomBackgroundURL);
-  if (!background_url)
-    return false;
-
-  custom_background_url = GURL(background_url->GetString());
-  return custom_background_url.is_valid();
-}
-
-void InstantService::RemoveLocalBackgroundImageCopy() {
-  base::FilePath path = profile_->GetPath().AppendASCII(
-      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(base::GetDeleteFileCallback(), path));
-}
-
 void InstantService::AddValidBackdropUrlForTesting(const GURL& url) const {
-  background_service_->AddValidBackdropUrlForTesting(url);
+  custom_background_service_->AddValidBackdropUrlForTesting(url);
 }
 
 void InstantService::AddValidBackdropCollectionForTesting(
     const std::string& collection_id) const {
-  background_service_->AddValidBackdropCollectionForTesting(collection_id);
+  custom_background_service_->AddValidBackdropCollectionForTesting(
+      collection_id);
 }
 
 void InstantService::SetNextCollectionImageForTesting(
     const CollectionImage& image) const {
-  background_service_->SetNextCollectionImageForTesting(image);
+  custom_background_service_->SetNextCollectionImageForTesting(image);
 }
 
 // static
 void InstantService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(
-      prefs::kNtpCustomBackgroundDict, NtpCustomBackgroundDefaults(),
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,
-                                false);
+  NtpCustomBackgroundService::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -695,29 +467,8 @@ bool InstantService::ShouldServiceRequest(
          instant_service->IsInstantProcess(render_process_id);
 }
 
-void InstantService::RefreshBackgroundIfNeeded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* background_info =
-      profile_->GetPrefs()->GetDictionary(prefs::kNtpCustomBackgroundDict);
-  int64_t refresh_timestamp = 0;
-  const base::Value* timestamp_value =
-      background_info->FindKey(kNtpCustomBackgroundRefreshTimestamp);
-  if (timestamp_value)
-    refresh_timestamp = timestamp_value->GetInt();
-  if (refresh_timestamp == 0)
-    return;
-
-  if (clock_->Now().ToTimeT() > refresh_timestamp) {
-    std::string collection_id =
-        background_info->FindKey(kNtpCustomBackgroundCollectionId)->GetString();
-    std::string resume_token =
-        background_info->FindKey(kNtpCustomBackgroundResumeToken)->GetString();
-    background_service_->FetchNextCollectionImage(collection_id, resume_token);
-  }
-}
-
 void InstantService::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
+  custom_background_service_->SetClockForTesting(clock);
 }
 
 void InstantService::SetNtpElementsNtpTheme() {
