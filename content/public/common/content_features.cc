@@ -982,6 +982,10 @@ const base::Feature kWebPaymentsMinimalUI{"WebPaymentsMinimalUI",
 const base::Feature kWebRtcUseGpuMemoryBufferVideoFrames{
     "WebRTC-UseGpuMemoryBufferVideoFrames", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables code caching for scripts used on WebUI pages.
+const base::Feature kWebUICodeCache{"WebUICodeCache",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables report-only Trusted Types experiment on WebUIs
 const base::Feature kWebUIReportOnlyTrustedTypes{
     "WebUIReportOnlyTrustedTypes", base::FEATURE_DISABLED_BY_DEFAULT};

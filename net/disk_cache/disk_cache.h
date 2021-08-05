@@ -551,6 +551,13 @@ struct NET_EXPORT RangeResult {
   int available_len = 0;
 };
 
+// The maximum size of cache that can be created for type
+// GENERATED_WEBUI_BYTE_CODE_CACHE. There are only a handful of commonly
+// accessed WebUI pages, which can each cache 0.5 - 1.5 MB of code. There is no
+// point in having a very large WebUI code cache, even if lots of disk space is
+// available.
+constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
+
 }  // namespace disk_cache
 
 #endif  // NET_DISK_CACHE_DISK_CACHE_H_

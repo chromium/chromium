@@ -18,6 +18,7 @@
 namespace blink {
 
 class CachedMetadata;
+class ParkableString;
 class ResourceResponse;
 class WebProcessMemoryDump;
 
@@ -76,9 +77,11 @@ class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {
   // Enum for marking serialized cached metadatas so that the deserializers
   // do not conflict.
   enum CachedMetadataType : uint32_t {
-    kSingleEntry,    // the metadata is a single CachedMetadata entry
-    kSourceKeyedMap  // the metadata is multiple CachedMetadata entries keyed by
-                     // a source string.
+    kSingleEntry,     // the metadata is a single CachedMetadata entry
+    kSourceKeyedMap,  // the metadata is multiple CachedMetadata entries keyed
+                      // by a source string.
+    kSingleEntryWithHash  // the metadata is a content hash followed by a single
+                          // CachedMetadata entry
   };
 
   virtual ~CachedMetadataHandler() = default;
@@ -121,13 +124,43 @@ class SingleCachedMetadataHandler : public CachedMetadataHandler {
     disable_send_to_platform_for_testing_ = true;
   }
 
+  // Defines how GetCodeCache should behave if the metadata handler requires a
+  // hash check but Check() hasn't yet been called.
+  enum GetCachedMetadataBehavior {
+    // HasCodeCache should crash the program with a runtime CHECK().
+    kCrashIfUnchecked,
+
+    // HasCodeCache should return true if the metadata handler contains data,
+    // even though that data might be stale because we haven't yet validated
+    // that it matches the current version of the script resource.
+    kAllowUnchecked,
+  };
+
   // Returns cached metadata of the given type associated with this resource.
   // This cached metadata can be pruned at any time.
   virtual scoped_refptr<CachedMetadata> GetCachedMetadata(
-      uint32_t data_type_id) const = 0;
+      uint32_t data_type_id,
+      GetCachedMetadataBehavior behavior = kCrashIfUnchecked) const = 0;
+
+  // Whether this cached metadata is required to contain a source text hash,
+  // which is used in V8CodeCache to check whether the text of a newly-loaded
+  // script matches the text when the code cache entry was written.
+  virtual bool HashRequired() const { return false; }
+
+  // If the handler requires source hashing, then Check does the following:
+  // 1. If cached metadata is present, check the hash on the cached metadata,
+  //    and clear it on a mismatch.
+  // 2. Remember the source hash so that it will be included on any future calls
+  //    that commit data to persistent storage.
+  // Calling Check multiple times with different source_text is disallowed.
+  virtual void Check(blink::mojom::CodeCacheHost*,
+                     const ParkableString& source_text) {
+    // Do nothing.
+  }
 
  protected:
   SingleCachedMetadataHandler() = default;
+
   bool disable_send_to_platform_for_testing_ = false;
 };
 

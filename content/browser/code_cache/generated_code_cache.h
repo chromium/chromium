@@ -50,7 +50,21 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   // Cache type. Used for collecting statistics for JS and Wasm in separate
   // buckets.
-  enum CodeCacheType { kJavaScript, kWebAssembly };
+  enum CodeCacheType {
+    // JavaScript from http(s) pages.
+    kJavaScript,
+
+    // WebAssembly from http(s) pages. This cache allows more total size and
+    // more size per item than the JavaScript cache, since some
+    // WebAssembly programs are very large.
+    kWebAssembly,
+
+    // JavaScript from chrome and chrome-untrusted pages. The resource URLs are
+    // limited to only those fetched via chrome and chrome-untrusted schemes.
+    // The cache size is limited to disk_cache::kMaxWebUICodeCacheSize.
+    // Deduplication of very large items is disabled in this cache.
+    kWebUIJavaScript,
+  };
 
   // Used for collecting statistics about cache behaviour.
   enum CacheEntryStatus {
@@ -188,6 +202,20 @@ class CONTENT_EXPORT GeneratedCodeCache {
                                          disk_cache::EntryResult result);
 
   void CollectStatistics(GeneratedCodeCache::CacheEntryStatus status);
+
+  // Whether very large cache entries are deduplicated in this cache.
+  // Deduplication is disabled in the WebUI code cache, as an additional defense
+  // against privilege escalation in case there is a bug in the deduplication
+  // logic.
+  bool IsDeduplicationEnabled() const;
+
+  bool ShouldDeduplicateEntry(uint32_t data_size) const;
+
+  // Checks that the header data in the small buffer is valid. We may read cache
+  // entries that were written by a previous version of Chrome which uses
+  // obsolete formats. These reads should fail and be doomed as soon as
+  // possible.
+  bool IsValidHeader(scoped_refptr<net::IOBufferWithSize> small_buffer) const;
 
   std::unique_ptr<disk_cache::Backend> backend_;
   BackendState backend_state_;

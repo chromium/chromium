@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
@@ -46,8 +47,15 @@ class V8ScriptRunnerTest : public testing::Test {
     return WTF::String::Format("a = function() { 1 + 1; } // %01000d\n",
                                counter_);
   }
+  WTF::String DifferentCode() const {
+    return WTF::String::Format("a = function() { 1 + 2; } // %01000d\n",
+                               counter_);
+  }
   KURL Url() const {
-    return KURL(WTF::String::Format("http://bla.com/bla%d", counter_));
+    return KURL(WTF::String::Format(code_cache_with_hashing_scheme_
+                                        ? "codecachewithhashing://bla.com/bla%d"
+                                        : "http://bla.com/bla%d",
+                                    counter_));
   }
   unsigned TagForCodeCache(SingleCachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForCodeCache(cache_handler);
@@ -64,6 +72,12 @@ class V8ScriptRunnerTest : public testing::Test {
                      ScriptState* script_state,
                      const ScriptSourceCode& source_code,
                      mojom::blink::V8CacheOptions cache_options) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    if (source_code.CacheHandler()) {
+      source_code.CacheHandler()->Check(
+          ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+          source_code.Source());
+    }
     v8::ScriptCompiler::CompileOptions compile_options;
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -75,7 +89,6 @@ class V8ScriptRunnerTest : public testing::Test {
     if (compiled_script.IsEmpty()) {
       return false;
     }
-    ExecutionContext* execution_context = ExecutionContext::From(script_state);
     V8CodeCache::ProduceCache(
         isolate,
         ExecutionContext::GetCodeCacheHostFromContext(execution_context),
@@ -89,13 +102,18 @@ class V8ScriptRunnerTest : public testing::Test {
                      v8::ScriptCompiler::CompileOptions compile_options,
                      v8::ScriptCompiler::NoCacheReason no_cache_reason,
                      V8CodeCache::ProduceCacheOptions produce_cache_options) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    if (source_code.CacheHandler()) {
+      source_code.CacheHandler()->Check(
+          ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+          source_code.Source());
+    }
     v8::MaybeLocal<v8::Script> compiled_script = V8ScriptRunner::CompileScript(
         script_state, source_code, SanitizeScriptErrors::kSanitize,
         compile_options, no_cache_reason, ReferrerScriptInfo());
     if (compiled_script.IsEmpty()) {
       return false;
     }
-    ExecutionContext* execution_context = ExecutionContext::From(script_state);
     V8CodeCache::ProduceCache(
         isolate,
         ExecutionContext::GetCodeCacheHostFromContext(execution_context),
@@ -109,13 +127,21 @@ class V8ScriptRunnerTest : public testing::Test {
     return resource;
   }
 
-  ScriptResource* CreateResource(const WTF::TextEncoding& encoding) {
+  ScriptResource* CreateResource(const WTF::TextEncoding& encoding,
+                                 Vector<uint8_t> serialized_metadata = {},
+                                 absl::optional<String> code = {}) {
     ScriptResource* resource = ScriptResource::CreateForTest(Url(), encoding);
-    String code = Code();
+    if (!code)
+      code = Code();
     ResourceResponse response(Url());
     response.SetHttpStatusCode(200);
     resource->ResponseReceived(response);
-    StringUTF8Adaptor code_utf8(code);
+    if (serialized_metadata.size() != 0) {
+      const uint8_t* begin = serialized_metadata.data();
+      resource->SetSerializedCachedMetadata(
+          base::make_span(begin, serialized_metadata.size()));
+    }
+    StringUTF8Adaptor code_utf8(code.value());
     resource->AppendData(code_utf8.data(), code_utf8.size());
     resource->FinishForTest();
     return resource;
@@ -123,6 +149,7 @@ class V8ScriptRunnerTest : public testing::Test {
 
  protected:
   static int counter_;
+  bool code_cache_with_hashing_scheme_ = false;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -403,6 +430,139 @@ TEST_F(V8ScriptRunnerTest, cacheDataTypeMismatch) {
       cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
   EXPECT_EQ(1, counter.GetTotal());
   EXPECT_EQ(1, counter.GetDataTypeMismatch());
+}
+
+TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
+  feature_list_.InitAndDisableFeature(
+      blink::features::kDiscardCodeCacheAfterFirstUse);
+  V8TestingScope scope;
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
+      "codecachewithhashing");
+  code_cache_with_hashing_scheme_ = true;
+  ScriptSourceCode source_code(
+      nullptr, CreateResource(UTF8Encoding()),
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+  SingleCachedMetadataHandler* cache_handler = source_code.CacheHandler();
+  EXPECT_TRUE(cache_handler->HashRequired());
+
+  // Cold run - should set the timestamp.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code,
+                            mojom::blink::V8CacheOptions::kDefault));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForTimeStamp(cache_handler)));
+  EXPECT_FALSE(
+      cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+
+  // Warm run - should produce code cache.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code,
+                            mojom::blink::V8CacheOptions::kDefault));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+
+  // Hot run - should consume code cache.
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     source_code);
+  EXPECT_EQ(produce_cache_options,
+            V8CodeCache::ProduceCacheOptions::kNoProduceCache);
+  EXPECT_EQ(compile_options,
+            v8::ScriptCompiler::CompileOptions::kConsumeCodeCache);
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code, compile_options, no_cache_reason,
+                            produce_cache_options));
+  EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
+}
+
+TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
+  V8TestingScope scope;
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
+      "codecachewithhashing");
+  code_cache_with_hashing_scheme_ = true;
+
+  ScriptSourceCode source_code_1(
+      nullptr, CreateResource(UTF8Encoding()),
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+  ScriptCachedMetadataHandlerWithHashing* cache_handler_1 =
+      static_cast<ScriptCachedMetadataHandlerWithHashing*>(
+          source_code_1.CacheHandler());
+  EXPECT_TRUE(cache_handler_1->HashRequired());
+
+  // Cold run - should set the timestamp.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code_1,
+                            mojom::blink::V8CacheOptions::kDefault));
+  EXPECT_TRUE(
+      cache_handler_1->GetCachedMetadata(TagForTimeStamp(cache_handler_1)));
+  EXPECT_FALSE(
+      cache_handler_1->GetCachedMetadata(TagForCodeCache(cache_handler_1)));
+
+  // A second ScriptSourceCode with matching script text, using the state of
+  // the ScriptCachedMetadataHandler from the first ScriptSourceCode.
+  ScriptSourceCode source_code_2(
+      nullptr,
+      CreateResource(UTF8Encoding(),
+                     cache_handler_1->GetSerializedCachedMetadata()),
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+  ScriptCachedMetadataHandlerWithHashing* cache_handler_2 =
+      static_cast<ScriptCachedMetadataHandlerWithHashing*>(
+          source_code_2.CacheHandler());
+  EXPECT_TRUE(cache_handler_2->HashRequired());
+
+  // Warm run - should produce code cache.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code_2,
+                            mojom::blink::V8CacheOptions::kDefault));
+  EXPECT_TRUE(
+      cache_handler_2->GetCachedMetadata(TagForCodeCache(cache_handler_2)));
+
+  // A third ScriptSourceCode with different script text, using the state of
+  // the ScriptCachedMetadataHandler from the second ScriptSourceCode.
+  ScriptSourceCode source_code_3(
+      nullptr,
+      CreateResource(UTF8Encoding(),
+                     cache_handler_2->GetSerializedCachedMetadata(),
+                     DifferentCode()),
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+  ScriptCachedMetadataHandlerWithHashing* cache_handler_3 =
+      static_cast<ScriptCachedMetadataHandlerWithHashing*>(
+          source_code_3.CacheHandler());
+  EXPECT_TRUE(cache_handler_3->HashRequired());
+
+  // Since the third script's text doesn't match the first two, the hash check
+  // should reject the existing code cache data and the cache entry should
+  // be updated back to a timestamp like it would during a cold run.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code_3,
+                            mojom::blink::V8CacheOptions::kDefault));
+  EXPECT_TRUE(
+      cache_handler_3->GetCachedMetadata(TagForTimeStamp(cache_handler_3)));
+  EXPECT_FALSE(
+      cache_handler_3->GetCachedMetadata(TagForCodeCache(cache_handler_3)));
+
+  // A fourth ScriptSourceCode with matching script text, using the state of
+  // the ScriptCachedMetadataHandler from the third ScriptSourceCode.
+  ScriptSourceCode source_code_4(
+      nullptr,
+      CreateResource(UTF8Encoding(),
+                     cache_handler_3->GetSerializedCachedMetadata()),
+      ScriptStreamer::NotStreamingReason::kScriptTooSmall);
+  ScriptCachedMetadataHandlerWithHashing* cache_handler_4 =
+      static_cast<ScriptCachedMetadataHandlerWithHashing*>(
+          source_code_4.CacheHandler());
+  EXPECT_TRUE(cache_handler_4->HashRequired());
+
+  // Running the original script again once again sets the timestamp since the
+  // content has changed again.
+  EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
+                            source_code_4,
+                            mojom::blink::V8CacheOptions::kDefault));
+  EXPECT_TRUE(
+      cache_handler_4->GetCachedMetadata(TagForTimeStamp(cache_handler_4)));
+  EXPECT_FALSE(
+      cache_handler_4->GetCachedMetadata(TagForCodeCache(cache_handler_4)));
 }
 
 }  // namespace

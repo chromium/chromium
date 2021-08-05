@@ -174,6 +174,14 @@ void RecordIndexLoad(net::CacheType cache_type,
   }
 }
 
+SimpleEntryImpl::OperationsMode CacheTypeToOperationsMode(net::CacheType type) {
+  return (type == net::DISK_CACHE || type == net::GENERATED_BYTE_CODE_CACHE ||
+          type == net::GENERATED_NATIVE_CODE_CACHE ||
+          type == net::GENERATED_WEBUI_BYTE_CODE_CACHE)
+             ? SimpleEntryImpl::OPTIMISTIC_OPERATIONS
+             : SimpleEntryImpl::NON_OPTIMISTIC_OPERATIONS;
+}
+
 }  // namespace
 
 const base::Feature SimpleBackendImpl::kPrioritizedSimpleCacheTasks{
@@ -228,11 +236,7 @@ SimpleBackendImpl::SimpleBackendImpl(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       orig_max_size_(max_bytes),
-      entry_operations_mode_((cache_type == net::DISK_CACHE ||
-                              cache_type == net::GENERATED_BYTE_CODE_CACHE ||
-                              cache_type == net::GENERATED_NATIVE_CODE_CACHE)
-                                 ? SimpleEntryImpl::OPTIMISTIC_OPERATIONS
-                                 : SimpleEntryImpl::NON_OPTIMISTIC_OPERATIONS),
+      entry_operations_mode_(CacheTypeToOperationsMode(cache_type)),
       post_doom_waiting_(
           base::MakeRefCounted<SimplePostDoomWaiterTable>(cache_type)),
       net_log_(net_log) {

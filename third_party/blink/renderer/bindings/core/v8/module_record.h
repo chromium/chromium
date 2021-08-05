@@ -59,7 +59,7 @@ class CORE_EXPORT ModuleRecord final {
 
  public:
   static v8::Local<v8::Module> Compile(
-      v8::Isolate*,
+      ScriptState*,
       const ModuleScriptCreationParams& params,
       const ScriptFetchOptions&,
       const TextPosition&,

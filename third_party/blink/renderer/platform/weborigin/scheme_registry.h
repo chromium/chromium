@@ -179,6 +179,13 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsWebUIForTest(const String& scheme);
   static void RemoveURLSchemeAsWebUIForTest(const String& scheme);
 
+  // Schemes which can use code caching but must check in the renderer whether
+  // the script content has changed rather than relying on a response time match
+  // from the network cache.
+  static void RegisterURLSchemeAsCodeCacheWithHashing(const String& scheme);
+  static void RemoveURLSchemeAsCodeCacheWithHashing(const String& scheme);
+  static bool SchemeSupportsCodeCacheWithHashing(const String& scheme);
+
  private:
   static const URLSchemesSet& LocalSchemes();
 };

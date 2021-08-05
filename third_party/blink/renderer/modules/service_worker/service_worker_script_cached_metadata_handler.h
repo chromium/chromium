@@ -32,7 +32,8 @@ class ServiceWorkerScriptCachedMetadataHandler
   void ClearCachedMetadata(blink::mojom::CodeCacheHost*,
                            ClearCacheType) override;
   scoped_refptr<CachedMetadata> GetCachedMetadata(
-      uint32_t data_type_id) const override;
+      uint32_t data_type_id,
+      GetCachedMetadataBehavior behavior = kCrashIfUnchecked) const override;
   String Encoding() const override;
   bool IsServedFromCacheStorage() const override;
   void OnMemoryDump(WebProcessMemoryDump* pmd,

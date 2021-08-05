@@ -179,17 +179,20 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
        percent_relative_size) /
       100;
 
-  if (available < 0)
-    return static_cast<int32_t>(scaled_default_disk_cache_size);
+  int64_t preferred_cache_size = scaled_default_disk_cache_size;
 
-  int64_t preferred_cache_size = PreferredCacheSizeInternal(available);
+  // If available disk space is known, use it to compute a better value for
+  // preferred_cache_size.
+  if (available >= 0) {
+    preferred_cache_size = PreferredCacheSizeInternal(available);
 
-  // If the preferred cache size is less than 20% of the available space, scale
-  // for the field trial, capping the scaled value at 20% of the available
-  // space.
-  if (preferred_cache_size < available / 5) {
-    preferred_cache_size = std::min(
-        (preferred_cache_size * percent_relative_size) / 100, available / 5);
+    // If the preferred cache size is less than 20% of the available space,
+    // scale for the field trial, capping the scaled value at 20% of the
+    // available space.
+    if (preferred_cache_size < available / 5) {
+      preferred_cache_size = std::min(
+          (preferred_cache_size * percent_relative_size) / 100, available / 5);
+    }
   }
 
   // Limit cache size to somewhat less than kint32max to avoid potential
@@ -204,6 +207,9 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
   // Make the size limit 50% larger in that case.
   if (type == net::GENERATED_NATIVE_CODE_CACHE) {
     size_limit = (size_limit / 2) * 3;
+  } else if (type == net::GENERATED_WEBUI_BYTE_CODE_CACHE) {
+    size_limit =
+        std::min(size_limit, static_cast<int64_t>(kMaxWebUICodeCacheSize));
   }
 
   DCHECK_LT(size_limit, std::numeric_limits<int32_t>::max());

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -200,6 +201,13 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   }
 }
 
+bool ScriptResource::CodeCacheHashRequired() const {
+  if (cached_metadata_handler_) {
+    return cached_metadata_handler_->HashRequired();
+  }
+  return false;
+}
+
 void ScriptResource::DestroyDecodedDataIfPossible() {
   if (cached_metadata_handler_) {
     // Since we are clearing locally we don't need a CodeCacheHost interface
@@ -261,14 +269,29 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   }
 
   cached_metadata_handler_ = nullptr;
-  // Currently we support the metadata caching only for HTTP family.
-  if (GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
-      response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
-    cached_metadata_handler_ =
-        MakeGarbageCollected<ScriptCachedMetadataHandler>(
-            Encoding(), CachedMetadataSender::Create(
-                            response, mojom::blink::CodeCacheType::kJavascript,
-                            GetResourceRequest().RequestorOrigin()));
+  // Currently we support the metadata caching only for HTTP family and any
+  // schemes defined by SchemeRegistry as requiring a hash check.
+  bool http_family = GetResourceRequest().Url().ProtocolIsInHTTPFamily() &&
+                     response.CurrentRequestUrl().ProtocolIsInHTTPFamily();
+  bool code_cache_with_hashing_supported =
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
+          GetResourceRequest().Url().Protocol()) &&
+      GetResourceRequest().Url().ProtocolIs(
+          response.CurrentRequestUrl().Protocol());
+  bool code_cache_supported = http_family || code_cache_with_hashing_supported;
+  if (code_cache_supported) {
+    std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
+        response, mojom::blink::CodeCacheType::kJavascript,
+        GetResourceRequest().RequestorOrigin());
+    if (code_cache_with_hashing_supported) {
+      cached_metadata_handler_ =
+          MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+              Encoding(), std::move(sender));
+    } else {
+      cached_metadata_handler_ =
+          MakeGarbageCollected<ScriptCachedMetadataHandler>(Encoding(),
+                                                            std::move(sender));
+    }
   }
 }  // namespace blink
 

@@ -482,6 +482,12 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 
     v8::Local<v8::Script> script;
 
+    if (source.CacheHandler()) {
+      source.CacheHandler()->Check(
+          ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+          source.Source());
+    }
+
     v8::ScriptCompiler::CompileOptions compile_options;
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;

@@ -10,7 +10,23 @@ void CodeCacheLoaderMock::FetchFromCodeCache(
     blink::mojom::CodeCacheType cache_type,
     const WebURL& url,
     WebCodeCacheLoader::FetchCodeCacheCallback callback) {
-  std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
+  if (controller_ && controller_->delayed_) {
+    // This simple mock doesn't support multiple in-flight loads.
+    CHECK(!controller_->callback_);
+
+    controller_->callback_ = std::move(callback);
+  } else {
+    std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
+  }
+}
+
+void CodeCacheLoaderMock::Controller::DelayResponse() {
+  delayed_ = true;
+}
+void CodeCacheLoaderMock::Controller::Respond(base::Time time,
+                                              mojo_base::BigBuffer data) {
+  CHECK(callback_);
+  std::move(callback_).Run(time, std::move(data));
 }
 
 }  // namespace blink

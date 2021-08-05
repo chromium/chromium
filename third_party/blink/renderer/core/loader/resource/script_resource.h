@@ -94,6 +94,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
 
+  bool CodeCacheHashRequired() const override;
+
   const ParkableString& SourceText();
 
   // Get the resource's current text. This can return partial data, so should

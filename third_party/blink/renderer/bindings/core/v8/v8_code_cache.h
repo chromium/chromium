@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -25,7 +26,6 @@ namespace blink {
 
 class CachedMetadata;
 class KURL;
-class SingleCachedMetadataHandler;
 class ScriptSourceCode;
 class ModuleRecordProduceCacheData;
 
@@ -55,7 +55,10 @@ class CORE_EXPORT V8CodeCache final {
 
   // Returns true iff the SingleCachedMetadataHandler contains a code cache
   // that can be consumed by V8.
-  static bool HasCodeCache(const SingleCachedMetadataHandler*);
+  static bool HasCodeCache(
+      const SingleCachedMetadataHandler*,
+      SingleCachedMetadataHandler::GetCachedMetadataBehavior behavior =
+          SingleCachedMetadataHandler::kCrashIfUnchecked);
 
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,

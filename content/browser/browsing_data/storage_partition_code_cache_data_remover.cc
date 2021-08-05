@@ -124,13 +124,30 @@ void StoragePartitionCodeCacheDataRemover::ClearWASMCodeCache(int rv) {
   if (generated_code_cache_context_ &&
       generated_code_cache_context_->generated_wasm_code_cache()) {
     net::CompletionOnceCallback callback = base::BindOnce(
-        &StoragePartitionCodeCacheDataRemover::DoneClearCodeCache,
+        &StoragePartitionCodeCacheDataRemover::ClearWebUIJSCodeCache,
         base::Unretained(this));
     generated_code_cache_context_->generated_wasm_code_cache()->GetBackend(
         base::BindOnce(&StoragePartitionCodeCacheDataRemover::ClearCache,
                        base::Unretained(this), std::move(callback)));
   } else {
-    // There is no Wasm cache, done with clearing caches.
+    // There is no Wasm cache, so move on to the next step.
+    ClearWebUIJSCodeCache(net::ERR_FAILED);
+  }
+}
+
+// |rv| is the returned when clearing the code cache. We don't handle
+// any errors here, so the result value is ignored.
+void StoragePartitionCodeCacheDataRemover::ClearWebUIJSCodeCache(int rv) {
+  if (generated_code_cache_context_ &&
+      generated_code_cache_context_->generated_webui_js_code_cache()) {
+    net::CompletionOnceCallback callback = base::BindOnce(
+        &StoragePartitionCodeCacheDataRemover::DoneClearCodeCache,
+        base::Unretained(this));
+    generated_code_cache_context_->generated_webui_js_code_cache()->GetBackend(
+        base::BindOnce(&StoragePartitionCodeCacheDataRemover::ClearCache,
+                       base::Unretained(this), std::move(callback)));
+  } else {
+    // There is no WebUI JS cache, done with clearing caches.
     DoneClearCodeCache(net::ERR_FAILED);
   }
 }

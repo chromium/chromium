@@ -48,13 +48,14 @@ void ModuleRecordProduceCacheData::Trace(Visitor* visitor) const {
 }
 
 v8::Local<v8::Module> ModuleRecord::Compile(
-    v8::Isolate* isolate,
+    ScriptState* script_state,
     const ModuleScriptCreationParams& params,
     const ScriptFetchOptions& options,
     const TextPosition& text_position,
     ExceptionState& exception_state,
     mojom::blink::V8CacheOptions v8_cache_options,
     ModuleRecordProduceCacheData** out_produce_cache_data) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Module> module;
 
@@ -69,6 +70,12 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (params.CacheHandler()) {
+    params.CacheHandler()->Check(
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+        params.GetSourceText());
+  }
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(v8_cache_options, params.CacheHandler(),
                                      params.GetSourceText().length(),

@@ -528,6 +528,10 @@ void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   DCHECK(!GetResponse().IsNull());
 }
 
+bool Resource::CodeCacheHashRequired() const {
+  return false;
+}
+
 String Resource::ReasonNotDeletable() const {
   StringBuilder builder;
   if (HasClientsOrObservers()) {

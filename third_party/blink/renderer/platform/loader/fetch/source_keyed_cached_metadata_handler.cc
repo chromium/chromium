@@ -46,7 +46,8 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   }
 
   scoped_refptr<CachedMetadata> GetCachedMetadata(
-      uint32_t data_type_id) const override {
+      uint32_t data_type_id,
+      GetCachedMetadataBehavior behavior = kCrashIfUnchecked) const override {
     scoped_refptr<CachedMetadata> cached_metadata =
         parent_->cached_metadata_map_.at(key_);
     if (!cached_metadata || cached_metadata->DataTypeID() != data_type_id)

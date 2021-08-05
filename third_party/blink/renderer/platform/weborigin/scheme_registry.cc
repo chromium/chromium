@@ -106,6 +106,7 @@ class URLSchemesRegistry final {
   URLSchemesSet allowing_shared_array_buffer_schemes;
   URLSchemesSet extension_schemes;
   URLSchemesSet web_ui_schemes;
+  URLSchemesSet code_cache_with_hashing_schemes;
 
  private:
   friend const URLSchemesRegistry& GetURLSchemesRegistry();
@@ -500,6 +501,25 @@ void SchemeRegistry::RegisterURLSchemeAsWebUIForTest(const String& scheme) {
 
 void SchemeRegistry::RemoveURLSchemeAsWebUIForTest(const String& scheme) {
   GetMutableURLSchemesRegistryForTest().web_ui_schemes.erase(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
+    const String& scheme) {
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  GetMutableURLSchemesRegistry().code_cache_with_hashing_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing(
+    const String& scheme) {
+  GetMutableURLSchemesRegistry().code_cache_with_hashing_schemes.erase(scheme);
+}
+
+bool SchemeRegistry::SchemeSupportsCodeCacheWithHashing(const String& scheme) {
+  if (scheme.IsEmpty())
+    return false;
+  DCHECK_EQ(scheme, scheme.LowerASCII());
+  return GetURLSchemesRegistry().code_cache_with_hashing_schemes.Contains(
+      scheme);
 }
 
 }  // namespace blink

@@ -139,5 +139,36 @@ TEST_F(SchemeRegistryTest, ExtensionScheme) {
   EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
 }
 
+TEST_F(SchemeRegistryTest, CodeCacheWithHashing) {
+  const char* kChromeUIScheme = "chrome";
+  EXPECT_FALSE(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kTestScheme));
+  EXPECT_FALSE(
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kChromeUIScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(kTestScheme);
+
+  EXPECT_TRUE(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kTestScheme));
+  EXPECT_FALSE(
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kChromeUIScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(kChromeUIScheme);
+
+  EXPECT_TRUE(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kTestScheme));
+  EXPECT_TRUE(
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kChromeUIScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing(kTestScheme);
+
+  EXPECT_FALSE(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kTestScheme));
+  EXPECT_TRUE(
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kChromeUIScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing(kChromeUIScheme);
+
+  EXPECT_FALSE(SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kTestScheme));
+  EXPECT_FALSE(
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kChromeUIScheme));
+}
+
 }  // namespace
 }  // namespace blink

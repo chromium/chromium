@@ -411,7 +411,9 @@ void SimpleIndex::StartEvictionIfNeeded() {
   eviction_in_progress_ = true;
   eviction_start_time_ = base::TimeTicks::Now();
 
-  bool use_size_heuristic = (cache_type_ != net::GENERATED_BYTE_CODE_CACHE);
+  bool use_size_heuristic =
+      (cache_type_ != net::GENERATED_BYTE_CODE_CACHE &&
+       cache_type_ != net::GENERATED_WEBUI_BYTE_CODE_CACHE);
 
   // Flatten for sorting.
   std::vector<std::pair<uint64_t, const EntrySet::value_type*>> entries;

@@ -401,7 +401,7 @@ class RemoveCodeCacheTester {
   explicit RemoveCodeCacheTester(GeneratedCodeCacheContext* code_cache_context)
       : code_cache_context_(code_cache_context) {}
 
-  enum Cache { kJs, kWebAssembly };
+  enum Cache { kJs, kWebAssembly, kWebUiJs };
 
   bool ContainsEntry(Cache cache, const GURL& url, const GURL& origin_lock) {
     entry_exists_ = false;
@@ -478,8 +478,10 @@ class RemoveCodeCacheTester {
   GeneratedCodeCache* GetCache(Cache cache) {
     if (cache == kJs)
       return code_cache_context_->generated_js_code_cache();
-    else
+    else if (cache == kWebAssembly)
       return code_cache_context_->generated_wasm_code_cache();
+    else
+      return code_cache_context_->generated_webui_js_code_cache();
   }
 
   void FetchEntryCallback(base::OnceClosure quit,
@@ -1700,6 +1702,56 @@ TEST_F(StoragePartitionImplTest, ClearWasmCodeCache) {
   // Make sure there isn't a second invalid callback sitting in the queue.
   // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(StoragePartitionImplTest, ClearWebUICodeCache) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kWebUICodeCache);
+
+  const GURL kResourceURL("chrome://host4/script.js");
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  // Ensure code cache is initialized.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+
+  RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
+
+  GURL origin = GURL("chrome://host1:1/");
+  std::string data("SomeData");
+  tester.AddEntry(RemoveCodeCacheTester::kWebUiJs, kResourceURL, origin, data);
+  EXPECT_TRUE(tester.ContainsEntry(RemoveCodeCacheTester::kWebUiJs,
+                                   kResourceURL, origin));
+  EXPECT_EQ(tester.received_data(), data);
+
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ClearCodeCache, partition, base::Time(), base::Time(),
+                     base::RepeatingCallback<bool(const GURL&)>(), &run_loop));
+  run_loop.Run();
+
+  EXPECT_FALSE(tester.ContainsEntry(RemoveCodeCacheTester::kWebUiJs,
+                                    kResourceURL, origin));
+
+  // Make sure there isn't a second invalid callback sitting in the queue.
+  // (this used to be a bug).
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(StoragePartitionImplTest, WebUICodeCacheDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kWebUICodeCache);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  // Ensure code cache is initialized.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+  EXPECT_EQ(partition->GetGeneratedCodeCacheContext()
+                ->generated_webui_js_code_cache(),
+            nullptr);
 }
 
 TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {

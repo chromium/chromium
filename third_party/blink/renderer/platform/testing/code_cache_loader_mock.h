@@ -14,7 +14,29 @@ namespace blink {
 // A simple class for mocking WebCodeCacheLoader.
 class CodeCacheLoaderMock : public WebCodeCacheLoader {
  public:
-  CodeCacheLoaderMock() {}
+  // A class which can be owned by both this mock loader and the creator of this
+  // mock loader, which lets the creator control the behavior of the mock loader
+  // without having to retain a reference to the mock loader itself.
+  class Controller : public base::RefCounted<Controller> {
+   public:
+    void DelayResponse();
+    void Respond(base::Time time, mojo_base::BigBuffer data);
+
+   private:
+    friend class CodeCacheLoaderMock;
+    friend class base::RefCounted<Controller>;
+    ~Controller() = default;
+
+    // Whether to delay responses until Respond is called.
+    // Otherwise responses are immediate and empty.
+    bool delayed_ = false;
+
+    // Callback saved by fetch call, if delayed_ was true.
+    WebCodeCacheLoader::FetchCodeCacheCallback callback_;
+  };
+
+  explicit CodeCacheLoaderMock(scoped_refptr<Controller> controller = nullptr)
+      : controller_(std::move(controller)) {}
   CodeCacheLoaderMock(const CodeCacheLoaderMock&) = delete;
   CodeCacheLoaderMock& operator=(const CodeCacheLoaderMock&) = delete;
   ~CodeCacheLoaderMock() override = default;
@@ -25,10 +47,8 @@ class CodeCacheLoaderMock : public WebCodeCacheLoader {
       const WebURL& url,
       WebCodeCacheLoader::FetchCodeCacheCallback callback) override;
 
-  base::WeakPtr<CodeCacheLoaderMock> GetWeakPtr();
-
  private:
-  base::WeakPtrFactory<CodeCacheLoaderMock> weak_ptr_factory_{this};
+  scoped_refptr<Controller> controller_;
 };
 
 }  // namespace blink

@@ -64,12 +64,13 @@ bool IsResourceHotForCaching(const SingleCachedMetadataHandler* cache_handler) {
 }  // namespace
 
 bool V8CodeCache::HasCodeCache(
-    const SingleCachedMetadataHandler* cache_handler) {
+    const SingleCachedMetadataHandler* cache_handler,
+    SingleCachedMetadataHandler::GetCachedMetadataBehavior behavior) {
   if (!cache_handler)
     return false;
 
   uint32_t code_cache_tag = V8CodeCache::TagForCodeCache(cache_handler);
-  return cache_handler->GetCachedMetadata(code_cache_tag).get();
+  return cache_handler->GetCachedMetadata(code_cache_tag, behavior).get();
 }
 
 v8::ScriptCompiler::CachedData* V8CodeCache::CreateCachedData(

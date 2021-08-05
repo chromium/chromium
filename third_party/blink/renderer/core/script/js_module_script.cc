@@ -48,7 +48,7 @@ JSModuleScript* JSModuleScript::Create(
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;
 
   v8::Local<v8::Module> result = ModuleRecord::Compile(
-      isolate, params, options, start_position, exception_state,
+      script_state, params, options, start_position, exception_state,
       modulator->GetV8CacheOptions(), &produce_cache_data);
 
   // CreateInternal processes Steps 4 and 8-10.

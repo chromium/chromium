@@ -64,6 +64,7 @@ class StoragePartitionCodeCacheDataRemover {
   // Executed on code cache thread.
   void ClearJSCodeCache();
   void ClearWASMCodeCache(int rv);
+  void ClearWebUIJSCodeCache(int rv);
   void ClearCache(net::CompletionOnceCallback callback,
                   disk_cache::Backend* backend);
   void DoneClearCodeCache(int rv);

@@ -248,7 +248,7 @@ TEST_P(DynamicModuleResolverTest, ResolveSuccess) {
   EXPECT_FALSE(capture->WasCalled());
 
   v8::Local<v8::Module> record = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "export const foo = 'hello';", TestReferrerURL());
+      scope.GetScriptState(), "export const foo = 'hello';", TestReferrerURL());
   ModuleScript* module_script =
       JSModuleScript::CreateForTest(modulator, record, TestDependencyURL());
   EXPECT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(), record,
@@ -406,7 +406,7 @@ TEST_P(DynamicModuleResolverTest, ExceptionThrown) {
   EXPECT_FALSE(capture->WasCalled());
 
   v8::Local<v8::Module> record = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "throw Error('bar')", TestReferrerURL());
+      scope.GetScriptState(), "throw Error('bar')", TestReferrerURL());
   ModuleScript* module_script =
       JSModuleScript::CreateForTest(modulator, record, TestDependencyURL());
   EXPECT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(), record,
@@ -449,7 +449,8 @@ TEST_P(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
   EXPECT_FALSE(capture->WasCalled());
 
   v8::Local<v8::Module> record = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "export const foo = 'hello';", TestDependencyURL());
+      scope.GetScriptState(), "export const foo = 'hello';",
+      TestDependencyURL());
   ModuleScript* module_script =
       JSModuleScript::CreateForTest(modulator, record, TestDependencyURL());
   EXPECT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(), record,

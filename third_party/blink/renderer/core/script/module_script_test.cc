@@ -62,7 +62,7 @@ static const int kScriptRepeatLength = 500;
 
 class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
  protected:
-  static String LargeSourceText() {
+  static String LargeSourceText(const char* suffix = nullptr) {
     StringBuilder builder;
     // Returns a sufficiently long script that is eligible for V8 code cache.
     builder.Append(String("window.foo = "));
@@ -70,6 +70,8 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
       builder.Append(String("1 + "));
     }
     builder.Append(String("0;"));
+    if (suffix)
+      builder.Append(String(suffix));
     return builder.ToString();
   }
 
@@ -402,6 +404,175 @@ TEST_P(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   ValueWrapperSyntheticModuleScript* module_script =
       CreateValueWrapperSyntheticModuleScript(modulator, local_value);
   ASSERT_FALSE(module_script->V8Module().IsEmpty());
+}
+
+TEST_P(ModuleScriptTest, V8CodeCacheWithHashChecking) {
+  // The order of steps below is chosen so that only the last step's behavior
+  // differs based on this flag. The important tests that verify rejection of
+  // cache data on content mismatches occur before that point.
+  feature_list_.InitAndDisableFeature(
+      blink::features::kDiscardCodeCacheAfterFirstUse);
+
+  using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
+
+  V8TestingScope scope;
+  Modulator* modulator =
+      MakeGarbageCollected<ModuleScriptTestModulator>(scope.GetScriptState());
+  Modulator::SetModulator(scope.GetScriptState(), modulator);
+
+  auto sender = std::make_unique<MockCachedMetadataSender>();
+  MockCachedMetadataSender* sender_ptr = sender.get();
+  ScriptCachedMetadataHandlerWithHashing* cache_handler =
+      MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+          UTF8Encoding(), std::move(sender));
+  const uint32_t kTimeStampTag = V8CodeCache::TagForTimeStamp(cache_handler);
+  const uint32_t kCodeTag = V8CodeCache::TagForCodeCache(cache_handler);
+
+  // Six loads:
+  // 0: cold, should produce timestamp
+  // 1: source text changed, should produce timestamp
+  // 2: warm, should produce code cache
+  // 3: source text changed again, should produce timestamp
+  // 4: warm, should produce code cache
+  // 5: hot, should consume code cache
+  for (int nth_load = 0; nth_load < 6; ++nth_load) {
+    // Running the module script immediately clears the code cache contents if
+    // it detects a hash mismatch. Thus, some checks must occur before it is
+    // called.
+    switch (nth_load) {
+      case 1:
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+
+      case 3:
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+    }
+
+    // Compile a module script.
+    String source =
+        LargeSourceText((nth_load == 1 || nth_load == 2) ? " " : nullptr);
+    cache_handler->ResetForTesting();
+    JSModuleScript* module_script =
+        CreateJSModuleScript(modulator, source, cache_handler);
+    ASSERT_TRUE(module_script);
+
+    // Check that the module script is instantiated/evaluated correctly.
+    ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
+                                          module_script->V8Module(),
+                                          module_script->SourceURL())
+                    .IsEmpty());
+    ASSERT_EQ(module_script->RunScriptAndReturnValue().GetResultType(),
+              ScriptEvaluationResult::ResultType::kSuccess);
+    TestFoo(scope);
+
+    Checkpoint checkpoint;
+    ::testing::InSequence s;
+
+    switch (nth_load) {
+      case 0:
+        // For the first time, the cache handler doesn't contain any data, and
+        // we'll set timestamp in ProduceCache() below.
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
+                  GetProduceCacheOptions(module_script));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+
+      case 1:
+        // For the second time, the timestamp has been cleared and will be
+        // replaced by another timestamp because the content didn't match.
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
+                  GetProduceCacheOptions(module_script));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+
+      case 2:
+        // For the third time, as timestamp is already set, we'll produce code
+        // cache in ProduceCache() below.
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
+                  GetProduceCacheOptions(module_script));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+
+      case 3:
+        // For the fourth time, the code cache has been cleared and will get
+        // replaced with a timestamp in ProduceCache() due to a content
+        // mismatch.
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
+                  GetProduceCacheOptions(module_script));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+
+      case 4:
+        // For the fifth time, as timestamp is already set, we'll produce code
+        // cache in ProduceCache() below.
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
+                  GetProduceCacheOptions(module_script));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
+        break;
+
+      case 5:
+        // For the sixth time, the code cache is already there and we've
+        // consumed the code cache and won't do anything in ProduceCache().
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kNoProduceCache,
+                  GetProduceCacheOptions(module_script));
+        break;
+    }
+
+    EXPECT_CALL(checkpoint, Call(3));
+
+    module_script->ProduceCache();
+
+    checkpoint.Call(3);
+
+    switch (nth_load) {
+      case 0:
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        break;
+
+      case 1:
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        break;
+
+      case 2:
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        break;
+
+      case 3:
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
+        break;
+
+      case 4:
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        break;
+
+      case 5:
+        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
+        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
+        break;
+    }
+  }
 }
 
 // Instantiate tests once with TLA and once without:
