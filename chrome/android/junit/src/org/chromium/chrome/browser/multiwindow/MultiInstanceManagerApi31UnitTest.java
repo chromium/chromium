@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -21,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
@@ -32,14 +35,22 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +61,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INVALID_INSTANCE_ID = MultiInstanceManagerApi31.INVALID_INSTANCE_ID;
+    private static final int INSTANCE_ID_1 = 1;
     private static final int PASSED_ID_1 = 1;
     private static final int PASSED_ID_2 = 2;
     private static final int PASSED_ID_3 = 3;
@@ -63,6 +75,13 @@ public class MultiInstanceManagerApi31UnitTest {
     private static final int TASK_ID_60 = 60;
     private static final int TASK_ID_61 = 61;
 
+    private static final String TITLE1 = "title1";
+    private static final String TITLE2 = "title2";
+    private static final String TITLE3 = "title3";
+    private static final GURL URL1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL URL2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL URL3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
+
     private TestMultiInstanceManagerApi31 mMultiInstanceManager;
     @Mock
     MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
@@ -71,9 +90,25 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock
     TabModelOrchestrator mTabModelOrchestrator;
     @Mock
+    ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock
     ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock
     MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+
+    @Mock
+    TabModelSelectorBase mTabModelSelector;
+    @Mock
+    TabModel mNormalTabModel;
+    @Mock
+    TabModel mIncognitoTabModel;
+    @Mock
+    Tab mTab1;
+    @Mock
+    Tab mTab2;
+    @Mock
+    Tab mTab3;
+
     @Mock
     Activity mActivityTask56;
     @Mock
@@ -90,6 +125,9 @@ public class MultiInstanceManagerApi31UnitTest {
     final Activity mCurrentActivity = mActivityTask56;
 
     Activity[] mActivityPool;
+
+    private int mNormalTabCount;
+    private int mIncognitoTabCount;
 
     private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
@@ -115,9 +153,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
                 MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
+                ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
                 MenuOrKeyboardActionController menuOrKeyboardActionController) {
             super(activity, tabModelOrchestratorSupplier, multiWindowModeStateDispatcher,
-                    activityLifecycleDispatcher, menuOrKeyboardActionController);
+                    activityLifecycleDispatcher, modalDialogManagerSupplier,
+                    menuOrKeyboardActionController);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -189,9 +229,10 @@ public class MultiInstanceManagerApi31UnitTest {
         };
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
-        mMultiInstanceManager = new TestMultiInstanceManagerApi31(mCurrentActivity,
-                mTabModelOrchestratorSupplier, mMultiWindowModeStateDispatcher,
-                mActivityLifecycleDispatcher, mMenuOrKeyboardActionController);
+        mMultiInstanceManager =
+                new TestMultiInstanceManagerApi31(mCurrentActivity, mTabModelOrchestratorSupplier,
+                        mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
     }
@@ -290,6 +331,218 @@ public class MultiInstanceManagerApi31UnitTest {
         // Closing an instance removes the entry.
         mMultiInstanceManager.closeInstance(1, mActivityTask57.getTaskId());
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSelectedTabUpdatesInstanceInfo() {
+        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mNormalTabModel.index()).thenReturn(0);
+
+        when(mTab1.isIncognito()).thenReturn(false);
+        when(mTab1.getOriginalUrl()).thenReturn(URL1);
+        when(mTab1.getTitle()).thenReturn(TITLE1);
+        when(mTab2.isIncognito()).thenReturn(false);
+        when(mTab2.getOriginalUrl()).thenReturn(URL2);
+        when(mTab2.getTitle()).thenReturn(TITLE2);
+        when(mTab3.isIncognito()).thenReturn(true);
+        when(mTab3.getOriginalUrl()).thenReturn(URL3);
+        when(mTab3.getTitle()).thenReturn(TITLE3);
+
+        MultiInstanceManagerApi31 multiInstanceManager =
+                new MultiInstanceManagerApi31(mCurrentActivity, mTabModelOrchestratorSupplier,
+                        mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
+        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
+
+        triggerSelectTab(tabModelObserver, mTab1);
+        assertFalse("Normal tab should be selected",
+                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+        assertEquals("Title should be from the active normal tab", TITLE1,
+                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+        assertEquals("URL should be from the active normal tab", URL1.getSpec(),
+                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+
+        // Update url/title as a new normal tab is selected.
+        triggerSelectTab(tabModelObserver, mTab2);
+        assertFalse("Normal tab should be selected",
+                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+        assertEquals("Title should be from the active normal tab", TITLE2,
+                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+        assertEquals("URL should be from the active normal tab", URL2.getSpec(),
+                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+
+        // Incognito tab doesn't affect url/title when selected.
+        triggerSelectTab(tabModelObserver, mTab3);
+        assertTrue("Incognito tab should be selected",
+                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+        assertEquals("Title should be from the active normal tab", TITLE2,
+                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+        assertEquals("URL should be from the active normal tab", URL2.getSpec(),
+                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+
+        // Nulled-tab doesn't affect url/title either.
+        triggerSelectTab(tabModelObserver, null);
+        assertTrue("Incognito tab should be selected",
+                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+        assertEquals("Null tab should not affect the title", TITLE2,
+                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+        assertEquals("Null tab should not affect the URL", URL2.getSpec(),
+                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testTabEventsUpdatesTabCounts() {
+        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        Answer normalTabCount = invocation -> mNormalTabCount;
+        when(mNormalTabModel.getCount()).then(normalTabCount);
+        Answer incognitoTabCount = invocation -> mIncognitoTabCount;
+        when(mIncognitoTabModel.getCount()).then(incognitoTabCount);
+        Answer normalActiveTab = invocation -> mNormalTabCount > 0 ? 0 : TabModel.INVALID_TAB_INDEX;
+        when(mNormalTabModel.index()).then(normalActiveTab);
+
+        MultiInstanceManagerApi31 multiInstanceManager =
+                new MultiInstanceManagerApi31(mCurrentActivity, mTabModelOrchestratorSupplier,
+                        mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
+        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
+
+        when(mTab1.isIncognito()).thenReturn(false);
+        when(mTab2.isIncognito()).thenReturn(false);
+        when(mTab3.isIncognito()).thenReturn(true);
+
+        final String normalTabMessage = "Normal tab count does not match";
+        final String incognitoTabMessage = "Normal tab count does not match";
+        triggerAddTab(tabModelObserver, mTab1); // normal tab added
+        assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(incognitoTabMessage, 0,
+                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+
+        triggerAddTab(tabModelObserver, mTab2); // normal tab added
+        assertEquals(normalTabMessage, 2, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(incognitoTabMessage, 0,
+                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+
+        triggerAddTab(tabModelObserver, mTab3); // incognito tab added
+        assertEquals(normalTabMessage, 2, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(incognitoTabMessage, 1,
+                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+
+        triggerTabClosureCommitted(tabModelObserver, mTab1);
+        assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(incognitoTabMessage, 1,
+                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+
+        triggerTabRemoved(tabModelObserver, mTab3);
+        assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(incognitoTabMessage, 0,
+                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+
+        triggerTabRemoved(tabModelObserver, mTab2);
+        assertEquals(normalTabMessage, 0, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(incognitoTabMessage, 0,
+                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testZeroNormalTabClearsUrlTitle() {
+        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+        when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        Answer normalTabCount = invocation -> mNormalTabCount;
+        when(mNormalTabModel.getCount()).then(normalTabCount);
+        Answer incognitoTabCount = invocation -> mIncognitoTabCount;
+        when(mIncognitoTabModel.getCount()).then(incognitoTabCount);
+        Answer normalActiveTab = invocation -> mNormalTabCount > 0 ? 0 : TabModel.INVALID_TAB_INDEX;
+
+        when(mNormalTabModel.index()).then(normalActiveTab);
+        when(mTab1.isIncognito()).thenReturn(false);
+        when(mTab1.getOriginalUrl()).thenReturn(URL1);
+        when(mTab1.getTitle()).thenReturn(TITLE1);
+        when(mTab2.isIncognito()).thenReturn(false);
+        when(mTab2.getOriginalUrl()).thenReturn(URL2);
+        when(mTab2.getTitle()).thenReturn(TITLE2);
+
+        MultiInstanceManagerApi31 multiInstanceManager =
+                new MultiInstanceManagerApi31(mCurrentActivity, mTabModelOrchestratorSupplier,
+                        mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
+                        mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
+        multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
+
+        triggerAddTab(tabModelObserver, mTab1);
+        triggerSelectTab(tabModelObserver, mTab1);
+        assertEquals("Title should be from the active normal tab", TITLE1,
+                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+        assertEquals("URL should be from the active normal tab", URL1.getSpec(),
+                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+
+        triggerAddTab(tabModelObserver, mTab2);
+        triggerSelectTab(tabModelObserver, mTab2);
+        assertEquals("Title should be from the active normal tab", TITLE2,
+                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+        assertEquals("URL should be from the active normal tab", URL2.getSpec(),
+                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+
+        triggerTabClosureCommitted(tabModelObserver, mTab1);
+        triggerTabRemoved(tabModelObserver, mTab2);
+        assertEquals("Tab count should be zero", 0,
+                MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertTrue("Title was not cleared",
+                TextUtils.isEmpty(MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1)));
+        assertTrue("URL was not cleared",
+                TextUtils.isEmpty(MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1)));
+    }
+
+    private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {
+        // Set up the mocks to have |TabModelUtils.getCurrentTab(selector.getModel(false))|
+        // return the last active normal tab.
+        if (tab != null && !tab.isIncognito()) when(mNormalTabModel.getTabAt(0)).thenReturn(tab);
+        tabModelObserver.didSelectTab(tab, 0, 0);
+    }
+
+    private void triggerAddTab(TabModelObserver tabModelObserver, Tab tab) {
+        if (tab.isIncognito()) {
+            mIncognitoTabCount++;
+        } else {
+            mNormalTabCount++;
+        }
+        tabModelObserver.didAddTab(tab, 0, 0);
+    }
+
+    private void triggerTabClosureCommitted(TabModelObserver tabModelObserver, Tab tab) {
+        if (tab.isIncognito()) {
+            mIncognitoTabCount--;
+        } else {
+            mNormalTabCount--;
+        }
+        tabModelObserver.tabClosureCommitted(tab);
+    }
+
+    private void triggerTabRemoved(TabModelObserver tabModelObserver, Tab tab) {
+        if (tab.isIncognito()) {
+            mIncognitoTabCount--;
+        } else {
+            mNormalTabCount--;
+        }
+        tabModelObserver.tabRemoved(tab);
     }
 
     private int allocInstanceIndex(int passedId, Activity activity) {

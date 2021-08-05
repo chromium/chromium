@@ -457,7 +457,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected void onPreCreate() {
         super.onPreCreate();
         mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),
-                getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
+                getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(),
+                getModalDialogManagerSupplier(), this);
     }
 
     @Override

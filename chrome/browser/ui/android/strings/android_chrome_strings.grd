@@ -3092,7 +3092,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Move to other window
       </message>
       <message name="IDS_MENU_MANAGE_ALL_WINDOWS" desc="Menu item for bringing up instance switcher UI. [CHAR_LIMIT=27]">
-        Manage all windows (<ph name="INSTANCE_COUNTS">%1$d<ex>3</ex></ph>)
+        Manage windows (<ph name="INSTANCE_COUNTS">%1$d<ex>3</ex></ph>)
       </message>
       <message name="IDS_MENU_FORWARD" desc="Tooltip for the button to advance to the next web page. Verb. [CHAR_LIMIT=27]">
         Forward
@@ -4026,15 +4026,28 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <!-- Multi-instance Switcher Dialog strings -->
       <message name="IDS_INSTANCE_SWITCHER_HEADER" desc="The header of multi-instance switcher dialog.">
-        Manage all windows
+        Manage windows
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_TAB_COUNT" desc="Total number of tabs for each instance entry.">
+      <message name="IDS_INSTANCE_SWITCHER_ENTRY_EMPTY_WINDOW" desc="Title of an instance entry that has no tabs in it.">
+        Empty window
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_DESC_INCOGNITO" desc="Description of an instance entry with incognito tab(s) only.">
         {TAB_COUNT, plural,
-          =1 {<ph name="TAB_COUNT_ONE">%1$d<ex>1</ex></ph> tab}
-          other {<ph name="TAB_COUNT_MANY">%1$d<ex>3</ex></ph> tabs}}
+          =1 {<ph name="TAB_COUNT_ONE">%1$s</ph> incognito tab}
+          other {<ph name="TAB_COUNT_NORMAL">%1$s<ex>2</ex></ph> incognito tabs}}
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_OPEN_FULLSCREEN" desc="The menu item for the 3-dot more button to open the chosen instance in full screen.">
-        Open in full screen
+      <message name="IDS_INSTANCE_SWITCHER_DESC_MIXED" desc="Description of an instance entry showing both normal and incognito tabs.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_COUNT_ONE">%1$s</ph> tab}
+          other {<ph name="TAB_COUNT_MANY">%2$s<ex>1</ex></ph> tabs, <ph name="TAB_COUNT_INCOGNITO">%1$s</ph> incognito}}
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_TAB_COUNT_ZERO" desc="Multi-instance switcher entry description when there is no tab for an instance.">
+        No tabs
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_TAB_COUNT_NONZERO" desc="Total number of tabs for each instance entry.">
+        {TAB_COUNT, plural,
+          =1 {1 tab}
+          other {# tabs}}
       </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_WINDOW" desc="The menu item for the 3-dot more button to close the instance.">
         Close window
@@ -4042,8 +4055,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_INSTANCE_SWITCHER_CURRENT_WINDOW" desc="The description for an instance entry saying that it is the entry for the current window.">
         Current
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_ADJACENT_WINDOW" desc="The description for an instance entry saying that it is running in an adjacent window.">
-        Running in adjacent window
+      <message name="IDS_INSTANCE_SWITCHER_ADJACENT_WINDOW" desc="The description for an instance entry running in the foreground.">
+        Window is open
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_ALREADY_RUNNING_FOREGROUND" desc="Toast message to show when user tries to switch to a window that is already running in the foreground.">
+        Chrome is already running here.
+      </message>
+      <message name="IDS_TARGET_SELECTOR_MOVE" desc="The message in the button in target selector dialog that starts moving a tab.">
+        Move tab
       </message>
 
       <!-- In-Product Help strings -->

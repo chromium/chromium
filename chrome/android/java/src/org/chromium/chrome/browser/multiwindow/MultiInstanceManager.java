@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -98,6 +99,7 @@ public class MultiInstanceManager
      *         associated activity.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the
      *         associated activity.
+     * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
      *         associated activity.
      * @return {@link MultiInstanceManager} object or {@code null} on the platform it is not needed.
@@ -106,13 +108,14 @@ public class MultiInstanceManager
             ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return null;
         } else if (MultiWindowUtils.instanceSwitcherEnabled()) {
             return new MultiInstanceManagerApi31(activity, tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher, activityLifecycleDispatcher,
-                    menuOrKeyboardActionController);
+                    modalDialogManagerSupplier, menuOrKeyboardActionController);
         } else {
             return new MultiInstanceManager(activity, tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher, activityLifecycleDispatcher,

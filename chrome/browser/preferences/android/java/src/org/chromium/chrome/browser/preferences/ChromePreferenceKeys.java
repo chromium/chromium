@@ -601,8 +601,12 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix MULTI_INSTANCE_TASK_MAP =
             new KeyPrefix("Chrome.MultiInstance.TaskMap.*");
     // Information on each instance.
+    public static final KeyPrefix MULTI_INSTANCE_INCOGNITO_TAB_COUNT =
+            new KeyPrefix("Chrome.MultiInstance.IncognitoTabCount.*");
+    public static final KeyPrefix MULTI_INSTANCE_IS_INCOGNITO_SELECTED =
+            new KeyPrefix("Chrome.MultiInstance.IsIncognitoSelected.*");
     public static final KeyPrefix MULTI_INSTANCE_TAB_COUNT =
-            new KeyPrefix("Chrome.MultiInstance.TabCount.*");
+            new KeyPrefix("Chrome.MultiInstance.TabCount.*"); // Normal tab count
     public static final KeyPrefix MULTI_INSTANCE_TITLE =
             new KeyPrefix("Chrome.MultiInstance.Title.*");
     public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
@@ -1075,6 +1079,8 @@ public final class ChromePreferenceKeys {
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
+                MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
+                MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_TASK_MAP.pattern(),
                 MULTI_INSTANCE_TITLE.pattern(),

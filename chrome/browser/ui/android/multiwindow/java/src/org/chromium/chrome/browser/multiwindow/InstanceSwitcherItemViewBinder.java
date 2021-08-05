@@ -26,13 +26,16 @@ class InstanceSwitcherItemViewBinder {
         } else if (InstanceSwitcherItemProperties.DESC == propertyKey) {
             ((TextView) view.findViewById(R.id.desc))
                     .setText(model.get(InstanceSwitcherItemProperties.DESC));
+
         } else if (InstanceSwitcherItemProperties.CURRENT == propertyKey) {
-            int visible = model.get(InstanceSwitcherItemProperties.CURRENT) ? View.VISIBLE
-                                                                            : View.INVISIBLE;
-            view.findViewById(R.id.current).setVisibility(visible);
+            boolean current = model.get(InstanceSwitcherItemProperties.CURRENT);
+            view.findViewById(R.id.current).setVisibility(current ? View.VISIBLE : View.INVISIBLE);
+            // Do not show 3-dot submenu for the current instance.
+            view.findViewById(R.id.more).setVisibility(current ? View.INVISIBLE : View.VISIBLE);
 
         } else if (InstanceSwitcherItemProperties.CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(InstanceSwitcherItemProperties.CLICK_LISTENER));
+
         } else if (InstanceSwitcherItemProperties.MORE_MENU == propertyKey) {
             ListMenuButtonDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
             ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);

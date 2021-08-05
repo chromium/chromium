@@ -10,21 +10,23 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemViewBinder.java",
-    "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherMediator.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorCoordinator.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemProperties.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/UiUtils.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
-    "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
-    "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -41,7 +43,34 @@ android_resources("java_resources") {
   deps = [
     "//chrome/browser/ui/android/favicon:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java_resources",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/multiwindow/UiUtilsUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//components/favicon/android:java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
