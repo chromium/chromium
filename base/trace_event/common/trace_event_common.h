@@ -392,12 +392,15 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                            TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val,     \
                            arg2_name, arg2_val)
 
-// Similar to TRACE_EVENT_BEGINx but with a custom |at| timestamp provided.
+// Similar to TRACE_EVENT_BEGINx but with a custom |timestamp| provided.
 // - |id| is used to match the _BEGIN event with the _END event.
 //   Events are considered to match if their category_group, name and id values
 //   all match. |id| must either be a pointer or an integer value up to 64 bits.
 //   If it's a pointer, the bits will be xored with a hash of the process ID so
 //   that the same pointer on two different processes will not collide.
+// - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
+//   calling this to detect an invalid timestamp even when tracing is not
+//   enabled, as the commit queue doesn't run all tests with tracing enabled.
 #define TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(category_group, name, id, \
                                                      thread_id, timestamp)     \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(                          \
@@ -448,6 +451,10 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                            TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val,   \
                            arg2_name, arg2_val)
 
+// Adds a trace event with the given |name| and |timestamp|. |timestamp| must be
+// non-null or it crashes. Use DCHECK(timestamp) before calling this to detect
+// an invalid timestamp even when tracing is not enabled, as the commit queue
+// doesn't run all tests with tracing enabled.
 #define TRACE_EVENT_MARK_WITH_TIMESTAMP0(category_group, name, timestamp) \
   INTERNAL_TRACE_EVENT_ADD_WITH_TIMESTAMP(                                \
       TRACE_EVENT_PHASE_MARK, category_group, name, timestamp,            \
@@ -478,12 +485,15 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
       TRACE_EVENT_PHASE_MARK, category_group, name, timestamp,                \
       TRACE_EVENT_FLAG_COPY)
 
-// Similar to TRACE_EVENT_ENDx but with a custom |at| timestamp provided.
+// Similar to TRACE_EVENT_ENDx but with a custom |timestamp| provided.
 // - |id| is used to match the _BEGIN event with the _END event.
 //   Events are considered to match if their category_group, name and id values
 //   all match. |id| must either be a pointer or an integer value up to 64 bits.
 //   If it's a pointer, the bits will be xored with a hash of the process ID so
 //   that the same pointer on two different processes will not collide.
+// - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
+//   calling this to detect an invalid timestamp even when tracing is not
+//   enabled, as the commit queue doesn't run all tests with tracing enabled.
 #define TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0(category_group, name, id, \
                                                    thread_id, timestamp)     \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(                        \
@@ -542,6 +552,9 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
                            static_cast<int>(value2_val))
 
 // Similar to TRACE_COUNTERx, but with a custom |timestamp| provided.
+// - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
+//   calling this to detect an invalid timestamp even when tracing is not
+//   enabled, as the commit queue doesn't run all tests with tracing enabled.
 #define TRACE_COUNTER_WITH_TIMESTAMP1(category_group, name, timestamp, value) \
   INTERNAL_TRACE_EVENT_ADD_WITH_TIMESTAMP(                                    \
       TRACE_EVENT_PHASE_COUNTER, category_group, name, timestamp,             \
