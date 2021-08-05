@@ -15,7 +15,7 @@ namespace chromeos {
 namespace bluetooth_config {
 
 mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
-    device::BluetoothDevice* device);
+    const device::BluetoothDevice* device);
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

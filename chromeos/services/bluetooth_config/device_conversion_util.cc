@@ -17,7 +17,7 @@ namespace {
 // expresses more granularity than Bluetooth system UI, so some similar device
 // types return the same DeviceType value (e.g., both PHONE and MODEM return
 // the kPhone type).
-mojom::DeviceType ComputeDeviceType(device::BluetoothDevice* device) {
+mojom::DeviceType ComputeDeviceType(const device::BluetoothDevice* device) {
   switch (device->GetDeviceType()) {
     case device::BluetoothDeviceType::UNKNOWN:
       return mojom::DeviceType::kUnknown;
@@ -59,7 +59,7 @@ mojom::DeviceType ComputeDeviceType(device::BluetoothDevice* device) {
 }
 
 mojom::AudioOutputCapability ComputeAudioOutputCapability(
-    device::BluetoothDevice* device) {
+    const device::BluetoothDevice* device) {
   // For a device to provide audio output capabilities, both the "rendering" and
   // "audio" bits of the Bluetooth class must be set. See
   // https://crbug.com/1058451 for details.
@@ -76,7 +76,7 @@ mojom::AudioOutputCapability ComputeAudioOutputCapability(
 }
 
 mojom::DeviceBatteryInfoPtr ComputeBatteryInfo(
-    device::BluetoothDevice* device) {
+    const device::BluetoothDevice* device) {
   const absl::optional<uint8_t>& battery_percentage =
       device->battery_percentage();
   if (!battery_percentage)
@@ -87,7 +87,7 @@ mojom::DeviceBatteryInfoPtr ComputeBatteryInfo(
 }
 
 mojom::DeviceConnectionState ComputeConnectionState(
-    device::BluetoothDevice* device) {
+    const device::BluetoothDevice* device) {
   if (device->IsConnected())
     return mojom::DeviceConnectionState::kConnected;
 
@@ -100,7 +100,7 @@ mojom::DeviceConnectionState ComputeConnectionState(
 }  // namespace
 
 mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
-    device::BluetoothDevice* device) {
+    const device::BluetoothDevice* device) {
   auto properties = mojom::BluetoothDeviceProperties::New();
   properties->id = device->GetIdentifier();
   properties->public_name = device->GetNameForDisplay();
