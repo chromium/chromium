@@ -26,6 +26,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
@@ -41,6 +42,10 @@ const std::map<std::string, bool> kHatsNextTestSurveyProductSpecificData{
     {"Test Field 1", true},
     {"Test Field 2", false},
     {"Test Field 3", true}};
+
+// The locale expected by the test survey. This value is checked in
+// hats_next_mock.html for tests that expect a loaded response.
+const std::string kTestLocale = "lt";
 
 }  // namespace
 
@@ -131,6 +136,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   const std::string kLastMajorVersion =
       std::string(kHatsSurveyTriggerTesting) + ".last_major_version";
 
+  ScopedBrowserLocale browser_locale(kTestLocale);
+
   auto* dialog = new MockHatsNextWebDialog(
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
@@ -204,6 +211,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
+
+  ScopedBrowserLocale browser_locale(kTestLocale);
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
@@ -359,6 +368,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
   // Ensure that the dialog correctly resets the zoom level to default.
   browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
       blink::PageZoomFactorToZoomLevel(5.0f));
+
+  ScopedBrowserLocale browser_locale(kTestLocale);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* dialog = new MockHatsNextWebDialog(

@@ -9,6 +9,7 @@
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -230,10 +231,22 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   param_url = net::AppendQueryParameter(param_url, "product_specific_data",
                                         product_specific_data_json);
 
+  // The HaTS backend service accepts a list of preferred languages, although
+  // only the application locale is provided here to ensure that the survey
+  // matches the native UI language.
+  base::ListValue language_list;
+  language_list.AppendString(g_browser_process->GetApplicationLocale());
+
+  std::string language_list_json;
+  base::JSONWriter::Write(language_list, &language_list_json);
+  param_url =
+      net::AppendQueryParameter(param_url, "languages", language_list_json);
+
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo)) {
     param_url = net::AppendQueryParameter(param_url, "enable_testing", "true");
   }
+
   return param_url;
 }
 
