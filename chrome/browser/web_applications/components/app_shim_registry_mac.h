@@ -25,8 +25,8 @@ class PrefRegistrySimple;
 // paths (e.g, the result of calling Profile::GetPath).
 //
 // This class should arguably be a extensions::ExtensionRegistryObserver. It
-// is not (and instead is called by AppShortcutManager, which is one), because
-// apps are in the process of being disentangled from extensions.
+// is not (and instead is called by WebAppShortcutManager, which is one),
+// because apps are in the process of being disentangled from extensions.
 class AppShimRegistry {
  public:
   AppShimRegistry(const AppShimRegistry& other) = delete;

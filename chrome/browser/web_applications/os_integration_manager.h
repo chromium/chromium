@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +75,7 @@ class OsIntegrationManager {
  public:
   explicit OsIntegrationManager(
       Profile* profile,
-      std::unique_ptr<AppShortcutManager> shortcut_manager,
+      std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<FileHandlerManager> file_handler_manager,
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
@@ -119,16 +119,16 @@ class OsIntegrationManager {
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebApplicationInfo& web_app_info);
 
-  // Proxy calls for AppShortcutManager.
+  // Proxy calls for WebAppShortcutManager.
   // virtual for testing
   virtual void GetAppExistingShortCutLocation(
       ShortcutLocationCallback callback,
       std::unique_ptr<ShortcutInfo> shortcut_info);
 
-  // Proxy calls for AppShortcutManager.
+  // Proxy calls for WebAppShortcutManager.
   void GetShortcutInfoForApp(
       const AppId& app_id,
-      AppShortcutManager::GetShortcutInfoCallback callback);
+      WebAppShortcutManager::GetShortcutInfoCallback callback);
 
   // Proxy calls for FileHandlerManager.
   bool IsFileHandlingAPIAvailable(const AppId& app_id);
@@ -175,7 +175,7 @@ class OsIntegrationManager {
       FileHandlerUpdateAction file_handlers_need_os_update);
 
  protected:
-  AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
+  WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   FileHandlerManager* file_handler_manager() {
     return file_handler_manager_.get();
   }
@@ -186,7 +186,7 @@ class OsIntegrationManager {
     return url_handler_manager_.get();
   }
   void set_shortcut_manager(
-      std::unique_ptr<AppShortcutManager> shortcut_manager) {
+      std::unique_ptr<WebAppShortcutManager> shortcut_manager) {
     shortcut_manager_ = std::move(shortcut_manager);
   }
   void set_file_handler_manager(
@@ -276,7 +276,7 @@ class OsIntegrationManager {
   WebAppRegistrar* registrar_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
 
-  std::unique_ptr<AppShortcutManager> shortcut_manager_;
+  std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;
   std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager_;
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;

@@ -93,7 +93,7 @@ InstallOsHooksOptions& InstallOsHooksOptions::operator=(
 
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
-    std::unique_ptr<AppShortcutManager> shortcut_manager,
+    std::unique_ptr<WebAppShortcutManager> shortcut_manager,
     std::unique_ptr<FileHandlerManager> file_handler_manager,
     std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
     std::unique_ptr<UrlHandlerManager> url_handler_manager)
@@ -265,7 +265,7 @@ void OsIntegrationManager::GetAppExistingShortCutLocation(
 
 void OsIntegrationManager::GetShortcutInfoForApp(
     const AppId& app_id,
-    AppShortcutManager::GetShortcutInfoCallback callback) {
+    WebAppShortcutManager::GetShortcutInfoCallback callback) {
   DCHECK(shortcut_manager_);
   return shortcut_manager_->GetShortcutInfoForApp(app_id, std::move(callback));
 }

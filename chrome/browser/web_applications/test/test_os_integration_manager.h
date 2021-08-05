@@ -13,7 +13,7 @@
 
 namespace web_app {
 
-class AppShortcutManager;
+class WebAppShortcutManager;
 class FileHandlerManager;
 class ProtocolHandlerManager;
 class UrlHandlerManager;
@@ -22,7 +22,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
  public:
   TestOsIntegrationManager(
       Profile* profile,
-      std::unique_ptr<AppShortcutManager> shortcut_manager,
+      std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<FileHandlerManager> file_handler_manager,
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
@@ -107,7 +107,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
 };
 
 // Stub test shortcut manager.
-class TestShortcutManager : public AppShortcutManager {
+class TestShortcutManager : public WebAppShortcutManager {
  public:
   explicit TestShortcutManager(Profile* profile);
   ~TestShortcutManager() override;
