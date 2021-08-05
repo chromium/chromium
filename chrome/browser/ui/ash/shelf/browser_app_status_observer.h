@@ -13,6 +13,8 @@ namespace content {
 class WebContents;
 }
 
+typedef uint32_t WebContentsId;
+
 // An instance of a browser-based app. Can represent either of:
 // - apps running inside Browser->WebContents,
 // - actual browser instances (a single browser window). In this case `contents`
@@ -23,7 +25,8 @@ struct BrowserAppInstance {
 
   std::string app_id;
   Browser* browser;
-  content::WebContents* contents;
+  content::WebContents* web_contents;
+  WebContentsId web_contents_id;
   bool visible;
   bool active;
 };

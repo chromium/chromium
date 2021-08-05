@@ -146,6 +146,17 @@ const BrowserAppInstance* BrowserAppsTracker::GetAppInstance(
   return it == app_instances_.end() ? nullptr : it->second.get();
 }
 
+const BrowserAppInstance* BrowserAppsTracker::GetAppInstanceByWebContentsId(
+    WebContentsId web_contents_id) const {
+  for (const auto& pair : app_instances_) {
+    const auto& app_instance = pair.second;
+    if (app_instance->web_contents_id == web_contents_id) {
+      return app_instance.get();
+    }
+  }
+  return nullptr;
+}
+
 const BrowserAppInstance* BrowserAppsTracker::GetChromeInstance(
     Browser* browser) const {
   auto it = chrome_instances_.find(browser);
@@ -424,12 +435,12 @@ Browser* BrowserAppsTracker::FindTrackedBrowserByWindow(aura::Window* window) {
 void BrowserAppsTracker::CreateAppInstance(std::string app_id,
                                            Browser* browser,
                                            content::WebContents* contents) {
-  // TODO(crbug.com/1203992): generate WebContents ID here
   CreateInstance(app_instances_, contents,
                  base::WrapUnique(new BrowserAppInstance{
                      std::move(app_id),
                      browser,
                      contents,
+                     ++last_web_contents_id_,
                      IsAppVisible(browser, contents),
                      IsAppActive(browser, contents),
                  }));
@@ -450,7 +461,8 @@ void BrowserAppsTracker::CreateChromeInstance(Browser* browser) {
                  base::WrapUnique(new BrowserAppInstance{
                      extension_misc::kChromeAppId,
                      browser,
-                     nullptr,
+                     nullptr /* contents */,
+                     0 /* web_contents_id */,
                      IsBrowserVisible(browser),
                      IsBrowserActive(browser),
                  }));
@@ -484,9 +496,9 @@ void BrowserAppsTracker::MaybeUpdateInstance(BrowserAppInstance& instance,
   DCHECK(browser);
   bool visible;
   bool active;
-  if (instance.contents) {
-    visible = IsAppVisible(browser, instance.contents);
-    active = IsAppActive(browser, instance.contents);
+  if (instance.web_contents) {
+    visible = IsAppVisible(browser, instance.web_contents);
+    active = IsAppActive(browser, instance.web_contents);
   } else {
     visible = IsBrowserVisible(browser);
     active = IsBrowserActive(browser);

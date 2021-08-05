@@ -57,6 +57,10 @@ class BrowserAppsTracker : public TabStripModelObserver,
   const BrowserAppInstance* GetAppInstance(
       content::WebContents* contents) const;
 
+  // Get app instance running in a |contents|. Returns null if no app is found.
+  const BrowserAppInstance* GetAppInstanceByWebContentsId(
+      WebContentsId web_contents_id) const;
+
   // Get Chrome instance running in |browser|. Returns null if not found.
   const BrowserAppInstance* GetChromeInstance(Browser* browser) const;
 
@@ -186,6 +190,8 @@ class BrowserAppsTracker : public TabStripModelObserver,
   std::map<Browser*, std::unique_ptr<BrowserAppInstance>> chrome_instances_;
 
   base::ObserverList<BrowserAppStatusObserver, true>::Unchecked observers_;
+
+  WebContentsId last_web_contents_id_{0};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_BROWSER_APPS_TRACKER_H_
