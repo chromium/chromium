@@ -209,7 +209,7 @@ const char kServiceProviderConfig[] = R"({
             "token_endpoint": "https://api.box.com/oauth2/token",
             "max_direct_size": 20971520,
             "scopes": [],
-            "disable": [ "box.com" ]
+            "disable": [ "box.com", "boxcloud.com" ]
           }
         }
       }
