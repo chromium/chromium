@@ -158,6 +158,12 @@ fetching new policy or logging in.
 A [Help Center article](https://support.google.com/chrome/a/answer/6326250)
 warns admins of the implications of mis-using this policy for Chrome OS.
 
+* **AllowOnlyPolicyCellularNetworks**
+    * (optional, defaults to false) - **boolean**
+    * When this field is present and set to true, only cellular networks present
+      in policy may be connected to. No new cellular networks may be added or
+      configured. This allows admins to ensure that only policy configured
+      cellular networks are accessible.
 
 * **AllowOnlyPolicyNetworksToAutoconnect**
     * (optional, defaults to false) - **boolean**
@@ -1552,6 +1558,11 @@ ONC configuration of of **Cellular** networks is not yet supported.
         or **NetworkTechnology**
         is *LTE*) - **boolean**
     * For GSM or LTE modems, indicates whether a SIM card is present or not.
+
+* **SMDPAddress**
+    * (optional, read-only) - **string**
+    * When set with the address of an SMDP+ server, indicates that eSIM profile
+      for this network should be downloaded and installed using this address.
 
 * **SupportNetworkScan**
     * (optional, read-only) - **boolean**

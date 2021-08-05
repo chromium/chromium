@@ -148,6 +148,7 @@ ONC_EXPORT extern const char kServingOperator[];
 ONC_EXPORT extern const char kSignalStrength[];
 ONC_EXPORT extern const char kSIMLockStatus[];
 ONC_EXPORT extern const char kSIMPresent[];
+ONC_EXPORT extern const char kSMDPAddress[];
 ONC_EXPORT extern const char kSupportNetworkScan[];
 ONC_EXPORT extern const char kTechnologyCdma1Xrtt[];
 ONC_EXPORT extern const char kTechnologyEdge[];
@@ -504,6 +505,7 @@ ONC_EXPORT extern const char kWPAD[];
 }  // namespace proxy
 
 namespace global_network_config {
+ONC_EXPORT extern const char kAllowOnlyPolicyCellularNetworks[];
 ONC_EXPORT extern const char kAllowOnlyPolicyNetworksToAutoconnect[];
 ONC_EXPORT extern const char* kAllowOnlyPolicyWiFiToConnect;
 ONC_EXPORT extern const char* kAllowOnlyPolicyWiFiToConnectIfAvailable;

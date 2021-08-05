@@ -339,6 +339,7 @@ const OncFieldSignature cellular_with_state_fields[] = {
     {::onc::cellular::kSignalStrength, &kIntegerSignature},
     {::onc::cellular::kSIMLockStatus, &kSIMLockStatusSignature},
     {::onc::cellular::kSIMPresent, &kBoolSignature},
+    {::onc::cellular::kSMDPAddress, &kStringSignature},
     {::onc::cellular::kSupportNetworkScan, &kBoolSignature},
     {nullptr}};
 
@@ -379,6 +380,8 @@ const OncFieldSignature network_with_state_fields[] = {
     {nullptr}};
 
 const OncFieldSignature global_network_configuration_fields[] = {
+    {::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+     &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
      &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
