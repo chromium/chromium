@@ -11,14 +11,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * This class groups all the {@link AccountInfoService} instance manipulation
  * methods in one place.
  */
 public final class AccountInfoServiceProvider {
-    private static final AtomicReference<AccountInfoService> sInstance = new AtomicReference<>();
     private static @Nullable Promise<AccountInfoService> sInstancePromise;
 
     /**
@@ -27,14 +24,15 @@ public final class AccountInfoServiceProvider {
     @MainThread
     public static void init(
             IdentityManager identityManager, AccountTrackerService accountTrackerService) {
-        if (sInstance.get() != null) {
+        if (sInstancePromise != null && sInstancePromise.isFulfilled()) {
             return;
         }
-        sInstance.set(new AccountInfoServiceImpl(identityManager, accountTrackerService));
+        final AccountInfoService service =
+                new AccountInfoServiceImpl(identityManager, accountTrackerService);
         if (sInstancePromise == null) {
-            sInstancePromise = Promise.fulfilled(sInstance.get());
+            sInstancePromise = Promise.fulfilled(service);
         } else {
-            sInstancePromise.fulfill(sInstance.get());
+            sInstancePromise.fulfill(service);
         }
     }
 
@@ -43,11 +41,14 @@ public final class AccountInfoServiceProvider {
      *
      * This method must be invoked after {@link AccountInfoService} is initialized.
      */
+    @MainThread
     public static AccountInfoService get() {
-        if (sInstance.get() == null) {
+        ThreadUtils.assertOnUiThread();
+        final Promise<AccountInfoService> promise = getPromise();
+        if (!promise.isFulfilled()) {
             throw new RuntimeException("The AccountInfoService is not yet initialized!");
         }
-        return sInstance.get();
+        return promise.getResult();
     }
 
     /**
@@ -68,13 +69,11 @@ public final class AccountInfoServiceProvider {
     @VisibleForTesting
     public static void setInstanceForTests(AccountInfoService accountInfoService) {
         ThreadUtils.assertOnUiThread();
-        sInstance.set(accountInfoService);
         sInstancePromise = Promise.fulfilled(accountInfoService);
     }
 
     @VisibleForTesting
     public static void resetForTests() {
-        sInstance.set(null);
         sInstancePromise = null;
     }
 
