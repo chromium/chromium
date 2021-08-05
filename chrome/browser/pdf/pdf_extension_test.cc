@@ -2241,14 +2241,17 @@ class PDFExtensionClipboardTest
   void DoActionAndCheckClipboard(base::OnceClosure action,
                                  ui::ClipboardBuffer clipboard_buffer,
                                  const std::string& expected) {
+    ASSERT_FALSE(clipboard_quit_closure_);
+
     ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-    DCHECK(!clipboard_changed_);
-    DCHECK(!clipboard_quit_closure_);
+    EXPECT_FALSE(clipboard_changed_);
+    clipboard_changed_ = false;
 
     base::RunLoop run_loop;
     clipboard_quit_closure_ = run_loop.QuitClosure();
     std::move(action).Run();
     run_loop.Run();
+    EXPECT_FALSE(clipboard_quit_closure_);
 
     EXPECT_TRUE(clipboard_changed_);
     clipboard_changed_ = false;
