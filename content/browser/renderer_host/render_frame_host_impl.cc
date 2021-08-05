@@ -1447,6 +1447,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   GetSiteInstance()->IncrementActiveFrameCount();
 
   if (parent_) {
+    // All frames in a frame tree should use the same storage partition.
+    CHECK_EQ(parent_->GetStoragePartition(), GetStoragePartition());
+
     cross_origin_embedder_policy_ = parent_->cross_origin_embedder_policy();
 
     // New child frames should inherit the nav_entry_id of their parent.
