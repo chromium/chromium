@@ -110,6 +110,7 @@
 
     this.globalPolicy_ =
         /** @type {!chromeos.networkConfig.mojom.GlobalPolicy} */ ({
+          allow_only_policy_cellular_networks: false,
           allow_only_policy_networks_to_autoconnect: false,
           allow_only_policy_networks_to_connect: false,
           allow_only_policy_networks_to_connect_if_available: false,

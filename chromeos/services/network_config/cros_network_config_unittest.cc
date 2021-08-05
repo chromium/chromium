@@ -1642,6 +1642,7 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
+  EXPECT_EQ(false, policy->allow_only_policy_cellular_networks);
   EXPECT_EQ(true, policy->allow_only_policy_networks_to_autoconnect);
   EXPECT_EQ(false, policy->allow_only_policy_networks_to_connect);
   EXPECT_EQ(false, policy->allow_only_policy_networks_to_connect_if_available);
