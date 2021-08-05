@@ -3081,7 +3081,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     // (2) to give the subframe unload handlers a chance to execute.
     if (!frame_tree_node_->IsMainFrame() && IsActive()) {
       base::TimeDelta subframe_shutdown_timeout =
-          delegate_->IsBeingDestroyed()
+          frame_tree_->IsBeingDestroyed()
               ? base::TimeDelta()
               : GetSubframeProcessShutdownDelay(
                     GetSiteInstance()->GetBrowserContext());
@@ -3125,10 +3125,10 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // the corruption will not be visible until later, making the bug very
   // difficult to understand.
   CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
-  // We should not create new RenderFrames while our delegate is being destroyed
-  // (e.g., via a WebContentsObserver during WebContents shutdown).  This seems
-  // to have caused crashes in https://crbug.com/717650.
-  CHECK(!delegate_->IsBeingDestroyed());
+  // We should not create new RenderFrames while `frame_tree_` is being
+  // destroyed (e.g., via a WebContentsObserver during WebContents shutdown).
+  // This seems to have caused crashes in https://crbug.com/717650.
+  CHECK(!frame_tree_->IsBeingDestroyed());
   DCHECK_NE(render_frame_state_, RenderFrameState::kCreated);
 
   const RenderFrameState old_render_frame_state = render_frame_state_;

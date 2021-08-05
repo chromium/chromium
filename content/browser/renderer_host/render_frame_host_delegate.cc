@@ -139,10 +139,6 @@ RenderFrameHostDelegate::GetJavaRenderFrameHostDelegate() {
 }
 #endif
 
-bool RenderFrameHostDelegate::IsBeingDestroyed() {
-  return false;
-}
-
 Visibility RenderFrameHostDelegate::GetVisibility() {
   return Visibility::HIDDEN;
 }

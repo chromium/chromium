@@ -708,6 +708,7 @@ void FrameTree::StopLoading() {
 }
 
 void FrameTree::Shutdown() {
+  is_being_destroyed_ = true;
 #if DCHECK_IS_ON()
   DCHECK(!was_shut_down_);
   was_shut_down_ = true;

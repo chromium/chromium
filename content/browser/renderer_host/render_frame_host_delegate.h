@@ -455,10 +455,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   GetJavaRenderFrameHostDelegate();
 #endif
 
-  // Whether the delegate is being destroyed, in which case the RenderFrameHost
-  // should not be asked to create a RenderFrame.
-  virtual bool IsBeingDestroyed();
-
   // Notified that the render frame started loading a subresource.
   virtual void SubresourceResponseStarted() {}
 
