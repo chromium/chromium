@@ -48,12 +48,17 @@
 
 namespace media {
 
-bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
+const base::Feature kMultiPlaneSoftwareVideoSharedImages {
+  "MultiPlaneSoftwareVideoSharedImages",
 #if defined(OS_MAC)
-  return true;
+      base::FEATURE_ENABLED_BY_DEFAULT
 #else
-  return false;
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
+
+bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
+  return base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages);
 }
 
 // Implementation of a pool of GpuMemoryBuffers used to back VideoFrames.
