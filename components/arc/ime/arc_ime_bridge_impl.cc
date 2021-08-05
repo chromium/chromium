@@ -20,6 +20,17 @@
 namespace arc {
 namespace {
 
+mojom::SegmentStyle GetSegmentStyle(const ui::ImeTextSpan& ime_text_span) {
+  if (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kNone ||
+      ime_text_span.underline_style == ui::ImeTextSpan::UnderlineStyle::kNone) {
+    return mojom::SegmentStyle::NONE;
+  }
+  if (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kThick) {
+    return mojom::SegmentStyle::EMPHASIZED;
+  }
+  return mojom::SegmentStyle::DEFAULT;
+}
+
 std::vector<mojom::CompositionSegmentPtr> ConvertSegments(
     const ui::CompositionText& composition) {
   std::vector<mojom::CompositionSegmentPtr> segments;
@@ -31,6 +42,7 @@ std::vector<mojom::CompositionSegmentPtr> ConvertSegments(
         (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kThick ||
          (composition.selection.start() == ime_text_span.start_offset &&
           composition.selection.end() == ime_text_span.end_offset));
+    segment->style = GetSegmentStyle(ime_text_span);
     segments.push_back(std::move(segment));
   }
   return segments;
