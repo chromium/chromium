@@ -2632,7 +2632,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/getStats.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
@@ -7238,3 +7237,6 @@ crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_sc
 
 # Sheriff 2021-08-04
 crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Failure Pass Crash Timeout ]
+
+# Sheriff 2021-08/05
+crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
