@@ -11046,6 +11046,7 @@ histogram as enum -->
   <int value="38" label="kAccountPasswordsSynced"/>
   <int value="39" label="kAccountCompromisedCredentials"/>
   <int value="40" label="kFaviconCacheExpiration"/>
+  <int value="41" label="kSecurePaymentConfirmationInstruments"/>
 </enum>
 
 <enum name="ChromeChannelForHistogram">

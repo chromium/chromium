@@ -113,6 +113,7 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -841,6 +842,18 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             delete_end_.is_null() ? base::Time::Max() : delete_end_,
             CreateTaskCompletionClosureForMojo(
                 TracingDataType::kHttpAuthCache));
+
+    scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
+        webdata_services::WebDataServiceWrapperFactory::
+            GetPaymentManifestWebDataServiceForBrowserContext(
+                profile_, ServiceAccessType::EXPLICIT_ACCESS);
+    if (web_data_service) {
+      web_data_service->ClearSecurePaymentConfirmationInstruments(
+          delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(
+              TracingDataType::kSecurePaymentConfirmationInstruments));
+    }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (chromeos::SystemProxyManager::Get()) {
       // Sends a request to the System-proxy daemon to clear the proxy user
