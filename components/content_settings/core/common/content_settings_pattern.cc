@@ -9,7 +9,6 @@
 #include <memory>
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
