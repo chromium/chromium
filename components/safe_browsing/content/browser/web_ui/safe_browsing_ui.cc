@@ -1348,6 +1348,35 @@ base::Value SerializePasswordReuseEvent(
   }
   event_dict.SetKey("reused_password_type", base::Value(reused_password_type));
 
+  std::string reused_password_account_type;
+  switch (event.reused_password_account_type().account_type()) {
+    case LoginReputationClientRequest::PasswordReuseEvent::
+        ReusedPasswordAccountType::UNKNOWN:
+      reused_password_account_type = "UNKNOWN";
+      break;
+    case LoginReputationClientRequest::PasswordReuseEvent::
+        ReusedPasswordAccountType::GSUITE:
+      reused_password_account_type = "GSUITE";
+      break;
+    case LoginReputationClientRequest::PasswordReuseEvent::
+        ReusedPasswordAccountType::GMAIL:
+      reused_password_account_type = "GMAIL";
+      break;
+    case LoginReputationClientRequest::PasswordReuseEvent::
+        ReusedPasswordAccountType::NON_GAIA_ENTERPRISE:
+      reused_password_account_type = "NON_GAIA_ENTERPRISE";
+      break;
+    case LoginReputationClientRequest::PasswordReuseEvent::
+        ReusedPasswordAccountType::SAVED_PASSWORD:
+      reused_password_account_type = "SAVED_PASSWORD";
+      break;
+  }
+  event_dict.SetKey("reused_password_account_type",
+                    base::Value(reused_password_account_type));
+  event_dict.SetKey(
+      "is_account_syncing",
+      base::Value(event.reused_password_account_type().is_account_syncing()));
+
   return std::move(event_dict);
 }
 
