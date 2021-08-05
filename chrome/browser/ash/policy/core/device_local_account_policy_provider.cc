@@ -158,6 +158,13 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
     }
   }
 
+  // Disable translation functionality in Web Kiosk Mode.
+  if (type_ == DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
+    chrome_policy.Set(key::kTranslateEnabled, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                      base::Value(false), nullptr);
+  }
+
   bool restricted_managed_guest_session_enabled = false;
   ash::CrosSettings::Get()->GetBoolean(
       chromeos::kRestrictedManagedGuestSessionEnabled,
