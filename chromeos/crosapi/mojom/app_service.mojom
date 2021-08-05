@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module crosapi.mojom;
 
@@ -119,4 +119,11 @@ interface AppServiceProxy {
 // the lacros-chrome so that the browser can access the app service info
 // in the same process.
 [Stable, Uuid="d77d3b7e-ef90-4615-b81b-7e43482a4d5e"]
-interface AppServiceSubscriber {};
+interface AppServiceSubscriber {
+  // Receives a stream of apps from ash-chrome from a publisher, and save to
+  // AppRegistryCache.
+  // If |should_notify_initialized| is true, notifies observers that |app_type|
+  // has finished initiating apps.
+  [MinVersion=9]
+  OnApps@0(array<App> deltas, AppType app_type, bool should_notify_initialized);
+};

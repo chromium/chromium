@@ -66,6 +66,8 @@ class SubscriberCrosapi : public KeyedService,
   mojo::Receiver<crosapi::mojom::AppServiceProxy> crosapi_receiver_{this};
   mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
   mojo::Remote<crosapi::mojom::AppServiceSubscriber> subscriber_;
+
+  Profile* profile_;
 };
 
 }  // namespace apps

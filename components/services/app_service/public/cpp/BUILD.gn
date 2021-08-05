@@ -180,6 +180,15 @@ source_set("types") {
   deps = [ "//components/services/app_service/public/mojom" ]
 }
 
+source_set("crosapi_utils") {
+  sources = [
+    "crosapi_utils.cc",
+    "crosapi_utils.h",
+  ]
+
+  deps = [ "//components/services/app_service/public/mojom" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

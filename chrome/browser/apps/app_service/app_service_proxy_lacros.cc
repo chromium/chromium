@@ -535,14 +535,6 @@ void AppServiceProxyLacros::AddAppIconSource(Profile* profile) {
 void AppServiceProxyLacros::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                    apps::mojom::AppType app_type,
                                    bool should_notify_initialized) {
-  if (app_service_.is_connected()) {
-    for (const auto& delta : deltas) {
-      if (!apps_util::IsInstalled(delta->readiness)) {
-        app_service_->RemovePreferredApp(delta->app_type, delta->app_id);
-      }
-    }
-  }
-
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
 }

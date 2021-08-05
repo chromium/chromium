@@ -104,6 +104,10 @@ mojom("mojom") {
           mojom = "crosapi.mojom.WindowMode"
           cpp = "::apps::mojom::WindowMode"
         },
+        {
+          mojom = "crosapi.mojom.AppType"
+          cpp = "::apps::mojom::AppType"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

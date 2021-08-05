@@ -2184,6 +2184,7 @@ static_library("browser") {
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
+    "//components/services/app_service/public/cpp:crosapi_utils",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/cpp:types",

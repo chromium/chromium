@@ -16,20 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/crosapi_utils.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
 namespace {
-
-std::vector<apps::mojom::AppPtr> CloneApps(
-    const std::vector<apps::mojom::AppPtr>& clone_from) {
-  std::vector<apps::mojom::AppPtr> clone_to;
-  for (const auto& app : clone_from) {
-    clone_to.push_back(app->Clone());
-  }
-  return clone_to;
-}
 
 std::vector<apps::mojom::CapabilityAccessPtr> CloneCapabilityAccesses(
     const std::vector<apps::mojom::CapabilityAccessPtr>& clone_from) {
@@ -224,7 +216,7 @@ void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;
   for (auto& subscriber : subscribers_) {
-    subscriber->OnApps(CloneApps(deltas), apps::mojom::AppType::kWeb,
+    subscriber->OnApps(apps_util::CloneApps(deltas), apps::mojom::AppType::kWeb,
                        false /* should_notify_initialized */);
   }
 }
