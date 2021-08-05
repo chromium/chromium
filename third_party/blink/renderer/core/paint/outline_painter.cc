@@ -277,6 +277,172 @@ FloatRoundedRect::Radii GetFocusRingCornerRadii(
   return FloatRoundedRect::Radii(DefaultFocusRingCornerRadius(style));
 }
 
+// Given 3 points defining a corner, returns the corresponding corner in
+// |radii|.
+FloatSize GetRadiiCorner(const FloatRoundedRect::Radii& radii,
+                         const SkPoint& p1,
+                         const SkPoint& p2,
+                         const SkPoint& p3) {
+  if (p1.x() == p2.x()) {
+    DCHECK_NE(p1.y(), p2.y());
+    DCHECK_NE(p2.x(), p3.x());
+    DCHECK_EQ(p2.y(), p3.y());
+    if (p1.y() < p2.y())
+      return p2.x() < p3.x() ? radii.BottomLeft() : radii.BottomRight();
+    return p2.x() < p3.x() ? radii.TopLeft() : radii.TopRight();
+  }
+  DCHECK_EQ(p1.y(), p2.y());
+  DCHECK_EQ(p2.x(), p3.x());
+  DCHECK_NE(p2.y(), p3.y());
+  if (p1.x() < p2.x())
+    return p2.y() < p3.y() ? radii.TopRight() : radii.BottomRight();
+  return p2.y() < p3.y() ? radii.TopLeft() : radii.BottomLeft();
+}
+
+SkPathDirection CornerArcDirection(const FloatRoundedRect::Radii& radii,
+                                   const SkPoint& p1,
+                                   const SkPoint& p2,
+                                   const SkPoint& p3) {
+  if (p1.x() == p2.x()) {
+    return (p1.y() < p2.y()) == (p2.x() < p3.x()) ? SkPathDirection::kCCW
+                                                  : SkPathDirection::kCW;
+  }
+  return (p1.x() < p2.x()) == (p2.y() < p3.y()) ? SkPathDirection::kCW
+                                                : SkPathDirection::kCCW;
+}
+
+struct Line {
+  SkPoint start;
+  SkPoint end;
+};
+
+// Merge line2 into line1 if they are in the same straight line.
+bool MergeLineIfPossible(Line& line1, const Line& line2) {
+  DCHECK(line1.end == line2.start);
+  if ((line1.start.x() == line1.end.x() && line1.start.x() == line2.end.x()) ||
+      (line1.start.y() == line1.end.y() && line1.start.y() == line2.end.y())) {
+    line1.end = line2.end;
+    return true;
+  }
+  return false;
+}
+
+// Shorten |line| between rounded corners.
+void AdjustLineBetweenCorners(Line& line,
+                              const FloatRoundedRect::Radii& radii,
+                              const SkPoint& prev_point,
+                              const SkPoint& next_point) {
+  FloatSize corner1 = GetRadiiCorner(radii, prev_point, line.start, line.end);
+  FloatSize corner2 = GetRadiiCorner(radii, line.start, line.end, next_point);
+  if (line.start.x() == line.end.x()) {
+    // |line| is vertical, and adjacent lines are horizontal.
+    float height = std::abs(line.end.y() - line.start.y());
+    float corner1_height = corner1.Height();
+    float corner2_height = corner2.Height();
+    if (corner1_height + corner2_height > height) {
+      // Scale down the corner heights to make the corners fit in |height|.
+      float scale = height / (corner1_height + corner2_height);
+      corner1_height = floorf(corner1_height * scale);
+      corner2_height = floorf(corner2_height * scale);
+    }
+    if (line.start.y() < line.end.y()) {
+      line.start.offset(0, corner1_height);
+      line.end.offset(0, -corner2_height);
+    } else {
+      line.start.offset(0, -corner1_height);
+      line.end.offset(0, corner2_height);
+    }
+  } else {
+    // |line| is horizontal, and adjacent lines are vertical.
+    float width = std::abs(line.end.x() - line.start.x());
+    float corner1_width = corner1.Width();
+    float corner2_width = corner2.Width();
+    if (corner1_width + corner2_width > width) {
+      // Scale down the corner widths to make the corners fit in |width|.
+      float scale = width / (corner1_width + corner2_width);
+      corner1_width = floorf(corner1_width * scale);
+      corner2_width = floorf(corner2_width * scale);
+    }
+    if (line.start.x() < line.end.x()) {
+      line.start.offset(corner1_width, 0);
+      line.end.offset(-corner2_width, 0);
+    } else {
+      line.start.offset(-corner1_width, 0);
+      line.end.offset(corner2_width, 0);
+    }
+  }
+}
+
+// Create a rounded path from |path| containing right angle lines by
+// - inserting arc segments for corners;
+// - adjusting length of the lines.
+void AddCornerRadiiToPath(SkPath& path, const FloatRoundedRect::Radii& radii) {
+  SkPath input;
+  input.swap(path);
+
+  // The path may contain multiple contours each of which is like (kMove_Verb,
+  // kLine_Verb, ..., kClose_Verb). Each line must be either horizontal or
+  // vertical. Two adjacent lines create a right angle.
+  SkPath::Iter iter(input, /*forceClose*/ true);
+  SkPoint points[4];  // for iter.next().
+  Vector<Line> lines;
+  for (SkPath::Verb verb = iter.next(points); verb != SkPath::kDone_Verb;
+       verb = iter.next(points)) {
+    switch (verb) {
+      case SkPath::kMove_Verb:
+        DCHECK(lines.IsEmpty());
+        break;
+      case SkPath::kLine_Verb: {
+        Line new_line{points[0], points[1]};
+        if (lines.IsEmpty() || !MergeLineIfPossible(lines.back(), new_line))
+          lines.push_back(new_line);
+        break;
+      }
+      case SkPath::kClose_Verb: {
+        DCHECK_GE(lines.size(), 4u);
+        if (MergeLineIfPossible(lines.back(), lines.front())) {
+          lines.front() = lines.back();
+          lines.pop_back();
+        }
+        Vector<SkPathDirection> arc_directions(lines.size());
+        // Save the first line before adjustment because we may adjust the line
+        // to zero length which loses direction. Will be used to adjust the last
+        // line.
+        Line original_first_line = lines.front();
+        for (wtf_size_t i = 0; i < lines.size(); i++) {
+          const SkPoint& prev_point =
+              lines[i == 0 ? lines.size() - 1 : i - 1].start;
+          const Line& next_line =
+              i == lines.size() - 1 ? original_first_line : lines[i + 1];
+          DCHECK(lines[i].end == next_line.start);
+          arc_directions[i] = CornerArcDirection(
+              radii, lines[i].start, next_line.start, next_line.end);
+          AdjustLineBetweenCorners(lines[i], radii, prev_point, next_line.end);
+        }
+        // Generate the new contour into |result|.
+        path.moveTo(lines[0].start);
+        for (wtf_size_t i = 0; i < lines.size(); i++) {
+          const Line& line = lines[i];
+          if (line.end != line.start)
+            path.lineTo(line.end);
+          const Line& next_line = lines[i == lines.size() - 1 ? 0 : i + 1];
+          if (line.end != next_line.start) {
+            path.arcTo(std::abs(next_line.start.x() - line.end.x()),
+                       std::abs(next_line.start.y() - line.end.y()), 0,
+                       SkPath::kSmall_ArcSize, arc_directions[i],
+                       next_line.start.x(), next_line.start.y());
+          }
+        }
+        lines.clear();
+        path.close();
+        break;
+      }
+      default:
+        NOTREACHED();
+    }
+  }
+}
+
 void PaintSingleFocusRing(GraphicsContext& context,
                           const Vector<IntRect>& rects,
                           float width,
@@ -315,15 +481,10 @@ void PaintSingleFocusRing(GraphicsContext& context,
     return;
   }
 
-  // TODO(wangxianzhu): Bake non-uniform radii into the path. For now use the
-  // minimum radius.
-  float radius = std::min(
-      {corner_radii.TopLeft().Width(), corner_radii.TopLeft().Height(),
-       corner_radii.TopRight().Width(), corner_radii.TopRight().Height(),
-       corner_radii.BottomLeft().Width(), corner_radii.BottomLeft().Height(),
-       corner_radii.BottomRight().Width(),
-       corner_radii.BottomRight().Height()});
-  context.DrawFocusRingPath(path, color, width, radius);
+  // Bake non-uniform radii into the path, and draw the path with 0 corner
+  // radius as the path already has rounded corners.
+  AddCornerRadiiToPath(path, corner_radii);
+  context.DrawFocusRingPath(path, color, width, 0);
 }
 
 void PaintFocusRing(GraphicsContext& context,
