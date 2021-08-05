@@ -6,6 +6,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 class NewTabPageBrowserTest extends PolymerTest {
@@ -318,6 +319,13 @@ var NewTabPageModulesChromeCartV2ModuleTest =
   }
 };
 
-TEST_F('NewTabPageModulesChromeCartV2ModuleTest', 'All', function() {
+// https://crbug.com/1227564: Flaky on Chrome OS.
+GEN('#if defined(OS_CHROMEOS)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+
+TEST_F('NewTabPageModulesChromeCartV2ModuleTest', 'MAYBE_All', function() {
   mocha.run();
 });
