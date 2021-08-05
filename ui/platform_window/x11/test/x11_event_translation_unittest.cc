@@ -86,10 +86,19 @@ TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
 
   auto* properties = keyev->properties();
   EXPECT_TRUE(properties);
-  EXPECT_EQ(3u, properties->size());
+  EXPECT_EQ(4u, properties->size());
 
   // Ensure hardware keycode, keyboard group and IME flag properties are
   // properly set.
+  auto state_it = properties->find(ui::kPropertyKeyboardState);
+  ASSERT_NE(state_it, properties->end());
+  EXPECT_EQ(4u, state_it->second.size());
+  // Making sure the value is stored in little endian.
+  EXPECT_EQ(static_cast<uint8_t>(state), state_it->second[0]);
+  EXPECT_EQ(static_cast<uint8_t>(state >> 8), state_it->second[1]);
+  EXPECT_EQ(static_cast<uint8_t>(state >> 16), state_it->second[2]);
+  EXPECT_EQ(static_cast<uint8_t>(state >> 24), state_it->second[3]);
+
   auto hw_keycode_it = properties->find(ui::kPropertyKeyboardHwKeyCode);
   EXPECT_NE(hw_keycode_it, properties->end());
   EXPECT_EQ(1u, hw_keycode_it->second.size());
