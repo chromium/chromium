@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -46,6 +47,10 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   // ash::enhanced_network_tts::mojom::EnhancedNetworkTts:
   void GetAudioData(mojom::TtsRequestPtr request,
                     GetAudioDataCallback callback) override;
+
+  // Whether or not to override enhanced TTS params.
+  static constexpr base::Feature kOverrideParams{
+      "EnhancedNetworkTtsOverride", base::FEATURE_DISABLED_BY_DEFAULT};
 
  private:
   // Create or reuse a connection to the data decoder service for safe JSON
@@ -92,6 +97,11 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
 
   // Used for all callbacks.
   base::WeakPtrFactory<EnhancedNetworkTtsImpl> weak_factory_{this};
+
+  // An override Google API key. If empty, the API key with which the browser
+  // was built (if any) will be used instead.
+  static constexpr base::FeatureParam<std::string> kApiKey{&kOverrideParams,
+                                                           "api_key", ""};
 };
 
 }  // namespace enhanced_network_tts

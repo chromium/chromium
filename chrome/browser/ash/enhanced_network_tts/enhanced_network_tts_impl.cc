@@ -22,13 +22,17 @@
 namespace ash {
 namespace enhanced_network_tts {
 
+constexpr base::Feature EnhancedNetworkTtsImpl::kOverrideParams;
+constexpr base::FeatureParam<std::string> EnhancedNetworkTtsImpl::kApiKey;
+
 EnhancedNetworkTtsImpl& EnhancedNetworkTtsImpl::GetInstance() {
   static base::NoDestructor<EnhancedNetworkTtsImpl> tts_impl;
   return *tts_impl;
 }
 
 EnhancedNetworkTtsImpl::EnhancedNetworkTtsImpl()
-    : api_key_(google_apis::GetReadAloudAPIKey()) {}
+    : api_key_(kApiKey.Get().empty() ? google_apis::GetReadAloudAPIKey()
+                                     : kApiKey.Get()) {}
 EnhancedNetworkTtsImpl::~EnhancedNetworkTtsImpl() = default;
 
 void EnhancedNetworkTtsImpl::BindReceiverAndURLFactory(
