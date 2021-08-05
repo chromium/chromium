@@ -41,6 +41,7 @@ source_set("search_engines") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web",
     "//net",
     "//rlz/buildflags",

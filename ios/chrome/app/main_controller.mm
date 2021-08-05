@@ -111,8 +111,8 @@
 #include "ios/chrome/common/app_group/app_group_utils.h"
 #include "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/empty_nsurlcache.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/overrides_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
@@ -834,19 +834,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   block:^{
                     auto URLLoaderFactory = self.appState.mainBrowserState
                                                 ->GetSharedURLLoaderFactory();
+
                     const bool is_first_run = FirstRun::IsChromeFirstRun();
-                    ios::GetChromeBrowserProvider()
-                        .GetAppDistributionProvider()
-                        ->ScheduleDistributionNotifications(URLLoaderFactory,
-                                                            is_first_run);
+                    ios::provider::ScheduleAppDistributionNotifications(
+                        URLLoaderFactory, is_first_run);
 
                     const base::Time install_date = base::Time::FromTimeT(
                         GetApplicationContext()->GetLocalState()->GetInt64(
                             metrics::prefs::kInstallDate));
 
-                    ios::GetChromeBrowserProvider()
-                        .GetAppDistributionProvider()
-                        ->InitializeFirebase(install_date, is_first_run);
+                    ios::provider::InitializeFirebase(install_date,
+                                                      is_first_run);
                   }];
 }
 
