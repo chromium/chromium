@@ -53,8 +53,9 @@ IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
   if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
       browser_state->IsOffTheRecord())
     return nullptr;
-  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
 }
 
 // static
