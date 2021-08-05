@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
+#include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/system_properties_provider.h"
 
 namespace chromeos {
@@ -15,10 +16,11 @@ namespace bluetooth_config {
 // SystemPropertiesProvider implementation which uses AdapterStateController as
 // the source of properties.
 class SystemPropertiesProviderImpl : public SystemPropertiesProvider,
-                                     public AdapterStateController::Observer {
+                                     public AdapterStateController::Observer,
+                                     public DeviceCache::Observer {
  public:
-  explicit SystemPropertiesProviderImpl(
-      AdapterStateController* adapter_state_controller);
+  SystemPropertiesProviderImpl(AdapterStateController* adapter_state_controller,
+                               DeviceCache* device_cache);
   ~SystemPropertiesProviderImpl() override;
 
  private:
@@ -26,14 +28,23 @@ class SystemPropertiesProviderImpl : public SystemPropertiesProvider,
 
   // SystemPropertiesProvider:
   mojom::BluetoothSystemState ComputeSystemState() const override;
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> GetPairedDevices()
+      const override;
 
   // AdapterStateController::Observer:
   void OnAdapterStateChanged() override;
 
+  // DeviceCache::Observer:
+  void OnPairedDevicesListChanged() override;
+
   AdapterStateController* adapter_state_controller_;
+  DeviceCache* device_cache_;
+
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>
       adapter_state_controller_observation_{this};
+  base::ScopedObservation<DeviceCache, DeviceCache::Observer>
+      device_cache_observation_{this};
 };
 
 }  // namespace bluetooth_config

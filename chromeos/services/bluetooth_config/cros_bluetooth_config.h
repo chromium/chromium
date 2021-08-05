@@ -20,6 +20,7 @@ namespace chromeos {
 namespace bluetooth_config {
 
 class AdapterStateController;
+class DeviceCache;
 class Initializer;
 class SystemPropertiesProvider;
 
@@ -47,6 +48,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   mojo::ReceiverSet<mojom::CrosBluetoothConfig> receivers_;
 
   std::unique_ptr<AdapterStateController> adapter_state_controller_;
+  std::unique_ptr<DeviceCache> device_cache_;
   std::unique_ptr<SystemPropertiesProvider> system_properties_provider_;
 };
 

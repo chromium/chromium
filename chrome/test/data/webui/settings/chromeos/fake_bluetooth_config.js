@@ -17,6 +17,7 @@ export class FakeBluetoothConfig {
     this.systemProperties_ = {
       systemState:
           chromeos.bluetoothConfig.mojom.BluetoothSystemState.kDisabled,
+      pairedDevices: [],
     };
 
     /**

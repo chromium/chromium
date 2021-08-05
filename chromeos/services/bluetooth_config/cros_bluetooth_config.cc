@@ -16,9 +16,13 @@ CrosBluetoothConfig::CrosBluetoothConfig(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
     : adapter_state_controller_(
           initializer.CreateAdapterStateController(bluetooth_adapter)),
+      device_cache_(
+          initializer.CreateDeviceCache(adapter_state_controller_.get(),
+                                        bluetooth_adapter)),
       system_properties_provider_(
           std::make_unique<SystemPropertiesProviderImpl>(
-              adapter_state_controller_.get())) {}
+              adapter_state_controller_.get(),
+              device_cache_.get())) {}
 
 CrosBluetoothConfig::~CrosBluetoothConfig() = default;
 

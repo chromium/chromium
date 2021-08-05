@@ -31,6 +31,8 @@ class SystemPropertiesProvider {
   SystemPropertiesProvider();
 
   virtual mojom::BluetoothSystemState ComputeSystemState() const = 0;
+  virtual std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
+  GetPairedDevices() const = 0;
 
   // Notifies all observers of property changes; should be called by derived
   // types to notify observers of property changes.

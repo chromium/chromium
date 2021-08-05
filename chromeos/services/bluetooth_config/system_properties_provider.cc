@@ -28,6 +28,7 @@ mojom::BluetoothSystemPropertiesPtr
 SystemPropertiesProvider::GenerateProperties() {
   auto properties = mojom::BluetoothSystemProperties::New();
   properties->system_state = ComputeSystemState();
+  properties->paired_devices = GetPairedDevices();
   return properties;
 }
 
