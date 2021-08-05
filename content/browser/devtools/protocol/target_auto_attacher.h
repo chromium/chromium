@@ -5,12 +5,13 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_TARGET_AUTO_ATTACHER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_TARGET_AUTO_ATTACHER_H_
 
+#include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "content/browser/devtools/service_worker_devtools_manager.h"
-#include "content/public/browser/devtools_agent_host.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace content {
 
+class DevToolsAgentHost;
 class DevToolsAgentHostImpl;
 class DevToolsRendererChannel;
 class NavigationRequest;
@@ -33,14 +34,6 @@ class TargetAutoAttacher {
     Delegate() = default;
     virtual ~Delegate() = default;
   };
-
-  static std::unique_ptr<TargetAutoAttacher> CreateForBrowser();
-  static std::unique_ptr<TargetAutoAttacher> CreateForServiceWorker(
-      DevToolsRendererChannel* channel);
-  static std::unique_ptr<TargetAutoAttacher> CreateForWorker(
-      DevToolsRendererChannel* channel);
-  static std::unique_ptr<TargetAutoAttacher> CreateForFrame(
-      DevToolsRendererChannel* channel);
 
   virtual ~TargetAutoAttacher();
 
@@ -78,6 +71,18 @@ class TargetAutoAttacher {
   bool wait_for_debugger_on_start_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TargetAutoAttacher);
+};
+
+class RendererAutoAttacherBase : public TargetAutoAttacher {
+ public:
+  explicit RendererAutoAttacherBase(DevToolsRendererChannel* renderer_channel);
+  ~RendererAutoAttacherBase() override;
+
+ protected:
+  void UpdateAutoAttach(base::OnceClosure callback) override;
+
+ private:
+  DevToolsRendererChannel* const renderer_channel_;
 };
 
 }  // namespace protocol

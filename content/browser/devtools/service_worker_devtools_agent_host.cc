@@ -140,7 +140,7 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      protocol::TargetAutoAttacher::CreateForServiceWorker(
+      std::make_unique<protocol::RendererAutoAttacherBase>(
           GetRendererChannel()),
       session->GetRootSession()));
   if (state_ == WORKER_READY && sessions().empty())
