@@ -1247,7 +1247,9 @@ void ResourceLoader::HandleError(const ResourceError& error) {
     Restart(resource_->GetResourceRequest());
     return;
   }
-  if (error.CorsErrorStatus()) {
+  if (error.CorsErrorStatus() &&
+      !base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
+    // CORS issues are reported via network service instrumentation.
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError,

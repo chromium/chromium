@@ -1055,5 +1055,10 @@ const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
 const base::Feature kReportAllJavascriptFrameworks{
     "ReportAllJavaScriptFrameworks", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Suppresses console errors for CORS problems which report an associated
+// inspector issue anyway.
+const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

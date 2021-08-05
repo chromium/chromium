@@ -30,6 +30,7 @@
 
 #include <memory>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -121,6 +122,12 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
   // Report failures only.
   if (error.IsCancellation() || error.IsUnactionableTrustTokensStatus())
     return;
+
+  if (error.CorsErrorStatus() &&
+      base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
+    // CORS issues are reported via network service instrumentation.
+    return;
+  }
 
   StringBuilder message;
   message.Append("Failed to load resource");

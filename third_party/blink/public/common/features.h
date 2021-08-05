@@ -452,6 +452,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
 // detect the properties and attributes required.
 BLINK_COMMON_EXPORT extern const base::Feature kReportAllJavascriptFrameworks;
 
+// Suppresses console errors for CORS problems which report an associated
+// inspector issue anyway.
+BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
+
 }  // namespace features
 }  // namespace blink
 

@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -884,7 +885,12 @@ void FetchManager::Loader::Failed(
   failed_ = true;
   if (execution_context_->IsContextDestroyed())
     return;
-  if (!message.IsEmpty()) {
+  bool issue_only =
+      base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly) &&
+      issue_id;
+  if (!message.IsEmpty() && !issue_only) {
+    // CORS issues are reported via network service instrumentation, with the
+    // exception of early errors reported in FileIssueAndPerformNetworkError.
     execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError, message));
