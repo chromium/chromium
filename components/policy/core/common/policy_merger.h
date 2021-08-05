@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "components/policy/core/common/policy_map.h"

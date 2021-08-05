@@ -10,7 +10,6 @@
 #include <limits>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"

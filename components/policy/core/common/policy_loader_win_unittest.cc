@@ -15,7 +15,6 @@
 #include <iterator>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/json/json_writer.h"
