@@ -224,6 +224,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Whether the navigation is restoring a page from back-forward cache.
   virtual bool IsServedFromBackForwardCache() = 0;
 
+  // Whether this navigation is activating an existing page (e.g. served from
+  // the BackForwardCache or Prerender)
+  virtual bool IsPageActivation() const = 0;
+
   // Navigation control flow --------------------------------------------------
 
   // The net error code if an error happened prior to commit. Otherwise it will

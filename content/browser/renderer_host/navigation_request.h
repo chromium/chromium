@@ -872,7 +872,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Whether this navigation is activating an existing page (e.g. served from
   // the BackForwardCache or Prerender)
-  bool IsPageActivation() const;
+  bool IsPageActivation() const override;
 
   // See comments for |prerender_navigation_entry_|.
   void SetPrerenderNavigationEntry(

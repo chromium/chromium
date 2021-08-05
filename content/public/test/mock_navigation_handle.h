@@ -68,6 +68,11 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsServedFromBackForwardCache() override {
     return is_served_from_bfcache_;
   }
+  bool IsPageActivation() const override {
+    MockNavigationHandle* handle = const_cast<MockNavigationHandle*>(this);
+    return handle->IsPrerenderedPageActivation() ||
+           handle->IsServedFromBackForwardCache();
+  }
   RenderFrameHost* GetParentFrame() override {
     return render_frame_host_ ? render_frame_host_->GetParent() : nullptr;
   }
