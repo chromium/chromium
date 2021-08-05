@@ -236,6 +236,9 @@ class DownloadHistoryTest : public testing::Test {
 
   content::MockDownloadManager::CreateDownloadItemAdapter
   GetCreateDownloadItemAdapterFromDownloadRow(const history::DownloadRow& row) {
+    download::DownloadItemRerouteInfo reroute_info;
+    if (!row.reroute_info_serialized.empty())
+      CHECK(reroute_info.ParseFromString(row.reroute_info_serialized));
     return content::MockDownloadManager::CreateDownloadItemAdapter(
         row.guid, history::ToContentDownloadId(row.id), row.current_path,
         row.target_path, row.url_chain, row.referrer_url, row.site_url,
@@ -246,7 +249,8 @@ class DownloadHistoryTest : public testing::Test {
         history::ToContentDownloadDangerType(row.danger_type),
         history::ToContentDownloadInterruptReason(row.interrupt_reason),
         row.opened, row.last_access_time, row.transient,
-        history::ToContentReceivedSlices(row.download_slice_info));
+        history::ToContentReceivedSlices(row.download_slice_info),
+        reroute_info);
   }
 
   // Creates the DownloadHistory. If |return_null_item| is true, |manager_|
@@ -1023,6 +1027,35 @@ TEST_F(DownloadHistoryTest,
 
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(0)));
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(1)));
+}
+
+// Tests that download item's reroute info can be saved/updated into and
+// retrieved from history DB successfully.
+TEST_F(DownloadHistoryTest, DownloadHistoryTest_RerouteInfo) {
+  // Create a fresh item not from history, OnDownloadCreated, OnDownloadUpdated,
+  // OnDownloadRemoved.
+  CreateDownloadHistory({});
+
+  history::DownloadRow row;
+  InitBasicItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                "http://example2.com/bar.pdf",
+                "http://example.com/referrer1.html",
+                download::DownloadItem::COMPLETE, &row);
+  EXPECT_CALL(item(0), IsDone()).WillRepeatedly(Return(true));
+  // Pretend the manager just created |item|.
+  CallOnDownloadCreated(0);
+  ExpectDownloadCreated(row);
+  EXPECT_TRUE(DownloadHistory::IsPersisted(&item(0)));
+
+  // Update reroute info and trigger an update.
+  download::DownloadItemRerouteInfo reroute_info;
+  reroute_info.set_service_provider(enterprise_connectors::BOX);
+  reroute_info.mutable_box()->set_file_id("12345");
+  ASSERT_TRUE(reroute_info.SerializeToString(&row.reroute_info_serialized));
+  EXPECT_CALL(item(0), GetRerouteInfo())
+      .WillRepeatedly(ReturnRefOfCopy(reroute_info));
+  item(0).NotifyObserversDownloadUpdated();
+  ExpectDownloadUpdated(row, true);
 }
 
 }  // anonymous namespace

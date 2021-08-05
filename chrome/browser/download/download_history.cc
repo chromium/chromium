@@ -384,7 +384,11 @@ void DownloadHistory::LoadHistoryDownloads(
         history::ToContentDownloadInterruptReason(row.interrupt_reason);
     std::vector<GURL> url_chain = row.url_chain;
     TruncatedDataUrlAtTheEndIfNeeded(&url_chain);
-    // TODO(https://crbug.com/1203753) Load reroute_info.
+    download::DownloadItemRerouteInfo reroute_info;
+    if (row.reroute_info_serialized.empty() ||
+        !reroute_info.ParseFromString(row.reroute_info_serialized)) {
+      reroute_info.Clear();
+    }
     download::DownloadItem* item = notifier_.GetManager()->CreateDownloadItem(
         row.guid, loading_id_, row.current_path, row.target_path, url_chain,
         row.referrer_url, row.site_url, row.tab_url, row.tab_referrer_url,
@@ -397,7 +401,8 @@ void DownloadHistory::LoadHistoryDownloads(
         history_download_state,
         history::ToContentDownloadDangerType(row.danger_type), history_reason,
         row.opened, row.last_access_time, row.transient,
-        history::ToContentReceivedSlices(row.download_slice_info));
+        history::ToContentReceivedSlices(row.download_slice_info),
+        reroute_info);
     // DownloadManager returns a nullptr if it decides to remove the download
     // permanently.
     if (item == nullptr) {

@@ -132,8 +132,8 @@ class CONTENT_EXPORT DownloadManagerImpl
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override;
   void PostInitialization(DownloadInitializationDependency dependency) override;
   bool IsManagerInitialized() override;
   int InProgressCount() override;

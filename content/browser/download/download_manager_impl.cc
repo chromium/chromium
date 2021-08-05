@@ -981,8 +981,9 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     bool opened,
     base::Time last_access_time,
     bool transient,
-    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
-  // Retrive the in-progress download if it exists. Notice that this also
+    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+    const download::DownloadItemRerouteInfo& reroute_info) {
+  // Retrieve the in-progress download if it exists. Notice that this also
   // removes it from |in_progress_downloads_|.
   auto in_progress_download = RetrieveInProgressDownload(id);
 
@@ -999,8 +1000,6 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     return nullptr;
   }
 
-  download::DownloadItemRerouteInfo reroute_info;
-  // TODO(https://crbug.com/1203753) take |reroute_info| as an input arg.
   auto item = base::WrapUnique(item_factory_->CreatePersistedItem(
       this, guid, id, current_path, target_path, url_chain, referrer_url,
       site_url, tab_url, tab_refererr_url, request_initiator, mime_type,

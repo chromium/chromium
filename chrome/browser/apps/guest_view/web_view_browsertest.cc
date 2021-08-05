@@ -3340,7 +3340,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
         download->GetTotalBytes(), download->GetHash(), download->GetState(),
         download->GetDangerType(), download->GetLastReason(),
         download->GetOpened(), download->GetLastAccessTime(),
-        download->IsTransient(), download->GetReceivedSlices()));
+        download->IsTransient(), download->GetReceivedSlices(),
+        download->GetRerouteInfo()));
   }
 
   std::unique_ptr<content::DownloadTestObserver> completion_observer(
