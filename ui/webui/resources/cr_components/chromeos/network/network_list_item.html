@@ -164,7 +164,6 @@
               networkState.source)]]">
           </cr-policy-indicator>
         </template>
-        <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
         <template is="dom-if"
             if="[[shouldShowActivateButton_(isPSimPendingActivationNetwork_,
               showButtons)]]" restamp>
@@ -176,7 +175,6 @@
           </cr-button>
           <div class="separator"></div>
         </template>
-        <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
         <template is="dom-if" if="[[isPSimActivatingNetwork_]]" restamp>
           <paper-spinner-lite id="activatingPSimSpinner" active>
           </paper-spinner-lite>

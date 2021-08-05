@@ -1297,9 +1297,6 @@
       <message name="IDS_NETWORK_LIST_INITIALIZING" desc="Text in the network list element when a Cellular network is initiailizing.">
         Initializing...
       </message>
-      <message name="IDS_NETWORK_LIST_NOT_AVAILABLE" desc="Text in the network list element when a network is not available to be selected but is still present in the list (e.g., if cellular activation is not allowed in the current context, this message is displayed next to unactivated cellular networks).">
-        Not available
-      </message>
       <message name="IDS_NETWORK_LIST_UPDATED_CELLULAR_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked. Used when updated cellular activation flag in on.">
         Locked
       </message>

@@ -23,9 +23,6 @@ suite('NetworkIconTest', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
     mojom = chromeos.networkConfig.mojom;
     networkIcon = document.createElement('network-icon');
     document.body.appendChild(networkIcon);

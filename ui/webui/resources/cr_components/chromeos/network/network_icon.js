@@ -61,14 +61,6 @@ Polymer({
       reflectToAttribute: true,
       computed: 'computeAriaLabel_(locale, networkState)'
     },
-
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
   },
 
   /**
@@ -101,8 +93,7 @@ Polymer({
     const prefix = OncMojo.networkTypeIsMobile(type) ? 'cellular-' : 'wifi-';
 
     if (this.networkState.type === mojom.NetworkType.kCellular &&
-        this.networkState.typeState.cellular.simLocked &&
-        this.isUpdatedCellularUiEnabled_) {
+        this.networkState.typeState.cellular.simLocked) {
       return prefix + 'locked';
     }
 

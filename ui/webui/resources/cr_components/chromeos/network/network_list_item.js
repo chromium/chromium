@@ -129,14 +129,6 @@ Polymer({
       value: '',
     },
 
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
-
     /**
      * Indicates the network item is a pSIM network not yet activated but
      * eligible for activation.
@@ -248,10 +240,6 @@ Polymer({
       return;
     }
 
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return;
-    }
-
     // Clear subtitle to ensure that stale values are not displayed when this
     // component is recycled for a case without subtitles.
     this.subtitle_ = '';
@@ -355,7 +343,7 @@ Polymer({
    * @private
    */
   computeDisabled_() {
-    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+    if (!this.deviceState) {
       return false;
     }
     return OncMojo.deviceIsInhibited(this.deviceState);
@@ -568,17 +556,7 @@ Polymer({
 
     if (this.networkState.type === mojom.NetworkType.kCellular) {
       if (this.networkState.typeState.cellular.simLocked) {
-        return this.isUpdatedCellularUiEnabled_ ?
-            this.i18n('networkListItemUpdatedCellularSimCardLocked') :
-            this.i18n('networkListItemSimCardLocked');
-      }
-      if (!this.isUpdatedCellularUiEnabled_ &&
-          this.shouldShowNotAvailableText_()) {
-        return this.i18n('networkListItemNotAvailable');
-      }
-      if (!this.isUpdatedCellularUiEnabled_ &&
-          this.isCellularNetworkScanning_()) {
-        return this.i18n('networkListItemScanning');
+        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
       if (this.isPSimUnavailableNetwork_) {
         return this.i18n('networkListItemUnavailableSimNetwork');
@@ -605,8 +583,7 @@ Polymer({
     const mojom = chromeos.networkConfig.mojom;
     if (this.networkState &&
         this.networkState.type === mojom.NetworkType.kCellular &&
-        this.networkState.typeState.cellular.simLocked &&
-        this.isUpdatedCellularUiEnabled_) {
+        this.networkState.typeState.cellular.simLocked) {
       return 'warning';
     }
     if (this.isPSimUnavailableNetwork_) {
@@ -823,9 +800,6 @@ Polymer({
    * @private
    */
   computeIsPSimPendingActivationNetwork_(managedProperties) {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -871,9 +845,6 @@ Polymer({
    * @private
    */
   computeIsPSimUnavailableNetwork_(managedProperties) {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -887,9 +858,6 @@ Polymer({
    * @private
    */
   computeIsPSimActivatingNetwork_() {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!this.networkState || !this.networkState.typeState.cellular ||
         this.networkState.typeState.cellular.eid) {
       return false;
@@ -932,8 +900,7 @@ Polymer({
     if (!this.showButtons) {
       return false;
     }
-    if (!this.networkState || !this.networkState.typeState.cellular ||
-        !this.isUpdatedCellularUiEnabled_) {
+    if (!this.networkState || !this.networkState.typeState.cellular) {
       return false;
     }
     return this.networkState.typeState.cellular.simLocked;
