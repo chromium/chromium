@@ -3315,10 +3315,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Regression test for http://crbug.com/996940. Requests that redirected to an
 // appcache handled URL could have request ID collisions.
-// This test is flaky on Linux: https://crbug.com/1094834.
+// This test is flaky on Linux and Mac: https://crbug.com/1094834.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_RedirectToAppCacheRequest DISABLED_RedirectToAppCacheRequest
 #else
 #define MAYBE_RedirectToAppCacheRequest RedirectToAppCacheRequest
