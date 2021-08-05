@@ -5,7 +5,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 #include <string>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/test/metrics/user_action_tester.h"

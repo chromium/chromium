@@ -4,7 +4,6 @@
 
 #include "components/signin/internal/identity_manager/ubertoken_fetcher_impl.h"
 
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"

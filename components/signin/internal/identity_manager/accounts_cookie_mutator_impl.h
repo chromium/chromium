@@ -6,7 +6,6 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_IMPL_H_
 
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
