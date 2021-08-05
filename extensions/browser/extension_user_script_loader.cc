@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -277,13 +278,46 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
     std::unique_ptr<UserScriptList> scripts,
     DynamicScriptsModifiedCallback callback) {
   auto scripts_metadata = std::make_unique<UserScriptList>();
-  for (const std::unique_ptr<UserScript>& script : *scripts)
-    scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
+  for (const std::unique_ptr<UserScript>& script : *scripts) {
+    // Only proceed with adding scripts that the extension still intends to add.
+    // This guards again an edge case where scripts registered by an API call
+    // are quickly unregistered.
+    if (base::Contains(pending_dynamic_script_ids_, script->id()))
+      scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
+  }
+
+  if (scripts_metadata->empty()) {
+    std::move(callback).Run(/*error=*/absl::nullopt);
+    return;
+  }
 
   AddScripts(std::move(scripts),
              base::BindOnce(&ExtensionUserScriptLoader::OnDynamicScriptsAdded,
                             weak_factory_.GetWeakPtr(),
                             std::move(scripts_metadata), std::move(callback)));
+}
+
+void ExtensionUserScriptLoader::RemoveDynamicScripts(
+    const std::set<std::string>& ids_to_remove,
+    DynamicScriptsModifiedCallback callback) {
+  if (ids_to_remove.empty()) {
+    std::move(callback).Run(/*error=*/absl::nullopt);
+    return;
+  }
+
+  // Remove pending script ids first, so loads from previous operations which
+  // complete later will recognize the change.
+  RemovePendingDynamicScriptIDs(ids_to_remove);
+  RemoveScripts(
+      ids_to_remove,
+      base::BindOnce(&ExtensionUserScriptLoader::OnDynamicScriptsRemoved,
+                     weak_factory_.GetWeakPtr(), ids_to_remove,
+                     std::move(callback)));
+}
+
+void ExtensionUserScriptLoader::ClearDynamicScripts(
+    DynamicScriptsModifiedCallback callback) {
+  RemoveDynamicScripts(GetDynamicScriptIDs(), std::move(callback));
 }
 
 std::set<std::string> ExtensionUserScriptLoader::GetDynamicScriptIDs() {
@@ -369,6 +403,25 @@ void ExtensionUserScriptLoader::OnDynamicScriptsAdded(
         loaded_dynamic_scripts_.end(),
         std::make_move_iterator(added_scripts->begin()),
         std::make_move_iterator(added_scripts->end()));
+  }
+
+  std::move(callback).Run(error);
+}
+
+void ExtensionUserScriptLoader::OnDynamicScriptsRemoved(
+    const std::set<std::string>& removed_script_ids,
+    DynamicScriptsModifiedCallback callback,
+    UserScriptLoader* loader,
+    const absl::optional<std::string>& error) {
+  // Remove scripts from `loaded_dynamic_scripts_` only when the set of
+  // `removed_script_ids` have actually been removed and the corresponding IPC
+  // has been sent.
+  if (!error.has_value()) {
+    base::EraseIf(
+        loaded_dynamic_scripts_,
+        [&removed_script_ids](const std::unique_ptr<UserScript>& script) {
+          return base::Contains(removed_script_ids, script->id());
+        });
   }
 
   std::move(callback).Run(error);

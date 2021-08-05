@@ -747,6 +747,10 @@
     "channel": "trunk",
     "min_manifest_version": 3
   },
+  "scripting.unregisterContentScripts": {
+    "channel": "trunk",
+    "min_manifest_version": 3
+  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["blessed_extension"]

@@ -888,7 +888,7 @@ ScriptingGetRegisteredContentScriptsFunction::Run() {
       api::scripting::GetRegisteredContentScripts::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::unique_ptr<api::scripting::ContentScriptFilter>& filter = params->filter;
+  const api::scripting::ContentScriptFilter* filter = params->filter.get();
   std::set<std::string> id_filter;
   if (filter && filter->ids) {
     id_filter.insert(std::make_move_iterator(filter->ids->begin()),
@@ -910,6 +910,65 @@ ScriptingGetRegisteredContentScriptsFunction::Run() {
   return RespondNow(
       ArgumentList(api::scripting::GetRegisteredContentScripts::Results::Create(
           script_infos)));
+}
+
+ScriptingUnregisterContentScriptsFunction::
+    ScriptingUnregisterContentScriptsFunction() = default;
+ScriptingUnregisterContentScriptsFunction::
+    ~ScriptingUnregisterContentScriptsFunction() = default;
+
+ExtensionFunction::ResponseAction
+ScriptingUnregisterContentScriptsFunction::Run() {
+  auto params(api::scripting::UnregisterContentScripts::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::unique_ptr<api::scripting::ContentScriptFilter>& filter = params->filter;
+  std::set<std::string> ids_to_remove;
+
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context())
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension()->id());
+  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  if (filter && filter->ids) {
+    for (const auto& id : *filter->ids) {
+      if (UserScript::IsIDGenerated(id)) {
+        return RespondNow(Error(base::StringPrintf(
+            "Content script's ID '%s' must not start with '%c'", id.c_str(),
+            UserScript::kGeneratedIDPrefix)));
+      }
+
+      if (!base::Contains(existing_script_ids, id)) {
+        return RespondNow(Error(
+            base::StringPrintf("Nonexistent script ID '%s'", id.c_str())));
+      }
+
+      ids_to_remove.insert(id);
+    }
+  }
+
+  if (ids_to_remove.empty()) {
+    loader->ClearDynamicScripts(
+        base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
+                           OnContentScriptsUnregistered,
+                       this));
+  } else {
+    loader->RemoveDynamicScripts(
+        std::move(ids_to_remove),
+        base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
+                           OnContentScriptsUnregistered,
+                       this));
+  }
+
+  return RespondLater();
+}
+
+void ScriptingUnregisterContentScriptsFunction::OnContentScriptsUnregistered(
+    const absl::optional<std::string>& error) {
+  if (error.has_value())
+    Respond(Error(*error));
+  else
+    Respond(NoArguments());
 }
 
 }  // namespace extensions

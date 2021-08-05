@@ -163,7 +163,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // The mutually-exclusive information about sets of scripts that were added or
   // removed since the last script load. These maps are keyed by script ids.
-  // Note that we only need HostID information for removal.
+  // Note that we only need a script's id for removal.
   std::map<std::string, std::unique_ptr<UserScript>> added_scripts_map_;
   std::set<std::string> removed_script_ids_;
 

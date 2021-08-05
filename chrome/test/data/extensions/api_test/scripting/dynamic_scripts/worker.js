@@ -68,10 +68,15 @@ chrome.test.runTests([
         {ids: ['NONEXISTENT']});
     chrome.test.assertEq([], scripts);
 
+    await chrome.scripting.unregisterContentScripts();
+    scripts = await chrome.scripting.getRegisteredContentScripts();
+    chrome.test.assertEq([], scripts);
+
     chrome.test.succeed();
   },
 
   async function scriptInjected() {
+    await chrome.scripting.unregisterContentScripts();
     var scripts = [{
       id: 'script1',
       matches: ['*://a.com/*'],
@@ -100,6 +105,7 @@ chrome.test.runTests([
   // Tests that an error is returned when multiple content script entries in
   // registerContentScripts share the same ID.
   async function duplicateScriptId_DuplicatesInSameCall() {
+    await chrome.scripting.unregisterContentScripts();
     const scriptId = 'script2';
 
     var scripts = [
@@ -118,6 +124,7 @@ chrome.test.runTests([
   // made in quick succession, the first call will successfully register the
   // script and the second call with return with an error.
   async function duplicateScriptId_DuplicateInPendingRegistration() {
+    await chrome.scripting.unregisterContentScripts();
     const scriptId = 'script3';
     var scripts =
         [{id: scriptId, matches: ['*://notused.com/*'], js: ['dynamic_1.js']}];
@@ -138,6 +145,7 @@ chrome.test.runTests([
   // Tests that an error is returned when a content script to be registered has
   // the same ID as a loaded content script.
   async function duplicateScriptId_DuplicatePreviouslyRegistered() {
+    await chrome.scripting.unregisterContentScripts();
     const scriptId = 'script4';
     const scripts =
         [{id: scriptId, matches: ['*://notused.com/*'], js: ['dynamic_1.js']}];
@@ -153,6 +161,7 @@ chrome.test.runTests([
   // Tests that an error is returned if a content script is specified with an
   // invalid ID.
   async function emptyScriptId() {
+    await chrome.scripting.unregisterContentScripts();
     const scripts =
         [{id: '', matches: ['*://notused.com/*'], js: ['dynamic_1.js']}];
 
@@ -166,6 +175,7 @@ chrome.test.runTests([
   // Tests that an error is returned if a content script is specified with an
   // invalid ID.
   async function invalidScriptId() {
+    await chrome.scripting.unregisterContentScripts();
     const scriptId = '_manifest_only';
     const scripts =
         [{id: scriptId, matches: ['*://notused.com/*'], js: ['dynamic_1.js']}];
@@ -180,6 +190,7 @@ chrome.test.runTests([
   // Test that an error is returned if a content script is specified with a
   // file that cannot be read.
   async function scriptFileError() {
+    await chrome.scripting.unregisterContentScripts();
     const scriptFile = 'nonexistent.js';
     const scripts =
         [{id: 'script5', matches: ['*://notused.com/*'], js: [scriptFile]}];
@@ -194,6 +205,7 @@ chrome.test.runTests([
   // Test that an error is returned if a content script does not specify any
   // js/css files to inject.
   async function emptyJSAndCSS() {
+    await chrome.scripting.unregisterContentScripts();
     const scripts = [{id: 'empty', matches: ['*://notused.com/*'], css: []}];
 
     await chrome.test.assertPromiseRejects(
@@ -206,6 +218,7 @@ chrome.test.runTests([
   // Test that an error is returned if a content script specifies a malformed
   // match pattern.
   async function invalidMatchPattern() {
+    await chrome.scripting.unregisterContentScripts();
     const scripts = [{
       id: 'invalidMatchPattern',
       matches: ['invalid**match////'],
@@ -223,6 +236,7 @@ chrome.test.runTests([
   // Test that a registered content script will not be injected into a frame
   // where the extension does not have the host permissions for.
   async function noHostPermissions() {
+    await chrome.scripting.unregisterContentScripts();
     var scripts = [{
       id: 'noHostPerms',
       matches: ['*://nohostperms.com/*'],
@@ -249,6 +263,7 @@ chrome.test.runTests([
   // Test that a registered content script WILL be injected into a frame
   // where the extension has host permissions for.
   async function hostPermissions() {
+    await chrome.scripting.unregisterContentScripts();
     var scripts = [{
       id: 'hostPerms',
       matches: ['*://hostperms.com/*'],
@@ -277,6 +292,7 @@ chrome.test.runTests([
   // and a registerContentScripts call, then the script will still only be
   // injected once on a matching frame.
   async function staticAndDynamicScriptInjectedOnce() {
+    await chrome.scripting.unregisterContentScripts();
     var scripts = [{
       id: 'inject_element',
       matches: ['*://*/*'],
@@ -297,5 +313,103 @@ chrome.test.runTests([
     chrome.test.assertEq(1, results.length);
     chrome.test.assertEq(1, results[0].result);
     chrome.test.succeed();
-  }
+  },
+
+  // Test that scripts that are unregistered are not injected into a (former)
+  // matching frame.
+  async function unregisterScripts() {
+    await chrome.scripting.unregisterContentScripts();
+    var scripts = [
+      {
+        id: 'inject_element_1',
+        matches: ['*://*/*'],
+        js: ['inject_element.js'],
+        runAt: 'document_end'
+      },
+      {
+        id: 'inject_element_2',
+        matches: ['*://*/*'],
+        js: ['inject_element_2.js'],
+        runAt: 'document_end'
+      }
+    ];
+
+    const getInjectedElementIds = function() {
+      let childIds = [];
+      for (const child of document.body.children)
+        childIds.push(child.id);
+      return childIds.sort();
+    };
+
+    await chrome.scripting.registerContentScripts(scripts);
+    const config = await chrome.test.getConfig();
+    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
+    let tab = await openTab(url);
+    let results = await chrome.scripting.executeScript(
+        {target: {tabId: tab.id}, func: getInjectedElementIds});
+
+    // Both scripts should be injected, and both scripts should inject one
+    // element.
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(['injected', 'injected_2'], results[0].result);
+    scripts = await chrome.scripting.getRegisteredContentScripts();
+    chrome.test.assertEq(2, scripts.length);
+
+    await chrome.scripting.unregisterContentScripts(
+        {ids: ['inject_element_1']});
+    tab = await openTab(url);
+    results = await chrome.scripting.executeScript(
+        {target: {tabId: tab.id}, func: getInjectedElementIds});
+
+    // After removing the script with id 'inject_element_1' and opening a tab,
+    // only 'inject_element_2' should be injected.
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq(['injected_2'], results[0].result);
+
+    scripts = await chrome.scripting.getRegisteredContentScripts();
+    chrome.test.assertEq(1, scripts.length);
+
+    chrome.test.succeed();
+  },
+
+  // Test that an error is returned when attempting to specify an invalid ID
+  // for unregisterContentScripts.
+  async function unregisterScriptsWithInvalidID() {
+    await chrome.scripting.unregisterContentScripts();
+
+    const scriptId = '_manifest_only';
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.unregisterContentScripts({ids: [scriptId]}),
+        `Error: Content script's ID '${scriptId}' must not start with '_'`);
+    chrome.test.succeed();
+  },
+
+  // Test that an error is returned when attempting to specify a nonexistent ID
+  // for unregisterContentScripts.
+  async function unregisterScriptsWithNonexistentID() {
+    await chrome.scripting.unregisterContentScripts();
+
+    const validId = 'inject_element_1';
+    var scripts = [{
+      id: validId,
+      matches: ['*://*/*'],
+      js: ['inject_element.js'],
+      runAt: 'document_end'
+    }];
+
+    await chrome.scripting.registerContentScripts(scripts);
+
+    const nonexistentId = 'NONEXISTENT';
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.unregisterContentScripts(
+            {ids: [validId, nonexistentId]}),
+        `Error: Nonexistent script ID '${nonexistentId}'`);
+
+    // UnregisterContentScripts should be a no-op if it fails.
+    scripts = await chrome.scripting.getRegisteredContentScripts();
+    chrome.test.assertEq(1, scripts.length);
+    chrome.test.assertEq(validId, scripts[0].id);
+
+    chrome.test.succeed();
+  },
 ]);

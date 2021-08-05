@@ -153,6 +153,27 @@ class ScriptingGetRegisteredContentScriptsFunction : public ExtensionFunction {
   ~ScriptingGetRegisteredContentScriptsFunction() override;
 };
 
+class ScriptingUnregisterContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.unregisterContentScripts",
+                             SCRIPTING_UNREGISTERCONTENTSCRIPTS)
+
+  ScriptingUnregisterContentScriptsFunction();
+  ScriptingUnregisterContentScriptsFunction(
+      const ScriptingUnregisterContentScriptsFunction&) = delete;
+  ScriptingUnregisterContentScriptsFunction& operator=(
+      const ScriptingUnregisterContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingUnregisterContentScriptsFunction() override;
+
+  // Called when content scripts have been unregistered.
+  void OnContentScriptsUnregistered(const absl::optional<std::string>& error);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_

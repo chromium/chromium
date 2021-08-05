@@ -46,6 +46,9 @@ class UserScript {
   // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
   static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
 
+  // Returns if a user script's ID is generated.
+  static bool IsIDGenerated(const std::string& id);
+
   // Holds script file info.
   class File {
    public:

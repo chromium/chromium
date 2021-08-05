@@ -63,6 +63,15 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   void AddDynamicScripts(std::unique_ptr<UserScriptList> scripts,
                          DynamicScriptsModifiedCallback callback);
 
+  // Removes all dynamic scripts with an id specified in `ids` from
+  // `pending_dynamic_script_ids_` and `loaded_dynamic_scripts_`.
+  void RemoveDynamicScripts(const std::set<std::string>& ids_to_remove,
+                            DynamicScriptsModifiedCallback callback);
+
+  // Removes all dynamic scripts for the extension, including loaded and
+  // pending scripts.
+  void ClearDynamicScripts(DynamicScriptsModifiedCallback callback);
+
   // Returns the IDs of all dynamic scripts for the extension, which includes
   // the IDs of all pending and loaded dynamic scripts.
   std::set<std::string> GetDynamicScriptIDs();
@@ -94,12 +103,22 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
                              UserScriptLoader* loader,
                              const absl::optional<std::string>& error);
 
+  // Called when the scripts to be removed in RemoveDynamicScripts are removed.
+  // All scripts in `loaded_dynamic_scripts_` with their id in
+  // `removed_script_ids` are removed.
+  void OnDynamicScriptsRemoved(const std::set<std::string>& removed_script_ids,
+                               DynamicScriptsModifiedCallback callback,
+                               UserScriptLoader* loader,
+                               const absl::optional<std::string>& error);
+
   // The IDs of dynamically registered scripts (e.g. registered by the
   // extension's API calls) that have not been loaded yet. IDs are removed from
   // the set when:
   //  - Their corresponding scripts have been loaded.
   //  - A load for the IDs has failed.
   //  - A load for the IDs will no longer be initiated.
+  //  - An unregisterContentScripts call was made for one or more ids in this
+  //    set.
   std::set<std::string> pending_dynamic_script_ids_;
 
   // The metadata of dynamic scripts from the extension that have been loaded.

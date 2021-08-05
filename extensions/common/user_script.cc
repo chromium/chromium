@@ -78,6 +78,11 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
   return valid_schemes;
 }
 
+// static
+bool UserScript::IsIDGenerated(const std::string& id) {
+  return !id.empty() && id[0] == kGeneratedIDPrefix;
+}
+
 UserScript::File::File(const base::FilePath& extension_root,
                        const base::FilePath& relative_path,
                        const GURL& url)
@@ -272,7 +277,7 @@ void UserScript::Unpickle(const base::Pickle& pickle,
 
 bool UserScript::IsIDGenerated() const {
   CHECK(!user_script_id_.empty());
-  return user_script_id_[0] == kGeneratedIDPrefix;
+  return IsIDGenerated(user_script_id_);
 }
 
 void UserScript::UnpickleGlobs(const base::Pickle& pickle,
