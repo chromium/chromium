@@ -231,7 +231,7 @@ NET_EXPORT extern const base::Feature kPostQuantumCECPQ2;
 // compatibility with large ClientHello messages, use |kPostQuantumCECPQ2|.)
 NET_EXPORT extern const base::Feature kPostQuantumCECPQ2SomeDomains;
 NET_EXPORT extern const base::FeatureParam<std::string>
-    kPostQuantumCECPQ2InitialLetters;
+    kPostQuantumCECPQ2Prefix;
 
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
 NET_EXPORT extern const base::Feature kNetUnusedIdleSocketTimeout;
