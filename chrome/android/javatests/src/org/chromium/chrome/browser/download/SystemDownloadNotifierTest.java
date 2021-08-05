@@ -9,6 +9,7 @@ import android.os.Looper;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,6 +23,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.PendingState;
@@ -53,6 +55,11 @@ public class SystemDownloadNotifierTest {
             mSystemDownloadNotifier.setDownloadNotificationService(
                     mMockDownloadNotificationService);
         });
+    }
+
+    @After
+    public void tearDown() {
+        ThrottlingNotificationScheduler.getInstance().clear();
     }
 
     private DownloadInfo getDownloadInfo(ContentId id) {
