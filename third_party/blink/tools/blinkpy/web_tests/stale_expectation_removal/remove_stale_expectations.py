@@ -8,6 +8,9 @@ import sys
 
 assert sys.version_info[0] == 3
 
+from blinkpy.web_tests.stale_expectation_removal import builders
+from unexpected_passes_common import builders as common_builders
+
 
 def ParseArgs():
     parser = argparse.ArgumentParser(description=(
@@ -78,6 +81,8 @@ def main():
     raise RuntimeError(
         'Script is still under active development and not currently functional'
     )
+    builders_instance = builders.WebTestBuilders()
+    common_builders.RegisterInstance(builders_instance)
     return 0
 
 

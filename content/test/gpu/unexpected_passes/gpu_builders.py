@@ -81,7 +81,7 @@ class GpuBuilders(builders.Builders):
       self._fake_ci_builders = {}
       for try_builder, ci_builder_list in fake_try_builders.items():
         for ci in ci_builder_list:
-          self._fake_ci_builders[ci] = try_builder
+          self._fake_ci_builders.setdefault(ci, set()).add(try_builder)
 
     return self._fake_ci_builders
 
