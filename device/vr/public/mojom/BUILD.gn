@@ -66,6 +66,7 @@ mojom_component("isolated_xr_service") {
     ":vr_service",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]

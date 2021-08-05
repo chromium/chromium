@@ -125,6 +125,12 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
   switch (mojo_sandbox) {
     case sandbox::mojom::Sandbox::kService:
       return sandbox::policy::SandboxType::kService;
+    case sandbox::mojom::Sandbox::kUtility:
+      return sandbox::policy::SandboxType::kUtility;
+#if defined(OS_WIN)
+    case sandbox::mojom::Sandbox::kXrCompositing:
+      return sandbox::policy::SandboxType::kXrCompositing;
+#endif  // OS_WIN
   }
 }
 

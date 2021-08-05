@@ -15,4 +15,13 @@ enum Sandbox {
   // use limited operating system services. Prefer to use this sandbox
   // if possible.
   kService,
+
+  // Hosts generic utilities with limited access to system services.
+  // On some platforms, may be slightly less locked down than |kService|.
+  // For instance, it allows dynamic code and wider access to APIs on Windows.
+  kUtility,
+
+  // |kXrCompositing| hosts XR Device Service on Windows.
+  [EnableIf=is_win]
+  kXrCompositing,
 };

@@ -31,22 +31,6 @@ content::GetServiceSandboxType<audio::mojom::AudioService>() {
              : sandbox::policy::SandboxType::kNoSandbox;
 }
 
-// device::mojom::XRDeviceService
-namespace device {
-namespace mojom {
-class XRDeviceService;
-}
-}  // namespace device
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<device::mojom::XRDeviceService>() {
-#if defined(OS_WIN)
-  return sandbox::policy::SandboxType::kXrCompositing;
-#else
-  return sandbox::policy::SandboxType::kUtility;
-#endif  // !OS_WIN
-}
-
 // media::mojom::CdmServiceBroker
 namespace media {
 namespace mojom {

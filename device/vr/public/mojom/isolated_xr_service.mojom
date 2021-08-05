@@ -9,6 +9,7 @@ import "device/vr/public/mojom/vr_service.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -195,8 +196,14 @@ interface IsolatedXRRuntimeProvider {
   RequestDevices(pending_remote<IsolatedXRRuntimeProviderClient> client);
 };
 
+[EnableIf=is_win]
+const sandbox.mojom.Sandbox kXrSandbox = sandbox.mojom.Sandbox.kXrCompositing;
+[EnableIfNot=is_win]
+const sandbox.mojom.Sandbox kXrSandbox = sandbox.mojom.Sandbox.kUtility;
+
 // The main interface for the XR Device Service. Called from the browser
 // process.
+[ServiceSandbox=kXrSandbox]
 interface XRDeviceService {
   // Binds a IsolatedXRRuntimeProvider pipe in the service and passes along
   // the device service host.
