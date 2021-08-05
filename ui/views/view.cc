@@ -310,9 +310,9 @@ void View::RemoveChildView(View* view) {
   DoRemoveChildView(view, true, false, nullptr);
 }
 
-void View::RemoveAllChildViews(bool delete_children) {
+void View::RemoveAllChildViews() {
   while (!children_.empty())
-    DoRemoveChildView(children_.front(), false, delete_children, nullptr);
+    DoRemoveChildView(children_.front(), false, true, nullptr);
   UpdateTooltip();
 }
 
