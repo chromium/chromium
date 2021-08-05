@@ -152,7 +152,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private final IntentRequestTracker mIntentRequestTracker;
     private final int mControlContainerHeightResource;
-    private final InsetObserverView mInsetObserverView;
+    private final Supplier<InsetObserverView> mInsetObserverViewSupplier;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
 
     private int mStatusIndicatorHeight;
@@ -230,7 +230,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param intentRequestTracker Tracks intent requests.
      * @param controlContainerHeightResource The resource for the control container.
-     * @param insetObserverView The {@link InsetObserverView}.
+     * @param insetObserverViewSupplier Supplier for the {@link InsetObserverView}.
      * @param backButtonShouldCloseTabFn Function which supplies whether or not the back button
      *         should close the tab.
      */
@@ -269,7 +269,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplierImpl<EphemeralTabCoordinator>
                     ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker, int controlContainerHeightResource,
-            @NonNull InsetObserverView insetObserverView,
+            @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
@@ -286,7 +286,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mIntentRequestTracker = intentRequestTracker;
         mControlContainerHeightResource = controlContainerHeightResource;
-        mInsetObserverView = insetObserverView;
+        mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mCanAnimateBrowserControls = () -> {
             // These null checks prevent any exceptions that may be caused by callbacks after
@@ -437,7 +437,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivityLifecycleDispatcher, mCompositorViewHolderSupplier.get(),
                 mCallbackController.makeCancelable(
                         () -> mLayoutManager.getActiveLayout().requestUpdate()),
-                mActivityTabProvider, mInsetObserverView, new BackActionDelegate() {
+                mActivityTabProvider, mInsetObserverViewSupplier.get(), new BackActionDelegate() {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
                         if (isShowingStartSurfaceHomepage()) return ActionType.EXIT_APP;

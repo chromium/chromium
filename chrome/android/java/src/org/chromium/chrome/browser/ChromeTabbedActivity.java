@@ -1607,7 +1607,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this::isInOverviewMode, this::isWarmOnResume,
                 /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
                 mEphemeralTabCoordinatorSupplier, getIntentRequestTracker(),
-                getControlContainerHeightResource(), getInsetObserverView(),
+                getControlContainerHeightResource(), this::getInsetObserverView,
                 this::backShouldCloseTab);
     }
 
