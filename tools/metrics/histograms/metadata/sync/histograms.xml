@@ -804,7 +804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Sync.ModelTypeStoreBackendError.{Operation}"
+<histogram name="Sync.ModelTypeStoreBackendError.{Operation}"
     enum="LevelDBStatus" expires_after="2021-11-28">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
@@ -819,6 +819,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="Operation">
     <variant name="DeleteData"/>
     <variant name="GetStoreVersion"/>
+    <variant name="Init"/>
     <variant name="ReadAllRecords"/>
     <variant name="ReadRecords"/>
     <variant name="WriteModifications"/>
