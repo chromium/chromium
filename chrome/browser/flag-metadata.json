@@ -2615,8 +2615,8 @@
   },
   {
     "name": "enable-swipe-to-move-cursor",
-    "owners": [ "ctzsm", "changwan"],
-    "expiry_milestone": 90
+    "owners": [ "ctzsm" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-switch-access-point-scanning",
