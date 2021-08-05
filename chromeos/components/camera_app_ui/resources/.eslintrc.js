@@ -401,6 +401,7 @@ module.exports = {
     'CSSScale': 'readable',
     'CSSTransformValue': 'readable',
     'CSSTranslate': 'readable',
+    'CSSUnitValue': 'readable',
   },
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
