@@ -75,6 +75,3 @@ crbug.com/896068 [ Linux ] webaudio/dom-exceptions.html [ Pass Crash ]
 crbug.com/989365 [ Linux ] external/wpt/cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html [ Pass Timeout ]
 
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Timeout ]
-
-# Sheriff 2020-08-25
-crbug.com/1121429 fast/selectors/placeholder-shown-style-update.html [ Pass Crash ]
