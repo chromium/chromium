@@ -178,6 +178,10 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     }));
   }
 
+  private getItemUrl_(): string {
+    return this.item_.url || '';
+  }
+
   private onItemIdChanged_() {
     // TODO(tsergeant): Add a histogram to measure whether this assertion fails
     // for real users.
