@@ -32,9 +32,9 @@ const char kStartUpURL2[] = "chrome://version/";
 
 // Verifies that the |kRestoreOnStartup| and |kRestoreOnStartupURLs| policies
 // are honored on Chrome OS.
-class RestoreOnStartupTestChromeOS : public LoginPolicyTestBase {
+class RestoreOnStartupTest : public LoginPolicyTestBase {
  public:
-  RestoreOnStartupTestChromeOS();
+  RestoreOnStartupTest() = default;
 
   // LoginPolicyTestBase:
   void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override;
@@ -42,12 +42,10 @@ class RestoreOnStartupTestChromeOS : public LoginPolicyTestBase {
   void VerifyStartUpURLs();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RestoreOnStartupTestChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(RestoreOnStartupTest);
 };
 
-RestoreOnStartupTestChromeOS::RestoreOnStartupTestChromeOS() {}
-
-void RestoreOnStartupTestChromeOS::GetMandatoryPoliciesValue(
+void RestoreOnStartupTest::GetMandatoryPoliciesValue(
     base::DictionaryValue* policy) const {
   policy->SetInteger(key::kRestoreOnStartup,
                      SessionStartupPref::kPrefValueURLs);
@@ -57,7 +55,7 @@ void RestoreOnStartupTestChromeOS::GetMandatoryPoliciesValue(
   policy->SetKey(key::kRestoreOnStartupURLs, std::move(urls));
 }
 
-void RestoreOnStartupTestChromeOS::VerifyStartUpURLs() {
+void RestoreOnStartupTest::VerifyStartUpURLs() {
   const BrowserList* const browser_list = BrowserList::GetInstance();
   ASSERT_EQ(1U, browser_list->size());
   const Browser* const browser = browser_list->get(0);
@@ -70,14 +68,14 @@ void RestoreOnStartupTestChromeOS::VerifyStartUpURLs() {
 }
 
 // Verify that the policies are honored on a new user's login.
-IN_PROC_BROWSER_TEST_F(RestoreOnStartupTestChromeOS, PRE_LogInAndVerify) {
+IN_PROC_BROWSER_TEST_F(RestoreOnStartupTest, PRE_LogInAndVerify) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
   VerifyStartUpURLs();
 }
 
 // Verify that the policies are honored on an existing user's login.
-IN_PROC_BROWSER_TEST_F(RestoreOnStartupTestChromeOS, LogInAndVerify) {
+IN_PROC_BROWSER_TEST_F(RestoreOnStartupTest, LogInAndVerify) {
   ash::LoginScreenTestApi::SubmitPassword(AccountId::FromUserEmail(kAccountId),
                                           kAccountPassword,
                                           true /* check_if_submittable */);
