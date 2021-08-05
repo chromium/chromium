@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -149,7 +150,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
 
   std::unique_ptr<NiceMock<policy::MockPolicyService>> policy_service_;
   policy::PolicyMap policy_map_;

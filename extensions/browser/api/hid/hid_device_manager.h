@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
@@ -125,8 +126,8 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
                      const device::mojom::HidDeviceInfo& device_info);
 
   base::ThreadChecker thread_checker_;
-  content::BrowserContext* browser_context_ = nullptr;
-  EventRouter* event_router_ = nullptr;
+  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  CheckedPtr<EventRouter> event_router_ = nullptr;
   bool initialized_ = false;
   mojo::Remote<device::mojom::HidManager> hid_manager_;
   mojo::AssociatedReceiver<device::mojom::HidManagerClient> receiver_{this};

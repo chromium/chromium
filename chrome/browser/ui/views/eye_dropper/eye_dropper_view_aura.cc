@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
@@ -19,7 +20,7 @@ class EyeDropperView::PreEventDispatchHandler::KeyboardHandler
  private:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  EyeDropperView* view_;
+  CheckedPtr<EyeDropperView> view_;
   gfx::NativeView parent_;
 };
 

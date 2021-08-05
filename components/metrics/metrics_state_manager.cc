@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -123,7 +124,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   }
 
  private:
-  PrefService* const local_state_;
+  const CheckedPtr<PrefService> local_state_;
   const bool metrics_ids_were_reset_;
   // |previous_client_id_| is set only (if known) when |metrics_ids_were_reset_|
   const std::string previous_client_id_;

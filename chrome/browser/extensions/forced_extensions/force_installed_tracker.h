@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -167,12 +168,12 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
 
   void OnInstallForcelistChanged();
 
-  const ExtensionManagement* extension_management_;
+  CheckedPtr<const ExtensionManagement> extension_management_;
 
   // Unowned, but guaranteed to outlive this object.
-  ExtensionRegistry* registry_;
-  Profile* profile_;
-  PrefService* pref_service_;
+  CheckedPtr<ExtensionRegistry> registry_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<PrefService> pref_service_;
 
   // Collection of all extensions we are interested in here. Don't update
   // directly, use AddExtensionInfo/RemoveExtensionInfo/ChangeExtensionStatus

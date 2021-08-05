@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/plugins/flash_temporary_permission_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_util.h"
@@ -32,7 +33,7 @@ class FlashTemporaryPermissionTracker::GrantObserver
   void WebContentsDestroyed() override;
 
   GURL origin_;
-  FlashTemporaryPermissionTracker* owner_;
+  CheckedPtr<FlashTemporaryPermissionTracker> owner_;
 
   DISALLOW_COPY_AND_ASSIGN(GrantObserver);
 };

@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/oauth_token_getter.h"
 
@@ -71,7 +72,7 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-  TestTokenStorage* token_storage_ = nullptr;
+  CheckedPtr<TestTokenStorage> token_storage_ = nullptr;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
   bool is_authenticating_ = false;
   base::queue<base::OnceClosure> on_authentication_done_;

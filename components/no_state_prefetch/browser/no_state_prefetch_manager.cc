@@ -20,6 +20,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -109,7 +110,7 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
     // |this| is deleted at this point.
   }
 
-  NoStatePrefetchManager* const manager_;
+  const CheckedPtr<NoStatePrefetchManager> manager_;
   std::unique_ptr<WebContents> tab_;
 
   DISALLOW_COPY_AND_ASSIGN(OnCloseWebContentsDeleter);

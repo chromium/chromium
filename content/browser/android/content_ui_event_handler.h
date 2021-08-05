@@ -9,6 +9,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace ui {
 class KeyEventAndroid;
@@ -72,7 +73,7 @@ class ContentUiEventHandler {
   // A weak reference to the Java ContentUiEventHandler object.
   JavaObjectWeakGlobalRef java_ref_;
 
-  WebContentsImpl* const web_contents_;
+  const CheckedPtr<WebContentsImpl> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentUiEventHandler);
 };

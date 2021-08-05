@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 
@@ -24,7 +25,7 @@ struct PreCompositedLayerInfo {
   // If this is not nullptr, we should use the composited layer created by the
   // GraphicsLayer. Otherwise we should layerize |chunks|. A GraphicsLayer with
   // ShouldCreateLayersAfterPaint() == true should set this field to nullptr.
-  const GraphicsLayer* graphics_layer = nullptr;
+  CheckedPtr<const GraphicsLayer> graphics_layer = nullptr;
 };
 
 // A pending layer is a collection of paint chunks that will end up in the same
@@ -148,7 +149,7 @@ class PLATFORM_EXPORT PendingLayer {
   FloatPoint offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
-  const GraphicsLayer* graphics_layer_ = nullptr;
+  CheckedPtr<const GraphicsLayer> graphics_layer_ = nullptr;
   CompositingType compositing_type_;
 };
 }  // namespace blink

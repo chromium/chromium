@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/views/views_export.h"
@@ -54,8 +55,8 @@ class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
                               const base::WeakPtr<DesktopCaptureClient>&);
   using ClientSet = std::set<base::WeakPtr<DesktopCaptureClient>, Comparator>;
 
-  aura::Window* root_;
-  aura::Window* capture_window_ = nullptr;
+  CheckedPtr<aura::Window> root_;
+  CheckedPtr<aura::Window> capture_window_ = nullptr;
 
   // The global set of DesktopCaptureClients.
   static ClientSet* clients_;

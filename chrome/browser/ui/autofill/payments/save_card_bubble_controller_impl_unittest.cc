@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -169,7 +170,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   TestAutofillClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  CheckedPtr<MockTrustSafetySentimentService> mock_sentiment_service_;
 
  private:
   static void UploadSaveCardCallback(

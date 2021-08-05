@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -41,8 +42,8 @@ class DeviceInfoPrefs {
   void GarbageCollectExpiredCacheGuids();
 
  private:
-  PrefService* const pref_service_;
-  const base::Clock* const clock_;
+  const CheckedPtr<PrefService> pref_service_;
+  const CheckedPtr<const base::Clock> clock_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceInfoPrefs);
 };

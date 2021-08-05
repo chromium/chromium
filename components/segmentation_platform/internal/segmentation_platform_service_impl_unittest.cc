@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -124,14 +125,14 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  Config* config_;
+  CheckedPtr<Config> config_;
   std::map<std::string, proto::SegmentInfo> segment_db_entries_;
   std::map<std::string, proto::SignalData> signal_db_entries_;
   std::map<std::string, proto::SignalStorageConfigs>
       segment_storage_config_db_entries_;
-  leveldb_proto::test::FakeDB<proto::SegmentInfo>* segment_db_;
-  leveldb_proto::test::FakeDB<proto::SignalData>* signal_db_;
-  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>*
+  CheckedPtr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> segment_db_;
+  CheckedPtr<leveldb_proto::test::FakeDB<proto::SignalData>> signal_db_;
+  CheckedPtr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>
       segment_storage_config_db_;
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
   TestingPrefServiceSimple pref_service_;

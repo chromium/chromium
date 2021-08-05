@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -78,7 +79,7 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   void OnPostSubBufferFinished(OutputSurfaceFrame frame,
                                gfx::SwapResult result);
 
-  VulkanContextProvider* const context_provider_;
+  const CheckedPtr<VulkanContextProvider> context_provider_;
 
   const gpu::SurfaceHandle surface_handle_;
   std::unique_ptr<gpu::VulkanSurface> vulkan_surface_;

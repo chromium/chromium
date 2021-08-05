@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -124,7 +125,7 @@ class VideoEncoderShim::EncoderImpl {
     ~BitstreamBuffer() {}
 
     media::BitstreamBuffer buffer;
-    uint8_t* mem;
+    CheckedPtr<uint8_t> mem;
   };
 
   void DoEncode();

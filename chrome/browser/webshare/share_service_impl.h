@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -74,7 +75,7 @@ class ShareServiceImpl : public blink::mojom::ShareService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   webshare::SharesheetClient sharesheet_client_;
 #endif
-  content::RenderFrameHost* render_frame_host_;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_;
 
   base::WeakPtrFactory<ShareServiceImpl> weak_factory_{this};
 };

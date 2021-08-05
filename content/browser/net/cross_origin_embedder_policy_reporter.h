@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
@@ -81,7 +82,7 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
                       bool report_only);
 
   // See the class comment.
-  StoragePartition* const storage_partition_;
+  const CheckedPtr<StoragePartition> storage_partition_;
 
   const GURL context_url_;
   const absl::optional<std::string> endpoint_;

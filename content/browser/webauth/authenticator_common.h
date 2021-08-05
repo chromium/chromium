@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -201,7 +202,8 @@ class CONTENT_EXPORT AuthenticatorCommon {
   const GlobalRenderFrameHostId render_frame_host_id_;
   std::unique_ptr<device::FidoRequestHandlerBase> request_;
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory_;
-  device::FidoDiscoveryFactory* discovery_factory_testing_override_ = nullptr;
+  CheckedPtr<device::FidoDiscoveryFactory> discovery_factory_testing_override_ =
+      nullptr;
   blink::mojom::Authenticator::MakeCredentialCallback
       make_credential_response_callback_;
   blink::mojom::Authenticator::GetAssertionCallback

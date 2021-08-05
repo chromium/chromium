@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -402,7 +403,7 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   std::string sdp_mid_;
   int sdp_mline_index_;
   std::string ice_sdp_;
-  webrtc::PeerConnectionObserver* observer_;
+  CheckedPtr<webrtc::PeerConnectionObserver> observer_;
   webrtc::RTCErrorType setconfiguration_error_type_ =
       webrtc::RTCErrorType::NONE;
   rtc::scoped_refptr<webrtc::RTCStatsReport> stats_report_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -72,7 +73,7 @@ class TypedNavigationUpgradeLifetimeHelper
   friend class content::WebContentsUserData<
       TypedNavigationUpgradeLifetimeHelper>;
 
-  content::WebContents* const web_contents_;
+  const CheckedPtr<content::WebContents> web_contents_;
   base::WeakPtrFactory<TypedNavigationUpgradeLifetimeHelper> weak_factory_{
       this};
 

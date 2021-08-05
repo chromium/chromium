@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -149,7 +150,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
   static url::Origin OriginFromPackageName(const std::string& package);
 
  private:
-  NavigationControllerImpl* navigation_controller_;
+  CheckedPtr<NavigationControllerImpl> navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationControllerAndroid);

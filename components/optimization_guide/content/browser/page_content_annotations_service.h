@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
@@ -79,7 +80,7 @@ class PageContentAnnotationsService : public KeyedService {
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
   // The task tracker to keep track of tasks to query |history_service|.
   base::CancelableTaskTracker history_service_task_tracker_;
 

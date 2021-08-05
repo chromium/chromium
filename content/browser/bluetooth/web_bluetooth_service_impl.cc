@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -247,8 +248,8 @@ class WebBluetoothServiceImpl::AdvertisementClient {
   virtual ~AdvertisementClient() = default;
 
   mojo::AssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient> client_;
-  WebContentsImpl* web_contents_;
-  WebBluetoothServiceImpl* service_;
+  CheckedPtr<WebContentsImpl> web_contents_;
+  CheckedPtr<WebBluetoothServiceImpl> service_;
 };
 
 class WebBluetoothServiceImpl::WatchAdvertisementsClient
@@ -430,7 +431,8 @@ class WebBluetoothServiceImpl::ScanningClient
   bool allow_send_event_ = false;
   blink::mojom::WebBluetoothRequestLEScanOptionsPtr options_;
   RequestScanningStartCallback callback_;
-  BluetoothDeviceScanningPromptController* prompt_controller_ = nullptr;
+  CheckedPtr<BluetoothDeviceScanningPromptController> prompt_controller_ =
+      nullptr;
 };
 
 bool HasValidFilter(

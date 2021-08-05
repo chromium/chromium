@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
@@ -91,7 +92,7 @@ class WebDocumentSubresourceFilterImpl
   // Manages all AdResource observers. Only non-null for the
   // WebDocumentSubresourceFilter most recently created by the
   // SubresourceFilterAgent.
-  AdResourceTracker* ad_resource_tracker_;
+  CheckedPtr<AdResourceTracker> ad_resource_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(WebDocumentSubresourceFilterImpl);
 };

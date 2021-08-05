@@ -374,7 +374,7 @@ NewTabPageHandler::NewTabPageHandler(
   instant_service_->AddObserver(this);
   ntp_background_service_->AddObserver(this);
   instant_service_->UpdateNtpTheme();
-  promo_service_observation_.Observe(promo_service_);
+  promo_service_observation_.Observe(promo_service_.get());
 }
 
 NewTabPageHandler::~NewTabPageHandler() {

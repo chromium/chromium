@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -85,11 +86,11 @@ class CONTENT_EXPORT RateLimitTable {
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Must outlive |this|.
-  const ConversionStorage::Delegate* delegate_
+  CheckedPtr<const ConversionStorage::Delegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Must outlive |this|.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to
   // the NULL time.

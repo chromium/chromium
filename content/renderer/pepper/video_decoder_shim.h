@@ -14,6 +14,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/video_decode_accelerator.h"
@@ -77,7 +78,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   std::unique_ptr<DecoderImpl> decoder_impl_;
   State state_;
 
-  PepperVideoDecoderHost* host_;
+  CheckedPtr<PepperVideoDecoderHost> host_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
 

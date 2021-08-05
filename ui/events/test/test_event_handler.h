@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/events/event_handler.h"
 
 typedef std::vector<std::string> HandlerSequenceRecorder;
@@ -55,7 +56,7 @@ class TestEventHandler : public EventHandler {
   int num_touch_events_;
   int num_gesture_events_;
 
-  HandlerSequenceRecorder* recorder_;
+  CheckedPtr<HandlerSequenceRecorder> recorder_;
   std::string handler_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventHandler);

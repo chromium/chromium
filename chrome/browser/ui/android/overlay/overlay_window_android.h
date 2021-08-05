@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/overlay_window.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_observer.h"
@@ -76,13 +77,13 @@ class OverlayWindowAndroid : public content::OverlayWindow,
 
   // A weak reference to Java PictureInPictureActivity object.
   JavaObjectWeakGlobalRef java_ref_;
-  ui::WindowAndroid* window_android_;
-  thin_webview::android::CompositorView* compositor_view_;
+  CheckedPtr<ui::WindowAndroid> window_android_;
+  CheckedPtr<thin_webview::android::CompositorView> compositor_view_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   gfx::Rect bounds_;
   gfx::Size video_size_;
 
-  content::PictureInPictureWindowController* controller_;
+  CheckedPtr<content::PictureInPictureWindowController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_OVERLAY_OVERLAY_WINDOW_ANDROID_H_

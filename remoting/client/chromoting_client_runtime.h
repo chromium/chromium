@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -119,7 +120,7 @@ class ChromotingClientRuntime {
   // For logging session stage changes and stats.
   std::unique_ptr<TelemetryLogWriter> log_writer_;
 
-  ChromotingClientRuntime::Delegate* delegate_ = nullptr;
+  CheckedPtr<ChromotingClientRuntime::Delegate> delegate_ = nullptr;
 
   friend struct base::DefaultSingletonTraits<ChromotingClientRuntime>;
 

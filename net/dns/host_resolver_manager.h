@@ -17,6 +17,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -458,12 +459,12 @@ class NET_EXPORT HostResolverManager
   // Parameters for ProcTask.
   ProcTaskParams proc_params_;
 
-  NetLog* net_log_;
+  CheckedPtr<NetLog> net_log_;
 
   // If present, used by DnsTask and ServeFromHosts to resolve requests.
   std::unique_ptr<DnsClient> dns_client_;
 
-  SystemDnsConfigChangeNotifier* system_dns_config_notifier_;
+  CheckedPtr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
 
   // False if IPv6 should not be attempted and assumed unreachable when on a
   // WiFi connection. See https://crbug.com/696569 for further context.
@@ -483,7 +484,7 @@ class NET_EXPORT HostResolverManager
   scoped_refptr<base::TaskRunner> proc_task_runner_;
 
   // Shared tick clock, overridden for testing.
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   // For per-context cache invalidation notifications.
   base::ObserverList<ResolveContext,

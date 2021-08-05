@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
@@ -150,10 +151,10 @@ class SynchronousLayerTreeFrameSink
   void DeliverMessages();
 
   const uint32_t layer_tree_frame_sink_id_;
-  SynchronousCompositorRegistry* const registry_;  // Not owned.
+  const CheckedPtr<SynchronousCompositorRegistry> registry_;  // Not owned.
 
   // Not owned.
-  SynchronousLayerTreeFrameSinkClient* sync_client_ = nullptr;
+  CheckedPtr<SynchronousLayerTreeFrameSinkClient> sync_client_ = nullptr;
 
   // Used to allocate bitmaps in the software Display.
   // TODO(crbug.com/692814): The Display never sends its resources out of
@@ -214,7 +215,7 @@ class SynchronousLayerTreeFrameSink
   // Uses frame_sink_manager_.
   std::unique_ptr<viz::Display> display_;
   // Owned by |display_|.
-  SoftwareOutputSurface* software_output_surface_ = nullptr;
+  CheckedPtr<SoftwareOutputSurface> software_output_surface_ = nullptr;
   std::unique_ptr<viz::BeginFrameSource> synthetic_begin_frame_source_;
   std::unique_ptr<viz::ExternalBeginFrameSource> external_begin_frame_source_;
 

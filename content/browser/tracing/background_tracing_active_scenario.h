@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
@@ -83,7 +84,7 @@ class BackgroundTracingActiveScenario {
   std::unique_ptr<TracingSession> tracing_session_;
   std::unique_ptr<BackgroundTracingConfigImpl> config_;
   // Owned by |config_|.
-  const BackgroundTracingRule* last_triggered_rule_ = nullptr;
+  CheckedPtr<const BackgroundTracingRule> last_triggered_rule_ = nullptr;
   State scenario_state_ = State::kIdle;
   base::RepeatingClosure rule_triggered_callback_for_testing_;
   BackgroundTracingManager::ReceiveCallback receive_callback_;

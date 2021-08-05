@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class SkBitmap;
@@ -30,7 +31,7 @@ class ElevationIconSetter {
  private:
   void SetButtonIcon(base::OnceClosure callback, const SkBitmap& icon);
 
-  views::LabelButton* button_;
+  CheckedPtr<views::LabelButton> button_;
   base::WeakPtrFactory<ElevationIconSetter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ElevationIconSetter);

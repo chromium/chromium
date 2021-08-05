@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_DISPATCHER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "media/midi/midi_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -68,7 +69,7 @@ class MIDIDispatcher : public GarbageCollected<MIDIDispatcher>,
   void Trace(Visitor* visitor) const;
 
  private:
-  Client* client_ = nullptr;
+  CheckedPtr<Client> client_ = nullptr;
 
   bool initialized_ = false;
 

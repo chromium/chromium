@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -119,10 +120,10 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   // Owned by another object.
   // |connect_delegate| will live during the lifetime of this object.
-  WebSocketStream::ConnectDelegate* const connect_delegate_;
+  const CheckedPtr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
   // This is stored in SendRequest() for use by ReadResponseHeaders().
-  HttpResponseInfo* http_response_info_;
+  CheckedPtr<HttpResponseInfo> http_response_info_;
 
   // The key to be sent in the next Sec-WebSocket-Key header. Usually NULL (the
   // key is generated on the fly).
@@ -147,9 +148,10 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   // to avoid including extension-related header files here.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
-  WebSocketStreamRequestAPI* const stream_request_;
+  const CheckedPtr<WebSocketStreamRequestAPI> stream_request_;
 
-  WebSocketEndpointLockManager* const websocket_endpoint_lock_manager_;
+  const CheckedPtr<WebSocketEndpointLockManager>
+      websocket_endpoint_lock_manager_;
 
   base::WeakPtrFactory<WebSocketBasicHandshakeStream> weak_ptr_factory_{this};
 

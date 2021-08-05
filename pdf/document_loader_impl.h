@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/chunk_stream.h"
 #include "pdf/document_loader.h"
@@ -74,7 +75,7 @@ class DocumentLoaderImpl : public DocumentLoader {
 
   uint32_t EndOfCurrentChunk() const;
 
-  Client* const client_;
+  const CheckedPtr<Client> client_;
   std::string url_;
   std::unique_ptr<URLLoaderWrapper> loader_;
 

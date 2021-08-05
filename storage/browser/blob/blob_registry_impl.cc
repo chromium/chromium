@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -175,7 +176,7 @@ class BlobRegistryImpl::BlobUnderConstruction {
 #endif
 
   // BlobRegistryImpl we belong to.
-  BlobRegistryImpl* blob_registry_;
+  CheckedPtr<BlobRegistryImpl> blob_registry_;
 
   // UUID of the blob being built.
   std::string uuid_;

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/management_policy.h"
@@ -151,10 +152,10 @@ class InstallVerifier : public KeyedService,
   // Called with the result of a signature request, or NULL on failure.
   void SignatureCallback(std::unique_ptr<InstallSignature> signature);
 
-  ExtensionPrefs* prefs_;
+  CheckedPtr<ExtensionPrefs> prefs_;
 
   // The context with which the InstallVerifier is associated.
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
 
   // Have we finished our bootstrap check yet?
   bool bootstrap_check_complete_;
@@ -192,7 +193,7 @@ class ScopedInstallVerifierBypassForTest {
 
  private:
   ForceType value_;
-  ForceType* old_value_;
+  CheckedPtr<ForceType> old_value_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedInstallVerifierBypassForTest);
 };

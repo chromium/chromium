@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -12143,7 +12144,7 @@ class AllowDialogInterceptor
   bool HasCalledAlertCallback() const { return has_called_callback_; }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
   std::u16string alert_message_;
   RunModalAlertDialogCallback alert_callback_;
   bool has_called_callback_ = false;
@@ -15227,7 +15228,7 @@ class NavigationStarterBeforeDidCommitNavigation
     return true;
   }
 
-  Shell* shell_;
+  CheckedPtr<Shell> shell_;
   const GURL& url_to_intercept_;
   const GURL& url_to_start_;
 };
@@ -16887,7 +16888,7 @@ class SandboxedNavigationControllerPopupBrowserTest
   }
 
  protected:
-  Shell* popup_shell_ = nullptr;
+  CheckedPtr<Shell> popup_shell_ = nullptr;
 
  private:
   base::test::ScopedFeatureList feature_list_;

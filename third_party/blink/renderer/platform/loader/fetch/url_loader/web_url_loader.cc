@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -383,7 +384,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(
       network::ResourceRequest* request);
 
-  WebURLLoader* loader_;
+  CheckedPtr<WebURLLoader> loader_;
 
   KURL url_;
   // This is set in Start() and is used by SetSecurityStyleAndDetails() to
@@ -394,7 +395,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   // DevTools request id to that new request, and it will propagate here.
   bool has_devtools_request_id_;
 
-  WebURLLoaderClient* client_;
+  CheckedPtr<WebURLLoaderClient> client_;
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
       freezable_task_runner_handle_;
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
@@ -411,7 +412,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle_;
   WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   const WebVector<WebString> cors_exempt_header_list_;
-  base::WaitableEvent* terminate_sync_load_event_;
+  CheckedPtr<base::WaitableEvent> terminate_sync_load_event_;
 
   int request_id_;
   bool in_two_phase_read_ = false;

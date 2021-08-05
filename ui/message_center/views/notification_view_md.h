@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -83,8 +84,8 @@ class CompactTitleMessageView : public views::View {
   void set_message(const std::u16string& message);
 
  private:
-  views::Label* title_ = nullptr;
-  views::Label* message_ = nullptr;
+  CheckedPtr<views::Label> title_ = nullptr;
+  CheckedPtr<views::Label> message_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CompactTitleMessageView);
 };
@@ -142,12 +143,12 @@ class NotificationInputContainerMD : public views::View,
  private:
   void UpdateButtonImage();
 
-  NotificationInputDelegate* const delegate_;
+  const CheckedPtr<NotificationInputDelegate> delegate_;
 
-  views::InkDropContainerView* const ink_drop_container_;
+  const CheckedPtr<views::InkDropContainerView> ink_drop_container_;
 
-  views::Textfield* const textfield_;
-  views::ImageButton* const button_;
+  const CheckedPtr<views::Textfield> textfield_;
+  const CheckedPtr<views::ImageButton> button_;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationInputContainerMD);
 };
@@ -282,10 +283,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   // destroyed when the ink drop is visible.
   std::vector<views::View*> GetChildrenForLayerAdjustment() const;
 
-  views::InkDropContainerView* const ink_drop_container_;
+  const CheckedPtr<views::InkDropContainerView> ink_drop_container_;
 
   // View containing close and settings buttons
-  NotificationControlButtonsView* control_buttons_view_;
+  CheckedPtr<NotificationControlButtonsView> control_buttons_view_;
 
   // Whether this notification is expanded or not.
   bool expanded_ = false;
@@ -304,40 +305,41 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   bool clickable_;
 
   // Container views directly attached to this view.
-  NotificationHeaderView* header_row_ = nullptr;
-  views::View* content_row_ = nullptr;
-  views::View* actions_row_ = nullptr;
-  views::View* settings_row_ = nullptr;
+  CheckedPtr<NotificationHeaderView> header_row_ = nullptr;
+  CheckedPtr<views::View> content_row_ = nullptr;
+  CheckedPtr<views::View> actions_row_ = nullptr;
+  CheckedPtr<views::View> settings_row_ = nullptr;
 
   // Containers for left and right side on |content_row_|
-  views::View* left_content_ = nullptr;
-  views::View* right_content_ = nullptr;
+  CheckedPtr<views::View> left_content_ = nullptr;
+  CheckedPtr<views::View> right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.
-  views::Label* title_view_ = nullptr;
-  views::Label* message_view_ = nullptr;
-  views::Label* status_view_ = nullptr;
-  ProportionalImageView* icon_view_ = nullptr;
-  views::View* image_container_view_ = nullptr;
+  CheckedPtr<views::Label> title_view_ = nullptr;
+  CheckedPtr<views::Label> message_view_ = nullptr;
+  CheckedPtr<views::Label> status_view_ = nullptr;
+  CheckedPtr<ProportionalImageView> icon_view_ = nullptr;
+  CheckedPtr<views::View> image_container_view_ = nullptr;
   std::vector<NotificationMdTextButton*> action_buttons_;
   std::vector<views::View*> item_views_;
-  views::ProgressBar* progress_bar_view_ = nullptr;
-  CompactTitleMessageView* compact_title_message_view_ = nullptr;
-  views::View* action_buttons_row_ = nullptr;
-  NotificationInputContainerMD* inline_reply_ = nullptr;
+  CheckedPtr<views::ProgressBar> progress_bar_view_ = nullptr;
+  CheckedPtr<CompactTitleMessageView> compact_title_message_view_ = nullptr;
+  CheckedPtr<views::View> action_buttons_row_ = nullptr;
+  CheckedPtr<NotificationInputContainerMD> inline_reply_ = nullptr;
 
   // Counter for view layouting, which is used during the CreateOrUpdate*
   // phases to keep track of the view ordering. See crbug.com/901045
   int left_content_count_;
 
   // Views for inline settings.
-  views::RadioButton* block_all_button_ = nullptr;
-  views::RadioButton* dont_block_button_ = nullptr;
-  NotificationMdTextButton* settings_done_button_ = nullptr;
+  CheckedPtr<views::RadioButton> block_all_button_ = nullptr;
+  CheckedPtr<views::RadioButton> dont_block_button_ = nullptr;
+  CheckedPtr<NotificationMdTextButton> settings_done_button_ = nullptr;
 
   // Owned by views properties. Guaranteed to be not null for the lifetime of
   // |this| because views properties are the last thing cleaned up.
-  NotificationViewMDPathGenerator* highlight_path_generator_ = nullptr;
+  CheckedPtr<NotificationViewMDPathGenerator> highlight_path_generator_ =
+      nullptr;
 
   std::unique_ptr<ui::EventHandler> click_activator_;
 

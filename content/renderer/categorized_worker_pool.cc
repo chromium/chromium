@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -83,10 +84,10 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
   }
 
  private:
-  CategorizedWorkerPool* const pool_;
+  const CheckedPtr<CategorizedWorkerPool> pool_;
   const std::vector<cc::TaskCategory> categories_;
-  gfx::RenderingPipeline* pipeline_;
-  base::ConditionVariable* const has_ready_to_run_tasks_cv_;
+  CheckedPtr<gfx::RenderingPipeline> pipeline_;
+  const CheckedPtr<base::ConditionVariable> has_ready_to_run_tasks_cv_;
 
   base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
@@ -165,7 +166,7 @@ class CategorizedWorkerPool::CategorizedWorkerPoolSequencedTaskRunner
   // implement the SequencedTaskRunner interfaces.
   base::Lock lock_;
 
-  cc::TaskGraphRunner* task_graph_runner_;
+  CheckedPtr<cc::TaskGraphRunner> task_graph_runner_;
   // Namespace used to schedule tasks in the task graph runner.
   cc::NamespaceToken namespace_token_;
   // List of tasks currently queued up for execution.

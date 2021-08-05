@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "v8/include/v8.h"
 
@@ -122,7 +123,7 @@ class OneTimeMessageHandler {
                     v8::MaybeLocal<v8::Value> result);
 
   // The associated bindings system. Outlives this object.
-  NativeExtensionBindingsSystem* const bindings_system_;
+  const CheckedPtr<NativeExtensionBindingsSystem> bindings_system_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
 

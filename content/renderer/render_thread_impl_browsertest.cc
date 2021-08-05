@@ -16,6 +16,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/discardable_memory.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -271,12 +272,12 @@ class RenderThreadImplBrowserTest : public testing::Test,
   std::unique_ptr<RenderProcess> process_;
   scoped_refptr<QuitOnTestMsgFilter> test_msg_filter_;
 
-  blink::scheduler::WebMockThreadScheduler* main_thread_scheduler_;
+  CheckedPtr<blink::scheduler::WebMockThreadScheduler> main_thread_scheduler_;
 
   // RenderThreadImpl doesn't currently support a proper shutdown sequence
   // and it's okay when we're running in multi-process mode because renderers
   // get killed by the OS. Memory leaks aren't nice but it's test-only.
-  RenderThreadImpl* thread_;
+  CheckedPtr<RenderThreadImpl> thread_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -438,7 +439,7 @@ class RenderThreadImplGpuMemoryBufferBrowserTest
         base::Unretained(this)));
   }
 
-  gpu::GpuMemoryBufferManager* memory_buffer_manager_ = nullptr;
+  CheckedPtr<gpu::GpuMemoryBufferManager> memory_buffer_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RenderThreadImplGpuMemoryBufferBrowserTest);
 };

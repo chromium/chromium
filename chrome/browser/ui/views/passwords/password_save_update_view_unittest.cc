@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -59,7 +60,7 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
   password_manager::PasswordForm pending_password_;
 
  private:
-  PasswordSaveUpdateView* view_;
+  CheckedPtr<PasswordSaveUpdateView> view_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 

@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -231,7 +232,7 @@ class CastSocketImpl : public CastSocket {
     void Start() override;
 
    private:
-    CastSocketImpl* socket_;
+    CheckedPtr<CastSocketImpl> socket_;
     ChannelError error_state_;
     LastError last_error_;
   };
@@ -248,7 +249,7 @@ class CastSocketImpl : public CastSocket {
     void Start() override;
 
    private:
-    CastSocketImpl* const socket_;
+    const CheckedPtr<CastSocketImpl> socket_;
     DISALLOW_COPY_AND_ASSIGN(CastSocketMessageDelegate);
   };
 
@@ -416,7 +417,7 @@ class CastSocketImpl : public CastSocket {
 
   // Raw pointer to the auth handshake delegate. Used to get detailed error
   // information.
-  AuthTransportDelegate* auth_delegate_;
+  CheckedPtr<AuthTransportDelegate> auth_delegate_;
 
   // List of socket observers.
   base::ObserverList<Observer>::Unchecked observers_;

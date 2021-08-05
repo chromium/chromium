@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "media/audio/audio_sink_parameters.h"
@@ -176,7 +177,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
     EXPECT_CALL(
         *audio_device_factory_platform_,
         MockNewAudioRendererSink(blink::WebAudioDeviceSourceType::kWebRtc,
-                                 web_local_frame_, _))
+                                 web_local_frame_.get(), _))
         .Times(testing::AtLeast(1))
         .WillRepeatedly(DoAll(SaveArg<2>(&params), InvokeWithoutArgs([&]() {
                                 EXPECT_EQ(params.device_id, device_id.Utf8());
@@ -231,9 +232,9 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
   Persistent<MediaStreamDescriptor> stream_descriptor_;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
-  WebView* web_view_ = nullptr;
+  CheckedPtr<WebView> web_view_ = nullptr;
   WebLocalFrameClient web_local_frame_client_;
-  WebLocalFrame* web_local_frame_ = nullptr;
+  CheckedPtr<WebLocalFrame> web_local_frame_ = nullptr;
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_;
   scoped_refptr<blink::WebMediaStreamAudioRenderer> renderer_proxy_;
 };

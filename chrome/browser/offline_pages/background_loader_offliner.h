@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/offline_pages/resource_loading_observer.h"
@@ -151,11 +152,11 @@ class BackgroundLoaderOffliner
 
   std::unique_ptr<background_loader::BackgroundLoaderContents> loader_;
   // Not owned.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   // Not owned.
-  OfflinePageModel* offline_page_model_;
+  CheckedPtr<OfflinePageModel> offline_page_model_;
   // Not owned.
-  const OfflinerPolicy* policy_;
+  CheckedPtr<const OfflinerPolicy> policy_;
   // Tracks pending request, if any.
   std::unique_ptr<SavePageRequest> pending_request_;
   // Handles determining when a page should be snapshotted.

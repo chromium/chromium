@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -51,7 +52,7 @@ class ShareTabInsteadButton : public TabSharingInfoBarDelegateButton {
   }
 
  private:
-  TabSharingUI* const ui_;
+  const CheckedPtr<TabSharingUI> ui_;
 };
 
 // Represents a button which, when clicked, changes the activated tab to be

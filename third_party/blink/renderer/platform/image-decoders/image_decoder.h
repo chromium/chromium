@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -119,7 +120,7 @@ class PLATFORM_EXPORT ColorProfileTransform final {
   const skcms_ICCProfile* DstProfile() const;
 
  private:
-  const skcms_ICCProfile* src_profile_;
+  CheckedPtr<const skcms_ICCProfile> src_profile_;
   skcms_ICCProfile dst_profile_;
 };
 

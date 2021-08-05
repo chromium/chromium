@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
 #include "base/bind.h"
@@ -93,7 +94,7 @@ class TestWebURLLoader final : public WebURLLoader {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
-  WebLoaderFreezeMode* const freeze_mode_ptr_;
+  const CheckedPtr<WebLoaderFreezeMode> freeze_mode_ptr_;
 };
 
 class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
@@ -123,7 +124,7 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
  private:
   // Points to |ResourceLoaderDefersLoadingTest::freeze_mode_|.
-  WebLoaderFreezeMode* const freeze_mode_ptr_;
+  const CheckedPtr<WebLoaderFreezeMode> freeze_mode_ptr_;
 
   ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
 };

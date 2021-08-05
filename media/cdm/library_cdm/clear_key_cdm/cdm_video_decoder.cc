@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -275,7 +276,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
     std::move(quit_closure).Run();
   }
 
-  CdmHostProxy* const cdm_host_proxy_;
+  const CheckedPtr<CdmHostProxy> cdm_host_proxy_;
   std::unique_ptr<VideoDecoder> video_decoder_;
 
   // Results of |video_decoder_| operations. Set iff the callback of the

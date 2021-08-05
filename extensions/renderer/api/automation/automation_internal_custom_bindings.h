@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -263,7 +264,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   std::vector<TreeChangeObserver> tree_change_observers_;
   // A bit-map of api::automation::TreeChangeObserverFilter.
   int tree_change_observer_overall_filter_;
-  NativeExtensionBindingsSystem* bindings_system_;
+  CheckedPtr<NativeExtensionBindingsSystem> bindings_system_;
   bool should_ignore_context_;
 
   // The global focused tree id.

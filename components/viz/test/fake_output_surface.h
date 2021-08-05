@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -125,7 +126,7 @@ class FakeOutputSurface : public OutputSurface {
   explicit FakeOutputSurface(
       std::unique_ptr<SoftwareOutputDevice> software_device);
 
-  OutputSurfaceClient* client_ = nullptr;
+  CheckedPtr<OutputSurfaceClient> client_ = nullptr;
   std::unique_ptr<OutputSurfaceFrame> last_sent_frame_;
   size_t num_sent_frames_ = 0;
   bool has_external_stencil_test_ = false;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -111,8 +112,8 @@ class LiveCaptionController : public KeyedService,
 
   void UpdateAccessibilityCaptionHistograms();
 
-  PrefService* profile_prefs_;
-  PrefService* global_prefs_;
+  CheckedPtr<PrefService> profile_prefs_;
+  CheckedPtr<PrefService> global_prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   absl::optional<ui::CaptionStyle> caption_style_;

@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -675,8 +676,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
     ~StatementRef();
 
-    Database* database_;
-    sqlite3_stmt* stmt_;
+    CheckedPtr<Database> database_;
+    CheckedPtr<sqlite3_stmt> stmt_;
     bool was_valid_;
   };
   friend class StatementRef;

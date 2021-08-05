@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "extensions/renderer/module_system.h"
@@ -73,9 +74,9 @@ class ModuleSystemTestEnvironment {
   v8::HandleScope handle_scope_;
 
   scoped_refptr<const Extension> extension_;
-  ScriptContextSet* context_set_;
-  ScriptContext* context_;
-  AssertNatives* assert_natives_;
+  CheckedPtr<ScriptContextSet> context_set_;
+  CheckedPtr<ScriptContext> context_;
+  CheckedPtr<AssertNatives> assert_natives_;
   std::unique_ptr<StringSourceMap> source_map_;
 
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;

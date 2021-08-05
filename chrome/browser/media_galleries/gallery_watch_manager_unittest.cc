@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
@@ -209,13 +210,13 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 
-  storage_monitor::TestStorageMonitor* monitor_;
+  CheckedPtr<storage_monitor::TestStorageMonitor> monitor_;
   std::unique_ptr<TestingProfile> profile_;
-  MediaGalleriesPreferences* gallery_prefs_;
+  CheckedPtr<MediaGalleriesPreferences> gallery_prefs_;
 
   bool expect_gallery_changed_;
   bool expect_gallery_watch_dropped_;
-  base::RunLoop* pending_loop_;
+  CheckedPtr<base::RunLoop> pending_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(GalleryWatchManagerTest);
 };

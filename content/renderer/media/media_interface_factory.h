@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
@@ -83,7 +84,7 @@ class CONTENT_EXPORT MediaInterfaceFactory final
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
   void OnConnectionError();
 
-  blink::BrowserInterfaceBrokerProxy* interface_broker_;
+  CheckedPtr<blink::BrowserInterfaceBrokerProxy> interface_broker_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

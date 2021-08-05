@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -241,7 +242,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
   void SendGoodbyePacketForMdnsNameGeneratorServiceIfNecessary();
 
   std::unique_ptr<net::MDnsSocketFactory> owned_socket_factory_;
-  net::MDnsSocketFactory* socket_factory_;
+  CheckedPtr<net::MDnsSocketFactory> socket_factory_;
   // Only the socket handlers that have successfully bound and started are kept.
   std::map<uint16_t, std::unique_ptr<SocketHandler>> socket_handler_by_id_;
   SocketHandlerStartResult start_result_ =
@@ -258,7 +259,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
   std::set<std::unique_ptr<MdnsResponder>, base::UniquePtrComparator>
       responders_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  CheckedPtr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   // If not `base::TimeTicks()`, represents the end of the throttling period for
   // calls to `StartIfNeeded()`.
@@ -329,10 +331,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponder
   // responder should be destroyed before |manager_| becomes invalid or a weak
   // reference should be used to access the manager when there is no such
   // guarantee in an operation.
-  MdnsResponderManager* const manager_;
+  const CheckedPtr<MdnsResponderManager> manager_;
   std::map<std::string, net::IPAddress> name_addr_map_;
   std::map<std::string, uint16_t> name_refcount_map_;
-  MdnsResponderManager::NameGenerator* name_generator_;
+  CheckedPtr<MdnsResponderManager::NameGenerator> name_generator_;
 
   DISALLOW_COPY_AND_ASSIGN(MdnsResponder);
 };

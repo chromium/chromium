@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -76,11 +77,11 @@ class IdentityDialogController
 
  private:
   WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
-  WebIdDialog* view_{nullptr};
+  CheckedPtr<WebIdDialog> view_{nullptr};
 
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
-  content::WebContents* rp_web_contents_;
+  CheckedPtr<content::WebContents> rp_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_

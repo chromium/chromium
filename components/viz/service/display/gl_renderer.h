@@ -16,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -445,8 +446,8 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
            std::map<gfx::ColorSpace, std::unique_ptr<gfx::ColorTransform>>>
       color_transform_cache_;
 
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::ContextSupport* context_support_;
+  CheckedPtr<gpu::gles2::GLES2Interface> gl_;
+  CheckedPtr<gpu::ContextSupport> context_support_;
   std::unique_ptr<ContextCacheController::ScopedVisibility> context_visibility_;
   std::unique_ptr<ContextCacheController::ScopedBusy> context_busy_;
 
@@ -459,11 +460,11 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   bool is_scissor_enabled_ = false;
   bool stencil_shadow_ = false;
   bool blend_shadow_ = false;
-  const Program* current_program_ = nullptr;
+  CheckedPtr<const Program> current_program_ = nullptr;
   TexturedQuadDrawCache draw_cache_;
   int highp_threshold_cache_ = 0;
 
-  ScopedRenderPassTexture* current_framebuffer_texture_;
+  CheckedPtr<ScopedRenderPassTexture> current_framebuffer_texture_;
 
   SyncQueryCollection sync_queries_;
   bool use_discard_framebuffer_ = false;

@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "content/browser/sms/sms_provider.h"
@@ -66,7 +67,7 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
 
   // |provider_| is safe because all instances of SmsProvider are owned
   // by the BrowserMainLoop, which outlive instances of this class.
-  SmsProvider* const provider_;
+  const CheckedPtr<SmsProvider> provider_;
 
   SmsQueue subscribers_;
   // A cancel callback can cancel receiving of the remote fetching response.

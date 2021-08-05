@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
@@ -256,7 +257,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void OnGetCookie(const std::string& callback_id,
                    const std::vector<net::CanonicalCookie>& cookies);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
 
@@ -607,7 +608,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 #endif
 
   // The Safe Browsing service.
-  SafeBrowsingServiceInterface* sb_service_ = nullptr;
+  CheckedPtr<SafeBrowsingServiceInterface> sb_service_ = nullptr;
 
   // Whether there is a test listener.
   bool has_test_listener_ = false;

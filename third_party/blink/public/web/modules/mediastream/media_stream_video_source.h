@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video_capture_types.h"
@@ -328,7 +329,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
     PendingTrackInfo& operator=(PendingTrackInfo&& other);
     ~PendingTrackInfo();
 
-    MediaStreamVideoTrack* track;
+    CheckedPtr<MediaStreamVideoTrack> track;
     VideoCaptureDeliverFrameCB frame_callback;
     EncodedVideoFrameCB encoded_frame_callback;
     VideoTrackSettingsCallback settings_callback;

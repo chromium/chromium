@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
@@ -180,8 +181,8 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   std::unique_ptr<FrameDeletionObserver, BrowserThread::DeleteOnUIThread>
       frame_deletion_observer_;
 
-  media::AudioSystem* audio_system_;
-  MediaStreamManager* media_stream_manager_;
+  CheckedPtr<media::AudioSystem> audio_system_;
+  CheckedPtr<MediaStreamManager> media_stream_manager_;
   base::flat_map<int, std::unique_ptr<Session>> sessions_;
   int primary_session_id_;
   int last_session_id_;

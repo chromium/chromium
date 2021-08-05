@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"
 
@@ -201,7 +202,7 @@ class COMPONENT_EXPORT(SQL) Recovery {
   };
   void Shutdown(Disposition raze);
 
-  Database* db_;         // Original Database connection.
+  CheckedPtr<Database> db_;  // Original Database connection.
   Database recover_db_;  // Recovery Database connection.
 };
 

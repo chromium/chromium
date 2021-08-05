@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
@@ -269,9 +270,9 @@ class FrameNodeImpl
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
-  FrameNodeImpl* const parent_frame_node_;
-  PageNodeImpl* const page_node_;
-  ProcessNodeImpl* const process_node_;
+  const CheckedPtr<FrameNodeImpl> parent_frame_node_;
+  const CheckedPtr<PageNodeImpl> page_node_;
+  const CheckedPtr<ProcessNodeImpl> process_node_;
   // Can be used to tie together "sibling" frames, where a navigation is ongoing
   // in a new frame that will soon replace the existing one.
   const int frame_tree_node_id_;

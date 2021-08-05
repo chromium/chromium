@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
@@ -98,7 +99,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
                                      HRESULT hr);
   void ClearIncludedDescriptors();
 
-  BluetoothRemoteGattServiceWin* parent_service_;
+  CheckedPtr<BluetoothRemoteGattServiceWin> parent_service_;
   scoped_refptr<BluetoothTaskManagerWin> task_manager_;
 
   // Characteristic info from OS and used to interact with OS.

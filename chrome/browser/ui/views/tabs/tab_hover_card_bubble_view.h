@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/callback_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -72,9 +73,9 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  FadeLabel* title_label_ = nullptr;
-  FadeLabel* domain_label_ = nullptr;
-  ThumbnailView* thumbnail_view_ = nullptr;
+  CheckedPtr<FadeLabel> title_label_ = nullptr;
+  CheckedPtr<FadeLabel> domain_label_ = nullptr;
+  CheckedPtr<ThumbnailView> thumbnail_view_ = nullptr;
   absl::optional<TabAlertState> alert_state_;
 
   absl::optional<int> corner_radius_;

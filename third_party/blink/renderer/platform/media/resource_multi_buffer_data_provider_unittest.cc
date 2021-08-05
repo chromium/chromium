@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/format_macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -215,7 +216,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
     EXPECT_CALL(*url_loader.get(),
                 LoadAsynchronously(Truly(CorrectAcceptEncodingAndPreviewsState),
-                                   loader_));
+                                   loader_.get()));
     return url_loader;
   }
 
@@ -229,7 +230,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   scoped_refptr<UrlData> url_data_;
   scoped_refptr<UrlData> redirected_to_;
   // The loader is owned by the UrlData above.
-  ResourceMultiBufferDataProvider* loader_;
+  CheckedPtr<ResourceMultiBufferDataProvider> loader_;
 
   uint8_t data_[kDataSize];
 };

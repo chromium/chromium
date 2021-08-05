@@ -34,6 +34,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
@@ -127,7 +128,7 @@ class PLATFORM_EXPORT MediaStreamComponent final
     void ProvideInput(AudioBus*, int frames_to_process) override;
 
    private:
-    WebAudioSourceProvider* web_audio_source_provider_;
+    CheckedPtr<WebAudioSourceProvider> web_audio_source_provider_;
     Mutex provide_input_lock_;
 
     // Used to wrap AudioBus to be passed into |web_audio_source_provider_|.

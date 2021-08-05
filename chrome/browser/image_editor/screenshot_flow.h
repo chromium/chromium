@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
@@ -109,7 +110,7 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
       ScreenshotFlow::CaptureMode::NOT_CAPTURING;
 
   // Web Contents that we are capturing.
-  content::WebContents* web_contents_ = nullptr;  // unowned.
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;  // unowned.
 
   // Callback provided to Start().
   ScreenshotCaptureCallback flow_callback_;

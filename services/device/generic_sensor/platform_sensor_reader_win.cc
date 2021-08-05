@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/math_constants.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -346,7 +347,7 @@ class EventListener
   }
 
  private:
-  PlatformSensorReaderWin32* const platform_sensor_reader_;
+  const CheckedPtr<PlatformSensorReaderWin32> platform_sensor_reader_;
   SensorReading last_sensor_reading_;
 
   DISALLOW_COPY_AND_ASSIGN(EventListener);

@@ -187,9 +187,9 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
   OperationHandler* handler = OperationHandler::CreateOperationHandler();
   handler->AwaitOperation(
       base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
-                     base::Unretained(backend_), old_primary_key));
+                     base::Unretained(backend_.get()), old_primary_key));
   handler->AwaitOperation(base::BindOnce(
-      &PasswordStoreBackend::AddLoginAsync, base::Unretained(backend_),
+      &PasswordStoreBackend::AddLoginAsync, base::Unretained(backend_.get()),
       new_form_with_correct_password_issues));
   handler->InvokeOnCompletion(
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
@@ -260,7 +260,7 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
         form,
         base::BindOnce(ConvertToForms)
             .Then(base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
-                                 base::Unretained(backend_),
+                                 base::Unretained(backend_.get()),
                                  request_handler->AffiliatedLoginsClosure())));
   } else {
     request_handler->AffiliatedLoginsClosure().Run({});
@@ -475,7 +475,7 @@ void PasswordStore::UnblocklistInternal(
   for (const auto& form : forms_to_remove) {
     handler->AwaitOperation(
         base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
-                       base::Unretained(backend_), form));
+                       base::Unretained(backend_.get()), form));
   }
 
   auto notify_callback =

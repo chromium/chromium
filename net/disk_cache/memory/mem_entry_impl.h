@@ -15,6 +15,7 @@
 #include "base/containers/linked_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -185,7 +186,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                          // entry. 0 here is beginning of child, not of
                          // the entire file.
   // Pointer to the parent entry, or nullptr if this entry is a parent entry.
-  MemEntryImpl* parent_;
+  CheckedPtr<MemEntryImpl> parent_;
   std::unique_ptr<EntryMap> children_;
 
   base::Time last_modified_;

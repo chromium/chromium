@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -195,7 +196,7 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
   std::string extension_id_;
 
   // If non-null, we listen to messages only from this BrowserContext.
-  const content::BrowserContext* browser_context_ = nullptr;
+  CheckedPtr<const content::BrowserContext> browser_context_ = nullptr;
 
   // The message that signals failure.
   absl::optional<std::string> failure_message_;

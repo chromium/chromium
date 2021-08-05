@@ -8,6 +8,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -129,10 +130,10 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
 
   ukm::UkmRecorder* GetUkmRecorder() override { return recorder_; }
 
-  base::RunLoop* run_loop_;
+  CheckedPtr<base::RunLoop> run_loop_;
   bool finished_memory_dump_ = false;
   bool finished_process_info_ = false;
-  ukm::TestUkmRecorder* recorder_;
+  CheckedPtr<ukm::TestUkmRecorder> recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };

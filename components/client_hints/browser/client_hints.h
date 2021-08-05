@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
@@ -48,9 +49,9 @@ class ClientHints : public KeyedService,
   void ClearAdditionalClientHints() override;
 
  private:
-  content::BrowserContext* context_ = nullptr;
-  network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
-  HostContentSettingsMap* settings_map_ = nullptr;
+  CheckedPtr<content::BrowserContext> context_ = nullptr;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
+  CheckedPtr<HostContentSettingsMap> settings_map_ = nullptr;
   blink::UserAgentMetadata user_agent_metadata_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
 

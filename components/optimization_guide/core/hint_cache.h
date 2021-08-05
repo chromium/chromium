@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -181,7 +182,7 @@ class HintCache {
 
   // The backing store used with this hint cache. Set during construction. Not
   // owned. Guaranteed to outlive |this|.
-  OptimizationGuideStore* optimization_guide_store_;
+  CheckedPtr<OptimizationGuideStore> optimization_guide_store_;
 
   // The cache of host-keyed hints loaded from the store. Maps store
   // EntryKey to Hint proto. This serves two purposes:
@@ -197,7 +198,7 @@ class HintCache {
   URLKeyedHintCache url_keyed_hint_cache_;
 
   // The clock used to determine if hints have expired.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

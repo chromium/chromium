@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_TASK_H_
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
@@ -154,7 +155,7 @@ class ManifestUpdateTask final
   bool app_identity_update_allowed_ = false;
 
 #if DCHECK_IS_ON()
-  bool* destructor_called_ptr_ = nullptr;
+  CheckedPtr<bool> destructor_called_ptr_ = nullptr;
 #endif
 };
 

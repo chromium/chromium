@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
@@ -133,11 +134,11 @@ class SigninViewControllerDelegateViews
 
   // If the widget is non-null, then it owns the
   // `SigninViewControllerDelegateViews` and the content view.
-  views::Widget* modal_signin_widget_ = nullptr;
+  CheckedPtr<views::Widget> modal_signin_widget_ = nullptr;
 
-  content::WebContents* web_contents_;
-  Browser* const browser_;
-  views::WebView* content_view_;
+  CheckedPtr<content::WebContents> web_contents_;
+  const CheckedPtr<Browser> browser_;
+  CheckedPtr<views::WebView> content_view_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
 };

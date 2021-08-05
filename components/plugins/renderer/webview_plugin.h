@@ -8,6 +8,7 @@
 #include <list>
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -136,12 +137,12 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   // Manages its own lifetime.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   ui::Cursor current_cursor_;
 
   // Owns us.
-  blink::WebPluginContainer* container_;
+  CheckedPtr<blink::WebPluginContainer> container_;
 
   gfx::Rect rect_;
 
@@ -211,14 +212,14 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void UpdateTooltip(const std::u16string& tooltip_text);
 
    private:
-    WebViewPlugin* plugin_;
-    blink::WebNavigationControl* frame_ = nullptr;
+    CheckedPtr<WebViewPlugin> plugin_;
+    CheckedPtr<blink::WebNavigationControl> frame_ = nullptr;
 
     std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
         agent_group_scheduler_;
 
     // Owned by us, deleted via |close()|.
-    blink::WebView* web_view_;
+    CheckedPtr<blink::WebView> web_view_;
 
     mojo::AssociatedReceiver<blink::mojom::WidgetHost>
         blink_widget_host_receiver_{this};

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/client_settings.h"
@@ -118,7 +119,7 @@ class ElementArea {
                         const RectF& rect);
   void ReportUpdate();
 
-  ScriptExecutorDelegate* const delegate_;
+  const CheckedPtr<ScriptExecutorDelegate> delegate_;
   std::vector<Rectangle> rectangles_;
 
   // Cached positions from the last time an update was sent, used to avoid

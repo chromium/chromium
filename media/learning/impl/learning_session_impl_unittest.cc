@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "media/learning/common/learning_task_controller.h"
@@ -107,7 +108,7 @@ class LearningSessionImplTest : public testing::Test {
       *flag_ptr_ = true;
     }
 
-    bool* flag_ptr_ = nullptr;
+    CheckedPtr<bool> flag_ptr_ = nullptr;
   };
 
   LearningSessionImplTest() {

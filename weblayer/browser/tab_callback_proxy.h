@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "weblayer/public/tab_observer.h"
 
 namespace weblayer {
@@ -28,7 +29,7 @@ class TabCallbackProxy : public TabObserver {
   void OnTitleUpdated(const std::u16string& title) override;
 
  private:
-  Tab* tab_;
+  CheckedPtr<Tab> tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(TabCallbackProxy);

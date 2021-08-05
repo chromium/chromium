@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
@@ -128,9 +129,9 @@ class TabListSceneLayer : public SceneLayer {
   scoped_refptr<cc::UIResourceLayer> background_layer_;
 
   bool content_obscures_self_;
-  ui::ResourceManager* resource_manager_;
-  LayerTitleCache* layer_title_cache_;
-  TabContentManager* tab_content_manager_;
+  CheckedPtr<ui::ResourceManager> resource_manager_;
+  CheckedPtr<LayerTitleCache> layer_title_cache_;
+  CheckedPtr<TabContentManager> tab_content_manager_;
   SkColor background_color_;
 
   scoped_refptr<cc::Layer> own_tree_;

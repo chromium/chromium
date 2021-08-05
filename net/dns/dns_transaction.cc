@@ -19,6 +19,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -324,7 +325,7 @@ class DnsUDPAttempt : public DnsAttempt {
 
   // Should be owned by the DnsSession, to which the transaction should own a
   // reference.
-  DnsUdpTracker* const udp_tracker_;
+  const CheckedPtr<DnsUdpTracker> udp_tracker_;
 
   std::unique_ptr<DnsResponse> response_;
 
@@ -1018,7 +1019,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
   base::WeakPtr<DnsSession> session_;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const context_;
+  const CheckedPtr<ResolveContext> context_;
   std::string formatted_probe_hostname_;
 
   // List of ProbeStats, one for each DoH server, indexed by the DoH server
@@ -1597,7 +1598,7 @@ class DnsTransactionImpl : public DnsTransaction,
   scoped_refptr<DnsSession> session_;
   std::string hostname_;
   uint16_t qtype_;
-  const OptRecordRdata* opt_rdata_;
+  CheckedPtr<const OptRecordRdata> opt_rdata_;
   const bool secure_;
   const SecureDnsMode secure_dns_mode_;
   // Cleared in DoCallback.
@@ -1629,7 +1630,7 @@ class DnsTransactionImpl : public DnsTransaction,
   std::unique_ptr<base::ElapsedTimer> time_from_start_;
 
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* resolve_context_;
+  CheckedPtr<ResolveContext> resolve_context_;
   RequestPriority request_priority_;
 
   THREAD_CHECKER(thread_checker_);

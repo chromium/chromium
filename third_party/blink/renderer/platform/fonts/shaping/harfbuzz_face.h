@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
@@ -76,10 +77,10 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
   HbScoped<hb_face_t> CreateFace();
   void PrepareHarfBuzzFontData();
 
-  FontPlatformData* platform_data_;
+  CheckedPtr<FontPlatformData> platform_data_;
   uint64_t unique_id_;
-  hb_font_t* unscaled_font_;
-  HarfBuzzFontData* harfbuzz_font_data_;
+  CheckedPtr<hb_font_t> unscaled_font_;
+  CheckedPtr<HarfBuzzFontData> harfbuzz_font_data_;
 };
 
 }  // namespace blink

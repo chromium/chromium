@@ -12,6 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1028,7 +1029,7 @@ class AuctionRunnerTest : public testing::Test,
   // Set by UseMockWorkletService(). Non-owning reference to the
   // AuctionProcessManager that will be / has been passed to the
   // InterestGroupManager.
-  MockAuctionProcessManager* mock_auction_process_manager_ = nullptr;
+  CheckedPtr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
 
   // The InterestGroupManager is recreated and repopulated for each auction.
   std::unique_ptr<InterestGroupManager> interest_group_manager_;

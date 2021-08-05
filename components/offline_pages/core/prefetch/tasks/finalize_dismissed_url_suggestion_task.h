@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -38,7 +39,7 @@ class FinalizeDismissedUrlSuggestionTask : public Task {
   void Run() override;
   void OnComplete(bool removed);
 
-  PrefetchStore* prefetch_store_;
+  CheckedPtr<PrefetchStore> prefetch_store_;
   ClientId client_id_;
   base::WeakPtrFactory<FinalizeDismissedUrlSuggestionTask> weak_ptr_factory_{
       this};

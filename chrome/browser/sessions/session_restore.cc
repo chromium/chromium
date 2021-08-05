@@ -23,6 +23,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -266,7 +267,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     Browser* browser =
         use_new_window ? Browser::Create(Browser::CreateParams(profile_, true))
-                       : browser_;
+                       : browser_.get();
 
     RecordAppLaunchForTab(browser, tab, selected_index);
 
@@ -891,10 +892,10 @@ class SessionRestoreImpl : public BrowserListObserver {
   }
 
   // The profile to create the sessions for.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The first browser to restore to, may be null.
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 
   // Whether or not restore is synchronous.
   const bool synchronous_;
@@ -957,7 +958,7 @@ class SessionRestoreImpl : public BrowserListObserver {
   base::TimeTicks restore_started_;
 
   // List of callbacks for session restore notification.
-  SessionRestore::CallbackList* on_session_restored_callbacks_;
+  CheckedPtr<SessionRestore::CallbackList> on_session_restored_callbacks_;
 
   // Set to true if reading the last commands encountered an error.
   bool read_error_ = false;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_DIALOG_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/secure_payment_confirmation_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -87,15 +88,15 @@ class SecurePaymentConfirmationDialogView
   void UpdateLabelView(DialogViewID id, const std::u16string& text);
 
   // May be null.
-  ObserverForTest* observer_for_test_ = nullptr;
-  const PaymentUIObserver* ui_observer_for_test_ = nullptr;
+  CheckedPtr<ObserverForTest> observer_for_test_ = nullptr;
+  CheckedPtr<const PaymentUIObserver> ui_observer_for_test_ = nullptr;
 
   VerifyCallback verify_callback_;
   CancelCallback cancel_callback_;
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().
-  const SkBitmap* instrument_icon_ = nullptr;
+  CheckedPtr<const SkBitmap> instrument_icon_ = nullptr;
   // Cache the instrument icon generation ID to check if the instrument_icon_
   // has changed pixels.
   uint32_t instrument_icon_generation_id_ = 0;

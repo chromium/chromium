@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -517,7 +518,7 @@ class AppWindow : public content::WebContentsDelegate,
 
   // The browser context with which this window is associated. AppWindow does
   // not own this object.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   const std::string extension_id_;
 

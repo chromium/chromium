@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_EXTENSIONS_RENDERER_PERMISSIONS_POLICY_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions {
@@ -23,7 +24,7 @@ class RendererPermissionsPolicyDelegate
   bool IsRestrictedUrl(const GURL& document_url, std::string* error) override;
 
  private:
-  Dispatcher* dispatcher_;
+  CheckedPtr<Dispatcher> dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererPermissionsPolicyDelegate);
 };

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -82,13 +83,13 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   base::ThreadChecker thread_checker_;
 
   // Event handler for handling events sent from this object.
-  ConnectionToClient::EventHandler* event_handler_ = nullptr;
+  CheckedPtr<ConnectionToClient::EventHandler> event_handler_ = nullptr;
 
   std::unique_ptr<WebrtcTransport> transport_;
 
   std::unique_ptr<Session> session_;
 
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
+  CheckedPtr<WebrtcDummyVideoEncoderFactory> video_encoder_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;

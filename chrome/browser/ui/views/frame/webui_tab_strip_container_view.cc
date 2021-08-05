@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -280,10 +281,10 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     DCHECK(content_area_);
     DCHECK(omnibox_);
 
-    view_observations_.AddObservation(content_area_);
-    view_observations_.AddObservation(omnibox_);
+    view_observations_.AddObservation(content_area_.get());
+    view_observations_.AddObservation(omnibox_.get());
 #if defined(OS_WIN)
-    view_observations_.AddObservation(top_container_);
+    view_observations_.AddObservation(top_container_.get());
 #endif  // defined(OS_WIN)
 
     content_area_->GetWidget()->GetNativeView()->AddPreTargetHandler(this);
@@ -375,9 +376,9 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
  private:
   CloseCallback close_callback_;
-  views::View* top_container_;
-  views::View* content_area_;
-  views::View* omnibox_;
+  CheckedPtr<views::View> top_container_;
+  CheckedPtr<views::View> content_area_;
+  CheckedPtr<views::View> omnibox_;
 
   bool enabled_ = false;
 
@@ -472,8 +473,8 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
   }
 
  private:
-  WebUITabStripContainerView* const container_;
-  views::View* const drag_handle_;
+  const CheckedPtr<WebUITabStripContainerView> container_;
+  const CheckedPtr<views::View> drag_handle_;
 
   bool drag_in_progress_ = false;
 };
@@ -610,7 +611,7 @@ std::unique_ptr<views::View> WebUITabStripContainerView::CreateNewTabButton() {
       base::BindRepeating(&WebUITabStripContainerView::NewTabButtonPressed,
                           base::Unretained(this)));
   new_tab_button_ = new_tab_button.get();
-  view_observations_.AddObservation(new_tab_button_);
+  view_observations_.AddObservation(new_tab_button_.get());
   return new_tab_button;
 }
 

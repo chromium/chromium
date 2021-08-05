@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -254,7 +255,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // The prefetch manager owning this object.
-  NoStatePrefetchManager* no_state_prefetch_manager_;
+  CheckedPtr<NoStatePrefetchManager> no_state_prefetch_manager_;
 
   // The delegate that content embedders use to override this class's logic.
   std::unique_ptr<NoStatePrefetchContentsDelegate> delegate_;
@@ -270,7 +271,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   const absl::optional<url::Origin> initiator_origin_;
 
   // The browser context being used
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // A vector of URLs that this prerendered page matches against.
   // This array can contain more than element as a result of redirects,

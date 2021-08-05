@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -119,7 +120,7 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // Maps account_id to the last error for that account.
   std::map<CoreAccountId, GoogleServiceAuthError> errors_;
 
-  AccountTrackerService* account_tracker_service_;
+  CheckedPtr<AccountTrackerService> account_tracker_service_;
   RefreshTokenLoadStatus fire_refresh_token_loaded_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegateAndroid);

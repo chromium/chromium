@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
@@ -210,7 +211,7 @@ class OfflinePageTabHelper
   bool reloading_url_on_net_error_ = false;
 
   // Service, outlives this object.
-  PrefetchService* prefetch_service_ = nullptr;
+  CheckedPtr<PrefetchService> prefetch_service_ = nullptr;
 
   // TODO(crbug.com/827215): We only really want interface messages for the main
   // frame but this is not easily done with the current helper classes.

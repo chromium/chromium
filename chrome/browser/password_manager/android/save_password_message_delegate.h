@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/messages/android/message_enums.h"
@@ -88,7 +89,7 @@ class SavePasswordMessageDelegate {
 
   PasswordEditDialogFactory password_edit_dialog_factory_;
 
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
   std::string account_email_;
 
   // ManagePasswordsState maintains the password form that is being

@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ct_policy_status.h"
@@ -370,7 +371,7 @@ class WebURLResponse {
   const std::unique_ptr<ResourceResponse> owned_resource_response_;
 
   // Should never be null.
-  ResourceResponse* const resource_response_;
+  const CheckedPtr<ResourceResponse> resource_response_;
 };
 
 }  // namespace blink

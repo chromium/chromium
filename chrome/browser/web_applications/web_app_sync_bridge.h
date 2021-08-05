@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -157,8 +158,8 @@ class WebAppSyncBridge : public AppRegistryController,
   void MaybeInstallAppsFromSyncAndPendingInstallation();
 
   std::unique_ptr<WebAppDatabase> database_;
-  WebAppRegistrarMutable* const registrar_;
-  SyncInstallDelegate* const install_delegate_;
+  const CheckedPtr<WebAppRegistrarMutable> registrar_;
+  const CheckedPtr<SyncInstallDelegate> install_delegate_;
 
   bool is_in_update_ = false;
 

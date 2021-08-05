@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,7 +53,7 @@ class MockReportQueueProvider : public ReportQueueProvider {
     void OnCompleted() override;
     void OnStart() override;
 
-    MockReportQueueProvider* const provider_;
+    const CheckedPtr<MockReportQueueProvider> provider_;
   };
 
   scoped_refptr<StorageModuleInterface> storage_;

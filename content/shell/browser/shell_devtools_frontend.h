@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/shell/browser/shell_devtools_bindings.h"
 
@@ -36,7 +37,7 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
 
   ShellDevToolsFrontend(Shell* frontend_shell, WebContents* inspected_contents);
   ~ShellDevToolsFrontend() override;
-  Shell* frontend_shell_;
+  CheckedPtr<Shell> frontend_shell_;
   std::unique_ptr<ShellDevToolsBindings> devtools_bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellDevToolsFrontend);

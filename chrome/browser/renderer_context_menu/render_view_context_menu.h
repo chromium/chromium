@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -290,7 +291,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // - The submenu containing the installed protocol handlers.
   ui::SimpleMenuModel protocol_handler_submenu_model_;
   // - The registry with the protocols.
-  ProtocolHandlerRegistry* protocol_handler_registry_;
+  CheckedPtr<ProtocolHandlerRegistry> protocol_handler_registry_;
   // - The observation of the registry.
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
@@ -334,7 +335,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // In the case of a MimeHandlerView this will point to the WebContents that
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
   // |source_web_contents_|.
-  content::WebContents* const embedder_web_contents_;
+  const CheckedPtr<content::WebContents> embedder_web_contents_;
 
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>

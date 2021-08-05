@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -240,7 +241,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // network.
   bool was_ever_used_;
 
-  SSLClientContext* const context_;
+  const CheckedPtr<SSLClientContext> context_;
 
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
   base::TimeTicks start_cert_verification_time_;

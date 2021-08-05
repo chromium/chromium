@@ -22,6 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_CHARACTER_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_CHARACTER_RUN_H_
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -94,7 +95,7 @@ struct BidiCharacterRun {
   // save 8 bytes per object on 64-bit.
   bool has_hyphen_ : 1;
   unsigned char level_;
-  BidiCharacterRun* next_;
+  CheckedPtr<BidiCharacterRun> next_;
   int start_;
   int stop_;
 };

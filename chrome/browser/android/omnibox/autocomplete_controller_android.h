@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -143,7 +144,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // There should be only one instance of AutocompleteControllerAndroid per
   // Profile. This is orchestrated by AutocompleteControllerFactory java class.
   // Guaranteed to be non-null.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // Direct reference to AutocompleteController java class. Kept for as long as
   // this instance of AutocompleteControllerAndroid lives: until corresponding
@@ -155,7 +156,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // Associated AutocompleteProviderClient.
   // Guaranteed to be non-null.
-  ChromeAutocompleteProviderClient* const provider_client_;
+  const CheckedPtr<ChromeAutocompleteProviderClient> provider_client_;
 
   // AutocompleteController associated with this client. As this is directly
   // associated with the |provider_client_| and indirectly with |profile_|

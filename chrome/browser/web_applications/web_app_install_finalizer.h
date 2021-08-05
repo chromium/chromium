@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -128,9 +129,9 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                           UninstallWebAppCallback callback,
                           OsHooksResults os_hooks_info);
 
-  Profile* const profile_;
-  WebAppIconManager* const icon_manager_;
-  WebAppPolicyManager* policy_manager_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<WebAppIconManager> icon_manager_;
+  CheckedPtr<WebAppPolicyManager> policy_manager_;
   bool started_ = false;
 
   struct SyncUninstallState {

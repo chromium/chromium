@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
     friend class RTCEncodedAudioStreamTransformer;
 
     WTF::Mutex transformer_mutex_;
-    RTCEncodedAudioStreamTransformer* transformer_
+    CheckedPtr<RTCEncodedAudioStreamTransformer> transformer_
         GUARDED_BY(transformer_mutex_);
   };
 

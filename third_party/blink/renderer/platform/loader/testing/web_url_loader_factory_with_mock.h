@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 
@@ -28,7 +29,7 @@ class WebURLLoaderFactoryWithMock : public WebURLLoaderFactory {
 
  private:
   // Not owned. The mock factory should outlive |this|.
-  WebURLLoaderMockFactory* mock_factory_;
+  CheckedPtr<WebURLLoaderMockFactory> mock_factory_;
 };
 
 }  // namespace blink

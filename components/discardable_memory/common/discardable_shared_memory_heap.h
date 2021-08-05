@@ -16,6 +16,7 @@
 #include "base/containers/linked_list.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,8 +63,9 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
          size_t length,
          DiscardableSharedMemoryHeap::ScopedMemorySegment* memory_segment);
 
-    DiscardableSharedMemoryHeap::ScopedMemorySegment* const memory_segment_;
-    base::DiscardableSharedMemory* shared_memory_;
+    const CheckedPtr<DiscardableSharedMemoryHeap::ScopedMemorySegment>
+        memory_segment_;
+    CheckedPtr<base::DiscardableSharedMemory> shared_memory_;
     size_t start_;
     size_t length_;
     bool is_locked_;
@@ -161,7 +163,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
 
    private:
     std::vector<bool> dirty_pages_;
-    DiscardableSharedMemoryHeap* const heap_;
+    const CheckedPtr<DiscardableSharedMemoryHeap> heap_;
     std::unique_ptr<base::DiscardableSharedMemory> shared_memory_;
     const size_t size_;
     const int32_t id_;

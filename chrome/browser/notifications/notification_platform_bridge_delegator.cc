@@ -140,7 +140,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayed(
     GetDisplayedNotificationsCallback callback) const {
   // TODO(knollr): Query both bridges to get all notifications.
   NotificationPlatformBridge* bridge =
-      system_bridge_ ? system_bridge_ : message_center_bridge_;
+      system_bridge_ ? system_bridge_.get() : message_center_bridge_.get();
   DCHECK(bridge);
   bridge->GetDisplayed(profile_, std::move(callback));
 }

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -96,7 +97,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   bool remove_standard_frame = false;
   std::string workspace;
 
-  WorkspaceExtensionDelegate* workspace_extension_delegate = nullptr;
+  CheckedPtr<WorkspaceExtensionDelegate> workspace_extension_delegate = nullptr;
 
   PlatformWindowShadowType shadow_type = PlatformWindowShadowType::kDefault;
 

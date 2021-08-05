@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -188,7 +189,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   ErrorCode last_error_code_ = ErrorCode::OK;
 
   // Used to set ConfirmationDialog behavior.
-  FakeIt2MeDialogFactory* dialog_factory_ = nullptr;
+  CheckedPtr<FakeIt2MeDialogFactory> dialog_factory_ = nullptr;
 
   std::unique_ptr<base::DictionaryValue> policies_;
 

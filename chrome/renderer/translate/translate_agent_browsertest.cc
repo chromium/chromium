@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -178,7 +179,7 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::TearDown();
   }
 
-  TestTranslateAgent* translate_agent_;
+  CheckedPtr<TestTranslateAgent> translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
 
  private:

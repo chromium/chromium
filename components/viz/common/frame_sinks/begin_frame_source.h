@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
@@ -379,7 +380,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
   BeginFrameArgs last_begin_frame_args_;
   base::flat_set<BeginFrameObserver*> observers_;
-  ExternalBeginFrameSourceClient* client_;
+  CheckedPtr<ExternalBeginFrameSourceClient> client_;
   bool paused_ = false;
 
  private:

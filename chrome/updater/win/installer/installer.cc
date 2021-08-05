@@ -13,6 +13,8 @@
 
 #include "chrome/updater/win/installer/installer.h"
 
+#include "base/memory/checked_ptr.h"
+
 // #define needed to link in RtlGenRandom(), a.k.a. SystemFunction036.  See the
 // "Community Additions" comment on MSDN here:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa387694.aspx
@@ -101,7 +103,7 @@ struct Context {
   const wchar_t* base_path = nullptr;
 
   // First output from call back method. Specifies the path of resource archive.
-  PathString* updater_resource_path = nullptr;
+  CheckedPtr<PathString> updater_resource_path = nullptr;
 };
 
 // Calls CreateProcess with good default parameters and waits for the process to

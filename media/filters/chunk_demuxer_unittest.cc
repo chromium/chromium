@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -1797,8 +1798,8 @@ class EndOfStreamHelper {
     *called = true;
   }
 
-  DemuxerStream* audio_stream_;
-  DemuxerStream* video_stream_;
+  CheckedPtr<DemuxerStream> audio_stream_;
+  CheckedPtr<DemuxerStream> video_stream_;
   bool audio_read_done_;
   bool video_read_done_;
 

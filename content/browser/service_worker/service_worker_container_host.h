@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -743,7 +744,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // For service worker execution contexts -------------------------------------
 
   // The ServiceWorkerHost that owns |this|.
-  ServiceWorkerHost* service_worker_host_ = nullptr;
+  CheckedPtr<ServiceWorkerHost> service_worker_host_ = nullptr;
 
   // For all instances --------------------------------------------------------
 

@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -181,19 +182,19 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   base::ObserverList<Observer>::Unchecked observers_;
 
   // The Profile this toolbar model is for.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
-  extensions::ExtensionPrefs* extension_prefs_;
-  PrefService* prefs_;
+  CheckedPtr<extensions::ExtensionPrefs> extension_prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   // The ExtensionActionAPI object, cached for convenience.
-  extensions::ExtensionActionAPI* extension_action_api_;
+  CheckedPtr<extensions::ExtensionActionAPI> extension_action_api_;
 
   // The ExtensionRegistry object, cached for convenience.
-  extensions::ExtensionRegistry* extension_registry_;
+  CheckedPtr<extensions::ExtensionRegistry> extension_registry_;
 
   // The ExtensionActionManager, cached for convenience.
-  extensions::ExtensionActionManager* extension_action_manager_;
+  CheckedPtr<extensions::ExtensionActionManager> extension_action_manager_;
 
   // True if we've handled the initial EXTENSIONS_READY notification.
   bool actions_initialized_;

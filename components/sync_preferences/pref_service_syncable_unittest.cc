@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -105,7 +106,7 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
   void FailNextProcessSyncChanges() { fail_next_ = true; }
 
  private:
-  syncer::SyncChangeList* output_;
+  CheckedPtr<syncer::SyncChangeList> output_;
   bool fail_next_;
 };
 
@@ -149,7 +150,7 @@ class TestPrefServiceSyncableObserver : public PrefServiceSyncableObserver {
 
  private:
   bool is_syncing_changed_ = false;
-  const TestSyncedPrefObserver* sync_pref_observer_ = nullptr;
+  CheckedPtr<const TestSyncedPrefObserver> sync_pref_observer_ = nullptr;
 };
 
 syncer::SyncChange MakeRemoteChange(const std::string& name,
@@ -263,7 +264,7 @@ class PrefServiceSyncableTest : public testing::Test {
  protected:
   TestingPrefServiceSyncable prefs_;
 
-  PrefModelAssociator* pref_sync_service_;
+  CheckedPtr<PrefModelAssociator> pref_sync_service_;
 };
 
 TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
@@ -497,12 +498,12 @@ class PrefServiceSyncableMergeTest : public testing::Test {
  protected:
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   // Owned by prefs_;
-  PrefNotifierImpl* pref_notifier_;
+  CheckedPtr<PrefNotifierImpl> pref_notifier_;
   scoped_refptr<TestingPrefStore> managed_prefs_;
   scoped_refptr<TestingPrefStore> user_prefs_;
   TestPrefModelAssociatorClient client_;
   PrefServiceSyncable prefs_;
-  PrefModelAssociator* pref_sync_service_;
+  CheckedPtr<PrefModelAssociator> pref_sync_service_;
 };
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {

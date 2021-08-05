@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -48,9 +49,9 @@ class AuthenticatorClientPinEntryView : public views::View,
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
-  Delegate* const delegate_;
-  views::Textfield* pin_text_field_ = nullptr;
-  views::Textfield* confirmation_text_field_ = nullptr;
+  const CheckedPtr<Delegate> delegate_;
+  CheckedPtr<views::Textfield> pin_text_field_ = nullptr;
+  CheckedPtr<views::Textfield> confirmation_text_field_ = nullptr;
   const bool show_confirmation_text_field_;
 };
 

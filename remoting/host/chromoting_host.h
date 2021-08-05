@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -142,7 +143,7 @@ class ChromotingHost : public ClientSession::EventHandler {
   // used on the network thread only.
 
   // Parameters specified when the host was created.
-  DesktopEnvironmentFactory* desktop_environment_factory_;
+  CheckedPtr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<protocol::SessionManager> session_manager_;
   scoped_refptr<protocol::TransportContext> transport_context_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;

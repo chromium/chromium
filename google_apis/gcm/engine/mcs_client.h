@@ -14,6 +14,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/base/mcs_message.h"
@@ -238,7 +239,7 @@ class GCM_EXPORT MCSClient {
   const std::string version_string_;
 
   // Clock for enforcing TTL. Passed in for testing.
-  base::Clock* const clock_;
+  const CheckedPtr<base::Clock> clock_;
 
   // Client state.
   State state_;
@@ -253,11 +254,11 @@ class GCM_EXPORT MCSClient {
   uint64_t security_token_;
 
   // Factory for creating new connections and connection handlers.
-  ConnectionFactory* connection_factory_;
+  CheckedPtr<ConnectionFactory> connection_factory_;
 
   // Connection handler to handle all over-the-wire protocol communication
   // with the mobile connection server.
-  ConnectionHandler* connection_handler_;
+  CheckedPtr<ConnectionHandler> connection_handler_;
 
   // -----  Reliablie Message Queue section -----
   // Note: all queues/maps are ordered from oldest (front/begin) message to
@@ -298,7 +299,7 @@ class GCM_EXPORT MCSClient {
   PersistentIdList restored_unackeds_server_ids_;
 
   // The GCM persistent store. Not owned.
-  GCMStore* gcm_store_;
+  CheckedPtr<GCMStore> gcm_store_;
 
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
@@ -309,7 +310,7 @@ class GCM_EXPORT MCSClient {
   std::map<std::string, int> custom_heartbeat_intervals_;
 
   // Recorder that records GCM activities for debugging purpose. Not owned.
-  GCMStatsRecorder* recorder_;
+  CheckedPtr<GCMStatsRecorder> recorder_;
 
   base::WeakPtrFactory<MCSClient> weak_ptr_factory_{this};
 

@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -138,7 +139,7 @@ class DirectOutputSurface : public viz::OutputSurface {
     client_->DidReceivePresentationFeedback(gfx::PresentationFeedback());
   }
 
-  viz::OutputSurfaceClient* client_ = nullptr;
+  CheckedPtr<viz::OutputSurfaceClient> client_ = nullptr;
   base::WeakPtrFactory<DirectOutputSurface> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DirectOutputSurface);

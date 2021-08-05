@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -395,7 +396,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   }
 
  private:
-  IPC::TestSink* sink_;
+  CheckedPtr<IPC::TestSink> sink_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderAccessibilityImplTest);
 };
@@ -1407,7 +1408,7 @@ class TimeDelayBlinkAXTreeSource : public BlinkAXTreeSource {
 
  private:
   mutable int time_delay_ms_ = 0;
-  base::test::TaskEnvironment* task_environment_;
+  CheckedPtr<base::test::TaskEnvironment> task_environment_;
 };
 
 // Tests for URL-keyed metrics.

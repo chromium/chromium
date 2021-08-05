@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/thin_webview/internal/compositor_view_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -55,9 +56,9 @@ class ThinWebView : public content::WebContentsObserver {
   void ResizeWebContents(const gfx::Size& size);
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-  CompositorView* compositor_view_;
-  ui::WindowAndroid* window_android_;
-  content::WebContents* web_contents_;
+  CheckedPtr<CompositorView> compositor_view_;
+  CheckedPtr<ui::WindowAndroid> window_android_;
+  CheckedPtr<content::WebContents> web_contents_;
   std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid>
       web_contents_delegate_;
   gfx::Size view_size_;

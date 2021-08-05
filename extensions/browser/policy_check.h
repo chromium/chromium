@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/preload_check.h"
 
 namespace content {
@@ -31,7 +32,7 @@ class PolicyCheck : public PreloadCheck {
   std::u16string GetErrorMessage() const override;
 
  private:
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
   std::u16string error_;
 
   DISALLOW_COPY_AND_ASSIGN(PolicyCheck);

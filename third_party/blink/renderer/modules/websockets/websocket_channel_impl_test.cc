@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -386,7 +387,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
   WebSocketConnector connector_;
   Persistent<MockWebSocketChannelClient> channel_client_;
   std::unique_ptr<MockWebSocketHandshakeThrottle> handshake_throttle_;
-  MockWebSocketHandshakeThrottle* const raw_handshake_throttle_;
+  const CheckedPtr<MockWebSocketHandshakeThrottle> raw_handshake_throttle_;
   Persistent<WebSocketChannelImpl> channel_;
   uint64_t sum_of_consumed_buffered_amount_;
 

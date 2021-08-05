@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_GUEST_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace content {
 struct ContextMenuParams;
@@ -34,7 +35,7 @@ class ExtensionOptionsGuestDelegate {
   ExtensionOptionsGuest* extension_options_guest() const { return guest_; }
 
  private:
-  ExtensionOptionsGuest* const guest_;
+  const CheckedPtr<ExtensionOptionsGuest> guest_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionOptionsGuestDelegate);
 };

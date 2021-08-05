@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -628,7 +629,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     DirectiveMapping(DirectiveStatus status) : status(std::move(status)) {}
 
     DirectiveStatus status;
-    const CSPParser::Directive* directive = nullptr;
+    CheckedPtr<const CSPParser::Directive> directive = nullptr;
   };
 
   DirectiveMapping script_src_mapping({DirectiveStatus({kScriptSrc})});

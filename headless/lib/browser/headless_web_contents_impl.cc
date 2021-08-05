@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -209,7 +210,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
-  HeadlessWebContentsImpl* headless_web_contents_;  // Not owned.
+  CheckedPtr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
   DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 

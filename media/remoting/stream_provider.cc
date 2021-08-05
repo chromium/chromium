@@ -97,7 +97,7 @@ void StreamProvider::MediaStream::SendRpcMessageOnMainThread(
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&RpcBroker::SendMessageToRemote,
-                     base::Unretained(rpc_broker_), std::move(message)));
+                     base::Unretained(rpc_broker_.get()), std::move(message)));
 }
 
 void StreamProvider::MediaStream::Initialize(

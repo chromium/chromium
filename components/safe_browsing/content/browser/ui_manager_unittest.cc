@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
@@ -278,7 +279,8 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
 
  private:
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
-  TestSafeBrowsingUIManagerDelegate* raw_ui_manager_delegate_ = nullptr;
+  CheckedPtr<TestSafeBrowsingUIManagerDelegate> raw_ui_manager_delegate_ =
+      nullptr;
 };
 
 TEST_F(SafeBrowsingUIManagerTest, Allowlist) {

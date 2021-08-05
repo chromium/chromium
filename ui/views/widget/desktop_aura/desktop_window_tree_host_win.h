@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
@@ -257,12 +258,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // TODO(beng): Consider providing an interface to DesktopNativeWidgetAura
   //             instead of providing this route back to Widget.
-  internal::NativeWidgetDelegate* native_widget_delegate_;
+  CheckedPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
 
-  DesktopNativeWidgetAura* desktop_native_widget_aura_;
+  CheckedPtr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   // Owned by DesktopNativeWidgetAura.
-  DesktopDragDropClientWin* drag_drop_client_;
+  CheckedPtr<DesktopDragDropClientWin> drag_drop_client_;
 
   // When certain windows are being shown, we augment the window size
   // temporarily for animation. The following two members contain the top left
@@ -295,7 +296,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // Owned by TooltipController, but we need to forward events to it so we keep
   // a reference.
-  corewm::TooltipWin* tooltip_;
+  CheckedPtr<corewm::TooltipWin> tooltip_;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -55,7 +56,7 @@ class BLINK_PLATFORM_EXPORT ResourceMultiBuffer : public MultiBuffer {
  protected:
   // Do not access from destructor, it is a pointer to the
   // object that contains us.
-  UrlData* url_data_;
+  CheckedPtr<UrlData> url_data_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
@@ -192,7 +193,7 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   const CorsMode cors_mode_;
   bool has_access_control_;
 
-  UrlIndex* const url_index_;
+  const CheckedPtr<UrlIndex> url_index_;
 
   // Length of resource this url points to. (in bytes)
   int64_t length_;
@@ -293,7 +294,7 @@ class BLINK_PLATFORM_EXPORT UrlIndex {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  ResourceFetchContext* fetch_context_;
+  CheckedPtr<ResourceFetchContext> fetch_context_;
   using UrlDataMap = std::map<UrlData::KeyType, scoped_refptr<UrlData>>;
   UrlDataMap indexed_data_;
   scoped_refptr<MultiBuffer::GlobalLRU> lru_;

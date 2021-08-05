@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
@@ -188,7 +189,7 @@ class SettingsResetPromptDialogCloseTest : public DialogBrowserTest {
   void DismissUi() override { dialog_->Close(); }
 
  private:
-  SettingsResetPromptDialog* dialog_ = nullptr;
+  CheckedPtr<SettingsResetPromptDialog> dialog_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsResetPromptDialogCloseTest,

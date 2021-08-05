@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -70,7 +71,7 @@ class DCOMPTexture : public gl::GLImageDCOMPSurface,
 
   bool context_lost_ = false;
   bool shared_image_mailbox_created_ = false;
-  GpuChannel* channel_ = nullptr;
+  CheckedPtr<GpuChannel> channel_ = nullptr;
   const int32_t route_id_;
   scoped_refptr<SharedContextState> context_state_;
   SequenceId sequence_;

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -380,8 +381,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
   base::WeakPtr<SpdySession> session_;
-  TestServerPushDelegate* test_push_delegate_;
-  SpdySessionPool* spdy_session_pool_;
+  CheckedPtr<TestServerPushDelegate> test_push_delegate_;
+  CheckedPtr<SpdySessionPool> spdy_session_pool_;
   const GURL test_url_;
   const url::SchemeHostPort test_server_;
   SpdySessionKey key_;

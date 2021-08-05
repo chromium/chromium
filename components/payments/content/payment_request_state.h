@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/address_normalizer.h"
@@ -375,8 +376,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   base::WeakPtr<Delegate> delegate_;
 
   // Not owned. Never null. Will outlive this object.
-  autofill::PersonalDataManager* personal_data_manager_;
-  JourneyLogger* journey_logger_;
+  CheckedPtr<autofill::PersonalDataManager> personal_data_manager_;
+  CheckedPtr<JourneyLogger> journey_logger_;
 
   StatusCallback can_make_payment_callback_;
   StatusCallback has_enrolled_instrument_callback_;
@@ -384,11 +385,12 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool are_requested_methods_supported_ = false;
   std::string get_all_payment_apps_error_;
 
-  autofill::AutofillProfile* selected_shipping_profile_ = nullptr;
-  autofill::AutofillProfile* selected_shipping_option_error_profile_ = nullptr;
-  autofill::AutofillProfile* selected_contact_profile_ = nullptr;
-  autofill::AutofillProfile* invalid_shipping_profile_ = nullptr;
-  autofill::AutofillProfile* invalid_contact_profile_ = nullptr;
+  CheckedPtr<autofill::AutofillProfile> selected_shipping_profile_ = nullptr;
+  CheckedPtr<autofill::AutofillProfile>
+      selected_shipping_option_error_profile_ = nullptr;
+  CheckedPtr<autofill::AutofillProfile> selected_contact_profile_ = nullptr;
+  CheckedPtr<autofill::AutofillProfile> invalid_shipping_profile_ = nullptr;
+  CheckedPtr<autofill::AutofillProfile> invalid_contact_profile_ = nullptr;
   base::WeakPtr<PaymentApp> selected_app_;
 
   // Profiles may change due to (e.g.) sync events, so profiles are cached after

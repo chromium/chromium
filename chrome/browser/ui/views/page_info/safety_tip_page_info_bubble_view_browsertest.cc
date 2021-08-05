@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1649,7 +1650,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
   }
 
  private:
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

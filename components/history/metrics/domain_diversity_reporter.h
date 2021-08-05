@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 #define COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -53,9 +54,9 @@ class DomainDiversityReporter : public KeyedService,
   void Shutdown() override {}
 
  private:
-  history::HistoryService* history_service_;
-  PrefService* prefs_;
-  base::Clock* clock_;
+  CheckedPtr<history::HistoryService> history_service_;
+  CheckedPtr<PrefService> prefs_;
+  CheckedPtr<base::Clock> clock_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,8 +46,8 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
   void CreateDialogController();
 
  protected:
-  WebContents* initiator_;
-  MediaRouterDialogControllerViews* dialog_controller_;
+  CheckedPtr<WebContents> initiator_;
+  CheckedPtr<MediaRouterDialogControllerViews> dialog_controller_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerViewsTest);

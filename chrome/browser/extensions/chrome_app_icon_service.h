@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
@@ -104,7 +105,7 @@ class ChromeAppIconService : public KeyedService,
 #endif
 
   // Unowned pointer.
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS this handles Chrome app life-cycle events that may change how

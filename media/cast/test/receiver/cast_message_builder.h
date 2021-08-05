@@ -12,6 +12,7 @@
 #include <map>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
@@ -42,11 +43,11 @@ class CastMessageBuilder {
 
   FrameId last_acked_frame_id() const { return cast_msg_.ack_frame_id; }
 
-  const base::TickClock* const clock_;  // Not owned by this class.
-  RtpPayloadFeedback* const cast_feedback_;
+  const CheckedPtr<const base::TickClock> clock_;  // Not owned by this class.
+  const CheckedPtr<RtpPayloadFeedback> cast_feedback_;
 
   // CastMessageBuilder has only const access to the framer.
-  const Framer* const framer_;
+  const CheckedPtr<const Framer> framer_;
   const uint32_t media_ssrc_;
   const bool decoder_faster_than_max_frame_rate_;
   const int max_unacked_frames_;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -102,15 +103,15 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   base::test::ScopedFeatureList feature_list_;
 
-  HistoryClustersTabHelper* helper_;
+  CheckedPtr<HistoryClustersTabHelper> helper_;
 
   std::unique_ptr<history_clusters::HistoryClustersServiceTestApi>
       history_clusters_service_test_api_;
 
   base::CancelableTaskTracker tracker_;
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Used to verify the async callback is invoked.
   base::RunLoop run_loop_;

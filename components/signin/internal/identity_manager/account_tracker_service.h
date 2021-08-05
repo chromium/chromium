@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -225,7 +226,7 @@ class AccountTrackerService {
   static AccountIdMigrationState GetMigrationState(
       const PrefService* pref_service);
 
-  PrefService* pref_service_ = nullptr;  // Not owned.
+  CheckedPtr<PrefService> pref_service_ = nullptr;  // Not owned.
   std::map<CoreAccountId, AccountInfo> accounts_;
   base::FilePath user_data_dir_;
 

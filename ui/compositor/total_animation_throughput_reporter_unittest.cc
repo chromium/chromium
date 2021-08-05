@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -314,7 +315,7 @@ class ObserverChecker : public ui::CompositorObserver {
   }
 
  private:
-  ui::CompositorObserver* const reporter_observer_;
+  const CheckedPtr<ui::CompositorObserver> reporter_observer_;
 };
 
 }  // namespace
@@ -364,7 +365,7 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
     ~DeleteTestReporter() override { *deleted_ = true; }
 
    private:
-    bool* deleted_;
+    CheckedPtr<bool> deleted_;
   };
 
   Layer layer;

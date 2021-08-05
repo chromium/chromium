@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
@@ -154,8 +155,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
   bool NotifyAuthenticatorSelected();
   void NotifyAuthenticatorSelectedAndFailWithResult(Result result);
 
-  Delegate* delegate_;
-  FidoAuthenticator* authenticator_;
+  CheckedPtr<Delegate> delegate_;
+  CheckedPtr<FidoAuthenticator> authenticator_;
 
   Options options_;
 

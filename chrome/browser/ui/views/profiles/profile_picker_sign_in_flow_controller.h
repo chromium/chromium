@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
@@ -154,13 +155,13 @@ class ProfilePickerSignInFlowController
                        Profile::CreateStatus profile_create_status);
 
   // The host object, must outlive this object.
-  ProfilePickerWebContentsHost* host_;
+  CheckedPtr<ProfilePickerWebContentsHost> host_;
 
   // The web contents backed by `profile`. This is used for displaying the
   // sign-in flow.
   std::unique_ptr<content::WebContents> contents_;
 
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 
   // Prevent |profile_| from being destroyed first.
   ScopedProfileKeepAlive profile_keep_alive_;

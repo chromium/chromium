@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -761,14 +762,14 @@ class ServiceWorkerCacheWriter::DataPipeReader
   }
 
   // Parameters set on Read().
-  net::IOBuffer* buffer_ = nullptr;
+  CheckedPtr<net::IOBuffer> buffer_ = nullptr;
   uint32_t num_bytes_to_read_ = 0;
   ReadCallback callback_;
 
   // |reader_| is safe to be kept as a rawptr because |owner_| owns |this| and
   // |reader_|, and |owner_| keeps |reader_| until it's destroyed.
-  storage::mojom::ServiceWorkerResourceReader* const reader_;
-  ServiceWorkerCacheWriter* const owner_;
+  const CheckedPtr<storage::mojom::ServiceWorkerResourceReader> reader_;
+  const CheckedPtr<ServiceWorkerCacheWriter> owner_;
 
   // Mojo data pipe and the watcher is set up when Read() is called for the
   // first time.

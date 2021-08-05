@@ -158,7 +158,7 @@ void NonClientView::SetFrameView(
   frame_view_ = std::move(frame_view);
   if (parent()) {
     AddChildViewAt(frame_view_.get(), 0);
-    frame_view_->AddChildViewAt(client_view_, 0);
+    frame_view_->AddChildViewAt(client_view_.get(), 0);
   }
 
   if (old_frame_view)
@@ -174,7 +174,7 @@ void NonClientView::SetOverlayView(View* view) {
 
   overlay_view_ = view;
   if (parent())
-    AddChildView(overlay_view_);
+    AddChildView(overlay_view_.get());
 }
 
 CloseRequestResult NonClientView::OnWindowCloseRequested() {
@@ -289,9 +289,9 @@ void NonClientView::ViewHierarchyChanged(
   // constructor.
   if (details.is_add && GetWidget() && details.child == this) {
     AddChildViewAt(frame_view_.get(), 0);
-    frame_view_->AddChildViewAt(client_view_, 0);
+    frame_view_->AddChildViewAt(client_view_.get(), 0);
     if (overlay_view_)
-      AddChildView(overlay_view_);
+      AddChildView(overlay_view_.get());
   }
 }
 

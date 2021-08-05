@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video_capture_types.h"
@@ -85,7 +86,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   Member<blink::ApplyConstraintsRequest> current_request_;
 
   // TODO(crbug.com/704136): Change to use Member.
-  blink::MediaStreamVideoSource* video_source_ = nullptr;
+  CheckedPtr<blink::MediaStreamVideoSource> video_source_ = nullptr;
   base::OnceClosure request_completed_cb_;
 
   MediaDevicesDispatcherCallback media_devices_dispatcher_cb_;

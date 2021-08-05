@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_AD_SAMPLER_TRIGGER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -104,12 +105,12 @@ class AdSamplerTrigger : public content::WebContentsObserver,
 
   // TriggerManager gets called if this trigger detects an ad and wants to
   // collect some data about it. Not owned.
-  TriggerManager* trigger_manager_;
+  CheckedPtr<TriggerManager> trigger_manager_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  history::HistoryService* history_service_;
-  ReferrerChainProvider* referrer_chain_provider_;
+  CheckedPtr<history::HistoryService> history_service_;
+  CheckedPtr<ReferrerChainProvider> referrer_chain_provider_;
 
   // Task runner for posting delayed tasks. Normally set to the runner for the
   // UI thread, but can be overwritten for tests.

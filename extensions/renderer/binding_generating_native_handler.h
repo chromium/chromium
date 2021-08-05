@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/native_handler.h"
 
 namespace extensions {
@@ -30,7 +31,7 @@ class BindingGeneratingNativeHandler : public NativeHandler {
   v8::Local<v8::Object> NewInstance() override;
 
  private:
-  ScriptContext* context_;
+  CheckedPtr<ScriptContext> context_;
   std::string api_name_;
   std::string bind_to_;
 };

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_prompt.h"
@@ -51,8 +52,8 @@ class FileHandlingPermissionPrompt : public permissions::PermissionPrompt {
 
   void OnDialogResponse(bool allow, bool permanently);
 
-  Delegate* delegate_;
-  views::Widget* widget_ = nullptr;
+  CheckedPtr<Delegate> delegate_;
+  CheckedPtr<views::Widget> widget_ = nullptr;
   base::WeakPtrFactory<FileHandlingPermissionPrompt> weak_ptr_factory_{this};
 };
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
@@ -67,7 +68,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
 
   void OnMojoDisconnect();
 
-  mojom::SafeBrowsing* safe_browsing_;
+  CheckedPtr<mojom::SafeBrowsing> safe_browsing_;
   const int render_frame_id_;
 
   // These fields hold the connection to this instance's private connection to

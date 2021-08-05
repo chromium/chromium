@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -77,7 +78,7 @@ class GpuVideoDecodeAcceleratorHost
   mojo::SharedAssociatedRemote<mojom::GpuAcceleratedVideoDecoder> decoder_;
 
   // The client that will receive callbacks from the decoder.
-  Client* client_;
+  CheckedPtr<Client> client_;
 
   // Protect |impl_|. |impl_| is used on media thread, but it can be invalidated
   // on main thread.
@@ -86,7 +87,7 @@ class GpuVideoDecodeAcceleratorHost
   // Unowned reference to the gpu::CommandBufferProxyImpl that created us.
   // |this| registers as a DeletionObserver of |impl_|, the so reference is
   // always valid as long as it is not NULL.
-  gpu::CommandBufferProxyImpl* impl_;
+  CheckedPtr<gpu::CommandBufferProxyImpl> impl_;
 
   // Requested dimensions of the buffer, from ProvidePictureBuffers().
   gfx::Size picture_buffer_dimensions_;

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
@@ -91,8 +92,8 @@ class BrowserDesktopWindowTreeHostWin
 
   void SetWindowIcon(bool badged);
 
-  BrowserView* browser_view_;
-  BrowserFrame* browser_frame_;
+  CheckedPtr<BrowserView> browser_view_;
+  CheckedPtr<BrowserFrame> browser_frame_;
 
   MinimizeButtonMetrics minimize_button_metrics_;
 

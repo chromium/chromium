@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,7 +46,7 @@ class MockPrefChangeCallback {
               const base::Value* value);
 
  private:
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 };
 
 #endif  // COMPONENTS_PREFS_MOCK_PREF_CHANGE_CALLBACK_H_

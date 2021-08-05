@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -67,8 +68,8 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return WebAppProvider::Get(profile())->ui_manager();
   }
 
-  TestShortcutManager* shortcut_manager_;
-  TestOsIntegrationManager* os_integration_manager_;
+  CheckedPtr<TestShortcutManager> shortcut_manager_;
+  CheckedPtr<TestOsIntegrationManager> os_integration_manager_;
 
  private:
   std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {

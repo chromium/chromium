@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -179,11 +180,11 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   SigninViewControllerDelegate* GetModalDialogDelegateForTesting();
 
   // Browser owning this controller.
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 
   // |delegate_| owns itself and calls OnModalSigninClosed() before being
   // destroyed.
-  SigninViewControllerDelegate* delegate_ = nullptr;
+  CheckedPtr<SigninViewControllerDelegate> delegate_ = nullptr;
   base::ScopedObservation<SigninViewControllerDelegate,
                           SigninViewControllerDelegate::Observer>
       delegate_observation_{this};

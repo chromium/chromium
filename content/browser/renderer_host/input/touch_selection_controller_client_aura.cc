@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -97,8 +98,8 @@ class TouchSelectionControllerClientAura::EnvEventObserver
     selection_controller_->HideAndDisallowShowingAutomatically();
   }
 
-  ui::TouchSelectionController* selection_controller_;
-  aura::Window* window_;
+  CheckedPtr<ui::TouchSelectionController> selection_controller_;
+  CheckedPtr<aura::Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(EnvEventObserver);
 };

@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/audio/sinc_resampler.h"
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -180,7 +181,7 @@ class BufferSourceProvider final : public AudioSourceProvider {
   }
 
  private:
-  const float* source_;
+  CheckedPtr<const float> source_;
   int source_frames_available_;
 };
 

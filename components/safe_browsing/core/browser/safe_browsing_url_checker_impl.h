@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -317,7 +318,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // May be null on certain platforms that don't support chrome://safe-browsing
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
-  WebUIDelegate* webui_delegate_ = nullptr;
+  CheckedPtr<WebUIDelegate> webui_delegate_ = nullptr;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 

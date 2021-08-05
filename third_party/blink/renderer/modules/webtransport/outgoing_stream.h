@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -155,7 +156,7 @@ class MODULES_EXPORT OutgoingStream final
     // the memory stored in |buffer_|.
     v8::Isolate* isolate_;
     size_t length_ = 0u;
-    uint8_t* buffer_ = nullptr;
+    CheckedPtr<uint8_t> buffer_ = nullptr;
   };
 
   const Member<ScriptState> script_state_;

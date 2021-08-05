@@ -19,6 +19,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -199,11 +200,11 @@ class ThreatDetails : public content::WebContentsObserver {
 
   scoped_refptr<BaseUIManager> ui_manager_;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   const UnsafeResource resource_;
 
-  ReferrerChainProvider* referrer_chain_provider_;
+  CheckedPtr<ReferrerChainProvider> referrer_chain_provider_;
 
   // For every Url we collect we create a Resource message. We keep
   // them in a map so we can avoid duplicates.

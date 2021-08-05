@@ -16,6 +16,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -609,7 +610,7 @@ class CONTENT_EXPORT RenderFrameHostManager
         const WebExposedIsolationInfo& web_exposed_isolation_info);
 
     // Set with an existing SiteInstance to be reused.
-    SiteInstance* existing_site_instance;
+    CheckedPtr<SiteInstance> existing_site_instance;
 
     // In case |existing_site_instance| is null, specify a destination URL.
     UrlInfo dest_url_info;
@@ -948,10 +949,10 @@ class CONTENT_EXPORT RenderFrameHostManager
       std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
 
   // For use in creating RenderFrameHosts.
-  FrameTreeNode* frame_tree_node_;
+  CheckedPtr<FrameTreeNode> frame_tree_node_;
 
   // Our delegate, not owned by us. Guaranteed non-null.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // Our RenderFrameHost which is responsible for all communication with a child
   // RenderFrame instance.

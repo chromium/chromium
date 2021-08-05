@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -49,9 +50,9 @@ class WebAppShortcutManager : public AppShortcutManager {
 
   WebAppRegistrar& GetWebAppRegistrar();
 
-  WebAppIconManager* icon_manager_;
-  FileHandlerManager* file_handler_manager_;
-  ProtocolHandlerManager* protocol_handler_manager_;
+  CheckedPtr<WebAppIconManager> icon_manager_;
+  CheckedPtr<FileHandlerManager> file_handler_manager_;
+  CheckedPtr<ProtocolHandlerManager> protocol_handler_manager_;
 
   base::WeakPtrFactory<WebAppShortcutManager> weak_ptr_factory_{this};
 };

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/image_model.h"
 
@@ -93,7 +94,7 @@ class GlobalErrorWithStandardBubble
 
  private:
   bool has_shown_bubble_view_ = false;
-  GlobalErrorBubbleViewBase* bubble_view_ = nullptr;
+  CheckedPtr<GlobalErrorBubbleViewBase> bubble_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GlobalErrorWithStandardBubble);
 };

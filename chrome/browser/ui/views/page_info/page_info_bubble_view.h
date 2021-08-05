@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
@@ -152,32 +153,32 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   // The presenter that controls the Page Info UI.
   std::unique_ptr<PageInfo> presenter_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // The header section (containing security-related information).
-  SecurityInformationView* header_ = nullptr;
+  CheckedPtr<SecurityInformationView> header_ = nullptr;
 
   // The raw details of the status of the identity check for this site.
   std::u16string details_text_;
 
   // The view that contains the certificate, cookie, and permissions sections.
-  views::View* site_settings_view_ = nullptr;
+  CheckedPtr<views::View> site_settings_view_ = nullptr;
 
   // The button that opens the "Cookies" dialog.
-  PageInfoHoverButton* cookie_button_ = nullptr;
+  CheckedPtr<PageInfoHoverButton> cookie_button_ = nullptr;
 
   // The button that opens the "Certificate" dialog.
-  PageInfoHoverButton* certificate_button_ = nullptr;
+  CheckedPtr<PageInfoHoverButton> certificate_button_ = nullptr;
 
   // The button that opens up "Site Settings".
-  views::View* site_settings_link = nullptr;
+  CheckedPtr<views::View> site_settings_link = nullptr;
 
   // The view that contains the "Permissions" table of the bubble.
-  views::View* permissions_view_ = nullptr;
+  CheckedPtr<views::View> permissions_view_ = nullptr;
 
   // The view that contains ui related to features on a page, like a presenting
   // VR page.
-  views::View* page_feature_info_view_ = nullptr;
+  CheckedPtr<views::View> page_feature_info_view_ = nullptr;
 
   // The certificate provided by the site, if one exists.
   scoped_refptr<net::X509Certificate> certificate_;

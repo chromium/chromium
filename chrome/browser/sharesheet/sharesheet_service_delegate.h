@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -93,7 +94,7 @@ class SharesheetServiceDelegate {
   // SharesheetServiceDelegate.
   gfx::NativeWindow native_window_;
 
-  SharesheetService* sharesheet_service_;
+  CheckedPtr<SharesheetService> sharesheet_service_;
 
   std::unique_ptr<SharesheetUiDelegate> sharesheet_controller_;
 };

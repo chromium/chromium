@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,7 +39,7 @@ class IncognitoClearBrowsingDataDialogBrowserTest
   }
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  CheckedPtr<Browser> incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,

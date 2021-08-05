@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
@@ -68,14 +69,14 @@ class POLICY_EXPORT ConfigurationPolicyPrefStore
   PrefValueMap* CreatePreferencesFromPolicies();
 
   // May be null in tests.
-  BrowserPolicyConnectorBase* policy_connector_;
+  CheckedPtr<BrowserPolicyConnectorBase> policy_connector_;
 
   // The PolicyService from which policy settings are read.
-  PolicyService* policy_service_;
+  CheckedPtr<PolicyService> policy_service_;
 
   // The policy handlers used to convert policies into their corresponding
   // preferences.
-  const ConfigurationPolicyHandlerList* handler_list_;
+  CheckedPtr<const ConfigurationPolicyHandlerList> handler_list_;
 
   // The policy level that this PrefStore uses.
   PolicyLevel level_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -34,7 +35,7 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
  private:
   // The callback passed to |webrtc::MouseCursorMonitor::Init()|.
-  webrtc::MouseCursorMonitor::Callback* callback_;
+  CheckedPtr<webrtc::MouseCursorMonitor::Callback> callback_;
 
   // Wraps the IPC channel to the desktop session agent.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

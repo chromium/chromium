@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -154,8 +155,8 @@ class AffiliationBackend : public FacetManagerHost,
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::Clock* clock_;
-  const base::TickClock* tick_clock_;
+  CheckedPtr<base::Clock> clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   std::unique_ptr<AffiliationDatabase> cache_;

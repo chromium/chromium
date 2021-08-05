@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
@@ -114,7 +115,7 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
         &associated_interfaces_, GetMainRenderFrame());
   }
 
-  LoginRobotsDeciderAgent* login_robots_decider_agent_;
+  CheckedPtr<LoginRobotsDeciderAgent> login_robots_decider_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

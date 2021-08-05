@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -124,7 +125,7 @@ class UnloadController : public WebContentsCollection::Observer,
     return !on_close_confirmed_.is_null();
   }
 
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   WebContentsCollection web_contents_collection_;
 

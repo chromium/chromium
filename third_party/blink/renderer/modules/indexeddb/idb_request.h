@@ -34,6 +34,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
@@ -418,13 +419,13 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
 
   // Pointer back to the WebIDBCallbacks that holds a persistent reference to
   // this object.
-  WebIDBCallbacks* web_callbacks_ = nullptr;
+  CheckedPtr<WebIDBCallbacks> web_callbacks_ = nullptr;
 
   // Non-null while this request is queued behind other requests that are still
   // getting post-processed.
   //
   // The IDBRequestQueueItem is owned by the result queue in IDBTransaction.
-  IDBRequestQueueItem* queue_item_ = nullptr;
+  CheckedPtr<IDBRequestQueueItem> queue_item_ = nullptr;
 };
 
 }  // namespace blink

@@ -12,6 +12,7 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -595,7 +596,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
   const SkImage* sk_image() const { return sk_image_; }
 
  private:
-  const SkImage* sk_image_ = nullptr;
+  CheckedPtr<const SkImage> sk_image_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSkImageBuilder);
 };
@@ -2677,7 +2678,7 @@ void SkiaRenderer::CopyDrawnRenderPass(
   // Root framebuffer uses id 0 in SkiaOutputSurface.
   AggregatedRenderPassId render_pass_id;
   gpu::Mailbox mailbox;
-  const auto* const render_pass = current_frame()->current_render_pass;
+  const auto* const render_pass = current_frame()->current_render_pass.get();
   if (render_pass != current_frame()->root_render_pass) {
     render_pass_id = render_pass->id;
     auto it = render_pass_backings_.find(render_pass_id);

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
@@ -102,12 +103,12 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   // access to the overlay representations kept here.
   base::flat_map<gpu::Mailbox, OverlayData> overlays_;
 
-  gpu::MailboxManager* const mailbox_manager_;
+  const CheckedPtr<gpu::MailboxManager> mailbox_manager_;
 
-  gpu::SharedImageRepresentationFactory* const
+  const CheckedPtr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
 
-  gpu::SharedContextState* const context_state_;
+  const CheckedPtr<gpu::SharedContextState> context_state_;
   scoped_refptr<gl::GLSurface> gl_surface_;
   const bool supports_async_swap_;
 

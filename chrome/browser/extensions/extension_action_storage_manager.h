@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -50,7 +51,7 @@ class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
   // May return NULL.
   StateStore* GetStateStore();
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   base::ScopedObservation<ExtensionActionAPI, ExtensionActionAPI::Observer>
       extension_action_observation_{this};

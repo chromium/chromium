@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_LOADER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 
 namespace blink {
@@ -29,7 +30,7 @@ class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
                           FetchCodeCacheCallback callback) override;
 
  private:
-  mojom::CodeCacheHost* const code_cache_host_;
+  const CheckedPtr<mojom::CodeCacheHost> code_cache_host_;
 };
 
 }  // namespace blink

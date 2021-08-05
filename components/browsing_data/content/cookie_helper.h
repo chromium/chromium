@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
 
@@ -56,7 +57,7 @@ class CookieHelper : public base::RefCountedThreadSafe<CookieHelper> {
   virtual ~CookieHelper();
 
  private:
-  content::StoragePartition* storage_partition_;
+  CheckedPtr<content::StoragePartition> storage_partition_;
   IsDeletionDisabledCallback delete_disabled_callback_;
 };
 

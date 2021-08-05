@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -183,7 +184,7 @@ class NotificationViewMDTest : public views::InkDropObserver,
   bool delete_on_notification_removed_ = false;
   std::set<std::string> removed_ids_;
   scoped_refptr<NotificationTestDelegate> delegate_;
-  NotificationViewMD* notification_view_ = nullptr;
+  CheckedPtr<NotificationViewMD> notification_view_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NotificationViewMDTest);
@@ -410,10 +411,10 @@ TEST_F(NotificationViewMDTest, CreateOrUpdateTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->title_view_);
-  EXPECT_EQ(nullptr, notification_view()->message_view_);
-  EXPECT_EQ(nullptr, notification_view()->image_container_view_);
-  EXPECT_EQ(nullptr, notification_view()->icon_view_);
+  EXPECT_EQ(nullptr, notification_view()->title_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->message_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->image_container_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->icon_view_.get());
 }
 
 TEST_F(NotificationViewMDTest, UpdateViewsOrderingTest) {
@@ -429,7 +430,7 @@ TEST_F(NotificationViewMDTest, UpdateViewsOrderingTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->title_view_);
+  EXPECT_EQ(nullptr, notification_view()->title_view_.get());
   EXPECT_NE(nullptr, notification_view()->message_view_);
   EXPECT_EQ(0, notification_view()->left_content_->GetIndexOf(
                    notification_view()->message_view_));

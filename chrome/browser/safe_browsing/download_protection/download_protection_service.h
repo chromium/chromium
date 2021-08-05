@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -291,7 +292,7 @@ class DownloadProtectionService {
   SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
       content::WebContents* web_contents);
 
-  SafeBrowsingService* sb_service_;
+  CheckedPtr<SafeBrowsingService> sb_service_;
   // These pointers may be NULL if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;

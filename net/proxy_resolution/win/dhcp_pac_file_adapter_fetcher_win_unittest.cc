@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -70,7 +71,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
           FROM_HERE, base::TimeDelta::FromMilliseconds(fetcher_delay_ms_), this,
           &MockDhcpPacFileAdapterFetcher::OnFetcherTimer);
     }
-    return base::WrapUnique(fetcher_);
+    return base::WrapUnique(fetcher_.get());
   }
 
   class DelayingDhcpQuery : public DhcpQuery {
@@ -142,7 +143,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   int fetcher_delay_ms_;
   int fetcher_result_;
   std::string pac_script_;
-  MockPacFileFetcher* fetcher_;
+  CheckedPtr<MockPacFileFetcher> fetcher_;
   base::OneShotTimer fetcher_timer_;
   scoped_refptr<DelayingDhcpQuery> dhcp_query_;
 };
@@ -297,7 +298,7 @@ class MockDhcpRealFetchPacFileAdapterFetcher
     return PacFileFetcherImpl::Create(url_request_context_);
   }
 
-  URLRequestContext* url_request_context_;
+  CheckedPtr<URLRequestContext> url_request_context_;
 };
 
 TEST(DhcpPacFileAdapterFetcher, MockDhcpRealFetch) {

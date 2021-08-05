@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
@@ -94,8 +95,8 @@ class SyncEngineInitializer : public SyncTask {
                              std::unique_ptr<google_apis::FileList> file_list);
   void PopulateDatabase(std::unique_ptr<SyncTaskToken> token);
 
-  SyncEngineContext* sync_context_;  // Not owned.
-  leveldb::Env* env_override_;
+  CheckedPtr<SyncEngineContext> sync_context_;  // Not owned.
+  CheckedPtr<leveldb::Env> env_override_;
 
   google_apis::CancelCallbackOnce cancel_callback_;
   base::FilePath database_path_;

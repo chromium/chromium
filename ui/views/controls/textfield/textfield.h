@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -639,7 +640,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<TextfieldModel> model_;
 
   // This is the current listener for events from this Textfield.
-  TextfieldController* controller_ = nullptr;
+  CheckedPtr<TextfieldController> controller_ = nullptr;
 
   // An edit command to execute on the next key event. When set to a valid
   // value, the key event is still passed to |controller_|, but otherwise
@@ -745,7 +746,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // View containing the text cursor.
-  View* cursor_view_ = nullptr;
+  CheckedPtr<View> cursor_view_ = nullptr;
 
 #if defined(OS_MAC)
   // Used to track active password input sessions.

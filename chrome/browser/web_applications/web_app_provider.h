@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
@@ -175,7 +176,7 @@ class WebAppProvider : public KeyedService {
 
   base::OneShotEvent on_registry_ready_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // Ensures that ConnectSubsystems() is not called after Start().
   bool started_ = false;

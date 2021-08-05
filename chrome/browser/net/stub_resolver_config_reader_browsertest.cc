@@ -8,6 +8,7 @@
 
 #include "base/enterprise_util.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -111,7 +112,7 @@ class StubResolverConfigReaderBrowsertest
   policy::PolicyMap policy_map_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
-  StubResolverConfigReader* config_reader_;
+  CheckedPtr<StubResolverConfigReader> config_reader_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

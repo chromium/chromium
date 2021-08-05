@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -318,7 +319,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     FieldRendererId focused_field_id_;
     mojom::FocusedFieldType focused_field_type_ =
         mojom::FocusedFieldType::kUnknown;
-    PasswordAutofillAgent* agent_ = nullptr;
+    CheckedPtr<PasswordAutofillAgent> agent_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(FocusStateNotifier);
   };
@@ -545,7 +546,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   base::WeakPtr<AutofillAgent> autofill_agent_;
 
-  PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
+  CheckedPtr<PasswordGenerationAgent>
+      password_generation_agent_;  // Weak reference.
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   PagePasswordsAnalyser page_passwords_analyser_;

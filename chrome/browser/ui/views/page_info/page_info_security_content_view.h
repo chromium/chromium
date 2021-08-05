@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_SECURITY_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_SECURITY_CONTENT_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "components/page_info/page_info_ui.h"
@@ -32,13 +33,13 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
 
   void SecurityDetailsClicked(const ui::Event& event);
 
-  PageInfo* presenter_;
+  CheckedPtr<PageInfo> presenter_;
 
   // The button that opens the "Certificate" dialog.
-  PageInfoHoverButton* certificate_button_ = nullptr;
+  CheckedPtr<PageInfoHoverButton> certificate_button_ = nullptr;
 
   // The views that shows the status of the site's identity check.
-  SecurityInformationView* security_view_ = nullptr;
+  CheckedPtr<SecurityInformationView> security_view_ = nullptr;
 
   // The certificate provided by the site, if one exists.
   scoped_refptr<net::X509Certificate> certificate_;

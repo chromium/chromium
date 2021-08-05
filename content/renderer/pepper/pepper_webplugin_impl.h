@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -119,7 +120,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   scoped_refptr<PepperPluginInstanceImpl> instance_;
   gfx::Rect plugin_rect_;
   PP_Var instance_object_;
-  blink::WebPluginContainer* container_;
+  CheckedPtr<blink::WebPluginContainer> container_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperWebPluginImpl);
 };

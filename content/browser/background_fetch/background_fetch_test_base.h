@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_test_browser_context.h"
@@ -94,7 +95,7 @@ class BackgroundFetchTestBase : public ::testing::Test {
  private:
   BackgroundFetchTestBrowserContext browser_context_;
 
-  MockBackgroundFetchDelegate* delegate_;
+  CheckedPtr<MockBackgroundFetchDelegate> delegate_;
 
   EmbeddedWorkerTestHelper embedded_worker_test_helper_;
 

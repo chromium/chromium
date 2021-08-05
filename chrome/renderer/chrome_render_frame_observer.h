@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/safe_browsing/buildflags.h"
@@ -129,14 +130,15 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
                                chrome::mojom::ImageFormat image_format);
 
   // Have the same lifetime as us.
-  translate::TranslateAgent* translate_agent_;
-  optimization_guide::PageTextAgent* page_text_agent_;
+  CheckedPtr<translate::TranslateAgent> translate_agent_;
+  CheckedPtr<optimization_guide::PageTextAgent> page_text_agent_;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+  CheckedPtr<safe_browsing::PhishingClassifierDelegate> phishing_classifier_ =
+      nullptr;
 #endif
 
   // Owned by ChromeContentRendererClient and outlive us.
-  web_cache::WebCacheImpl* web_cache_impl_;
+  CheckedPtr<web_cache::WebCacheImpl> web_cache_impl_;
 
 #if !defined(OS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.

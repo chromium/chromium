@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -155,10 +156,10 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   bool IsShortcutsVisible() const;
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
-  InstantService* instant_service_;
-  NtpBackgroundService* ntp_background_service_;
-  search_provider_logos::LogoService* logo_service_;
-  const ui::ThemeProvider* theme_provider_;
+  CheckedPtr<InstantService> instant_service_;
+  CheckedPtr<NtpBackgroundService> ntp_background_service_;
+  CheckedPtr<search_provider_logos::LogoService> logo_service_;
+  CheckedPtr<const ui::ThemeProvider> theme_provider_;
   GURL last_blocklisted_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
@@ -166,16 +167,16 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
   absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   base::Time ntp_navigation_start_time_;
   NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
   std::vector<GetPromoCallback> promo_callbacks_;
-  PromoService* promo_service_;
+  CheckedPtr<PromoService> promo_service_;
   base::ScopedObservation<PromoService, PromoServiceObserver>
       promo_service_observation_{this};
   absl::optional<base::TimeTicks> promo_load_start_time_;

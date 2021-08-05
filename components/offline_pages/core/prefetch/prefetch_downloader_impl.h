@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/offline_pages/core/prefetch/prefetch_downloader.h"
@@ -74,10 +75,10 @@ class PrefetchDownloaderImpl : public PrefetchDownloader {
           success_downloads);
 
   // Unowned. It is valid until |this| instance is disposed.
-  download::BackgroundDownloadService* download_service_;
+  CheckedPtr<download::BackgroundDownloadService> download_service_;
 
   // Unowned, owns |this|.
-  PrefetchService* prefetch_service_ = nullptr;
+  CheckedPtr<PrefetchService> prefetch_service_ = nullptr;
 
   version_info::Channel channel_;
 
@@ -92,7 +93,7 @@ class PrefetchDownloaderImpl : public PrefetchDownloader {
   std::set<std::string> outstanding_download_ids_;
   std::map<std::string, std::pair<base::FilePath, int64_t>> success_downloads_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   base::WeakPtrFactory<PrefetchDownloaderImpl> weak_ptr_factory_{this};
 

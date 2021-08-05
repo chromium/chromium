@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/search_engines/edit_search_engine_controller.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
@@ -96,7 +97,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   base::DictionaryValue* CreateDictionaryForExtension(
       const extensions::Extension& extension);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   KeywordEditorController list_controller_;
   std::unique_ptr<EditSearchEngineController> edit_controller_;

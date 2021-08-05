@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SAVE_MANAGER_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SAVE_MANAGER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
 
 namespace password_manager {
@@ -124,7 +125,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const std::unique_ptr<FormSaver> form_saver_;
 
   // The client which implements embedder-specific PasswordManager operations.
-  PasswordManagerClient* client_;
+  CheckedPtr<PasswordManagerClient> client_;
 
   // Stores updated credentials when the form was submitted but success is still
   // unknown. This variable contains credentials that are ready to be written
@@ -136,7 +137,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       PendingCredentialsState::NONE;
 
   // FormFetcher instance which owns the login data from PasswordStore.
-  const FormFetcher* form_fetcher_;
+  CheckedPtr<const FormFetcher> form_fetcher_;
 
  private:
   std::u16string GetOldPassword(
@@ -161,7 +162,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
 
   // Can be nullptr.
-  VotesUploader* votes_uploader_;
+  CheckedPtr<VotesUploader> votes_uploader_;
 };
 
 }  // namespace password_manager

@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -182,10 +183,11 @@ class CloudPrintProxyBackend::Core
           receiver);
 
   // Our parent CloudPrintProxyBackend
-  CloudPrintProxyBackend* const backend_;
+  const CheckedPtr<CloudPrintProxyBackend> backend_;
 
   // Monitors for network connection changes.
-  network::NetworkConnectionTracker* const network_connection_tracker_;
+  const CheckedPtr<network::NetworkConnectionTracker>
+      network_connection_tracker_;
 
   // Provides access to networking APIs for auth_.
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>

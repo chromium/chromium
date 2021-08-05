@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/host_port_pair.h"
@@ -126,8 +127,8 @@ class NET_EXPORT SpdySessionPool
     const bool enable_ip_based_pooling_;
     const bool is_websocket_;
     const bool is_blocking_request_for_session_;
-    Delegate* const delegate_;
-    SpdySessionPool* spdy_session_pool_;
+    const CheckedPtr<Delegate> delegate_;
+    CheckedPtr<SpdySessionPool> spdy_session_pool_;
 
     DISALLOW_COPY_AND_ASSIGN(SpdySessionRequest);
   };
@@ -409,9 +410,9 @@ class NET_EXPORT SpdySessionPool
       SpdySessionRequestMap::iterator request_map_iterator,
       RequestSet::iterator request_set_iterator);
 
-  HttpServerProperties* http_server_properties_;
+  CheckedPtr<HttpServerProperties> http_server_properties_;
 
-  TransportSecurityState* transport_security_state_;
+  CheckedPtr<TransportSecurityState> transport_security_state_;
 
   // The set of all sessions. This is a superset of the sessions in
   // |available_sessions_|.
@@ -432,8 +433,8 @@ class NET_EXPORT SpdySessionPool
   // The index of all unclaimed pushed streams of all SpdySessions in this pool.
   Http2PushPromiseIndex push_promise_index_;
 
-  SSLClientContext* const ssl_client_context_;
-  HostResolver* const resolver_;
+  const CheckedPtr<SSLClientContext> ssl_client_context_;
+  const CheckedPtr<HostResolver> resolver_;
 
   // Versions of QUIC which may be used.
   const quic::ParsedQuicVersionVector quic_supported_versions_;
@@ -479,9 +480,9 @@ class NET_EXPORT SpdySessionPool
   SpdySessionRequestMap spdy_session_request_map_;
 
   TimeFunc time_func_;
-  ServerPushDelegate* push_delegate_;
+  CheckedPtr<ServerPushDelegate> push_delegate_;
 
-  NetworkQualityEstimator* network_quality_estimator_;
+  CheckedPtr<NetworkQualityEstimator> network_quality_estimator_;
 
   base::WeakPtrFactory<SpdySessionPool> weak_ptr_factory_{this};
 

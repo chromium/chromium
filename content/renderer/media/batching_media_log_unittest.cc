@@ -5,6 +5,7 @@
 #include "content/renderer/media/batching_media_log.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -33,7 +34,7 @@ class TestEventHandler : public BatchingMediaLog::EventHandler {
   }
 
  private:
-  BatchingMediaLogTest* test_cls_;
+  CheckedPtr<BatchingMediaLogTest> test_cls_;
 };
 
 class BatchingMediaLogTest : public testing::Test {

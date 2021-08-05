@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -159,7 +160,7 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   bool CanScrollVertically() const;
 
   base::TimeTicks momentum_animation_start_time_;
-  cc::ScrollElasticityHelper* helper_;
+  CheckedPtr<cc::ScrollElasticityHelper> helper_;
   State state_;
 
   // If there is no overscroll, require a minimum overscroll delta before

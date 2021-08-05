@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -51,7 +52,7 @@ class PhotosService : public KeyedService {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PhotosService> weak_factory_{this};
 };

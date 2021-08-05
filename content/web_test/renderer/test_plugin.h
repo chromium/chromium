@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
@@ -167,13 +168,13 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  TestRunner* test_runner_;
-  blink::WebPluginContainer* container_;
-  blink::WebLocalFrame* web_local_frame_;
+  CheckedPtr<TestRunner> test_runner_;
+  CheckedPtr<blink::WebPluginContainer> container_;
+  CheckedPtr<blink::WebLocalFrame> web_local_frame_;
 
   gfx::Rect rect_;
   scoped_refptr<ContextProviderRef> context_provider_;
-  gpu::gles2::GLES2Interface* gl_;
+  CheckedPtr<gpu::gles2::GLES2Interface> gl_;
   gpu::Mailbox mailbox_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;

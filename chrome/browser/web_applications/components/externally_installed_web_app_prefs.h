@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,8 +64,7 @@ class ExternallyInstalledWebAppPrefs {
   bool IsPlaceholderApp(const AppId& app_id) const;
 
  private:
-  PrefService* const pref_service_;
-
+  const CheckedPtr<PrefService> pref_service_;
 };
 
 }  // namespace web_app

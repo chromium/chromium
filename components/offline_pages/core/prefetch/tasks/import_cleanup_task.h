@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_IMPORT_CLEANUP_TASK_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -26,8 +27,8 @@ class ImportCleanupTask : public Task {
   void Run() override;
   void OnPrefetchItemUpdated(bool row_was_updated);
 
-  PrefetchStore* prefetch_store_;        // Outlives this class.
-  PrefetchImporter* prefetch_importer_;  // Outlives this class.
+  CheckedPtr<PrefetchStore> prefetch_store_;        // Outlives this class.
+  CheckedPtr<PrefetchImporter> prefetch_importer_;  // Outlives this class.
 
   base::WeakPtrFactory<ImportCleanupTask> weak_ptr_factory_{this};
 

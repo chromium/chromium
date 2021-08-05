@@ -13,6 +13,7 @@
 #include "base/containers/mru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
@@ -45,8 +46,8 @@ class LevelDBSnapshot {
   const leveldb::Snapshot* snapshot() const { return snapshot_; }
 
  private:
-  leveldb::DB* db_;
-  const leveldb::Snapshot* snapshot_;
+  CheckedPtr<leveldb::DB> db_;
+  CheckedPtr<const leveldb::Snapshot> snapshot_;
 
   DISALLOW_COPY_AND_ASSIGN(LevelDBSnapshot);
 };
@@ -132,7 +133,7 @@ class TransactionalLevelDBDatabase
 
   scoped_refptr<LevelDBState> level_db_state_;
   std::unique_ptr<LevelDBScopes> scopes_;
-  TransactionalLevelDBFactory* class_factory_;
+  CheckedPtr<TransactionalLevelDBFactory> class_factory_;
   base::Time last_modified_;
   std::unique_ptr<base::Clock> clock_;
 
@@ -156,7 +157,7 @@ class TransactionalLevelDBDatabase
     DetachIteratorOnDestruct(DetachIteratorOnDestruct&& that);
     ~DetachIteratorOnDestruct();
 
-    TransactionalLevelDBIterator* it = nullptr;
+    CheckedPtr<TransactionalLevelDBIterator> it = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(DetachIteratorOnDestruct);
   };

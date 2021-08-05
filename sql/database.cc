@@ -19,6 +19,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -64,7 +65,7 @@ class ScopedBusyTimeout {
   }
 
  private:
-  sqlite3* db_;
+  CheckedPtr<sqlite3> db_;
 };
 
 // Helper to "safely" enable writable_schema.  No error checking
@@ -83,7 +84,7 @@ class ScopedWritableSchema {
   }
 
  private:
-  sqlite3* db_;
+  CheckedPtr<sqlite3> db_;
 };
 
 // Helper to wrap the sqlite3_backup_*() step of Raze().  Return

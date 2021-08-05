@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -143,7 +144,7 @@ class LeakDetectionDelegateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockPasswordManagerClient> client_;
-  MockLeakDetectionCheckFactory* mock_factory_ = nullptr;
+  CheckedPtr<MockLeakDetectionCheckFactory> mock_factory_ = nullptr;
   // TODO(crbug.com/1218413): Use StrickMock after MockPasswordStore is replaced
   // with the MockPasswordStoreInterface.
   scoped_refptr<MockPasswordStore> mock_store_ =

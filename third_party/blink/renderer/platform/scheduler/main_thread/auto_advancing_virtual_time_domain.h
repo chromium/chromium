@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AUTO_ADVANCING_VIRTUAL_TIME_DOMAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AUTO_ADVANCING_VIRTUAL_TIME_DOMAIN_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/task_observer.h"
 #include "base/time/time_override.h"
@@ -95,7 +96,7 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   int max_task_starvation_count_;
 
   bool can_advance_virtual_time_;
-  SchedulerHelper* helper_;  // NOT OWNED
+  CheckedPtr<SchedulerHelper> helper_;  // NOT OWNED
 
   // VirtualTime is usually doled out in 100ms intervals using fences and this
   // variable let us honor a request to MaybeAdvanceVirtualTime that straddles

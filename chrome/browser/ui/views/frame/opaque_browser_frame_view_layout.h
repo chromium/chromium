@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
@@ -161,7 +162,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // when the window is restored.
   virtual int NonClientExtraTopThickness() const;
 
-  OpaqueBrowserFrameViewLayoutDelegate* delegate_;
+  CheckedPtr<OpaqueBrowserFrameViewLayoutDelegate> delegate_;
 
   // The leading and trailing x positions of the empty space available for
   // laying out titlebar elements.
@@ -227,18 +228,19 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   views::Button* restore_button_;
   views::Button* close_button_;
 
-  views::View* window_icon_;
-  views::Label* window_title_;
+  CheckedPtr<views::View> window_icon_;
+  CheckedPtr<views::Label> window_title_;
 
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
 
-  views::ClientView* client_view_ = nullptr;
+  CheckedPtr<views::ClientView> client_view_ = nullptr;
 
   bool is_window_controls_overlay_enabled_ = false;
-  CaptionButtonPlaceholderContainer* caption_button_placeholder_container_;
+  CheckedPtr<CaptionButtonPlaceholderContainer>
+      caption_button_placeholder_container_;
 
   DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayout);
 };

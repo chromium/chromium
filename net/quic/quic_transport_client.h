@@ -5,6 +5,7 @@
 #ifndef NET_QUIC_QUIC_TRANSPORT_CLIENT_H_
 #define NET_QUIC_QUIC_TRANSPORT_CLIENT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
@@ -133,7 +134,7 @@ class NET_EXPORT QuicTransportClient
         absl::optional<quic::MessageStatus> status) override;
 
    private:
-    QuicTransportClient* client_;
+    CheckedPtr<QuicTransportClient> client_;
   };
 
   // DoLoop processing the Connect() call.
@@ -157,13 +158,13 @@ class NET_EXPORT QuicTransportClient
   const GURL url_;
   const url::Origin origin_;
   const NetworkIsolationKey isolation_key_;
-  URLRequestContext* const context_;  // Unowned.
-  WebTransportClientVisitor* const visitor_;  // Unowned.
+  const CheckedPtr<URLRequestContext> context_;          // Unowned.
+  const CheckedPtr<WebTransportClientVisitor> visitor_;  // Unowned.
 
-  ClientSocketFactory* const client_socket_factory_;
-  QuicContext* const quic_context_;
+  const CheckedPtr<ClientSocketFactory> client_socket_factory_;
+  const CheckedPtr<QuicContext> quic_context_;
   NetLogWithSource net_log_;
-  base::SequencedTaskRunner* task_runner_;
+  CheckedPtr<base::SequencedTaskRunner> task_runner_;
 
   quic::ParsedQuicVersionVector supported_versions_;
   // TODO(vasilvv): move some of those into QuicContext.

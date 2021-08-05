@@ -7,6 +7,7 @@
 
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -192,7 +193,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
   }
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  FileSystemAccessManagerImpl* const manager_;
+  const CheckedPtr<FileSystemAccessManagerImpl> manager_;
   const BindingContext context_;
   const storage::FileSystemURL url_;
   const SharedHandleState handle_state_;

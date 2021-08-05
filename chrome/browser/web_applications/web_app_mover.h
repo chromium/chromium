@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -100,17 +101,17 @@ class WebAppMover final : public syncer::SyncServiceObserver {
 
   void RecordResults(WebAppMoverResult result);
 
-  Profile* profile_;
-  WebAppRegistrar* registrar_;
-  InstallFinalizer* install_finalizer_;
-  WebAppInstallManager* install_manager_;
-  AppRegistryController* controller_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<WebAppRegistrar> registrar_;
+  CheckedPtr<InstallFinalizer> install_finalizer_;
+  CheckedPtr<WebAppInstallManager> install_manager_;
+  CheckedPtr<AppRegistryController> controller_;
 
   UninstallMode uninstall_mode_;
   std::string uninstall_url_prefix_or_pattern_;
   GURL install_url_;
 
-  syncer::SyncService* sync_service_ = nullptr;
+  CheckedPtr<syncer::SyncService> sync_service_ = nullptr;
   base::OnceClosure sync_ready_callback_;
 
   bool results_recorded_ = false;

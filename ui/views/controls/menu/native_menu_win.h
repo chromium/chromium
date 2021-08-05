@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
@@ -77,7 +78,7 @@ class VIEWS_EXPORT NativeMenuWin {
   void ResetNativeMenu();
 
   // Our attached model and delegate.
-  ui::MenuModel* model_;
+  CheckedPtr<ui::MenuModel> model_;
 
   HMENU menu_;
 
@@ -98,7 +99,7 @@ class VIEWS_EXPORT NativeMenuWin {
   int first_item_index_;
 
   // If we're a submenu, this is our parent.
-  NativeMenuWin* parent_;
+  CheckedPtr<NativeMenuWin> parent_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeMenuWin);
 };

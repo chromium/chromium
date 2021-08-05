@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "headless/public/devtools/domains/accessibility.h"
@@ -180,13 +181,13 @@ class HEADLESS_EXPORT HeadlessDevToolsClientImpl
   void SendProtocolMessage(const base::DictionaryValue* message);
 
   std::unique_ptr<HeadlessDevToolsChannel> channel_;
-  ExternalHost* external_host_ = nullptr;
-  RawProtocolListener* raw_protocol_listener_ = nullptr;
+  CheckedPtr<ExternalHost> external_host_ = nullptr;
+  CheckedPtr<RawProtocolListener> raw_protocol_listener_ = nullptr;
 
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
   std::string session_id_;
-  HeadlessDevToolsClientImpl* parent_client_ = nullptr;
+  CheckedPtr<HeadlessDevToolsClientImpl> parent_client_ = nullptr;
   base::flat_map<std::string, HeadlessDevToolsClientImpl*> sessions_;
   bool renderer_crashed_ = false;
 

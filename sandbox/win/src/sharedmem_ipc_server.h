@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -93,14 +94,14 @@ class SharedMemIPCServer {
     // The size of this channel.
     uint32_t channel_size;
     // The pointer to the actual channel data.
-    char* channel_buffer;
+    CheckedPtr<char> channel_buffer;
     // The pointer to the base of the shared memory.
-    char* shared_base;
+    CheckedPtr<char> shared_base;
     // A pointer to this channel's client-side control structure this structure
     // lives in the shared memory.
-    ChannelControl* channel;
+    CheckedPtr<ChannelControl> channel;
     // the IPC dispatcher associated with this channel.
-    Dispatcher* dispatcher;
+    CheckedPtr<Dispatcher> dispatcher;
     // The target process information associated with this channel.
     ClientInfo target_info;
   };
@@ -119,7 +120,7 @@ class SharedMemIPCServer {
 
   // The thread pool provides the threads that call back into this object
   // when the IPC events fire.
-  ThreadPool* thread_pool_;
+  CheckedPtr<ThreadPool> thread_pool_;
 
   // The IPC object is associated with a target process.
   HANDLE target_process_;

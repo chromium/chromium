@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -100,7 +101,7 @@ class NetErrorAutoReloader
     net::Error error;
   };
 
-  network::NetworkConnectionTracker* connection_tracker_;
+  CheckedPtr<network::NetworkConnectionTracker> connection_tracker_;
   bool is_online_ = true;
   std::set<content::NavigationHandle*> pending_navigations_;
   absl::optional<base::OneShotTimer> next_reload_timer_;

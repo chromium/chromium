@@ -14,6 +14,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
@@ -247,7 +248,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
     std::move(callback).Run(status);
   }
 
-  RemoteFileSyncService* remote_service_;
+  CheckedPtr<RemoteFileSyncService> remote_service_;
   RemoteServiceState last_state_;
   base::WeakPtrFactory<RemoteSyncRunner> factory_{this};
   DISALLOW_COPY_AND_ASSIGN(RemoteSyncRunner);

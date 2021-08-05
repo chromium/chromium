@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/android/jni_headers/GlDisplay_jni.h"
 #include "remoting/client/chromoting_client_runtime.h"
 #include "remoting/client/cursor_shape_stub_proxy.h"
@@ -60,7 +61,7 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
   // Initializes the core on the display thread.
   void Initialize();
 
-  ChromotingClientRuntime* runtime_;
+  CheckedPtr<ChromotingClientRuntime> runtime_;
   base::WeakPtr<JniGlDisplayHandler> shell_;
 
   // Will be std::move'd when GrabFrameConsumer() is called.
@@ -68,7 +69,7 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
 
   base::WeakPtr<DualBufferFrameConsumer> frame_consumer_;
 
-  ANativeWindow* window_ = nullptr;
+  CheckedPtr<ANativeWindow> window_ = nullptr;
   std::unique_ptr<EglThreadContext> egl_context_;
   std::unique_ptr<GlRenderer> renderer_;
 

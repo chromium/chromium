@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -119,7 +120,7 @@ class GeoLanguageProvider {
 
   // The pref service used to cached the latest latitude/longitude pair
   // obtained.
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(GeoLanguageProvider);
 };

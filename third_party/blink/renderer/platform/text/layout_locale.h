@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LAYOUT_LOCALE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LAYOUT_LOCALE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -93,7 +94,7 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   mutable scoped_refptr<Hyphenation> hyphenation_;
 
   // hb_language_t is defined in hb.h, which not all files can include.
-  const hb_language_impl_t* harfbuzz_language_;
+  CheckedPtr<const hb_language_impl_t> harfbuzz_language_;
 
   UScriptCode script_;
   mutable UScriptCode script_for_han_;

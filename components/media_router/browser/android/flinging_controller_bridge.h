@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_FLINGING_CONTROLLER_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/flinging_controller.h"
 #include "media/base/media_controller.h"
@@ -46,7 +47,7 @@ class FlingingControllerBridge : public media::FlingingController,
   // Observer to be notified of media status changes from the Java side.
   // NOTE: We don't manage a collection of observers because FlingingRenderer is
   // the only observer that subscribes to |this|, with a 1:1 relationship.
-  media::MediaStatusObserver* observer_ = nullptr;
+  CheckedPtr<media::MediaStatusObserver> observer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FlingingControllerBridge);
 };

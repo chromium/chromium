@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -130,7 +131,7 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
   absl::optional<net::AddressList> result_addresses_;
   absl::optional<std::vector<std::string>> result_text_;
   absl::optional<std::vector<net::HostPortPair>> result_hosts_;
-  base::RunLoop* const run_loop_;
+  const CheckedPtr<base::RunLoop> run_loop_;
 };
 
 class TestMdnsListenClient : public mojom::MdnsListenClient {

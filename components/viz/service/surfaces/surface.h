@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -348,7 +349,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   const SurfaceInfo surface_info_;
   SurfaceId previous_frame_surface_id_;
-  SurfaceManager* const surface_manager_;
+  const CheckedPtr<SurfaceManager> surface_manager_;
   base::WeakPtr<SurfaceClient> surface_client_;
   std::unique_ptr<SurfaceDependencyDeadline> deadline_;
 
@@ -385,7 +386,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   bool is_latency_info_taken_ = false;
 
-  SurfaceAllocationGroup* const allocation_group_;
+  const CheckedPtr<SurfaceAllocationGroup> allocation_group_;
 
   SurfaceSavedFrameStorage surface_saved_frame_storage_{this};
 

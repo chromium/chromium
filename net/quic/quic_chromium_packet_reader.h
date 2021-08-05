@@ -7,6 +7,7 @@
 #define NET_QUIC_QUIC_CHROMIUM_PACKET_READER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
@@ -61,12 +62,12 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   // Return true if reading should continue.
   bool ProcessReadResult(int result);
 
-  DatagramClientSocket* socket_;
+  CheckedPtr<DatagramClientSocket> socket_;
 
-  Visitor* visitor_;
+  CheckedPtr<Visitor> visitor_;
   bool read_pending_;
   int num_packets_read_;
-  const quic::QuicClock* clock_;  // Not owned.
+  CheckedPtr<const quic::QuicClock> clock_;  // Not owned.
   int yield_after_packets_;
   quic::QuicTime::Delta yield_after_duration_;
   quic::QuicTime yield_after_;

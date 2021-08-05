@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -173,9 +174,9 @@ class ChromeAppSorting : public AppSorting,
   // Sets |web_app_sync_bridge_|. Only for use by tests.
   void SetWebAppSyncBridgeForTesting(web_app::WebAppSyncBridge* sync_bridge);
 
-  content::BrowserContext* const browser_context_ = nullptr;
-  const web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
-  web_app::WebAppSyncBridge* web_app_sync_bridge_ = nullptr;
+  const CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  CheckedPtr<const web_app::WebAppRegistrar> web_app_registrar_ = nullptr;
+  CheckedPtr<web_app::WebAppSyncBridge> web_app_sync_bridge_ = nullptr;
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       app_registrar_observation_{this};

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -42,7 +43,7 @@ class SafeBuiltins {
   v8::Local<v8::Object> GetPromise() const;
 
  private:
-  ScriptContext* context_;
+  CheckedPtr<ScriptContext> context_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBuiltins);
 };

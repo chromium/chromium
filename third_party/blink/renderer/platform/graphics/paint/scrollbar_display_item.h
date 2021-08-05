@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCROLLBAR_DISPLAY_ITEM_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -76,7 +77,7 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
 
   struct Data {
     scoped_refptr<cc::Scrollbar> scrollbar_;
-    const TransformPaintPropertyNode* scroll_translation_;
+    CheckedPtr<const TransformPaintPropertyNode> scroll_translation_;
     CompositorElementId element_id_;
     // This is lazily created for non-composited scrollbar.
     mutable sk_sp<const PaintRecord> record_;

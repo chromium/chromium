@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
@@ -58,10 +59,10 @@ class CONTENT_EXPORT PepperFileChooserHost
                               const std::vector<int>& browser_ids);
 
   // Non-owning pointer.
-  RendererPpapiHost* renderer_ppapi_host_;
+  CheckedPtr<RendererPpapiHost> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext reply_context_;
-  CompletionHandler* handler_;
+  CheckedPtr<CompletionHandler> handler_;
 
   base::WeakPtrFactory<PepperFileChooserHost> weak_factory_{this};
 

@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -438,7 +439,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
       platform_support_;
   base::Thread render_thread_;
   WebMediaStreamSource web_source_;
-  MockMediaStreamVideoSource* mock_source_;
+  CheckedPtr<MockMediaStreamVideoSource> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 };
 

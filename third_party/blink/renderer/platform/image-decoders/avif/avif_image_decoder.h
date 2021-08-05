@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/libavif/src/include/avif/avif.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -51,7 +52,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
  private:
   struct AvifIOData {
-    blink::SegmentReader* reader = nullptr;
+    CheckedPtr<blink::SegmentReader> reader = nullptr;
     std::vector<uint8_t> buffer;
     bool all_data_received = false;
   };

@@ -32,6 +32,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 
@@ -133,10 +134,11 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   ThreatSource threat_source_;
 
  private:
-  history::HistoryService* history_service_ = nullptr;
-  SafeBrowsingNavigationObserverManager* navigation_observer_manager_ = nullptr;
-  SafeBrowsingMetricsCollector* metrics_collector_ = nullptr;
-  TriggerManager* trigger_manager_ = nullptr;
+  CheckedPtr<history::HistoryService> history_service_ = nullptr;
+  CheckedPtr<SafeBrowsingNavigationObserverManager>
+      navigation_observer_manager_ = nullptr;
+  CheckedPtr<SafeBrowsingMetricsCollector> metrics_collector_ = nullptr;
+  CheckedPtr<TriggerManager> trigger_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CONTROLLER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 
 #include "base/macros.h"
@@ -109,7 +110,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   // applicable.
   bool bubble_has_been_shown_ = false;
 
-  ObserverForTest* observer_for_test_ = nullptr;
+  CheckedPtr<ObserverForTest> observer_for_test_ = nullptr;
 
   base::WeakPtrFactory<VirtualCardManualFallbackBubbleControllerImpl>
       weak_ptr_factory_{this};

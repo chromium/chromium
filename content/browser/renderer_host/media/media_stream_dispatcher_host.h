@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
@@ -107,7 +108,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   const int render_process_id_;
   const int render_frame_id_;
   const int requester_id_;
-  MediaStreamManager* media_stream_manager_;
+  CheckedPtr<MediaStreamManager> media_stream_manager_;
   mojo::Remote<blink::mojom::MediaStreamDeviceObserver>
       media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;

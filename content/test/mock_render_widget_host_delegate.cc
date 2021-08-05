@@ -57,7 +57,7 @@ MockRenderWidgetHostDelegate::GetInputEventRouter() {
 
 RenderWidgetHostImpl* MockRenderWidgetHostDelegate::GetFocusedRenderWidgetHost(
     RenderWidgetHostImpl* widget_host) {
-  return !!focused_widget_ ? focused_widget_ : widget_host;
+  return !!focused_widget_ ? focused_widget_.get() : widget_host;
 }
 
 void MockRenderWidgetHostDelegate::SendScreenRects() {

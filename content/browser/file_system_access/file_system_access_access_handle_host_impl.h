@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -51,7 +52,7 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   void OnDisconnect();
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  FileSystemAccessManagerImpl* const manager_;
+  const CheckedPtr<FileSystemAccessManagerImpl> manager_;
 
   // URL of the file associated with this handle. It is used to unlock the
   // exclusive write lock on closure/destruction.

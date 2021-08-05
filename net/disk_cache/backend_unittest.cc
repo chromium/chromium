@@ -11,6 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -5078,7 +5079,7 @@ TEST_F(DiskCacheBackendTest, SimpleOwnershipTransferBackendDestroyRace) {
       *ran_ptr = true;
     }
 
-    bool* ran_ptr;
+    CheckedPtr<bool> ran_ptr;
   };
 
   const char kKey[] = "skeleton";
@@ -5226,7 +5227,7 @@ TEST_F(DiskCacheBackendTest, SimpleCancelOpPendingDoom) {
     explicit CleanupContext(bool* ran_ptr) : ran_ptr(ran_ptr) {}
     ~CleanupContext() { *ran_ptr = true; }
 
-    bool* ran_ptr;
+    CheckedPtr<bool> ran_ptr;
   };
 
   const char kKey[] = "skeleton";

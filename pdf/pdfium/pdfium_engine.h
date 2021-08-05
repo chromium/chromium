@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -226,7 +227,7 @@ class PDFiumEngine : public PDFEngine,
     // compensate for any rounding errors.
     void Invalidate(const gfx::Rect& selection);
 
-    PDFiumEngine* const engine_;
+    const CheckedPtr<PDFiumEngine> engine_;
     // The origin at the time this object was constructed.
     const gfx::Point previous_origin_;
     // Screen rectangles that were selected on construction.
@@ -647,7 +648,7 @@ class PDFiumEngine : public PDFEngine,
   // TODO(crbug.com/702993): Remove when PPAPI is gone.
   void SetLastInstance();
 
-  PDFEngine::Client* const client_;
+  const CheckedPtr<PDFEngine::Client> client_;
 
   // The current document layout.
   DocumentLayout layout_;

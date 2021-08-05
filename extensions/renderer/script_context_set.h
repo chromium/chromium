@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
@@ -125,7 +126,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
 
   // Weak reference to all installed Extensions that are also active in this
   // process.
-  ExtensionIdSet* active_extension_ids_;
+  CheckedPtr<ExtensionIdSet> active_extension_ids_;
 
   // The set of all ScriptContexts we own.
   std::set<ScriptContext*> contexts_;

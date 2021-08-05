@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -188,7 +189,7 @@ class AuctionV8Helper
     ~ScopedConsoleTarget();
 
    private:
-    AuctionV8Helper* owner_;
+    CheckedPtr<AuctionV8Helper> owner_;
   };
 
   explicit AuctionV8Helper(
@@ -214,7 +215,7 @@ class AuctionV8Helper
       kScriptTimeout;
 
   // See corresponding getters for description.
-  std::vector<std::string>* console_buffer_
+  CheckedPtr<std::vector<std::string>> console_buffer_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   std::string console_script_name_ GUARDED_BY_CONTEXT(sequence_checker_);
 

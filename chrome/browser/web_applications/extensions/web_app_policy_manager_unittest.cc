@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -399,12 +400,12 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   InstallResultCode install_result_code_ =
       InstallResultCode::kSuccessNewInstall;
 
-  WebAppRegistrarMutable* test_app_registrar_ = nullptr;
+  CheckedPtr<WebAppRegistrarMutable> test_app_registrar_ = nullptr;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  TestExternallyManagedAppManager* test_externally_managed_app_manager_ =
-      nullptr;
-  WebAppPolicyManager* web_app_policy_manager_ = nullptr;
+  CheckedPtr<TestExternallyManagedAppManager>
+      test_externally_managed_app_manager_ = nullptr;
+  CheckedPtr<WebAppPolicyManager> web_app_policy_manager_ = nullptr;
 };
 
 TEST_F(WebAppPolicyManagerTest, NoPrefValues) {

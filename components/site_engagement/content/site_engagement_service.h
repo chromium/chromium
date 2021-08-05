@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -311,10 +312,10 @@ class SiteEngagementService : public KeyedService,
   void AddObserver(SiteEngagementObserver* observer);
   void RemoveObserver(SiteEngagementObserver* observer);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // The clock used to vend times.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<SiteEngagementServiceAndroid> android_service_;

@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_image_generator.h"
@@ -107,7 +108,7 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   virtual CacheType GetType() const = 0;
 
  protected:
-  const ImageFrameGenerator* generator_;
+  CheckedPtr<const ImageFrameGenerator> generator_;
   int use_count_;
 
  private:

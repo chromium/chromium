@@ -53,6 +53,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -133,7 +134,7 @@ struct PacketProxy {
     if (receiver)
       receiver->ReceivePacket(std::move(packet));
   }
-  CastReceiver* receiver;
+  CheckedPtr<CastReceiver> receiver;
 };
 
 class TransportClient : public CastTransport::Client {
@@ -159,8 +160,9 @@ class TransportClient : public CastTransport::Client {
   }
 
  private:
-  LogEventDispatcher* const log_event_dispatcher_;  // Not owned by this class.
-  PacketProxy* const packet_proxy_;                 // Not owned by this class.
+  const CheckedPtr<LogEventDispatcher>
+      log_event_dispatcher_;                    // Not owned by this class.
+  const CheckedPtr<PacketProxy> packet_proxy_;  // Not owned by this class.
 
   DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
@@ -212,7 +214,7 @@ class EncodedVideoFrameTracker final : public RawEventSubscriber {
   }
 
  private:
-  FakeMediaSource* media_source_;
+  CheckedPtr<FakeMediaSource> media_source_;
   CastLoggingEvent last_frame_event_type_;
   base::queue<scoped_refptr<media::VideoFrame>> video_frames_;
 

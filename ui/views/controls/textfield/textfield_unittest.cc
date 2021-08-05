@@ -15,6 +15,7 @@
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -139,7 +140,7 @@ class TextfieldFocuser : public View {
 
  private:
   bool consume_ = true;
-  Textfield* textfield_;
+  CheckedPtr<Textfield> textfield_;
 
   DISALLOW_COPY_AND_ASSIGN(TextfieldFocuser);
 };

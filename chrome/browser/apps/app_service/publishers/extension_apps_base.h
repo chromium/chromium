@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
@@ -179,7 +180,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
  private:
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
@@ -194,7 +195,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
   std::map<std::string, EnableFlowPtr> enable_flow_map_;
 
   // app_service_ is owned by the object that owns this object.
-  apps::mojom::AppService* app_service_;
+  CheckedPtr<apps::mojom::AppService> app_service_;
 
   base::WeakPtrFactory<ExtensionAppsBase> weak_factory_{this};
 };

@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 
@@ -59,7 +60,7 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   // historical tabs or groups.
   bool BrowserSupportsHistoricalEntries();
 
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   // The following factory is used to close the frame at a later time.
   base::WeakPtrFactory<BrowserTabStripModelDelegate> weak_factory_{this};

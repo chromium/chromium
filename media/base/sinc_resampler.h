@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 
@@ -165,11 +166,11 @@ class MEDIA_EXPORT SincResampler {
 
   // Pointers to the various regions inside |input_buffer_|.  See the diagram at
   // the top of the .cc file for more information.
-  float* r0_;
-  float* const r1_;
-  float* const r2_;
-  float* r3_;
-  float* r4_;
+  CheckedPtr<float> r0_;
+  const CheckedPtr<float> r1_;
+  const CheckedPtr<float> r2_;
+  CheckedPtr<float> r3_;
+  CheckedPtr<float> r4_;
 
   DISALLOW_COPY_AND_ASSIGN(SincResampler);
 };

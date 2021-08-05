@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "media/base/media_resource.h"
@@ -126,9 +127,9 @@ class MediaFoundationRendererClient
       pending_dcomp_surface_registry_;
   mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
 
-  RendererClient* client_ = nullptr;
+  CheckedPtr<RendererClient> client_ = nullptr;
 
-  VideoRendererSink* sink_;
+  CheckedPtr<VideoRendererSink> sink_;
   bool video_rendering_started_ = false;
   bool dcomp_rendering_initialized_ = false;
   // video's native size.
@@ -141,7 +142,7 @@ class MediaFoundationRendererClient
   bool has_video_ = false;
 
   PipelineStatusCallback init_cb_;
-  CdmContext* cdm_context_ = nullptr;
+  CheckedPtr<CdmContext> cdm_context_ = nullptr;
   CdmAttachedCB cdm_attached_cb_;
 
   // Used temporarily, to delay binding to |renderer_extension_remote_| until we

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_executor.h"
@@ -141,13 +142,13 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       model_handlers_;
 
   // Used to access the current time.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   // Database for segment information and metadata.
-  SegmentInfoDatabase* segment_database_;
+  CheckedPtr<SegmentInfoDatabase> segment_database_;
 
   // Main signal database for user actions and histograms.
-  SignalDatabase* signal_database_;
+  CheckedPtr<SignalDatabase> signal_database_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
   std::unique_ptr<FeatureAggregator> feature_aggregator_;

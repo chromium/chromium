@@ -101,8 +101,8 @@ void DialMediaSinkServiceImpl::Start() {
 
   StartTimer();
 
-  dial_registry_ =
-      test_dial_registry_ ? test_dial_registry_ : DialRegistry::GetInstance();
+  dial_registry_ = test_dial_registry_ ? test_dial_registry_.get()
+                                       : DialRegistry::GetInstance();
   dial_registry_->RegisterObserver(this);
   dial_registry_->OnListenerAdded();
 }

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -23,7 +24,7 @@ class ThreadWithCustomScheduler : public Thread {
   }
 
  private:
-  ThreadScheduler* scheduler_;
+  CheckedPtr<ThreadScheduler> scheduler_;
 };
 
 }  // namespace

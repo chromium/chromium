@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -117,7 +118,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
   int failure_count = 0;
 
  private:
-  MockHatsService* hats_service_;
+  CheckedPtr<MockHatsService> hats_service_;
 };
 
 // Test that the web dialog correctly receives change to history state that

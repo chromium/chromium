@@ -11,6 +11,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -73,9 +74,9 @@ class MediaSessionAndroid final
   JavaObjectWeakGlobalRef j_media_session_;
   // WebContentsAndroid corresponding to the Java WebContentsImpl that holds a
   // strong reference to |j_media_session_|.
-  WebContentsAndroid* web_contents_android_;
+  CheckedPtr<WebContentsAndroid> web_contents_android_;
 
-  MediaSessionImpl* const media_session_;
+  const CheckedPtr<MediaSessionImpl> media_session_;
 
   bool is_paused_ = false;
   bool is_controllable_ = false;

@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
@@ -113,7 +114,7 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
   unsigned int last_work_id_ = std::numeric_limits<unsigned int>::max();
   bool is_continued_work_ = false;
-  const WorkIdRecorder* const work_id_recorder_;
+  const CheckedPtr<const WorkIdRecorder> work_id_recorder_;
 
   // The SampledProfile protobuf message which contains the collected stack
   // samples.

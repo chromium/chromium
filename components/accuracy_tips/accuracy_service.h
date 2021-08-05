@@ -6,6 +6,7 @@
 #define COMPONENTS_ACCURACY_TIPS_ACCURACY_SERVICE_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -75,7 +76,7 @@ class AccuracyService : public KeyedService {
                            AccuracyTipUI::Interaction interaction);
 
   std::unique_ptr<AccuracyTipUI> ui_;
-  PrefService* pref_service_ = nullptr;
+  CheckedPtr<PrefService> pref_service_ = nullptr;
   scoped_refptr<AccuracyTipSafeBrowsingClient> sb_client_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
@@ -85,7 +86,7 @@ class AccuracyService : public KeyedService {
   const base::TimeDelta time_between_prompts_;
   const bool disable_ui_ = false;
 
-  base::Clock* clock_ = base::DefaultClock::GetInstance();
+  CheckedPtr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
   base::WeakPtrFactory<AccuracyService> weak_factory_{this};
 };

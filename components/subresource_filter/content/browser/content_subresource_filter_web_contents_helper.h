@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
@@ -110,9 +111,9 @@ class ContentSubresourceFilterWebContentsHelper
       LoadPolicy load_policy) override;
 
  private:
-  SubresourceFilterProfileContext* profile_context_;
+  CheckedPtr<SubresourceFilterProfileContext> profile_context_;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  VerifiedRulesetDealer::Handle* dealer_handle_;
+  CheckedPtr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
   // Set of frames across all pages in this WebContents that have had at least
   // one committed or aborted navigation. Keyed by FrameTreeNode ID.

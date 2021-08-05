@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/value_store/value_store_client_id.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 
@@ -83,7 +84,7 @@ class TestValueStoreFactory : public ValueStoreFactory {
 
   ~TestValueStoreFactory() override;
   base::FilePath db_path_;
-  ValueStore* last_created_store_ = nullptr;
+  CheckedPtr<ValueStore> last_created_store_ = nullptr;
 
   // None of these value stores are owned by this factory, so care must be
   // taken when calling GetExisting.

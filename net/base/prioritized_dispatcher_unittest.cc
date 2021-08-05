@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/gtest_util.h"
 #include "net/base/request_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,7 +128,7 @@ class PrioritizedDispatcherTest : public testing::Test {
     }
 
    private:
-    PrioritizedDispatcher* dispatcher_;
+    CheckedPtr<PrioritizedDispatcher> dispatcher_;
 
     char tag_;
     Priority priority_;
@@ -135,7 +136,7 @@ class PrioritizedDispatcherTest : public testing::Test {
     PrioritizedDispatcher::Handle handle_;
     bool running_;
 
-    std::string* log_;
+    CheckedPtr<std::string> log_;
   };
 
  protected:

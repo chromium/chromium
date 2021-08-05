@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
@@ -38,7 +39,7 @@ class DeviceEntryButton : public views::LabelButton {
 
   SkColor foreground_color_ = gfx::kPlaceholderColor;
 
-  const gfx::VectorIcon* icon_;
+  CheckedPtr<const gfx::VectorIcon> icon_;
 };
 
 DeviceEntryButton::DeviceEntryButton(PressedCallback callback,

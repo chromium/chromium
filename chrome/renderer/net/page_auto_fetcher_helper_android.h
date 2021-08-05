@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,7 +40,7 @@ class PageAutoFetcherHelper {
   // Virtual for testing only.
   virtual bool Bind();
 
-  content::RenderFrame* render_frame_;
+  CheckedPtr<content::RenderFrame> render_frame_;
   mojo::Remote<chrome::mojom::OfflinePageAutoFetcher> fetcher_;
 
   base::WeakPtrFactory<PageAutoFetcherHelper> weak_ptr_factory_{this};

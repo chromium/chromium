@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -194,7 +195,7 @@ class VariationsFieldTrialCreator {
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }
 
-  VariationsServiceClient* client_;
+  CheckedPtr<VariationsServiceClient> client_;
 
   UIStringOverrider ui_string_overrider_;
 

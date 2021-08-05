@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -177,8 +178,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void SetViewForTesting(AutofillPopupView* view) { view_ = view; }
 
   PopupControllerCommon controller_common_;
-  content::WebContents* web_contents_;
-  AutofillPopupView* view_ = nullptr;  // Weak reference.
+  CheckedPtr<content::WebContents> web_contents_;
+  CheckedPtr<AutofillPopupView> view_ = nullptr;  // Weak reference.
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
   // If set to true, the popup will never be hidden because of stale data or if

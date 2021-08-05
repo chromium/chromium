@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
@@ -133,9 +134,10 @@ class PreinstalledWebAppManager {
   bool IsReinstallPastMilestoneNeededSinceLastSync(
       int force_reinstall_for_milestone);
 
-  WebAppRegistrar* registrar_ = nullptr;
-  ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
-  Profile* const profile_;
+  CheckedPtr<WebAppRegistrar> registrar_ = nullptr;
+  CheckedPtr<ExternallyManagedAppManager> externally_managed_app_manager_ =
+      nullptr;
+  const CheckedPtr<Profile> profile_;
 
   std::unique_ptr<DebugInfo> debug_info_;
 

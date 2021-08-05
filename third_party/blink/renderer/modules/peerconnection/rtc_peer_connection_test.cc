@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -830,7 +831,7 @@ class RTCPeerConnectionCallSetupStateTest : public RTCPeerConnectionTest {
 
  protected:
   const CallSetupStateTracker* tracker_ = nullptr;
-  FakeRTCPeerConnectionHandlerPlatform* handler_ = nullptr;
+  CheckedPtr<FakeRTCPeerConnectionHandlerPlatform> handler_ = nullptr;
 };
 
 TEST_F(RTCPeerConnectionCallSetupStateTest, InitialState) {

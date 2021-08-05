@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 
 #include "base/memory/weak_ptr.h"
@@ -74,11 +75,12 @@ class CreditCardAccessoryControllerImpl
   // Virtual cards that are created based on the enrollment status of the cards
   // returned by the PersonalDataManager.
   std::vector<std::unique_ptr<CreditCard>> virtual_cards_cache_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   base::WeakPtr<ManualFillingController> mf_controller_;
-  PersonalDataManager* const personal_data_manager_;
-  autofill::BrowserAutofillManager* af_manager_for_testing_ = nullptr;
-  autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
+  const CheckedPtr<PersonalDataManager> personal_data_manager_;
+  CheckedPtr<autofill::BrowserAutofillManager> af_manager_for_testing_ =
+      nullptr;
+  CheckedPtr<autofill::AutofillDriver> af_driver_for_testing_ = nullptr;
 
   // Cached cards that are already unmasked by the user. These are shown to the
   // user in plaintext and won't require any authentication when filling is

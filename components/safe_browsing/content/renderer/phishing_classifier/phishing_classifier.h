@@ -27,6 +27,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -147,8 +148,8 @@ class PhishingClassifier {
   // Clears the current state of the PhishingClassifier.
   void Clear();
 
-  content::RenderFrame* render_frame_;  // owns us
-  const Scorer* scorer_;                // owned by the caller
+  CheckedPtr<content::RenderFrame> render_frame_;  // owns us
+  CheckedPtr<const Scorer> scorer_;                // owned by the caller
   std::unique_ptr<PhishingUrlFeatureExtractor> url_extractor_;
   std::unique_ptr<PhishingDOMFeatureExtractor> dom_extractor_;
   std::unique_ptr<PhishingTermFeatureExtractor> term_extractor_;
@@ -156,7 +157,7 @@ class PhishingClassifier {
   // State for any in-progress extraction.
   std::unique_ptr<FeatureMap> features_;
   std::unique_ptr<std::set<uint32_t>> shingle_hashes_;
-  const std::u16string* page_text_;  // owned by the caller
+  CheckedPtr<const std::u16string> page_text_;  // owned by the caller
   std::unique_ptr<SkBitmap> bitmap_;
   DoneCallback done_callback_;
 

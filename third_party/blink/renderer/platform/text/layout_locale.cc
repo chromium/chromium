@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
@@ -25,9 +26,9 @@ namespace {
 struct PerThreadData {
   HashMap<AtomicString, scoped_refptr<LayoutLocale>, CaseFoldingHash>
       locale_map;
-  const LayoutLocale* default_locale = nullptr;
-  const LayoutLocale* system_locale = nullptr;
-  const LayoutLocale* default_locale_for_han = nullptr;
+  CheckedPtr<const LayoutLocale> default_locale = nullptr;
+  CheckedPtr<const LayoutLocale> system_locale = nullptr;
+  CheckedPtr<const LayoutLocale> default_locale_for_han = nullptr;
   bool default_locale_for_han_computed = false;
   String current_accept_languages;
 };

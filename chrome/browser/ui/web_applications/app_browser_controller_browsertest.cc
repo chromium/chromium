@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
@@ -83,7 +84,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
   }
 
  private:
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
   SkColor color_at_navigation_;
   base::RunLoop run_loop_;
 };
@@ -150,8 +151,8 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         ->GetVisibleURL();
   }
 
-  Profile* profile_ = nullptr;
-  Browser* app_browser_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
   GURL tabbed_app_url_;
 
  private:

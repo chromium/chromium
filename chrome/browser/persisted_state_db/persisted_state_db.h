@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"

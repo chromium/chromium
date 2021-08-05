@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -135,7 +136,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       scoped_refptr<media::VideoFrame> video_frame,
       media::VideoTransformation transform);
 
-  cc::VideoFrameProvider* video_frame_provider_ = nullptr;
+  CheckedPtr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;

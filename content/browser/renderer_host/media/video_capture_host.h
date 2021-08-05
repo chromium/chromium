@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
@@ -121,7 +122,7 @@ class CONTENT_EXPORT VideoCaptureHost
   std::unique_ptr<RenderProcessHostDelegate> render_process_host_delegate_;
   uint32_t number_of_active_streams_ = 0;
 
-  MediaStreamManager* const media_stream_manager_;
+  const CheckedPtr<MediaStreamManager> media_stream_manager_;
 
   // A map of VideoCaptureControllerID to the VideoCaptureController to which it
   // is connected. An entry in this map holds a null controller while it is in

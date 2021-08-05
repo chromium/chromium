@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
@@ -226,7 +227,7 @@ class ReportSchedulerTest : public ::testing::Test {
 #else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
         .WillOnce(WithArgs<0>(
-            Invoke(client_, &policy::MockCloudPolicyClient::SetDMToken)));
+            Invoke(client_.get(), &policy::MockCloudPolicyClient::SetDMToken)));
 #endif
   }
 
@@ -244,11 +245,11 @@ class ReportSchedulerTest : public ::testing::Test {
 
   ReportingDelegateFactoryDesktop report_delegate_factory_;
   std::unique_ptr<ReportScheduler> scheduler_;
-  policy::MockCloudPolicyClient* client_;
-  MockReportGenerator* generator_;
-  MockReportUploader* uploader_;
-  MockRealTimeReportGenerator* real_time_generator_;
-  MockRealTimeUploader* extension_request_uploader_;
+  CheckedPtr<policy::MockCloudPolicyClient> client_;
+  CheckedPtr<MockReportGenerator> generator_;
+  CheckedPtr<MockReportUploader> uploader_;
+  CheckedPtr<MockRealTimeReportGenerator> real_time_generator_;
+  CheckedPtr<MockRealTimeUploader> extension_request_uploader_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage_;
 #endif

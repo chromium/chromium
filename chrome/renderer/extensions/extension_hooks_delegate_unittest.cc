@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/extensions/extension_hooks_delegate.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/common/child_process_host.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
@@ -76,7 +77,7 @@ class ExtensionHooksDelegateTest
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  ScriptContext* script_context_ = nullptr;
+  CheckedPtr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionHooksDelegateTest);

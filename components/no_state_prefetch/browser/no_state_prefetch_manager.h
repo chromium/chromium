@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -330,7 +331,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
     }
 
    private:
-    NoStatePrefetchManager* const manager_;
+    const CheckedPtr<NoStatePrefetchManager> manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
 
     // The number of distinct NoStatePrefetchHandles created for |this|,
@@ -484,7 +485,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   Config config_;
 
   // The browser_context that owns this NoStatePrefetchManager.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // The delegate that allows content embedder to override the logic in this
   // class.
@@ -533,7 +534,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   using PrerenderProcessSet = std::set<content::RenderProcessHost*>;
   PrerenderProcessSet prerender_process_hosts_;
 
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   bool page_load_metric_observer_disabled_ = false;
 

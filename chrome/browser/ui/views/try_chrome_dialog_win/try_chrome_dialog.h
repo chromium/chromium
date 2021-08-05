@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/installer/util/experiment_metrics.h"
 #include "ui/events/event_handler.h"
@@ -141,7 +142,7 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
 
   // Controls which experiment group to use for varying the layout and controls.
   const size_t group_;
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
   std::unique_ptr<Context> context_;
 
@@ -158,10 +159,10 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
       installer::ExperimentMetrics::kOtherClose;
 
   // Unowned; |popup_| owns itself.
-  views::Widget* popup_ = nullptr;
+  CheckedPtr<views::Widget> popup_ = nullptr;
 
   // The close button; owned by |popup_|.
-  views::View* close_button_ = nullptr;
+  CheckedPtr<views::View> close_button_ = nullptr;
 
   // True when the mouse is considered to be hovering over the dialog.
   bool has_hover_ = false;

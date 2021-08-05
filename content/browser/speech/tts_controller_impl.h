@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -171,7 +172,7 @@ class CONTENT_EXPORT TtsControllerImpl
   TtsControllerDelegate* delegate_ = nullptr;
 #endif
 
-  TtsEngineDelegate* engine_delegate_ = nullptr;
+  CheckedPtr<TtsEngineDelegate> engine_delegate_ = nullptr;
 
   bool stop_speaking_when_hidden_ = false;
 
@@ -186,7 +187,7 @@ class CONTENT_EXPORT TtsControllerImpl
 
   // A pointer to the platform implementation of text-to-speech, for
   // dependency injection.
-  TtsPlatform* tts_platform_ = nullptr;
+  CheckedPtr<TtsPlatform> tts_platform_ = nullptr;
 
   // A queue of utterances to speak after the current one finishes.
   std::list<std::unique_ptr<TtsUtterance>> utterance_list_;

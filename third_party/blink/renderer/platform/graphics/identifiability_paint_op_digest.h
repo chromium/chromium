@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IDENTIFIABILITY_PAINT_OP_DIGEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IDENTIFIABILITY_PAINT_OP_DIGEST_H_
 
+#include "base/memory/checked_ptr.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_cache.h"
@@ -63,7 +64,7 @@ class PLATFORM_EXPORT IdentifiabilityPaintOpDigest {
     ScopedResult GetRasterContent(const cc::DrawImage& draw_image) override;
 
    private:
-    IdentifiabilityPaintOpDigest* const outer_;
+    const CheckedPtr<IdentifiabilityPaintOpDigest> outer_;
   };
 
   // The maximum number of ops to digest during the lifetime of this

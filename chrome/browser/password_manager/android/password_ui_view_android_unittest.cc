@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -116,9 +117,9 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* testing_profile_;
+  CheckedPtr<TestingProfile> testing_profile_;
   scoped_refptr<TestPasswordStore> store_;
-  JNIEnv* env_;
+  CheckedPtr<JNIEnv> env_;
   base::ScopedTempDir temp_dir_;
 };
 

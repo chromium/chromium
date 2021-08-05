@@ -592,9 +592,9 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
             request_overlay_cb, render_color_space, &video_decoders);
         return video_decoders;
       },
-      media_task_runner_, base::Unretained(decoder_factory_),
-      base::Unretained(gpu_factories_), render_color_space_, media_log_.get(),
-      std::move(request_overlay_cb));
+      media_task_runner_, base::Unretained(decoder_factory_.get()),
+      base::Unretained(gpu_factories_.get()), render_color_space_,
+      media_log_.get(), std::move(request_overlay_cb));
 
   decoder_stream_ = std::make_unique<media::VideoDecoderStream>(
       std::move(traits), media_task_runner_, std::move(create_decoders_cb),

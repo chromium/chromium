@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/log_sink.h"
@@ -50,7 +51,7 @@ class LoggerImpl : public Logger, public LogSink {
                             const std::string& guid,
                             DownloadParams::StartResult start_result) override;
 
-  LogSource* log_source_;
+  CheckedPtr<LogSource> log_source_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(LoggerImpl);

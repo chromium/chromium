@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -1095,7 +1096,7 @@ class AutofillMetrics {
     int64_t MillisecondsSinceFormParsed(
         const base::TimeTicks& form_parsed_timestamp) const;
 
-    ukm::UkmRecorder* ukm_recorder_;  // Weak reference.
+    CheckedPtr<ukm::UkmRecorder> ukm_recorder_;  // Weak reference.
     ukm::SourceId source_id_;
     base::TimeTicks pinned_timestamp_;
   };
@@ -1109,7 +1110,7 @@ class AutofillMetrics {
     ~UkmTimestampPin();
 
    private:
-    FormInteractionsUkmLogger* const logger_;
+    const CheckedPtr<FormInteractionsUkmLogger> logger_;
     DISALLOW_IMPLICIT_CONSTRUCTORS(UkmTimestampPin);
   };
 

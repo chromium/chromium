@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -77,9 +78,9 @@ class BackgroundApplicationListModel::Application
   // appropriately.
   void RequestIcon(extension_misc::ExtensionIcons size);
 
-  const Extension* extension_;
+  CheckedPtr<const Extension> extension_;
   gfx::ImageSkia icon_;
-  BackgroundApplicationListModel* model_;
+  CheckedPtr<BackgroundApplicationListModel> model_;
 };
 
 namespace {

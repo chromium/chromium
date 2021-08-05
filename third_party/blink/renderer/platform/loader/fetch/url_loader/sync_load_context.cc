@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
@@ -72,19 +73,20 @@ class SyncLoadContext::SignalHelper final {
     if (abort_event_) {
       abort_watcher_.StartWatching(
           abort_event_,
-          base::BindOnce(&SyncLoadContext::OnAbort, base::Unretained(context_)),
+          base::BindOnce(&SyncLoadContext::OnAbort,
+                         base::Unretained(context_.get())),
           context_->task_runner_);
     }
     if (timeout_timer_) {
       DCHECK_NE(base::TimeDelta::Max(), timeout);
-      timeout_timer_->Start(FROM_HERE, timeout, context_,
+      timeout_timer_->Start(FROM_HERE, timeout, context_.get(),
                             &SyncLoadContext::OnTimeout);
     }
   }
 
-  SyncLoadContext* context_;
-  base::WaitableEvent* redirect_or_response_event_;
-  base::WaitableEvent* abort_event_;
+  CheckedPtr<SyncLoadContext> context_;
+  CheckedPtr<base::WaitableEvent> redirect_or_response_event_;
+  CheckedPtr<base::WaitableEvent> abort_event_;
   base::WaitableEventWatcher abort_watcher_;
   absl::optional<base::OneShotTimer> timeout_timer_;
 };

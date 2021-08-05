@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
@@ -220,7 +221,7 @@ class CONTENT_EXPORT AuctionRunner {
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
     // Points to the InterestGroupAd within `bidder` that won the auction. Only
     // nullptr when `bid_result` is also nullptr.
-    const blink::InterestGroup::Ad* bid_ad = nullptr;
+    CheckedPtr<const blink::InterestGroup::Ad> bid_ad = nullptr;
 
     double seller_score = 0;
   };
@@ -307,8 +308,8 @@ class CONTENT_EXPORT AuctionRunner {
   // Logs the result of the auction to UMA.
   void RecordResult(AuctionResult result) const;
 
-  Delegate* const delegate_;
-  InterestGroupManager* const interest_group_manager_;
+  const CheckedPtr<Delegate> delegate_;
+  const CheckedPtr<InterestGroupManager> interest_group_manager_;
 
   // Configuration.
   blink::mojom::AuctionAdConfigPtr auction_config_;
@@ -336,7 +337,7 @@ class CONTENT_EXPORT AuctionRunner {
   // The bidder with the highest scoring bid so far. No other scored bidder
   // worklet can win the auction, so the other worklets are all unloaded right
   // after scoring.
-  BidState* top_bidder_ = nullptr;
+  CheckedPtr<BidState> top_bidder_ = nullptr;
   // Number of bidders with the same score as `top_bidder`.
   size_t num_top_bidders_ = 0;
 

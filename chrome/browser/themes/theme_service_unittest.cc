@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -77,8 +78,8 @@ class ThemeScoper {
   }
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  CheckedPtr<extensions::ExtensionService> extension_service_ = nullptr;
+  CheckedPtr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   std::string extension_id_;
   base::ScopedTempDir temp_dir_;
 };
@@ -190,8 +191,8 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
  protected:
   ui::TestNativeTheme native_theme_;
-  extensions::ExtensionRegistry* registry_ = nullptr;
-  ThemeService* theme_service_ = nullptr;
+  CheckedPtr<extensions::ExtensionRegistry> registry_ = nullptr;
+  CheckedPtr<ThemeService> theme_service_ = nullptr;
 };
 
 class IncognitoThemeServiceTest : public ThemeServiceTest,

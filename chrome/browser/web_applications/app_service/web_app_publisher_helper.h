@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
@@ -289,15 +290,15 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       apps::mojom::OptionalBool has_notification_indicator);
 #endif
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::mojom::AppType app_type_;
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
-  WebAppProvider* const provider_;
+  const CheckedPtr<WebAppProvider> provider_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

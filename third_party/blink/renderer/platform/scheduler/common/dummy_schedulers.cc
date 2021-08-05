@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
@@ -207,7 +208,7 @@ class SimpleThread : public Thread {
   bool IsCurrentThread() const { return WTF::IsMainThread(); }
 
  private:
-  ThreadScheduler* scheduler_;
+  CheckedPtr<ThreadScheduler> scheduler_;
 };
 
 class DummyThreadScheduler : public ThreadScheduler {

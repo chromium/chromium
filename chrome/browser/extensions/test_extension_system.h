@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_system.h"
@@ -98,7 +99,7 @@ class TestExtensionSystem : public ExtensionSystem {
   void RecreateAppSorting();
 
  protected:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
  private:
   scoped_refptr<TestValueStoreFactory> store_factory_;

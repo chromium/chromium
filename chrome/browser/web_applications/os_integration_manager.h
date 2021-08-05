@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
@@ -272,9 +273,9 @@ class OsIntegrationManager {
       RegisterRunOnOsLoginCallback callback,
       std::unique_ptr<ShortcutInfo> info);
 
-  Profile* const profile_;
-  WebAppRegistrar* registrar_ = nullptr;
-  WebAppUiManager* ui_manager_ = nullptr;
+  const CheckedPtr<Profile> profile_;
+  CheckedPtr<WebAppRegistrar> registrar_ = nullptr;
+  CheckedPtr<WebAppUiManager> ui_manager_ = nullptr;
 
   std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;

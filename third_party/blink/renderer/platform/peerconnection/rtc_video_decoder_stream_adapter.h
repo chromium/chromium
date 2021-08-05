@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -164,8 +165,8 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-  media::GpuVideoAcceleratorFactories* const gpu_factories_;
-  media::DecoderFactory* const decoder_factory_;
+  const CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  const CheckedPtr<media::DecoderFactory> decoder_factory_;
   gfx::ColorSpace render_color_space_;
   const webrtc::SdpVideoFormat format_;
   media::VideoDecoderConfig config_;
@@ -198,8 +199,8 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Current decoder info, as reported by GetDecoderInfo().
   webrtc::VideoDecoder::DecoderInfo decoder_info_ GUARDED_BY(lock_);
   // Current decode callback, if any.
-  webrtc::DecodedImageCallback* decode_complete_callback_ GUARDED_BY(lock_) =
-      nullptr;
+  CheckedPtr<webrtc::DecodedImageCallback> decode_complete_callback_
+      GUARDED_BY(lock_) = nullptr;
   // Time since construction.  Cleared when we record that a frame has been
   // successfully decoded.
   absl::optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);

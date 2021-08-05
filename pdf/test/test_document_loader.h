@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "pdf/document_loader.h"
 #include "pdf/range_set.h"
 
@@ -40,7 +41,7 @@ class TestDocumentLoader : public DocumentLoader {
   void ClearPendingRequests() override;
 
  private:
-  Client* const client_;
+  const CheckedPtr<Client> client_;
   std::string pdf_data_;
 
   // Not using ChunkStream, for more fine-grained control over request size.

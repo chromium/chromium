@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -153,13 +154,13 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   SendTabToSelfEntries entries_;
 
   // |clock_| isn't owned.
-  const base::Clock* const clock_;
+  const CheckedPtr<const base::Clock> clock_;
 
   // |history_service_| isn't owned.
-  history::HistoryService* const history_service_;
+  const CheckedPtr<history::HistoryService> history_service_;
 
   // |device_info_tracker_| isn't owned.
-  syncer::DeviceInfoTracker* const device_info_tracker_;
+  const CheckedPtr<syncer::DeviceInfoTracker> device_info_tracker_;
 
   // The name of this local device.
   std::string local_device_name_;
@@ -168,7 +169,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   // A pointer to the most recently used entry used for deduplication.
-  const SendTabToSelfEntry* mru_entry_;
+  CheckedPtr<const SendTabToSelfEntry> mru_entry_;
 
   // A list of target devices and their associated cache information.
   std::vector<TargetDeviceInfo> target_device_name_to_cache_info_;

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -315,7 +316,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   std::string app_id_;
-  Browser* app_browser_;
+  CheckedPtr<Browser> app_browser_;
 
   AppType app_type() const { return app_type_; }
 
@@ -870,7 +871,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
  protected:
   bool should_swap_for_cross_site_;
 
-  extensions::ProcessMap* process_map_;
+  CheckedPtr<extensions::ProcessMap> process_map_;
 
   GURL same_dir_url_;
   GURL diff_dir_url_;
@@ -1657,7 +1658,7 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
 
    private:
     std::unique_ptr<JitChromeContentBrowserClient> overriden_client_;
-    content::ContentBrowserClient* original_client_;
+    CheckedPtr<content::ContentBrowserClient> original_client_;
   };
 
   void JitTestInternal() {

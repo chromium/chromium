@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -232,7 +233,7 @@ class InstantService : public KeyedService,
   // background is used.
   void SetNtpElementsNtpTheme();
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // The process ids associated with Instant processes.
   std::set<int> process_ids_;
@@ -253,7 +254,7 @@ class InstantService : public KeyedService,
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
@@ -261,13 +262,13 @@ class InstantService : public KeyedService,
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
       background_service_observation_{this};
 
-  ui::NativeTheme* native_theme_;
+  CheckedPtr<ui::NativeTheme> native_theme_;
 
-  NtpBackgroundService* background_service_;
+  CheckedPtr<NtpBackgroundService> background_service_;
 
   base::TimeTicks background_updated_timestamp_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   base::WeakPtrFactory<InstantService> weak_ptr_factory_{this};
 

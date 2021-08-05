@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
 
 #include "base/callback_helpers.h"
@@ -73,13 +74,13 @@ class SegmentSelectorImpl : public SegmentSelector {
                              const proto::SegmentationModelMetadata& metadata);
 
   // The database storing metadata and results.
-  SegmentInfoDatabase* segment_database_;
+  CheckedPtr<SegmentInfoDatabase> segment_database_;
 
   // Helper class to read/write results to the prefs.
-  SegmentationResultPrefs* result_prefs_;
+  CheckedPtr<SegmentationResultPrefs> result_prefs_;
 
   // The config for providing configuration params.
-  Config* config_;
+  CheckedPtr<Config> config_;
 
   // These values are read from prefs or db on init and used for serving the
   // clients in the current session.

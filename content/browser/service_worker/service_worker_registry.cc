@@ -8,6 +8,7 @@
 #include "content/browser/service_worker/service_worker_registry.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -137,7 +138,7 @@ class InflightCallWithInvoker final
   }
 
   // `registry_` owns `this`
-  ServiceWorkerRegistry* const registry_;
+  const CheckedPtr<ServiceWorkerRegistry> registry_;
   const base::RepeatingCallback<void(InflightCallWithInvoker*, ReplyCallback)>
       invoker_;
   base::OnceCallback<void(ReplyArgs...)> reply_callback_;

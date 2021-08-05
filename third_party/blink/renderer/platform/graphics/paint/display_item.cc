@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
@@ -12,7 +13,7 @@
 namespace blink {
 
 struct SameSizeAsDisplayItem {
-  void* pointer;
+  CheckedPtr<void> pointer;
   IntRect rect;
   uint32_t i1;
   uint32_t i2;

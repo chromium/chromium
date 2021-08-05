@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -94,7 +95,7 @@ class MediaStreamUIProxy::Core {
   std::unique_ptr<MediaStreamUI> ui_;
 
   bool tests_use_fake_render_frame_hosts_;
-  RenderFrameHostDelegate* const test_render_delegate_;
+  const CheckedPtr<RenderFrameHostDelegate> test_render_delegate_;
 
   // WeakPtr<> is used to RequestMediaAccessPermission() because there is no way
   // cancel media requests.

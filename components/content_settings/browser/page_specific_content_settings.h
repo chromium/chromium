@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -184,7 +185,7 @@ class PageSpecificContentSettings
     void WebContentsDestroyed();
 
    private:
-    content::WebContents* web_contents_;
+    CheckedPtr<content::WebContents> web_contents_;
 
     DISALLOW_COPY_AND_ASSIGN(SiteDataObserver);
   };
@@ -478,7 +479,7 @@ class PageSpecificContentSettings
 
     std::unique_ptr<Delegate> delegate_;
 
-    HostContentSettingsMap* map_;
+    CheckedPtr<HostContentSettingsMap> map_;
 
     // All currently registered |SiteDataObserver|s.
     base::ObserverList<SiteDataObserver>::Unchecked observer_list_;
@@ -520,7 +521,7 @@ class PageSpecificContentSettings
     if (IsPagePrerendering()) {
       DCHECK(updates_queued_during_prerender_);
       updates_queued_during_prerender_->delegate_updates.emplace_back(
-          base::BindOnce(method, base::Unretained(delegate_), args...));
+          base::BindOnce(method, base::Unretained(delegate_.get()), args...));
       return;
     }
     (*delegate_.*method)(args...);
@@ -534,9 +535,9 @@ class PageSpecificContentSettings
   void MaybeUpdateLocationBar();
 
   WebContentsHandler& handler_;
-  content::RenderFrameHost* main_frame_;
+  CheckedPtr<content::RenderFrameHost> main_frame_;
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   struct ContentSettingsStatus {
     bool blocked;
@@ -546,7 +547,7 @@ class PageSpecificContentSettings
   std::map<ContentSettingsType, ContentSettingsStatus> content_settings_status_;
 
   // Profile-bound, this will outlive this class (which is WebContents bound).
-  HostContentSettingsMap* map_;
+  CheckedPtr<HostContentSettingsMap> map_;
 
   // Stores the blocked/allowed cookies.
   browsing_data::LocalSharedObjectsContainer allowed_local_shared_objects_;

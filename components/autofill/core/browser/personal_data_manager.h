@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -820,12 +821,12 @@ class PersonalDataManager : public KeyedService,
   mutable std::string default_country_code_;
 
   // The PrefService that this instance uses. Must outlive this instance.
-  PrefService* pref_service_ = nullptr;
+  CheckedPtr<PrefService> pref_service_ = nullptr;
 
   // The HistoryService to be observed by the personal data manager. Must
   // outlive this instance. This unowned pointer is retained so the PDM can
   // remove itself from the history service's observer list on shutdown.
-  history::HistoryService* history_service_ = nullptr;
+  CheckedPtr<history::HistoryService> history_service_ = nullptr;
 
   // Pref registrar for managing the change observers.
   PrefChangeRegistrar pref_registrar_;
@@ -845,16 +846,16 @@ class PersonalDataManager : public KeyedService,
       ongoing_profile_changes_;
 
   // The client side profile validator.
-  AutofillProfileValidator* client_profile_validator_ = nullptr;
+  CheckedPtr<AutofillProfileValidator> client_profile_validator_ = nullptr;
 
   // The identity manager that this instance uses. Must outlive this instance.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  CheckedPtr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // The sync service this instances uses. Must outlive this instance.
-  syncer::SyncService* sync_service_ = nullptr;
+  CheckedPtr<syncer::SyncService> sync_service_ = nullptr;
 
   // The image fetcher to fetch customized images for Autofill data.
-  AutofillImageFetcher* image_fetcher_ = nullptr;
+  CheckedPtr<AutofillImageFetcher> image_fetcher_ = nullptr;
 
   // Whether the user is currently operating in an off-the-record context.
   // Default value is false.

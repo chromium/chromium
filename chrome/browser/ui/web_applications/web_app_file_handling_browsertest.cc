@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -284,14 +285,15 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
       bool expect_got_launch_params,
       const base::FilePath& expected_file_path = {}) {
     bool got_launch_params =
-        content::EvalJs(web_contents_, "!!window.launchParams").ExtractBool();
+        content::EvalJs(web_contents_.get(), "!!window.launchParams")
+            .ExtractBool();
     ASSERT_EQ(expect_got_launch_params, got_launch_params);
     if (got_launch_params) {
-      EXPECT_EQ(1, content::EvalJs(web_contents_,
+      EXPECT_EQ(1, content::EvalJs(web_contents_.get(),
                                    "window.launchParams.files.length"));
-      EXPECT_EQ(
-          expected_file_path.BaseName().AsUTF8Unsafe(),
-          content::EvalJs(web_contents_, "window.launchParams.files[0].name"));
+      EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
+                content::EvalJs(web_contents_.get(),
+                                "window.launchParams.files[0].name"));
     }
   }
 
@@ -307,7 +309,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,

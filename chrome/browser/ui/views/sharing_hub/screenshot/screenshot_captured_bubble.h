@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
@@ -56,9 +57,9 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   content::WebContents* web_contents_;
 
   // Pointers to view widgets; weak.
-  views::ImageView* image_view_ = nullptr;
-  views::MdTextButton* download_button_ = nullptr;
-  views::LabelButton* edit_button_ = nullptr;
+  CheckedPtr<views::ImageView> image_view_ = nullptr;
+  CheckedPtr<views::MdTextButton> download_button_ = nullptr;
+  CheckedPtr<views::LabelButton> edit_button_ = nullptr;
 };
 
 }  // namespace sharing_hub

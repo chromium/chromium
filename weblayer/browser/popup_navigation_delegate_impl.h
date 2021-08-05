@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_POPUP_NAVIGATION_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_POPUP_NAVIGATION_DELEGATE_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,8 +33,8 @@ class PopupNavigationDelegateImpl
 
  private:
   content::OpenURLParams params_;
-  content::WebContents* source_contents_;
-  content::RenderFrameHost* opener_;
+  CheckedPtr<content::WebContents> source_contents_;
+  CheckedPtr<content::RenderFrameHost> opener_;
   const bool original_user_gesture_;
 };
 

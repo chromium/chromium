@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -85,7 +86,7 @@ class OnScreenKeyboardDetector {
   // The observer list is cleared out after this notification.
   void HandleKeyboardHidden();
 
-  OnScreenKeyboardDisplayManagerTabTip* display_manager_;
+  CheckedPtr<OnScreenKeyboardDisplayManagerTabTip> display_manager_;
 
   // The main window which displays the on screen keyboard.
   HWND main_window_ = nullptr;

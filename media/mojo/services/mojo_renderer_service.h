@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -112,7 +113,7 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
   // Callback executed once SetCdm() completes.
   void OnCdmAttached(base::OnceCallback<void(bool)> callback, bool success);
 
-  MojoCdmServiceContext* const mojo_cdm_service_context_ = nullptr;
+  const CheckedPtr<MojoCdmServiceContext> mojo_cdm_service_context_ = nullptr;
 
   State state_;
   double playback_rate_;

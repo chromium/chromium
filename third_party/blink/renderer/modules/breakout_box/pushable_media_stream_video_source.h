@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_VIDEO_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_VIDEO_SOURCE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -56,7 +57,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
     // |main_task_runner_|. It is not necessary to guard it with |mutex_| to
     // read its value on |main_task_runner_|. This helps avoid deadlocks in
     // Stop()/OnSourceDestroyedOrStopped() interactions.
-    PushableMediaStreamVideoSource* source_;
+    CheckedPtr<PushableMediaStreamVideoSource> source_;
     // The same apples to |frame_callback_|, but since it does not have
     // complex interactions with owners, like |source_| does, we always guard
     // it for simplicity.

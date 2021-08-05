@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -131,7 +132,7 @@ class ErrorObserver : public ErrorConsole::Observer {
       : errors_expected_(errors_expected),
         error_console_(error_console),
         errors_observed_(0) {
-    observation_.Observe(error_console_);
+    observation_.Observe(error_console_.get());
   }
 
   // ErrorConsole::Observer implementation.
@@ -151,7 +152,7 @@ class ErrorObserver : public ErrorConsole::Observer {
 
  private:
   size_t errors_expected_;
-  ErrorConsole* error_console_;
+  CheckedPtr<ErrorConsole> error_console_;
   size_t errors_observed_;
   base::ScopedObservation<ErrorConsole, ErrorConsole::Observer> observation_{
       this};
@@ -860,8 +861,8 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
         ->DispatchEventToExtension(extension_id_, std::move(event));
   }
 
-  content::BrowserContext* const browser_context_ = nullptr;
-  EventRouter* const event_router_ = nullptr;
+  const CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  const CheckedPtr<EventRouter> event_router_ = nullptr;
   const ExtensionId extension_id_;
   std::unique_ptr<Event> event_;
   ExtensionTestMessageListener listener_;
@@ -1002,8 +1003,8 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
-  PushMessagingServiceImpl* push_service_;
+  CheckedPtr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
+  CheckedPtr<PushMessagingServiceImpl> push_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPushMessagingTest);
 };
@@ -1846,7 +1847,7 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
   // Holds version id of an extension worker once OnVersionStartedRunning is
   // observed.
   absl::optional<int64_t> running_version_id_;
-  content::ServiceWorkerContext* context_ = nullptr;
+  CheckedPtr<content::ServiceWorkerContext> context_ = nullptr;
   GURL extension_url_;
 };
 

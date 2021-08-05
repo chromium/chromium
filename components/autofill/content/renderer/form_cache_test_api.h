@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 
@@ -45,7 +46,7 @@ class FormCacheTestApi {
   }
 
  private:
-  FormCache* form_cache_;
+  CheckedPtr<FormCache> form_cache_;
 };
 
 }  // namespace autofill

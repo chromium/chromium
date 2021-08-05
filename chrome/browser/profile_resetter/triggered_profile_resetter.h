@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -70,7 +71,7 @@ class TriggeredProfileResetter : public KeyedService {
 
  private:
 #if defined(OS_WIN)
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 #endif  // defined(OS_WIN)
 
   bool has_reset_trigger_ = false;

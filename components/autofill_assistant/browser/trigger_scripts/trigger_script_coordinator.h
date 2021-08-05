@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -159,7 +160,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   TriggerScriptProto::TriggerUIType GetTriggerUiTypeForVisibleScript() const;
 
   // Delegate used to access settings and show the onboarding.
-  StarterPlatformDelegate* starter_delegate_ = nullptr;
+  CheckedPtr<StarterPlatformDelegate> starter_delegate_ = nullptr;
 
   // Delegate used to show and hide the UI.
   std::unique_ptr<UiDelegate> ui_delegate_;
@@ -233,7 +234,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   int64_t initial_trigger_condition_evaluations_ = -1;
 
   // The UKM recorder to use for metrics.
-  ukm::UkmRecorder* const ukm_recorder_;
+  const CheckedPtr<ukm::UkmRecorder> ukm_recorder_;
 
   // The UKM source id to record. This can change over time as the user
   // navigates around, but will always point to a source-id on a supported

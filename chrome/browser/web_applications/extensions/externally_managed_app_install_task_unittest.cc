@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -266,7 +267,7 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
   }
 
  private:
-  WebAppRegistrarMutable* registrar_ = nullptr;
+  CheckedPtr<WebAppRegistrarMutable> registrar_ = nullptr;
 
   std::vector<WebApplicationInfo> web_app_info_list_;
   std::vector<FinalizeOptions> finalize_options_list_;
@@ -391,12 +392,13 @@ class ExternallyManagedAppInstallTaskTest
 
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  WebAppInstallManager* install_manager_ = nullptr;
-  WebAppRegistrar* registrar_ = nullptr;
-  TestDataRetriever* data_retriever_ = nullptr;
-  TestExternallyManagedAppInstallFinalizer* install_finalizer_ = nullptr;
-  TestWebAppUiManager* ui_manager_ = nullptr;
-  TestOsIntegrationManager* os_integration_manager_ = nullptr;
+  CheckedPtr<WebAppInstallManager> install_manager_ = nullptr;
+  CheckedPtr<WebAppRegistrar> registrar_ = nullptr;
+  CheckedPtr<TestDataRetriever> data_retriever_ = nullptr;
+  CheckedPtr<TestExternallyManagedAppInstallFinalizer> install_finalizer_ =
+      nullptr;
+  CheckedPtr<TestWebAppUiManager> ui_manager_ = nullptr;
+  CheckedPtr<TestOsIntegrationManager> os_integration_manager_ = nullptr;
 };
 
 class ExternallyManagedAppInstallTaskWithRunOnOsLoginTest

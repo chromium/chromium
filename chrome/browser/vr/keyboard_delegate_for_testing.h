@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/model/text_input_info.h"
 #include "chrome/browser/vr/ui_test_input.h"
@@ -45,7 +46,7 @@ class VR_BASE_EXPORT KeyboardDelegateForTesting : public KeyboardDelegate {
   void UpdateInput(const TextInputInfo& info) override;
 
  private:
-  KeyboardUiInterface* ui_;
+  CheckedPtr<KeyboardUiInterface> ui_;
   std::queue<KeyboardTestInput> keyboard_input_queue_;
   TextInputInfo cached_keyboard_input_;
   bool keyboard_shown_ = false;

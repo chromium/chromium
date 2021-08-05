@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -35,7 +36,7 @@ class WebAppOriginText : public views::View {
 
  private:
   // Owned by the views hierarchy.
-  views::Label* label_ = nullptr;
+  CheckedPtr<views::Label> label_ = nullptr;
 
   void AnimationComplete();
 

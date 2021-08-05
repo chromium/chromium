@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -786,10 +787,10 @@ class POLICY_EXPORT CloudPolicyClient {
   int64_t fetched_invalidation_version_ = 0;
 
   // Used for signing requests.
-  SigningService* signing_service_ = nullptr;
+  CheckedPtr<SigningService> signing_service_ = nullptr;
 
   // Used for issuing requests to the cloud.
-  DeviceManagementService* service_ = nullptr;
+  CheckedPtr<DeviceManagementService> service_ = nullptr;
 
   // Only one outstanding policy fetch is allowed, so this is tracked in
   // its own member variable.
@@ -801,11 +802,13 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Only one outstanding app push-install report upload is allowed, and it must
   // be accessible so that it can be canceled.
-  DeviceManagementService::Job* app_install_report_request_job_ = nullptr;
+  CheckedPtr<DeviceManagementService::Job> app_install_report_request_job_ =
+      nullptr;
 
   // Only one outstanding extension install report upload is allowed, and it
   // must be accessible so that it can be canceled.
-  DeviceManagementService::Job* extension_install_report_request_job_ = nullptr;
+  CheckedPtr<DeviceManagementService::Job>
+      extension_install_report_request_job_ = nullptr;
 
   // The policy responses returned by the last policy fetch operation.
   ResponseMap responses_;

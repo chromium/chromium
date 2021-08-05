@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -117,7 +118,8 @@ class PresentationRequestNotificationProducerTest
 
  protected:
   std::unique_ptr<MediaNotificationService> notification_service_;
-  PresentationRequestNotificationProducer* notification_producer_ = nullptr;
+  CheckedPtr<PresentationRequestNotificationProducer> notification_producer_ =
+      nullptr;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
 };

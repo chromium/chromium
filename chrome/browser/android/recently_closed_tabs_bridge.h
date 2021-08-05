@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
 class Profile;
@@ -55,10 +56,10 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
   base::android::ScopedJavaGlobalRef<jobject> bridge_;
 
   // The profile whose recently closed tabs are being monitored.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // TabRestoreService that we are observing.
-  sessions::TabRestoreService* tab_restore_service_;
+  CheckedPtr<sessions::TabRestoreService> tab_restore_service_;
 
   DISALLOW_COPY_AND_ASSIGN(RecentlyClosedTabsBridge);
 };

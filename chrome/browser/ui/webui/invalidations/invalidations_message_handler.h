@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/invalidation/impl/invalidation_logger_observer.h"
@@ -57,7 +58,7 @@ class InvalidationsMessageHandler
   // The pointer to the internal InvalidatorService InvalidationLogger.
   // Used to get the information necessary to display to the JS and to
   // register ourselves as Observers for any notifications.
-  invalidation::InvalidationLogger* logger_;
+  CheckedPtr<invalidation::InvalidationLogger> logger_;
 
   base::WeakPtrFactory<InvalidationsMessageHandler> weak_ptr_factory_{this};
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -148,9 +149,9 @@ class ExtensionFunctionDispatcher
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // This map doesn't own either the keys or the values. When a RenderFrameHost
   // instance goes away, the corresponding entry in this map (if exists) will be

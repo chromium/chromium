@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/queued_task_poster.h"
 #include "remoting/client/display/gl_renderer.h"
@@ -80,7 +81,7 @@ class JniGlDisplayHandler {
   void OnRenderDone();
   void OnCanvasSizeChanged(int width, int height);
 
-  ChromotingClientRuntime* runtime_;
+  CheckedPtr<ChromotingClientRuntime> runtime_;
 
   QueuedTaskPoster ui_task_poster_;
 

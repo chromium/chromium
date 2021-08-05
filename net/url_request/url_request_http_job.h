@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
@@ -205,7 +206,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestPriority priority_;
 
   HttpRequestInfo request_info_;
-  const HttpResponseInfo* response_info_;
+  CheckedPtr<const HttpResponseInfo> response_info_;
 
   // Auth states for proxy and origin server.
   AuthState proxy_auth_state_;
@@ -253,7 +254,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // to inform the NetworkDelegate that it may not call back.
   bool awaiting_callback_;
 
-  const HttpUserAgentSettings* http_user_agent_settings_;
+  CheckedPtr<const HttpUserAgentSettings> http_user_agent_settings_;
 
   // Keeps track of total received bytes over the network from transactions used
   // by this job that have already been destroyed.

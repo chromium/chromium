@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -135,7 +136,7 @@ class MockImageDecoder : public ImageDecoder {
     frame_buffer_cache_[index].SetHasAlpha(false);
   }
 
-  MockImageDecoderClient* client_;
+  CheckedPtr<MockImageDecoderClient> client_;
 };
 
 class MockImageDecoderFactory : public ImageDecoderFactory {
@@ -165,7 +166,7 @@ class MockImageDecoderFactory : public ImageDecoderFactory {
                           const IntSize& decoded_size)
       : client_(client), decoded_size_(decoded_size) {}
 
-  MockImageDecoderClient* client_;
+  CheckedPtr<MockImageDecoderClient> client_;
   IntSize decoded_size_;
 };
 

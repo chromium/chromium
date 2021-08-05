@@ -5,6 +5,7 @@
 #ifndef MEDIA_REMOTING_REMOTING_RENDERER_FACTORY_H_
 #define MEDIA_REMOTING_REMOTING_RENDERER_FACTORY_H_
 
+#include "base/memory/checked_ptr.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/rpc_broker.h"
@@ -42,9 +43,9 @@ class RemotingRendererFactory : public RendererFactory {
   // Indicates whether RPC_ACQUIRE_RENDERER_DONE is sent or not.
   bool is_acquire_renderer_done_sent_ = false;
 
-  ReceiverController* receiver_controller_;
+  CheckedPtr<ReceiverController> receiver_controller_;
 
-  RpcBroker* rpc_broker_;  // Outlives this class.
+  CheckedPtr<RpcBroker> rpc_broker_;  // Outlives this class.
 
   // The RPC handle used by all Receiver instances created by |this|. Sent only
   // once to the sender side, through RPC_ACQUIRE_RENDERER_DONE, regardless of

@@ -5,6 +5,7 @@
 #ifndef NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 #define NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 
 #include <memory>
@@ -115,7 +116,7 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   PendingRequests pending_requests_;
 
   // This is the log for any generated events.
-  NetLog* net_log_;
+  CheckedPtr<NetLog> net_log_;
 
   // This object encapsulates all WinHttp logic in Chromium-friendly terms. It
   // manages the lifetime of the WinHttp session (which is

@@ -5,6 +5,7 @@
 #include "third_party/blink/public/platform/media/smoothness_helper.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/learning_task_controller.h"
@@ -64,7 +65,7 @@ class SmoothnessWindowMonitor {
   }
 
  private:
-  SmoothnessHelper::Client* player_ = nullptr;
+  CheckedPtr<SmoothnessHelper::Client> player_ = nullptr;
   WindowCB cb_;
   base::RepeatingTimer update_timer_;
   // Current dropped, decoded frames at the start of the segment.
@@ -217,7 +218,7 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
   int max_num_consecutive_nnrs_ = 0;
 
   // WebMediaPlayer which will tell us about the decoded / dropped frame counts.
-  Client* player_;
+  CheckedPtr<Client> player_;
 
   std::unique_ptr<SmoothnessWindowMonitor> monitor_;
 };

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -204,7 +205,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   gfx::ColorSpace rendering_color_space_;
 
-  gpu::GpuMemoryBufferManager* const gpu_memory_buffer_manager_;
+  const CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
   mojo::Remote<media::mojom::InterfaceFactory> interface_factory_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;

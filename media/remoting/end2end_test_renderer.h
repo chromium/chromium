@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
@@ -85,10 +86,10 @@ class End2EndTestRenderer final : public Renderer {
 
   // Receiver components.
   std::unique_ptr<TestRemotee> media_remotee_;
-  ReceiverController* receiver_controller_;
+  CheckedPtr<ReceiverController> receiver_controller_;
   std::unique_ptr<Receiver> receiver_;
   std::unique_ptr<StreamProvider> stream_provider_;
-  RpcBroker* receiver_rpc_broker_;
+  CheckedPtr<RpcBroker> receiver_rpc_broker_;
 
   // Handle of |receiver_|
   int receiver_renderer_handle_ = RpcBroker::kInvalidHandle;

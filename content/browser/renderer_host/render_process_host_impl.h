@@ -21,6 +21,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
@@ -1019,7 +1020,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   BrowserContext* browser_context_ = nullptr;
 
   // Owned by |browser_context_|.
-  StoragePartitionImpl* const storage_partition_impl_;
+  const CheckedPtr<StoragePartitionImpl> storage_partition_impl_;
 
   // Owns the singular DomStorageProvider binding established by this renderer.
   mojo::Receiver<blink::mojom::DomStorageProvider>

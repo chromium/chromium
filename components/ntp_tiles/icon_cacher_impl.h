@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/ntp_tiles/icon_cacher.h"
@@ -93,8 +94,8 @@ class IconCacherImpl : public IconCacher {
                                            bool newly_available);
 
   base::CancelableTaskTracker tracker_;
-  favicon::FaviconService* const favicon_service_;
-  favicon::LargeIconService* const large_icon_service_;
+  const CheckedPtr<favicon::FaviconService> favicon_service_;
+  const CheckedPtr<favicon::LargeIconService> large_icon_service_;
   std::unique_ptr<image_fetcher::ImageFetcher> const image_fetcher_;
   std::map<GURL, std::vector<base::OnceClosure>> in_flight_requests_;
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -618,7 +619,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   std::unique_ptr<QuicProxyClientSocket> sock_;
   std::unique_ptr<TestProxyDelegate> proxy_delegate_;
 
-  quic::test::MockSendAlgorithm* send_algorithm_;
+  CheckedPtr<quic::test::MockSendAlgorithm> send_algorithm_;
   scoped_refptr<TestTaskRunner> runner_;
 
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
@@ -2004,7 +2005,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  std::unique_ptr<QuicProxyClientSocket>* sock_;
+  CheckedPtr<std::unique_ptr<QuicProxyClientSocket>> sock_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteSockCallback);
 };

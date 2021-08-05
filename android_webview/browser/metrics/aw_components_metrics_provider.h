@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_METRICS_AW_COMPONENTS_METRICS_PROVIDER_H_
 #define ANDROID_WEBVIEW_BROWSER_METRICS_AW_COMPONENTS_METRICS_PROVIDER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -27,7 +28,7 @@ class AwComponentsMetricsProvider : public metrics::MetricsProvider {
       metrics::SystemProfileProto* system_profile_proto) override;
 
  private:
-  AwMetricsServiceClient* client_;
+  CheckedPtr<AwMetricsServiceClient> client_;
 };
 
 }  // namespace android_webview

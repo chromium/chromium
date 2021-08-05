@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_REMOTE_AUTH_NATIVE_MESSAGING_HOST_H_
 #define REMOTING_HOST_REMOTE_AUTH_NATIVE_MESSAGING_HOST_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
@@ -33,7 +34,7 @@ class RemoteAuthNativeMessagingHost final
   void SendMessageToClient(base::Value message);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  extensions::NativeMessageHost::Client* client_ = nullptr;
+  CheckedPtr<extensions::NativeMessageHost::Client> client_ = nullptr;
 };
 
 }  // namespace remoting

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -136,7 +137,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-  media::GpuVideoAcceleratorFactories* const gpu_factories_;
+  const CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   const webrtc::SdpVideoFormat format_;
   media::VideoDecoderConfig config_;
 
@@ -157,7 +158,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
   int32_t consecutive_error_count_ = 0;
   bool has_error_ = false;
-  webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
+  CheckedPtr<webrtc::DecodedImageCallback> decode_complete_callback_ = nullptr;
   // Requests that have not been submitted to the decoder yet.
   WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;
   // Record of timestamps that have been sent to be decoded. Removing a

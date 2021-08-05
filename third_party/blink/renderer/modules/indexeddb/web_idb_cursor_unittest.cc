@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -106,8 +107,8 @@ class MockContinueCallbacks : public testing::StrictMock<MockWebIDBCallbacks> {
   }
 
  private:
-  std::unique_ptr<IDBKey>* key_;
-  Vector<WebBlobInfo>* blobs_;
+  CheckedPtr<std::unique_ptr<IDBKey>> key_;
+  CheckedPtr<Vector<WebBlobInfo>> blobs_;
 };
 
 }  // namespace

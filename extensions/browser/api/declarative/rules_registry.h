@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "content/public/browser/browser_thread.h"
@@ -238,7 +239,7 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
                            const std::string& error);
 
   // The context to which this rules registry belongs.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // The ID of the thread on which the rules registry lives.
   const content::BrowserThread::ID owner_thread_;

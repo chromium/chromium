@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -42,11 +43,11 @@ struct VideoDecoderTraits {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner;
   std::unique_ptr<MediaLog> media_log;
   RequestOverlayInfoCB request_overlay_info_cb;
-  const gfx::ColorSpace* const target_color_space;
+  const CheckedPtr<const gfx::ColorSpace> target_color_space;
   gpu::GpuPreferences gpu_preferences;
   gpu::GpuFeatureInfo gpu_feature_info;
-  const gpu::GpuDriverBugWorkarounds* const gpu_workarounds;
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory;
+  const CheckedPtr<const gpu::GpuDriverBugWorkarounds> gpu_workarounds;
+  const CheckedPtr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory;
 
   // Windows decoders need to ensure that the cache is populated.
   GetConfigCacheCB get_cached_configs_cb;
@@ -143,7 +144,7 @@ class GpuMojoMediaClient final : public MojoMediaClient {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager_;
   AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  const CheckedPtr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   DISALLOW_COPY_AND_ASSIGN(GpuMojoMediaClient);
 };
 

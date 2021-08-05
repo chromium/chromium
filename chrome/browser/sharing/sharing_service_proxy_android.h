@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class SharingService;
 
@@ -32,7 +33,7 @@ class SharingServiceProxyAndroid {
       const base::android::JavaParamRef<jobject>& j_runnable);
 
  private:
-  SharingService* sharing_service_ = nullptr;
+  CheckedPtr<SharingService> sharing_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SharingServiceProxyAndroid);
 };

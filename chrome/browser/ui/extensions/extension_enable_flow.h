@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -104,13 +105,13 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
 
   void InstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   const std::string extension_id_;
-  ExtensionEnableFlowDelegate* const delegate_;  // Not owned.
+  const CheckedPtr<ExtensionEnableFlowDelegate> delegate_;  // Not owned.
 
   // Parent web contents for ExtensionInstallPrompt that may be created during
   // the flow. Note this is mutually exclusive with |parent_window_| below.
-  content::WebContents* parent_contents_ = nullptr;
+  CheckedPtr<content::WebContents> parent_contents_ = nullptr;
 
   // Parent native window for ExtensionInstallPrompt. Note this is mutually
   // exclusive with |parent_contents_| above.

@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -631,7 +632,7 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
 #endif
 
   base::WeakPtr<EventSender> sender_;
-  blink::WebLocalFrame* const frame_;
+  const CheckedPtr<blink::WebLocalFrame> frame_;
 
   DISALLOW_COPY_AND_ASSIGN(EventSenderBindings);
 };

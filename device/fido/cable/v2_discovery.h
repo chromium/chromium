@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
@@ -76,7 +77,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       const std::vector<CableDiscoveryData>& extension_contents);
 
   const FidoRequestType request_type_;
-  network::mojom::NetworkContext* const network_context_;
+  const CheckedPtr<network::mojom::NetworkContext> network_context_;
   const absl::optional<UnpairedKeys> qr_keys_;
   const absl::optional<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;

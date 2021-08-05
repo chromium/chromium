@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +35,7 @@ struct Export {
     return addr < other.addr;
   }
 
-  void* addr;
+  CheckedPtr<void> addr;
   std::string name;
 };
 
@@ -76,18 +77,19 @@ struct ModuleVerificationState {
 
   // The location in the in-memory binary of the latest reloc encountered by
   // |EnumRelocsCallback|.
-  uint8_t* last_mem_reloc_position;
+  CheckedPtr<uint8_t> last_mem_reloc_position;
 
   // The location in the on-disk binary of the latest reloc encountered by
   // |EnumRelocsCallback|.
-  uint8_t* last_disk_reloc_position;
+  CheckedPtr<uint8_t> last_disk_reloc_position;
 
   // The number of bytes with a different value on disk and in memory, as
   // computed by |VerifyModule|.
   int bytes_different;
 
   // The module state protobuf object that |VerifyModule| will populate.
-  ClientIncidentReport_EnvironmentData_Process_ModuleState* module_state;
+  CheckedPtr<ClientIncidentReport_EnvironmentData_Process_ModuleState>
+      module_state;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ModuleVerificationState);

@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "net/base/completion_once_callback.h"
@@ -123,7 +124,8 @@ class StaleHostResolver : public net::HostResolver {
   std::unique_ptr<net::ContextHostResolver> inner_resolver_;
 
   // Shared instance of tick clock, overridden for testing.
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  CheckedPtr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   // Options that govern when a stale response can or can't be returned.
   const StaleOptions options_;

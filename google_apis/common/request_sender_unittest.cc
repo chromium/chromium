@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -62,7 +63,7 @@ class RequestSenderTest : public testing::Test {
  protected:
   RequestSenderTest()
       : auth_service_(new TestAuthService),
-        request_sender_(base::WrapUnique(auth_service_),
+        request_sender_(base::WrapUnique(auth_service_.get()),
                         nullptr,
                         nullptr,
                         "dummy-user-agent",
@@ -71,7 +72,7 @@ class RequestSenderTest : public testing::Test {
     auth_service_->set_access_token(kTestAccessToken);
   }
 
-  TestAuthService* auth_service_;  // Owned by |request_sender_|.
+  CheckedPtr<TestAuthService> auth_service_;  // Owned by |request_sender_|.
   RequestSender request_sender_;
 };
 
@@ -127,9 +128,9 @@ class TestRequest : public AuthenticatedRequestInterface {
   }
 
  private:
-  RequestSender* sender_;
-  bool* start_called_;
-  FinishReason* finish_reason_;
+  CheckedPtr<RequestSender> sender_;
+  CheckedPtr<bool> start_called_;
+  CheckedPtr<FinishReason> finish_reason_;
   std::string passed_access_token_;
   ReAuthenticateCallback passed_reauth_callback_;
   base::WeakPtrFactory<TestRequest> weak_ptr_factory_{this};

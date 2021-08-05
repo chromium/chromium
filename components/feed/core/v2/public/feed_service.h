@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -146,7 +147,7 @@ class FeedService : public KeyedService {
       application_status_listener_;
 #endif
   std::unique_ptr<FeedStream> stream_;
-  FeedApi* api_;  // Points to `stream_`, overridden for testing.
+  CheckedPtr<FeedApi> api_;  // Points to `stream_`, overridden for testing.
 };
 
 }  // namespace feed

@@ -14,6 +14,7 @@
 
 #include "apps/saved_files_service_factory.h"
 #include "base/json/values_util.h"
+#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
@@ -168,7 +169,7 @@ class SavedFilesService::SavedFiles {
 
   void LoadSavedFileEntriesFromPreferences();
 
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
   const std::string extension_id_;
 
   // Contains all file entries that have been registered, keyed by ID.

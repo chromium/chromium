@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -131,7 +132,7 @@ class PredictorInitializer : public TestObserver {
   void OnPredictorInitialized() override { run_loop_.Quit(); }
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  CheckedPtr<ResourcePrefetchPredictor> predictor_;
   base::RunLoop run_loop_;
   DISALLOW_COPY_AND_ASSIGN(PredictorInitializer);
 };
@@ -227,7 +228,7 @@ class ConnectionTracker {
   // waiting for |num_accepted_connections_needed_| sockets to be accepted
   // before quitting the |num_accepted_connections_loop_|.
   size_t num_accepted_connections_needed_ = 0;
-  base::RunLoop* num_accepted_connections_loop_ = nullptr;
+  CheckedPtr<base::RunLoop> num_accepted_connections_loop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ConnectionTracker);
 };
@@ -250,7 +251,7 @@ class ConnectionListener
     uint16_t port = GetPort(*connection);
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ConnectionTracker::AcceptedSocketWithPort,
-                                  base::Unretained(tracker_), port));
+                                  base::Unretained(tracker_.get()), port));
     return connection;
   }
 
@@ -264,7 +265,7 @@ class ConnectionListener
     uint16_t port = GetPort(connection);
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ConnectionTracker::ReadFromSocketWithPort,
-                                  base::Unretained(tracker_), port));
+                                  base::Unretained(tracker_.get()), port));
   }
 
  private:
@@ -286,7 +287,7 @@ class ConnectionListener
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // This pointer should be only accessed on the browser UI thread.
-  ConnectionTracker* tracker_;
+  CheckedPtr<ConnectionTracker> tracker_;
 };
 
 class TestPreconnectManagerObserver : public PreconnectManager::Observer {
@@ -450,7 +451,7 @@ class TestPreconnectManagerObserver : public PreconnectManager::Observer {
   }
 
   WaitEvent wait_event_ = WaitEvent::kNone;
-  base::RunLoop* run_loop_ = nullptr;
+  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
 
   ResolveHostRequestInfo waiting_on_dns_;
   std::set<ResolveHostRequestInfo> successful_dns_lookups_;
@@ -683,7 +684,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer preconnecting_test_server_;
 
  private:
-  LoadingPredictor* loading_predictor_ = nullptr;
+  CheckedPtr<LoadingPredictor> loading_predictor_ = nullptr;
   std::unique_ptr<ConnectionListener> connection_listener_;
   std::unique_ptr<ConnectionTracker> connection_tracker_;
   std::unique_ptr<ConnectionListener> preconnecting_server_connection_listener_;
@@ -2359,7 +2360,7 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() { return web_contents_; }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {

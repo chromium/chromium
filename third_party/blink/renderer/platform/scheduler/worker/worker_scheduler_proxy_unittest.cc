@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -42,7 +43,7 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
   using WorkerThreadScheduler::lifecycle_state;
 
  private:
-  base::WaitableEvent* throtting_state_changed_;
+  CheckedPtr<base::WaitableEvent> throtting_state_changed_;
 };
 
 class WorkerThreadForTest : public WorkerThread {
@@ -90,8 +91,8 @@ class WorkerThreadForTest : public WorkerThread {
   WorkerThreadSchedulerForTest* GetWorkerScheduler() { return scheduler_; }
 
  private:
-  base::WaitableEvent* throtting_state_changed_;       // NOT OWNED
-  WorkerThreadSchedulerForTest* scheduler_ = nullptr;  // NOT OWNED
+  CheckedPtr<base::WaitableEvent> throtting_state_changed_;       // NOT OWNED
+  CheckedPtr<WorkerThreadSchedulerForTest> scheduler_ = nullptr;  // NOT OWNED
   std::unique_ptr<WorkerScheduler> worker_scheduler_;
 };
 

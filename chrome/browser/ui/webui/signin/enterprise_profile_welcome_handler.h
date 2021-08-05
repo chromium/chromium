@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -101,7 +102,7 @@ class EnterpriseProfileWelcomeHandler
                           signin::IdentityManager::Observer>
       observed_account_{this};
 
-  Browser* browser_ = nullptr;
+  CheckedPtr<Browser> browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
   const std::string domain_name_;
   const CoreAccountId account_id_;

@@ -3110,7 +3110,7 @@ const char* const* WebGLRenderingContextBase::ExtensionTracker::Prefixes()
       "",
       nullptr,
   };
-  return prefixes_ ? prefixes_ : kUnprefixed;
+  return prefixes_ ? prefixes_.get() : kUnprefixed;
 }
 
 bool WebGLRenderingContextBase::ExtensionTracker::MatchesNameWithPrefixes(

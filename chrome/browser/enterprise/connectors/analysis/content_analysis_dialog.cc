@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -98,7 +99,7 @@ class DeepScanningBaseView {
   ContentAnalysisDialog* dialog() { return dialog_; }
 
  protected:
-  ContentAnalysisDialog* dialog_;
+  CheckedPtr<ContentAnalysisDialog> dialog_;
 };
 
 class DeepScanningTopImageView : public DeepScanningBaseView,

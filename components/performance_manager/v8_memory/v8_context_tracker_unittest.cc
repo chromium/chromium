@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
@@ -67,7 +68,7 @@ class V8ContextTrackerTest : public GraphTestHarness {
         std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());
   }
 
-  execution_context::ExecutionContextRegistry* registry_ = nullptr;
+  CheckedPtr<execution_context::ExecutionContextRegistry> registry_ = nullptr;
   V8ContextTracker* tracker_ = nullptr;
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 };
