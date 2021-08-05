@@ -88,7 +88,7 @@ void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
 
 void SecurePaymentConfirmationNoCredsDialogView::InitChildViews(
     const std::u16string& no_creds_text) {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));

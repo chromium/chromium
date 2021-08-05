@@ -88,11 +88,6 @@ class ASH_EXPORT TriView : public views::View {
   // Adds the child |view| to the specified |container| at the child index.
   void AddViewAt(Container container, views::View* view, int index);
 
-  // Removes all the children from the specified |container|. If
-  // |delete_children| is true, the views are deleted, unless marked as not
-  // parent owned.
-  void RemoveAllChildren(Container container, bool delete_children);
-
   // During layout the |insets| are applied to the host views entire space
   // before allocating the remaining space to the container views.
   void SetInsets(const gfx::Insets& insets);

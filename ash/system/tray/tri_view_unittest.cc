@@ -177,27 +177,6 @@ TEST_F(TriViewTest, MultipleViewsAddedToTheSameContainer) {
   EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child2));
 }
 
-TEST_F(TriViewTest, ViewsRemovedOnRemoveAllChildren) {
-  views::View* child1 = new views::StaticSizedView();
-  views::View* child2 = new views::StaticSizedView();
-
-  tri_view_->AddView(TriView::Container::START, child1);
-  tri_view_->AddView(TriView::Container::START, child2);
-
-  EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child1));
-  EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child2));
-  EXPECT_EQ(2u, GetContainer(TriView::Container::START)->children().size());
-
-  tri_view_->RemoveAllChildren(TriView::Container::START, false);
-
-  EXPECT_FALSE(GetContainer(TriView::Container::START)->Contains(child1));
-  EXPECT_FALSE(GetContainer(TriView::Container::START)->Contains(child2));
-  EXPECT_EQ(0u, GetContainer(TriView::Container::START)->children().size());
-
-  delete child1;
-  delete child2;
-}
-
 TEST_F(TriViewTest, Insets) {
   const int kInset = 3;
   const int kViewHeight = 10;

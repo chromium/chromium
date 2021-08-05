@@ -1055,8 +1055,7 @@ void LockDebugView::CycleAuthErrorMessage() {
 }
 
 void LockDebugView::UpdatePerUserActionContainer() {
-  per_user_action_view_container_->RemoveAllChildViews(
-      true /*delete_children*/);
+  per_user_action_view_container_->RemoveAllChildViews();
 
   int num_users = debug_data_dispatcher_->GetUserCount();
   for (int i = 0; i < num_users; ++i) {
@@ -1156,8 +1155,7 @@ void LockDebugView::UpdatePerUserActionContainerAndLayout() {
 }
 
 void LockDebugView::UpdateDetachableBaseColumn() {
-  global_action_detachable_base_group_->RemoveAllChildViews(
-      true /*delete_children*/);
+  global_action_detachable_base_group_->RemoveAllChildViews();
 
   AddButton("Debug detachable base",
             base::BindRepeating(
