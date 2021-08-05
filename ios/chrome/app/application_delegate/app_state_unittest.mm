@@ -48,8 +48,7 @@
 #include "ios/chrome/test/block_cleanup_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_provider.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
-#include "ios/public/provider/chrome/browser/app_distribution/test_app_distribution.h"
+#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
@@ -146,6 +145,19 @@ typedef void (^HandleStartupParam)(
 // A block ths returns values of AppState connectedScenes.
 typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 
+class FakeAppDistributionProvider : public AppDistributionProvider {
+ public:
+  FakeAppDistributionProvider() : cancel_called_(false) {}
+  ~FakeAppDistributionProvider() override {}
+
+  void CancelDistributionNotifications() override { cancel_called_ = true; }
+  bool cancel_called() { return cancel_called_; }
+
+ private:
+  bool cancel_called_;
+  DISALLOW_COPY_AND_ASSIGN(FakeAppDistributionProvider);
+};
+
 class FakeUserFeedbackProvider : public TestUserFeedbackProvider {
  public:
   FakeUserFeedbackProvider() : synchronize_called_(false) {}
@@ -161,14 +173,21 @@ class FakeUserFeedbackProvider : public TestUserFeedbackProvider {
 class FakeChromeBrowserProvider : public ios::TestChromeBrowserProvider {
  public:
   FakeChromeBrowserProvider()
-      : user_feedback_provider_(std::make_unique<FakeUserFeedbackProvider>()) {}
+      : app_distribution_provider_(
+            std::make_unique<FakeAppDistributionProvider>()),
+        user_feedback_provider_(std::make_unique<FakeUserFeedbackProvider>()) {}
   ~FakeChromeBrowserProvider() override {}
+
+  AppDistributionProvider* GetAppDistributionProvider() const override {
+    return app_distribution_provider_.get();
+  }
 
   UserFeedbackProvider* GetUserFeedbackProvider() const override {
     return user_feedback_provider_.get();
   }
 
  private:
+  std::unique_ptr<FakeAppDistributionProvider> app_distribution_provider_;
   std::unique_ptr<FakeUserFeedbackProvider> user_feedback_provider_;
   DISALLOW_COPY_AND_ASSIGN(FakeChromeBrowserProvider);
 };
@@ -674,9 +693,6 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
 // Test that -applicationWillTerminate clears everything.
 TEST_F(AppStateWithThreadTest, willTerminate) {
   // Setup.
-  ios::provider::test::ResetAppDistributionNotificationsState();
-  ASSERT_FALSE(ios::provider::test::AreAppDistributionNotificationsCanceled());
-
   IOSChromeScopedTestingChromeBrowserProvider provider_(
       std::make_unique<FakeChromeBrowserProvider>());
 
@@ -718,7 +734,10 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
     EXPECT_FALSE(
         connectedScene.interfaceProvider.mainInterface.userInteractionEnabled);
   }
-  EXPECT_TRUE(ios::provider::test::AreAppDistributionNotificationsCanceled());
+  FakeAppDistributionProvider* provider =
+      static_cast<FakeAppDistributionProvider*>(
+          ios::GetChromeBrowserProvider().GetAppDistributionProvider());
+  EXPECT_TRUE(provider->cancel_called());
 }
 
 // Tests that -applicationWillEnterForeground resets components as needed.

@@ -26,8 +26,8 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_query_params.h"
 #include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace component_updater {
@@ -126,7 +126,9 @@ std::string IOSConfigurator::GetChannel() const {
 }
 
 std::string IOSConfigurator::GetBrand() const {
-  return ios::provider::GetBrandCode();
+  std::string brand;
+  ios::google_brand::GetBrand(&brand);
+  return brand;
 }
 
 std::string IOSConfigurator::GetLang() const {

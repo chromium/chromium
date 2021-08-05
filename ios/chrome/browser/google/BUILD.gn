@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("google") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "google_brand.h",
+    "google_brand.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/distribution",
+  ]
+}
+
 source_set("google_logo") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

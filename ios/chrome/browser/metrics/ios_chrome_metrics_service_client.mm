@@ -63,6 +63,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/chrome_paths.h"
+#include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -79,7 +80,6 @@
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -197,8 +197,7 @@ std::string IOSChromeMetricsServiceClient::GetApplicationLocale() {
 }
 
 bool IOSChromeMetricsServiceClient::GetBrand(std::string* brand_code) {
-  brand_code->assign(ios::provider::GetBrandCode());
-  return true;
+  return ios::google_brand::GetBrand(brand_code);
 }
 
 metrics::SystemProfileProto::Channel
