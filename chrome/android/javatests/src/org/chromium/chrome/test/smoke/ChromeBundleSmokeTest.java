@@ -20,6 +20,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
@@ -71,21 +72,25 @@ public class ChromeBundleSmokeTest {
     }
 
     @Test
+    @FlakyTest(message = "https://crbug.com/1236987, https://crbug.com/1236986")
     public void testModuleJavaCodeExecution() {
         runTestActivity(0); // Test case EXECUTE_JAVA.
     }
 
     @Test
+    @FlakyTest(message = "https://crbug.com/1236987, https://crbug.com/1236986")
     public void testModuleNativeCodeExecution() {
         runTestActivity(1); // Test case EXECUTE_NATIVE.
     }
 
     @Test
+    @FlakyTest(message = "https://crbug.com/1236987, https://crbug.com/1236986")
     public void testModuleJavaResourceLoading() {
         runTestActivity(2); // Test case LOAD_JAVA_RESOURCE.
     }
 
     @Test
+    @FlakyTest(message = "https://crbug.com/1236987, https://crbug.com/1236986")
     public void testModuleNativeResourceLoading() {
         runTestActivity(3); // Test case LOAD_NATIVE_RESOURCE.
     }
