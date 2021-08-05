@@ -2786,8 +2786,9 @@
             ],
             "experiments": [
                 {
-                    "name": "RecipeTasksChromeCartImprovement_Enabled",
+                    "name": "RecipeTasksRuleBasedDiscountDrive_Enabled",
                     "params": {
+                        "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
                         "NtpChromeCartModuleHeuristicsImprovementParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000"
                     },
