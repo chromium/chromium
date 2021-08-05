@@ -52,9 +52,12 @@ std::set<BrowserDevToolsAgentHost*>& BrowserDevToolsAgentHostInstances() {
   return *instances;
 }
 
-class BrowserAutoAttacher final : public protocol::TargetAutoAttacher,
-                                  public ServiceWorkerDevToolsManager::Observer,
-                                  public DevToolsAgentHostObserver {
+}  // namespace
+
+class BrowserDevToolsAgentHost::BrowserAutoAttacher final
+    : public protocol::TargetAutoAttacher,
+      public ServiceWorkerDevToolsManager::Observer,
+      public DevToolsAgentHostObserver {
  public:
   BrowserAutoAttacher() = default;
   ~BrowserAutoAttacher() override = default;
@@ -64,11 +67,11 @@ class BrowserAutoAttacher final : public protocol::TargetAutoAttacher,
   void WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
                      bool* should_pause_on_start) override {
     *should_pause_on_start = wait_for_debugger_on_start();
-    delegate()->AutoAttach(host, *should_pause_on_start);
+    DispatchAutoAttach(host, *should_pause_on_start);
   }
 
   void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) override {
-    delegate()->AutoDetach(host);
+    DispatchAutoDetach(host);
   }
 
   void ReattachServiceWorkers() {
@@ -76,11 +79,15 @@ class BrowserAutoAttacher final : public protocol::TargetAutoAttacher,
     ServiceWorkerDevToolsAgentHost::List agent_hosts;
     ServiceWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(&agent_hosts);
     Hosts new_hosts(agent_hosts.begin(), agent_hosts.end());
-    delegate()->SetAttachedTargetsOfType(new_hosts,
-                                         DevToolsAgentHost::kTypeServiceWorker);
+    DispatchSetAttachedTargetsOfType(new_hosts,
+                                     DevToolsAgentHost::kTypeServiceWorker);
   }
 
   void UpdateAutoAttach(base::OnceClosure callback) override {
+    if (have_observers_ == auto_attach()) {
+      std::move(callback).Run();
+      return;
+    }
     if (auto_attach()) {
       base::AutoReset<bool> auto_reset(&processing_existent_targets_, true);
       ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
@@ -90,6 +97,7 @@ class BrowserAutoAttacher final : public protocol::TargetAutoAttacher,
       DevToolsAgentHost::RemoveObserver(this);
       ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
     }
+    have_observers_ = auto_attach();
     std::move(callback).Run();
   }
 
@@ -101,7 +109,7 @@ class BrowserAutoAttacher final : public protocol::TargetAutoAttacher,
     // never get a chance to throttle them (and auto-attach there).
 
     if (IsMainFrameHost(host)) {
-      delegate()->AutoAttach(
+      DispatchAutoAttach(
           host, wait_for_debugger_on_start() && !processing_existent_targets_);
     }
   }
@@ -120,9 +128,8 @@ class BrowserAutoAttacher final : public protocol::TargetAutoAttacher,
   }
 
   bool processing_existent_targets_ = false;
+  bool have_observers_ = false;
 };
-
-}  // namespace
 
 // static
 const std::set<BrowserDevToolsAgentHost*>&
@@ -135,6 +142,7 @@ BrowserDevToolsAgentHost::BrowserDevToolsAgentHost(
     const CreateServerSocketCallback& socket_callback,
     bool only_discovery)
     : DevToolsAgentHostImpl(base::GenerateGUID()),
+      auto_attacher_(std::make_unique<BrowserAutoAttacher>()),
       tethering_task_runner_(tethering_task_runner),
       socket_callback_(socket_callback),
       only_discovery_(only_discovery) {
@@ -154,7 +162,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->SetBrowserOnly(true);
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kBrowser, GetId(),
-      std::make_unique<BrowserAutoAttacher>(), session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession()));
   if (only_discovery_)
     return true;
 

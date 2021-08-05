@@ -837,19 +837,26 @@ bool HandleCertificateError(WebContents* web_contents,
   return !callback;
 }
 
+namespace {
+void UpdatePortals(RenderFrameHostImpl* render_frame_host_impl) {
+  auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
+      RenderFrameDevToolsAgentHost::GetFor(
+          render_frame_host_impl->frame_tree_node()));
+  if (agent_host)
+    agent_host->UpdatePortals();
+}
+}  // namespace
+
 void PortalAttached(RenderFrameHostImpl* render_frame_host_impl) {
-  DispatchToAgents(render_frame_host_impl->frame_tree_node(),
-                   &protocol::TargetHandler::UpdatePortals);
+  UpdatePortals(render_frame_host_impl);
 }
 
 void PortalDetached(RenderFrameHostImpl* render_frame_host_impl) {
-  DispatchToAgents(render_frame_host_impl->frame_tree_node(),
-                   &protocol::TargetHandler::UpdatePortals);
+  UpdatePortals(render_frame_host_impl);
 }
 
 void PortalActivated(RenderFrameHostImpl* render_frame_host_impl) {
-  DispatchToAgents(render_frame_host_impl->frame_tree_node(),
-                   &protocol::TargetHandler::UpdatePortals);
+  UpdatePortals(render_frame_host_impl);
 }
 
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,

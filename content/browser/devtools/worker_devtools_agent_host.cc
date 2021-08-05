@@ -18,6 +18,10 @@
 
 namespace content {
 
+namespace protocol {
+class TargetAutoAttacher;
+}  // namespace protocol
+
 WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
     int process_id,
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
@@ -32,6 +36,8 @@ WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
       url_(url),
       name_(name),
       parent_id_(parent_id),
+      auto_attacher_(std::make_unique<protocol::RendererAutoAttacherBase>(
+          GetRendererChannel())),
       destroyed_callback_(std::move(destroyed_callback)),
       devtools_worker_token_(devtools_worker_token) {
   DCHECK(agent_remote);
@@ -91,9 +97,7 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      std::make_unique<protocol::RendererAutoAttacherBase>(
-          GetRendererChannel()),
-      session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession()));
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
   return true;

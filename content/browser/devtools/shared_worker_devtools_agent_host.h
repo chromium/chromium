@@ -19,6 +19,10 @@ class StorageKey;
 
 namespace content {
 
+namespace protocol {
+class TargetAutoAttacher;
+}  // namespace protocol
+
 class SharedWorkerHost;
 
 class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
@@ -64,6 +68,8 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+
+  std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
 
   enum WorkerState {
     WORKER_NOT_READY,

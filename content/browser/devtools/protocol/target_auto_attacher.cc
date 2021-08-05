@@ -21,20 +21,12 @@ namespace protocol {
 TargetAutoAttacher::TargetAutoAttacher() = default;
 TargetAutoAttacher::~TargetAutoAttacher() = default;
 
-void TargetAutoAttacher::SetDelegate(Delegate* delegate) {
-  DCHECK(delegate);
-  DCHECK(!delegate_);
-  delegate_ = delegate;
+bool TargetAutoAttacher::auto_attach() const {
+  return !clients_.empty();
 }
 
-void TargetAutoAttacher::SetRenderFrameHost(
-    RenderFrameHostImpl* render_frame_host) {
-  DCHECK(!render_frame_host);
-}
-
-DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
-    NavigationRequest* navigation_request) {
-  return AutoAttachToFrame(navigation_request, wait_for_debugger_on_start_);
+bool TargetAutoAttacher::wait_for_debugger_on_start() const {
+  return !clients_requesting_wait_for_debugger_.empty();
 }
 
 DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
@@ -68,8 +60,7 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
           RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
               navigation_request);
     }
-    return delegate()->AutoAttach(agent_host.get(),
-                                  wait_for_debugger_on_start) &&
+    return DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start) &&
                    wait_for_debugger_on_start
                ? agent_host.get()
                : nullptr;
@@ -80,7 +71,7 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
 
   // At this point we don't need a host, so we must auto detach if we auto
   // attached earlier.
-  delegate_->AutoDetach(agent_host.get());
+  DispatchAutoDetach(agent_host.get());
   return nullptr;
 }
 
@@ -88,30 +79,53 @@ void TargetAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void TargetAutoAttacher::SetAutoAttach(bool auto_attach,
-                                       bool wait_for_debugger_on_start,
-                                       base::OnceClosure callback) {
-  wait_for_debugger_on_start_ = wait_for_debugger_on_start;
-  if (auto_attach == auto_attach_) {
-    std::move(callback).Run();
-    return;
+void TargetAutoAttacher::AddClient(Client* client,
+                                   bool wait_for_debugger_on_start,
+                                   base::OnceClosure callback) {
+  bool need_update = clients_.empty();
+  clients_.AddObserver(client);
+  if (wait_for_debugger_on_start) {
+    need_update = need_update || clients_requesting_wait_for_debugger_.empty();
+    clients_requesting_wait_for_debugger_.insert(client);
   }
-  auto_attach_ = auto_attach;
-  UpdateAutoAttach(std::move(callback));
+  if (need_update)
+    UpdateAutoAttach(std::move(callback));
+  else
+    std::move(callback).Run();
 }
 
-void TargetAutoAttacher::ChildWorkerCreated(DevToolsAgentHostImpl* agent_host,
+void TargetAutoAttacher::RemoveClient(Client* client) {
+  clients_.RemoveObserver(client);
+  clients_requesting_wait_for_debugger_.erase(client);
+  DCHECK(clients_requesting_wait_for_debugger_.empty() || !clients_.empty());
+  if (clients_.empty() || clients_requesting_wait_for_debugger_.empty())
+    UpdateAutoAttach(base::DoNothing());
+}
+
+bool TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
                                             bool waiting_for_debugger) {
-  delegate_->AutoAttach(agent_host, waiting_for_debugger);
+  bool attached = false;
+  for (auto& client : clients_) {
+    attached =
+        client.AutoAttach(
+            host,
+            waiting_for_debugger &&
+                clients_requesting_wait_for_debugger_.contains(&client)) ||
+        attached;
+  }
+  return attached;
 }
 
-void TargetAutoAttacher::UpdatePortals() {
-  NOTREACHED();
+void TargetAutoAttacher::DispatchAutoDetach(DevToolsAgentHost* host) {
+  for (auto& client : clients_)
+    client.AutoDetach(host);
 }
 
-void TargetAutoAttacher::DidFinishNavigation(
-    NavigationRequest* navigation_request) {
-  NOTREACHED();
+void TargetAutoAttacher::DispatchSetAttachedTargetsOfType(
+    const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
+    const std::string& type) {
+  for (auto& client : clients_)
+    client.SetAttachedTargetsOfType(hosts, type);
 }
 
 RendererAutoAttacherBase::RendererAutoAttacherBase(
@@ -121,8 +135,20 @@ RendererAutoAttacherBase::RendererAutoAttacherBase(
 RendererAutoAttacherBase::~RendererAutoAttacherBase() = default;
 
 void RendererAutoAttacherBase::UpdateAutoAttach(base::OnceClosure callback) {
-  renderer_channel_->SetReportChildWorkers(
-      this, auto_attach(), wait_for_debugger_on_start(), std::move(callback));
+  DevToolsRendererChannel::ChildWorkerCreatedCallback report_worker_callback;
+  if (auto_attach()) {
+    report_worker_callback = base::BindRepeating(
+        &RendererAutoAttacherBase::ChildWorkerCreated, base::Unretained(this));
+  }
+  renderer_channel_->SetReportChildWorkers(std::move(report_worker_callback),
+                                           wait_for_debugger_on_start(),
+                                           std::move(callback));
+}
+
+void RendererAutoAttacherBase::ChildWorkerCreated(
+    DevToolsAgentHostImpl* agent_host,
+    bool waiting_for_debugger) {
+  DispatchAutoAttach(agent_host, waiting_for_debugger);
 }
 
 }  // namespace protocol

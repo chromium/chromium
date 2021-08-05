@@ -25,14 +25,13 @@ class DevToolsAgentHostImpl;
 class DevToolsSession;
 class NavigationHandle;
 class NavigationThrottle;
-class RenderFrameHostImpl;
 
 namespace protocol {
 
 class TargetHandler : public DevToolsDomainHandler,
                       public Target::Backend,
                       public DevToolsAgentHostObserver,
-                      public TargetAutoAttacher::Delegate {
+                      public TargetAutoAttacher::Client {
  public:
   enum class AccessMode {
     // Only setAutoAttach is supported. Any non-related target are not
@@ -46,18 +45,15 @@ class TargetHandler : public DevToolsDomainHandler,
   };
   TargetHandler(AccessMode access_mode,
                 const std::string& owner_target_id,
-                std::unique_ptr<TargetAutoAttacher> auto_attacher,
+                TargetAutoAttacher* auto_attacher,
                 DevToolsSession* root_session);
   ~TargetHandler() override;
 
   static std::vector<TargetHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   void Wire(UberDispatcher* dispatcher) override;
-  void SetRenderer(int process_host_id,
-                   RenderFrameHostImpl* frame_host) override;
   Response Disable() override;
 
-  void DidFinishNavigation(NavigationHandle* navigation_handle);
   std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
       NavigationHandle* navigation_handle);
 
@@ -154,9 +150,11 @@ class TargetHandler : public DevToolsDomainHandler,
   void DevToolsAgentHostCrashed(DevToolsAgentHost* agent_host,
                                 base::TerminationStatus status) override;
 
+  TargetAutoAttacher* const auto_attacher_;
   std::unique_ptr<Target::Frontend> frontend_;
-  std::unique_ptr<TargetAutoAttacher> auto_attacher_;
   bool flatten_auto_attach_ = false;
+  bool auto_attach_ = false;
+  bool wait_for_debugger_on_start_ = false;
   bool discover_;
   bool observing_agent_hosts_ = false;
   std::map<std::string, std::unique_ptr<Session>> attached_sessions_;

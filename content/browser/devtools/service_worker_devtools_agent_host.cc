@@ -63,6 +63,8 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
         coep_reporter,
     const base::UnguessableToken& devtools_worker_token)
     : DevToolsAgentHostImpl(devtools_worker_token.ToString()),
+      auto_attacher_(std::make_unique<protocol::RendererAutoAttacherBase>(
+          GetRendererChannel())),
       state_(WORKER_NOT_READY),
       devtools_worker_token_(devtools_worker_token),
       worker_process_id_(worker_process_id),
@@ -140,9 +142,7 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      std::make_unique<protocol::RendererAutoAttacherBase>(
-          GetRendererChannel()),
-      session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession()));
   if (state_ == WORKER_READY && sessions().empty())
     UpdateIsAttached(true);
   return true;

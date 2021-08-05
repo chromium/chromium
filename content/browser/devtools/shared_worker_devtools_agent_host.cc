@@ -37,6 +37,8 @@ SharedWorkerDevToolsAgentHost::SharedWorkerDevToolsAgentHost(
     SharedWorkerHost* worker_host,
     const base::UnguessableToken& devtools_worker_token)
     : DevToolsAgentHostImpl(devtools_worker_token.ToString()),
+      auto_attacher_(std::make_unique<protocol::RendererAutoAttacherBase>(
+          GetRendererChannel())),
       state_(WORKER_NOT_READY),
       worker_host_(worker_host),
       devtools_worker_token_(devtools_worker_token),
@@ -98,9 +100,7 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::SchemaHandler>());
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      std::make_unique<protocol::RendererAutoAttacherBase>(
-          GetRendererChannel()),
-      session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession()));
   return true;
 }
 

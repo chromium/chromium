@@ -25,6 +25,10 @@ namespace content {
 
 class BrowserContext;
 
+namespace protocol {
+class TargetAutoAttacher;
+}  // namespace protocol
+
 class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
                                        RenderProcessHostObserver {
  public:
@@ -112,6 +116,8 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   void UpdateLoaderFactories(base::OnceClosure callback);
+
+  std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
 
   enum WorkerState {
     WORKER_NOT_READY,
