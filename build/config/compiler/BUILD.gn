@@ -314,7 +314,6 @@ config("compiler") {
   # .o files built with different compiler versions harder.
   if (!is_win || is_clang) {
     cflags += [ "-fno-ident" ]
-    asmflags += [ "-fno-ident" ]
   }
 
   # In general, Windows is totally different, but all the other builds share
