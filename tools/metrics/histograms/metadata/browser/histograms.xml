@@ -89,10 +89,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
-    expires_after="2021-12-05">
+<histogram name="Browser.ChromeOS.HatsSatisfaction{Survey}" units="score"
+    expires_after="2022-08-01">
   <owner>aalsum@chromium.org</owner>
-  <owner>malaykeshav@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records the overall satisfaction score for HaTS, to be analyzed against
+    other OS metrics like performance or number of crashes. There is one score
+    per survey type.
+  </summary>
+  <token key="Survey">
+    <variant name=".General"/>
+    <variant name=".OnboardingExperience"/>
+    <variant name=".Unlock"/>
+  </token>
+</histogram>
+
+<histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
+    expires_after="2022-08-01">
+  <owner>aalsum@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
   <summary>
     Records the stage up to which the user interacted with the HaTS Chrome OS
     survey. This is needed in addition to the Hats metrics data since Chrome OS
