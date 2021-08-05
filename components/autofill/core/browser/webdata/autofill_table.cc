@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -2026,60 +2025,6 @@ bool AutofillTable::GetCreditCardCloudTokenData(
   }
 
   return s.Succeeded();
-}
-
-bool AutofillTable::AddCreditCardArtImage(
-    const CreditCardArtImage& credit_card_art_image) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return false;
-
-  sql::Statement s(db_->GetUniqueStatement(
-      "INSERT INTO credit_card_art_images(id, instrument_id, card_art_image)"
-      "VALUES (?,?,?)"));
-  s.BindString(0, credit_card_art_image.id);
-  s.BindInt64(1, credit_card_art_image.instrument_id);
-  s.BindBlob(2, credit_card_art_image.card_art_image);
-  s.Run();
-
-  return transaction.Commit();
-}
-
-bool AutofillTable::GetCreditCardArtImages(
-    std::vector<std::unique_ptr<CreditCardArtImage>>* credit_card_art_images) {
-  credit_card_art_images->clear();
-
-  sql::Statement s(
-      db_->GetUniqueStatement("SELECT "
-                              "id, "             // 0
-                              "instrument_id, "  // 1
-                              "card_art_image "  // 2
-                              "FROM credit_card_art_images"));
-
-  while (s.Step()) {
-    std::vector<uint8_t> card_art_image;
-    if (s.ColumnBlobAsVector(2, &card_art_image)) {
-      std::unique_ptr<CreditCardArtImage> data =
-          std::make_unique<CreditCardArtImage>(
-              s.ColumnString(0), s.ColumnInt64(1), std::move(card_art_image));
-      credit_card_art_images->push_back(std::move(data));
-    }
-  }
-
-  return s.Succeeded();
-}
-
-bool AutofillTable::ClearCreditCardArtImage(const std::string& id) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return false;
-
-  sql::Statement s(db_->GetUniqueStatement(
-      "DELETE FROM credit_card_art_images WHERE id = ?"));
-  s.BindString(0, id);
-  s.Run();
-
-  return transaction.Commit();
 }
 
 void AutofillTable::SetPaymentsCustomerData(

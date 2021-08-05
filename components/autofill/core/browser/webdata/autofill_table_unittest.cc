@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -3766,36 +3765,6 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
                 testing::UnorderedElementsAreArray(
                     output_offer_data[output_index]->eligible_instrument_id));
   }
-}
-
-TEST_F(AutofillTableTest, SetAndGetAndClearCreditCardArtImage) {
-  CreditCardArtImage image1("image1", 1, {UINT8_MAX});
-  table_->AddCreditCardArtImage(image1);
-  CreditCardArtImage image2("image2", 2, {UINT8_MAX});
-  table_->AddCreditCardArtImage(image2);
-
-  std::vector<std::unique_ptr<CreditCardArtImage>> output;
-  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
-  EXPECT_EQ(2U, output.size());
-  EXPECT_EQ("image1", output[0]->id);
-  EXPECT_EQ(1, output[0]->instrument_id);
-  EXPECT_EQ(UINT8_MAX, output[0]->card_art_image[0]);
-  EXPECT_EQ("image2", output[1]->id);
-  EXPECT_EQ(2, output[1]->instrument_id);
-  EXPECT_EQ(UINT8_MAX, output[1]->card_art_image[0]);
-
-  EXPECT_TRUE(table_->ClearCreditCardArtImage("image1"));
-  output.clear();
-  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
-  EXPECT_EQ(1U, output.size());
-  EXPECT_EQ("image2", output[0]->id);
-  EXPECT_EQ(2, output[0]->instrument_id);
-  EXPECT_EQ(UINT8_MAX, output[0]->card_art_image[0]);
-
-  EXPECT_TRUE(table_->ClearAllServerData());
-  output.clear();
-  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
-  EXPECT_EQ(0U, output.size());
 }
 
 }  // namespace autofill

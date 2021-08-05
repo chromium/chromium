@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -70,6 +71,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
@@ -113,6 +115,11 @@ class PersonalDataManagerMock : public PersonalDataManager {
   void OnValidatedPDM(const AutofillProfile* profile) {
     PersonalDataManager::OnValidated(profile);
   }
+
+  MOCK_METHOD(void,
+              FetchImagesForUrls,
+              ((const std::vector<GURL>& updated_urls)),
+              (const override));
 };
 
 template <typename T>
@@ -711,6 +718,19 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
         prefs::kAutofillLastVersionValidated);
   }
 
+  // Verifies the credit card art image fetching should begin.
+  void WaitForFetchImagesForUrls(const std::vector<GURL>& updated_urls) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*personal_data_, FetchImagesForUrls(updated_urls))
+        .Times(1)
+        .WillOnce(QuitMessageLoop(&run_loop));
+    run_loop.Run();
+  }
+
   std::unique_ptr<PersonalDataManagerMock> personal_data_;
 };
 
@@ -1274,6 +1294,51 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_Invalid) {
   ASSERT_EQ(1u, personal_data_->GetCreditCards().size());
   ASSERT_EQ(card, *personal_data_->GetCreditCards()[0]);
 }
+
+#if !defined(OS_IOS)
+TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
+  gfx::Image expected_image = gfx::test::CreateImage(32, 20);
+  std::unique_ptr<CreditCardArtImage> credit_card_art_image =
+      std::make_unique<CreditCardArtImage>();
+  credit_card_art_image->card_art_url = GURL("https://www.example.com");
+  credit_card_art_image->card_art_image = expected_image;
+  std::vector<std::unique_ptr<CreditCardArtImage>> images;
+  images.emplace_back(std::move(credit_card_art_image));
+
+  personal_data_->OnCardArtImagesFetched(std::move(images));
+
+  gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
+      GURL("https://www.example.com"));
+  ASSERT_TRUE(actual_image);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
+}
+
+TEST_F(PersonalDataManagerMockTest, ProcessVirtualCardMetadataChanges) {
+  CreditCard card = test::GetFullServerCard();
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+  card.set_server_id("card_server_id");
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForOnPersonalDataChanged();
+
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  card.set_server_id("card_server_id");
+  card.set_card_art_url(GURL("https://www.example.com/card1"));
+  std::vector<GURL> updated_urls;
+  updated_urls.emplace_back(GURL("https://www.example.com/card1"));
+
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForFetchImagesForUrls(updated_urls);
+
+  card.set_card_art_url(GURL("https://www.example.com/card2"));
+  updated_urls.clear();
+  updated_urls.emplace_back(GURL("https://www.example.com/card2"));
+
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForFetchImagesForUrls(updated_urls);
+}
+#endif
 
 TEST_F(PersonalDataManagerTest, UpdateUnverifiedProfilesAndCreditCards) {
   // Start with unverified data.
