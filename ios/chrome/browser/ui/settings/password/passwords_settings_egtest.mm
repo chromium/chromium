@@ -1532,13 +1532,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 // Checks that attempts to edit a username to a value which is already used for
 // the same domain fails.
 - (void)testEditUsernameFails {
-#if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1140400): Fix test for iPad devices.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad devices.");
-  }
-#endif
-
   GREYAssert(
       [PasswordSettingsAppInterface saveExamplePassword:@"concrete password"
                                                userName:@"concrete username1"
@@ -1570,7 +1563,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_clearText()];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      performAction:grey_typeText(@"concrete username2")];
+      performAction:grey_replaceText(@"concrete username2")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
