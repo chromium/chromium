@@ -3098,6 +3098,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // renderer.
   bool ShouldWaitForUnloadHandlers() const;
 
+  // Prerender2:
+  // Dispatches DidFinishLoad if it occurred pre-activation and was deferred to
+  // be dispatched after activation.
+  void MaybeDispatchDidFinishLoadOnPrerenderActivation();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -3781,6 +3786,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // The Page object associated with the main document. It is nullptr for
     // subframes.
     std::unique_ptr<PageImpl> owned_page;
+
+    // Prerender2:
+    //
+    // The URL that `blink.mojom.LocalFrameHost::DidFinishLoad()` passed to
+    // DidFinishLoad, nullopt if DidFinishLoad wasn't called for this document
+    // or this document is not in prerendering. This is used to defer and
+    // dispatch DidFinishLoad notification on prerender activation.
+    absl::optional<GURL> pending_did_finish_load_url_for_prerendering;
   };
 
   std::unique_ptr<DocumentAssociatedData> document_associated_data_;
