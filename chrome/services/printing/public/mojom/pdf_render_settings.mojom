@@ -6,6 +6,8 @@ module printing.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Corresponds to `printing::PdfRenderSettings` in
+// printing/pdf_render_settings.h.
 struct PdfRenderSettings {
   enum Mode {
     NORMAL = 0,
