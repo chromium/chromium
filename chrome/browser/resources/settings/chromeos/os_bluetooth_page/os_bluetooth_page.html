@@ -7,7 +7,8 @@
   </div>
   <template is="dom-if" route-path="/bluetoothDevices">
     <settings-subpage page-title="$i18n{bluetoothPageTitle}">
-      <os-settings-bluetooth-devices-subpage>
+      <os-settings-bluetooth-devices-subpage
+          system-properties="[[systemProperties_]]">
       </os-settings-bluetooth-devices-subpage>
     </settings-subpage>
   </template>

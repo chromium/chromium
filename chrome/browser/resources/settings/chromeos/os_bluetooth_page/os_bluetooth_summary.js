@@ -43,7 +43,7 @@ class SettingsBluetoothSummaryElement extends
   static get properties() {
     return {
       /**
-       * @type {?chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
        */
       systemProperties: {
         type: Object,

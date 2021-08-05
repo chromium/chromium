@@ -41,7 +41,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   static get properties() {
     return {
       /**
-       * @private {?chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       * @private {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
        */
       systemProperties_: Object,
     };
