@@ -150,7 +150,7 @@
   {
     "name": "app-cache",
     "owners": [ "enne" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "app-management-intent-settings",
