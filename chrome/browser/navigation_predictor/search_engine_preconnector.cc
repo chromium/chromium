@@ -98,14 +98,15 @@ void SearchEnginePreconnector::PreconnectDSE() {
   if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
                                                "skip_in_background", false) ||
       is_browser_app_likely_in_foreground) {
+    net::SchemefulSite schemeful_site(preconnect_url);
+    net::NetworkIsolationKey network_isolation_key(schemeful_site,
+                                                   schemeful_site);
     loading_predictor->PreconnectURLIfAllowed(
-        preconnect_url, /*allow_credentials=*/true,
-        net::NetworkIsolationKey(url::Origin::Create(preconnect_url),
-                                 url::Origin::Create(preconnect_url)));
+        preconnect_url, /*allow_credentials=*/true, network_isolation_key);
 
     loading_predictor->PreconnectURLIfAllowed(preconnect_url,
                                               /*allow_credentials=*/false,
-                                              net::NetworkIsolationKey());
+                                              network_isolation_key);
   }
 
   // The delay beyond the idle socket timeout that net uses when

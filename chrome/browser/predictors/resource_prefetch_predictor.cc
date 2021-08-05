@@ -75,6 +75,7 @@ PreconnectRequest::PreconnectRequest(
       num_sockets(num_sockets),
       network_isolation_key(network_isolation_key) {
   DCHECK_GE(num_sockets, 0);
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PrefetchRequest::PrefetchRequest(
@@ -85,6 +86,7 @@ PrefetchRequest::PrefetchRequest(
       network_isolation_key(network_isolation_key),
       destination(destination) {
   DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;

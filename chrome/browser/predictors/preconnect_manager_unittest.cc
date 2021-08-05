@@ -787,15 +787,17 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHost) {
 TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
   GURL cdn("http://cdn.google.com");
   GURL fonts("http://fonts.google.com");
+  net::NetworkIsolationKey network_isolation_key =
+      CreateNetworkIsolationKey(cdn);
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.host()));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
   preconnect_manager_->StartPreresolveHosts({cdn.host(), fonts.host()},
-                                            net::NetworkIsolationKey());
-  mock_network_context_->CompleteHostLookup(
-      cdn.host(), net::NetworkIsolationKey(), net::OK);
-  mock_network_context_->CompleteHostLookup(
-      fonts.host(), net::NetworkIsolationKey(), net::OK);
+                                            network_isolation_key);
+  mock_network_context_->CompleteHostLookup(cdn.host(), network_isolation_key,
+                                            net::OK);
+  mock_network_context_->CompleteHostLookup(fonts.host(), network_isolation_key,
+                                            net::OK);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {

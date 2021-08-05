@@ -1696,6 +1696,8 @@ void NetworkContext::PreconnectSockets(
     const GURL& original_url,
     bool allow_credentials,
     const net::NetworkIsolationKey& network_isolation_key) {
+  DCHECK(!require_network_isolation_key_ || !network_isolation_key.IsEmpty());
+
   GURL url = GetHSTSRedirect(original_url);
 
   // |PreconnectSockets| may receive arguments from the renderer, which is not
