@@ -6,7 +6,9 @@
 
 #include <memory>
 
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/files/file_util.h"
+#include "base/strings/string_split.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -38,6 +40,37 @@ bool IsURLBlocked(const GURL& url, content::BrowserContext* browser_context_) {
   return state == policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }
 
+#if defined(OS_LINUX)
+const char** GetUfwConfigPath() {
+  static const char* path = "/etc/ufw/ufw.conf";
+  return &path;
+}
+
+SettingValue GetUfwStatus() {
+  base::FilePath path(*GetUfwConfigPath());
+  std::string file_content;
+  base::StringPairs values;
+
+  if (!base::PathExists(path) || !base::PathIsReadable(path) ||
+      !base::ReadFileToString(path, &file_content)) {
+    return SettingValue::UNKNOWN;
+  }
+  base::SplitStringIntoKeyValuePairs(file_content, '=', '\n', &values);
+  auto is_ufw_enabled = std::find_if(values.begin(), values.end(), [](auto v) {
+    return v.first == "ENABLED";
+  });
+  if (is_ufw_enabled == values.end())
+    return SettingValue::UNKNOWN;
+
+  if (is_ufw_enabled->second == "yes")
+    return SettingValue::ENABLED;
+  else if (is_ufw_enabled->second == "no")
+    return SettingValue::DISABLED;
+  else
+    return SettingValue::UNKNOWN;
+}
+#endif  // defined(OS_LINUX)
+
 }  // namespace
 
 ContextInfo::ContextInfo() = default;
@@ -64,6 +97,12 @@ std::unique_ptr<ContextInfoFetcher> ContextInfoFetcher::CreateInstance(
                                               connectors_service);
 }
 
+ContextInfo ContextInfoFetcher::FetchAsyncSignals(ContextInfo info) {
+  // Add other async signals here
+  info.os_firewall = GetOSFirewall();
+  return info;
+}
+
 void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   ContextInfo info;
 
@@ -87,9 +126,23 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.chrome_cleanup_enabled = GetChromeCleanupEnabled();
   info.chrome_remote_desktop_app_blocked = GetChromeRemoteDesktopAppBlocked();
   info.third_party_blocking_enabled = GetThirdPartyBLockingEnabled();
-  info.os_firewall = GetOSFirewall();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
+#if defined(OS_WIN)
+  base::ThreadPool::CreateCOMSTATaskRunner({})
+      .get()
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&ContextInfoFetcher::FetchAsyncSignals,
+                         base::Unretained(this), std::move(info)),
+          std::move(callback));
+#else
+  base::ThreadPool::CreateTaskRunner({base::MayBlock()})
+      .get()
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&ContextInfoFetcher::FetchAsyncSignals,
+                         base::Unretained(this), std::move(info)),
+          std::move(callback));
+#endif
 }
 
 std::vector<std::string> ContextInfoFetcher::GetBrowserAffiliationIDs() {
@@ -181,7 +234,22 @@ bool ContextInfoFetcher::GetChromeRemoteDesktopAppBlocked() {
 }
 
 SettingValue ContextInfoFetcher::GetOSFirewall() {
+#if defined(OS_LINUX)
+  return GetUfwStatus();
+#else
   return SettingValue::UNKNOWN;
+#endif
 }
+
+#if defined(OS_LINUX)
+ScopedUfwConfigPathForTesting::ScopedUfwConfigPathForTesting(const char* path)
+    : initial_path_(*GetUfwConfigPath()) {
+  *GetUfwConfigPath() = path;
+}
+
+ScopedUfwConfigPathForTesting::~ScopedUfwConfigPathForTesting() {
+  *GetUfwConfigPath() = initial_path_;
+}
+#endif  // defined(OS_LINUX)
 
 }  // namespace enterprise_signals

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -105,11 +106,28 @@ class ContextInfoFetcher {
 
   SettingValue GetOSFirewall();
 
+  ContextInfo FetchAsyncSignals(ContextInfo info);
+
   content::BrowserContext* browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
   enterprise_connectors::ConnectorsService* connectors_service_;
 };
+
+#if defined(OS_LINUX)
+class ScopedUfwConfigPathForTesting {
+ public:
+  explicit ScopedUfwConfigPathForTesting(const char* path);
+  ~ScopedUfwConfigPathForTesting();
+
+  ScopedUfwConfigPathForTesting& operator=(
+      const ScopedUfwConfigPathForTesting&) = delete;
+  ScopedUfwConfigPathForTesting(const ScopedUfwConfigPathForTesting&) = delete;
+
+ private:
+  const char* initial_path_;
+};
+#endif  // defined(OS_LINUX)
 
 }  // namespace enterprise_signals
 
