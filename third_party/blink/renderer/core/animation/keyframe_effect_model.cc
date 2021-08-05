@@ -210,10 +210,11 @@ bool KeyframeEffectModelBase::SnapshotCompositorKeyFrames(
   if (!should_snapshot_property_callback(property))
     return false;
 
-  PropertySpecificKeyframeGroup* keyframe_group =
-      keyframe_groups_->DeprecatedAtOrEmptyValue(property);
-  if (!keyframe_group)
+  auto it = keyframe_groups_->find(property);
+  if (it == keyframe_groups_->end())
     return false;
+
+  PropertySpecificKeyframeGroup* keyframe_group = it->value;
 
   bool updated = false;
   for (auto& keyframe : keyframe_group->keyframes_) {
