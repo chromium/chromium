@@ -10,6 +10,7 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
+#import "base/sequence_checker.h"
 #import "base/test/bind.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/task_environment.h"
@@ -63,6 +64,7 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
               ASSERT_TRUE(base::ReadFileToString(file_path, &content));
               EXPECT_EQ(kDefaultResponseContent, content);
               EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
+              EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
               loop.Quit();
             }),
         base::DoNothing());
@@ -92,6 +94,7 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
   std::unique_ptr<HttpRequest> request_sent_;
   base::ScopedTempDir dir_;
   std::unique_ptr<BackgroundDownloadTaskHelper> helper_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Verifies download can be finished.
