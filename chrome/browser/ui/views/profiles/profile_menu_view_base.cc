@@ -798,7 +798,8 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
   profile_mgmt_heading_ = heading;
 
   // Add separator before heading.
-  profile_mgmt_separator_container_->RemoveAllChildViews();
+  profile_mgmt_separator_container_->RemoveAllChildViews(
+      /*delete_children=*/true);
   profile_mgmt_separator_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   profile_mgmt_separator_container_->SetBorder(
@@ -807,7 +808,8 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
       std::make_unique<views::Separator>());
 
   // Initialize heading layout.
-  profile_mgmt_heading_container_->RemoveAllChildViews();
+  profile_mgmt_heading_container_->RemoveAllChildViews(
+      /*delete_children=*/true);
   profile_mgmt_heading_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   profile_mgmt_heading_container_->SetBorder(

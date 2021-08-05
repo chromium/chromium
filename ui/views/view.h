@@ -452,7 +452,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Removes all the children from this view. This deletes all children that are
   // not set_owned_by_client(), which is deprecated.
-  void RemoveAllChildViews();
+  // TODO(pbos): Remove `delete_children` argument and migrate past `false` uses
+  // to RemoveAllChildViewsWithoutDeleting().
+  void RemoveAllChildViews(bool delete_children = true);
 
   // TODO(pbos): Remove this method, deleting children when removing them should
   // not be optional. If ownership needs to be preserved, use RemoveChildViewT()

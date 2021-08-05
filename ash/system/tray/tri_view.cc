@@ -114,6 +114,10 @@ void TriView::AddViewAt(Container container, views::View* view, int index) {
   GetContainer(container)->AddChildViewAt(view, index);
 }
 
+void TriView::RemoveAllChildren(Container container, bool delete_children) {
+  GetContainer(container)->RemoveAllChildViews(delete_children);
+}
+
 void TriView::SetInsets(const gfx::Insets& insets) {
   box_layout_->set_inside_border_insets(insets);
 }
