@@ -5486,6 +5486,12 @@ bool Document::CookiesEnabled() const {
   return cookie_jar_->CookiesEnabled();
 }
 
+void Document::SetCookieManager(
+    mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
+        cookie_manager) {
+  cookie_jar_->SetCookieManager(std::move(cookie_manager));
+}
+
 const AtomicString& Document::referrer() const {
   if (Loader())
     return Loader()->GetReferrer().referrer;

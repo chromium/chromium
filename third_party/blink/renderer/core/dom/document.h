@@ -39,6 +39,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -1042,6 +1043,10 @@ class CORE_EXPORT Document : public ContainerNode,
   String cookie(ExceptionState&) const;
   void setCookie(const String&, ExceptionState&);
   bool CookiesEnabled() const;
+
+  void SetCookieManager(
+      mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
+          cookie_manager);
 
   const AtomicString& referrer() const;
 

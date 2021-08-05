@@ -34,6 +34,8 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_draggable_region.h"
@@ -152,6 +154,11 @@ class WebDocument : public WebNode {
   // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list
   BLINK_EXPORT void AddPostPrerenderingActivationStep(
       base::OnceClosure callback);
+
+  // Sets a cookie manager which can be used for this document.
+  BLINK_EXPORT void SetCookieManager(
+      CrossVariantMojoRemote<
+          network::mojom::RestrictedCookieManagerInterfaceBase> cookie_manager);
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebDocument(Document*);
