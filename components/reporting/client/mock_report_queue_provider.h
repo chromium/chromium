@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,6 +35,13 @@ class MockReportQueueProvider : public ReportQueueProvider {
               CreateNewQueue,
               (std::unique_ptr<ReportQueueConfiguration> config),
               (override));
+
+  MOCK_METHOD(
+      (StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>),
+      CreateNewSpeculativeQueue,
+      (),
+      (override));
+
   MOCK_METHOD(void, InitOnCompletedCalled, (), (const));
 
  private:

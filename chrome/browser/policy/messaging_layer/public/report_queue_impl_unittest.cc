@@ -82,7 +82,7 @@ class ReportQueueImplTest : public testing::Test {
 
   NiceMock<MockFunction<Status()>> mocked_policy_check_;
 
-  content::BrowserTaskEnvironment task_envrionment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   const Priority priority_;
 
@@ -227,6 +227,24 @@ TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
   const auto result = f.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
+}
+
+// Enqueues a random string into speculative queue, then enqueues a sting,
+// attaches actual one and ensures that the string arrives unaltered in the
+// |StorageModuleInterface|.
+TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
+  constexpr char kTestString[] = "El-Chupacabra";
+  test::TestEvent<Status> a;
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Enqueue(kTestString, priority_, a.cb());
+  EXPECT_OK(a.result());
+
+  speculative_report_queue->AttachActualQueue(std::move(report_queue_));
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_storage_module()->priority(), priority_);
+  EXPECT_EQ(test_storage_module()->record().data(), kTestString);
 }
 
 }  // namespace

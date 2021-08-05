@@ -103,6 +103,12 @@ class ReportQueueProvider {
   static void CreateQueue(std::unique_ptr<ReportQueueConfiguration> config,
                           CreateReportQueueCallback queue_cb);
 
+  // Synchronously creates a speculative queue based on the configuration.
+  // Returns result as a smart pointer to ReportQueue with the on-thread
+  // deleter.
+  static StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+  CreateSpeculativeQueue(std::unique_ptr<ReportQueueConfiguration> config);
+
   // Instantiates ReportQueueProvider singleton based on the overall process
   // state and will refer to StorageModuleInterface and optional Uploader
   // accordingly.
@@ -310,6 +316,8 @@ class ReportQueueProvider {
   // error.
   virtual CreateReportQueueResponse CreateNewQueue(
       std::unique_ptr<ReportQueueConfiguration> config) = 0;
+  virtual StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+  CreateNewSpeculativeQueue() = 0;
 
   void OnPushComplete();
   void OnInitState(bool provider_configured);

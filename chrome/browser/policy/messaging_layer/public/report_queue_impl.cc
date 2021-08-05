@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
@@ -93,6 +95,179 @@ Record ReportQueueImpl::AugmentRecord(base::StringPiece record_data) const {
 
 void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
   storage_->Flush(priority, std::move(callback));
+}
+
+base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
+ReportQueueImpl::PrepareToAttachActualQueue() const {
+  NOTREACHED();
+  return base::BindOnce(
+      [](StatusOr<std::unique_ptr<ReportQueue>>) { NOTREACHED(); });
+}
+
+// static
+std::unique_ptr<SpeculativeReportQueueImpl, base::OnTaskRunnerDeleter>
+SpeculativeReportQueueImpl::Create() {
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+  return std::unique_ptr<SpeculativeReportQueueImpl, base::OnTaskRunnerDeleter>(
+      new SpeculativeReportQueueImpl(sequenced_task_runner),
+      base::OnTaskRunnerDeleter(sequenced_task_runner));
+}
+
+SpeculativeReportQueueImpl::SpeculativeReportQueueImpl(
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
+    : sequenced_task_runner_(sequenced_task_runner) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+SpeculativeReportQueueImpl::~SpeculativeReportQueueImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void SpeculativeReportQueueImpl::Flush(Priority priority,
+                                       FlushCallback callback) {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](Priority priority, FlushCallback callback,
+             base::WeakPtr<SpeculativeReportQueueImpl> self) {
+            if (!self) {
+              std::move(callback).Run(
+                  Status(error::UNAVAILABLE, "Queue has been destructed"));
+              return;
+            }
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            if (!self->report_queue_) {
+              std::move(callback).Run(Status(error::FAILED_PRECONDITION,
+                                             "ReportQueue is not ready yet."));
+              return;
+            }
+            self->report_queue_->Flush(priority, std::move(callback));
+          },
+          priority, std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SpeculativeReportQueueImpl::AddRecord(base::StringPiece record,
+                                           Priority priority,
+                                           EnqueueCallback callback) const {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeculativeReportQueueImpl::MaybeEnqueueRecord,
+                     weak_ptr_factory_.GetWeakPtr(), std::string(record),
+                     priority, std::move(callback)));
+}
+
+void SpeculativeReportQueueImpl::MaybeEnqueueRecord(
+    base::StringPiece record,
+    Priority priority,
+    EnqueueCallback callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!report_queue_) {
+    // Queue is not ready yet, store the record in the memory
+    // queue.
+    pending_records_.emplace(record, priority);
+    std::move(callback).Run(Status::StatusOK());
+    return;
+  }
+  // Queue is ready. If memory queue is empty, just forward the
+  // record.
+  if (pending_records_.empty()) {
+    report_queue_->Enqueue(record, priority, std::move(callback));
+    return;
+  }
+  // If memory queue is not empty, attach the new record at the
+  // end and initiate enqueuing of everything from there.
+  pending_records_.emplace(record, priority);
+  EnqueuePendingRecords(std::move(callback));
+}
+
+void SpeculativeReportQueueImpl::EnqueuePendingRecords(
+    EnqueueCallback callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!pending_records_.empty());
+  DCHECK(report_queue_);
+  std::string record(pending_records_.front().first);
+  Priority priority = pending_records_.front().second;
+  pending_records_.pop();
+  if (pending_records_.empty()) {
+    // Last of the pending records.
+    report_queue_->Enqueue(record, priority, std::move(callback));
+    return;
+  }
+  report_queue_->Enqueue(
+      record, priority,
+      base::BindPostTask(
+          sequenced_task_runner_,
+          base::BindOnce(
+              [](base::WeakPtr<const SpeculativeReportQueueImpl> self,
+                 EnqueueCallback callback, Status status) {
+                if (!status.ok()) {
+                  std::move(callback).Run(status);
+                  return;
+                }
+                if (!self) {
+                  std::move(callback).Run(
+                      Status(error::UNAVAILABLE, "Queue has been destructed"));
+                  return;
+                }
+                self->sequenced_task_runner_->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(
+                        &SpeculativeReportQueueImpl::EnqueuePendingRecords,
+                        self, std::move(callback)));
+              },
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+}
+
+base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
+SpeculativeReportQueueImpl::PrepareToAttachActualQueue() const {
+  return base::BindPostTask(
+      sequenced_task_runner_,
+      base::BindOnce(
+          [](base::WeakPtr<SpeculativeReportQueueImpl> speculative_queue,
+             StatusOr<std::unique_ptr<ReportQueue>> actual_queue_result) {
+            if (!speculative_queue) {
+              return;  // Speculative queue was destructed in a meantime.
+            }
+            if (!actual_queue_result.ok()) {
+              return;  // Actual queue creation failed.
+            }
+            // Set actual queue for the speculative queue to use
+            // (asynchronously).
+            speculative_queue->AttachActualQueue(
+                std::move(actual_queue_result.ValueOrDie()));
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SpeculativeReportQueueImpl::AttachActualQueue(
+    std::unique_ptr<ReportQueue> actual_queue) {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<SpeculativeReportQueueImpl> self,
+             std::unique_ptr<ReportQueue> actual_queue) {
+            if (!self) {
+              return;
+            }
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            if (self->report_queue_) {
+              // Already attached, do nothing.
+              return;
+            }
+            self->report_queue_ = std::move(actual_queue);
+            if (!self->pending_records_.empty()) {
+              self->EnqueuePendingRecords(
+                  base::BindOnce([](Status enqueue_status) {
+                    if (!enqueue_status.ok()) {
+                      LOG(ERROR) << "Pending records failed to enqueue, status="
+                                 << enqueue_status;
+                    }
+                  }));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(actual_queue)));
 }
 
 }  // namespace reporting

@@ -27,6 +27,12 @@ class MockReportQueue : public ReportQueue {
               (const override));
 
   MOCK_METHOD(void, Flush, (Priority, ReportQueue::FlushCallback), (override));
+
+  MOCK_METHOD(
+      (base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>),
+      PrepareToAttachActualQueue,
+      (),
+      (const override));
 };
 
 }  // namespace reporting

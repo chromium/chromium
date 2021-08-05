@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
@@ -50,6 +51,10 @@ class ReportQueueImpl : public ReportQueue {
 
   void Flush(Priority priority, FlushCallback callback) override;
 
+  // Dummy implementation for a regular queue.
+  base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
+  PrepareToAttachActualQueue() const override;
+
  protected:
   ReportQueueImpl(std::unique_ptr<ReportQueueConfiguration> config,
                   scoped_refptr<StorageModuleInterface> storage);
@@ -70,6 +75,65 @@ class ReportQueueImpl : public ReportQueue {
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+};
+
+class SpeculativeReportQueueImpl : public ReportQueue {
+ public:
+  ~SpeculativeReportQueueImpl() override;
+
+  // Factory method returns a smart pointer with on-thread deleter.
+  static std::unique_ptr<SpeculativeReportQueueImpl, base::OnTaskRunnerDeleter>
+  Create();
+
+  // Forwards |Flush| to |ReportQueue|, if already created.
+  // Returns with failure otherwise.
+  void Flush(Priority priority, FlushCallback callback) override;
+
+  // Provides a callback to attach initialized actual queue to the speculative
+  // queue.
+  base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
+  PrepareToAttachActualQueue() const override;
+
+  // Substitutes actual queue to the speculative, when ready.
+  // Initiates processesing of all pending records.
+  void AttachActualQueue(std::unique_ptr<ReportQueue> actual_queue);
+
+ protected:
+  // Forwards |AddRecord| to |ReportQueue|, if already created.
+  // Records the record internally otherwise.
+  void AddRecord(base::StringPiece record,
+                 Priority priority,
+                 EnqueueCallback callback) const override;
+
+ private:
+  // Private constructor, used by the factory method  only.
+  explicit SpeculativeReportQueueImpl(
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+
+  // Enqueues head of the |pending_records_| and reapplies for the rest of it.
+  void EnqueuePendingRecords(EnqueueCallback callback) const;
+
+  // Optionally enqueues |record| to actual queue, if ready.
+  // Otherwise adds it to the end of |pending_records_|.
+  void MaybeEnqueueRecord(base::StringPiece record,
+                          Priority priority,
+                          EnqueueCallback callback) const;
+
+  // Task runner that protects |report_queue_| and |pending_records_|
+  // and allows to synchronize the initialization.
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Actual |ReportQueue|, once created.
+  std::unique_ptr<ReportQueue> report_queue_;
+
+  // Queue of the pending records, collected before actual queue has been
+  // created. Declared 'mutable', because it is accessed by 'const' methods.
+  mutable std::queue<std::pair<std::string /*record*/, Priority /*priority*/>>
+      pending_records_;
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<SpeculativeReportQueueImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace reporting

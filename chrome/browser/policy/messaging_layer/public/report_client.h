@@ -87,6 +87,9 @@ class ReportingClient : public ReportQueueProvider {
   StatusOr<std::unique_ptr<ReportQueue>> CreateNewQueue(
       std::unique_ptr<ReportQueueConfiguration> config) override;
 
+  StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+  CreateNewSpeculativeQueue() override;
+
   // RAII class for testing ReportingClient - substitutes reporting files
   // location, signature verification public key and a cloud policy client
   // builder to return given client. Resets client when destructed.

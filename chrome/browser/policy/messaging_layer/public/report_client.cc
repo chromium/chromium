@@ -385,6 +385,11 @@ StatusOr<std::unique_ptr<ReportQueue>> ReportingClient::CreateNewQueue(
   return ReportQueueImpl::Create(std::move(config), storage_);
 }
 
+StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+ReportingClient::CreateNewSpeculativeQueue() {
+  return SpeculativeReportQueueImpl::Create();
+}
+
 // static
 void ReportingClient::AsyncStartUploader(
     bool need_encryption_key,

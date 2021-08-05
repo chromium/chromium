@@ -157,7 +157,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<ReportQueue> CreateQueue() {
     auto config_result = ReportQueueConfiguration::Create(
         dm_token_, destination_, policy_checker_callback_);
-    EXPECT_TRUE(config_result.ok());
+    EXPECT_TRUE(config_result.ok()) << config_result.status();
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
     ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
@@ -172,7 +172,79 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     return report_queue;
   }
 
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
+  CreateSpeculativeQueue() {
+    auto config_result = ReportQueueConfiguration::Create(
+        dm_token_, destination_, policy_checker_callback_);
+    EXPECT_TRUE(config_result.ok()) << config_result.status();
+
+    auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
+        std::move(config_result.ValueOrDie()));
+    EXPECT_TRUE(speculative_queue_result.ok())
+        << speculative_queue_result.status();
+    return std::move(speculative_queue_result.ValueOrDie());
+  }
+
   bool is_encryption_enabled() const { return GetParam(); }
+
+  auto GetEncryptionKeyInvocation() {
+    return [this](base::Value payload,
+                  policy::CloudPolicyClient::ResponseCallback done_cb) {
+      absl::optional<bool> const attach_encryption_settings =
+          payload.FindBoolKey("attachEncryptionSettings");
+      ASSERT_TRUE(attach_encryption_settings.has_value());
+      ASSERT_TRUE(attach_encryption_settings.value());  // If set, must be true.
+      ASSERT_TRUE(is_encryption_enabled());
+
+      base::Value encryption_settings{base::Value::Type::DICTIONARY};
+      std::string public_key;
+      base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
+                         &public_key);
+      encryption_settings.SetStringKey("publicKey", public_key);
+      encryption_settings.SetIntKey("publicKeyId",
+                                    signed_encryption_key_.public_key_id());
+      std::string public_key_signature;
+      base::Base64Encode(signed_encryption_key_.signature(),
+                         &public_key_signature);
+      encryption_settings.SetStringKey("publicKeySignature",
+                                       public_key_signature);
+      base::Value response{base::Value::Type::DICTIONARY};
+      response.SetPath("encryptionSettings", std::move(encryption_settings));
+      std::move(done_cb).Run(std::move(response));
+    };
+  }
+
+  auto GetVerifyDataInvocation() {
+    return [this](base::Value payload,
+                  policy::CloudPolicyClient::ResponseCallback done_cb) {
+      base::Value* const records = payload.FindListKey("encryptedRecord");
+      ASSERT_THAT(records, Ne(nullptr));
+      base::Value::ListView records_list = records->GetList();
+      ASSERT_THAT(records_list, SizeIs(1));
+      base::Value& record = records_list[0];
+      if (is_encryption_enabled()) {
+        const base::Value* const enctyption_info =
+            record.FindDictKey("encryptionInfo");
+        ASSERT_THAT(enctyption_info, Ne(nullptr));
+        const std::string* const encryption_key =
+            enctyption_info->FindStringKey("encryptionKey");
+        ASSERT_THAT(encryption_key, Ne(nullptr));
+        const std::string* const public_key_id =
+            enctyption_info->FindStringKey("publicKeyId");
+        ASSERT_THAT(public_key_id, Ne(nullptr));
+        int64_t key_id;
+        ASSERT_TRUE(base::StringToInt64(*public_key_id, &key_id));
+        EXPECT_THAT(key_id, Eq(signed_encryption_key_.public_key_id()));
+      } else {
+        ASSERT_THAT(record.FindKey("encryptionInfo"), Eq(nullptr));
+      }
+      base::Value* const seq_info = record.FindDictKey("sequenceInformation");
+      ASSERT_THAT(seq_info, Ne(nullptr));
+      base::Value response{base::Value::Type::DICTIONARY};
+      response.SetPath("lastSucceedUploadedRecord", std::move(*seq_info));
+      std::move(done_cb).Run(std::move(response));
+    };
+  }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   // BrowserTaskEnvironment must be instantiated before other classes that posts
@@ -235,33 +307,7 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
 
     // Uploader is available, let it set the key.
     EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-        .WillOnce(WithArgs<0, 2>(
-            Invoke([this](base::Value payload,
-                          policy::CloudPolicyClient::ResponseCallback done_cb) {
-              absl::optional<bool> const attach_encryption_settings =
-                  payload.FindBoolKey("attachEncryptionSettings");
-              ASSERT_TRUE(attach_encryption_settings.has_value());
-              ASSERT_TRUE(
-                  attach_encryption_settings.value());  // If set, must be true.
-              ASSERT_TRUE(is_encryption_enabled());
-
-              base::Value encryption_settings{base::Value::Type::DICTIONARY};
-              std::string public_key;
-              base::Base64Encode(signed_encryption_key_.public_asymmetric_key(),
-                                 &public_key);
-              encryption_settings.SetStringKey("publicKey", public_key);
-              encryption_settings.SetIntKey(
-                  "publicKeyId", signed_encryption_key_.public_key_id());
-              std::string public_key_signature;
-              base::Base64Encode(signed_encryption_key_.signature(),
-                                 &public_key_signature);
-              encryption_settings.SetStringKey("publicKeySignature",
-                                               public_key_signature);
-              base::Value response{base::Value::Type::DICTIONARY};
-              response.SetPath("encryptionSettings",
-                               std::move(encryption_settings));
-              std::move(done_cb).Run(std::move(response));
-            })))
+        .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
         .RetiresOnSaturation();
   }
 
@@ -273,39 +319,47 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
     EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-        .WillOnce(WithArgs<0, 2>(
-            Invoke([this](base::Value payload,
-                          policy::CloudPolicyClient::ResponseCallback done_cb) {
-              base::Value* const records =
-                  payload.FindListKey("encryptedRecord");
-              ASSERT_THAT(records, Ne(nullptr));
-              base::Value::ListView records_list = records->GetList();
-              ASSERT_THAT(records_list, SizeIs(1));
-              base::Value& record = records_list[0];
-              if (is_encryption_enabled()) {
-                const base::Value* const enctyption_info =
-                    record.FindDictKey("encryptionInfo");
-                ASSERT_THAT(enctyption_info, Ne(nullptr));
-                const std::string* const encryption_key =
-                    enctyption_info->FindStringKey("encryptionKey");
-                ASSERT_THAT(encryption_key, Ne(nullptr));
-                const std::string* const public_key_id =
-                    enctyption_info->FindStringKey("publicKeyId");
-                ASSERT_THAT(public_key_id, Ne(nullptr));
-                int64_t key_id;
-                ASSERT_TRUE(base::StringToInt64(*public_key_id, &key_id));
-                EXPECT_THAT(key_id, Eq(signed_encryption_key_.public_key_id()));
-              } else {
-                ASSERT_THAT(record.FindKey("encryptionInfo"), Eq(nullptr));
-              }
-              base::Value* const seq_info =
-                  record.FindDictKey("sequenceInformation");
-              ASSERT_THAT(seq_info, Ne(nullptr));
-              base::Value response{base::Value::Type::DICTIONARY};
-              response.SetPath("lastSucceedUploadedRecord",
-                               std::move(*seq_info));
-              std::move(done_cb).Run(std::move(response));
-            })));
+        .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
+  }
+
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+// Creates speculative queue, enqueues message and verifies it is uploaded
+// eventually.
+TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
+  // Create queue.
+  auto report_queue = CreateSpeculativeQueue();
+
+  // Enqueue event.
+  if (is_encryption_enabled()) {
+    if (!StorageSelector::is_uploader_required() ||
+        StorageSelector::is_use_missive()) {
+      // Uploader is not available, cannot bring in the key.
+      // Abort the test with no action.
+      return;
+    }
+  }
+
+  // Enqueue event right away, before attaching an actual queue.
+  test::TestEvent<Status> enqueue_record_event;
+  report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
+  const auto enqueue_record_result = enqueue_record_event.result();
+  EXPECT_OK(enqueue_record_result) << enqueue_record_result;
+
+  if (StorageSelector::is_uploader_required() &&
+      !StorageSelector::is_use_missive()) {
+    // Note: there does not seem to be another way to define the expectations
+    // A+B for encrypted case and just B for non-encrypted.g
+    if (is_encryption_enabled()) {
+      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+          .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
+          .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
+    } else {
+      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+          .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
+    }
   }
 
   // Trigger upload.

@@ -39,6 +39,7 @@ ReportQueueProvider::ReportQueueProvider()
 
 ReportQueueProvider::~ReportQueueProvider() = default;
 
+// static
 void ReportQueueProvider::CreateQueue(
     std::unique_ptr<ReportQueueConfiguration> config,
     CreateReportQueueCallback create_cb) {
@@ -56,6 +57,34 @@ void ReportQueueProvider::CreateQueue(
       CreateReportQueueRequest(std::move(config), std::move(create_cb)),
       base::BindOnce(&ReportQueueProvider::OnPushComplete,
                      base::Unretained(instance)));
+}
+
+// static
+StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+ReportQueueProvider::CreateSpeculativeQueue(
+    std::unique_ptr<ReportQueueConfiguration> config) {
+  if (!IsEncryptedReportingPipelineEnabled()) {
+    Status not_enabled = Status(
+        error::FAILED_PRECONDITION,
+        "The Encrypted Reporting Pipeline is not enabled. Please enable it on "
+        "the command line using --enable-features=EncryptedReportingPipeline");
+    VLOG(1) << not_enabled;
+    return not_enabled;
+  }
+  auto* instance = GetInstance();
+  // Instantiate speculative queue.
+  auto speculative_queue_result = instance->CreateNewSpeculativeQueue();
+  if (!speculative_queue_result.ok()) {
+    return speculative_queue_result.status();
+  }
+  // Initiate underlying queue creation.
+  auto speculative_queue = std::move(speculative_queue_result.ValueOrDie());
+  instance->create_request_queue_->Push(
+      CreateReportQueueRequest(std::move(config),
+                               speculative_queue->PrepareToAttachActualQueue()),
+      base::BindOnce(&ReportQueueProvider::OnPushComplete,
+                     base::Unretained(instance)));
+  return speculative_queue;
 }
 
 void ReportQueueProvider::OnPushComplete() {
