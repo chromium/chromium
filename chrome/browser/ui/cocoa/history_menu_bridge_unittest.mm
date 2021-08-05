@@ -18,6 +18,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -39,7 +40,7 @@ class MockTRS : public sessions::TabRestoreServiceImpl {
  public:
   MockTRS(Profile* profile)
       : sessions::TabRestoreServiceImpl(
-            base::WrapUnique(new ChromeTabRestoreServiceClient(profile)),
+            std::make_unique<ChromeTabRestoreServiceClient>(profile),
             profile->GetPrefs(),
             nullptr) {}
   MOCK_CONST_METHOD0(entries, const sessions::TabRestoreService::Entries&());
@@ -549,6 +550,38 @@ TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForIncognitoMode) {
   bridge_ = std::make_unique<MockBridge>(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   CheckMenuItemVisibility(this, true);
+}
+
+// Does a full setup and tear down of the bridge.
+TEST(HistoryMenuBridgeLifetimeTest, ShutdownAfterProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+
+  auto bridge = std::make_unique<HistoryMenuBridge>(profile.get());
+  profile.reset();
+  // Should not crash.
+  bridge.reset();
+}
+
+// Does a full setup and tear down of the bridge.
+TEST(HistoryMenuBridgeLifetimeTest, ShutdownBeforeProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+
+  auto bridge = std::make_unique<HistoryMenuBridge>(profile.get());
+  bridge.reset();
 }
 
 }  // namespace

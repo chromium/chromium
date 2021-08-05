@@ -245,11 +245,18 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   void OnHistoryServiceLoaded(history::HistoryService* service) override;
   void HistoryServiceBeingDeleted(history::HistoryService* service) override;
 
+  // Changes the visibility of the menu items depend on the current profile
+  // type.
+  void SetVisibilityOfMenuItems();
+
+  // Returns if the given menu item should be visible for the current profile.
+  bool ShouldMenuItemBeVisible(NSMenuItem* item);
+
   base::scoped_nsobject<HistoryMenuCocoaController> controller_;  // strong
 
-  Profile* profile_;  // weak
-  history::HistoryService* history_service_;  // weak
-  sessions::TabRestoreService* tab_restore_service_;  // weak
+  Profile* const profile_;                                      // weak
+  history::HistoryService* history_service_ = nullptr;          // weak
+  sessions::TabRestoreService* tab_restore_service_ = nullptr;  // weak
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 
@@ -260,8 +267,8 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // when either waiting for the history service to return query results, or
   // when the menu is rebuilding. |need_recreate_| is true whenever a rebuild
   // has been scheduled but is waiting for the current one to finish.
-  bool create_in_progress_;
-  bool need_recreate_;
+  bool create_in_progress_ = false;
+  bool need_recreate_ = false;
 
   // In order to not jarringly refresh the menu while the user has it open,
   // updates are blocked while the menu is tracking.
@@ -273,13 +280,9 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  // Changes the visibility of the menu items depend on the current profile
-  // type.
-  void SetVisibilityOfMenuItems();
-
-  // Returns if the given menu item should be visible for the current profile.
-  bool ShouldMenuItemBeVisible(NSMenuItem* item);
+  base::ScopedObservation<sessions::TabRestoreService,
+                          sessions::TabRestoreServiceObserver>
+      tab_restore_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryMenuBridge);
 };
