@@ -12,8 +12,8 @@ import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
@@ -34,132 +34,140 @@ import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {DestinationState} from './destination_settings.js';
 import {PreviewAreaState} from './preview_area.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewAppElementBase =
+    mixinBehaviors([SettingsBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
+  static get is() {
+    return 'print-preview-app';
+  }
 
-  behaviors: [
-    SettingsBehavior,
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!State} */
-    state: {
-      type: Number,
-      observer: 'onStateChanged_',
-    },
+  static get properties() {
+    return {
+      /** @type {!State} */
+      state: {
+        type: Number,
+        observer: 'onStateChanged_',
+      },
 
-    /** @private {string} */
-    cloudPrintErrorMessage_: String,
+      /** @private {string} */
+      cloudPrintErrorMessage_: String,
 
-    /** @private {!CloudPrintInterface} */
-    cloudPrintInterface_: Object,
+      /** @private {!CloudPrintInterface} */
+      cloudPrintInterface_: Object,
 
-    /** @private {boolean} */
-    controlsManaged_: {
-      type: Boolean,
-      computed: 'computeControlsManaged_(destinationsManaged_, ' +
-          'settingsManaged_, maxSheets_)',
-    },
+      /** @private {boolean} */
+      controlsManaged_: {
+        type: Boolean,
+        computed: 'computeControlsManaged_(destinationsManaged_, ' +
+            'settingsManaged_, maxSheets_)',
+      },
 
-    /** @private {Destination} */
-    destination_: Object,
+      /** @private {Destination} */
+      destination_: Object,
 
-    /** @private {boolean} */
-    destinationsManaged_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      destinationsManaged_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {!DestinationState} */
-    destinationState_: {
-      type: Number,
-      observer: 'onDestinationStateChange_',
-    },
+      /** @private {!DestinationState} */
+      destinationState_: {
+        type: Number,
+        observer: 'onDestinationStateChange_',
+      },
 
-    /** @private {DocumentSettings} */
-    documentSettings_: Object,
+      /** @private {DocumentSettings} */
+      documentSettings_: Object,
 
-    /** @private {!Error} */
-    error_: Number,
+      /** @private {!Error} */
+      error_: Number,
 
-    /** @private {Margins} */
-    margins_: Object,
+      /** @private {Margins} */
+      margins_: Object,
 
-    /** @private {!Size} */
-    pageSize_: Object,
+      /** @private {!Size} */
+      pageSize_: Object,
 
-    /** @private {!PreviewAreaState} */
-    previewState_: {
-      type: String,
-      observer: 'onPreviewStateChange_',
-    },
+      /** @private {!PreviewAreaState} */
+      previewState_: {
+        type: String,
+        observer: 'onPreviewStateChange_',
+      },
 
-    /** @private {!PrintableArea} */
-    printableArea_: Object,
+      /** @private {!PrintableArea} */
+      printableArea_: Object,
 
-    /** @private {boolean} */
-    settingsManaged_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      settingsManaged_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {?MeasurementSystem} */
-    measurementSystem_: {
-      type: Object,
-      value: null,
-    },
+      /** @private {?MeasurementSystem} */
+      measurementSystem_: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private {number} */
-    maxSheets_: Number,
-  },
-
-  listeners: {
-    'cr-dialog-open': 'onCrDialogOpen_',
-    'close': 'onCrDialogClose_',
-  },
-
-  /** @private {?NativeLayer} */
-  nativeLayer_: null,
-
-  // <if expr="chromeos or lacros">
-  /** @private {?NativeLayerCros} */
-  nativeLayerCros_: null,
-  // </if>
-
-  /** @private {!EventTracker} */
-  tracker_: new EventTracker(),
-
-  /** @private {boolean} */
-  cancelled_: false,
-
-  /** @private {boolean} */
-  printRequested_: false,
-
-  /** @private {boolean} */
-  startPreviewWhenReady_: false,
-
-  /** @private {boolean} */
-  showSystemDialogBeforePrint_: false,
-
-  /** @private {boolean} */
-  openPdfInPreview_: false,
-
-  /** @private {boolean} */
-  isInKioskAutoPrintMode_: false,
-
-  /** @private {?Promise} */
-  whenReady_: null,
-
-  /** @private {!Array<!CrDialogElement>} */
-  openDialogs_: [],
+      /** @private {number} */
+      maxSheets_: Number,
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {?NativeLayer} */
+    this.nativeLayer_ = null;
+
+    // <if expr="chromeos or lacros">
+    /** @private {?NativeLayerCros} */
+    this.nativeLayerCros_ = null;
+    // </if>
+
+    /** @private {!EventTracker} */
+    this.tracker_ = new EventTracker();
+
+    /** @private {boolean} */
+    this.cancelled_ = false;
+
+    /** @private {boolean} */
+    this.printRequested_ = false;
+
+    /** @private {boolean} */
+    this.startPreviewWhenReady_ = false;
+
+    /** @private {boolean} */
+    this.showSystemDialogBeforePrint_ = false;
+
+    /** @private {boolean} */
+    this.openPdfInPreview_ = false;
+
+    /** @private {boolean} */
+    this.isInKioskAutoPrintMode_ = false;
+
+    /** @private {?Promise} */
+    this.whenReady_ = null;
+
+    /** @private {!Array<!CrDialogElement>} */
+    this.openDialogs_ = [];
+
     // Regular expression that captures the leading slash, the content and the
     // trailing slash in three different groups.
     const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
@@ -167,20 +175,26 @@ Polymer({
     if (path !== '/') {  // There are no subpages in Print Preview.
       window.history.replaceState(undefined /* stateObject */, '', '/');
     }
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     FocusOutlineManager.forDocument(document);
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
     // <if expr="chromeos or lacros">
     this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
     // </if>
+    this.addWebUIListener('cr-dialog-open', e => this.onCrDialogOpen_(e));
+    this.addWebUIListener('close', e => this.onCrDialogClose_(e));
     this.addWebUIListener('print-failed', this.onPrintFailed_.bind(this));
     this.addWebUIListener(
         'print-preset-options', this.onPrintPresetOptions_.bind(this));
@@ -191,18 +205,20 @@ Polymer({
         this.onInitialSettingsSet_.bind(this));
     MetricsContext.getInitialSettings().record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.tracker_.removeAll();
     this.whenReady_ = null;
-  },
+  }
 
   /** @private */
   onSidebarFocus_() {
     this.$.previewArea.hideToolbar();
-  },
+  }
 
   /**
    * Consume escape and enter key presses and ctrl + shift + p. Delegate
@@ -284,7 +300,7 @@ Polymer({
 
     // Pass certain directional keyboard events to the PDF viewer.
     this.$.previewArea.handleDirectionalKeyEvent(e);
-  },
+  }
 
   /**
    * @param {!Event} e The cr-dialog-open event.
@@ -293,7 +309,7 @@ Polymer({
   onCrDialogOpen_(e) {
     this.openDialogs_.push(
         /** @type {!CrDialogElement} */ (e.composedPath()[0]));
-  },
+  }
 
   /**
    * @param {!Event} e The close event.
@@ -308,7 +324,7 @@ Polymer({
     if (e.composedPath()[0].nodeName === 'CR-DIALOG') {
       this.openDialogs_.pop();
     }
-  },
+  }
 
   /**
    * @param {!NativeInitialSettings} settings
@@ -354,7 +370,7 @@ Polymer({
       }
       title.textContent = settings.documentTitle;
     });
-  },
+  }
 
   /**
    * Called when Google Cloud Print integration is enabled.
@@ -374,7 +390,7 @@ Polymer({
         assert(this.cloudPrintInterface_).getEventTarget(),
         CloudPrintInterfaceEventType.SUBMIT_FAILED,
         this.onCloudPrintError_.bind(this, appKioskMode));
-  },
+  }
 
   /**
    * @return {boolean} Whether any of the print preview settings or destinations
@@ -385,7 +401,7 @@ Polymer({
     // If |this.maxSheets_| equals to 0, no sheets limit policy is present.
     return this.destinationsManaged_ || this.settingsManaged_ ||
         this.maxSheets_ > 0;
-  },
+  }
 
   /** @private */
   onDestinationStateChange_() {
@@ -419,7 +435,7 @@ Polymer({
       default:
         break;
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e Event containing the new sticky settings.
@@ -427,7 +443,7 @@ Polymer({
    */
   onStickySettingChanged_(e) {
     this.nativeLayer_.saveAppState(e.detail);
-  },
+  }
 
   /** @private */
   onPreviewSettingChanged_() {
@@ -437,7 +453,7 @@ Polymer({
     } else {
       this.startPreviewWhenReady_ = true;
     }
-  },
+  }
 
   /** @private */
   onStateChanged_() {
@@ -481,7 +497,7 @@ Polymer({
             this.onPrintToCloud_.bind(this), this.onPrintFailed_.bind(this));
       }
     }
-  },
+  }
 
   /** @private */
   onPrintRequested_() {
@@ -498,7 +514,7 @@ Polymer({
     // </if>
     this.$.state.transitTo(
         this.$.previewArea.previewLoaded() ? State.PRINTING : State.HIDDEN);
-  },
+  }
 
   /** @private */
   onCancelRequested_() {
@@ -511,7 +527,7 @@ Polymer({
     // </if>
     this.cancelled_ = true;
     this.$.state.transitTo(State.CLOSING);
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e The event containing the new validity.
@@ -524,12 +540,12 @@ Polymer({
       this.error_ = Error.INVALID_TICKET;
       this.$.state.transitTo(State.ERROR);
     }
-  },
+  }
 
   /** @private */
   onFileSelectionCancel_() {
     this.$.state.transitTo(State.READY);
-  },
+  }
 
   /**
    * Called when the native layer has retrieved the data to print to Google
@@ -545,7 +561,7 @@ Polymer({
     this.cloudPrintInterface_.submit(
         destination, this.$.model.createCloudJobTicket(destination),
         this.documentSettings_.title, data);
-  },
+  }
 
   // <if expr="not chromeos and not lacros">
   /** @private */
@@ -558,7 +574,7 @@ Polymer({
     this.nativeLayer_.showSystemDialog();
     this.$.state.transitTo(State.SYSTEM_DIALOG);
     // </if>
-  },
+  }
   // </if>
 
   // <if expr="is_macosx">
@@ -567,7 +583,7 @@ Polymer({
     this.openPdfInPreview_ = true;
     this.$.previewArea.setOpeningPdfInPreview();
     this.onPrintRequested_();
-  },
+  }
   // </if>
 
   /**
@@ -580,7 +596,7 @@ Polymer({
     console.warn('Printing failed with error code ' + httpError);
     this.error_ = Error.PRINT_FAILED;
     this.$.state.transitTo(State.FATAL_ERROR);
-  },
+  }
 
   /** @private */
   onPreviewStateChange_() {
@@ -601,7 +617,7 @@ Polymer({
       default:
         break;
     }
-  },
+  }
 
   /**
    * Called when there was an error communicating with Google Cloud print.
@@ -628,7 +644,7 @@ Polymer({
           'Google Cloud Print Error: ' +
           `HTTP status ${event.detail.status}`);
     }
-  },
+  }
 
   /**
    * Updates printing options according to source document presets.
@@ -663,7 +679,7 @@ Polymer({
       this.setSetting(
           'duplexShortEdge', duplex === DuplexMode.SHORT_EDGE, true);
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<number>} e Contains the new preview request ID.
@@ -671,10 +687,12 @@ Polymer({
    */
   onPreviewStart_(e) {
     this.$.documentInfo.inFlightRequestId = e.detail;
-  },
+  }
 
   /** @private */
   close_() {
     this.$.state.transitTo(State.CLOSING);
-  },
-});
+  }
+}
+
+customElements.define(PrintPreviewAppElement.is, PrintPreviewAppElement);

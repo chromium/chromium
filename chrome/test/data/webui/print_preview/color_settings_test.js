@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {PrintPreviewColorSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
@@ -37,7 +37,7 @@ suite('ColorSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const select = colorSection.$$('select');
+    const select = colorSection.shadowRoot.querySelector('select');
     assertEquals('color', select.value);
 
     colorSection.setSetting('color', false);
@@ -48,7 +48,7 @@ suite('ColorSettingsTest', function() {
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = colorSection.$$('select');
+    const select = colorSection.shadowRoot.querySelector('select');
     assertEquals('color', select.value);
     assertTrue(/** @type {boolean} */ (colorSection.getSettingValue('color')));
     assertFalse(colorSection.getSetting('color').setFromUi);
@@ -65,7 +65,7 @@ suite('ColorSettingsTest', function() {
     // disabled.
     test('disabled by policy', function() {
       // Verify that the selected option and names are as expected.
-      const select = colorSection.$$('select');
+      const select = colorSection.shadowRoot.querySelector('select');
       assertFalse(select.disabled);
 
       model.set('settings.color.setByPolicy', true);

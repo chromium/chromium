@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewButtonStripElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';
@@ -37,7 +37,8 @@ suite(button_strip_interactive_test.suiteName, function() {
   test(
       assert(button_strip_interactive_test.TestNames.FocusPrintOnReady),
       function() {
-        const printButton = assert(buttonStrip.$$('.action-button'));
+        const printButton =
+            assert(buttonStrip.shadowRoot.querySelector('.action-button'));
         const whenFocusDone = eventToPromise('focus', printButton);
 
         // Simulate initialization finishing.

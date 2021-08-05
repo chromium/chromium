@@ -46,3 +46,18 @@ export const SelectBehavior = {
    */
   onProcessSelectChange(value) {},
 };
+
+/** @interface */
+export class SelectBehaviorInterface {
+  constructor() {
+    /** @type {string} */
+    this.selectedValue;
+  }
+
+  /**
+   * Should be overridden by elements using this behavior to receive select
+   * value updates.
+   * @param {string} value The new select value to process.
+   */
+  onProcessSelectChange(value) {}
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundGraphicsModeRestriction, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+import {BackgroundGraphicsModeRestriction, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
 // <if expr="chromeos or lacros">
 import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
 // </if>
@@ -133,12 +133,13 @@ suite(policy_tests.suiteName, function() {
 
   function toggleMoreSettings() {
     const moreSettingsElement =
-        page.$$('print-preview-sidebar').$$('print-preview-more-settings');
+        page.shadowRoot.querySelector('print-preview-sidebar')
+            .$$('print-preview-more-settings');
     moreSettingsElement.$.label.click();
   }
 
   function getCheckbox(settingName) {
-    return page.$$('print-preview-sidebar')
+    return page.shadowRoot.querySelector('print-preview-sidebar')
         .$$('print-preview-other-options-settings')
         .$$(`#${settingName}`);
   }
@@ -269,10 +270,11 @@ suite(policy_tests.suiteName, function() {
           'mediaSize', /*serializedSettingName=*/ undefined,
           /*allowedMode=*/ undefined, subtestParams.defaultMode);
       toggleMoreSettings();
-      const mediaSettingsSelect = page.$$('print-preview-sidebar')
-                                      .$$('print-preview-media-size-settings')
-                                      .$$('print-preview-settings-select')
-                                      .$$('select');
+      const mediaSettingsSelect =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-media-size-settings')
+              .$$('print-preview-settings-select')
+              .$$('select');
       assertEquals(
           subtestParams.expectedName,
           JSON.parse(mediaSettingsSelect.value).name);
@@ -334,12 +336,14 @@ suite(policy_tests.suiteName, function() {
         const {_, itemCount} = await pluralString.whenCalled('getPluralString');
         assertEquals(subtestParams.maxSheets, itemCount);
       }
-      const printButton = page.$$('print-preview-sidebar')
-                              .$$('print-preview-button-strip')
-                              .$$('cr-button.action-button');
-      const errorMessage = page.$$('print-preview-sidebar')
-                               .$$('print-preview-button-strip')
-                               .$$('div.error-message');
+      const printButton =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-button-strip')
+              .shadowRoot.querySelector('cr-button.action-button');
+      const errorMessage =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-button-strip')
+              .shadowRoot.querySelector('div.error-message');
       assertEquals(subtestParams.expectedDisabled, printButton.disabled);
       assertEquals(subtestParams.expectedHidden, errorMessage.hidden);
       assertEquals(
@@ -413,9 +417,10 @@ suite(policy_tests.suiteName, function() {
       await doAllowedDefaultModePolicySetup(
           'color', 'isColorEnabled', subtestParams.allowedMode,
           subtestParams.defaultMode);
-      const colorSettingsSelect = page.$$('print-preview-sidebar')
-                                      .$$('print-preview-color-settings')
-                                      .$$('select');
+      const colorSettingsSelect =
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-color-settings')
+              .shadowRoot.querySelector('select');
       assertEquals(
           subtestParams.expectedDisabled, colorSettingsSelect.disabled);
       assertEquals(subtestParams.expectedValue, colorSettingsSelect.value);
@@ -540,7 +545,8 @@ suite(policy_tests.suiteName, function() {
           subtestParams.defaultMode);
       toggleMoreSettings();
       const duplexSettingsSection =
-          page.$$('print-preview-sidebar').$$('print-preview-duplex-settings');
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-duplex-settings');
       const checkbox = duplexSettingsSection.$$('cr-checkbox');
       const collapse = duplexSettingsSection.$$('iron-collapse');
       const select = duplexSettingsSection.$$('select');
@@ -652,7 +658,8 @@ suite(policy_tests.suiteName, function() {
       await loadInitialSettings(initialSettings);
 
       const pinSettingsSection =
-          page.$$('print-preview-sidebar').$$('print-preview-pin-settings');
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .$$('print-preview-pin-settings');
       const checkbox = pinSettingsSection.$$('cr-checkbox');
       const collapse = pinSettingsSection.$$('iron-collapse');
       const input = pinSettingsSection.$$('cr-input');

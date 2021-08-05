@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -97,8 +97,9 @@ suite(invalid_settings_browsertest.suiteName, function() {
     page = /** @type {!PrintPreviewAppElement} */ (
         document.createElement('print-preview-app'));
     document.body.appendChild(page);
-    page.$$('#documentInfo').init(true, false, false, 'title', false);
-    const previewArea = page.$$('#previewArea');
+    page.shadowRoot.querySelector('#documentInfo')
+        .init(true, false, false, 'title', false);
+    const previewArea = page.shadowRoot.querySelector('#previewArea');
   }
 
   /**
@@ -133,7 +134,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
       function() {
         createPage(false);
         const previewArea = /** @type {!PrintPreviewPreviewAreaElement} */ (
-            page.$$('#previewArea'));
+            page.shadowRoot.querySelector('#previewArea'));
 
         return nativeLayer.whenCalled('getInitialSettings').then(function() {
           const overlayEl = previewArea.$$('.preview-area-overlay-layer');
@@ -177,11 +178,11 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
         // Get references to relevant elements.
         const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
-            page.$$('#previewArea'));
+            page.shadowRoot.querySelector('#previewArea'));
         const overlay = previewAreaEl.$$('.preview-area-overlay-layer');
         const messageEl = previewAreaEl.$$('.preview-area-message');
         const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
-            page.$$('print-preview-sidebar'));
+            page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
         const destinationSettings =
             /** @type {!PrintPreviewDestinationSettingsElement} */ (
@@ -190,7 +191,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
         return waitBeforeNextRender(page)
             .then(() => {
               const parentElement = sidebar.$$('print-preview-button-strip');
-              printButton = parentElement.$$('.action-button');
+              printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
 
               return Promise.all([
                 whenReady(),
@@ -293,11 +295,11 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
         // Get references to relevant elements.
         const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
-            page.$$('#previewArea'));
+            page.shadowRoot.querySelector('#previewArea'));
         const overlayEl = previewAreaEl.$$('.preview-area-overlay-layer');
         const messageEl = previewAreaEl.$$('.preview-area-message');
         const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
-            page.$$('print-preview-sidebar'));
+            page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
         const destinationSettings =
             /** @type {!PrintPreviewDestinationSettingsElement} */ (
@@ -313,7 +315,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
         return waitBeforeNextRender(page)
             .then(() => {
               const parentElement = sidebar.$$('print-preview-button-strip');
-              printButton = parentElement.$$('.action-button');
+              printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
               return Promise.all([
                 whenReady(),
                 nativeLayer.whenCalled('getInitialSettings'),
@@ -399,11 +402,11 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
         // Get references to relevant elements.
         const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
-            page.$$('#previewArea'));
+            page.shadowRoot.querySelector('#previewArea'));
         const overlayEl = previewAreaEl.$$('.preview-area-overlay-layer');
         const messageEl = previewAreaEl.$$('.preview-area-message');
         const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
-            page.$$('print-preview-sidebar'));
+            page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
         const destinationSettings =
             /** @type {!PrintPreviewDestinationSettingsElement} */ (
@@ -412,7 +415,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
         return waitBeforeNextRender(page)
             .then(() => {
               const parentElement = sidebar.$$('print-preview-button-strip');
-              printButton = parentElement.$$('.action-button');
+              printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
               return Promise.all([
                 whenReady(),
                 nativeLayer.whenCalled('getInitialSettings'),

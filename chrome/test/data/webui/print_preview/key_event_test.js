@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayer, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
+import {NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -64,7 +64,7 @@ suite(key_event_test.suiteName, function() {
         document.createElement('print-preview-app'));
     document.body.appendChild(page);
     const previewArea = /** @type {!PrintPreviewPreviewAreaElement} */ (
-        page.$$('#previewArea'));
+        page.shadowRoot.querySelector('#previewArea'));
 
     // Wait for initialization to complete.
     return Promise
@@ -96,9 +96,9 @@ suite(key_event_test.suiteName, function() {
   test(assert(key_event_test.TestNames.EnterOnInputTriggersPrint), function() {
     const whenPrintCalled = nativeLayer.whenCalled('print');
     keyEventOn(
-        page.$$('print-preview-sidebar')
+        page.shadowRoot.querySelector('print-preview-sidebar')
             .$$('print-preview-copies-settings')
-            .$$('print-preview-number-settings-section')
+            .shadowRoot.querySelector('print-preview-number-settings-section')
             .$$('cr-input')
             .inputElement,
         'keydown', 'Enter', [], 'Enter');
@@ -111,7 +111,7 @@ suite(key_event_test.suiteName, function() {
       assert(key_event_test.TestNames.EnterOnDropdownDoesNotPrint), function() {
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
-            page.$$('print-preview-sidebar')
+            page.shadowRoot.querySelector('print-preview-sidebar')
                 .$$('print-preview-layout-settings')
                 .$$('.md-select'),
             'keydown', 'Enter', [], 'Enter');
@@ -123,9 +123,10 @@ suite(key_event_test.suiteName, function() {
   // comes from a button.
   test(assert(key_event_test.TestNames.EnterOnButtonDoesNotPrint), async () => {
     const moreSettingsElement =
-        page.$$('print-preview-sidebar').$$('print-preview-more-settings');
+        page.shadowRoot.querySelector('print-preview-sidebar')
+            .$$('print-preview-more-settings');
     moreSettingsElement.$.label.click();
-    const button = page.$$('print-preview-sidebar')
+    const button = page.shadowRoot.querySelector('print-preview-sidebar')
                        .$$('print-preview-advanced-options-settings')
                        .shadowRoot.querySelector('cr-button');
     const whenKeyEventFired = eventToPromise('keydown', button);
@@ -140,11 +141,12 @@ suite(key_event_test.suiteName, function() {
   test(
       assert(key_event_test.TestNames.EnterOnCheckboxDoesNotPrint), function() {
         const moreSettingsElement =
-            page.$$('print-preview-sidebar').$$('print-preview-more-settings');
+            page.shadowRoot.querySelector('print-preview-sidebar')
+                .$$('print-preview-more-settings');
         moreSettingsElement.$.label.click();
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
-            page.$$('print-preview-sidebar')
+            page.shadowRoot.querySelector('print-preview-sidebar')
                 .$$('print-preview-other-options-settings')
                 .$$('cr-checkbox'),
             'keydown', 'Enter', [], 'Enter');

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterface, CloudPrintInterfaceImpl, Destination, DuplexMode, NativeLayer, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
+import {CloudPrintInterface, CloudPrintInterfaceImpl, Destination, DuplexMode, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
@@ -99,7 +99,7 @@ suite(print_preview_app_test.suiteName, function() {
         page.destination_.capabilities = getCddTemplate(page.destination_.id);
 
         // Trigger print.
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         sidebar.dispatchEvent(new CustomEvent(
             'print-requested', {composed: true, bubbles: true}));
 
@@ -131,7 +131,7 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.destinationsManaged = true;
         await initialize();
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         assertTrue(sidebar.controlsManaged);
       });
 
@@ -140,7 +140,7 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.policies = {headerFooter: {allowedMode: true}};
         await initialize();
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         assertTrue(sidebar.controlsManaged);
       });
 
@@ -149,14 +149,14 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.policies = {cssBackground: {allowedMode: 1}};
         await initialize();
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         assertTrue(sidebar.controlsManaged);
       });
 
   test(assert(print_preview_app_test.TestNames.SheetsManaged), async () => {
     initialSettings.policies = {sheets: {value: 2}};
     await initialize();
-    const sidebar = page.$$('print-preview-sidebar');
+    const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
     assertTrue(sidebar.controlsManaged);
   });
 });

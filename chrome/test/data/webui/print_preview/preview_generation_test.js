@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorMode, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationState, DestinationType, Margins, MarginsType, NativeLayer, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
+import {ColorMode, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationState, DestinationType, Margins, MarginsType, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
 import {getCddTemplate, getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
@@ -84,7 +84,8 @@ suite(preview_generation_test.suiteName, function() {
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     const previewArea = page.$.previewArea;
-    const documentInfo = page.$$('print-preview-document-info');
+    const documentInfo =
+        page.shadowRoot.querySelector('print-preview-document-info');
     documentInfo.documentSettings.pageCount = 3;
     documentInfo.margins = new Margins(10, 10, 10, 10);
 
@@ -674,7 +675,8 @@ suite(preview_generation_test.suiteName, function() {
         // Check the last ticket sent by the preview area. It should not
         // have the same settings as the original (headers and footers
         // should have been turned off).
-        const previewArea = page.$$('print-preview-preview-area');
+        const previewArea =
+            page.shadowRoot.querySelector('print-preview-preview-area');
         assertMarginsFooter(
             previewArea.lastTicket_, 1, MarginsType.DEFAULT, false);
         nativeLayer.resetResolver('getPreview');

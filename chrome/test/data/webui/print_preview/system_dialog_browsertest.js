@@ -50,7 +50,7 @@ suite(system_dialog_browsertest.suiteName, function() {
     const page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     const previewArea = page.$.previewArea;
-    sidebar = page.$$('print-preview-sidebar');
+    sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
     return Promise
         .all([
           waitBeforeNextRender(page),
@@ -116,7 +116,8 @@ suite(system_dialog_browsertest.suiteName, function() {
             .then(() => {
               // Expect disabled print button
               const parentElement = sidebar.$$('print-preview-button-strip');
-              const printButton = parentElement.$$('.action-button');
+              const printButton =
+                  parentElement.shadowRoot.querySelector('.action-button');
               assertTrue(printButton.disabled);
               assertTrue(linkContainer.disabled);
               assertFalse(link.hidden);

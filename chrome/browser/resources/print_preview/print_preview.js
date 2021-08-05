@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './ui/app.js';
-
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
 export {CloudPrintInterfaceImpl} from './cloud_print_interface_impl.js';
@@ -35,7 +33,10 @@ export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer,
 export {getSelectDropdownBackground} from './print_preview_utils.js';
 export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';
 export {PrintPreviewAdvancedSettingsItemElement} from './ui/advanced_settings_item.js';
-export {DEFAULT_MAX_COPIES} from './ui/copies_settings.js';
+export {PrintPreviewAppElement} from './ui/app.js';
+export {PrintPreviewButtonStripElement} from './ui/button_strip.js';
+export {PrintPreviewColorSettingsElement} from './ui/color_settings.js';
+export {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement} from './ui/copies_settings.js';
 export {DestinationState, NUM_PERSISTED_DESTINATIONS} from './ui/destination_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
