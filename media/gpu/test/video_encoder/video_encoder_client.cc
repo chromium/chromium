@@ -376,6 +376,12 @@ void VideoEncoderClient::BitstreamBufferReady(
       current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
       current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
           metadata.payload_size_bytes;
+    } else if (metadata.h264.has_value()) {
+      uint8_t temporal_id = metadata.h264->temporal_idx;
+      ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
+      current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
+      current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
+          metadata.payload_size_bytes;
     }
   }
 
