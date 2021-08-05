@@ -11,16 +11,17 @@ Chrome has a [multi-process
 architecture](https://www.chromium.org/developers/design-documents/multi-process-architecture)
 and each process is heavily multi-threaded. In this document we will go over the
 basic threading system shared by each process. The main goal is to keep the main
-thread (a.k.a. "UI" thread in the browser process) and IO thread (each process'
-thread for handling
-[IPC](https://en.wikipedia.org/wiki/Inter-process_communication)) responsive.
-This means offloading any blocking I/O or other expensive operations to other
-threads. Our approach is to use message passing as the way of communicating
-between threads. We discourage locking and thread-safe objects. Instead, objects
-live on only one (often virtual -- we'll get to that later!) thread and we pass
-messages between those threads for communication. Absent external requirements
-about latency or workload, Chrome attempts to be a [highly concurrent, but not
-necessarily parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.),
+thread (a.k.a. "UI" thread in the browser process) and IO thread (each process's
+thread for receiving
+[IPC](https://en.wikipedia.org/wiki/Inter-process_communication))
+responsive.  This means offloading any blocking I/O or other expensive
+operations to other threads. Our approach is to use message passing as the way
+of communicating between threads. We discourage locking and thread-safe objects.
+Instead, objects live on only one (often virtual -- we'll get to that later!)
+thread and we pass messages between those threads for communication. Absent
+external requirements about latency or workload, Chrome attempts to be a [highly
+concurrent, but not necessarily
+parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.),
 system.
 
 This documentation assumes familiarity with computer science
@@ -113,9 +114,14 @@ Every Chrome process has
    * in the browser process (BrowserThread::UI): updates the UI
    * in renderer processes (Blink main thread): runs most of Blink
 * an IO thread
-   * in the browser process (BrowserThread::IO): handles IPCs and network
-     requests
-   * in renderer processes: handles IPCs
+   * in all processes: all IPC messages arrive on this thread. The application
+     logic to handle the message may be in a different thread (i.e., the IO
+     thread may route the message to a [Mojo
+     interface](/docs/README.md#Mojo-Services) which is bound to a
+     different thread).
+   * more generally most async I/O happens on this thread (e.g., through
+     base::FileDescriptorWatcher).
+   * in the browser process: this is called BrowserThread::IO.
 * a few more special-purpose threads
 * and a pool of general-purpose threads
 
