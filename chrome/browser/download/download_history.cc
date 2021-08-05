@@ -178,6 +178,10 @@ history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   download.by_ext_id = by_ext_id;
   download.by_ext_name = by_ext_name;
   download.download_slice_info = history::GetHistoryDownloadSliceInfos(*item);
+  auto& reroute_info = item->GetRerouteInfo();
+  if (reroute_info.IsInitialized()) {
+    download.reroute_info_serialized = reroute_info.SerializeAsString();
+  }
   TruncatedDataUrlAtTheEndIfNeeded(&download.url_chain);
   return download;
 }
@@ -199,7 +203,8 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
   // rename it. If Chrome is killed before committing the history here,
   // that temporary file will still get permanently left.
   // See http://crbug.com/664677.
-  if (previous == nullptr || previous->current_path != current.current_path)
+  if (previous == nullptr || previous->current_path != current.current_path ||
+      previous->reroute_info_serialized != current.reroute_info_serialized)
     return ShouldUpdateHistoryResult::UPDATE_IMMEDIATELY;
 
   // Ignore url_chain, referrer, site_url, http_method, mime_type,
@@ -379,6 +384,7 @@ void DownloadHistory::LoadHistoryDownloads(
         history::ToContentDownloadInterruptReason(row.interrupt_reason);
     std::vector<GURL> url_chain = row.url_chain;
     TruncatedDataUrlAtTheEndIfNeeded(&url_chain);
+    // TODO(https://crbug.com/1203753) Load reroute_info.
     download::DownloadItem* item = notifier_.GetManager()->CreateDownloadItem(
         row.guid, loading_id_, row.current_path, row.target_path, url_chain,
         row.referrer_url, row.site_url, row.tab_url, row.tab_referrer_url,

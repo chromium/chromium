@@ -465,6 +465,16 @@ class DownloadHistoryTest : public testing::Test {
                                           row->by_ext_name);
 #endif
 
+    download::DownloadItemRerouteInfo reroute_info;
+    if (!row->reroute_info_serialized.empty()) {
+      ASSERT_TRUE(reroute_info.ParseFromString(row->reroute_info_serialized));
+      EXPECT_CALL(item(index), GetRerouteInfo())
+          .WillRepeatedly(ReturnRefOfCopy(reroute_info));
+    } else {
+      EXPECT_CALL(item(index), GetRerouteInfo())
+          .WillRepeatedly(ReturnRefOfCopy(download::DownloadItemRerouteInfo()));
+    }
+
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
@@ -912,6 +922,37 @@ TEST_F(DownloadHistoryTest, CreateLargeDataURLCompletedItem) {
   row.state = history::DownloadState::COMPLETE;
   data_url.resize(1024);
   row.url_chain.back() = GURL(data_url);
+  item(0).NotifyObserversDownloadUpdated();
+  ExpectDownloadCreated(row);
+}
+
+// Test that reroute info will be stored into history.
+TEST_F(DownloadHistoryTest, RerouteInfo) {
+  // Create a fresh item not from download DB
+  CreateDownloadHistory({});
+
+  history::DownloadRow row;
+  download::DownloadItemRerouteInfo reroute_info;
+  reroute_info.set_service_provider(enterprise_connectors::BOX);
+  reroute_info.mutable_box()->set_folder_id("12345");
+  row.reroute_info_serialized = reroute_info.SerializeAsString();
+  InitBasicItem(FILE_PATH_LITERAL("/foo/bar.pdf"), "http://example.com/bar.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::IN_PROGRESS, &row);
+
+  // Incomplete download will not be inserted into history.
+  CallOnDownloadCreated(0);
+  ExpectNoDownloadCreated();
+
+  // Completed download should be inserted.
+  reroute_info.mutable_box()->set_file_id("67890");
+  EXPECT_CALL(item(0), IsDone()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item(0), GetState())
+      .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
+  EXPECT_CALL(item(0), GetRerouteInfo())
+      .WillRepeatedly(ReturnRefOfCopy(reroute_info));
+  row.state = history::DownloadState::COMPLETE;
+  row.reroute_info_serialized = reroute_info.SerializeAsString();
   item(0).NotifyObserversDownloadUpdated();
   ExpectDownloadCreated(row);
 }
