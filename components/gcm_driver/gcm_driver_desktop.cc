@@ -497,7 +497,6 @@ void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
 GCMDriverDesktop::GCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
     const GCMClient::ChromeBuildInfo& chrome_build_info,
-    const std::string& user_agent,
     PrefService* prefs,
     const base::FilePath& store_path,
     bool remove_account_mappings_with_email_key,

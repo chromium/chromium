@@ -13,7 +13,6 @@
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
-#include "components/sync/base/sync_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -92,11 +91,11 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner) {
   return std::unique_ptr<GCMDriver>(new GCMDriverDesktop(
       std::move(gcm_client_factory),
-      GetChromeBuildInfo(channel, product_category_for_subtypes),
-      syncer::MakeUserAgentForSync(channel), prefs, store_path,
-      remove_account_mappings_with_email_key, get_socket_factory_callback,
-      std::move(url_loader_factory), network_connection_tracker, ui_task_runner,
-      io_task_runner, blocking_task_runner));
+      GetChromeBuildInfo(channel, product_category_for_subtypes), prefs,
+      store_path, remove_account_mappings_with_email_key,
+      get_socket_factory_callback, std::move(url_loader_factory),
+      network_connection_tracker, ui_task_runner, io_task_runner,
+      blocking_task_runner));
 }
 
 }  // namespace gcm
