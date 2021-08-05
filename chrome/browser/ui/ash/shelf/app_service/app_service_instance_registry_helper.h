@@ -110,13 +110,16 @@ class AppServiceInstanceRegistryHelper {
   // no |window| in InstanceRegistry, returns apps::InstanceState::kUnknown.
   apps::InstanceState GetState(aura::Window* window) const;
 
-  // Adds the tab's |window| to |browser_window_to_tab_window_|.
-  void AddTabWindow(const std::string& app_id, aura::Window* window);
-  // Removes the tab's |window| from |browser_window_to_tab_window_|.
-  void RemoveTabWindow(const std::string& app_id, aura::Window* window);
-  // updates the relation for the tab's |window| and
-  // |browser_window_to_tab_window_|.
-  void UpdateTabWindow(const std::string& app_id, aura::Window* window);
+  // Adds the tab's |instance_key| to |browser_window_to_tab_instance_|.
+  void AddTabInstance(const std::string& app_id,
+                      const apps::Instance::InstanceKey& instance_key);
+  // Removes the tab's |instance_key| from |browser_window_to_tab_instance_|.
+  void RemoveTabInstance(const std::string& app_id,
+                         const apps::Instance::InstanceKey& instance_key);
+  // updates the relation for the tab's |instance_key| and
+  // |browser_window_to_tab_instance_|.
+  void UpdateTabInstance(const std::string& app_id,
+                         const apps::Instance::InstanceKey& instance_key);
 
   AppServiceAppWindowShelfController* controller_ = nullptr;
 
@@ -125,14 +128,15 @@ class AppServiceInstanceRegistryHelper {
   // Used to get app info for tabs.
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
-  // Maps the browser window to tab windows in the browser. When the browser
-  // window is inactive or invisible, tab windows in the browser should be
+  // Maps the browser window to tab instances in the browser. When the browser
+  // window is inactive or invisible, tab instances in the browser should be
   // updated accordingly as well.
-  std::map<aura::Window*, std::set<aura::Window*>>
-      browser_window_to_tab_window_;
+  std::map<aura::Window*, std::set<apps::Instance::InstanceKey>>
+      browser_window_to_tab_instances_;
 
-  // Maps the tab window to the browser window in the browser.
-  std::map<aura::Window*, aura::Window*> tab_window_to_browser_window_;
+  // Maps the tab instance to the browser window in the browser.
+  std::map<apps::Instance::InstanceKey, aura::Window*>
+      tab_instance_to_browser_window_;
 
   DISALLOW_COPY_AND_ASSIGN(AppServiceInstanceRegistryHelper);
 };
