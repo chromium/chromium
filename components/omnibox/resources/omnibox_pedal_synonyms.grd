@@ -114,7 +114,10 @@
   </outputs>
 
   <!-- Note, the list of languages here must match the omnibox_pedal_synonyms_grd languages
-       list in tools/gritsettings/translation_expectations.pyl or TC pipeline breaks. -->
+       list in tools/gritsettings/translation_expectations.pyl or TC pipeline breaks. 
+       Note also, omnibox_pedal_synonyms_translation_languages in google3
+       googleclient/chrome/transconsole_resources/BUILD should be updated
+       before changing this list or another phase of TC pipeline breaks. -->
   <translations>
     <file path="translations/omnibox_pedal_synonyms_ar.xtb" lang="ar" />
     <file path="translations/omnibox_pedal_synonyms_de.xtb" lang="de" />

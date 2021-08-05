@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-07-28T22:42:46.759Z",
+  "time_generated": "2021-08-04T20:45:06.513Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -159,7 +159,7 @@
     {
       "id": 20,
       "name": "COMPOSE_EMAIL_IN_GMAIL",
-      "enabled": true,
+      "enabled": false,
       "url": "https://mail.google.com/mail/u/0/?usp=dot_new#inbox?compose=new",
       "description": "Create an email in Gmail quickly (like mail.new)",
       "tags": "google"
@@ -183,7 +183,7 @@
     {
       "id": 23,
       "name": "CLEAR_YOUTUBE_HISTORY",
-      "enabled": true,
+      "enabled": false,
       "url": "",
       "description": "Clear your YouTube history in My Activity",
       "tags": ""
@@ -1242,7 +1242,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1263,7 +1263,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1284,7 +1284,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1305,7 +1305,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1326,7 +1326,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1347,7 +1347,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1368,7 +1368,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1389,7 +1389,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1410,7 +1410,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1431,7 +1431,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1452,7 +1452,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1473,7 +1473,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1494,7 +1494,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1536,7 +1536,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1557,7 +1557,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -1599,7 +1599,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5801,7 +5801,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5822,7 +5822,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5843,7 +5843,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5864,7 +5864,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5885,7 +5885,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5906,7 +5906,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5927,7 +5927,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5948,7 +5948,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5969,7 +5969,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -5990,7 +5990,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -6011,7 +6011,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -6032,7 +6032,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -6053,7 +6053,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -6095,7 +6095,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -6116,7 +6116,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -6158,7 +6158,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10394,7 +10394,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10415,7 +10415,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10436,7 +10436,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10457,7 +10457,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10478,7 +10478,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10499,7 +10499,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10520,7 +10520,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10541,7 +10541,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10562,7 +10562,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10583,7 +10583,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10604,7 +10604,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10625,7 +10625,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10646,7 +10646,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10688,7 +10688,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10709,7 +10709,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -10751,7 +10751,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14069,7 +14069,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14090,7 +14090,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14111,7 +14111,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14132,7 +14132,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14153,7 +14153,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14174,7 +14174,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14195,7 +14195,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14216,7 +14216,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14237,7 +14237,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14258,7 +14258,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14279,7 +14279,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14300,7 +14300,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14321,7 +14321,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14363,7 +14363,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14384,7 +14384,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -14426,7 +14426,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -19931,7 +19931,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -19952,7 +19952,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -19973,7 +19973,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -19994,7 +19994,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20015,7 +20015,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20036,7 +20036,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20057,7 +20057,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20078,7 +20078,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20099,7 +20099,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20120,7 +20120,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20141,7 +20141,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20162,7 +20162,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20183,7 +20183,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20225,7 +20225,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20246,7 +20246,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -20288,7 +20288,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38194,7 +38194,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38215,7 +38215,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38236,7 +38236,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38257,7 +38257,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38278,7 +38278,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38299,7 +38299,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38320,7 +38320,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38341,7 +38341,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38362,7 +38362,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38383,7 +38383,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38404,7 +38404,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38425,7 +38425,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38446,7 +38446,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38488,7 +38488,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38509,7 +38509,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38551,7 +38551,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38910,7 +38910,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38931,7 +38931,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38952,7 +38952,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38973,7 +38973,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -38994,7 +38994,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39015,7 +39015,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39036,7 +39036,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39057,7 +39057,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39078,7 +39078,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39099,7 +39099,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39120,7 +39120,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39141,7 +39141,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39162,7 +39162,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39204,7 +39204,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39225,7 +39225,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -39267,7 +39267,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",

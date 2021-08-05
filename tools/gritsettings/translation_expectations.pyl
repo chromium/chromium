@@ -91,6 +91,9 @@
   # The omnibox_pedal_synonyms are translated only into a subset of the languages.
   # Note, the list here must match the <translations> list in
   # components/omnibox/resources/omnibox_pedal_synonyms.grd or TC pipeline breaks.
+  # Note also, omnibox_pedal_synonyms_translation_languages in google3
+  # googleclient/chrome/transconsole_resources/BUILD should be updated
+  # before changing this list or another phase of TC pipeline breaks.
   "omnibox_pedal_synonyms_grd": {
     "languages": [
       "ar", "de", "es-419", "fr", "ja", "zh-CN", "zh-TW",
