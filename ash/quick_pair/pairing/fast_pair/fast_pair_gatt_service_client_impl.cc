@@ -29,6 +29,31 @@ const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
 
 constexpr base::TimeDelta kConnectingTimeout = base::TimeDelta::FromSeconds(5);
 
+constexpr const char* ToString(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothGattService::GATT_ERROR_UNKNOWN:
+      return "GATT_ERROR_UNKNOWN";
+    case device::BluetoothGattService::GATT_ERROR_FAILED:
+      return "GATT_ERROR_FAILED";
+    case device::BluetoothGattService::GATT_ERROR_IN_PROGRESS:
+      return "GATT_ERROR_IN_PROGRESS";
+    case device::BluetoothGattService::GATT_ERROR_INVALID_LENGTH:
+      return "GATT_ERROR_INVALID_LENGTH";
+    case device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED:
+      return "GATT_ERROR_NOT_PERMITTED";
+    case device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED:
+      return "GATT_ERROR_NOT_AUTHORIZED";
+    case device::BluetoothGattService::GATT_ERROR_NOT_PAIRED:
+      return "GATT_ERROR_NOT_PAIRED";
+    case device::BluetoothGattService::GATT_ERROR_NOT_SUPPORTED:
+      return "GATT_ERROR_NOT_SUPPORTED";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 namespace ash {
@@ -235,7 +260,8 @@ void FastPairGattServiceClientImpl::OnNotifySession(
 void FastPairGattServiceClientImpl::OnGattError(
     PairFailure failure,
     device::BluetoothGattService::GattErrorCode error) {
-  QP_LOG(VERBOSE) << "StartNotifySession failed due to GATT error.";
+  QP_LOG(VERBOSE) << "StartNotifySession failed due to GATT error: "
+                  << ToString(error);
   NotifyError(failure);
 }
 
