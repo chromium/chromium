@@ -1150,7 +1150,7 @@ std::string TemplateURLRef::HandleReplacements(
           // prefetch to allow the search server to treat the requests based on
           // source. "cs" represents Chrome Suggestions as the source. Adding a
           // new source should be supported by the Search engine.
-          HandleReplacement(std::string(), "pf=cs&", *i, &url);
+          HandleReplacement("pf", "cs", *i, &url);
         }
         break;
       }
