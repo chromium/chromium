@@ -11,8 +11,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.core.view.ViewCompat;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -63,45 +61,41 @@ public class FeedStreamViewResizer extends ViewResizer {
         return viewResizer;
     }
 
-    @Override
-    public void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
-        if (mUiConfig.getContext().getResources().getConfiguration().orientation
-                        != Configuration.ORIENTATION_LANDSCAPE
-                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
-            super.onDisplayStyleChanged(newDisplayStyle);
-            return;
-        }
-
-        updatePaddingForLandscapeMode();
-    }
-
     /**
      * In landscape mode, the entire large image or video preview cannot fit in the viewport because
      * the floating search bar at the top reduces the user's visible area. To deal with this, we
      * add the left and right paddings to all items in the RecyclerView in order to shrink all card
      * images a little bit so that they can fit in the viewport.
      */
-    private void updatePaddingForLandscapeMode() {
-        ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
-        if (contentContainer == null) {
-            return;
+    @Override
+    protected int computePadding() {
+        int padding = super.computePadding();
+        if (mUiConfig.getContext().getResources().getConfiguration().orientation
+                        != Configuration.ORIENTATION_LANDSCAPE
+                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
+            return padding;
         }
-        View toolbarView = contentContainer.findViewById(R.id.toolbar_container);
-        if (toolbarView == null) {
-            return;
-        }
-        int toolbarHeight = toolbarView.getHeight();
 
         Resources resources = mUiConfig.getContext().getResources();
         float dpToPx = resources.getDisplayMetrics().density;
         float screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
         float screenHeight = resources.getConfiguration().screenHeightDp * dpToPx;
+        float useableHeight = screenHeight - statusBarHeight() - toolbarHeight();
+        int customPadding =
+                (int) ((screenWidth - useableHeight * FEED_IMAGE_OR_VIDEO_ASPECT_RATIO) / 2);
+        return Math.max(customPadding, padding);
+    }
 
-        float useableHeight = screenHeight - statusBarHeight() - toolbarHeight;
-        int padding = (int) ((screenWidth - useableHeight * FEED_IMAGE_OR_VIDEO_ASPECT_RATIO) / 2);
-
-        ViewCompat.setPaddingRelative(
-                mView, padding, mView.getPaddingTop(), padding, mView.getPaddingBottom());
+    private int toolbarHeight() {
+        ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
+        if (contentContainer == null) {
+            return 0;
+        }
+        View toolbarView = contentContainer.findViewById(R.id.toolbar_container);
+        if (toolbarView == null) {
+            return 0;
+        }
+        return toolbarView.getHeight();
     }
 
     private int statusBarHeight() {

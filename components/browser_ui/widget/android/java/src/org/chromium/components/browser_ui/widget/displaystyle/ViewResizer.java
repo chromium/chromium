@@ -97,17 +97,17 @@ public class ViewResizer implements DisplayStyleObserver {
     }
 
     private void updatePadding() {
-        int padding;
-        if (mCurrentDisplayStyle == HorizontalDisplayStyle.WIDE) {
-            padding = computePadding();
-        } else {
-            padding = mDefaultPaddingPixels;
-        }
+        int padding = computePadding();
         ViewCompat.setPaddingRelative(
                 mView, padding, mView.getPaddingTop(), padding, mView.getPaddingBottom());
     }
 
-    private int computePadding() {
+    /**
+     * Computes the lateral padding to be applied to the associated view.
+     */
+    protected int computePadding() {
+        if (mCurrentDisplayStyle != HorizontalDisplayStyle.WIDE) return mDefaultPaddingPixels;
+
         // mUiConfig.getContext().getResources() is used here instead of mView.getResources()
         // because lemon compression, somehow, causes the resources to return a different
         // configuration.
