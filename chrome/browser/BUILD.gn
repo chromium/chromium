@@ -7238,8 +7238,6 @@ static_library("test_support") {
       "ash/policy/core/device_policy_builder.h",
       "ash/policy/core/fake_device_cloud_policy_manager.cc",
       "ash/policy/core/fake_device_cloud_policy_manager.h",
-      "ash/policy/enrollment/fake_device_cloud_policy_initializer.cc",
-      "ash/policy/enrollment/fake_device_cloud_policy_initializer.h",
       "ash/policy/external_data/cloud_external_data_manager_base_test_util.cc",
       "ash/policy/external_data/cloud_external_data_manager_base_test_util.h",
       "chromeos/net/network_portal_detector_test_utils.cc",

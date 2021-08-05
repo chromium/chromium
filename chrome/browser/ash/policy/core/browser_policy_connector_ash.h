@@ -225,10 +225,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // [2] i.e. g_browser_process->local_state()
   ProxyPolicyProvider* GetGlobalUserCloudPolicyProvider();
 
-  // Sets the device cloud policy initializer for testing.
-  void SetDeviceCloudPolicyInitializerForTesting(
-      std::unique_ptr<DeviceCloudPolicyInitializer> initializer);
-
   // Registers device refresh rate pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

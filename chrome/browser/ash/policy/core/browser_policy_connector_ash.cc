@@ -484,11 +484,6 @@ BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
   return global_user_cloud_policy_provider_;
 }
 
-void BrowserPolicyConnectorAsh::SetDeviceCloudPolicyInitializerForTesting(
-    std::unique_ptr<DeviceCloudPolicyInitializer> initializer) {
-  device_cloud_policy_initializer_ = std::move(initializer);
-}
-
 // static
 void BrowserPolicyConnectorAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
