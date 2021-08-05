@@ -73,18 +73,20 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   // Clears all of the the secure payment confirmation instrument information
   // created in the given time range `begin` and `end`, and invokes `callback`
   // when the clearing is completed.
-  void ClearSecurePaymentConfirmationInstruments(base::Time begin,
-                                                 base::Time end,
-                                                 base::OnceClosure callback);
+  virtual void ClearSecurePaymentConfirmationInstruments(
+      base::Time begin,
+      base::Time end,
+      base::OnceClosure callback);
 
   // Override WebDataServiceConsumer interface.
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
 
- private:
+ protected:
   ~PaymentManifestWebDataService() override;
 
+ private:
   std::unique_ptr<WDTypedResult> ClearSecurePaymentConfirmationInstrumentsImpl(
       base::Time begin,
       base::Time end,

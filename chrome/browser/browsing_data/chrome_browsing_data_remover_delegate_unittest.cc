@@ -105,6 +105,7 @@
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_enums.h"
@@ -597,6 +598,43 @@ class RemovePasswordsTester {
       mock_smart_bubble_stats_store_;
   testing::NiceMock<password_manager::MockFieldInfoStore>
       mock_field_info_store_;
+};
+
+class RemoveSecurePaymentConfirmationInstrumentsTester {
+ public:
+  using MockWrapper = testing::NiceMock<payments::MockWebDataServiceWrapper>;
+  using MockService =
+      testing::NiceMock<payments::MockPaymentManifestWebDataService>;
+  explicit RemoveSecurePaymentConfirmationInstrumentsTester(
+      TestingProfile* testing_profile) {
+    webdata_services::WebDataServiceWrapperFactory::GetInstance()
+        ->SetTestingFactory(
+            testing_profile,
+            base::BindRepeating(
+                &RemoveSecurePaymentConfirmationInstrumentsTester::
+                    BuildServiceWapper,
+                base::Unretained(this)));
+  }
+
+  std::unique_ptr<KeyedService> BuildServiceWapper(
+      content::BrowserContext* context) {
+    auto wrapper = std::make_unique<MockWrapper>();
+    EXPECT_CALL(*wrapper, GetPaymentManifestWebData)
+        .WillRepeatedly(Return(service_));
+    return std::move(wrapper);
+  }
+
+  void ExpectCallClearSecurePaymentConfirmationInstruments(int times) {
+    EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationInstruments)
+        .Times(times)
+        .WillRepeatedly(testing::WithArg<2>([](base::OnceClosure completion) {
+          base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                        std::move(completion));
+        }));
+  }
+
+ private:
+  scoped_refptr<MockService> service_ = base::MakeRefCounted<MockService>();
 };
 
 class RemovePermissionPromptCountsTest {
@@ -3214,4 +3252,15 @@ TEST_F(ChromeBrowsingDataRemoverDelegateLiteVideoTest,
 
   histogram_tester.ExpectUniqueSample("LiteVideo.UserBlocklist.ClearBlocklist",
                                       true, 1);
+}
+
+// Verify that clearing secure payment confirmation instruments data works.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       RemoveSecurePaymentConfirmationInstruments) {
+  GetProfile()->CreateWebDataService();
+  RemoveSecurePaymentConfirmationInstrumentsTester tester(GetProfile());
+  tester.ExpectCallClearSecurePaymentConfirmationInstruments(1);
+
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                constants::DATA_TYPE_PASSWORDS, false);
 }

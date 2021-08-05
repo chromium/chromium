@@ -194,6 +194,23 @@ static_library("utils") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_payment_manifest_web_data_service.cc",
+    "mock_payment_manifest_web_data_service.h",
+  ]
+  deps = [
+    ":utils",
+    "//base/test:test_support",
+    "//components/webdata/common",
+    "//components/webdata_services",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

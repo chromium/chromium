@@ -5116,6 +5116,8 @@ test("unit_tests") {
     "//components/paint_preview/common/mojom",
     "//components/password_manager/content/browser",
     "//components/payments/content",
+    "//components/payments/content:test_support",
+    "//components/payments/content:utils",
     "//components/performance_manager",
     "//components/performance_manager/public/mojom",
     "//components/performance_manager/test_support:test_support_common",
