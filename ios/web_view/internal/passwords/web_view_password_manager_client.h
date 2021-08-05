@@ -19,7 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #include "components/password_manager/ios/password_manager_client_bridge.h"
 #include "components/prefs/pref_member.h"
@@ -46,8 +46,8 @@ class WebViewPasswordManagerClient
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       std::unique_ptr<autofill::LogManager> log_manager,
-      password_manager::PasswordStore* profile_store,
-      password_manager::PasswordStore* account_store,
+      password_manager::PasswordStoreInterface* profile_store,
+      password_manager::PasswordStoreInterface* account_store,
       password_manager::PasswordReuseManager* reuse_manager,
       password_manager::PasswordRequirementsService* requirements_service);
 
@@ -83,8 +83,14 @@ class WebViewPasswordManagerClient
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       const override;
   PrefService* GetPrefs() const override;
+  // TODO(crbug.com/1218413): Remove the following two methods once migration
+  // from PasswordStore to PasswordStoreInterface is complete.
   password_manager::PasswordStore* GetProfilePasswordStore() const override;
   password_manager::PasswordStore* GetAccountPasswordStore() const override;
+  password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface()
+      const override;
+  password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface()
+      const override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
   void NotifyUserAutoSignin(
@@ -143,8 +149,8 @@ class WebViewPasswordManagerClient
   PrefService* pref_service_;
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<autofill::LogManager> log_manager_;
-  password_manager::PasswordStore* profile_store_;
-  password_manager::PasswordStore* account_store_;
+  password_manager::PasswordStoreInterface* profile_store_;
+  password_manager::PasswordStoreInterface* account_store_;
   password_manager::PasswordReuseManager* reuse_manager_;
   WebViewPasswordFeatureManager password_feature_manager_;
   const password_manager::SyncCredentialsFilter credentials_filter_;

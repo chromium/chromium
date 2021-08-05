@@ -30,9 +30,21 @@
 
 namespace ios_web_view {
 
+// TODO(crbug.com/1218413) Delete this method once the migration to
+// PasswordStoreInterface is complete and change the name of the
+// method below to GetForBrowserState.
 // static
 scoped_refptr<password_manager::PasswordStore>
 WebViewPasswordStoreFactory::GetForBrowserState(
+    WebViewBrowserState* browser_state,
+    ServiceAccessType access_type) {
+  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
+      GetInterfaceForBrowserState(browser_state, access_type).get()));
+}
+
+// static
+scoped_refptr<password_manager::PasswordStoreInterface>
+WebViewPasswordStoreFactory::GetInterfaceForBrowserState(
     WebViewBrowserState* browser_state,
     ServiceAccessType access_type) {
   // |profile| gets always redirected to a non-Incognito profile below, so
@@ -42,8 +54,9 @@ WebViewPasswordStoreFactory::GetForBrowserState(
       browser_state->IsOffTheRecord()) {
     return nullptr;
   }
-  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
 }
 
 // static

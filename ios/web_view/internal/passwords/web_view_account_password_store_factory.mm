@@ -53,9 +53,21 @@ void SyncEnabledOrDisabled(WebViewBrowserState* browser_state) {
 
 }  // namespace
 
+// TODO(crbug.com/1218413) Delete this method once the migration to
+// PasswordStoreInterface is complete and change the name of the
+// method below to GetForBrowserState.
 // static
 scoped_refptr<password_manager::PasswordStore>
 WebViewAccountPasswordStoreFactory::GetForBrowserState(
+    WebViewBrowserState* browser_state,
+    ServiceAccessType access_type) {
+  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
+      GetInterfaceForBrowserState(browser_state, access_type).get()));
+}
+
+// static
+scoped_refptr<password_manager::PasswordStoreInterface>
+WebViewAccountPasswordStoreFactory::GetInterfaceForBrowserState(
     WebViewBrowserState* browser_state,
     ServiceAccessType access_type) {
   if (!base::FeatureList::IsEnabled(
@@ -70,8 +82,9 @@ WebViewAccountPasswordStoreFactory::GetForBrowserState(
     return nullptr;
   }
 
-  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
 }
 
 // static

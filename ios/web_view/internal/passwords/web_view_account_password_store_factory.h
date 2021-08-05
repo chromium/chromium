@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 // Fired whenever password data is updated from the sync servers.
@@ -32,6 +33,10 @@ class WebViewAccountPasswordStoreFactory
   static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
       WebViewBrowserState* browser_state,
       ServiceAccessType access_type);
+
+  static scoped_refptr<password_manager::PasswordStoreInterface>
+  GetInterfaceForBrowserState(WebViewBrowserState* browser_state,
+                              ServiceAccessType access_type);
 
   static WebViewAccountPasswordStoreFactory* GetInstance();
 

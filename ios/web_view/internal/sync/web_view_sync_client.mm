@@ -61,10 +61,10 @@ std::unique_ptr<WebViewSyncClient> WebViewSyncClient::Create(
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
-      WebViewPasswordStoreFactory::GetForBrowserState(
+      WebViewPasswordStoreFactory::GetInterfaceForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
-      WebViewAccountPasswordStoreFactory::GetForBrowserState(
+      WebViewAccountPasswordStoreFactory::GetInterfaceForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
       browser_state->GetPrefs(),
@@ -81,8 +81,8 @@ std::unique_ptr<WebViewSyncClient> WebViewSyncClient::Create(
 WebViewSyncClient::WebViewSyncClient(
     autofill::AutofillWebDataService* profile_web_data_service,
     autofill::AutofillWebDataService* account_web_data_service,
-    password_manager::PasswordStore* profile_password_store,
-    password_manager::PasswordStore* account_password_store,
+    password_manager::PasswordStoreInterface* profile_password_store,
+    password_manager::PasswordStoreInterface* account_password_store,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::ModelTypeStoreService* model_type_store_service,
