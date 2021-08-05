@@ -23,7 +23,6 @@ include_rules = [
   "+media/audio/sounds",  # For system sounds
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/mojom",  # For platform verification mojom interface.
-  "+remoting/host/it2me",  # For CRD host in remote command
   "+services/device/public",
   "+services/metrics/public",
   "+services/network",

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_lockout_strategy.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -215,8 +216,12 @@ DeviceCommandStartCRDSessionJob::ResultPayload::Serialize() {
 }
 
 DeviceCommandStartCRDSessionJob::DeviceCommandStartCRDSessionJob(
-    Delegate* crd_host_delegate)
-    : delegate_(crd_host_delegate) {}
+    Delegate* crd_host_delegate,
+    CrdLockoutStrategy* lockout_strategy)
+    : delegate_(crd_host_delegate), lockout_strategy_(lockout_strategy) {
+  DCHECK(crd_host_delegate);
+  DCHECK(lockout_strategy);
+}
 
 DeviceCommandStartCRDSessionJob::~DeviceCommandStartCRDSessionJob() = default;
 
@@ -380,6 +385,11 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
 
   if (!UserTypeSupportsCRD()) {
     FinishWithError(ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, "");
+    return;
+  }
+
+  if (!lockout_strategy_->CanAttemptConnection()) {
+    FinishWithError(ResultCode::FAILURE_TOO_MANY_REJECTED_ATTEMPTS, "");
     return;
   }
 

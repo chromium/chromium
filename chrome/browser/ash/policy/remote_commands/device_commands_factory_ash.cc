@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_lockout_strategy.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_status_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_available_routines_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
@@ -47,7 +48,7 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
       return std::make_unique<DeviceCommandSetVolumeJob>();
     case em::RemoteCommand_Type_DEVICE_START_CRD_SESSION:
       return std::make_unique<DeviceCommandStartCRDSessionJob>(
-          GetCRDHostDelegate());
+          GetCRDHostDelegate(), GetCrdLockoutStrategy());
     case em::RemoteCommand_Type_DEVICE_FETCH_STATUS:
       return std::make_unique<DeviceCommandFetchStatusJob>();
     case em::RemoteCommand_Type_DEVICE_WIPE_USERS:
@@ -74,8 +75,16 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
 CRDHostDelegate* DeviceCommandsFactoryAsh::GetCRDHostDelegate() {
   if (!crd_host_delegate_) {
     crd_host_delegate_ = std::make_unique<CRDHostDelegate>();
+    crd_host_delegate_->AddConnectionObserver(GetCrdLockoutStrategy());
   }
   return crd_host_delegate_.get();
+}
+
+CrdLockoutStrategy* DeviceCommandsFactoryAsh::GetCrdLockoutStrategy() {
+  if (!crd_lockout_strategy_)
+    crd_lockout_strategy_ = std::make_unique<CrdFixedTimeoutLockoutStrategy>();
+
+  return crd_lockout_strategy_.get();
 }
 
 }  // namespace policy

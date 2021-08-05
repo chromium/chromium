@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_connection_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -16,6 +19,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
+#include "remoting/protocol/errors.h"
 
 namespace policy {
 
@@ -40,18 +44,18 @@ class DefaultNativeMessageHostFactory
   }
 };
 
-std::string FormatErrorMessage(const std::string& error_state,
-                               const base::Value& message) {
-  if (error_state == remoting::kHostStateDomainError) {
-    return "Invalid domain";
-  } else {
-    const std::string* error_code =
-        message.FindStringKey(remoting::kErrorMessageCode);
-    if (error_code)
-      return *error_code;
-    else
-      return "Unknown Error";
-  }
+bool IsConnectionRejected(const std::string& disconnect_reason) {
+  return (disconnect_reason ==
+          remoting::protocol::ErrorCodeToString(
+              remoting::protocol::ErrorCode::SESSION_REJECTED));
+}
+
+std::string FindStringKeyOrDefault(
+    const base::Value& dictionary,
+    const std::string& key_name,
+    const std::string& default_value = "<missing-key>") {
+  const std::string* result = dictionary.FindStringKey(key_name);
+  return result ? *result : default_value;
 }
 
 }  // namespace
@@ -66,6 +70,10 @@ CRDHostDelegate::CRDHostDelegate(
 }
 
 CRDHostDelegate::~CRDHostDelegate() = default;
+
+void CRDHostDelegate::AddConnectionObserver(CrdConnectionObserver* observer) {
+  connection_observers_.AddObserver(observer);
+}
 
 bool CRDHostDelegate::HasActiveSession() const {
   return host_ != nullptr;
@@ -130,51 +138,57 @@ void CRDHostDelegate::PostMessageFromNativeHost(
     return;
   }
 
-  const std::string* type_pointer =
-      message->FindStringKey(remoting::kMessageType);
-  if (!type_pointer) {
+  const std::string* type = message->FindStringKey(remoting::kMessageType);
+  if (!type) {
     OnProtocolBroken("Message without type");
     return;
   }
-  const std::string& type = *type_pointer;
 
+  HandleNativeHostMessage(*type, *message);
+}
+
+void CRDHostDelegate::HandleNativeHostMessage(const std::string& type,
+                                              const base::Value& message) {
   if (type == remoting::kHelloResponse) {
     OnHelloResponse();
-    return;
   } else if (type == remoting::kConnectResponse) {
     //  Ok, just ignore.
-    return;
   } else if (type == remoting::kDisconnectResponse) {
     OnDisconnectResponse();
-    return;
-  } else if (type == remoting::kHostStateChangedMessage ||
-             type == remoting::kErrorMessage) {
+  } else if (type == remoting::kErrorMessage) {
+    OnConnectionError(
+        FindStringKeyOrDefault(message, remoting::kErrorMessageCode));
+  } else if (type == remoting::kHostStateChangedMessage) {
     //  Handle CRD host state changes
-    const std::string* state_pointer = message->FindStringKey(remoting::kState);
-    if (!state_pointer) {
+    const std::string* state = message.FindStringKey(remoting::kState);
+    if (!state) {
       OnProtocolBroken("No state in message");
       return;
     }
-    const std::string& state = *state_pointer;
-
-    if (state == remoting::kHostStateReceivedAccessCode) {
-      OnStateReceivedAccessCode(*message);
-    } else if (state == remoting::kHostStateConnected) {
-      OnStateRemoteConnected(*message);
-    } else if (state == remoting::kHostStateDisconnected) {
-      OnStateRemoteDisconnected();
-    } else if (state == remoting::kHostStateError ||
-               state == remoting::kHostStateDomainError) {
-      OnStateError(state, *message);
-    } else if (state == remoting::kHostStateStarting ||
-               state == remoting::kHostStateRequestedAccessCode) {
-      //  Just ignore these states.
-    } else {
-      CRD_LOG(WARNING) << "Unhandled state :" << type;
-    }
-    return;
+    HandleNativeHostStateChangeMessage(*state, message);
+  } else {
+    CRD_LOG(WARNING) << "Unknown message type: " << type;
   }
-  CRD_LOG(WARNING) << "Unknown message type: " << type;
+}
+
+void CRDHostDelegate::HandleNativeHostStateChangeMessage(
+    const std::string& state,
+    const base::Value& message) {
+  if (state == remoting::kHostStateReceivedAccessCode) {
+    OnStateReceivedAccessCode(message);
+  } else if (state == remoting::kHostStateConnected) {
+    OnStateRemoteConnected(message);
+  } else if (state == remoting::kHostStateDisconnected) {
+    OnStateRemoteDisconnected(
+        FindStringKeyOrDefault(message, remoting::kDisconnectReason));
+  } else if (state == remoting::kHostStateDomainError) {
+    OnConnectionError(state);
+  } else if (state == remoting::kHostStateStarting ||
+             state == remoting::kHostStateRequestedAccessCode) {
+    //  Just ignore these states.
+  } else {
+    CRD_LOG(WARNING) << "Unhandled state: " << state;
+  }
 }
 
 void CRDHostDelegate::OnHelloResponse() {
@@ -191,14 +205,13 @@ void CRDHostDelegate::OnDisconnectResponse() {
   ShutdownHost();
 }
 
-void CRDHostDelegate::OnStateError(const std::string& error_state,
-                                   const base::Value& message) {
+void CRDHostDelegate::OnConnectionError(const std::string& error_reason) {
   // Notify callback if command is still running.
   if (command_awaiting_crd_access_code_) {
     command_awaiting_crd_access_code_ = false;
     std::move(error_callback_)
         .Run(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
-             "CRD State Error: " + FormatErrorMessage(error_state, message));
+             "CRD Connection Error: " + error_reason);
     code_success_callback_.Reset();
   }
   // Shut down host, if any.
@@ -206,21 +219,33 @@ void CRDHostDelegate::OnStateError(const std::string& error_state,
 }
 
 void CRDHostDelegate::OnStateRemoteConnected(const base::Value& message) {
+  for (auto& observer : connection_observers_)
+    observer.OnConnectionEstablished();
+
   remote_connected_ = true;
+
   // TODO(antrim): set up watchdog timer (session duration).
   const std::string* client = message.FindStringKey(remoting::kClient);
   if (client)
     CRD_DVLOG(1) << "Remote connection by " << *client;
 }
 
-void CRDHostDelegate::OnStateRemoteDisconnected() {
+void CRDHostDelegate::OnStateRemoteDisconnected(
+    const std::string& disconnect_reason) {
   // There could be a connection attempt that was not successful, we will
   // receive "disconnected" message without actually receiving "connected".
   if (!remote_connected_) {
-    CRD_DVLOG(1) << "Received disconnect out-of-order before connect";
+    CRD_DVLOG(1) << "Connection failed with reason: " << disconnect_reason;
+
+    if (IsConnectionRejected(disconnect_reason)) {
+      for (auto& observer : connection_observers_)
+        observer.OnConnectionRejected();
+    }
     return;
   }
   remote_connected_ = false;
+
+  CRD_DVLOG(1) << "Remote host has disconnected";
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.
   base::Value params(base::Value::Type::DICTIONARY);
@@ -230,10 +255,10 @@ void CRDHostDelegate::OnStateRemoteDisconnected() {
 void CRDHostDelegate::OnStateReceivedAccessCode(const base::Value& message) {
   if (!command_awaiting_crd_access_code_) {
     if (!remote_connected_) {
-      // We have already sent the access code back to the server which initiated
-      // this CRD session through a remote command, and we can not send a new
-      // access code. Assuming that the old access code is no longer valid, we
-      // can only terminate the current CRD session.
+      // We have already sent the access code back to the server which
+      // initiated this CRD session through a remote command, and we can not
+      // send a new access code. Assuming that the old access code is no
+      // longer valid, we can only terminate the current CRD session.
       base::Value params(base::Value::Type::DICTIONARY);
       SendMessageToHost(remoting::kDisconnectMessage, params);
     }

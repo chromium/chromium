@@ -483,7 +483,7 @@ void It2MeHost::SetState(It2MeHostState state, ErrorCode error_code) {
       DCHECK(state == It2MeHostState::kDisconnected)
           << It2MeHostStateToString(state);
       break;
-  };
+  }
 
   state_ = state;
 

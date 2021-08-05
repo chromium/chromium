@@ -17,6 +17,8 @@ class DeviceOAuth2TokenService;
 
 namespace policy {
 
+class CrdLockoutStrategy;
+
 // Remote command that would start Chrome Remote Desktop host and return auth
 // code. This command is usable only for devices running Kiosk sessions.
 class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
@@ -42,6 +44,10 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
 
     // Failure during attempt to start CRD host and obtain CRD token.
     FAILURE_CRD_HOST_ERROR = 6,
+
+    // Failed as the host user declined the connection too many times in a row.
+    // The |CrdLockoutStrategy| controls when this happens.
+    FAILURE_TOO_MANY_REJECTED_ATTEMPTS = 7,
   };
 
   using OAuthTokenCallback = base::OnceCallback<void(const std::string&)>;
@@ -74,7 +80,8 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
                                         ErrorCallback error_callback) = 0;
   };
 
-  explicit DeviceCommandStartCRDSessionJob(Delegate* crd_host_delegate);
+  DeviceCommandStartCRDSessionJob(Delegate* crd_host_delegate,
+                                  CrdLockoutStrategy* lockout_strategy);
   ~DeviceCommandStartCRDSessionJob() override;
 
   // RemoteCommandJob:
@@ -153,7 +160,9 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
 
   // The Delegate is used to interact with chrome services and CRD host.
   // Owned by DeviceCommandsFactoryAsh.
-  Delegate* delegate_;
+  Delegate* const delegate_;
+  // Owned by DeviceCommandsFactoryChromeOS.
+  CrdLockoutStrategy* const lockout_strategy_;
 
   bool terminate_session_attempted_ = false;
 

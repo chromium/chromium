@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_connection_observer.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +54,8 @@ std::string FindStringKey(const base::Value& dictionary,
 #define EXPECT_TYPE(dictionary, value) \
   EXPECT_STRING_KEY(dictionary, remoting::kMessageType, value)
 
+#define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0);
+
 // Builder class that constructs a message to send to the native host.
 class Message {
  public:
@@ -62,18 +65,18 @@ class Message {
   ~Message() = default;
 
   Message& WithType(const std::string& type) {
-    return AddString(remoting::kMessageType, type);
+    return WithString(remoting::kMessageType, type);
   }
 
   Message& WithState(const std::string& state) {
-    return AddString(remoting::kState, state);
+    return WithString(remoting::kState, state);
   }
 
-  Message& AddString(const std::string& key, const std::string& value) {
+  Message& WithString(const std::string& key, const std::string& value) {
     result.SetStringKey(key, value);
     return *this;
   }
-  Message& AddInt(const std::string& key, int value) {
+  Message& WithInt(const std::string& key, int value) {
     result.SetIntKey(key, value);
     return *this;
   }
@@ -286,6 +289,18 @@ class Response {
   base::WeakPtrFactory<Response> weak_factory_{this};
 };
 
+class ConnectionObserverMock : public CrdConnectionObserver {
+ public:
+  ConnectionObserverMock() = default;
+  ConnectionObserverMock(const ConnectionObserverMock&) = delete;
+  ConnectionObserverMock& operator=(const ConnectionObserverMock&) = delete;
+  ~ConnectionObserverMock() override = default;
+
+  // CRDConnectionObserver  implementation:
+  MOCK_METHOD(void, OnConnectionRejected, ());
+  MOCK_METHOD(void, OnConnectionEstablished, ());
+};
+
 }  // namespace
 
 class CRDHostDelegateTest : public ::testing::Test {
@@ -311,10 +326,16 @@ class CRDHostDelegateTest : public ::testing::Test {
   CRDHostDelegate& delegate() { return delegate_; }
   NativeMessageHostStub& host() { return host_; }
 
+  ConnectionObserverMock& InstallConnectionObserverMock() {
+    delegate_.AddConnectionObserver(&connection_observer_);
+    return connection_observer_;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
   NativeMessageHostStub host_;
+  ::testing::StrictMock<ConnectionObserverMock> connection_observer_;
   CRDHostDelegate delegate_{
       std::make_unique<NativeMessageHostFactoryStub>(&host_)};
 
@@ -460,8 +481,8 @@ TEST_F(CRDHostDelegateTest, ShouldSendAccessCodeToCallback) {
   host().PostMessage(Message()
                          .WithType(remoting::kHostStateChangedMessage)
                          .WithState(remoting::kHostStateReceivedAccessCode)
-                         .AddString(remoting::kAccessCode, "<the-access-code>")
-                         .AddInt(remoting::kAccessCodeLifetime, 123));
+                         .WithString(remoting::kAccessCode, "<the-access-code>")
+                         .WithInt(remoting::kAccessCodeLifetime, 123));
   RunUntilIdle();
 
   EXPECT_EQ(response().access_code(), "<the-access-code>");
@@ -475,8 +496,8 @@ TEST_F(CRDHostDelegateTest, ShouldDisconnectTheHostIfASecondAccessCodeArrives) {
       Message()
           .WithType(remoting::kHostStateChangedMessage)
           .WithState(remoting::kHostStateReceivedAccessCode)
-          .AddString(remoting::kAccessCode, "<the-first-access-code>")
-          .AddInt(remoting::kAccessCodeLifetime, 123));
+          .WithString(remoting::kAccessCode, "<the-first-access-code>")
+          .WithInt(remoting::kAccessCodeLifetime, 123));
   RunUntilIdle();
 
   EXPECT_EQ(response().access_code(), "<the-first-access-code>");
@@ -485,8 +506,8 @@ TEST_F(CRDHostDelegateTest, ShouldDisconnectTheHostIfASecondAccessCodeArrives) {
       Message()
           .WithType(remoting::kHostStateChangedMessage)
           .WithState(remoting::kHostStateReceivedAccessCode)
-          .AddString(remoting::kAccessCode, "<the-second-access-code>")
-          .AddInt(remoting::kAccessCodeLifetime, 123));
+          .WithString(remoting::kAccessCode, "<the-second-access-code>")
+          .WithInt(remoting::kAccessCodeLifetime, 123));
 
   host().WaitForMessageOfType(remoting::kDisconnectMessage);
 }
@@ -508,9 +529,11 @@ TEST_F(CRDHostDelegateTest, ShouldDisconnectTheHostIfRemoteDisconnects) {
                          .WithType(remoting::kHostStateChangedMessage)
                          .WithState(remoting::kHostStateConnected));
 
-  host().PostMessage(Message()
-                         .WithType(remoting::kHostStateChangedMessage)
-                         .WithState(remoting::kHostStateDisconnected));
+  host().PostMessage(
+      Message()
+          .WithType(remoting::kHostStateChangedMessage)
+          .WithState(remoting::kHostStateDisconnected)
+          .WithString(remoting::kDisconnectReason, "<the-disconnect-reason>"));
 
   host().WaitForMessageOfType(remoting::kDisconnectMessage);
 }
@@ -519,9 +542,11 @@ TEST_F(CRDHostDelegateTest, ShouldIgnoreRemoveDisconnectBeforeRemoteConnect) {
   StartCRDHostAndGetCode();
   host().HandleHandshake();
 
-  host().PostMessage(Message()
-                         .WithType(remoting::kHostStateChangedMessage)
-                         .WithState(remoting::kHostStateDisconnected));
+  host().PostMessage(
+      Message()
+          .WithType(remoting::kHostStateChangedMessage)
+          .WithState(remoting::kHostStateDisconnected)
+          .WithString(remoting::kDisconnectReason, "<the-disconnect-reason>"));
   RunUntilIdle();
 
   // The disconnect should be ignored and the host should just keep running.
@@ -537,10 +562,13 @@ TEST_F(CRDHostDelegateTest, ShouldDestroyHostIfHostDisconnects) {
   host().PostMessage(Message()
                          .WithType(remoting::kHostStateChangedMessage)
                          .WithState(remoting::kHostStateReceivedAccessCode)
-                         .AddString(remoting::kAccessCode, "<the-access-code>")
-                         .AddInt(remoting::kAccessCodeLifetime, 123));
+                         .WithString(remoting::kAccessCode, "<the-access-code>")
+                         .WithInt(remoting::kAccessCodeLifetime, 123));
 
-  host().PostMessage(Message().WithType(remoting::kDisconnectResponse));
+  host().PostMessage(
+      Message()
+          .WithType(remoting::kDisconnectResponse)
+          .WithString(remoting::kDisconnectReason, "<the-disconnect-reason>"));
   RunUntilIdle();
 
   EXPECT_TRUE(host().is_destroyed());
@@ -552,13 +580,12 @@ TEST_F(CRDHostDelegateTest, ShouldDestroyHostOnStateError) {
 
   host().PostMessage(
       Message()
-          .WithType(remoting::kHostStateChangedMessage)
-          .WithState(remoting::kHostStateError)
-          .AddString(remoting::kErrorMessageCode, "<the-error-code>"));
+          .WithType(remoting::kErrorMessage)
+          .WithString(remoting::kErrorMessageCode, "<the-error-code>"));
   RunUntilIdle();
 
   EXPECT_THAT(response().error_message(),
-              HasSubstr("CRD State Error: <the-error-code>"));
+              HasSubstr("CRD Connection Error: <the-error-code>"));
 
   EXPECT_TRUE(host().is_destroyed());
 }
@@ -573,7 +600,7 @@ TEST_F(CRDHostDelegateTest, ShouldDestroyHostOnStateDomainError) {
   RunUntilIdle();
 
   EXPECT_THAT(response().error_message(),
-              HasSubstr("CRD State Error: Invalid domain"));
+              HasSubstr("CRD Connection Error: INVALID_DOMAIN_ERROR"));
 
   EXPECT_TRUE(host().is_destroyed());
 }
@@ -596,6 +623,53 @@ TEST_F(CRDHostDelegateTest, ShouldIgnoreOtherStateValues) {
     EXPECT_FALSE(host().is_destroyed())
         << "Unexpected shutdown due to state " << state;
   }
+}
+
+TEST_F(CRDHostDelegateTest, ShouldReportSuccessfullAttemptsToLockoutStrategy) {
+  ConnectionObserverMock& connection_observer = InstallConnectionObserverMock();
+
+  StartCRDHostAndGetCode();
+  host().HandleHandshake();
+
+  EXPECT_CALL(connection_observer, OnConnectionEstablished);
+
+  host().PostMessage(Message()
+                         .WithType(remoting::kHostStateChangedMessage)
+                         .WithState(remoting::kHostStateConnected));
+  RunUntilIdle();
+}
+
+TEST_F(CRDHostDelegateTest, ShouldReportRejectedAttemptsToLockoutStrategy) {
+  ConnectionObserverMock& connection_observer = InstallConnectionObserverMock();
+
+  StartCRDHostAndGetCode();
+  host().HandleHandshake();
+
+  EXPECT_CALL(connection_observer, OnConnectionRejected());
+
+  host().PostMessage(
+      Message()
+          .WithType(remoting::kHostStateChangedMessage)
+          .WithState(remoting::kHostStateDisconnected)
+          .WithString(remoting::kDisconnectReason, "SESSION_REJECTED"));
+  RunUntilIdle();
+}
+
+TEST_F(CRDHostDelegateTest,
+       ShouldNotReportOtherConnectionFailedReasonsToLockoutStrategy) {
+  ConnectionObserverMock& connection_observer = InstallConnectionObserverMock();
+
+  StartCRDHostAndGetCode();
+  host().HandleHandshake();
+
+  EXPECT_NO_CALLS(connection_observer, OnConnectionRejected());
+
+  host().PostMessage(
+      Message()
+          .WithType(remoting::kHostStateChangedMessage)
+          .WithState(remoting::kHostStateDisconnected)
+          .WithString(remoting::kDisconnectReason, "other disconnect reason"));
+  RunUntilIdle();
 }
 
 }  // namespace policy

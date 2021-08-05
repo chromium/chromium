@@ -10,12 +10,15 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
 namespace policy {
+
+class CrdConnectionObserver;
 
 // Delegate that will start a session with the CRD native host.
 // Will keep the session alive and active as long as this class lives.
@@ -43,11 +46,21 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
       DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
       DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;
 
+  // Set a connection observer, which will be informed when either:
+  //   - The CRD connection is successfully established, or
+  //   - The CRD connection failed to be established.
+  void AddConnectionObserver(CrdConnectionObserver* observer);
+
  private:
   // extensions::NativeMessageHost::Client:
   // Invoked when native host sends a message
   void PostMessageFromNativeHost(const std::string& message) override;
   void CloseChannel(const std::string& error_message) override;
+
+  void HandleNativeHostMessage(const std::string& type,
+                               const base::Value& message);
+  void HandleNativeHostStateChangeMessage(const std::string& state,
+                                          const base::Value& message);
 
   // Sends message to host in separate task.
   void SendMessageToHost(const std::string& type, base::Value& params);
@@ -63,9 +76,9 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   void OnHelloResponse();
   void OnDisconnectResponse();
 
-  void OnStateError(const std::string& error_state, const base::Value& message);
+  void OnConnectionError(const std::string& error_reason);
   void OnStateRemoteConnected(const base::Value& message);
-  void OnStateRemoteDisconnected();
+  void OnStateRemoteDisconnected(const std::string& disconnect_reason);
   void OnStateReceivedAccessCode(const base::Value& message);
 
   std::unique_ptr<NativeMessageHostFactory> factory_;
@@ -84,6 +97,9 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   bool command_awaiting_crd_access_code_;
   // True if remote session was established.
   bool remote_connected_;
+
+  // Owned by the same |DeviceCommandsFactoryChromeOS| as |this|.
+  base::ObserverList<CrdConnectionObserver> connection_observers_;
 
   base::WeakPtrFactory<CRDHostDelegate> weak_factory_{this};
 
