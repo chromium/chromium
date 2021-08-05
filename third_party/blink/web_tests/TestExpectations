@@ -1177,14 +1177,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/outer-column-br
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/tall-line-in-short-block.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/composited-relpos-overlapping-will-change.html [ Failure ]
 
-### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:
-
-crbug.com/1225304 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html [ Failure ]
-
-# Lots of manual tests here; just skip everything - not too interesting for LayoutNGFragmentTraversal anyway:
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/cascade/* [ Skip ]
-virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/text/* [ Skip ]
-
 ### With LayoutNGPrinting enabled:
 
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-repeats-even-when-html-and-body-are-zero-height.html [ Crash Pass ]
@@ -2825,7 +2817,6 @@ crbug.com/626703 [ Mac ] external/wpt/inert/inert-retargeting-iframe.tentative.h
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-228.xht [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.serviceworker.html [ Crash ]
 crbug.com/626703 [ Mac ] external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.serviceworker.html [ Crash ]
 crbug.com/626703 [ Win7 ] external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.serviceworker.html [ Crash ]
@@ -2839,15 +2830,12 @@ crbug.com/626703 [ Win10.1909 ] virtual/prerender/wpt_internal/prerender/session
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-233.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/streams/readable-byte-streams/general.any.html [ Timeout ]
 crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]
-crbug.com/626703 [ Mac10.14 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-284.xht [ Failure Timeout ]
 crbug.com/626703 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-010.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-016.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/stream/tentative/constructor.any.sharedworker.html?wss [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-088.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-280.xht [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/websockets/stream/tentative/constructor.any.worker.html?wss [ Timeout ]
 crbug.com/626703 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-002.html [ Failure ]
@@ -2856,19 +2844,13 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/pointerevents/pointerevent_pointercapt
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-167.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/streams/readable-byte-streams/general.any.worker.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/CSS2/backgrounds/background-287.xht [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-264.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-254.xht [ Crash Failure ]
-crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-178.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
-crbug.com/626703 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-attachment-005.xht [ Failure Timeout ]
-crbug.com/626703 [ Mac11.0 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-057.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-006.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-007.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-009.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-pubkeycredparams.https.html [ Crash ]
-crbug.com/626703 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/restrict-gamepad/external/wpt/gamepad/idlharness-extensions.https.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/getcredential-passing.https.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-012.html [ Failure ]
@@ -2884,7 +2866,6 @@ crbug.com/626703 [ Win10.20h2 ] external/wpt/streams/readable-byte-streams/non-t
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-008.html [ Failure ]
 crbug.com/626703 external/wpt/streams/readable-byte-streams/general.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-011.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/backgrounds/background-245.xht [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-013.html [ Failure ]
 crbug.com/626703 external/wpt/streams/readable-byte-streams/non-transferable-buffers.any.worker.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-004.html [ Failure ]

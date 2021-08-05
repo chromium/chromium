@@ -351,14 +351,6 @@
     "args": ["--enable-blink-features=LayoutNGBlockFragmentation"]
   },
   {
-    "prefix": "layout_ng_fragment_traversal",
-    "bases": ["external/wpt/css/CSS2",
-              "external/wpt/css/css-contain",
-              "fast/block",
-              "fast/table"],
-    "args": ["--enable-blink-features=LayoutNGFragmentTraversal"]
-  },
-  {
     "prefix": "layout_ng_printing",
     "bases": ["printing"],
     "args": ["--enable-blink-features=LayoutNGPrinting"]
