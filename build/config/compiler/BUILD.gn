@@ -547,6 +547,13 @@ config("compiler") {
         ldflags += [ "-Wl,-mllvm,-instcombine-lower-dbg-declare=0" ]
       }
     }
+
+    # TODO(crbug.com/1235145): Investigate why/if this should be needed.
+    if (is_win) {
+      cflags += [ "/clang:-ffp-contract=off" ]
+    } else {
+      cflags += [ "-ffp-contract=off" ]
+    }
   }
 
   # C11/C++11 compiler flags setup.
@@ -1600,10 +1607,8 @@ config("default_warnings") {
         # Currently goma can not handle case sensitiveness for windows well.
         cflags += [ "-Wno-nonportable-include-path" ]
 
-        if (llvm_force_head_revision) {
-          # Warns in ATL headers; see https://crbug.com/1208419.
-          cflags += [ "-Wno-null-pointer-subtraction" ]
-        }
+        # Warns in ATL headers; see https://crbug.com/1208419.
+        cflags += [ "-Wno-null-pointer-subtraction" ]
       }
 
       if (current_toolchain == host_toolchain || !use_xcode_clang) {
