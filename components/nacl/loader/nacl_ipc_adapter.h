@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
