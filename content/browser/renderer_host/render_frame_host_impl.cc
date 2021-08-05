@@ -3289,6 +3289,7 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
 void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
   DCHECK_NE(is_audible_, is_audible);
   if (is_audible) {
+    DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
     GetProcess()->OnMediaStreamAdded();
   } else {
     GetProcess()->OnMediaStreamRemoved();

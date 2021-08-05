@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -50,6 +51,7 @@ class TestAudioStartObserver : public content::WebContentsObserver {
     audio_state_changed_ = true;
   }
 
+  void set_audio_state_changed(bool value) { audio_state_changed_ = value; }
   bool audio_state_changed() { return audio_state_changed_; }
 
  private:
@@ -329,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
 
-  // Allows to play a sound by default.
+  // Blocks to play a sound by default.
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   content_settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
@@ -386,4 +388,101 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   // The page starts logging for the muted site since the setting is
   // CONTENT_SETTING_BLOCK.
   EXPECT_TRUE(observer->HasLoggedSiteMutedUkmForTesting());
+}
+
+// Tests that the page-specific settings for `ContentSettingsType::SOUND` is not
+// updated in the prerendered page to make sure that it's fine that
+// SoundContentSettingObserver::CheckSoundBlocked() access to the main frame
+// from WebContents.
+IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
+                       NotUpdateCheckSoundBlockedInPrerendering) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  // Load a simple page.
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  const std::string kPlayingSoundScript(
+      "var context = new window.AudioContext();"
+      "var oscillator = context.createOscillator();"
+      "oscillator.connect(context.destination);"
+      "oscillator.start();");
+
+  base::RunLoop run_loop;
+  TestAudioStartObserver audio_start_observer(web_contents(),
+                                              run_loop.QuitClosure());
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetMainFrame(), kPlayingSoundScript));
+  run_loop.Run();
+  // The page should try to start the audio.
+  EXPECT_TRUE(audio_start_observer.audio_state_changed());
+
+  // Since the main frame is playing a sound, WebContents knows it is audible.
+  EXPECT_TRUE(web_contents()->IsCurrentlyAudible());
+
+  // Change the profile-wide settings to block sound by default.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  content_settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
+                                             CONTENT_SETTING_BLOCK);
+  // Check that the primary page's content settings know that sound is blocked.
+  auto* primary_page_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetMainFrame());
+  EXPECT_TRUE(
+      primary_page_settings->IsContentBlocked(ContentSettingsType::SOUND));
+
+  // Start a prerendered page.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *web_contents());
+  auto prerender_url = embedded_test_server()->GetURL("/empty.html");
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Reset the flag to test if audio state is changed by running the script to
+  // play a sound on the prerendered page.
+  audio_start_observer.set_audio_state_changed(false);
+  // Try to play a sound in the prerendering page.
+  content::ExecuteScriptAsync(render_frame_host, kPlayingSoundScript);
+  // The prerendering page should not start the audio.
+  EXPECT_FALSE(audio_start_observer.audio_state_changed());
+  // The main page is still audible as the prerendering doesn't affect playing a
+  // sound.
+  EXPECT_TRUE(web_contents()->IsCurrentlyAudible());
+
+  // Set the profile-wide contents settings to block sound again, to see if this
+  // updates the page-specific settings for the prerendered page or primary
+  // page.
+  content_settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
+                                             CONTENT_SETTING_BLOCK);
+  auto* prerendered_frame_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          render_frame_host);
+  // Audio is not blocked on the prerendered page since it doesn't play a sound.
+  EXPECT_FALSE(
+      prerendered_frame_settings->IsContentBlocked(ContentSettingsType::SOUND));
+  // Audio is blocked on the current page since it is playing a sound.
+  EXPECT_TRUE(
+      primary_page_settings->IsContentBlocked(ContentSettingsType::SOUND));
+
+  // Activate the prerendering page.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // Since audio stream status is posted to UI thread, wait until it's idle.
+  base::RunLoop().RunUntilIdle();
+
+  auto* activated_page_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetMainFrame());
+  // It should be false since the page is activated from the prerendering.
+  // TODO(crbug.com/1228567): If AudioContext activation is handled, the audio
+  // would be played and the status also would be updated.
+  EXPECT_FALSE(
+      activated_page_settings->IsContentBlocked(ContentSettingsType::SOUND));
+  EXPECT_FALSE(web_contents()->IsCurrentlyAudible());
 }

@@ -155,10 +155,12 @@ ContentSetting SoundContentSettingObserver::GetCurrentContentSetting() {
 
 void SoundContentSettingObserver::CheckSoundBlocked(bool is_audible) {
   if (is_audible && GetCurrentContentSetting() == CONTENT_SETTING_BLOCK) {
-    // The tab has tried to play sound, but was muted.
-    // This is a page level event so it is OK to get the main frame here.
-    // TODO(https://crbug.com/1103176): We should figure a way of not having to
-    // use GetMainFrame here. (pass the source frame somehow)
+    // Since this is a page-level event and only primary pages can play audio
+    // in prerendering, we get `settings` from the main frame of the primary
+    // page.
+    // TODO(https://crbug.com/1103176): For other types of FrameTrees(fenced
+    // frames, portals) than prerendering, we should figure a way of not having
+    // to use GetMainFrame here. (pass the source frame somehow)
     content_settings::PageSpecificContentSettings* settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
             web_contents()->GetMainFrame());
