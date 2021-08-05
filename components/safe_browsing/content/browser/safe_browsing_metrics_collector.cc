@@ -141,6 +141,13 @@ void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
   DictionaryPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
   base::DictionaryValue* mutable_state_dict = update.Get();
+  bool is_pref_valid = mutable_state_dict->is_dict();
+  base::UmaHistogramBoolean("SafeBrowsing.MetricsCollector.IsPrefValid",
+                            is_pref_valid);
+  if (!is_pref_valid) {
+    return;
+  }
+
   for (auto state_map : mutable_state_dict->DictItems()) {
     for (auto event_map : state_map.second.DictItems()) {
       event_map.second.EraseListValueIf([&](const auto& timestamp) {

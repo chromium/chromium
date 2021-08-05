@@ -591,6 +591,10 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
   // The CSD event is also removed because it was logged more than 30 days now.
   EXPECT_EQ(0u, csd_timestamps->GetList().size());
+
+  histograms.ExpectUniqueSample("SafeBrowsing.MetricsCollector.IsPrefValid",
+                                /* sample */ 1,
+                                /* expected_count */ 32);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest, GetUserState) {
