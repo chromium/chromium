@@ -833,8 +833,9 @@ void PDFiumEngine::OnDocumentCanceled() {
 }
 
 void PDFiumEngine::FinishLoadingDocument() {
+  // Note that doc_loader_->IsDocumentComplete() may not be true here if
+  // called via `OnDocumentCanceled()`.
   DCHECK(doc());
-  DCHECK(doc_loader_->IsDocumentComplete());
 
   LoadBody();
 

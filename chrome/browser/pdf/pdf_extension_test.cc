@@ -100,6 +100,7 @@
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
@@ -409,6 +410,16 @@ class PDFExtensionTestWithoutUnseasonedOverride
 class PDFExtensionTest : public WithUnseasonedOverride,
                          public PDFExtensionTestWithoutUnseasonedOverride {};
 
+class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
+ protected:
+  std::vector<base::Feature> GetEnabledFeatures() const override {
+    auto enabled = PDFExtensionTest::GetEnabledFeatures();
+    enabled.push_back(chrome_pdf::features::kPdfIncrementalLoading);
+    enabled.push_back(chrome_pdf::features::kPdfPartialLoading);
+    return enabled;
+  }
+};
+
 class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
  public:
   PDFExtensionTestWithTestGuestViewManager() {
@@ -615,7 +626,7 @@ class PDFExtensionLoadTest
   int part() const { return std::get<0>(GetParam()); }
 
   std::vector<base::Feature> GetEnabledFeatures() const override {
-    std::vector<base::Feature> enabled =
+    auto enabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
     if (IsUnseasoned())
       enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
@@ -623,7 +634,7 @@ class PDFExtensionLoadTest
   }
 
   std::vector<base::Feature> GetDisabledFeatures() const override {
-    std::vector<base::Feature> disabled =
+    auto disabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetDisabledFeatures();
     if (!IsUnseasoned())
       disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
@@ -997,6 +1008,74 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ArrayBufferAllocator) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSTestWithoutUnseasonedOverride,
                        RedirectsFailInPlugin) {
   RunTestsInJsModule("redirects_fail_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithPartialLoading,
+                       PartialRedirectsFailInPlugin) {
+  // Should match values used by `chrome_pdf::DocumentLoaderImpl`.
+  constexpr size_t kDefaultRequestSize = 65536;
+  constexpr size_t kChunkCloseDistance = 10;
+
+  std::string pdf_contents;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    ASSERT_TRUE(
+        base::ReadFileToString(test_data_dir.AppendASCII("pdf").AppendASCII(
+                                   "test-ranges-linearized.pdf"),
+                               &pdf_contents));
+  }
+  ASSERT_GT(pdf_contents.size(),
+            kDefaultRequestSize * (kChunkCloseDistance + 2));
+
+  // Use an additional test server, to allow customizing the response handling.
+  net::test_server::EmbeddedTestServer test_server;
+
+  constexpr char kActualPdf[] = "/pdf/test-ranges-linearized.pdf";
+  constexpr char kSimulatedPdf[] = "/simulated/test-ranges-linearized.pdf";
+  net::test_server::ControllableHttpResponse initial_response(&test_server,
+                                                              kSimulatedPdf);
+  net::test_server::ControllableHttpResponse followup_response(&test_server,
+                                                               kSimulatedPdf);
+  auto handle = test_server.StartAndReturnHandle();
+
+  content::WebContents* contents = GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(contents);
+  contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(
+          test_server.GetURL(kSimulatedPdf)));
+
+  {
+    SCOPED_TRACE("Waiting for initial request");
+    initial_response.WaitForRequest();
+  }
+  initial_response.Send("HTTP/1.1 200 OK\r\n");
+  initial_response.Send("Accept-Ranges: bytes\r\n");
+  initial_response.Send(
+      base::StringPrintf("Content-Length: %zu\r\n", pdf_contents.size()));
+  initial_response.Send("Content-Type: application/pdf\r\n");
+  initial_response.Send("\r\n");
+  initial_response.Send(pdf_contents.substr(0, kDefaultRequestSize));
+
+  navigation_observer.Wait();
+  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+
+  {
+    SCOPED_TRACE("Waiting for follow-up request");
+    followup_response.WaitForRequest();
+  }
+  followup_response.Send("HTTP/1.1 301 Moved Permanently\r\n");
+  followup_response.Send(base::StringPrintf(
+      "Location: %s\r\n",
+      embedded_test_server()->GetURL(kActualPdf).spec().c_str()));
+  followup_response.Send("\r\n");
+  followup_response.Done();
+
+  // TODO(crbug.com/1228987): Load success or failure is non-deterministic
+  // currently, due to races between viewport messages and loading. For this
+  // test, we only care that loading terminated, not about success or failure.
+  ignore_result(pdf_extension_test_util::EnsurePDFHasLoaded(contents));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbar) {
@@ -2936,7 +3015,7 @@ class PDFExtensionAccessibilityTextExtractionTest
 
  protected:
   std::vector<base::Feature> GetEnabledFeatures() const override {
-    std::vector<base::Feature> enabled =
+    auto enabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
@@ -3144,9 +3223,9 @@ class PDFExtensionAccessibilityTreeDumpTest
 
  protected:
   std::vector<base::Feature> GetEnabledFeatures() const override {
-    std::vector<base::Feature> enabled = {
-        chrome_pdf::features::kAccessiblePDFForm,
-    };
+    auto enabled =
+        PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
+    enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
 
@@ -3447,6 +3526,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
 
 // TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTestWithPartialLoading);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionTestWithTestGuestViewManager);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);

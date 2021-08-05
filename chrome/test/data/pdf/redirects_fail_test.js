@@ -36,21 +36,6 @@ const tests = [
     });
   },
 
-  // Test that if the plugin is loaded with a URL that doesn't redirect but
-  // subsequent requests do redirect, it fails.
-  function partialRedirectsFail() {
-    const base = new URL(viewer.originalUrl);
-    const partialUrl = new URL('test-ranges.pdf', base);
-    const redirectUrl = new URL('/server-redirect?' + viewer.originalUrl, base);
-    createPluginForUrl(partialUrl, redirectUrl, function(progress) {
-      if (progress === -1) {
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
-    });
-  },
-
   // Test that if the plugin is loaded with a URL that doesn't redirect, it
   // succeeds.
   function noRedirectsSucceed() {
