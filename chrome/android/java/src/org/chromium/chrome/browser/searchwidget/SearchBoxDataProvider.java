@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -23,10 +23,10 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     private Tab mTab;
 
     /**
-     * @param resources The {@link Resources} for accessing colors.
+     * @param context The {@link Context} for accessing colors.
      */
-    SearchBoxDataProvider(Resources resources) {
-        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(resources, isIncognito());
+    SearchBoxDataProvider(Context context) {
+        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito());
     }
 
     /**

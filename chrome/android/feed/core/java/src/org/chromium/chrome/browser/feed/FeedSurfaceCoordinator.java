@@ -27,7 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -88,6 +89,8 @@ public class FeedSurfaceCoordinator
         implements FeedSurfaceProvider, FeedIPHDelegate, SwipeRefreshLayout.OnRefreshListener {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
+
+    private static final String TAG = "FeedSurfaceCoordinator";
 
     protected final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
@@ -526,7 +529,7 @@ public class FeedSurfaceCoordinator
             view = (RecyclerView) mHybridListRenderer.bind(mContentManager);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
-            view.setBackgroundColor(mActivity.getResources().getColor(R.color.default_bg_color));
+            view.setBackgroundColor(MaterialColors.getColor(context, R.attr.default_bg_color, TAG));
         } else {
             view = null;
         }
@@ -575,7 +578,8 @@ public class FeedSurfaceCoordinator
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = createFeedStream(true);
         mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
-        mRecyclerView.setBackgroundResource(R.color.default_bg_color);
+        mRecyclerView.setBackgroundColor(
+                MaterialColors.getColor(mActivity, R.attr.default_bg_color, TAG));
 
         // For New Tab Page, mSwipeRefreshLayout has not been added to a view container. We need to
         // do it here.
@@ -682,7 +686,7 @@ public class FeedSurfaceCoordinator
 
         mScrollViewForPolicy = new PolicyScrollView(mActivity);
         mScrollViewForPolicy.setBackgroundColor(
-                ApiCompatibilityUtils.getColor(mActivity.getResources(), R.color.default_bg_color));
+                MaterialColors.getColor(mActivity, R.attr.default_bg_color, TAG));
         mScrollViewForPolicy.setVerticalScrollBarEnabled(false);
 
         // Make scroll view focusable so that it is the next focusable view when the url bar clears

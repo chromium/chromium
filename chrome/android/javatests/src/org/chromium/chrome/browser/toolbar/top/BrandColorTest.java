@@ -95,7 +95,7 @@ public class BrandColorTest {
         mToolbar = (ToolbarPhone) mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarDataProvider = mToolbar.getToolbarDataProvider();
         mDefaultColor = ChromeColors.getDefaultThemeColor(
-                mActivityTestRule.getActivity().getResources(), /* isIncognito = */ false);
+                mActivityTestRule.getActivity(), /* isIncognito = */ false);
         // TODO(https://crbug.com/871805): Use helper class to determine whether dark status icons
         // are supported.
         mSupportsDarkStatusIcons = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;

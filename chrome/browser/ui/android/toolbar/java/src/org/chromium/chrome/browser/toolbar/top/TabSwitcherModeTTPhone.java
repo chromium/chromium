@@ -296,7 +296,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
             // the tab switcher, which is the standard mode background. Note that horizontal tab
             // switcher is an exception, which uses the correspond background color for standard
             // and incognito mode.
-            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getResources(), false);
+            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), false);
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         } else {
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
@@ -321,7 +321,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     private int getToolbarColorForCurrentState() {
         // TODO(huayinz): Split tab switcher background color from primary background color.
         if (DeviceClassManager.enableAccessibilityLayout() || mIsGridTabSwitcherEnabled) {
-            return ChromeColors.getPrimaryBackgroundColor(getResources(), mIsIncognito);
+            return ChromeColors.getPrimaryBackgroundColor(getContext(), mIsIncognito);
         }
 
         return Color.TRANSPARENT;

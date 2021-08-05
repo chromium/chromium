@@ -152,7 +152,7 @@ public class CompositorView
         // Cover the black surface before it has valid content.  Set this placeholder view to
         // visible, but don't yet make SurfaceView visible, in order to delay
         // surfaceCreate/surfaceChanged calls until the native library is loaded.
-        setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getResources(), false));
+        setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getContext(), false));
         super.setVisibility(View.VISIBLE);
 
         // Request the opaque surface.  We might need the translucent one, but

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.view.ContextThemeWrapper;
 
 import androidx.test.filters.SmallTest;
 
@@ -75,9 +76,10 @@ public class WarmupManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        mContext = InstrumentationRegistry.getInstrumentation()
-                           .getTargetContext()
-                           .getApplicationContext();
+        mContext = new ContextThemeWrapper(InstrumentationRegistry.getInstrumentation()
+                                                   .getTargetContext()
+                                                   .getApplicationContext(),
+                R.style.ColorOverlay);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
             mWarmupManager = WarmupManager.getInstance();

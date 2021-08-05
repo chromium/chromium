@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import android.view.ContextThemeWrapper;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -493,7 +495,8 @@ public class ContinuousSearchListMediatorTest {
                     }
                 },
                 Mockito.mock(ThemeColorProvider.class),
-                ApplicationProvider.getApplicationContext().getResources());
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(), R.style.ColorOverlay));
     }
 
     private void assertListItemEqualsSearchResult(

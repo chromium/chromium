@@ -710,8 +710,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mContinuousSearchContainerCoordinator = new ContinuousSearchContainerCoordinator(viewStub,
                 mLayoutManager, mCompositorViewHolderSupplier.get().getResourceManager(),
                 mActivityTabProvider, browserControlsSizer, mCanAnimateBrowserControls,
-                defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(),
-                mActivity.getResources(), mToolbarManager::setForceHideShadow);
+                defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(), mActivity,
+                mToolbarManager::setForceHideShadow);
         mContinuousSearchObserver = (newHeight, animate) -> {
             mContinuousSearchHeight = newHeight;
             updateTopControlsHeight(animate);

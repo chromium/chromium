@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.styles;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -27,20 +26,6 @@ public class ChromeColors {
     /**
      * Determines the default theme color used for toolbar based on the provided parameters.
      *
-     * @param res {@link Resources} used to retrieve colors.
-     * @param forceDarkBgColor When true, returns the default dark-mode color; otherwise returns
-     *        adaptive default color.
-     * @return The default theme color.
-     */
-    public static @ColorInt int getDefaultThemeColor(Resources res, boolean forceDarkBgColor) {
-        return forceDarkBgColor
-                ? ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary_dark)
-                : ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
-    }
-
-    /**
-     * Determines the default theme color used for toolbar based on the provided parameters.
-     *
      * @param context {@link Context} used to retrieve colors.
      * @param isIncognito Whether the color is used in incognito mode. If true, this method will
      *                    return a non-dynamic dark theme color.
@@ -56,14 +41,15 @@ public class ChromeColors {
      * Returns the primary background color used as native page background based on the given
      * parameters.
      *
-     * @param res The {@link Resources} used to retrieve colors.
-     * @param forceDarkBgColor When true, returns the dark-mode primary background color; otherwise
-     *        returns adaptive primary background color.
+     * @param context The {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used in incognito mode. If true, this method will
+     *                    return a non-dynamic dark background color.
      * @return The primary background color.
      */
-    public static @ColorInt int getPrimaryBackgroundColor(Resources res, boolean forceDarkBgColor) {
-        return forceDarkBgColor ? ApiCompatibilityUtils.getColor(res, R.color.default_bg_color_dark)
-                                : ApiCompatibilityUtils.getColor(res, R.color.default_bg_color);
+    public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.default_bg_color_dark)
+                           : MaterialColors.getColor(context, R.attr.default_bg_color, TAG);
     }
 
     /**

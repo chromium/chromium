@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITC
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -228,13 +227,12 @@ public class TasksViewBinderTest extends DummyUiChromeActivityTestCase {
     @SmallTest
     public void testSetIncognitoMode() {
         mTasksViewPropertyModel.set(IS_INCOGNITO, true);
-        Resources resources = getActivity().getResources();
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(resources, true);
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getActivity(), true);
         ColorDrawable viewColor = (ColorDrawable) mTasksView.getBackground();
         assertEquals(backgroundColor, viewColor.getColor());
 
         mTasksViewPropertyModel.set(IS_INCOGNITO, false);
-        backgroundColor = ChromeColors.getPrimaryBackgroundColor(resources, false);
+        backgroundColor = ChromeColors.getPrimaryBackgroundColor(getActivity(), false);
         viewColor = (ColorDrawable) mTasksView.getBackground();
         assertEquals(backgroundColor, viewColor.getColor());
     }

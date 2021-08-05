@@ -45,7 +45,7 @@ public class FindToolbarPhone extends FindToolbar {
         int queryHintTextColorId;
         int dividerColorId;
         if (isIncognito) {
-            setBackgroundColor(ChromeColors.getDefaultThemeColor(getResources(), true));
+            setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), true));
             ColorStateList white = ChromeColors.getPrimaryIconTint(getContext(), true);
             ApiCompatibilityUtils.setImageTintList(mFindNextButton, white);
             ApiCompatibilityUtils.setImageTintList(mFindPrevButton, white);
@@ -54,7 +54,7 @@ public class FindToolbarPhone extends FindToolbar {
             queryHintTextColorId = R.color.find_in_page_query_incognito_hint_color;
             dividerColorId = R.color.white_alpha_12;
         } else {
-            setBackgroundColor(ChromeColors.getDefaultThemeColor(getResources(), false));
+            setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), false));
             ColorStateList dark = ChromeColors.getPrimaryIconTint(getContext(), false);
             ApiCompatibilityUtils.setImageTintList(mFindNextButton, dark);
             ApiCompatibilityUtils.setImageTintList(mFindPrevButton, dark);

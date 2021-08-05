@@ -126,7 +126,7 @@ public class CustomTabActivityIncognitoTest {
 
     private static int getIncognitoThemeColor(CustomTabActivity activity) throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeColors.getDefaultThemeColor(activity.getResources(), true));
+                () -> ChromeColors.getDefaultThemeColor(activity, true));
     }
 
     private static int getToolbarColor(CustomTabActivity activity) throws ExecutionException {

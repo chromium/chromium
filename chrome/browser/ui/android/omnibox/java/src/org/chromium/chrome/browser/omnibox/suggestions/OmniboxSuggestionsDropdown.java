@@ -157,8 +157,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
         ViewCompat.setPaddingRelative(this, 0, 0, 0, paddingBottom);
 
-        mStandardBgColor = ChromeColors.getDefaultThemeColor(resources, false);
-        mIncognitoBgColor = ChromeColors.getDefaultThemeColor(resources, true);
+        mStandardBgColor = ChromeColors.getDefaultThemeColor(context, false);
+        mIncognitoBgColor = ChromeColors.getDefaultThemeColor(context, true);
     }
 
     /** Get the Android View implementing suggestion list. */

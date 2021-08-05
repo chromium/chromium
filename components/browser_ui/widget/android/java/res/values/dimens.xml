@@ -66,6 +66,7 @@
     <!-- Sometimes the modern toolbar is shown at 48dp so a corner radius of
          24dp is needed to completely round the corners. -->
     <dimen name="modern_toolbar_background_corner_radius">24dp</dimen>
+    <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_2</dimen>
 
     <!-- Promo cards dimensions -->
     <dimen name="promo_image_size">24dp</dimen>

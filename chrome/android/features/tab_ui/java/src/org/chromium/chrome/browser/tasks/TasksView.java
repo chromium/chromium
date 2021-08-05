@@ -157,7 +157,7 @@ class TasksView extends CoordinatorLayoutForPointer {
      */
     void setIncognitoMode(boolean isIncognito) {
         Resources resources = mContext.getResources();
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(resources, isIncognito);
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
         setBackgroundColor(backgroundColor);
         mHeaderView.setBackgroundColor(backgroundColor);
 

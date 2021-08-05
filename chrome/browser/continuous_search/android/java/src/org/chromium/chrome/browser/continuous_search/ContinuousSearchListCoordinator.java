@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
@@ -38,19 +39,19 @@ public class ContinuousSearchListCoordinator {
     private final SimpleRecyclerViewAdapter mRecyclerViewAdapter;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final PropertyModel mRootViewModel;
-    private final Resources mResources;
+    private final Context mContext;
 
     public ContinuousSearchListCoordinator(
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Tab> tabSupplier, Callback<VisibilitySettings> setLayoutVisibility,
-            ThemeColorProvider themeColorProvider, Resources resources) {
+            ThemeColorProvider themeColorProvider, Context context) {
         ContinuousSearchConfiguration.initialize();
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
-        mResources = resources;
+        mContext = context;
         mListMediator = new ContinuousSearchListMediator(browserControlsStateProvider, listItems,
-                mRootViewModel, setLayoutVisibility, themeColorProvider, resources);
+                mRootViewModel, setLayoutVisibility, themeColorProvider, context);
 
         boolean twoLineChip = mListMediator.shouldShowResultTitle();
         mRecyclerViewAdapter.registerType(ListItemType.SEARCH_RESULT,
@@ -119,7 +120,7 @@ public class ContinuousSearchListCoordinator {
             }
         };
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new SpaceItemDecoration(mResources));
+        recyclerView.addItemDecoration(new SpaceItemDecoration(mContext.getResources()));
         recyclerView.setAdapter(mRecyclerViewAdapter);
         recyclerView.addOnScrollListener(new OnScrollListener() {
             @Override

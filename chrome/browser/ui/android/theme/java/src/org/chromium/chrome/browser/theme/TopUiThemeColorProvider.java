@@ -46,6 +46,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
 
     private final Supplier<Integer> mActivityThemeColorSupplier;
     private final boolean mIsTablet;
+    private final Context mContext;
 
     /** Whether the theme should apply while in dark mode. */
     private final boolean mAllowThemingInNightMode;
@@ -57,7 +58,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     private boolean mIsDefaultColorUsed;
 
     /**
-     * @param context {@link Context} to access resource.
+     * @param context {@link Context} to access the theme and the resources.
      * @param tabSupplier Supplier of the current tab.
      * @param activityThemeColorSupplier Supplier of activity theme color.
      * @param isTablet Whether the current activity is being run on a tablet.
@@ -69,6 +70,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
             Supplier<Integer> activityThemeColorSupplier, boolean isTablet,
             boolean allowThemingInNightMode, boolean allowBrightThemeColors) {
         super(context);
+        mContext = context;
         mTabObserver = new CurrentTabObserver(tabSupplier,
                 new EmptyTabObserver() {
                     @Override
@@ -113,8 +115,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
         if (!isUsingTabThemeColor(tab, themeColor)) {
-            themeColor = ChromeColors.getDefaultThemeColor(
-                    tab.getContext().getResources(), tab.isIncognito());
+            themeColor = ChromeColors.getDefaultThemeColor(mContext, tab.isIncognito());
             if (isThemingAllowed(tab)) {
                 int customThemeColor = mActivityThemeColorSupplier.get();
                 if (customThemeColor != TabState.UNSPECIFIED_THEME_COLOR) {

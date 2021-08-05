@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.provider.Browser;
 import android.text.TextUtils;
@@ -17,7 +16,6 @@ import android.widget.ImageView;
 
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.R;
@@ -304,14 +302,13 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
                 // Otherwise use the link icon.
                 iconResId = getIconResId(mQuickActionCategory);
 
-                Resources res = mContext.getResources();
                 if (mToolbarBackgroundColor != 0
                         && !ThemeUtils.isUsingDefaultToolbarColor(
-                                res, false, mToolbarBackgroundColor)
+                                mContext, false, mToolbarBackgroundColor)
                         && ColorUtils.shouldUseLightForegroundOnBackground(
                                 mToolbarBackgroundColor)) {
                     // Tint the link icon to match the custom tab toolbar.
-                    iconDrawable = ApiCompatibilityUtils.getDrawable(res, iconResId);
+                    iconDrawable = mContext.getDrawable(iconResId);
                     iconDrawable.mutate();
                     DrawableCompat.setTint(iconDrawable, mToolbarBackgroundColor);
                 }

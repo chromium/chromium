@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import android.content.res.Resources;
+import android.content.Context;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
@@ -51,7 +51,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private final PropertyModel mRootViewModel;
     private final Callback<VisibilitySettings> mSetLayoutVisibility;
     private final ThemeColorProvider mThemeColorProvider;
-    private final Resources mResources;
+    private final Context mContext;
     private Tab mCurrentTab;
     private boolean mOnSrp;
     private ContinuousNavigationUserDataImpl mCurrentUserData;
@@ -78,13 +78,13 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     ContinuousSearchListMediator(BrowserControlsStateProvider browserControlsStateProvider,
             ModelList modelList, PropertyModel rootViewModel,
             Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
-            Resources resources) {
+            Context context) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModelList = modelList;
         mRootViewModel = rootViewModel;
         mSetLayoutVisibility = setLayoutVisibility;
         mThemeColorProvider = themeColorProvider;
-        mResources = resources;
+        mContext = context;
 
         mRootViewModel.set(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK,
                 (v) -> dismissOnUserRequest());
@@ -251,7 +251,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                               : R.style.TextAppearance_TextMedium_Primary_Light);
         if (label != null) {
             mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_LABEL,
-                    mResources.getString(R.string.csn_provider_label, label));
+                    mContext.getString(R.string.csn_provider_label, label));
         }
         if (iconRes != 0) {
             mRootViewModel.set(ContinuousSearchListProperties.PROVIDER_ICON_RESOURCE, iconRes);
@@ -387,7 +387,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private int getBackgroundColorForParentBackgroundColor(int parentColor) {
         // TODO(crbug.com/1192784): Pass isIncognito here.
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                mResources, parentColor, false);
+                mContext, parentColor, false);
     }
 
     private boolean shouldUseDarkElementColors(int backgroundColor) {
@@ -395,7 +395,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private int getColor(int id) {
-        return ApiCompatibilityUtils.getColor(mResources, id);
+        return ApiCompatibilityUtils.getColor(mContext.getResources(), id);
     }
 
     void destroy() {

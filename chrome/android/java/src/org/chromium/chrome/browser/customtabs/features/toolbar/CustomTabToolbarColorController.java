@@ -180,8 +180,7 @@ public class CustomTabToolbarColorController {
     }
 
     private int getDefaultColor() {
-        return ChromeColors.getDefaultThemeColor(
-                mActivity.getResources(), mIntentDataProvider.isIncognito());
+        return ChromeColors.getDefaultThemeColor(mActivity, mIntentDataProvider.isIncognito());
     }
 
     private static boolean shouldUseDefaultThemeColorForFullscreen(

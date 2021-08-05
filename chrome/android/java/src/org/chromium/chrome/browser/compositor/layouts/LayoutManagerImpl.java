@@ -783,8 +783,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
                 canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
-                ThemeUtils.getTextBoxColorForToolbarBackground(mContext.getResources(), tab,
-                        topUiTheme.calculateColor(tab, tab.getThemeColor())),
+                ThemeUtils.getTextBoxColorForToolbarBackground(
+                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())),
                 topUiTheme.getTextBoxBackgroundAlpha(tab));
 
         mHost.requestRender();

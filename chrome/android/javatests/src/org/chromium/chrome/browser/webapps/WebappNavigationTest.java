@@ -406,8 +406,7 @@ public class WebappNavigationTest {
     }
 
     private long getDefaultPrimaryColor() {
-        return ChromeColors.getDefaultThemeColor(
-                mActivityTestRule.getActivity().getResources(), false);
+        return ChromeColors.getDefaultThemeColor(mActivityTestRule.getActivity(), false);
     }
 
     private String offOriginUrl() {

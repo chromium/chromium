@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
 
@@ -76,7 +76,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Boolean> canAnimateNativeBrowserControls,
             Supplier<Integer> defaultTopContainerHeightSupplier,
-            ThemeColorProvider themeColorProvider, Resources resources,
+            ThemeColorProvider themeColorProvider, Context context,
             Callback<Boolean> hideToolbarShadow) {
         mViewStub = containerViewStub;
         mLayoutManager = layoutManager;
@@ -85,7 +85,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
                 layoutManager, canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
                 this::initializeLayout, hideToolbarShadow);
         mListCoordinator = new ContinuousSearchListCoordinator(browserControlsStateProvider,
-                tabSupplier, this::updateVisibility, themeColorProvider, resources);
+                tabSupplier, this::updateVisibility, themeColorProvider, context);
     }
 
     private void updateVisibility(VisibilitySettings visibilitySettings) {

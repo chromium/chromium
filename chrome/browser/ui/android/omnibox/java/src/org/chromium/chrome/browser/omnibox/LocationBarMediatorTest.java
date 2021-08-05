@@ -33,9 +33,12 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Property;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,7 +52,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -229,6 +231,8 @@ public class LocationBarMediatorTest {
 
     @Before
     public void setUp() {
+        Context context = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay);
         mUrlBarData = UrlBarData.create(null, "text", 0, 0, "text");
         doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(mTemplateUrlService).when(mTemplateUrlServiceSupplier).get();
@@ -242,20 +246,20 @@ public class LocationBarMediatorTest {
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Runnable noAction = () -> {}; // launchAssistanceSettingsAction
-        mMediator = new LocationBarMediator(/*context=*/RuntimeEnvironment.application,
-                mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
-                mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
-                mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
+        mMediator = new LocationBarMediator(context, mLocationBarLayout, mLocationBarDataProvider,
+                mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
+                mLocaleManager, mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
+                mWindowAndroid,
                 /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, noAction,
                 tab -> true, (tab, transition) -> {}, () -> mIsToolbarMicEnabled);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
         GSAStateShadow.setGSAState(mGSAState);
 
-        mTabletMediator = new LocationBarMediator(RuntimeEnvironment.application,
-                mLocationBarTablet, mLocationBarDataProvider, mProfileSupplier,
-                mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
-                mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
+        mTabletMediator = new LocationBarMediator(context, mLocationBarTablet,
+                mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
+                mOverrideUrlLoadingDelegate, mLocaleManager, mTemplateUrlServiceSupplier,
+                mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
                 /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, noAction,
                 tab -> true, (tab, transition) -> {}, () -> mIsToolbarMicEnabled);
         mTabletMediator.setCoordinators(

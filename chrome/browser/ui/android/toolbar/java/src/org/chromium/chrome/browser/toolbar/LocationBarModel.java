@@ -131,7 +131,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mUrlFormatter = urlFormatter;
         mProfileProvider = profileProvider;
         mOfflineStatus = offlineStatus;
-        mPrimaryColor = ChromeColors.getDefaultThemeColor(context.getResources(), false);
+        mPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
         mSearchEngineLogoUtils = searchEngineLogoUtils;
     }
 
@@ -418,15 +418,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     private void updateUsingBrandColor() {
         mIsUsingBrandColor = !isIncognito()
-                && mPrimaryColor
-                        != ChromeColors.getDefaultThemeColor(mContext.getResources(), isIncognito())
+                && mPrimaryColor != ChromeColors.getDefaultThemeColor(mContext, isIncognito())
                 && hasTab() && !mTab.isNativePage();
     }
 
     @Override
     public int getPrimaryColor() {
         return isInOverviewAndShowingOmnibox()
-                ? ChromeColors.getDefaultThemeColor(mContext.getResources(), isIncognito())
+                ? ChromeColors.getDefaultThemeColor(mContext, isIncognito())
                 : mPrimaryColor;
     }
 

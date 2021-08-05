@@ -431,7 +431,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     private void updatePrimaryColorAndTint(boolean isIncognito) {
-        int primaryColor = ChromeColors.getPrimaryBackgroundColor(getResources(), isIncognito);
+        int primaryColor = ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito);
         setBackgroundColor(primaryColor);
 
         if (mLightIconTint == null) {

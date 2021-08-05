@@ -95,8 +95,7 @@ public class TabThemeTest {
 
     private static int getDefaultThemeColor(Tab tab) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return ChromeColors.getDefaultThemeColor(
-                    tab.getContext().getResources(), tab.isIncognito());
+            return ChromeColors.getDefaultThemeColor(tab.getContext(), tab.isIncognito());
         });
     }
 

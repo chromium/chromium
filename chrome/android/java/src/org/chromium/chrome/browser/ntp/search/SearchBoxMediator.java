@@ -106,8 +106,8 @@ class SearchBoxMediator
         Drawable drawable = mAssistantVoiceSearchService.getCurrentMicDrawable();
         mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, drawable);
 
-        final @ColorInt int primaryColor = ChromeColors.getDefaultThemeColor(
-                mContext.getResources(), false /* forceDarkBgColor= */);
+        final @ColorInt int primaryColor =
+                ChromeColors.getDefaultThemeColor(mContext, false /* forceDarkBgColor= */);
         ColorStateList colorStateList =
                 mAssistantVoiceSearchService.getButtonColorStateList(primaryColor, mContext);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);

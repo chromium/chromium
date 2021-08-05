@@ -25,8 +25,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class ThemeTestUtils {
     public static int getDefaultThemeColor(Tab tab) {
-        return ChromeColors.getDefaultThemeColor(
-                tab.getContext().getResources(), tab.isIncognito());
+        return ChromeColors.getDefaultThemeColor(tab.getContext(), tab.isIncognito());
     }
 
     /**

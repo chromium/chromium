@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.system;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 
@@ -85,11 +84,10 @@ public class StatusBarColorControllerTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testColorToggleIncognitoInOverview() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        Resources resources = activity.getResources();
         final int expectedOverviewStandardColor = defaultColorFallbackToBlack(
-                ChromeColors.getPrimaryBackgroundColor(resources, false));
-        final int expectedOverviewIncognitoColor = defaultColorFallbackToBlack(
-                ChromeColors.getPrimaryBackgroundColor(resources, true));
+                ChromeColors.getPrimaryBackgroundColor(activity, false));
+        final int expectedOverviewIncognitoColor =
+                defaultColorFallbackToBlack(ChromeColors.getPrimaryBackgroundColor(activity, true));
 
         sActivityTestRule.loadUrlInNewTab(
                 "about:blank", true /* incognito */, TabLaunchType.FROM_CHROME_UI);
@@ -115,9 +113,8 @@ public class StatusBarColorControllerTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredInOverview() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        Resources resources = activity.getResources();
         final int expectedDefaultStandardColor =
-                defaultColorFallbackToBlack(ChromeColors.getDefaultThemeColor(resources, false));
+                defaultColorFallbackToBlack(ChromeColors.getDefaultThemeColor(activity, false));
 
         String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
                 "/chrome/test/data/android/theme_color_test.html");

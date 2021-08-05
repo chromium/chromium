@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -279,6 +281,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
         mNoSearchLogoSpacer = findViewById(R.id.no_search_logo_spacer);
 
+        initializeSearchBoxBackground();
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
@@ -307,6 +310,16 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
      */
     ScrollDelegate getScrollDelegate() {
         return mScrollDelegate;
+    }
+
+    /**
+     * Sets up the search box background tint.
+     */
+    private void initializeSearchBoxBackground() {
+        final int searchBoxColor =
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation);
+        final ColorStateList colorStateList = ColorStateList.valueOf(searchBoxColor);
+        findViewById(R.id.search_box).setBackgroundTintList(colorStateList);
     }
 
     /**

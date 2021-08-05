@@ -8,6 +8,9 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -94,9 +97,12 @@ public final class ToolbarSecurityIconTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
+
+        Context context =
+                new ContextThemeWrapper(ContextUtils.getApplicationContext(), R.style.ColorOverlay);
         // clang-format off
         mLocationBarModel = spy(
-                new LocationBarModel(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                new LocationBarModel(context, NewTabPageDelegate.EMPTY,
                         (url) -> url.getSpec(), (window) -> null, ToolbarTestUtils.OFFLINE_STATUS,
                         mSearchEngineLogoUtils));
         // clang-format on

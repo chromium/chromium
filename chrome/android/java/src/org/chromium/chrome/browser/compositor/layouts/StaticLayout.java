@@ -358,7 +358,7 @@ public class StaticLayout extends Layout {
             return sToolbarTextBoxBackgroundColorForTesting;
         }
 
-        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext.getResources(), tab,
+        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab,
                 mTopUiThemeColorProvider.get().calculateColor(tab, tab.getThemeColor()));
     }
 

@@ -13,9 +13,10 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
@@ -81,8 +82,6 @@ public class ContinuousSearchContainerCoordinatorTest {
     @Mock
     private ThemeColorProvider mThemeColorProviderMock;
     @Mock
-    private Resources mResources;
-    @Mock
     private SearchUrlHelper.Natives mSearchUrlHelperJniMock;
     @Mock
     private ContinuousSearchSceneLayer.Natives mContinuousSearchSceneLayerJniMock;
@@ -129,10 +128,12 @@ public class ContinuousSearchContainerCoordinatorTest {
         doReturn(FAKE_NATIVE_ADDR).when(mContinuousSearchSceneLayerJniMock).init(any());
         doReturn(mResourceLoaderMock).when(mResourceManagerMock).getDynamicResourceLoader();
 
-        mRoot = new LinearLayout(ContextUtils.getApplicationContext());
+        Context context =
+                new ContextThemeWrapper(ContextUtils.getApplicationContext(), R.style.ColorOverlay);
+        mRoot = new LinearLayout(context);
         mRoot.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
         mRoot.setOrientation(LinearLayout.VERTICAL);
-        ViewStub viewStub = new ViewStub(ContextUtils.getApplicationContext());
+        ViewStub viewStub = new ViewStub(context);
         viewStub.setId(STUB_ID);
         viewStub.setInflatedId(INFLATED_ID);
         viewStub.setLayoutResource(
@@ -150,7 +151,7 @@ public class ContinuousSearchContainerCoordinatorTest {
         mUserData.mAllowNativeUrlChecks = false;
         mCoordinator = new ContinuousSearchContainerCoordinator(viewStub, mLayoutManagerMock,
                 mResourceManagerMock, mTabSupplier, mStateProviderMock, mAnimateNativeControls,
-                mDefaultTopHeight, mThemeColorProviderMock, mResources, (state) -> {
+                mDefaultTopHeight, mThemeColorProviderMock, context, (state) -> {
                     mAnimateHidingState = state;
                     mAnimateHidingStateCount++;
                 });

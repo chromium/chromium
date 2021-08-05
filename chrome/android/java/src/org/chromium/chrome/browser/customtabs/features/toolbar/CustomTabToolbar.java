@@ -174,7 +174,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        final int backgroundColor = ChromeColors.getDefaultThemeColor(getResources(), false);
+        final int backgroundColor = ChromeColors.getDefaultThemeColor(getContext(), false);
         setBackground(new ColorDrawable(backgroundColor));
         mUseDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         mUrlBar = (TextView) findViewById(R.id.url_bar);
@@ -732,10 +732,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void updateProgressBarColors() {
             final ToolbarProgressBar progressBar = getProgressBar();
             if (progressBar == null) return;
+            final Context context = getContext();
             final Resources resources = getResources();
             final int backgroundColor = getBackground().getColor();
             if (ThemeUtils.isUsingDefaultToolbarColor(
-                        resources, /*isIncognito=*/false, backgroundColor)) {
+                        context, /*isIncognito=*/false, backgroundColor)) {
                 progressBar.setBackgroundColor(
                         ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background));
                 progressBar.setForegroundColor(

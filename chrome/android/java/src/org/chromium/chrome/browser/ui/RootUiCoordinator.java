@@ -379,7 +379,7 @@ public class RootUiCoordinator
 
         mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
-                mActivity.getResources(), mStatusBarColorProvider, mOverviewModeBehaviorSupplier,
+                mActivity, mStatusBarColorProvider, mOverviewModeBehaviorSupplier,
                 mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
     }
 

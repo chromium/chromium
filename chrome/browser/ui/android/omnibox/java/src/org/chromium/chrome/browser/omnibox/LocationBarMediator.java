@@ -931,7 +931,7 @@ class LocationBarMediator
         // of whether it is branded or not.
         if (isUrlBarFocused()) {
             return ChromeColors.getDefaultThemeColor(
-                    mContext.getResources(), mLocationBarDataProvider.isIncognito());
+                    mContext, mLocationBarDataProvider.isIncognito());
         } else {
             return mLocationBarDataProvider.getPrimaryColor();
         }

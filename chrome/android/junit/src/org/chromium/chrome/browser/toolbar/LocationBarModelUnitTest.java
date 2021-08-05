@@ -9,6 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.ContextThemeWrapper;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -21,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -98,18 +101,22 @@ public class LocationBarModelUnitTest {
     // clang-format off
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
-                    url -> url.getSpec(), IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
-                    OFFLINE_STATUS, searchEngineLogoUtils);
+            super(new ContextThemeWrapper(
+                          ContextUtils.getApplicationContext(), R.style.ColorOverlay),
+                    NewTabPageDelegate.EMPTY, url -> url.getSpec(),
+                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS,
+                    searchEngineLogoUtils);
             setTab(tab, /*incognito=*/true);
         }
     }
 
     private static class TestRegularLocationBarModel extends LocationBarModel {
         public TestRegularLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
-                    url -> url.getSpec(), IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
-                    OFFLINE_STATUS, searchEngineLogoUtils);
+            super(new ContextThemeWrapper(
+                          ContextUtils.getApplicationContext(), R.style.ColorOverlay),
+                    NewTabPageDelegate.EMPTY, url -> url.getSpec(),
+                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS,
+                    searchEngineLogoUtils);
             setTab(tab, /*incognito=*/false);
         }
     }
