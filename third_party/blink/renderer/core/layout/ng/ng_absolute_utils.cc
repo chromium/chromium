@@ -431,8 +431,7 @@ bool ComputeOutOfFlowInlineDimensions(
     min_max_length_sizes = {LayoutUnit(), LayoutUnit::Max()};
   } else {
     min_max_length_sizes = ComputeMinMaxInlineSizes(
-        space, node, border_padding, MinMaxSizesFunc, &min_inline_length,
-        /* is_block_size_indefinite */ !can_compute_block_size_without_layout);
+        space, node, border_padding, MinMaxSizesFunc, &min_inline_length);
   }
 
   const auto writing_direction = style.GetWritingDirection();

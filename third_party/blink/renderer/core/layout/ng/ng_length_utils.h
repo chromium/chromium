@@ -309,13 +309,11 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const NGBoxStrut& border_padding);
 
 template <typename MinMaxSizesFunc>
-MinMaxSizes ComputeMinMaxInlineSizes(
-    const NGConstraintSpace& space,
-    const NGBlockNode& node,
-    const NGBoxStrut& border_padding,
-    const MinMaxSizesFunc& min_max_sizes_func,
-    const Length* opt_min_length = nullptr,
-    absl::optional<bool> is_block_size_indefinite = absl::nullopt) {
+MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
+                                     const NGBlockNode& node,
+                                     const NGBoxStrut& border_padding,
+                                     const MinMaxSizesFunc& min_max_sizes_func,
+                                     const Length* opt_min_length = nullptr) {
   const ComputedStyle& style = node.Style();
   const Length& min_length =
       opt_min_length ? *opt_min_length : style.LogicalMinWidth();
@@ -328,8 +326,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
   if (!style.AspectRatio().IsAuto() &&
-      is_block_size_indefinite.value_or(
-          BlockLengthUnresolvable(space, style.LogicalHeight()))) {
+      BlockLengthUnresolvable(space, style.LogicalHeight())) {
     MinMaxSizes transferred_sizes =
         ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
     sizes.min_size = std::max(
