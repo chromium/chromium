@@ -35,7 +35,7 @@ interface RepeaterEvent extends CustomEvent {
 interface ExtensionsRuntimeHostPermissionsElement {
   $: {
     hostActionMenu: CrActionMenuElement,
-    'host-access': CrRadioGroupElement,
+    'host-access': HTMLSelectElement,
   };
 }
 
@@ -140,8 +140,8 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private revertingHostAccess_: boolean;
 
   private onHostAccessChange_() {
-    const group = this.$['host-access'];
-    const access = group.selected as chrome.developerPrivate.HostAccess;
+    const selectMenu = this.$['host-access'];
+    const access = selectMenu.value as chrome.developerPrivate.HostAccess;
 
     // Log a user action when the host access selection is changed by the user,
     // but not when reverting from a canceled change to another setting.
@@ -174,7 +174,7 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
       //   This ensures there will be at least one, so that the host access
       //   is properly calculated.
       this.oldHostAccess_ = this.permissions.hostAccess;
-      this.doShowHostDialog_(group, null);
+      this.doShowHostDialog_(selectMenu, null);
     } else {
       this.delegate.setItemHostAccess(this.itemId, access);
     }
@@ -235,7 +235,7 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     if (this.oldHostAccess_) {
       assert(this.permissions.hostAccess === this.oldHostAccess_);
       this.revertingHostAccess_ = true;
-      this.$['host-access'].selected = this.oldHostAccess_;
+      this.$['host-access'].value = this.oldHostAccess_;
       this.revertingHostAccess_ = false;
       this.oldHostAccess_ = null;
     }
