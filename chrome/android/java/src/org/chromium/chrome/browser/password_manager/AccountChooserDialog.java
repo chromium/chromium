@@ -115,6 +115,11 @@ public class AccountChooserDialog
                     convertView =
                             inflater.inflate(R.layout.account_chooser_dialog_item, parent, false);
                 }
+                convertView.setSelected(false);
+                convertView.setOnClickListener(view -> {
+                    mCredential = mCredentials[position];
+                    if (mDialog != null) mDialog.dismiss();
+                });
                 convertView.setTag(position);
 
                 Credential credential = getItem(position);
