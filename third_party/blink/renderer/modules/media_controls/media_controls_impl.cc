@@ -1864,13 +1864,11 @@ void MediaControlsImpl::OnPlay() {
 void MediaControlsImpl::OnPlaying() {
   StartHideMediaControlsTimer();
   UpdateCSSClassFromState();
-  timeline_->OnMediaPlaying();
 }
 
 void MediaControlsImpl::OnPause() {
   UpdatePlayState();
   UpdateTimeIndicators();
-  timeline_->OnMediaStoppedPlaying();
   MakeOpaque();
 
   StopHideMediaControlsTimer();
@@ -1995,7 +1993,7 @@ void MediaControlsImpl::ElementSizeChangedTimerFired(TimerBase*) {
 }
 
 void MediaControlsImpl::OnLoadingProgress() {
-  timeline_->OnProgress();
+  timeline_->RenderBarSegments();
 }
 
 void MediaControlsImpl::ComputeWhichControlsFit() {
@@ -2195,7 +2193,6 @@ MediaControlOverflowMenuButtonElement& MediaControlsImpl::OverflowButton() {
 }
 
 void MediaControlsImpl::OnWaiting() {
-  timeline_->OnMediaStoppedPlaying();
   UpdateCSSClassFromState();
 }
 
