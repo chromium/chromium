@@ -4780,8 +4780,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     field's signature changed, or a field was newly created. The reference
     period starts when Autofill parses the form for the first time, and ends
     when a navigation is committed or the frame is destructed.
-  </summary>
-  <details>
+
     Every form is observed for dynamic changes from the time it was first parsed
     by Autofill until either a navigation has been committed or the frame is
     destructed or the form's observation had to be flushed prematurely (the form
@@ -4791,7 +4790,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the form's lifetime (its signature changed); the second bit is 1 iff a field
     was added (its renderer ID is new to the form); the highest bit is 1 iff the
     form was changed (its signature changed).
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.BankNameDisplayed"
@@ -4806,15 +4805,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     interacts with a form requesting a credit card, a dropdown of suggestions is
     shown and at least one of the suggestions has a bank name. Form events are
     logged at most once per page load.
-  </summary>
-  <details>
+
     These metrics are used to measure the impact of the bank name experiment.
     They are used to calculate the CTR of the autofill UI with bank names
     available. Not all credit cards will have bank names even if we launch the
     experiment. With these metrics we can run the experiment on 2 groups. For
     one group, we will show bank names if available. For the other, we won't
     shown.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.HasModifiedProfile.CreditCardFormSubmission"
@@ -5439,10 +5437,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of Wallet addresses that were added to Chrome via Sync. Recorded
     when receiving an AUTOFILL_WALLET_DATA update from the Sync server.
-  </summary>
-  <details>
+
     Can probably be removed around Q1 2019, after project Dice has rolled out.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.WalletAddressesAddedOrRemoved" units="addresses"
@@ -5456,10 +5453,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The total number of Wallet addresses that were added to or removed from
     Chrome via Sync. Recorded when receiving an AUTOFILL_WALLET_DATA update from
     the Sync server.
-  </summary>
-  <details>
+
     Can probably be removed around Q1 2019, after project Dice has rolled out.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.WalletAddressesRemoved" units="addresses"
@@ -5472,10 +5468,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of Wallet addresses that were removed from Chrome via Sync.
     Recorded when receiving an AUTOFILL_WALLET_DATA update from the Sync server.
-  </summary>
-  <details>
+
     Can probably be removed around Q1 2019, after project Dice has rolled out.
-  </details>
+  </summary>
 </histogram>
 
 <histogram base="true" name="Autofill.WalletCards" units="credit cards"
@@ -5526,10 +5521,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of Wallet credit cards that were added to Chrome via Sync.
     Recorded when receiving an AUTOFILL_WALLET_DATA update from the Sync server.
-  </summary>
-  <details>
+
     Can probably be removed around Q1 2019, after project Dice has rolled out.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.WalletCardsAddedOrRemoved" units="credit cards"
@@ -5543,10 +5537,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The total number of Wallet credit cards that were added to or removed from
     Chrome via Sync. Recorded when receiving an AUTOFILL_WALLET_DATA update from
     the Sync server.
-  </summary>
-  <details>
+
     Can probably be removed around Q1 2019, after project Dice has rolled out.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.WalletCardsRemoved" units="credit cards"
@@ -5559,10 +5552,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of Wallet credit cards that were removed from Chrome via Sync.
     Recorded when receiving an AUTOFILL_WALLET_DATA update from the Sync server.
-  </summary>
-  <details>
+
     Can probably be removed around Q1 2019, after project Dice has rolled out.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Autofill.WalletUseDate.Address" units="ms" expires_after="M76">
@@ -7118,13 +7110,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Count of how many page loads use various features. The PageVisits bucket is
     incremented for each page load, and the other buckets incremented at most
     once per PageVisit via the blink::UseCounter class.
-  </summary>
-  <details>
+
     This histogram recorded values in the renderer process. With the addition of
     OOPIF, the counts could be inaccurate due to multiple renderer processes for
     a page. It was replaced by an implementation that records values in the
     browser process.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.Features_TestBrowserProcessLogging"
@@ -7154,14 +7145,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Like Blink.UseCounter.AnimatedCSSProperties but specifically for the case of
     CSS properties used inside of an SVG image.
-  </summary>
-  <details>
+
     Warning: This histogram represents pre-renderer metrics and so is flawed
     under OOPIF.
 
     This histogram counts usage of animated CSS properties only. Refer to
     Blink.UseCounter.SVGImage.CSSProperties for details.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.SVGImage.CSSProperties"
@@ -7175,8 +7165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Like Blink.UseCounter.CSSProperties but specifically for the case of CSS
     properties used inside of an SVG image.
-  </summary>
-  <details>
+
     Warning: This histogram represents pre-renderer metrics and so is flawed
     under OOPIF.
 
@@ -7184,7 +7173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     is created. Note that the same SVG image can be used across multiple tabs in
     a single renderer but this counts as a single usage. See
     http://crbug.com/236262.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.UseCounter.SVGImage.Features" enum="FeatureObserver"
@@ -7201,8 +7190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Like Blink.UseCounter.Features except specifically for the case of SVG
     Images.
-  </summary>
-  <details>
+
     Warning: This histogram represents pre-renderer metrics and so is flawed
     under OOPIF.
 
@@ -7210,7 +7198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     incremented each time a new SVG image is created. Note that the same SVG
     image can be used across multiple tabs in a single renderer but this counts
     as a single usage. See http://crbug.com/236262.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Blink.XHR.setRequestHeader.HeaderValueCategoryInRFC7230"
@@ -10505,14 +10493,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 04/2020. No longer used.
   </obsolete>
   <owner>ebeach@google.com</owner>
-  <summary>HTTP latency seen by the Connectivity Diagnostics.</summary>
-  <details>
+  <summary>
+    HTTP latency seen by the Connectivity Diagnostics.
+
     HTTP latency is computed using the chrome.socket API to make an HTTP GET
     request to the /generate_204 page of three randomly generated Google
     hostnames (*-ccd-testing-v4.metric.gstatic.com). The time taken from issuing
     the HTTP request to receiving a response is clocked in JavaScript and the
     arithmetic mean of the three times is used as the HTTP latency.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="ConnectivityDiagnostics.TestVerdict"
@@ -17907,15 +17896,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Measures the time delta in milliseconds since the last zero RSSI value was
     read to when the user successfully unlocks or signs in using Smart Lock.
-  </summary>
-  <details>
+
     A zero RSSI value is special because both Bluetooth devices in a connection
     attempt to maintain by adjusting their transmit power levels. This time
     delta can be used as a possible heuristic to determine that the phone is
     close to the local device.
 
     If no RSSI was read, then an overflow value will be recorded.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.AuthProximity.TransmitPowerDelta" units="dBm"
@@ -17929,8 +17917,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Measures the difference between the current transmit power and the maximum
     transmit power of the local device when the user successfully unlocks or
     signs in using Smart Lock.
-  </summary>
-  <details>
+
     Devices connected using classic Bluetooth adjust their transmit power
     dynamically to optimize power and signal strength. The difference between
     the current transmit power and maximum transmit power can be used as a
@@ -17941,7 +17928,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     If no transmit power was read, then a sentinel value of 127 will be
     recorded.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.BluetoothAvailability"
@@ -17952,15 +17939,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>bcwhite@chromium.org</owner>
   <summary>
     Reports the type of Bluetooth adapter present in the device.
-  </summary>
-  <details>
+
     Statistics about what Bluetooth capabilities are available will determine
     how the EasyUnlock feature gets developed and deployed across platforms.
 
     This value is logged only once during the lifetime of the Chrome process,
     shortly after it starts up. If a Bluetooth USB adapter is inserted after
     that point, the change will not be registered until Chrome restarts.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.ClickedButton" enum="EasyUnlockButton"
@@ -17994,12 +17980,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of eligible devices that the CryptAuth server returns during the
     Smart Lock setup flow.
-  </summary>
-  <details>
+
     Note that a single user might report multiple values, for example if they
     try to complete the setup flow with a device in airplane mode, and then try
     again taking the device out of airplane mode.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.Setup.Devices.Count.Ineligible" units="units"
@@ -18011,12 +17996,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of ineligible devices that the CryptAuth server returns during
     the Smart Lock setup flow.
-  </summary>
-  <details>
+
     Note that a single user might report multiple values, for example if they
     try to complete the setup flow with a device in airplane mode, and then try
     again taking the device out of airplane mode.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.Setup.Devices.HasSecureScreenLock"
@@ -18041,14 +18025,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether the user's phone has a trust agent -- e.g. Smart Lock for Android --
     enabled. Recorded during Smart Lock (for Chrome) setup, when the user's
     phone first connects to the Chromebook.
-  </summary>
-  <details>
+
     Note that this histogram tracks whether the setting under Settings ~&gt;
     Security ~&gt; Trust agents ~&gt; Smart Lock (Google) (or any other trust
     agent) is enabled. The Smart Lock trust agent is enabled by default for
     users who have ascure lock screen. This metric does _not_ measure whether
     users have any Smart Lock trustlets enabled.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.Setup.Devices.IneligibilityReason"
@@ -18062,15 +18045,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     eligible as unlock keys for Smart Lock. This is recorded during the Smart
     Lock setup flow, only if the CryptAuth server returns no eligible devices
     for the user.
-  </summary>
-  <details>
+
     To be precise, this metric tracks the _least_ actionable _reason_ why the
     _most_ actionable _device_ is not eligible as an unlock key. For example,
     suppose that the user has 10 ineligible devices returned. This metric tries
     to identify the most likely candidate device for use as a Smart Lock key,
     and then records the most confounding reason why that device is still not
     eligible to be used as an unlock key.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.Setup.Progress.SansPromo"
@@ -18107,14 +18089,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>hansberry@chromium.org</owner>
   <summary>
     Measures user interactions with the Smart Lock promo notification.
-  </summary>
-  <details>
+
     Due to technical limitations of the implementation, it is hard to track
     precisely which users opened the setup app as a result of interacting with
     the promo notification. This metric measures setup app interactions from all
     users who click on the promo notification, and subsequently launch the setup
     app.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.SetupStateOnClose" enum="EasyUnlockSetupState"
@@ -18152,15 +18133,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records when the Easy Unlock trial run is launched, and when the user
     attempts to click on the lock icon during the trial run.
-  </summary>
-  <details>
+
     If a user clicks on the lock icon more than once, then the &quot;clicked
     lock icon&quot; event counter will be incremented more than once as well.
     Hence, the &quot;user count&quot; data shows how many users ever clicked on
     the lock icon during the trial run. From the raw (non-&quot;user
     count&quot;) data, we can also see whether users click on the icon multiple
     times.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="EasyUnlock.UnlockEvent" enum="EasyUnlockUnlockEvent"
@@ -40649,8 +40629,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>pasko@chromium.org</owner>
   <summary>
     The completion status of prefetches that have finished loading.
-  </summary>
-  <details>
+
     Measurement occurs at ResourceLoader::ResponseCompleted so requests canceled
     before that point are not registered.
 
@@ -40663,7 +40642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     &quot;success already prefetched&quot; means that both was_cached() and
     unused_since_prefetch were true. Validated results are considered cached,
     even though a conditional network request is made.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.MTPR_GetProxyForUrl_Thread_Wait_Time" units="ms"
@@ -40978,8 +40957,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>csharrison@chromium.org</owner>
   <summary>
     When a preconnection is made, indicate what the motivation was.
-  </summary>
-  <details>
+
     Currently, the most common (only?) motivations are SELF_REFERAL,
     LEARNED_REFERAL and OMNIBOX. The SELF_REFERAL indicates that we made sure a
     second connection was available for a resource that either was never before
@@ -40989,7 +40967,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     search is being suggested, and we preconnect to the search provider.
     (WARNING: Prior to version 7.517.*, enums 7, 8, and 9 may be confused, as
     EARLY_LOAD_MOTIVATED was inserted new 6 value.)
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.PreconnectProxyStatus" enum="ProxyStatus"
@@ -41024,13 +41002,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     What did we decide to do about a predicted resource, based on the historical
     expected number of connection that this subresource will require.
-  </summary>
-  <details>
+
     This is basically the current thresholding of the SubresourceExpectation,
     relative to current static thresholds, and taking into account whether
     preconnection is enabled (i.e., if preconnection is disabled, we'll never
     decide to preconnect).
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.PreconnectSubresourceExpectation" units="units"
@@ -41042,12 +41019,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The expected number of connections, times 100, that we'll make to a given
     subresource, based on learned history.
-  </summary>
-  <details>
+
     By comparing this to thresholds, we decide if we will preconnect,
     preresolve, or do nothing. This histogram can be used to select those static
     thresholds.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.PreconnectTriggerUsed" enum="PreconnectTriggerUsed"
@@ -41071,12 +41047,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
     Indicate final utilization for each attempted socket connection.
-  </summary>
-  <details>
+
     We also include stats for non-speculative sockets. Some socket connections
     may never connect, and others may never be used (as the user may abort
     before then).
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.PreconnectUtilization2" enum="NetPreconnectUtilization"
@@ -41087,12 +41062,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>csharrison@chromium.org</owner>
   <summary>
     Indicate final utilization for each attempted socket connection.
-  </summary>
-  <details>
+
     We also include stats for non-speculative sockets. Some socket connections
     may never connect, and others may never be used (as the user may abort
     before then).
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.Predictor.MRUIndex" units="units"
@@ -41127,8 +41101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jkarlin@chromium.org</owner>
   <summary>
     The completion status of prefetches that have finished loading.
-  </summary>
-  <details>
+
     Measurement occurs at ResourceLoader::ResponseCompleted so requests canceled
     before that point are not registered.
 
@@ -41140,7 +41113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     &quot;success already prefetched&quot; means that both was_cached() and
     unused_since_prefetch were true. Validated results are considered cached,
     even though a conditional network request is made.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.Prefetch.TimeBeforeCancel" units="ms"
@@ -41151,10 +41124,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Time spent on prefetch requests before the request was canceled.
-  </summary>
-  <details>
+
     This applies to requests with RESOURCE_TYPE_PREFETCH.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.Prefetch.TimeSpentOnPrefetchHit" units="ms"
@@ -41175,10 +41147,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed July 2018
   </obsolete>
   <owner>jkarlin@chromium.org</owner>
-  <summary>Time spent on prefetch requests when fetched from cache.</summary>
-  <details>
+  <summary>
+    Time spent on prefetch requests when fetched from cache.
+
     This applies to requests with RESOURCE_TYPE_PREFETCH.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Net.Prefetch.TimeSpentPrefetchingFromNetwork" units="ms"
@@ -51244,13 +51217,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>rbyers@chromium.org</owner>
   <owner>mfomitchev@chromium.org</owner>
-  <summary>Completed overscroll gestures.</summary>
-  <details>
+  <summary>
+    Completed overscroll gestures.
+
     An overscroll gesture starts when user scrolls past the edge of the web page
     and continues scrolling in the same direction. An overscroll gesture is
     completed when user stops scrolling (e.g. by lifting the fingers from the
     touchscreen or touchpad).
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="Overscroll.Navigated" enum="OverscrollMode"
@@ -74087,11 +74061,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Amount of time between subsequent SessionService Save() operations (aka
     updates to session data).
-  </summary>
-  <details>
+
     Periods longer than 10 minutes are grouped together; see SaveLongPeriod for
     resolution.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="SessionRestore.SubFrameUniqueNameChangedBeforeFirstCommit"
@@ -85603,12 +85576,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     histograms.
   </obsolete>
   <owner>asvitkine@chromium.org</owner>
-  <summary>The server returned a 400 code, and we discarded a log.</summary>
-  <details>
+  <summary>
+    The server returned a 400 code, and we discarded a log.
+
     This tends to indicate that a syntax error is present in a log, such as
     would appear when a bogus XML tag is included, or the XML is not balanced
     and well structured.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="UMA.UploadCreation" enum="BooleanSuccess"

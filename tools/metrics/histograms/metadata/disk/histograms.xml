@@ -342,11 +342,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DiskCache.0.NumberOfReferences" units="?" expires_after="M85">
   <owner>rvargas@chromium.org</owner>
-  <summary>The number of open entry references at any given moment.</summary>
-  <details>
+  <summary>
+    The number of open entry references at any given moment.
+
     Closely related to AverageOpenEntries, but this one is not the average per
     client but instead a direct histogram updated every 30 secs.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="DiskCache.0.OpenTime" units="ms" expires_after="M85">

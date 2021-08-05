@@ -3389,26 +3389,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Connectivity Diagnostics App: WiFi signal strength recorded during
     NIC_SIGNAL_STRENGTH test.
-  </summary>
-  <details>
+
     The &quot;Strength&quot; property of a WiFi signal is a partially-reversible
     function that linearly maps the RSSI range -120dBm to -20dBm to Strength
     values from 0 to 100.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="ConnectivityDiagnostics.RESOLVER_LATENCY" units="ms"
     expires_after="M83">
   <owner>ebeach@google.com</owner>
-  <summary>Resolution latency seen by the Connectivity Diagnostics.</summary>
-  <details>
+  <summary>
+    Resolution latency seen by the Connectivity Diagnostics.
+
     Resolver latency is computed by using the chrome.dns API to query three
     randomly generated Google hostnames (*-ccd-testing-v4.metric.gstatic.com).
     The random hostnames guarantees that there will be no caching of DNS
     hostnames. The time taken from issuing the DNS request to receiving a
     response is clocked in JavaScript and the arithmetic mean of the three times
     is used as the resolver latency.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="ContextMenu.CancelSystemTouches" enum="BooleanHit"
@@ -17547,14 +17547,13 @@ should be kept until we use this API.  -->
     the touch events enabled flag and the presence of a touchscreen.
 
     Team: input-dev@chromium.org.
-  </summary>
-  <details>
+
     NOTE: This metric was incorrectly recorded on Chrome OS for versions 42
     through 45, see http://crbug.com/499476 for more details. As of
     http://crbug.com/644318, we changed the internal name to
     TouchEventFeatureDetection, but we still keep the old histogram name here to
     keep consistensy.
-  </details>
+  </summary>
 </histogram>
 
 <histogram name="TPM.EarlyResetDuringCommand" units="count"
