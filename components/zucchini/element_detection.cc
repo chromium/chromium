@@ -65,6 +65,18 @@ std::unique_ptr<Disassembler> MakeDisassemblerWithoutFallback(
     if (disasm && disasm->size() >= kMinProgramSize)
       return disasm;
   }
+
+  if (DisassemblerElfAArch32::QuickDetect(image)) {
+    auto disasm = Disassembler::Make<DisassemblerElfAArch32>(image);
+    if (disasm && disasm->size() >= kMinProgramSize)
+      return disasm;
+  }
+
+  if (DisassemblerElfAArch64::QuickDetect(image)) {
+    auto disasm = Disassembler::Make<DisassemblerElfAArch64>(image);
+    if (disasm && disasm->size() >= kMinProgramSize)
+      return disasm;
+  }
 #endif  // BUILDFLAG(ENABLE_ELF)
 
 #if BUILDFLAG(ENABLE_DEX)
@@ -101,6 +113,10 @@ std::unique_ptr<Disassembler> MakeDisassemblerOfType(ConstBufferView image,
       return Disassembler::Make<DisassemblerElfX86>(image);
     case kExeTypeElfX64:
       return Disassembler::Make<DisassemblerElfX64>(image);
+    case kExeTypeElfAArch32:
+      return Disassembler::Make<DisassemblerElfAArch32>(image);
+    case kExeTypeElfAArch64:
+      return Disassembler::Make<DisassemblerElfAArch64>(image);
 #endif  // BUILDFLAG(ENABLE_ELF)
 #if BUILDFLAG(ENABLE_DEX)
     case kExeTypeDex:

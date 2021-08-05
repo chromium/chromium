@@ -11,6 +11,7 @@
 
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
+#include "components/zucchini/rel32_utils.h"
 
 namespace zucchini {
 
@@ -81,6 +82,35 @@ class ReferenceBytesMixer {
                               offset_t old_offset,
                               ConstBufferView new_view,
                               offset_t new_offset);
+};
+
+// In AArch32 and AArch64, instructions mix operation bits and payload bits in
+// complex ways. This is the main use case of ReferenceBytesMixer.
+class ReferenceBytesMixerElfArm : public ReferenceBytesMixer {
+ public:
+  // |exe_type| must be EXE_TYPE_ELF_ARM or EXE_TYPE_ELF_AARCH64.
+  explicit ReferenceBytesMixerElfArm(ExecutableType exe_type);
+  ReferenceBytesMixerElfArm(const ReferenceBytesMixerElfArm&) = delete;
+  const ReferenceBytesMixerElfArm& operator=(const ReferenceBytesMixerElfArm&) =
+      delete;
+  ~ReferenceBytesMixerElfArm() override;
+
+  // ReferenceBytesMixer:
+  int NumBytes(uint8_t type) const override;
+  ConstBufferView Mix(uint8_t type,
+                      ConstBufferView old_view,
+                      offset_t old_offset,
+                      ConstBufferView new_view,
+                      offset_t new_offset) override;
+
+ private:
+  ArmCopyDispFun GetCopier(uint8_t type) const;
+
+  // For simplicity, 32-bit vs. 64-bit distinction is represented by state
+  // |exe_type_|, instead of creating derived classes.
+  const ExecutableType exe_type_;
+
+  std::vector<uint8_t> out_buffer_;
 };
 
 }  // namespace zucchini
