@@ -157,6 +157,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.cc",

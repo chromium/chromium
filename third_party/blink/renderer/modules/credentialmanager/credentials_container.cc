@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_payment_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
@@ -949,6 +950,71 @@ void CreatePublicKeyCredentialForPaymentCredential(
       std::make_unique<ScopedPromiseResolver>(resolver)));
 }
 
+// Validates the "payment" extension for public key credential creation. The
+// function rejects the promise before returning in this case.
+bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
+                             ScriptPromiseResolver* resolver) {
+  const auto* payment = options->publicKey()->extensions()->payment();
+  if (!payment->hasIsPayment() || !payment->isPayment())
+    return true;
+
+  const auto* context = resolver->GetExecutionContext();
+  DCHECK(RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context));
+
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kPayment)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "The 'payment' feature is not enabled in this document. Permissions "
+        "Policy may be used to delegate Web Payment capabilities to "
+        "cross-origin child frames."));
+    return false;
+  }
+
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationDebugEnabled())
+    return true;
+
+  if (!options->publicKey()->hasAuthenticatorSelection()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "A user verifying platform authenticator with resident key support is "
+        "required for 'payment' extension."));
+    return false;
+  }
+
+  const auto* authenticator = options->publicKey()->authenticatorSelection();
+  if (!authenticator->hasUserVerification() ||
+      authenticator->userVerification() != "required") {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "User verification is required for 'payment' extension."));
+    return false;
+  }
+
+  if ((!authenticator->hasResidentKey() &&
+       !authenticator->hasRequireResidentKey()) ||
+      (authenticator->hasResidentKey() &&
+       authenticator->residentKey() != "required") ||
+      (!authenticator->hasResidentKey() &&
+       authenticator->hasRequireResidentKey() &&
+       !authenticator->requireResidentKey())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "A resident key is required for 'payment' extension."));
+    return false;
+  }
+
+  if (!authenticator->hasAuthenticatorAttachment() ||
+      authenticator->authenticatorAttachment() != "platform") {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "A platform authenticator is required for 'payment' extension."));
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 const char CredentialsContainer::kSupplementName[] = "CredentialsContainer";
@@ -1053,6 +1119,13 @@ ScriptPromise CredentialsContainer::get(
             DOMExceptionCode::kNotSupportedError,
             "The 'googleLegacyAppidSupport' extension is only valid when "
             "creating a credential"));
+        return promise;
+      }
+      if (options->publicKey()->extensions()->hasPayment()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "The 'payment' extension is only valid when creating a "
+            "credential"));
         return promise;
       }
     }
@@ -1371,6 +1444,10 @@ ScriptPromise CredentialsContainer::create(
                 "requests with an 'rp.id' not equal to 'google.com'"));
       }
     }
+    if (options->publicKey()->extensions()->hasPayment() &&
+        !IsPaymentExtensionValid(options, resolver)) {
+      return promise;
+    }
   }
 
   if (options->hasSignal()) {
@@ -1409,6 +1486,7 @@ ScriptPromise CredentialsContainer::create(
             "Ignoring unknown publicKey.authenticatorSelection.residentKey "
             "value"));
   }
+
   auto mojo_options =
       MojoPublicKeyCredentialCreationOptions::From(*options->publicKey());
   if (!mojo_options) {

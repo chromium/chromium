@@ -667,6 +667,28 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       PaymentExtension) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  RespondToFutureEnrollments(/*confirm=*/true);
+
+  std::string first_credential_identifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
+          .ExtractString();
+  ASSERT_EQ(std::string::npos, first_credential_identifier.find("Error"));
+
+  std::string second_credential_identifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
+          .ExtractString();
+  ASSERT_EQ(std::string::npos, second_credential_identifier.find("Error"));
+  ASSERT_NE(first_credential_identifier, second_credential_identifier);
+}
+
 // b.com cannot create a credential with RP = "a.com".
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        RelyingPartyIsEnforced) {
