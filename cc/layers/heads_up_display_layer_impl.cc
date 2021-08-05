@@ -307,6 +307,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       } else if (gpu_raster) {
         flags |= gpu::SHARED_IMAGE_USAGE_GLES2 |
                  gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+      } else {
+        flags |= gpu::SHARED_IMAGE_USAGE_GLES2;
       }
       if (backing->overlay_candidate)
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
