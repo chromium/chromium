@@ -68,7 +68,8 @@ void NGInlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground);
-  if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible)
+  if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible ||
+      inline_box_fragment_.IsOpaque())
     return;
 
   // You can use p::first-line to specify a background. If so, the direct child

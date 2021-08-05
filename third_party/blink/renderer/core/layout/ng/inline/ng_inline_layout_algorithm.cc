@@ -334,9 +334,11 @@ void NGInlineLayoutAlgorithm::CreateLine(
   const LayoutUnit hang_width = line_info->HangWidth();
   LayoutUnit inline_size;
   if (IsLtr(line_info->BaseDirection())) {
-    inline_size = box_states_->ComputeInlinePositions(line_box, LayoutUnit());
+    inline_size = box_states_->ComputeInlinePositions(
+        line_box, LayoutUnit(), line_info->IsBlockInInline());
   } else {
-    inline_size = box_states_->ComputeInlinePositions(line_box, -hang_width);
+    inline_size = box_states_->ComputeInlinePositions(
+        line_box, -hang_width, line_info->IsBlockInInline());
     inline_size += hang_width;
   }
   if (UNLIKELY(hang_width)) {
@@ -419,6 +421,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // creating a "hole" in the array.
   if (box_states_->HasBoxFragments()) {
     box_states_->CreateBoxFragments(ConstraintSpace(), line_box,
+                                    line_info->IsBlockInInline(),
                                     &oof_relative_offsets);
   }
 

@@ -357,6 +357,11 @@ class CORE_EXPORT NGPhysicalFragment
     return is_hidden_for_paint_ || layout_object_->IsTruncated();
   }
 
+  // This fragment is opaque for layout and paint, as if it does not exist and
+  // does not paint its backgrounds and borders, but it can have regular
+  // children and paint properties such as filters can apply.
+  bool IsOpaque() const { return is_opaque_; }
+
   // Return true if this fragment is monolithic, as far as block fragmentation
   // is concerned.
   bool IsMonolithic() const {
@@ -652,6 +657,7 @@ class CORE_EXPORT NGPhysicalFragment
   const unsigned sub_type_ : 3;       // NGBoxType, NGTextType, or NGLineBoxType
   const unsigned style_variant_ : 2;  // NGStyleVariant
   const unsigned is_hidden_for_paint_ : 1;
+  unsigned is_opaque_ : 1;
   unsigned is_math_fraction_ : 1;
   unsigned is_math_operator_ : 1;
   // base (line box) or resolve (text) direction

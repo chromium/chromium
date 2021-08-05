@@ -629,7 +629,8 @@ void NGInlineLayoutStateStack::BoxData::UpdateFragmentEdges(
 
 LayoutUnit NGInlineLayoutStateStack::ComputeInlinePositions(
     NGLogicalLineItems* line_box,
-    LayoutUnit position) {
+    LayoutUnit position,
+    bool ignore_box_margin_border_padding) {
   // At this point, children are in the visual order, and they have their
   // origins at (0, 0). Accumulate inline offset from left to right.
   for (NGLogicalLineItem& child : *line_box) {
@@ -642,7 +643,7 @@ LayoutUnit NGInlineLayoutStateStack::ComputeInlinePositions(
     position += child.inline_size;
   }
 
-  if (box_data_list_.IsEmpty())
+  if (box_data_list_.IsEmpty() || ignore_box_margin_border_padding)
     return position;
 
   // Adjust child offsets for margin/border/padding of inline boxes.
@@ -748,6 +749,7 @@ void NGInlineLayoutStateStack::ApplyRelativePositioning(
 void NGInlineLayoutStateStack::CreateBoxFragments(
     const NGConstraintSpace& space,
     NGLogicalLineItems* line_box,
+    bool is_opaque,
     Vector<LogicalOffset, 32>* oof_relative_offsets) {
   DCHECK(!box_data_list_.IsEmpty());
   DCHECK(oof_relative_offsets);
@@ -761,7 +763,8 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
     NGLogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
     scoped_refptr<const NGLayoutResult> box_fragment =
-        box_data.CreateBoxFragment(space, line_box, (*oof_relative_offsets)[i]);
+        box_data.CreateBoxFragment(space, line_box, is_opaque,
+                                   (*oof_relative_offsets)[i]);
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
       child->rect = box_data.rect;
@@ -783,6 +786,7 @@ scoped_refptr<const NGLayoutResult>
 NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
     const NGConstraintSpace& space,
     NGLogicalLineItems* line_box,
+    bool is_opaque,
     LogicalOffset oof_relative_offset) {
   DCHECK(item);
   DCHECK(item->Style());
@@ -802,10 +806,16 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   box.SetBoxType(NGPhysicalFragment::kInlineBox);
   box.SetStyleVariant(item->StyleVariant());
 
-  // Inline boxes have block start/end borders, even when its containing block
-  // was fragmented. Fragmenting a line box in block direction is not
-  // supported today.
-  box.SetSidesToInclude({true, has_line_right_edge, true, has_line_left_edge});
+  if (UNLIKELY(is_opaque)) {
+    box.SetIsOpaque();
+    box.SetSidesToInclude({false, false, false, false});
+  } else {
+    // Inline boxes have block start/end borders, even when its containing block
+    // was fragmented. Fragmenting a line box in block direction is not
+    // supported today.
+    box.SetSidesToInclude(
+        {true, has_line_right_edge, true, has_line_left_edge});
+  }
 
   for (unsigned i = fragment_start; i < fragment_end; i++) {
     NGLogicalLineItem& child = (*line_box)[i];
