@@ -126,16 +126,6 @@ void FormFetcherImpl::Fetch() {
   // `stats_store` can be null in tests.
   if (stats_store)
     stats_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
-
-  // The desktop bubble needs this information.
-  password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,
-                                                 this);
-#else
-  if (base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
-    // We need this information to mute leak detection warming.
-    password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,
-                                                   this);
-  }
 #endif
 }
 
@@ -215,6 +205,15 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
 
 void FormFetcherImpl::ProcessPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  insecure_credentials_.clear();
+  for (const auto& form : results) {
+    for (const auto& issue : form->password_issues) {
+      insecure_credentials_.emplace_back(
+          form->signon_realm, form->username_value, issue.second.create_time,
+          issue.first, issue.second.is_muted);
+      insecure_credentials_.back().in_store = form->in_store;
+    }
+  }
   if (client_->GetProfilePasswordStore()->affiliated_match_helper()) {
     client_->GetProfilePasswordStore()
         ->affiliated_match_helper()
@@ -301,11 +300,6 @@ void FormFetcherImpl::OnGetSiteStatistics(
 void FormFetcherImpl::ProcessMigratedForms(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
   ProcessPasswordStoreResults(std::move(forms));
-}
-
-void FormFetcherImpl::OnGetInsecureCredentials(
-    std::vector<InsecureCredential> insecure_credentials) {
-  insecure_credentials_ = std::move(insecure_credentials);
 }
 
 }  // namespace password_manager

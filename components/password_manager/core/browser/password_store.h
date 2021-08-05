@@ -137,11 +137,6 @@ class PasswordStore : public PasswordStoreInterface {
   // completion. The request will be cancelled if the consumer is destroyed.
   void GetAllInsecureCredentials(InsecureCredentialsConsumer* consumer);
 
-  // Returns all the insecure credentials for a given site. This list also
-  // includes Android affiliated credentials.
-  void GetMatchingInsecureCredentials(const std::string& signon_realm,
-                                      InsecureCredentialsConsumer* consumer);
-
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
 
@@ -184,8 +179,6 @@ class PasswordStore : public PasswordStoreInterface {
   // insecure credentials.
   // Returns PasswordStoreChangeList for the updated password forms.
   virtual std::vector<InsecureCredential> GetAllInsecureCredentialsImpl();
-  virtual std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
-      const std::string& signon_realm);
 
   // Invokes callback and notifies observers if there was a change to the list
   // of insecure passwords. It also informs Sync about the updated password
@@ -233,25 +226,11 @@ class PasswordStore : public PasswordStoreInterface {
   void UnblocklistInternal(base::OnceClosure completion,
                            std::vector<std::unique_ptr<PasswordForm>> forms);
 
-  // Extended version of GetMatchingInsecureCredentialsImpl that also returns
-  // credentials stored for the specified affiliated Android applications or Web
-  // realms.
-  std::vector<InsecureCredential> GetInsecureCredentialsWithAffiliationsImpl(
-      const std::string& signon_realm,
-      const std::vector<std::string>& additional_affiliated_realms);
-
   // Retrieves and fills in affiliation and branding information for Android
   // credentials in |forms| and invokes |callback| with the result. Called on
   // the main sequence.
   void InjectAffiliationAndBrandingInformation(LoginsReply callback,
                                                LoginsResult forms);
-
-  // Schedules GetInsecureCredentialsWithAffiliationsImpl() to be run on the
-  // background sequence.
-  void ScheduleGetInsecureCredentialsWithAffiliations(
-      base::WeakPtr<InsecureCredentialsConsumer> consumer,
-      const std::string& signon_realm,
-      const std::vector<std::string>& additional_affiliated_realms);
 
   // The local backend is currently a ref-counted type because it still inherits
   // from PasswordStore and this would be a self reference. So, if `this` is an

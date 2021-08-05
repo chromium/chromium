@@ -332,25 +332,6 @@ void PasswordStore::GetAllInsecureCredentials(
       base::BindOnce(&PasswordStore::GetAllInsecureCredentialsImpl, this));
 }
 
-void PasswordStore::GetMatchingInsecureCredentials(
-    const std::string& signon_realm,
-    InsecureCredentialsConsumer* consumer) {
-  if (affiliated_match_helper_) {
-    PasswordFormDigest form(PasswordForm::Scheme::kHtml, signon_realm,
-                            GURL(signon_realm));
-    affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
-        form,
-        base::BindOnce(
-            &PasswordStore::ScheduleGetInsecureCredentialsWithAffiliations,
-            this, consumer->GetWeakPtr(), signon_realm));
-  } else {
-    PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-        consumer,
-        base::BindOnce(&PasswordStore::GetMatchingInsecureCredentialsImpl, this,
-                       signon_realm));
-  }
-}
-
 void PasswordStore::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -398,14 +379,6 @@ void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
 }
 
 std::vector<InsecureCredential> PasswordStore::GetAllInsecureCredentialsImpl() {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return std::vector<InsecureCredential>();
-}
-
-std::vector<InsecureCredential>
-PasswordStore::GetMatchingInsecureCredentialsImpl(
-    const std::string& signon_realm) {
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
   LOG(ERROR) << "Called function without implementation: " << __func__;
   return std::vector<InsecureCredential>();
@@ -486,23 +459,6 @@ void PasswordStore::UnblocklistInternal(
   handler->InvokeOnCompletion(std::move(notify_callback));
 }
 
-std::vector<InsecureCredential>
-PasswordStore::GetInsecureCredentialsWithAffiliationsImpl(
-    const std::string& signon_realm,
-    const std::vector<std::string>& additional_affiliated_realms) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  std::vector<InsecureCredential> results(
-      GetMatchingInsecureCredentialsImpl(signon_realm));
-  for (const std::string& realm : additional_affiliated_realms) {
-    std::vector<InsecureCredential> more_results(
-        GetMatchingInsecureCredentialsImpl(realm));
-    results.insert(results.end(), std::make_move_iterator(more_results.begin()),
-                   std::make_move_iterator(more_results.end()));
-  }
-
-  return results;
-}
-
 void PasswordStore::InjectAffiliationAndBrandingInformation(
     LoginsReply callback,
     LoginsResult forms) {
@@ -512,19 +468,6 @@ void PasswordStore::InjectAffiliationAndBrandingInformation(
         std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms));
-  }
-}
-
-void PasswordStore::ScheduleGetInsecureCredentialsWithAffiliations(
-    base::WeakPtr<InsecureCredentialsConsumer> consumer,
-    const std::string& signon_realm,
-    const std::vector<std::string>& additional_affiliated_realms) {
-  if (consumer) {
-    PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-        consumer.get(),
-        base::BindOnce(
-            &PasswordStore::GetInsecureCredentialsWithAffiliationsImpl, this,
-            signon_realm, additional_affiliated_realms));
   }
 }
 

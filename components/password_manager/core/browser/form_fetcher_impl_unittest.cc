@@ -447,11 +447,15 @@ TEST_P(FormFetcherImplTest, Stats) {
 TEST_P(FormFetcherImplTest, InsecureCredentials) {
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
-  const std::vector<InsecureCredential> credentials = {InsecureCredential(
-      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
-      InsecureType::kLeaked, IsMuted(false))};
-  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetInsecureCredentials(credentials);
+  PasswordForm form = CreateNonFederated();
+  form.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  results.push_back(std::make_unique<PasswordForm>(form));
+  const std::vector<InsecureCredential> credentials = {
+      InsecureCredential(form.signon_realm, form.username_value, base::Time(),
+                         InsecureType::kLeaked, IsMuted(false))};
+  static_cast<PasswordStoreConsumer*>(form_fetcher_.get())
+      ->OnGetPasswordStoreResultsFrom(mock_store_.get(), std::move(results));
   EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
               UnorderedElementsAreArray(credentials));
 }
@@ -526,52 +530,12 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
   EXPECT_THAT(form_fetcher_->GetInteractionsStats(),
               UnorderedElementsAre(stats));
 }
-
-TEST_P(FormFetcherImplTest, FetchInsecure) {
-  std::vector<InsecureCredential> list = {InsecureCredential(
-      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
-      InsecureType::kLeaked, IsMuted(false))};
-  EXPECT_CALL(*mock_store_,
-              GetMatchingInsecureCredentialsImpl(form_digest_.signon_realm))
-      .WillOnce(Return(list));
-  form_fetcher_->Fetch();
-  task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
-              UnorderedElementsAreArray(list));
-}
 #else
 TEST_P(FormFetcherImplTest, DontFetchStatistics) {
   EXPECT_CALL(*mock_store_, GetLogins(form_digest_, form_fetcher_.get()));
   EXPECT_CALL(mock_smart_bubble_stats_store_, GetSiteStats).Times(0);
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
-}
-
-TEST_P(FormFetcherImplTest, DontFetchInsecure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
-                                    false);
-  EXPECT_CALL(*mock_store_, GetMatchingInsecureCredentialsImpl).Times(0);
-  form_fetcher_->Fetch();
-  task_environment_.RunUntilIdle();
-}
-
-TEST_P(FormFetcherImplTest, FetchInsecure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
-                                    true);
-  std::vector<InsecureCredential> list = {InsecureCredential(
-      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
-      InsecureType::kLeaked, IsMuted(false))};
-  EXPECT_CALL(*mock_store_,
-              GetMatchingInsecureCredentialsImpl(form_digest_.signon_realm))
-      .WillOnce(Return(list));
-  form_fetcher_->Fetch();
-  task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
-              UnorderedElementsAreArray(list));
 }
 #endif
 
@@ -866,13 +830,15 @@ TEST_P(FormFetcherImplTest, Clone_Stats) {
 TEST_P(FormFetcherImplTest, Clone_Insecure) {
   Fetch();
   // Pass empty results to make the state NOT_WAITING.
-  store_consumer()->OnGetPasswordStoreResultsFrom(
-      mock_store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
-  const std::vector<InsecureCredential> credentials = {InsecureCredential(
-      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
-      InsecureType::kLeaked, IsMuted(false))};
-  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetInsecureCredentials(credentials);
+  PasswordForm form = CreateNonFederated();
+  form.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  results.push_back(std::make_unique<PasswordForm>(form));
+  const std::vector<InsecureCredential> credentials = {
+      InsecureCredential(form.signon_realm, form.username_value, base::Time(),
+                         InsecureType::kLeaked, IsMuted(false))};
+  static_cast<PasswordStoreConsumer*>(form_fetcher_.get())
+      ->OnGetPasswordStoreResultsFrom(mock_store_.get(), std::move(results));
 
   auto clone = form_fetcher_->Clone();
   EXPECT_THAT(clone->GetInsecureCredentials(),

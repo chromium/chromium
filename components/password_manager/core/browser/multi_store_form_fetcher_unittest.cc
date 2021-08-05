@@ -445,23 +445,39 @@ TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
 
 TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
   Fetch();
+  PasswordForm profile_form =
+      CreateHTMLForm("www.url.com", "username1", "pass");
+  profile_form.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  std::vector<std::unique_ptr<PasswordForm>> profile_results;
+  profile_results.push_back(std::make_unique<PasswordForm>(profile_form));
+
+  PasswordForm account_form =
+      CreateHTMLForm("www.url.com", "username1", "pass");
+  account_form.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata()});
+  std::vector<std::unique_ptr<PasswordForm>> account_results;
+  account_results.push_back(std::make_unique<PasswordForm>(account_form));
+
   InsecureCredential profile_store_insecure_credentials(
-      form_digest_.signon_realm, u"profile_username", base::Time::FromTimeT(1),
+      profile_form.signon_realm, profile_form.username_value, base::Time(),
       InsecureType::kLeaked, IsMuted(false));
   profile_store_insecure_credentials.in_store =
       PasswordForm::Store::kProfileStore;
 
   InsecureCredential account_store_insecure_credentials(
-      form_digest_.signon_realm, u"account_username", base::Time::FromTimeT(1),
+      account_form.signon_realm, account_form.username_value, base::Time(),
       InsecureType::kLeaked, IsMuted(false));
   account_store_insecure_credentials.in_store =
       PasswordForm::Store::kAccountStore;
 
-  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetInsecureCredentials({profile_store_insecure_credentials});
+  static_cast<PasswordStoreConsumer*>(form_fetcher_.get())
+      ->OnGetPasswordStoreResultsFrom(profile_mock_store_.get(),
+                                      std::move(profile_results));
 
-  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetInsecureCredentials({account_store_insecure_credentials});
+  static_cast<PasswordStoreConsumer*>(form_fetcher_.get())
+      ->OnGetPasswordStoreResultsFrom(account_mock_store_.get(),
+                                      std::move(account_results));
 
   EXPECT_THAT(
       form_fetcher_->GetInsecureCredentials(),

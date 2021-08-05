@@ -257,18 +257,6 @@ TestPasswordStore::GetAllInsecureCredentialsImpl() {
                                          insecure_credentials_.end());
 }
 
-std::vector<InsecureCredential>
-TestPasswordStore::GetMatchingInsecureCredentialsImpl(
-    const std::string& signon_realm) {
-  std::vector<InsecureCredential> result;
-  std::copy_if(insecure_credentials_.begin(), insecure_credentials_.end(),
-               std::back_inserter(result),
-               [&signon_realm](const InsecureCredential& credential) {
-                 return credential.signon_realm == signon_realm;
-               });
-  return result;
-}
-
 bool TestPasswordStore::IsAccountStore() const {
   return is_account_store_.value();
 }

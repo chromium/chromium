@@ -151,21 +151,6 @@ PasswordStoreImpl::GetAllInsecureCredentialsImpl() {
   return insecure_credentials;
 }
 
-std::vector<InsecureCredential>
-PasswordStoreImpl::GetMatchingInsecureCredentialsImpl(
-    const std::string& signon_realm) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<InsecureCredential> insecure_credentials =
-      login_db_ ? login_db_->insecure_credentials_table().GetRows(signon_realm)
-                : std::vector<InsecureCredential>();
-  PasswordForm::Store store = IsAccountStore()
-                                  ? PasswordForm::Store::kAccountStore
-                                  : PasswordForm::Store::kProfileStore;
-  for (InsecureCredential& cred : insecure_credentials)
-    cred.in_store = store;
-  return insecure_credentials;
-}
-
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());

@@ -119,8 +119,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
   std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
-  std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
-      const std::string& signon_realm) override;
 
  private:
   LoginsResult GetAllLoginsInternal();

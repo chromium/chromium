@@ -75,10 +75,6 @@ class MockPasswordStore : public PasswordStore {
               GetAllInsecureCredentialsImpl,
               (),
               (override));
-  MOCK_METHOD(std::vector<InsecureCredential>,
-              GetMatchingInsecureCredentialsImpl,
-              (const std::string&),
-              (override));
   MOCK_METHOD(void,
               GetAllLoginsWithAffiliationAndBrandingInformation,
               (PasswordStoreConsumer*),

@@ -4277,19 +4277,15 @@ TEST_P(PasswordManagerTest, DontStartLeakDetectionWhenMuted) {
       std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
   manager()->set_leak_factory(std::move(mock_factory));
 
-  const PasswordForm form = MakeSimpleForm();
+  PasswordForm form = MakeSimpleForm();
+  form.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
   std::vector<FormData> observed = {form.form_data};
   EXPECT_CALL(*store_, GetLogins)
-      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form)));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 
-  // Add muted insecure credentials.
-  std::vector<InsecureCredential> insecure_credentials = {InsecureCredential(
-      form.signon_realm, form.username_value, base::Time::FromTimeT(1),
-      InsecureType::kLeaked, IsMuted(true))};
-  EXPECT_CALL(*store_, GetMatchingInsecureCredentialsImpl(form.signon_realm))
-      .WillOnce(Return(insecure_credentials));
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
@@ -4316,19 +4312,18 @@ TEST_P(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
   MockLeakDetectionCheckFactory* weak_factory = mock_factory.get();
   manager()->set_leak_factory(std::move(mock_factory));
 
-  const PasswordForm form = MakeSimpleForm();
+  PasswordForm form = MakeSimpleForm();
   std::vector<FormData> observed = {form.form_data};
+
+  form.username_value = u"different_username";
+  form.password_issues.insert(
+      {InsecureType::kLeaked, InsecurityMetadata(base::Time(), IsMuted(true))});
+
   EXPECT_CALL(*store_, GetLogins)
-      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form)));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 
-  // Add muted insecure credentials.
-  std::vector<InsecureCredential> insecure_credentials = {InsecureCredential(
-      form.signon_realm, u"different_username", base::Time::FromTimeT(1),
-      InsecureType::kLeaked, IsMuted(true))};
-  EXPECT_CALL(*store_, GetMatchingInsecureCredentialsImpl(form.signon_realm))
-      .WillOnce(Return(insecure_credentials));
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
