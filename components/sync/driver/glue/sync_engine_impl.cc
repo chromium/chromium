@@ -352,7 +352,6 @@ void SyncEngineImpl::ConnectDataType(
 }
 
 void SyncEngineImpl::DisconnectDataType(ModelType type) {
-  DCHECK(!IsProxyType(type));
   model_type_connector_->DisconnectDataType(type);
 }
 

@@ -519,7 +519,7 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   // TODO(crbug.com/922900): Do we need to call RegisterDataType() for Nigori?
   sync_manager_->GetModelTypeConnector()->ConnectDataType(
-      NIGORI, nigori_controller_->ActivateManuallyForNigori());
+      NIGORI, nigori_controller_->Connect());
 }
 
 }  // namespace syncer

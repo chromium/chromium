@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "components/sync/engine/data_type_activation_response.h"
+
 namespace syncer {
 
 FakeDataTypeController::FakeDataTypeController(ModelType type)
@@ -39,10 +41,9 @@ FakeDataTypeController::GetPreconditionState() const {
   return precondition_state_;
 }
 
-DataTypeController::ConnectResult FakeDataTypeController::Connect(
-    ModelTypeConfigurer* configurer) {
+std::unique_ptr<DataTypeActivationResponse> FakeDataTypeController::Connect() {
   ++activate_call_count_;
-  return ModelTypeController::Connect(configurer);
+  return ModelTypeController::Connect();
 }
 
 }  // namespace syncer

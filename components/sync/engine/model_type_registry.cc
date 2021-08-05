@@ -59,6 +59,11 @@ void ModelTypeRegistry::ConnectDataType(
 }
 
 void ModelTypeRegistry::DisconnectDataType(ModelType type) {
+  if (update_handler_map_.count(type) == 0) {
+    // Type not connected. Simply ignore.
+    return;
+  }
+
   DVLOG(1) << "Disabling an off-thread sync type: " << ModelTypeToString(type);
 
   DCHECK(!IsProxyType(type));

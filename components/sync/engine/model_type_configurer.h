@@ -56,7 +56,8 @@ class ModelTypeConfigurer {
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
   // Opposite of the above: stops treating |type| as a datatype that is
-  // propagating changes between the server and the processor.
+  // propagating changes between the server and the processor. No-op if the
+  // type is not connected.
   virtual void DisconnectDataType(ModelType type) = 0;
 
   // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
