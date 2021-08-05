@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/policy/core/common/cloud/signing_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -83,7 +82,6 @@ namespace policy {
 // static
 std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
     chromeos::system::StatisticsProvider* statistics_provider,
-    SigningService* signing_service,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     CloudPolicyClient::DeviceDMTokenCallback device_dm_token_callback) {
@@ -93,8 +91,8 @@ std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
       GetAttestedDeviceId(statistics_provider),
       GetEthernetMacAddress(statistics_provider),
       GetDockMacAddress(statistics_provider),
-      GetManufactureDate(statistics_provider), signing_service, service,
-      url_loader_factory, std::move(device_dm_token_callback));
+      GetManufactureDate(statistics_provider), service, url_loader_factory,
+      std::move(device_dm_token_callback));
 }
 
 }  // namespace policy

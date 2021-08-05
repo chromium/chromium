@@ -114,9 +114,10 @@ void DeviceCloudPolicyInitializer::PrepareEnrollment(
 
   enrollment_handler_ = std::make_unique<EnrollmentHandler>(
       policy_store_, install_attributes_, state_keys_broker_,
-      attestation_flow_.get(), CreateClient(device_management_service),
-      background_task_runner_, ad_join_delegate, enrollment_config,
-      std::move(dm_auth), install_attributes_->GetDeviceId(),
+      attestation_flow_.get(), signing_service_.get(),
+      CreateClient(device_management_service), background_task_runner_,
+      ad_join_delegate, enrollment_config, std::move(dm_auth),
+      install_attributes_->GetDeviceId(),
       EnrollmentRequisitionManager::GetDeviceRequisition(),
       EnrollmentRequisitionManager::GetSubOrganization(),
       base::BindOnce(&DeviceCloudPolicyInitializer::EnrollmentCompleted,
@@ -310,7 +311,7 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
   // DeviceDMToken callback is empty here because for device policies this
   // DMToken is already provided in the policy fetch requests.
   return CreateDeviceCloudPolicyClientAsh(
-      statistics_provider_, signing_service_.get(), device_management_service,
+      statistics_provider_, device_management_service,
       system_url_loader_factory_for_testing_
           ? system_url_loader_factory_for_testing_
           : g_browser_process->shared_url_loader_factory(),

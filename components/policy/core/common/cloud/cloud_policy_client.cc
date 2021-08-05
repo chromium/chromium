@@ -157,7 +157,6 @@ CloudPolicyClient::CloudPolicyClient(
     const std::string& ethernet_mac_address,
     const std::string& dock_mac_address,
     const std::string& manufacture_date,
-    SigningService* signing_service,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     DeviceDMTokenCallback device_dm_token_callback)
@@ -168,7 +167,6 @@ CloudPolicyClient::CloudPolicyClient(
       ethernet_mac_address_(ethernet_mac_address),
       dock_mac_address_(dock_mac_address),
       manufacture_date_(manufacture_date),
-      signing_service_(signing_service),
       service_(service),  // Can be null for unit tests.
       device_dm_token_callback_(device_dm_token_callback),
       url_loader_factory_(url_loader_factory) {}
@@ -248,9 +246,10 @@ void CloudPolicyClient::RegisterWithCertificate(
     const std::string& client_id,
     DMAuth auth,
     const std::string& pem_certificate_chain,
-    const std::string& sub_organization) {
+    const std::string& sub_organization,
+    SigningService* signing_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(signing_service_);
+  DCHECK(signing_service);
   DCHECK(service_);
   DCHECK(!is_registered());
 
@@ -269,7 +268,7 @@ void CloudPolicyClient::RegisterWithCertificate(
     configuration->set_device_owner(sub_organization);
   }
 
-  signing_service_->SignData(
+  signing_service->SignData(
       data.SerializeAsString(),
       base::BindOnce(&CloudPolicyClient::OnRegisterWithCertificateRequestSigned,
                      weak_ptr_factory_.GetWeakPtr(), std::move(auth)));

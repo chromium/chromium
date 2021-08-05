@@ -482,8 +482,8 @@ class CloudPolicyClientTest : public testing::Test {
             &url_loader_factory_);
     client_ = std::make_unique<CloudPolicyClient>(
         kMachineID, kMachineModel, kBrandCode, kAttestedDeviceId,
-        kEthernetMacAddress, kDockMacAddress, kManufactureDate,
-        &fake_signing_service_, &service_, shared_url_loader_factory_,
+        kEthernetMacAddress, kDockMacAddress, kManufactureDate, &service_,
+        shared_url_loader_factory_,
         base::BindRepeating(
             &MockDeviceDMTokenCallbackObserver::OnDeviceDMTokenRequested,
             base::Unretained(&device_dmtoken_callback_observer_)));
@@ -777,7 +777,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
   client_->RegisterWithCertificate(
       device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */);
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      &fake_signing_service_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
@@ -813,7 +814,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateFailToSignRequest) {
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
   client_->RegisterWithCertificate(
       device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */);
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      &fake_signing_service_);
   EXPECT_FALSE(client_->is_registered());
   EXPECT_EQ(DM_STATUS_CANNOT_SIGN_REQUEST, client_->status());
 }
@@ -1682,7 +1684,8 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
   device_attestation.SetPsmExecutionResult(psm_execution_result);
   client_->RegisterWithCertificate(
       device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
-      kEnrollmentCertificate, std::string() /* sub_organization */);
+      kEnrollmentCertificate, std::string() /* sub_organization */,
+      &fake_signing_service_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,

@@ -23,16 +23,14 @@ class SharedURLLoaderFactory;
 namespace policy {
 
 class DeviceManagementService;
-class SigningService;
 
 // Creates a CloudPolicyClient specific to the device level policies in Ash.
 // Returned client can be used to connect |DeviceCloudPolicyManagerAsh|.
 // |statistics_provider| is used to retrieve machine identity (machine id,
-// model, brand code etc.). |signing_service|, |service|, |url_loader_factory|
-// and |device_dm_token_callback| are passed to the client as are.
+// model, brand code etc.). |service|, |url_loader_factory| and
+// |device_dm_token_callback| are passed to the client as are.
 std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
     chromeos::system::StatisticsProvider* statistics_provider,
-    SigningService* signing_service,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     CloudPolicyClient::DeviceDMTokenCallback device_dm_token_callback);
