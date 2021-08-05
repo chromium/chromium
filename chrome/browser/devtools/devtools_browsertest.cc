@@ -2744,7 +2744,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, DevToolsFetchFromHttpDisallowed) {
   OpenDevToolsWindow("about:blank", true);
 
   const auto result = FetchFromDevToolsWindow("http://www.google.com");
-  EXPECT_EQ("a JavaScript error:\nTypeError: Failed to fetch\n", result.error);
+  EXPECT_THAT(result.error,
+              ::testing::StartsWith(
+                  "a JavaScript error:\nTypeError: Failed to fetch\n"));
 
   CloseDevToolsWindow();
 }
@@ -2754,5 +2756,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
 
   const auto result = Fetch(GetInspectedTab(),
                             "devtools://devtools/bundled/Images/whatsnew.avif");
-  EXPECT_EQ("a JavaScript error:\nTypeError: Failed to fetch\n", result.error);
+  EXPECT_THAT(result.error,
+              ::testing::StartsWith(
+                  "a JavaScript error:\nTypeError: Failed to fetch\n"));
 }

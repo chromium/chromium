@@ -294,6 +294,7 @@ class FetchManager::Loader final
   Vector<KURL> url_list_;
   Member<ExecutionContext> execution_context_;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
+  TraceWrapperV8Reference<v8::Value> exception_;
 };
 
 FetchManager::Loader::Loader(ExecutionContext* execution_context,
@@ -314,6 +315,15 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
       execution_context_(execution_context) {
   DCHECK(world_);
   url_list_.push_back(fetch_request_data->Url());
+  ScriptState* state = resolver_->GetScriptState();
+  v8::Isolate* isolate = state->GetIsolate();
+  // Only use a handle scope as we should be in the right context already.
+  v8::HandleScope scope(isolate);
+  // Create the exception at this point so we get the stack-trace that belongs
+  // to the fetch() call.
+  v8::Local<v8::Value> exception =
+      V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
+  exception_.Set(isolate, exception);
 }
 
 FetchManager::Loader::~Loader() {
@@ -330,6 +340,7 @@ void FetchManager::Loader::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   visitor->Trace(execution_context_);
   visitor->Trace(cached_metadata_handler_);
+  visitor->Trace(exception_);
   ThreadableLoaderClient::Trace(visitor);
 }
 
@@ -901,8 +912,8 @@ void FetchManager::Loader::Failed(
     if (dom_exception) {
       resolver_->Reject(dom_exception);
     } else {
-      v8::Local<v8::Value> value = V8ThrowException::CreateTypeError(
-          state->GetIsolate(), "Failed to fetch");
+      v8::Local<v8::Value> value = exception_.NewLocal(state->GetIsolate());
+      exception_.Clear();
       if (RuntimeEnabledFeatures::ExceptionMetaDataForDevToolsEnabled()) {
         ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
         if (devtools_request_id) {
