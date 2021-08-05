@@ -344,17 +344,20 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {
   auto menu1 = ExistingWindowSubMenuModel::Create(
       nullptr, browser()->tab_menu_model_delegate(),
       browser()->tab_strip_model(), 0);
-  ASSERT_EQ(12, menu1->GetItemCount());
+  ASSERT_EQ(15, menu1->GetItemCount());
   EXPECT_EQ(u"Desk 1", menu1->GetLabelAt(2));
   CheckBrowserTitle(menu1->GetLabelAt(3), kBrowser2TabTitle, 1);
-  EXPECT_EQ(u"Desk 2", menu1->GetLabelAt(4));
-  CheckBrowserTitle(menu1->GetLabelAt(5), kBrowser4TabTitle, 1);
-  CheckBrowserTitle(menu1->GetLabelAt(6), kBrowser3TabTitle, 1);
-  EXPECT_EQ(u"Desk 3", menu1->GetLabelAt(7));
-  CheckBrowserTitle(menu1->GetLabelAt(8), kBrowser5TabTitle, 1);
-  CheckBrowserTitle(menu1->GetLabelAt(9), kBrowser6TabTitle, 1);
-  EXPECT_EQ(u"Desk 4", menu1->GetLabelAt(10));
-  CheckBrowserTitle(menu1->GetLabelAt(11), kBrowser7TabTitle, 1);
+  EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(4));
+  EXPECT_EQ(u"Desk 2", menu1->GetLabelAt(5));
+  CheckBrowserTitle(menu1->GetLabelAt(6), kBrowser4TabTitle, 1);
+  CheckBrowserTitle(menu1->GetLabelAt(7), kBrowser3TabTitle, 1);
+  EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(8));
+  EXPECT_EQ(u"Desk 3", menu1->GetLabelAt(9));
+  CheckBrowserTitle(menu1->GetLabelAt(10), kBrowser5TabTitle, 1);
+  CheckBrowserTitle(menu1->GetLabelAt(11), kBrowser6TabTitle, 1);
+  EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(12));
+  EXPECT_EQ(u"Desk 4", menu1->GetLabelAt(13));
+  CheckBrowserTitle(menu1->GetLabelAt(14), kBrowser7TabTitle, 1);
 
   // Clean up.
   chrome::CloseTab(browser_2.get());

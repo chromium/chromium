@@ -80,7 +80,8 @@ void ExistingBaseSubMenuModel::Build(
 
   // Start command ids after the parent menu's ids to avoid collisions.
   int command_id = min_command_id_ + 1;
-  for (auto item : menu_item_infos) {
+  for (size_t i = 0; i < menu_item_infos.size(); ++i) {
+    const MenuItemInfo& item = menu_item_infos[i];
     if (command_id > min_command_id_ + max_size)
       break;
 
@@ -92,6 +93,10 @@ void ExistingBaseSubMenuModel::Build(
         AddItem(command_id++, item.text);
       }
     } else {
+      // Add a spacing separator to further delineate menu item groupings.
+      if (i > 0)
+        AddSeparator(ui::SPACING_SEPARATOR);
+
       AddTitle(item.text);
     }
 
