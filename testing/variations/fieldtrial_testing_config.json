@@ -8696,6 +8696,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Control",
+                    "disable_features": [
+                        "V8ScriptAblation"
+                    ]
+                },
+                {
                     "name": "DelayOnce50ms",
                     "params": {
                         "V8ScriptDelayOnceMs": "50"
