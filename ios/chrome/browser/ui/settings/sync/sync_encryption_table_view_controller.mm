@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -201,7 +203,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsControllerProtocol callbacks
 
 - (void)reportDismissalUserAction {
-  NOTREACHED();
+  base::RecordAction(
+      base::UserMetricsAction("MobileSyncEncryptionSettingsClose"));
 }
 
 - (void)reportBackUserAction {
