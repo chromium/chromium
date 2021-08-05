@@ -4,6 +4,7 @@
 
 #include "ui/message_center/views/message_popup_collection.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -138,9 +139,25 @@ MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
   return it->popup->message_view();
 }
 
+void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
+    const std::string& ungrouped_notification_id,
+    const std::string& new_grouped_notification_id) {
+  auto it = std::find_if(
+      popup_items_.begin(), popup_items_.end(),
+      [&](auto popup) { return popup.id == ungrouped_notification_id; });
+  if (it == popup_items_.end())
+    return;
+
+  it->id = new_grouped_notification_id;
+  it->popup->message_view()->set_notification_id(new_grouped_notification_id);
+}
+
 void MessagePopupCollection::OnNotificationAdded(
     const std::string& notification_id) {
-  NotificationViewController::OnNotificationAdded(notification_id);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled())
+    NotificationViewController::OnNotificationAdded(notification_id);
+#endif
   // Should not call MessagePopupCollection::Update here. Because notification
   // may be removed before animation which is triggered by the previous
   // operation on MessagePopupCollection ends. As result, when a new
@@ -153,7 +170,10 @@ void MessagePopupCollection::OnNotificationAdded(
 void MessagePopupCollection::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
-  NotificationViewController::OnNotificationRemoved(notification_id, by_user);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled())
+    NotificationViewController::OnNotificationRemoved(notification_id, by_user);
+#endif
 
   if (by_user) {
     recently_closed_by_user_ = true;
@@ -504,8 +524,11 @@ bool MessagePopupCollection::AddPopup() {
       return false;
     }
 
-    item.popup->Show();
     popup_items_.push_back(item);
+    if (new_notification->group_parent())
+      PopulateGroupParent(item.id);
+
+    item.popup->Show();
     NotifyPopupAdded(item.popup);
   }
 

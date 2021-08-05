@@ -1318,5 +1318,22 @@ TEST_F(MessageCenterImplTest, ButtonClickWithReplyOnLockScreen) {
   EXPECT_FALSE(lock_screen_controller()->IsScreenLocked());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Test to ensure no grouping behavior gets accidentally enabled
+// outside of chrome os.
+TEST_F(MessageCenterImplTest, NoGroupingBehaviorOnNonChromeOS) {
+  std::vector<std::string> notification_ids{"id0", "id1", "id2"};
+  for (std::string id : notification_ids)
+    message_center()->AddNotification(
+        CreateSimpleNotificationWithNotifierId(id, "app0"));
+
+  for (std::string id : notification_ids) {
+    auto* notification = message_center()->FindNotificationById(id);
+    EXPECT_FALSE(notification->allow_group() || notification->group_parent() ||
+                 notification->group_child());
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace internal
 }  // namespace message_center

@@ -217,5 +217,10 @@ if (enable_message_center) {
         "//ui/views:test_support",
       ]
     }
+
+    if (is_chromeos_ash) {
+      sources += [ "notification_view_controller_unittest.cc" ]
+      deps += [ "//ash/constants" ]
+    }
   }
 }

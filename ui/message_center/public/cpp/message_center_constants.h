@@ -108,6 +108,7 @@ constexpr int kMarginBetweenPopups = 10;
 // The corners are only rounded in Chrome OS.
 constexpr int kNotificationCornerRadius = 2;
 
+constexpr char kIdSuffixForGroupContainerNotification[] = "_copy";
 }  // namespace message_center
 
 #endif  // UI_MESSAGE_CENTER_PUBLIC_CPP_MESSAGE_CENTER_CONSTANTS_H_

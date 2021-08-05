@@ -696,6 +696,31 @@ NotificationViewMD::~NotificationViewMD() {
   RemovePreTargetHandler(click_activator_.get());
 }
 
+void NotificationViewMD::AddGroupNotification(const Notification& notification,
+                                              bool newest_first) {
+  if (newest_first) {
+    left_content_->AddChildViewAt(
+        std::make_unique<NotificationViewMD>(notification), 0);
+  } else {
+    left_content_->AddChildView(
+        std::make_unique<NotificationViewMD>(notification));
+  }
+  SetExpanded(true);
+}
+
+void NotificationViewMD::RemoveGroupNotification(
+    const std::string& notification_id) {
+  NotificationViewMD* to_be_deleted = nullptr;
+  for (auto* child : left_content_->children()) {
+    NotificationViewMD* group_notification =
+        static_cast<NotificationViewMD*>(child);
+    if (group_notification->notification_id() == notification_id)
+      to_be_deleted = group_notification;
+  }
+  if (to_be_deleted)
+    delete to_be_deleted;
+}
+
 void NotificationViewMD::AddLayerBeneathView(ui::Layer* layer) {
   for (auto* child : GetChildrenForLayerAdjustment()) {
     child->SetPaintToLayer();
