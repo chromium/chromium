@@ -1,5 +1,5 @@
 // Note: Following utility functions are expected to be used from
-// upload-on-prerender-* test files.
+// unload-on-prerender-* test files.
 
 function createTestUrl(nextState) {
   const params = new URLSearchParams();
