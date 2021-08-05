@@ -25,7 +25,9 @@ import android.util.Base64;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
@@ -33,6 +35,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.components.variations.VariationsSwitches;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -53,6 +57,9 @@ public class VariationsSeedFetcherTest {
     private static final String sRestrict = "restricted";
     private static final String sMilestone = "64";
     private static final String sChannel = "dev";
+
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Before
     public void setUp() throws IOException {
@@ -198,5 +205,22 @@ public class VariationsSeedFetcherTest {
         assertTrue(urlString.contains("osname"));
         assertTrue(urlString.contains("milestone"));
         assertFalse(urlString.contains("channel"));
+    }
+
+    /**
+     * Test method to make sure {@link VariationsSeedFetcher#getConnectionString()} honors the
+     * "--fake-variations-channel" switch.
+     */
+    @Test
+    @CommandLineFlags.Add(VariationsSwitches.FAKE_VARIATIONS_CHANNEL + "=stable")
+    public void testGetConnectionString_HonorsChannelCommandlineSwitch() {
+        String urlString = mFetcher.getConnectionString(
+                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, sChannel);
+
+        // The URL should have a channel param.
+        assertTrue(urlString, urlString.contains("channel"));
+
+        // The channel param should be overridden by commandline.
+        assertTrue(urlString, urlString.contains("stable"));
     }
 }
