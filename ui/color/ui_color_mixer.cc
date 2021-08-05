@@ -114,10 +114,6 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorPwaToolbarForeground] = {kColorEndpointForeground};
   mixer[kColorSeparator] = {kColorMidground};
   mixer[kColorShadowBase] = {dark_window ? SK_ColorBLACK : gfx::kGoogleGrey800};
-  mixer[kColorShadowValueAmbientShadowElevationTwo] =
-      SetAlpha(kColorShadowBase, 0x26);
-  mixer[kColorShadowValueKeyShadowElevationTwo] =
-      SetAlpha(kColorShadowBase, 0x4d);
   mixer[kColorShadowValueAmbientShadowElevationThree] =
       SetAlpha(kColorShadowBase, 0x40);
   mixer[kColorShadowValueKeyShadowElevationThree] =
