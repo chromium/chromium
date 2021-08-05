@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
@@ -84,6 +85,29 @@ public class PriceDropNotificationManager {
         }
 
         return true;
+    }
+
+    /**
+     * @return Whether price drop notifications can be posted and record user opt-in metrics.
+     */
+    public boolean canPostNotificationWithMetricsRecorded() {
+        if (!PriceTrackingUtilities.isPriceDropNotificationEligible()) return false;
+        boolean isSystemNotificationEnabled = areAppNotificationsEnabled();
+        RecordHistogram.recordBooleanHistogram(
+                "Commerce.PriceDrop.SystemNotificationEnabled", isSystemNotificationEnabled);
+        if (!isSystemNotificationEnabled) return false;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
+
+        NotificationChannel channel = getNotificationChannel();
+        boolean isChannelCreated = channel != null;
+        RecordHistogram.recordBooleanHistogram(
+                "Commerce.PriceDrop.NotificationChannelCreated", isChannelCreated);
+        if (!isChannelCreated) return false;
+        boolean isChannelBlocked = channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
+        RecordHistogram.recordBooleanHistogram(
+                "Commerce.PriceDrop.NotificationChannelBlocked", isChannelBlocked);
+        return !isChannelBlocked;
     }
 
     /**

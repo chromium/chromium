@@ -119,6 +119,7 @@ public class PriceDropNotificationManagerTest {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
         assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }
 
     @Test
@@ -128,6 +129,7 @@ public class PriceDropNotificationManagerTest {
         mMockNotificationManager.setNotificationsEnabled(false);
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }
 
     @Test
@@ -140,9 +142,11 @@ public class PriceDropNotificationManagerTest {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertTrue(mPriceDropNotificationManager.canPostNotification());
+            assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
         } else {
             assertNull(mPriceDropNotificationManager.getNotificationChannel());
             assertFalse(mPriceDropNotificationManager.canPostNotification());
+            assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
 
             mPriceDropNotificationManager.createNotificationChannel();
             assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
@@ -150,6 +154,7 @@ public class PriceDropNotificationManagerTest {
                     mPriceDropNotificationManager.getNotificationChannel().getImportance());
 
             assertTrue(mPriceDropNotificationManager.canPostNotification());
+            assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
         }
     }
 

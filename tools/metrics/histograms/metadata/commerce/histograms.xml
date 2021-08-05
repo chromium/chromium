@@ -33,6 +33,37 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
       summary="Tabs between 1 and 90 days since last usage."/>
 </variants>
 
+<histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
+    expires_after="M97">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the price drop notification channel is blocked by users.
+    Recorded when we try to initialize commerce subscriptions. Implemented for
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
+    expires_after="M97">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the price drop notification channel is created. Recorded
+    when we try to initialize commerce subscriptions. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
+    expires_after="M97">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the system notification is enabled by users. Recorded when
+    we try to initialize commerce subscriptions. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
     enum="BooleanContainsPrice" expires_after="2022-06-07">

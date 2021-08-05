@@ -155,7 +155,7 @@ public class ImplicitPriceDropSubscriptionsManager {
     }
 
     private boolean shouldInitializeSubscriptions() {
-        if ((!mPriceDropNotificationManager.canPostNotification())
+        if ((!mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded())
                 || (System.currentTimeMillis()
                                 - mSharedPreferencesManager.readLong(
                                         CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
