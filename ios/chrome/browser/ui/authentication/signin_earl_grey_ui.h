@@ -52,10 +52,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // This method should be used only if SimplifySignOutIOS is turned on.
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;
 
-// Taps on the settings link in the sign-in view. The sign-in view has to be
-// opened before calling this method.
-+ (void)tapSettingsLink;
-
 // Taps the sign in confirmation page, scrolls first to make the OK button
 // visible on short devices (e.g. iPhone 5s).
 + (void)tapSigninConfirmationDialog;
