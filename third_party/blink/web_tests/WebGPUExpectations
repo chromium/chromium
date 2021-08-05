@@ -266,10 +266,6 @@ crbug.com/tint/993 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execut
 # Crashes or fails with "Backing is being accessed by both GL and Vulkan"
 crbug.com/1234041 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:* [ Skip ]
 
-# VVLs want fillBuffer to be a multiple of 4
-crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=false;indirect=true;* [ Skip ]
-crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=false;* [ Skip ]
-
 # Shared image synchronization
 crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:drawTo2DCanvas:* [ Crash ]
 crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:offscreenCanvas,snapshot:* [ Crash ]
