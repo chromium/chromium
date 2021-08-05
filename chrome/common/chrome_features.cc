@@ -1001,7 +1001,7 @@ const base::Feature kUploadZippedSystemLogs{"UploadZippedSystemLogs",
 #if defined(OS_ANDROID)
 // Enables using NotificationCompat.Builder to create Android notifications.
 const base::Feature kUseNotificationCompatBuilder{
-    "UseNotificationCompatBuilder", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseNotificationCompatBuilder", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

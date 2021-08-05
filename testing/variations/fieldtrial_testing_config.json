@@ -8447,24 +8447,6 @@
             ]
         }
     ],
-    "UseNotificationCompatBuilder": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210625",
-                    "enable_features": [
-                        "UseNotificationCompatBuilder"
-                    ],
-                    "disable_features": [
-                        "AllowRemoteContextForNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseOzonePlatform": [
         {
             "platforms": [
