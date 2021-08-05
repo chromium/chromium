@@ -28,7 +28,7 @@
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/metrics/demographics/user_demographics.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_base_switches.h"
@@ -99,7 +99,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
   db_thread_ = profile_web_data_service_
                    ? profile_web_data_service_->GetDBTaskRunner()
                    : nullptr;
-  password_store_ = IOSChromePasswordStoreFactory::GetForBrowserState(
+  password_store_ = IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
       browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ =
