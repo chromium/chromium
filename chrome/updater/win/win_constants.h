@@ -57,6 +57,7 @@ extern const wchar_t kRegKeyCompanyEnrollment[];
 extern const wchar_t kRegValueDmToken[];
 
 extern const wchar_t kWindowsServiceName[];
+extern const wchar_t kWindowsInternalServiceName[];
 
 }  // namespace updater
 

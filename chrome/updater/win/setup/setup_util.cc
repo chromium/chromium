@@ -216,8 +216,10 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                         "*/chrome/updater/*=2");
+  const wchar_t* const kServiceName =
+      internal_service ? kWindowsInternalServiceName : kWindowsServiceName;
   list->AddWorkItem(new installer::InstallServiceWorkItem(
-      kWindowsServiceName, kWindowsServiceName, com_service_command,
+      kServiceName, kServiceName, com_service_command,
       base::ASCIIToWide(UPDATER_KEY),
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),

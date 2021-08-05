@@ -111,13 +111,13 @@ absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-bool DeleteService() {
+bool DeleteService(const wchar_t* const service_name) {
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
   if (!scm)
     return false;
 
-  SC_HANDLE service = ::OpenService(scm, kWindowsServiceName, DELETE);
+  SC_HANDLE service = ::OpenService(scm, service_name, DELETE);
   bool is_service_deleted = !service;
   if (!is_service_deleted) {
     is_service_deleted =
@@ -127,12 +127,11 @@ bool DeleteService() {
 
     ::CloseServiceHandle(service);
   }
-
-  ::CloseServiceHandle(scm);
-
   base::win::RegKey(HKEY_LOCAL_MACHINE, base::ASCIIToWide(UPDATER_KEY).c_str(),
                     KEY_WRITE)
-      .DeleteValue(kWindowsServiceName);
+      .DeleteValue(service_name);
+
+  ::CloseServiceHandle(scm);
 
   return is_service_deleted;
 }
@@ -162,7 +161,10 @@ void Clean(UpdaterScope scope) {
   }
 
   if (scope == UpdaterScope::kSystem) {
-    EXPECT_TRUE(DeleteService());
+    for (const wchar_t* const service_name :
+         {kWindowsInternalServiceName, kWindowsServiceName}) {
+      EXPECT_TRUE(DeleteService(service_name));
+    }
   }
 
   // TODO(crbug.com/1062288): Delete the Wake task.
@@ -176,14 +178,14 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
 }
 
-bool IsServiceGone() {
+bool IsServiceGone(const wchar_t* const service_name) {
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
   if (!scm)
     return false;
 
   SC_HANDLE service = ::OpenService(
-      scm, kWindowsServiceName, SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG);
+      scm, service_name, SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG);
   bool is_service_gone = !service;
   if (!is_service_gone) {
     if (!::ChangeServiceConfig(service, SERVICE_NO_CHANGE, SERVICE_NO_CHANGE,
@@ -201,7 +203,7 @@ bool IsServiceGone() {
   return is_service_gone &&
          !base::win::RegKey(HKEY_LOCAL_MACHINE,
                             base::ASCIIToWide(UPDATER_KEY).c_str(), KEY_READ)
-              .HasValue(kWindowsServiceName);
+              .HasValue(service_name);
 }
 
 void ExpectClean(UpdaterScope scope) {
@@ -228,8 +230,12 @@ void ExpectClean(UpdaterScope scope) {
     EXPECT_FALSE(RegKeyExists(root, 0, GetComTypeLibRegistryPath(iid)));
   }
 
-  if (scope == UpdaterScope::kSystem)
-    EXPECT_TRUE(IsServiceGone());
+  if (scope == UpdaterScope::kSystem) {
+    for (const wchar_t* const service_name :
+         {kWindowsInternalServiceName, kWindowsServiceName}) {
+      EXPECT_TRUE(IsServiceGone(service_name));
+    }
+  }
 
   // TODO(crbug.com/1062288): Assert there are no Wake tasks.
 

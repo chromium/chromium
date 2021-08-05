@@ -57,9 +57,13 @@ void DeleteComService() {
                                    WorkItem::kWow64Default);
   }
 
-  if (!installer::InstallServiceWorkItem::DeleteService(
-          kWindowsServiceName, base::ASCIIToWide(UPDATER_KEY), {}, {}))
-    LOG(WARNING) << "DeleteService failed.";
+  for (const wchar_t* const service_name :
+       {kWindowsInternalServiceName, kWindowsServiceName}) {
+    if (!installer::InstallServiceWorkItem::DeleteService(
+            service_name, base::ASCIIToWide(UPDATER_KEY), {}, {})) {
+      LOG(WARNING) << "DeleteService [" << service_name << "] failed.";
+    }
+  }
 }
 
 void DeleteComInterfaces(HKEY root) {
