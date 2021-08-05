@@ -44,8 +44,6 @@ class ProfilePickerSignInFlowController
 
   ProfilePickerSignInFlowController(
       ProfilePickerWebContentsHost* host,
-      Profile* profile,
-      absl::optional<SkColor> profile_color,
       base::TimeDelta extended_account_info_timeout);
   ~ProfilePickerSignInFlowController() override;
   ProfilePickerSignInFlowController(const ProfilePickerSignInFlowController&) =
@@ -53,35 +51,37 @@ class ProfilePickerSignInFlowController
   ProfilePickerSignInFlowController& operator=(
       const ProfilePickerSignInFlowController&) = delete;
 
-  // Must be called after constructor.
-  void Init();
+  // Initiates switching the flow to sign-in. When it is done,
+  // `switch_finished_callback` gets called. If a sign-in was in progress before
+  // in the lifetime of this class, it only switches the view to show the
+  // ongoing sign-in again (and updates color for the new profile to
+  // `profile_color`).
+  void SwitchToSignIn(absl::optional<SkColor> profile_color,
+                      base::OnceCallback<void(bool)> switch_finished_callback);
 
-  // Cancels the flow explicitly. This does not log any metrics, the caller
-  // must take care of logging the outcome of the flow on its own.
-  void Cancel();
+  // Returns true if the user is not yet authenticated.
+  bool IsSigningIn() const;
 
   // Reloads the sign-in page if applicable.
   void ReloadSignInPage();
 
-  // TODO(crbug.com/1227029): Make private as an implementation detail of the
-  // DICe flow.
-  content::WebContents* contents() const { return contents_.get(); }
-
-  // Updates the profile color provided in the constructor. absl::optional
-  // denotes the default theme.
-  void SetProfileColor(absl::optional<SkColor> color);
-  // Returns the profile color, taking into account current policies.
-  // Returns absl::nullopt for the default theme.
-  absl::optional<SkColor> GetProfileColor() const;
-
-  bool IsSigningIn() const;
-
-  // Returns theme provider based on `profile_`.
+  // Returns theme provider based on the sign-in profile or nullptr if the flow
+  // is not yet initialized.
   const ui::ThemeProvider* GetThemeProvider() const;
 
   // Getter of the path of profile which is displayed on the profile switch
   // screen. Returns an empty path if no such screen has been displayed.
   base::FilePath switch_profile_path() const { return switch_profile_path_; }
+
+  // Sign-in flow operations.
+  //
+  // All the following public functions can only be called after the flow gets
+  // initialized. The flow is initialized when the `switch_finished_callback`
+  // provided in SwitchToSignIn() gets called with success (true value).
+
+  // Cancels the flow explicitly. This does not log any metrics, the caller
+  // must take care of logging the outcome of the flow on its own.
+  void Cancel();
 
   // Finishes the creation flow by marking `profile_being_created_` as fully
   // created, opening a browser window for this profile and calling
@@ -139,6 +139,19 @@ class ProfilePickerSignInFlowController
       EnterpriseProfileWelcomeUI::ScreenType type,
       base::OnceCallback<void(bool)> proceed_callback);
 
+  // Initializes the flow with the newly created profile.
+  void OnProfileCreated(
+      base::OnceCallback<void(bool)>& switch_finished_callback,
+      Profile* new_profile,
+      Profile::CreateStatus status);
+
+  // Returns whether the flow is initialized (i.e. whether `profile_` has been
+  // created).
+  bool IsInitialized() const;
+
+  // Returns the profile color, taking into account current policies.
+  absl::optional<SkColor> GetProfileColor() const;
+
   void FinishAndOpenBrowserImpl(BrowserOpenedCallback callback,
                                 bool enterprise_sync_consent_needed);
 
@@ -153,17 +166,19 @@ class ProfilePickerSignInFlowController
                        Profile* profile,
                        Profile::CreateStatus profile_create_status);
 
+  content::WebContents* contents() const { return contents_.get(); }
+
   // The host object, must outlive this object.
   ProfilePickerWebContentsHost* host_;
-
-  // The web contents backed by `profile`. This is used for displaying the
-  // sign-in flow.
-  std::unique_ptr<content::WebContents> contents_;
 
   Profile* profile_ = nullptr;
 
   // Prevent |profile_| from being destroyed first.
-  ScopedProfileKeepAlive profile_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+
+  // The web contents backed by `profile`. This is used for displaying the
+  // sign-in flow.
+  std::unique_ptr<content::WebContents> contents_;
 
   // Set for the profile at the very end to avoid coloring the simple toolbar
   // for GAIA sign-in (that uses the ThemeProvider of the current profile).

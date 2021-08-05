@@ -137,9 +137,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Cancel the sign-in flow and returns back to the main picker screen (if the
   // original EntryPoint was to open the picker).
   void CancelSignIn();
-  // On creation success for the sign-in profile, it rebuilds the view.
-  void OnProfileForSigninCreated(
-      absl::optional<SkColor> profile_color,
+
+  // Handles profile creation when forced sign-in is enabled.
+  void OnProfileForForcedSigninCreated(
       base::OnceCallback<void(bool)>& switch_finished_callback,
       Profile* new_profile,
       Profile::CreateStatus status);

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -133,16 +134,8 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
 
 ProfilePickerSignInFlowController::ProfilePickerSignInFlowController(
     ProfilePickerWebContentsHost* host,
-    Profile* profile,
-    absl::optional<SkColor> profile_color,
     base::TimeDelta extended_account_info_timeout)
     : host_(host),
-      contents_(content::WebContents::Create(
-          content::WebContents::CreateParams(profile))),
-      profile_(profile),
-      profile_keep_alive_(profile_,
-                          ProfileKeepAliveOrigin::kProfileCreationFlow),
-      profile_color_(profile_color),
       extended_account_info_timeout_(extended_account_info_timeout) {}
 
 ProfilePickerSignInFlowController::~ProfilePickerSignInFlowController() {
@@ -166,7 +159,58 @@ ProfilePickerSignInFlowController::~ProfilePickerSignInFlowController() {
   }
 }
 
-void ProfilePickerSignInFlowController::Init() {
+void ProfilePickerSignInFlowController::SwitchToSignIn(
+    absl::optional<SkColor> profile_color,
+    base::OnceCallback<void(bool)> switch_finished_callback) {
+  // Update the color even if the profile is already initialized (to respect
+  // potentially different choice now).
+  profile_color_ = profile_color;
+
+  if (IsInitialized()) {
+    std::move(switch_finished_callback).Run(true);
+    // Do not load any url because the desired sign-in screen is still loaded in
+    // `contents()`.
+    host_->ShowScreen(contents(), GURL(), /*show_toolbar=*/true);
+    return;
+  }
+
+  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
+  // Silently create the new profile for browsing on GAIA (so that the sign-in
+  // cookies are stored in the right profile).
+  ProfileManager::CreateMultiProfileAsync(
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .ChooseNameForNewProfile(icon_index),
+      icon_index, /*is_hidden=*/true,
+      base::BindRepeating(&ProfilePickerSignInFlowController::OnProfileCreated,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::OwnedRef(std::move(switch_finished_callback))));
+}
+
+// TODO(crbug.com/1227029): Move the function to respect declaration order.
+void ProfilePickerSignInFlowController::OnProfileCreated(
+    base::OnceCallback<void(bool)>& switch_finished_callback,
+    Profile* new_profile,
+    Profile::CreateStatus status) {
+  if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
+    std::move(switch_finished_callback).Run(false);
+    return;
+  }
+  if (status != Profile::CREATE_STATUS_INITIALIZED) {
+    return;
+  }
+
+  DCHECK(new_profile);
+  DCHECK(!profile_);
+  DCHECK(!contents());
+  std::move(switch_finished_callback).Run(true);
+
+  profile_ = new_profile;
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
+
+  contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(profile_));
   contents()->SetDelegate(this);
 
   // Create a manager that supports modal dialogs, such as for webauthn.
@@ -214,7 +258,9 @@ void ProfilePickerSignInFlowController::Init() {
                     /*show_toolbar=*/true);
 }
 
+// TODO(crbug.com/1227029): Move the function to respect declaration order.
 void ProfilePickerSignInFlowController::Cancel() {
+  DCHECK(IsInitialized());
   if (is_finished_)
     return;
 
@@ -226,20 +272,18 @@ void ProfilePickerSignInFlowController::Cancel() {
       profile_->GetPath(), base::DoNothing());
 }
 
+// TODO(crbug.com/1227029): Move the function to respect declaration order.
 void ProfilePickerSignInFlowController::ReloadSignInPage() {
-  if (contents() && IsSigningIn()) {
+  if (IsInitialized() && contents() && IsSigningIn()) {
     contents()->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
                                        true);
   }
 }
 
-void ProfilePickerSignInFlowController::SetProfileColor(
-    absl::optional<SkColor> color) {
-  profile_color_ = color;
-}
-
+// TODO(crbug.com/1227029): Move the function down to respect declaration order.
 absl::optional<SkColor> ProfilePickerSignInFlowController::GetProfileColor()
     const {
+  DCHECK(IsInitialized());
   // The new profile theme may be overridden by an existing policy theme. This
   // check ensures the correct theme is applied to the sync confirmation window.
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
@@ -255,10 +299,13 @@ bool ProfilePickerSignInFlowController::IsSigningIn() const {
 
 const ui::ThemeProvider* ProfilePickerSignInFlowController::GetThemeProvider()
     const {
+  if (!IsInitialized())
+    return nullptr;
   return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
 void ProfilePickerSignInFlowController::SwitchToSyncConfirmation() {
+  DCHECK(IsInitialized());
   host_->ShowScreen(
       contents(), GURL(chrome::kChromeUISyncConfirmationURL),
       /*show_toolbar=*/false,
@@ -271,8 +318,10 @@ void ProfilePickerSignInFlowController::SwitchToSyncConfirmation() {
           base::Unretained(this)));
 }
 
+// TODO(crbug.com/1227029): Move the function to respect declaration order.
 void ProfilePickerSignInFlowController::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
+  DCHECK(IsInitialized());
   // The sign-in flow is finished, no profile window should be shown in the end.
   Cancel();
 
@@ -286,6 +335,7 @@ void ProfilePickerSignInFlowController::SwitchToProfileSwitch(
 void ProfilePickerSignInFlowController::SwitchToEnterpriseProfileWelcome(
     EnterpriseProfileWelcomeUI::ScreenType type,
     base::OnceCallback<void(bool)> proceed_callback) {
+  DCHECK(IsInitialized());
   host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
                     /*show_toolbar=*/false,
@@ -344,6 +394,7 @@ ProfilePickerSignInFlowController::GetWebContentsModalDialogHost() {
 
 void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
+  DCHECK(IsInitialized());
   DCHECK(!account_info.IsEmpty());
   email_ = account_info.email;
 
@@ -382,6 +433,7 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
 
 void ProfilePickerSignInFlowController::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
+  DCHECK(IsInitialized());
   if (!account_info.IsValid())
     return;
   name_for_signed_in_profile_ =
@@ -393,12 +445,14 @@ void ProfilePickerSignInFlowController::OnExtendedAccountInfoUpdated(
 
 void ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout(
     const CoreAccountInfo& account) {
+  DCHECK(IsInitialized());
   name_for_signed_in_profile_ =
       profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(account);
   OnProfileNameAvailable();
 }
 
 void ProfilePickerSignInFlowController::OnProfileNameAvailable() {
+  DCHECK(IsInitialized());
   // Stop listening to further changes.
   DCHECK(identity_manager_observation_.IsObservingSource(
       IdentityManagerFactory::GetForProfile(profile_)));
@@ -409,6 +463,7 @@ void ProfilePickerSignInFlowController::OnProfileNameAvailable() {
 }
 
 void ProfilePickerSignInFlowController::SwitchToSyncConfirmationFinished() {
+  DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   SyncConfirmationUI* sync_confirmation_ui =
       static_cast<SyncConfirmationUI*>(contents()->GetWebUI()->GetController());
@@ -421,6 +476,7 @@ void ProfilePickerSignInFlowController::
     SwitchToEnterpriseProfileWelcomeFinished(
         EnterpriseProfileWelcomeUI::ScreenType type,
         base::OnceCallback<void(bool)> proceed_callback) {
+  DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   EnterpriseProfileWelcomeUI* enterprise_profile_welcome_ui =
       contents()
@@ -435,9 +491,15 @@ void ProfilePickerSignInFlowController::
       GetProfileColor(), std::move(proceed_callback));
 }
 
+bool ProfilePickerSignInFlowController::IsInitialized() const {
+  return profile_ != nullptr;
+}
+
+// TODO(crbug.com/1227029): Move the function to respect declaration order.
 void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
     BrowserOpenedCallback callback,
     bool enterprise_sync_consent_needed) {
+  DCHECK(IsInitialized());
   // Do nothing if the sign-in flow is aborted or if this has already been
   // called. Note that this can get called first time from a special case
   // handling (such as the Settings link) and than second time when the
@@ -460,6 +522,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
 void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
     BrowserOpenedCallback callback,
     bool enterprise_sync_consent_needed) {
+  DCHECK(IsInitialized());
   DCHECK(!name_for_signed_in_profile_.empty());
 
   ProfileAttributesEntry* entry =
@@ -512,6 +575,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl(
 }
 
 void ProfilePickerSignInFlowController::FinishAndOpenBrowserForSAML() {
+  DCHECK(IsInitialized());
   // First, free up `contents()` to be moved to a new browser window.
   host_->ShowScreenInSystemContents(
       GURL(url::kAboutBlankURL),
@@ -525,6 +589,7 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowserForSAML() {
 }
 
 void ProfilePickerSignInFlowController::OnSignInContentsFreedUp() {
+  DCHECK(IsInitialized());
   DCHECK(!is_finished_);
   is_finished_ = true;
 
@@ -541,6 +606,7 @@ void ProfilePickerSignInFlowController::OnBrowserOpened(
     BrowserOpenedCallback finish_flow_callback,
     Profile* profile,
     Profile::CreateStatus profile_create_status) {
+  DCHECK(IsInitialized());
   CHECK_EQ(profile, profile_);
 
   // Hide the flow window. This posts a task on the message loop to destroy the

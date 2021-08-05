@@ -578,31 +578,29 @@ void ProfilePickerView::Init(Profile* system_profile) {
 void ProfilePickerView::SwitchToSignIn(
     absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
-  if (sign_in_) {
-    // The profile is already created (the user went back and forth again). No
-    // need to create it again.
-    std::move(switch_finished_callback).Run(true);
-    // The color might be different for the second time (as the user could go to
-    // the local customization flow and change the color there) so update it.
-    sign_in_->SetProfileColor(profile_color);
-    // Do not load any url because the desired sign-in screen is still loaded in
-    // `sign_in_->contents`.
-    ShowScreen(sign_in_->contents(), GURL(),
-               /*show_toolbar=*/true);
+  // TODO(crbug.com/1227029): Consider having forced signin as another
+  // implementation of an abstract signin interface to move the code out of
+  // this class.
+  if (signin_util::IsForceSigninEnabled()) {
+    size_t icon_index = profiles::GetPlaceholderAvatarIndex();
+    ProfileManager::CreateMultiProfileAsync(
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .ChooseNameForNewProfile(icon_index),
+        icon_index, /*is_hidden=*/true,
+        base::BindRepeating(
+            &ProfilePickerView::OnProfileForForcedSigninCreated,
+            weak_ptr_factory_.GetWeakPtr(),
+            base::OwnedRef(std::move(switch_finished_callback))));
     return;
   }
 
-  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
-  // Silently create the new profile for browsing on GAIA (so that the sign-in
-  // cookies are stored in the right profile).
-  ProfileManager::CreateMultiProfileAsync(
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .ChooseNameForNewProfile(icon_index),
-      icon_index, /*is_hidden=*/true,
-      base::BindRepeating(&ProfilePickerView::OnProfileForSigninCreated,
-                          weak_ptr_factory_.GetWeakPtr(), profile_color,
-                          base::OwnedRef(std::move(switch_finished_callback))));
+  if (!sign_in_) {
+    sign_in_ = std::make_unique<ProfilePickerSignInFlowController>(
+        this, extended_account_info_timeout_);
+  }
+
+  sign_in_->SwitchToSignIn(profile_color, std::move(switch_finished_callback));
 }
 
 void ProfilePickerView::CancelSignIn() {
@@ -635,11 +633,12 @@ void ProfilePickerView::CancelSignIn() {
   }
 }
 
-void ProfilePickerView::OnProfileForSigninCreated(
-    absl::optional<SkColor> profile_color,
+void ProfilePickerView::OnProfileForForcedSigninCreated(
     base::OnceCallback<void(bool)>& switch_finished_callback,
     Profile* profile,
     Profile::CreateStatus status) {
+  DCHECK(signin_util::IsForceSigninEnabled());
+
   if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
     std::move(switch_finished_callback).Run(false);
     return;
@@ -650,16 +649,8 @@ void ProfilePickerView::OnProfileForSigninCreated(
   DCHECK(profile);
   std::move(switch_finished_callback).Run(true);
 
-  if (signin_util::IsForceSigninEnabled()) {
-    // Show the embedded sign-in flow if the force signin is enabled.
-    ProfilePickerForceSigninDialog::ShowForceSigninDialog(
-        web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
-    return;
-  }
-
-  sign_in_ = std::make_unique<ProfilePickerSignInFlowController>(
-      this, profile, profile_color, extended_account_info_timeout_);
-  sign_in_->Init();
+  ProfilePickerForceSigninDialog::ShowForceSigninDialog(
+      web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
 }
 
 void ProfilePickerView::WindowClosing() {
