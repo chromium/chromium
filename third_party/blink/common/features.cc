@@ -1020,13 +1020,6 @@ const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
 const base::Feature kReportAllJavascriptFrameworks{
     "ReportAllJavaScriptFrameworks", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether to exclude out-of-view frames for paint timing, to make paint timing
-// actually measure user experience instead of depending on paint implementation
-// (e.g. whether to paint out-of-view frames) and arbitrary user actions (e.g.
-// scrolling a never-painted frame into view).
-const base::Feature kPaintTimingNoOutOfViewFrames{
-    "PaintTimingNoOutOfViewFrames", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
