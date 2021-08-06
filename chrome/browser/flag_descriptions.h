@@ -1888,11 +1888,11 @@ extern const char kMessagesForAndroidAdsBlockedDescription[];
 extern const char kMessagesForAndroidChromeSurveyName[];
 extern const char kMessagesForAndroidChromeSurveyDescription[];
 
-extern const char kMessagesForAndroidGroupedPermissionName[];
-extern const char kMessagesForAndroidGroupedPermissionDescription[];
-
 extern const char kMessagesForAndroidInfrastructureName[];
 extern const char kMessagesForAndroidInfrastructureDescription[];
+
+extern const char kMessagesForAndroidNotificationBlockedName[];
+extern const char kMessagesForAndroidNotificationBlockedDescription[];
 
 extern const char kMessagesForAndroidPasswordsName[];
 extern const char kMessagesForAndroidPasswordsDescription[];

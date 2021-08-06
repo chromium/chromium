@@ -84,8 +84,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".ChromeSurvey"/>
   <variant name=".DownloadProgress"/>
   <variant name=".GeneratedPasswordSaved"/>
-  <variant name=".GroupedPermission"/>
   <variant name=".MerchantTrust"/>
+  <variant name=".NotificationBlocked"/>
   <variant name=".PermissionUpdate"/>
   <variant name=".PopupBlocked"/>
   <variant name=".ReaderMode"/>

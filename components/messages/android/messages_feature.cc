@@ -12,8 +12,8 @@ const base::Feature kMessagesForAndroidAdsBlocked{
 const base::Feature kMessagesForAndroidChromeSurvey{
     "MessagesForAndroidChromeSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kMessagesForAndroidGroupedPermission{
-    "MessagesForAndroidGroupedPermission", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMessagesForAndroidNotificationBlocked{
+    "MessagesForAndroidNotificationBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidInfrastructure{
     "MessagesForAndroidInfrastructure", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -69,9 +69,9 @@ bool IsUpdatePasswordMessagesUiEnabled() {
          base::FeatureList::IsEnabled(kMessagesForAndroidUpdatePassword);
 }
 
-bool IsGroupedPermissionMessagesUiEnabled() {
+bool IsNotificationBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidGroupedPermission);
+         base::FeatureList::IsEnabled(kMessagesForAndroidNotificationBlocked);
 }
 
 bool IsPermissionUpdateMessagesUiEnabled() {

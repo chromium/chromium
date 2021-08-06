@@ -47790,6 +47790,8 @@ from previous Chrome versions.
   <int value="-1197035323" label="ZeroSuggestRedirectToChrome:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>
   <int value="-1195034892" label="ContinuousSearch:disabled"/>
+  <int value="-1194794230"
+      label="MessagesForAndroidNotificationBlocked:disabled"/>
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
@@ -48289,7 +48291,6 @@ from previous Chrome versions.
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
-  <int value="-779392840" label="MessagesForAndroidGroupedPermission:disabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
   <int value="-778047974" label="CrostiniUseBusterImage:disabled"/>
@@ -48926,7 +48927,6 @@ from previous Chrome versions.
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
-  <int value="-249332966" label="MessagesForAndroidGroupedPermission:enabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
   <int value="-247542772" label="CheckOfflineCapability:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
@@ -50286,6 +50286,7 @@ from previous Chrome versions.
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>
+  <int value="859220075" label="MessagesForAndroidNotificationBlocked:enabled"/>
   <int value="859449217" label="MagnifierPanningImprovements:enabled"/>
   <int value="859495772"
       label="UsernameFirstFlowFallbackCrowdsourcing:disabled"/>
@@ -54893,7 +54894,7 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="ReaderMode"/>
   <int value="11" label="ChromeSurvey"/>
   <int value="12" label="SaveCard"/>
-  <int value="13" label="GroupedPermission"/>
+  <int value="13" label="NotificationBlocked"/>
   <int value="14" label="PermissionUpdate"/>
   <int value="15" label="AdsBlocked"/>
   <int value="16" label="DownloadProgress"/>

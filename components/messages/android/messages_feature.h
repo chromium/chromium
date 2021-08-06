@@ -17,14 +17,14 @@ extern const base::Feature kMessagesForAndroidAdsBlocked;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidChromeSurvey;
 
-// Feature that controls whether grouped permission prompts use Messages or
-// Infobars infrastructure.
-extern const base::Feature kMessagesForAndroidGroupedPermission;
-
 // Feature that controls whether Messages for Android infrastucture components
 // are initialized. When this feature is disabled all individual message
 // implementations also fallback to Infobar implementations.
 extern const base::Feature kMessagesForAndroidInfrastructure;
+
+// Feature that controls whether notifiation blocked prompts use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidNotificationBlocked;
 
 // Feature that controls whether "save password" and "saved password
 // confirmation" prompts use Messages or Infobars infrastructure.
@@ -56,7 +56,7 @@ extern const base::Feature kMessagesForAndroidUpdatePassword;
 
 bool IsAdsBlockedMessagesUiEnabled();
 
-bool IsGroupedPermissionMessagesUiEnabled();
+bool IsNotificationBlockedMessagesUiEnabled();
 
 bool IsPasswordMessagesUiEnabled();
 

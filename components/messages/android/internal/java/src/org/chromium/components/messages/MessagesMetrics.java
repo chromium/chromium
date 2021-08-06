@@ -85,8 +85,8 @@ public class MessagesMetrics {
                 return "SaveCard";
             case MessageIdentifier.CHROME_SURVEY:
                 return "ChromeSurvey";
-            case MessageIdentifier.GROUPED_PERMISSION:
-                return "GroupedPermission";
+            case MessageIdentifier.NOTIFICATION_BLOCKED:
+                return "NotificationBlocked";
             case MessageIdentifier.PERMISSION_UPDATE:
                 return "PermissionUpdate";
             case MessageIdentifier.ADS_BLOCKED:

@@ -3765,14 +3765,14 @@
     "expiry_milestone": 99
   },
   {
-    "name": "messages-for-android-grouped-permission",
-    "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "messages-for-android-infrastructure",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "messages-for-android-notification-blocked",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 99
   },
   {
     "name": "messages-for-android-passwords",
