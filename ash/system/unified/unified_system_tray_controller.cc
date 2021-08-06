@@ -43,6 +43,7 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include "ash/system/privacy_screen/privacy_screen_feature_pod_controller.h"
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
+#include "ash/system/time/unified_calendar_view_controller.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/detailed_view_controller.h"
@@ -367,6 +368,11 @@ void UnifiedSystemTrayController::ShowNotifierSettingsView() {
   DCHECK(Shell::Get()->session_controller()->ShouldShowNotificationTray());
   DCHECK(!Shell::Get()->session_controller()->IsScreenLocked());
   ShowDetailedView(std::make_unique<UnifiedNotifierSettingsController>(this));
+}
+
+void UnifiedSystemTrayController::ShowCalendarView() {
+  if (features::IsCalendarViewEnabled())
+    ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowMediaControlsDetailedView() {

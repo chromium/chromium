@@ -97,6 +97,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowNotifierSettingsView();
   // Show the detailed view of media controls. Called from the view.
   void ShowMediaControlsDetailedView();
+  // Show the detailed view of Calendar. Called from the view.
+  void ShowCalendarView();
 
   // If you want to add a new detailed view, add here.
 

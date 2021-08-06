@@ -1342,6 +1342,8 @@ component("ash") {
     "system/time/time_tray_item_view.h",
     "system/time/time_view.cc",
     "system/time/time_view.h",
+    "system/time/unified_calendar_view_controller.cc",
+    "system/time/unified_calendar_view_controller.h",
     "system/toast/toast_manager_impl.cc",
     "system/toast/toast_manager_impl.h",
     "system/toast/toast_overlay.cc",

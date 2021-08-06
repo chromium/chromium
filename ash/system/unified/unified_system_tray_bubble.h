@@ -70,6 +70,9 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // Show audio settings detailed view.
   void ShowAudioDetailedView();
 
+  // Show calendar view.
+  void ShowCalendarView();
+
   // Show network settings detailed view.
   void ShowNetworkDetailedView(bool force);
 

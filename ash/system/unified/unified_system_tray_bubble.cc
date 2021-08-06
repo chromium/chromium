@@ -188,6 +188,15 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
   controller_->ShowAudioDetailedView();
 }
 
+void UnifiedSystemTrayBubble::ShowCalendarView() {
+  if (!bubble_widget_)
+    return;
+
+  DCHECK(unified_view_);
+  DCHECK(controller_);
+  controller_->ShowCalendarView();
+}
+
 void UnifiedSystemTrayBubble::ShowNetworkDetailedView(bool force) {
   if (!bubble_widget_)
     return;
