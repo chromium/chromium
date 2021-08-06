@@ -1367,6 +1367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix base="true" name="SVG" label=""/>
   <suffix base="true" name="Unknown" label=""/>
   <suffix base="true" name="Video" label=""/>
+  <suffix base="true" name="VideoFrame" label=""/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration"/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration2"/>
 </histogram_suffixes>
@@ -1395,6 +1396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.Canvas.DrawImage.Duration2.SVG"/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Unknown"/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Video"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.VideoFrame"/>
   <affected-histogram name="Blink.Canvas.GetImageData"/>
   <affected-histogram name="Blink.Canvas.PutImageData"/>
 </histogram_suffixes>

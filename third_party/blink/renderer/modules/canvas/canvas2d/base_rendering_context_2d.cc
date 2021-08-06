@@ -1903,6 +1903,8 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       image_source_name = "SVG";
     } else if (image_source->IsVideoElement()) {
       image_source_name = "Video";
+    } else if (image_source->IsVideoFrame()) {
+      image_source_name = "VideoFrame";
     } else {  // Unknown source.
       image_source_name = "Unknown";
     }

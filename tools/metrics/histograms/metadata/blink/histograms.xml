@@ -197,6 +197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name=".SVG" summary=""/>
     <variant name=".Unknown" summary=""/>
     <variant name=".Video" summary=""/>
+    <variant name=".VideoFrame" summary=""/>
   </token>
 </histogram>
 
