@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
 import {Route, Router, routes} from 'chrome://settings/settings.js';
 
@@ -41,20 +42,25 @@ suite('PrivacyReviewPage', function() {
    * @param {!{
    *   isHeaderVisibleExpected: ((boolean|undefined)|undefined),
    *   isFooterVisibleExpected: (boolean|undefined),
+   *   isFooterHrVisibleExpected: (boolean|undefined),
    *   isWelcomeFragmentVisibleExpected: (boolean|undefined),
    *   isCompletionFragmentVisibleExpected: (boolean|undefined),
-   *   isCookiesFragmentVisibleExpected: (boolean|undefined),
+   *   isMsbbFragmentVisibleExpected: (boolean|undefined),
    * }} destructured1
    */
   function assertCardVisibility_({
     isHeaderVisibleExpected,
     isFooterVisibleExpected,
+    isFooterHrVisibleExpected,
     isWelcomeFragmentVisibleExpected,
     isCompletionFragmentVisibleExpected,
-    isCookiesFragmentVisibleExpected,
+    isMsbbFragmentVisibleExpected,
   }) {
     assertEquals(!!isHeaderVisibleExpected, isChildVisible(page, '#header'));
     assertEquals(!!isFooterVisibleExpected, isChildVisible(page, '#footer'));
+    assertEquals(
+        !!isFooterHrVisibleExpected,
+        page.shadowRoot.querySelector('#footer').classList.contains('hr'));
     assertEquals(
         !!isWelcomeFragmentVisibleExpected,
         isChildVisible(page, '#welcomeFragment'));
@@ -62,8 +68,7 @@ suite('PrivacyReviewPage', function() {
         !!isCompletionFragmentVisibleExpected,
         isChildVisible(page, '#completionFragment'));
     assertEquals(
-        !!isCookiesFragmentVisibleExpected,
-        isChildVisible(page, '#cookiesFragment'));
+        !!isMsbbFragmentVisibleExpected, isChildVisible(page, '#msbbFragment'));
   }
 
   function assertWelcomeCardVisible_() {
@@ -78,16 +83,18 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter('completion');
     assertCardVisibility_({
       isFooterVisibleExpected: true,
+      isFooterHrVisibleExpected: true,
       isCompletionFragmentVisibleExpected: true,
     });
   }
 
-  function assertCookiesCardVisible_() {
-    assertQueryParameter('cookies');
+  function assertMsbbCardVisible_() {
+    assertQueryParameter('msbb');
     assertCardVisibility_({
       isHeaderVisibleExpected: true,
       isFooterVisibleExpected: true,
-      isCookiesFragmentVisibleExpected: true,
+      isFooterHrVisibleExpected: true,
+      isMsbbFragmentVisibleExpected: true,
     });
   }
 
@@ -95,12 +102,14 @@ suite('PrivacyReviewPage', function() {
     // The review starts with the welcome card.
     assertWelcomeCardVisible_();
 
-    // Advance to the cookies card.
+    // Advance to the MSBB card.
     page.shadowRoot.querySelector('#nextButton').click();
-    assertCookiesCardVisible_();
+    flush();
+    assertMsbbCardVisible_();
 
     // Advance to the completion card.
     page.shadowRoot.querySelector('#nextButton').click();
+    flush();
     assertCompletionCardVisible_();
   });
 });

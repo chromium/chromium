@@ -8,6 +8,9 @@
  * various privacy settings.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -16,6 +19,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 
+import {PrivacyReviewMsbbFragmentElement} from './privacy_review_msbb_fragment.js';
 /**
  * Steps in the privacy review flow. The page updates from those steps to show
  * the corresponding page content.
@@ -23,7 +27,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
  */
 const PrivacyReviewStep = {
   WELCOME: 'welcome',
-  COOKIES: 'cookies',
+  MSBB: 'msbb',
   COMPLETION: 'completion',
 };
 
@@ -48,6 +52,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   static get properties() {
     return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       /**
        * The current step in the privacy review flow.
        * @private {PrivacyReviewStep}
@@ -106,13 +118,13 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   onNextButtonClick_() {
     switch (this.privacyReviewStep_) {
       case PrivacyReviewStep.WELCOME:
-        this.navigateToCard_(PrivacyReviewStep.COOKIES);
+        this.navigateToCard_(PrivacyReviewStep.MSBB);
         break;
       case PrivacyReviewStep.COMPLETION:
         // TODO(crbug/1215630): Navigate to routes.PRIVACY and focus the
         // privacy review row.
         break;
-      case PrivacyReviewStep.COOKIES:
+      case PrivacyReviewStep.MSBB:
         this.navigateToCard_(PrivacyReviewStep.COMPLETION);
         break;
       default:
@@ -126,8 +138,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
    */
   computeHeaderString_() {
     switch (this.privacyReviewStep_) {
-      case PrivacyReviewStep.COOKIES:
-        return this.i18n('privacyReviewCookiesCardHeader');
+      case PrivacyReviewStep.MSBB:
+        return this.i18n('privacyReviewMsbbCardHeader');
       default:
         return null;
     }
@@ -151,7 +163,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         return this.i18n('privacyReviewWelcomeCardStartButton');
       case PrivacyReviewStep.COMPLETION:
         return this.i18n('privacyReviewCompletionCardLeaveButton');
-      case PrivacyReviewStep.COOKIES:
+      case PrivacyReviewStep.MSBB:
         return this.i18n('privacyReviewNextButton');
       default:
         return '';
@@ -160,9 +172,17 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /**
    * @private
+   * @return string
+   */
+  computeFooterClass_() {
+    return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME ? null : 'hr';
+  }
+
+  /**
+   * @private
    * @return boolean
    */
-  showWelcomeCard_() {
+  showWelcomeFragment_() {
     return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME;
   }
 
@@ -170,7 +190,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
    * @private
    * @return boolean
    */
-  showCompletionCard_() {
+  showCompletionFragment_() {
     return this.privacyReviewStep_ === PrivacyReviewStep.COMPLETION;
   }
 
@@ -178,8 +198,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
    * @private
    * @return boolean
    */
-  showCookiesCard_() {
-    return this.privacyReviewStep_ === PrivacyReviewStep.COOKIES;
+  showMsbbFragment_() {
+    return this.privacyReviewStep_ === PrivacyReviewStep.MSBB;
   }
 }
 

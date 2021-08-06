@@ -1,6 +1,10 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style settings-shared">
   #header {
     padding: 12px;
+  }
+
+  #headerLabel {
+    font-size: 123%;  /* Should be 16px when 100% is 13px. */
   }
 
   .privacy-review-card {
@@ -21,18 +25,20 @@
     </div>
   </div>
   <div id="welcomeFragment" class="fragment"
-      hidden="[[!showWelcomeCard_(privacyReviewStep_)]]">
+      hidden="[[!showWelcomeFragment_(privacyReviewStep_)]]">
     <div>$i18n{privacyReviewWelcomeCardHeader}</div>
   </div>
   <div id="completionFragment" class="fragment"
-       hidden="[[!showCompletionCard_(privacyReviewStep_)]]">
+       hidden="[[!showCompletionFragment_(privacyReviewStep_)]]">
     <div>$i18n{privacyReviewCompletionCardHeader}</div>
   </div>
-  <div id="cookiesFragment" class="fragment"
-       hidden="[[!showCookiesCard_(privacyReviewStep_)]]">
-    <div>$i18n{privacyReviewCookiesCardHeader}</div>
-  </div>
-  <div id="footer">
+  <template is="dom-if" if="[[showMsbbFragment_(privacyReviewStep_)]]">
+    <privacy-review-msbb-fragment id="msbbFragment"
+        class="fragment"
+        prefs="{{prefs}}">
+    </privacy-review-msbb-fragment>
+  </template>
+  <div id="footer" class$="[[computeFooterClass_(privacyReviewStep_)]]">
     <cr-button class="cr-button" id="nextButton" role="button"
         tabindex="0" on-click="onNextButtonClick_">
       [[computeNextButtonLabel_(privacyReviewStep_)]]
