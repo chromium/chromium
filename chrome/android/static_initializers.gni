@@ -37,11 +37,9 @@ if (current_toolchain == default_toolchain &&
   # token.cc (initializer offset 0x27f024c size 0x11c)
   expected_static_initializer_count += 1
 
-  if (target_cpu == "arm") {
-    # This one is from //third_party/gvr-android-sdk
-    # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
-    expected_static_initializer_count += 1
-  }
+  # This one is from //third_party/gvr-android-sdk
+  # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
+  expected_static_initializer_count += 1
 
   if (use_static_angle && !is_official_build) {
     # TODO(https://crbug.com/1172451): remove global variables from ANGLE:

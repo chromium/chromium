@@ -42,7 +42,8 @@ def _VerifyLibBuildIdsMatch(tool_prefix, *so_files):
 
 def _GetStaticInitializers(so_path, tool_prefix):
   output = subprocess.check_output(
-      [_DUMP_STATIC_INITIALIZERS_PATH, '-d', so_path, '-t', tool_prefix])
+      [_DUMP_STATIC_INITIALIZERS_PATH, '-d', so_path, '-t', tool_prefix],
+      encoding='utf-8')
   summary = re.search(r'Found \d+ static initializers in (\d+) files.', output)
   return output.splitlines()[:-1], int(summary.group(1))
 

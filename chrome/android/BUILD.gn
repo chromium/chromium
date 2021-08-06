@@ -3140,9 +3140,14 @@ instrumentation_test_runner(
 if (defined(expected_static_initializer_count)) {
   action_with_pydeps("monochrome_static_initializers") {
     script = "//build/android/gyp/assert_static_initializers.py"
-    inputs = [ "$root_build_dir/apks/MonochromePublic.aab" ]
+    if (android_64bit_target_cpu) {
+      deps = [ ":monochrome_64_public_bundle" ]
+      inputs = [ "$root_build_dir/apks/MonochromePublic64.aab" ]
+    } else {
+      deps = [ ":monochrome_public_bundle" ]
+      inputs = [ "$root_build_dir/apks/MonochromePublic.aab" ]
+    }
     outputs = [ "$target_gen_dir/$target_name.stamp" ]
-    deps = [ ":monochrome_public_bundle" ]
     args = [
       "--expected-count=$expected_static_initializer_count",
       "--tool-prefix",
