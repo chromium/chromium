@@ -42,7 +42,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
-    "zishSVViB0kPN8UwQ150VGjBKuBP";
+    "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 constexpr char kHatsShouldShowSurveyReasonHistogram[] =
     "Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason";
