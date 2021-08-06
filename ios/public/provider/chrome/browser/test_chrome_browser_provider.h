@@ -35,7 +35,6 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   AppDistributionProvider* GetAppDistributionProvider() const override;
   OmahaServiceProvider* GetOmahaServiceProvider() const override;
   UserFeedbackProvider* GetUserFeedbackProvider() const override;
-  SpotlightProvider* GetSpotlightProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
 
@@ -48,7 +47,6 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   std::unique_ptr<SigninResourcesProvider> signin_resources_provider_;
   std::unique_ptr<VoiceSearchProvider> voice_search_provider_;
   std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;
-  std::unique_ptr<SpotlightProvider> spotlight_provider_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
   std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
 };

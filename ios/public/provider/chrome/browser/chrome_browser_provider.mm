@@ -99,10 +99,6 @@ UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
   return nullptr;
 }
 
-SpotlightProvider* ChromeBrowserProvider::GetSpotlightProvider() const {
-  return nullptr;
-}
-
 BrowserURLRewriterProvider*
 ChromeBrowserProvider::GetBrowserURLRewriterProvider() const {
   return nullptr;

@@ -15,7 +15,6 @@
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
 #include "ios/public/provider/chrome/browser/signin/test_signin_resources_provider.h"
-#import "ios/public/provider/chrome/browser/spotlight/test_spotlight_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/public/provider/chrome/browser/voice/test_voice_search_provider.h"
 #import "ios/public/provider/chrome/browser/voice/voice_search_language.h"
@@ -34,7 +33,6 @@ TestChromeBrowserProvider::TestChromeBrowserProvider()
           std::make_unique<TestSigninResourcesProvider>()),
       voice_search_provider_(std::make_unique<TestVoiceSearchProvider>()),
       user_feedback_provider_(std::make_unique<TestUserFeedbackProvider>()),
-      spotlight_provider_(std::make_unique<TestSpotlightProvider>()),
       mailto_handler_provider_(std::make_unique<TestMailtoHandlerProvider>()),
       discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
@@ -97,10 +95,6 @@ OmahaServiceProvider* TestChromeBrowserProvider::GetOmahaServiceProvider()
 UserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
     const {
   return user_feedback_provider_.get();
-}
-
-SpotlightProvider* TestChromeBrowserProvider::GetSpotlightProvider() const {
-  return spotlight_provider_.get();
 }
 
 MailtoHandlerProvider* TestChromeBrowserProvider::GetMailtoHandlerProvider()

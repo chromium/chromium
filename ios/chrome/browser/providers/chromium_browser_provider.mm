@@ -7,7 +7,6 @@
 #include <memory>
 
 #import "ios/chrome/browser/providers/chromium_logo_controller.h"
-#import "ios/chrome/browser/providers/chromium_spotlight_provider.h"
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
 #include "ios/chrome/browser/providers/signin/chromium_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
@@ -28,7 +27,6 @@ ChromiumBrowserProvider::ChromiumBrowserProvider()
           std::make_unique<ChromiumSigninResourcesProvider>()),
       user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
       voice_search_provider_(std::make_unique<ChromiumVoiceSearchProvider>()),
-      spotlight_provider_(std::make_unique<ChromiumSpotlightProvider>()),
       overrides_provider_(std::make_unique<OverridesProvider>()),
       discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
@@ -77,10 +75,6 @@ UserFeedbackProvider* ChromiumBrowserProvider::GetUserFeedbackProvider() const {
 AppDistributionProvider* ChromiumBrowserProvider::GetAppDistributionProvider()
     const {
   return app_distribution_provider_.get();
-}
-
-SpotlightProvider* ChromiumBrowserProvider::GetSpotlightProvider() const {
-  return spotlight_provider_.get();
 }
 
 OverridesProvider* ChromiumBrowserProvider::GetOverridesProvider() const {
