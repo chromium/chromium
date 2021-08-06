@@ -1629,7 +1629,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2715751256863167692">Amb aquesta actualització es restableix el dispositiu Chromebook i se suprimeixen les dades d'usuari actuals.</translation>
 <translation id="271639966356700691">Prem Ctrl+Alt+augmenta la brillantor per ampliar
 i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
-<translation id="2716986496990888774">El teu pare o la teva mare gestiona aquesta opció de configuració.</translation>
+<translation id="2716986496990888774">El teu pare o mare gestiona aquesta opció de configuració.</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2718998670920917754">El programari antivirus ha detectat un virus.</translation>
 <translation id="2719936478972253983">S'han bloquejat les galetes següents</translation>
@@ -3177,7 +3177,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4402755511846832236">Bloqueja els llocs web perquè no sàpiguen quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="4403775189117163360">Tria una altra carpeta</translation>
 <translation id="4404136731284211429">Torna a analitzar</translation>
-<translation id="4404843640767531781">El teu pare o la teva mare ha bloquejat <ph name="APP_NAME" />. Demana-li permís per utilitzar aquesta aplicació.</translation>
+<translation id="4404843640767531781">El teu pare o mare ha bloquejat <ph name="APP_NAME" />. Demana-li permís per utilitzar aquesta aplicació.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg i *.png</translation>
 <translation id="440653823335387109">PÀGINES QUE HAS LLEGIT</translation>
 <translation id="4406883609789734330">Subtítols instantanis</translation>
@@ -3861,7 +3861,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5154702632169343078">Assumpte</translation>
 <translation id="5157635116769074044">Fixa aquesta pàgina a la pantalla d'inici...</translation>
 <translation id="5159094275429367735">Configura Crostini</translation>
-<translation id="5159419673777902220">El teu pare o la teva mare han desactivat els permisos d'extensions</translation>
+<translation id="5159419673777902220">El teu pare o mare han desactivat els permisos d'extensions</translation>
 <translation id="5160634252433617617">Teclat físic</translation>
 <translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5161251470972801814">Dispositius USB fabricats per <ph name="VENDOR_NAME" /></translation>
@@ -5304,7 +5304,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6771503742377376720">És una entitat emissora de certificats</translation>
 <translation id="6775163072363532304">Els dispositius disponibles es mostraran aquí.</translation>
 <translation id="6777817260680419853">S'ha bloquejat la redirecció</translation>
-<translation id="6778737459546443941">El teu pare o la teva mare encara no ho han aprovat</translation>
+<translation id="6778737459546443941">El teu pare o mare encara no ho han aprovat</translation>
 <translation id="6779447100905857289">els teus carretons</translation>
 <translation id="677965093459947883">Molt petita</translation>
 <translation id="6781005693196527806">&amp;Gestiona els motors de cerca...</translation>
@@ -6227,7 +6227,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7753735457098489144">Ha fallat la instal·lació perquè falta espai d'emmagatzematge. Per alliberar espai, suprimeix fitxers de l'emmagatzematge del dispositiu.</translation>
 <translation id="7754347746598978109">Sense permís per utilitzar JavaScript</translation>
 <translation id="7754704193130578113">Pregunta on es desarà cada fitxer abans de baixar-lo</translation>
-<translation id="7755287808199759310">El teu pare o la teva mare et poden desbloquejar el lloc</translation>
+<translation id="7755287808199759310">El teu pare o mare et poden desbloquejar el lloc</translation>
 <translation id="7757592200364144203">Canvia el nom del dispositiu</translation>
 <translation id="7757787379047923882">Text compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
