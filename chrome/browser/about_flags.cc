@@ -7094,7 +7094,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContinuousSearchDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kContinuousSearch,
                                     kContinuousSearchFeatureVariations,
-                                    "ContinuousSearchVariations")},
+                                    "ContinuousSearchNavigation")},
 
     {"enable-experimental-accessibility-labels",
      flag_descriptions::kExperimentalAccessibilityLabelsName,
