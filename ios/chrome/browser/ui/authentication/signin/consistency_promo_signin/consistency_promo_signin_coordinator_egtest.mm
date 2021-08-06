@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -33,6 +34,14 @@
   // Resets the number of dismissals for web sign-in.
   [ChromeEarlGrey setIntegerValue:0
                       forUserPref:prefs::kSigninWebSignDismissalCount];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+}
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Tests that ConsistencyPromoSigninCoordinator shows up, and then skips it.
@@ -46,6 +55,10 @@
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@(kSigninAccountConsistencyPromoActionShownCount)];
+  GREYAssertNil(error, @"Failed to record show count histogram");
 }
 
 // Tests that ConsistencyPromoSigninCoordinator is not shown after the last
@@ -76,6 +89,10 @@
       kDefaultWebSignInDismissalCount,
       [ChromeEarlGrey userIntegerPref:prefs::kSigninWebSignDismissalCount],
       @"Dismissal count should be at the max value");
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@(kSigninAccountConsistencyPromoActionShownCount)];
+  GREYAssertNil(error, @"Failed to record show count histogram");
 }
 
 @end

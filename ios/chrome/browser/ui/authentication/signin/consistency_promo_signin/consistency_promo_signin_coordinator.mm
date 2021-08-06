@@ -39,18 +39,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Metrics to record the number of times the web sign-in is displayed.
-const char* kSigninAccountConsistencyPromoActionShownCount =
-    "Signin.AccountConsistencyPromoAction.Shown.Count";
-// Metrics to record how many times the web sign-in has been displayed before
-// the user signs in.
-const char* kSigninAccountConsistencyPromoActionSignedInCount =
-    "Signin.AccountConsistencyPromoAction.SignedIn.Count";
-
-}  // namespace
-
 @interface ConsistencyPromoSigninCoordinator () <
     ConsistencyAccountChooserCoordinatorDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
@@ -195,6 +183,8 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
       int displayCount = [self.class displayCountWithPrefService:prefService];
       base::UmaHistogramExactLinear(
           kSigninAccountConsistencyPromoActionSignedInCount, displayCount, 100);
+      // Reset dismissal count.
+      prefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
       break;
     }
     case SigninCoordinatorResultCanceledByUser:

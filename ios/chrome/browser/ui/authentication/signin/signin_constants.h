@@ -82,4 +82,11 @@ typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
 // is reset as soon as the user shows sign-in intent).
 extern const int kDefaultWebSignInDismissalCount;
 
+// Metrics to record the number of times the web sign-in is displayed.
+extern const char* kSigninAccountConsistencyPromoActionShownCount;
+// Metrics to record how many times the web sign-in has been displayed before
+// the user signs in. This value is based on
+// |prefs::kSigninBottomSheetShownCount|.
+extern const char* kSigninAccountConsistencyPromoActionSignedInCount;
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_CONSTANTS_H_

@@ -27,3 +27,8 @@ const char* kWebSigninConsistencyConsecutiveActiveDismissalLimitParam =
     "consecutive_active_dismissal_limit";
 
 const int kDefaultWebSignInDismissalCount = 3;
+
+const char* kSigninAccountConsistencyPromoActionShownCount =
+    "Signin.AccountConsistencyPromoAction.Shown.Count";
+const char* kSigninAccountConsistencyPromoActionSignedInCount =
+    "Signin.AccountConsistencyPromoAction.SignedIn.Count";
