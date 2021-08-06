@@ -6,7 +6,9 @@
 
 #include "ash/display/output_protection_delegate.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {
@@ -96,6 +98,14 @@ void ContentProtectionAsh::ChallengePlatform(
       user, service_id, challenge,
       base::BindOnce(&ContentProtectionAsh::OnChallengePlatform,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContentProtectionAsh::IsVerifiedAccessEnabled(
+    IsVerifiedAccessEnabledCallback callback) {
+  bool enabled_for_device = false;
+  ash::CrosSettings::Get()->GetBoolean(
+      chromeos::kAttestationForContentProtectionEnabled, &enabled_for_device);
+  std::move(callback).Run(enabled_for_device);
 }
 
 void ContentProtectionAsh::OnWindowDestroyed(aura::Window* window) {

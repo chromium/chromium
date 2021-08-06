@@ -84,4 +84,8 @@ interface ContentProtection {
   [MinVersion=2]
   ChallengePlatform@3(string service_id, string challenge) =>
       (ChallengePlatformResult? result);
+
+  // Returns true if Verified Access is enabled in settings, false otherwise.
+  [MinVersion=3]
+  IsVerifiedAccessEnabled@4() => (bool enabled);
 };

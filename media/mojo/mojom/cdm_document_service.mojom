@@ -52,7 +52,7 @@ interface CdmDocumentService {
   GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
 
   // Returns true if Verified Access is enabled in settings, false otherwise.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   IsVerifiedAccessEnabled() => (bool enabled);
 
   // Gets the CDM preference data for the origin associated with the CDM.

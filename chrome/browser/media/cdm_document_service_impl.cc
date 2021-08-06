@@ -20,7 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #endif
 
-#if BUILDFLAG(ENABLE_CDM_STORAGE_ID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID) || defined(OS_CHROMEOS)
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #endif
@@ -113,7 +113,9 @@ void CdmDocumentServiceImpl::ChallengePlatform(
   if (lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
       lacros_service->GetInterfaceVersion(
-          crosapi::mojom::ContentProtection::Uuid_) >= 2) {
+          crosapi::mojom::ContentProtection::Uuid_) >=
+          static_cast<int>(crosapi::mojom::ContentProtection::
+                               kChallengePlatformMinVersion)) {
     lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
         ->ChallengePlatform(
             service_id, challenge,
@@ -217,7 +219,7 @@ void CdmDocumentServiceImpl::OnStorageIdResponse(
 }
 #endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
     IsVerifiedAccessEnabledCallback callback) {
   // If we are in guest/incognito mode, then verified access is effectively
@@ -229,17 +231,27 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
     return;
   }
 
-  bool enabled_for_device = false;
-  if (!ash::CrosSettings::Get()->GetBoolean(
-          chromeos::kAttestationForContentProtectionEnabled,
-          &enabled_for_device)) {
-    LOG(ERROR) << "Failed to get device setting.";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service &&
+      lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::ContentProtection::Uuid_) >=
+          static_cast<int>(crosapi::mojom::ContentProtection::
+                               kIsVerifiedAccessEnabledMinVersion)) {
+    lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
+        ->IsVerifiedAccessEnabled(std::move(callback));
+  } else {
     std::move(callback).Run(false);
-    return;
   }
+#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool enabled_for_device = false;
+  ash::CrosSettings::Get()->GetBoolean(
+      chromeos::kAttestationForContentProtectionEnabled, &enabled_for_device);
   std::move(callback).Run(enabled_for_device);
+#endif  // else BUILDFLAG(IS_CHROMEOS_LACROS)
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
 void CdmDocumentServiceImpl::GetCdmPreferenceData(
