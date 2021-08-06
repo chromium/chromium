@@ -1000,9 +1000,6 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
                                       opener_widget->GetOriginalScreenInfos(),
                                       /*settings=*/nullptr);
 
-  // CreatePopup returns nullptr if this renderer process is about to die.
-  if (!popup_widget)
-    return nullptr;
   page_popup_ = To<WebPagePopupImpl>(popup_widget);
   page_popup_->Initialize(this, client);
   EnablePopupMouseWheelEventListener(web_opener_frame->LocalRoot());
