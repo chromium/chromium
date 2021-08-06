@@ -334,6 +334,8 @@ void Desk::SetName(std::u16string new_name, bool set_by_user) {
 
   for (auto& observer : observers_)
     observer.OnDeskNameChanged(name_);
+
+  DesksController::Get()->NotifyDeskNameChanged(this, name_);
 }
 
 void Desk::PrepareForActivationAnimation() {

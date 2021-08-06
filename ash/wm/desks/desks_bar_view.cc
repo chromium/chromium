@@ -762,6 +762,9 @@ void DesksBarView::OnDeskSwitchAnimationLaunching() {}
 
 void DesksBarView::OnDeskSwitchAnimationFinished() {}
 
+void DesksBarView::OnDeskNameChanged(const Desk* desk,
+                                     const std::u16string& new_name) {}
+
 void DesksBarView::OnContentsScrolled() {
   UpdateScrollButtonsVisibility();
   UpdateGradientZone();

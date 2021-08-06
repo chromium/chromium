@@ -383,6 +383,9 @@ void SplitViewMetricsController::OnDeskActivationChanged(
 
 void SplitViewMetricsController::OnDeskSwitchAnimationLaunching() {}
 void SplitViewMetricsController::OnDeskSwitchAnimationFinished() {}
+void SplitViewMetricsController::OnDeskNameChanged(
+    const Desk* desk,
+    const std::u16string& new_name) {}
 
 void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   int32_t* activation_index =

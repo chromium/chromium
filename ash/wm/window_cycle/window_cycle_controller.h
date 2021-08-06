@@ -154,6 +154,8 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
                                const Desk* deactivated) override {}
   void OnDeskSwitchAnimationLaunching() override {}
   void OnDeskSwitchAnimationFinished() override {}
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override {}
 
  private:
   // Gets a list of windows from the currently open windows, removing windows

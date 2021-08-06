@@ -269,6 +269,8 @@ class ASH_EXPORT ShelfLayoutManager
                                const Desk* deactivated) override {}
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override {}
 
   ShelfVisibilityState visibility_state() const {
     return state_.visibility_state;

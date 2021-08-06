@@ -42,6 +42,10 @@ void DeskSwitchAnimationWaiter::OnDeskSwitchAnimationFinished() {
   run_loop_.Quit();
 }
 
+void DeskSwitchAnimationWaiter::OnDeskNameChanged(
+    const Desk* desk,
+    const std::u16string& new_name) {}
+
 void ActivateDesk(const Desk* desk) {
   ASSERT_FALSE(desk->is_active());
   DeskSwitchAnimationWaiter waiter;

@@ -63,6 +63,11 @@ class ASH_EXPORT DesksController : public DesksHelper,
     // Called when the desk switch animations on all root windows finish.
     virtual void OnDeskSwitchAnimationFinished() = 0;
 
+    // Called when the desk's name is changed, including when the name is set on
+    // a newly created desk if we are not using name user nudges.
+    virtual void OnDeskNameChanged(const Desk* desk,
+                                   const std::u16string& new_name) = 0;
+
    protected:
     virtual ~Observer() = default;
   };
@@ -70,8 +75,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   DesksController();
   ~DesksController() override;
 
-  // Convenience method for returning the DesksController instance. The actual
-  // instance is created and owned by Shell.
+  // Convenience method for returning the DesksController instance.
   static DesksController* Get();
 
   // Returns the default name for a desk at |desk_index|.
@@ -186,6 +190,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   // Notifies each desk in |desks_| that their contents has changed.
   void NotifyAllDesksForContentChanged();
+
+  void NotifyDeskNameChanged(const Desk* desk, const std::u16string& new_name);
 
   // Reverts the name of the given |desk| to the default value (i.e. "Desk 1",
   // "Desk 2", ... etc.) according to its position in the |desks_| list, as if

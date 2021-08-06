@@ -46,7 +46,7 @@ class ASH_EXPORT Desk {
     // removes its Observers before calling this.
     virtual void OnDeskDestroyed(const Desk* desk) = 0;
 
-    // Called  when the desk's name changes.
+    // Called when the desk's name changes.
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
   };
 

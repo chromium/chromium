@@ -119,7 +119,7 @@ class SplitViewMetricsController : public TabletModeObserver,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // DeskController::Observer:
+  // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
   void OnDeskRemoved(const Desk* desk) override;
   void OnDeskReordered(int old_index, int new_index) override;
@@ -127,6 +127,8 @@ class SplitViewMetricsController : public TabletModeObserver,
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* window) override;
