@@ -35,8 +35,8 @@ namespace content {
 
 namespace {
 
-// Returns the cookie manager for the |browser_context| at the client end of the
-// mojo pipe. This will be restricted to the origin of |url|, and will apply
+// Returns the cookie manager for the `browser_context` at the client end of the
+// mojo pipe. This will be restricted to the origin of `url`, and will apply
 // policies from user and ContentBrowserClient to cookie operations.
 mojo::PendingRemote<network::mojom::RestrictedCookieManager>
 GetRestrictedCookieManagerForContext(

@@ -193,7 +193,7 @@ EncryptionSchemeUMA DetermineEncryptionSchemeUMAValue(
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-// Returns true if |url| represents (or is likely to) a local file.
+// Returns true if `url` represents (or is likely to) a local file.
 bool IsLocalFile(const GURL& url) {
   return url.SchemeIsFile() || url.SchemeIsFileSystem() ||
          url.SchemeIs(url::kContentScheme) ||
@@ -216,7 +216,7 @@ void DestructionHelper(
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
     std::unique_ptr<WebSurfaceLayerBridge> bridge,
     bool is_chunk_demuxer) {
-  // We release |bridge| after pipeline stop to ensure layout tests receive
+  // We release `bridge` after pipeline stop to ensure layout tests receive
   // painted video frames before test harness exit.
   main_task_runner->DeleteSoon(FROM_HERE, std::move(bridge));
 
@@ -241,7 +241,7 @@ void DestructionHelper(
   // the renderer hang monitor's threshold on at least Windows while also
   // blocking other work on the renderer main thread, so we do the actual
   // destruction in the background without blocking WMPI destruction or
-  // |task_runner|.  On advice of task_scheduler OWNERS, MayBlock() is not
+  // `task_runner`.  On advice of task_scheduler OWNERS, MayBlock() is not
   // used because virtual memory overhead is not considered blocking I/O; and
   // CONTINUE_ON_SHUTDOWN is used to allow process termination to not block on
   // completing the task.
@@ -290,7 +290,7 @@ void CreateAllocation(base::trace_event::ProcessMemoryDump* pmd,
     pmd->AddSuballocation(dump->guid(), std_allocator);
 }
 
-// Determine whether we should update MediaPosition in |delegate_|.
+// Determine whether we should update MediaPosition in `delegate_`.
 bool MediaPositionNeedsUpdate(
     const media_session::MediaPosition& old_position,
     const media_session::MediaPosition& new_position) {
@@ -392,8 +392,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   weak_this_ = weak_factory_.GetWeakPtr();
 
-  // Using base::Unretained(this) is safe because the |pipeline| is owned by
-  // |this| and the callback will always be made on the main task runner.
+  // Using base::Unretained(this) is safe because the `pipeline` is owned by
+  // `this` and the callback will always be made on the main task runner.
   // Not using BindToCurrentLoop() because CreateRenderer() is a sync call.
   auto pipeline = std::make_unique<media::PipelineImpl>(
       media_task_runner_, main_task_runner_,
@@ -509,7 +509,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // The underlying Pipeline must be stopped before it is destroyed.
   //
   // Note: This destruction happens synchronously on the media thread and
-  // |demuxer_|, |data_source_|, |compositor_|, and |media_log_| must outlive
+  // `demuxer_`, `data_source_`, `compositor_`, and `media_log_` must outlive
   // this process. They will be destructed by the DestructionHelper below
   // after trampolining through the media thread.
   pipeline_controller_->Stop();
@@ -531,7 +531,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   if (data_source_)
     data_source_->Stop();
 
-  // Disconnect from the surface layer. We still preserve the |bridge_| until
+  // Disconnect from the surface layer. We still preserve the `bridge_` until
   // after pipeline shutdown to ensure any pending frames are painted for tests.
   if (bridge_)
     bridge_->ClearObserver();
@@ -595,7 +595,7 @@ void WebMediaPlayerImpl::RegisterContentsLayer(cc::Layer* layer) {
 }
 
 void WebMediaPlayerImpl::UnregisterContentsLayer(cc::Layer* layer) {
-  // |client_| will unregister its cc::Layer if given a nullptr.
+  // `client_` will unregister its cc::Layer if given a nullptr.
   client_->SetCcLayer(nullptr);
 }
 
@@ -643,7 +643,7 @@ void WebMediaPlayerImpl::DisableOverlay() {
 void WebMediaPlayerImpl::EnteredFullscreen() {
   overlay_info_.is_fullscreen = true;
 
-  // |always_enable_overlays_| implies that we're already in overlay mode, so
+  // `always_enable_overlays_` implies that we're already in overlay mode, so
   // take no action here.  Otherwise, switch to an overlay if it's allowed and
   // if it will display properly.
   if (!always_enable_overlays_ && overlay_mode_ != OverlayMode::kNoOverlays &&
@@ -655,7 +655,7 @@ void WebMediaPlayerImpl::EnteredFullscreen() {
   // we already sent it and we don't have a callback anyway (we reset it when
   // it's called in restart mode), or (b) we'll send this later when the surface
   // actually arrives.  GVD assumes that the first overlay info will have the
-  // routing information.  Note that we set |is_fullscreen_| earlier, so that
+  // routing information.  Note that we set `is_fullscreen_` earlier, so that
   // if EnableOverlay() can include fullscreen info in case it sends the overlay
   // info before returning.
   if (!decoder_requires_restart_for_overlay_)
@@ -743,7 +743,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // Start a new observation.  If there was one before, then we didn't play it.
   will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(false));
   // For now, send in an empty set of features.  We should fill some in here,
-  // and / or ask blink (via |client_|) for features from the DOM.
+  // and / or ask blink (via `client_`) for features from the DOM.
   learning::FeatureDictionary dict;
   will_play_helper_.BeginObservation(dict);
 
@@ -754,12 +754,12 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   // See https://crbug.com/936566.
   //
   // The credentials mode also has repercussions in WouldTaintOrigin(), but we
-  // access what we need from |mb_data_source_|->cors_mode() directly, instead
+  // access what we need from `mb_data_source_`->cors_mode() directly, instead
   // of storing it here.
   allow_media_player_renderer_credentials_ = cors_mode != kCorsModeAnonymous;
 #endif  // defined(OS_ANDROID)
 
-  // Note: |url| may be very large, take care when making copies.
+  // Note: `url` may be very large, take care when making copies.
   loaded_url_ = GURL(url);
   load_type_ = load_type;
 
@@ -802,7 +802,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
     // used, the pipeline can start immediately.
     StartPipeline();
   } else {
-    // If |loaded_url_| is remoting media, starting the pipeline.
+    // If `loaded_url_` is remoting media, starting the pipeline.
     if (loaded_url_.SchemeIs(media::remoting::kRemotingScheme)) {
       StartPipeline();
       return;
@@ -819,7 +819,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
         return;
       }
 
-      // Replace |loaded_url_| with an empty data:// URL since it may be large.
+      // Replace `loaded_url_` with an empty data:// URL since it may be large.
       loaded_url_ = GURL("data:,");
 
       // Mark all the data as buffered.
@@ -958,7 +958,7 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   // When paused or ended, we know exactly what the current time is and can
   // elide seeks to it. However, there are two cases that are not elided:
   //   1) When the pipeline state is not stable.
-  //      In this case we just let |pipeline_controller_| decide what to do, as
+  //      In this case we just let `pipeline_controller_` decide what to do, as
   //      it has complete information.
   //   2) For MSE.
   //      Because the buffers may have changed between seeks, MSE seeks are
@@ -982,7 +982,7 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   if (playback_events_recorder_)
     playback_events_recorder_->OnSeeking();
 
-  // Call this before setting |seeking_| so that the current media time can be
+  // Call this before setting `seeking_` so that the current media time can be
   // recorded by the reporter.
   if (watch_time_reporter_)
     watch_time_reporter_->OnSeeking();
@@ -992,7 +992,7 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   if (!seeking_)
     client_->DidSeek();
 
-  // TODO(sandersd): Move |seeking_| to PipelineController.
+  // TODO(sandersd): Move `seeking_` to PipelineController.
   // TODO(sandersd): Do we want to reset the idle timer here?
   delegate_->SetIdle(delegate_id_, false);
   ended_ = false;
@@ -1221,7 +1221,7 @@ base::TimeDelta WebMediaPlayerImpl::GetCurrentTimeInternal() const {
   else
     current_time = pipeline_controller_->GetMediaTime();
 
-  // It's possible for |current_time| to be kInfiniteDuration here if the page
+  // It's possible for `current_time` to be kInfiniteDuration here if the page
   // seeks to kInfiniteDuration (2**64 - 1) when Duration() is infinite.
   DCHECK_GE(current_time, base::TimeDelta());
   return current_time;
@@ -1311,7 +1311,7 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
-  // TODO(sandersd): Replace with |highest_ready_state_since_seek_| if we need
+  // TODO(sandersd): Replace with `highest_ready_state_since_seek_` if we need
   // to ensure that preroll always gets a chance to complete.
   // See http://crbug.com/671525.
   //
@@ -1338,7 +1338,7 @@ bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
     return true;
 
   // Freshly initialized; there has never been any loading progress. (Otherwise
-  // |preroll_attempt_pending_| would be true when the start time is null.)
+  // `preroll_attempt_pending_` would be true when the start time is null.)
   if (preroll_attempt_start_time_.is_null())
     return false;
 
@@ -1449,8 +1449,8 @@ void WebMediaPlayerImpl::SetContentDecryptionModule(
     return;
   }
 
-  // Create a local copy of |result| to avoid problems with the callback
-  // getting passed to the media thread and causing |result| to be destructed
+  // Create a local copy of `result` to avoid problems with the callback
+  // getting passed to the media thread and causing `result` to be destructed
   // on the wrong thread in some failure conditions. Blink should prevent
   // multiple simultaneous calls.
   DCHECK(!set_cdm_result_);
@@ -1474,7 +1474,7 @@ void WebMediaPlayerImpl::OnEncryptedMediaInitData(
     if (watch_time_reporter_)
       CreateWatchTimeReporter();
 
-    // |was_encrypted| = false means we didn't have a CDM prior to observing
+    // `was_encrypted` = false means we didn't have a CDM prior to observing
     // encrypted media init data. Reset the reporter until the CDM arrives. See
     // SetCdmInternal().
     DCHECK(!cdm_config_);
@@ -1542,7 +1542,7 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
     return;
   }
 
-  // Arrival of |cdm_config_| and |key_system_| unblocks recording of encrypted
+  // Arrival of `cdm_config_` and `key_system_` unblocks recording of encrypted
   // stats. Attempt to create the stats reporter. Note, we do NOT guard this
   // within !was_encypted above because often the CDM arrives after the call to
   // OnEncryptedMediaInitData().
@@ -1559,7 +1559,7 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
   DCHECK(cdm_context);
 
   // Keep the reference to the CDM, as it shouldn't be destroyed until
-  // after the pipeline is done with the |cdm_context|.
+  // after the pipeline is done with the `cdm_context`.
   pending_cdm_context_ref_ = std::move(cdm_context_ref);
   pipeline_controller_->SetCdm(
       cdm_context,
@@ -1572,7 +1572,7 @@ void WebMediaPlayerImpl::OnCdmAttached(bool success) {
   DCHECK(pending_cdm_context_ref_);
 
   // If the CDM is set from the constructor there is no promise
-  // (|set_cdm_result_|) to fulfill.
+  // (`set_cdm_result_`) to fulfill.
   if (success) {
     media_log_->SetProperty<MediaLogProperty::kIsVideoEncrypted>(true);
 
@@ -1655,7 +1655,7 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
   // Tell the data source we have enough data so that it may release the
   // connection (unless blink is waiting on us to signal play()).
   if (mb_data_source_ && !client_->CouldPlayIfEnoughData()) {
-    // |attempting_suspended_start_| will be cleared by OnPipelineSeeked() which
+    // `attempting_suspended_start_` will be cleared by OnPipelineSeeked() which
     // will occur after this method during a suspended startup.
     if (attempting_suspended_start_ && did_lazy_load_) {
       DCHECK(!has_first_frame_);
@@ -1667,7 +1667,7 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // enough" to the MultiBufferDataSource.
       //
       // base::Unretained() is safe here since the base::CancelableOnceClosure
-      // will cancel upon destruction of this class and |mb_data_source_| is
+      // will cancel upon destruction of this class and `mb_data_source_` is
       // gauranteeed to outlive us.
       have_enough_after_lazy_load_cb_.Reset(
           base::BindOnce(&MultiBufferDataSource::OnBufferingHaveEnough,
@@ -1694,12 +1694,12 @@ void WebMediaPlayerImpl::OnBeforePipelineResume() {
   have_enough_after_lazy_load_cb_.Cancel();
 
   // We went through suspended startup, so the player is only just now spooling
-  // up for playback. As such adjust |load_start_time_| so it reports the same
+  // up for playback. As such adjust `load_start_time_` so it reports the same
   // metric as what would be reported if we had not suspended at startup.
   if (skip_metrics_due_to_startup_suspend_) {
     // In the event that the call to SetReadyState() initiated after pipeline
     // startup immediately tries to start playback, we should not update
-    // |load_start_time_| to avoid losing visibility into the impact of a
+    // `load_start_time_` to avoid losing visibility into the impact of a
     // suspended startup on the time until first frame / play ready for cases
     // where suspended startup was applied incorrectly.
     if (!attempting_suspended_start_)
@@ -1739,7 +1739,7 @@ void WebMediaPlayerImpl::OnMemoryPressure(
     return;
   }
 
-  // The new value of |memory_pressure_level| will take effect on the next
+  // The new value of `memory_pressure_level` will take effect on the next
   // garbage collection. Typically this means the next SourceBuffer append()
   // operation, since per MSE spec, the garbage collection must only occur
   // during SourceBuffer append(). But if memory pressure is critical it might
@@ -1753,9 +1753,9 @@ void WebMediaPlayerImpl::OnMemoryPressure(
        memory_pressure_level ==
            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  // base::Unretained is safe, since |chunk_demuxer_| is actually owned by
-  // |this| via this->demuxer_. Note the destruction of |chunk_demuxer_| is done
-  // from ~WMPI by first hopping to |media_task_runner_| to prevent race with
+  // base::Unretained is safe, since `chunk_demuxer_` is actually owned by
+  // `this` via this->demuxer_. Note the destruction of `chunk_demuxer_` is done
+  // from ~WMPI by first hopping to `media_task_runner_` to prevent race with
   // this task.
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&media::ChunkDemuxer::OnMemoryPressure,
@@ -1773,7 +1773,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     return;
 
 #if defined(OS_ANDROID)
-  // |mb_data_source_| may be nullptr if someone passes in a m3u8 as a data://
+  // `mb_data_source_` may be nullptr if someone passes in a m3u8 as a data://
   // URL, since MediaPlayer doesn't support data:// URLs, fail playback now.
   const bool found_hls =
       base::FeatureList::IsEnabled(media::kHlsPlayer) &&
@@ -1888,7 +1888,7 @@ void WebMediaPlayerImpl::OnEnded() {
   if (playback_events_recorder_)
     playback_events_recorder_->OnEnded();
 
-  // We don't actually want this to run until |client_| calls seek() or pause(),
+  // We don't actually want this to run until `client_` calls seek() or pause(),
   // but that should have already happened in timeChanged() and so this is
   // expected to be a no-op.
   UpdatePlayState();
@@ -1898,7 +1898,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  // Cache the |time_to_metadata_| to use for adjusting the TimeToFirstFrame and
+  // Cache the `time_to_metadata_` to use for adjusting the TimeToFirstFrame and
   // TimeToPlayReady metrics later if we end up doing a suspended startup.
   time_to_metadata_ = base::TimeTicks::Now() - load_start_time_;
   media_metrics_provider_->SetTimeToMetadata(time_to_metadata_);
@@ -1928,7 +1928,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
 
     if (overlay_enabled_) {
       // SurfaceView doesn't support rotated video, so transition back if
-      // the video is now rotated.  If |always_enable_overlays_|, we keep the
+      // the video is now rotated.  If `always_enable_overlays_`, we keep the
       // overlay anyway so that the state machine keeps working.
       // TODO(liberato): verify if compositor feedback catches this.  If so,
       // then we don't need this check.
@@ -1960,11 +1960,11 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
 
   // It could happen that the demuxer successfully completed initialization
   // (implying it had determined media metadata), but then removed all audio and
-  // video streams and the ability to demux any A/V before |metadata| was
+  // video streams and the ability to demux any A/V before `metadata` was
   // constructed and passed to us. One example is, with MSE-in-Workers, the
   // worker owning the MediaSource could have been terminated, or the app could
   // have explicitly removed all A/V SourceBuffers. That termination/removal
-  // could race the construction of |metadata|. Regardless of load-type, we
+  // could race the construction of `metadata`. Regardless of load-type, we
   // shouldn't allow playback of a resource that has neither audio nor video.
   // We treat lack of A/V as if there were an error in the demuxer before
   // reaching HAVE_METADATA.
@@ -2089,7 +2089,7 @@ void WebMediaPlayerImpl::OnProgress() {
   DVLOG(4) << __func__;
 
   // See IsPrerollAttemptNeeded() for more details. We can't use that method
-  // here since it considers |preroll_attempt_start_time_| and for OnProgress()
+  // here since it considers `preroll_attempt_start_time_` and for OnProgress()
   // events we must make the attempt -- since there may not be another event.
   if (highest_ready_state_ < ReadyState::kReadyStateHaveFutureData) {
     // Reset the preroll attempt clock.
@@ -2097,7 +2097,7 @@ void WebMediaPlayerImpl::OnProgress() {
     preroll_attempt_start_time_ = base::TimeTicks();
 
     // Clear any 'stale' flag and give the pipeline a chance to resume. If we
-    // are already resumed, this will cause |preroll_attempt_start_time_| to
+    // are already resumed, this will cause `preroll_attempt_start_time_` to
     // be set.
     delegate_->ClearStaleFlag(delegate_id_);
     UpdatePlayState();
@@ -2148,7 +2148,7 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     TRACE_EVENT1("media", "WebMediaPlayerImpl::BufferingHaveEnough", "id",
                  media_log_->id());
     // The SetReadyState() call below may clear
-    // |skip_metrics_due_to_startup_suspend_| so report this first.
+    // `skip_metrics_due_to_startup_suspend_` so report this first.
     if (!have_reported_time_to_play_ready_ &&
         !skip_metrics_due_to_startup_suspend_) {
       DCHECK(!for_suspended_start);
@@ -2282,13 +2282,13 @@ void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {
       encrypted_client_->DidBlockPlaybackWaitingForKey();
       // TODO(jrummell): didResumePlaybackBlockedForKey() should only be called
       // when a key has been successfully added (e.g. OnSessionKeysChange() with
-      // |has_additional_usable_key| = true). http://crbug.com/461903
+      // `has_additional_usable_key` = true). http://crbug.com/461903
       encrypted_client_->DidResumePlaybackBlockedForKey();
       return;
 
     // Ideally this should be handled by PipelineController directly without
-    // being proxied here. But currently Pipeline::Client (|this|) is passed to
-    // PipelineImpl directly without going through |pipeline_controller_|,
+    // being proxied here. But currently Pipeline::Client (`this`) is passed to
+    // PipelineImpl directly without going through `pipeline_controller_`,
     // making it difficult to do.
     // TODO(xhwang): Handle this in PipelineController when we have a clearer
     // picture on how to refactor WebMediaPlayerImpl, PipelineController and
@@ -2305,7 +2305,7 @@ void WebMediaPlayerImpl::OnVideoNaturalSizeChange(const gfx::Size& size) {
 
   TRACE_EVENT0("media", "WebMediaPlayerImpl::OnVideoNaturalSizeChange");
 
-  // The input |size| is from the decoded video frame, which is the original
+  // The input `size` is from the decoded video frame, which is the original
   // natural size and need to be rotated accordingly.
   gfx::Size rotated_size = GetRotatedVideoSize(
       pipeline_metadata_.video_decoder_config.video_transformation().rotation,
@@ -2572,7 +2572,7 @@ void WebMediaPlayerImpl::FlingingStarted() {
   video_decode_stats_reporter_.reset();
 
   // Requests to restart media pipeline. A flinging renderer will be created via
-  // the |renderer_factory_selector_|.
+  // the `renderer_factory_selector_`.
   ScheduleRestart();
 }
 
@@ -2658,7 +2658,7 @@ void WebMediaPlayerImpl::NotifyDownloading(bool is_downloading) {
 void WebMediaPlayerImpl::OnOverlayRoutingToken(
     const base::UnguessableToken& token) {
   DCHECK(overlay_mode_ == OverlayMode::kUseAndroidOverlay);
-  // TODO(liberato): |token| should already be a RoutingToken.
+  // TODO(liberato): `token` should already be a RoutingToken.
   overlay_routing_token_is_pending_ = false;
   overlay_routing_token_ = media::OverlayInfo::RoutingToken(token);
   MaybeSendOverlayInfoToDecoder();
@@ -2678,13 +2678,13 @@ void WebMediaPlayerImpl::OnOverlayInfoRequested(
     return;
   }
 
-  // If |decoder_requires_restart_for_overlay| is true, we must restart the
+  // If `decoder_requires_restart_for_overlay` is true, we must restart the
   // pipeline for fullscreen transitions. The decoder is unable to switch
   // surfaces otherwise. If false, we simply need to tell the decoder about the
   // new surface and it will handle things seamlessly.
   // For encrypted video we pretend that the decoder doesn't require a restart
   // because it needs an overlay all the time anyway. We'll switch into
-  // |always_enable_overlays_| mode below.
+  // `always_enable_overlays_` mode below.
   decoder_requires_restart_for_overlay_ =
       (overlay_mode_ == OverlayMode::kUseAndroidOverlay && is_encrypted_)
           ? false
@@ -2712,7 +2712,7 @@ void WebMediaPlayerImpl::MaybeSendOverlayInfoToDecoder() {
     return;
 
   // We should send the overlay info as long as we know it.  This includes the
-  // case where |!overlay_enabled_|, since we want to tell the decoder to avoid
+  // case where `!overlay_enabled_`, since we want to tell the decoder to avoid
   // using overlays.  Assuming that the decoder has requested info, the only
   // case in which we don't want to send something is if we've requested the
   // info but not received it yet.  Then, we should wait until we do.
@@ -2844,7 +2844,7 @@ void WebMediaPlayerImpl::StartPipeline() {
 
     if (base::FeatureList::IsEnabled(
             media::kMemoryPressureBasedSourceBufferGC)) {
-      // base::Unretained is safe because |this| owns memory_pressure_listener_.
+      // base::Unretained is safe because `this` owns memory_pressure_listener_.
       memory_pressure_listener_ =
           std::make_unique<base::MemoryPressureListener>(
               FROM_HERE,
@@ -2919,10 +2919,10 @@ WebMediaPlayerImpl::GetCurrentFrameFromCompositor() const {
   scoped_refptr<media::VideoFrame> video_frame =
       compositor_->GetCurrentFrameOnAnyThread();
 
-  // base::Unretained is safe here because |compositor_| is destroyed on
-  // |vfc_task_runner_|. The destruction is queued from |this|' destructor,
-  // which also runs on |main_task_runner_|, which makes it impossible for
-  // UpdateCurrentFrameIfStale() to be queued after |compositor_|'s dtor.
+  // base::Unretained is safe here because `compositor_` is destroyed on
+  // `vfc_task_runner_`. The destruction is queued from `this`' destructor,
+  // which also runs on `main_task_runner_`, which makes it impossible for
+  // UpdateCurrentFrameIfStale() to be queued after `compositor_`'s dtor.
   vfc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameCompositor::UpdateCurrentFrameIfStale,
@@ -3107,8 +3107,8 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(bool is_flinging,
                         !overlay_info_.is_fullscreen && !needs_first_frame_;
 
   // If we're already suspended, see if we can wait for user interaction. Prior
-  // to kReadyStateHaveMetadata, we require |is_stale| to remain suspended.
-  // |is_stale| will be cleared when we receive data which may take us to
+  // to kReadyStateHaveMetadata, we require `is_stale` to remain suspended.
+  // `is_stale` will be cleared when we receive data which may take us to
   // kReadyStateHaveMetadata.
   bool can_stay_suspended = (is_stale || have_future_data) && is_suspended &&
                             paused_ && !seeking_ && !needs_first_frame_;
@@ -3125,32 +3125,32 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(bool is_flinging,
            << ", have_future_data=" << have_future_data
            << ", paused_=" << paused_ << ", seeking_=" << seeking_;
 
-  // We do not treat |playback_rate_| == 0 as paused. For the media session,
+  // We do not treat `playback_rate_` == 0 as paused. For the media session,
   // being paused implies displaying a play button, which is incorrect in this
   // case. For memory usage reporting, we just use the same definition (but we
   // don't have to).
   //
-  // Similarly, we don't consider |ended_| to be paused. Blink will immediately
-  // call pause() or seek(), so |ended_| should not affect the computation.
-  // Despite that, |ended_| does result in a separate paused state, to simplfy
+  // Similarly, we don't consider `ended_` to be paused. Blink will immediately
+  // call pause() or seek(), so `ended_` should not affect the computation.
+  // Despite that, `ended_` does result in a separate paused state, to simplfy
   // the contract for SetDelegateState().
   //
-  // |has_remote_controls| indicates if the player can be controlled outside the
+  // `has_remote_controls` indicates if the player can be controlled outside the
   // page (e.g. via the notification controls or by audio focus events). Idle
   // suspension does not destroy the media session, because we expect that the
   // notification controls (and audio focus) remain. With some exceptions for
   // background videos, the player only needs to have audio to have controls
-  // (requires |have_current_data|).
+  // (requires `have_current_data`).
   //
-  // |alive| indicates if the player should be present (not |GONE|) to the
+  // `alive` indicates if the player should be present (not `GONE`) to the
   // delegate, either paused or playing. The following must be true for the
   // player:
-  //   - |have_current_data|, since playback can't begin before that point, we
+  //   - `have_current_data`, since playback can't begin before that point, we
   //     need to know whether we are paused to correctly configure the session,
   //     and also because the tracks and duration are passed to DidPlay(),
-  //   - |is_flinging| is false (RemotePlayback is not handled by the delegate)
-  //   - |has_error| is false as player should have no errors,
-  //   - |background_suspended| is false, otherwise |has_remote_controls| must
+  //   - `is_flinging` is false (RemotePlayback is not handled by the delegate)
+  //   - `has_error` is false as player should have no errors,
+  //   - `background_suspended` is false, otherwise `has_remote_controls` must
   //     be true.
   //
   // TODO(sandersd): If Blink told us the paused state sooner, we could detect
@@ -3199,7 +3199,7 @@ void WebMediaPlayerImpl::SetDemuxer(std::unique_ptr<Demuxer> demuxer) {
 
   demuxer_ = std::move(demuxer);
 
-  // base::Unretained() is safe here. |demuxer_| is destroyed on the main
+  // base::Unretained() is safe here. `demuxer_` is destroyed on the main
   // thread, but before doing it ~WebMediaPlayerImpl() posts a media thread task
   // that deletes media_thread_mem_dumper_ and  waits for it to finish.
   media_thread_mem_dumper_ = std::make_unique<media::MemoryDumpProviderProxy>(
@@ -3211,14 +3211,14 @@ void WebMediaPlayerImpl::SetDemuxer(std::unique_ptr<Demuxer> demuxer) {
 void WebMediaPlayerImpl::ReportMemoryUsage() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  // About base::Unretained() usage below: We destroy |demuxer_| on the main
+  // About base::Unretained() usage below: We destroy `demuxer_` on the main
   // thread.  Before that, however, ~WebMediaPlayerImpl() posts a task to the
   // media thread and waits for it to finish.  Hence, the GetMemoryUsage() task
   // posted here must finish earlier.
   //
   // The exception to the above is when OnError() has been called. If we're in
   // the error state we've already shut down the pipeline and can't rely on it
-  // to cycle the media thread before we destroy |demuxer_|. In this case skip
+  // to cycle the media thread before we destroy `demuxer_`. In this case skip
   // collection of the demuxer memory stats.
   if (demuxer_ && !IsNetworkStateError(network_state_)) {
     base::PostTaskAndReplyWithResult(
@@ -3471,10 +3471,10 @@ WebMediaPlayerImpl::GetVideoFramePresentationMetadata() {
 }
 
 void WebMediaPlayerImpl::UpdateFrameIfStale() {
-  // base::Unretained is safe here because |compositor_| is destroyed on
-  // |vfc_task_runner_|. The destruction is queued from |this|' destructor,
-  // which also runs on |main_task_runner_|, which makes it impossible for
-  // UpdateCurrentFrameIfStale() to be queued after |compositor_|'s dtor.
+  // base::Unretained is safe here because `compositor_` is destroyed on
+  // `vfc_task_runner_`. The destruction is queued from `this`' destructor,
+  // which also runs on `main_task_runner_`, which makes it impossible for
+  // UpdateCurrentFrameIfStale() to be queued after `compositor_`'s dtor.
   vfc_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameCompositor::UpdateCurrentFrameIfStale,
@@ -3608,7 +3608,7 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
       seeking_ || paused_)
     return;
 
-  // client_->PausePlayback() will get |paused_when_hidden_| set to
+  // client_->PausePlayback() will get `paused_when_hidden_` set to
   // false and UpdatePlayState() called, so set the flag to true after and then
   // return.
   client_->PausePlayback();
@@ -3686,7 +3686,7 @@ void WebMediaPlayerImpl::SwitchToRemoteRenderer(
   video_decode_stats_reporter_.reset();
 
   // Requests to restart media pipeline. A remote renderer will be created via
-  // the |renderer_factory_selector_|.
+  // the `renderer_factory_selector_`.
   ScheduleRestart();
   if (client_) {
     client_->MediaRemotingStarted(
@@ -3708,7 +3708,7 @@ void WebMediaPlayerImpl::SwitchToLocalRenderer(
   CreateVideoDecodeStatsReporter();
 
   // Requests to restart media pipeline. A local renderer will be created via
-  // the |renderer_factory_selector_|.
+  // the `renderer_factory_selector_`.
   ScheduleRestart();
   if (client_)
     client_->MediaRemotingStopped(GetSwitchToLocalMessage(reason));
@@ -3876,7 +3876,7 @@ void WebMediaPlayerImpl::UpdateSmoothnessHelper() {
   if (smoothness_helper_ && features == smoothness_helper_->features())
     return;
 
-  // Create or restart the smoothness helper with |features|.
+  // Create or restart the smoothness helper with `features`.
   smoothness_helper_ = SmoothnessHelper::Create(
       GetLearningTaskController(learning::tasknames::kConsecutiveBadWindows),
       GetLearningTaskController(learning::tasknames::kConsecutiveNNRs),
@@ -3885,7 +3885,7 @@ void WebMediaPlayerImpl::UpdateSmoothnessHelper() {
 
 std::unique_ptr<learning::LearningTaskController>
 WebMediaPlayerImpl::GetLearningTaskController(const char* task_name) {
-  // Get the LearningTaskController for |task_id|.
+  // Get the LearningTaskController for `task_id`.
   learning::LearningTask task = learning::MediaLearningTasks::Get(task_name);
   DCHECK_EQ(task.name, task_name);
 

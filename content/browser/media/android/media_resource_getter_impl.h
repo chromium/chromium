@@ -31,9 +31,9 @@ class ResourceContext;
 // asynchronously on the UI thread.
 class MediaResourceGetterImpl : public media::MediaResourceGetter {
  public:
-  // Construct a MediaResourceGetterImpl object. |browser_context| and
-  // |render_process_id| are passed to retrieve the CookieStore.
-  // |file_system_context| are used to get the platform path.
+  // Construct a MediaResourceGetterImpl object. `browser_context` and
+  // `render_process_id` are passed to retrieve the CookieStore.
+  // `file_system_context` are used to get the platform path.
   MediaResourceGetterImpl(BrowserContext* browser_context,
                           storage::FileSystemContext* file_system_context,
                           int render_process_id,

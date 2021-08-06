@@ -46,7 +46,7 @@ class MEDIA_EXPORT MediaResource {
   //   some previously existing streams inaccessible/unavailable.
   virtual std::vector<DemuxerStream*> GetAllStreams() = 0;
 
-  // A helper function that return the first stream of the given |type| if one
+  // A helper function that return the first stream of the given `type` if one
   // exists or a null pointer if there is no streams of that type.
   DemuxerStream* GetFirstStream(DemuxerStream::Type type);
 

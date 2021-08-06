@@ -40,9 +40,9 @@ struct MEDIA_EXPORT MediaUrlParams {
   //
   // Used by MediaPlayerRenderer when determining whether or not send cookies
   // and credentials to the underlying Android MediaPlayer. Cookies/credentials
-  // are retrieved based on whether or not the |media_url| passes the checks
+  // are retrieved based on whether or not the `media_url` passes the checks
   // initiated in MediaResourceGetter::CheckPolicyForCookies() for the given
-  // |site_for_cookies|.
+  // `site_for_cookies`.
   bool allow_credentials;
 
   // True when MediaPlayerRenderer has been selected because the media has been
