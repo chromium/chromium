@@ -171,7 +171,7 @@ bool ImageFrameGenerator::DecodeToYUV(
     SkColorType color_type,
     const SkISize component_sizes[cc::kNumYUVPlanes],
     void* planes[cc::kNumYUVPlanes],
-    const size_t row_bytes[cc::kNumYUVPlanes]) {
+    const wtf_size_t row_bytes[cc::kNumYUVPlanes]) {
   MutexLocker lock(generator_mutex_);
   DCHECK_EQ(index, 0u);
 

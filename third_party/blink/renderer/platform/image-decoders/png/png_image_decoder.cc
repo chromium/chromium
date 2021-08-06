@@ -53,8 +53,8 @@ PNGImageDecoder::PNGImageDecoder(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     const ColorBehavior& color_behavior,
-    size_t max_decoded_bytes,
-    size_t offset)
+    wtf_size_t max_decoded_bytes,
+    wtf_size_t offset)
     : ImageDecoder(alpha_option,
                    high_bit_depth_decoding_option,
                    color_behavior,
@@ -77,12 +77,12 @@ bool PNGImageDecoder::SetFailed() {
   return ImageDecoder::SetFailed();
 }
 
-size_t PNGImageDecoder::DecodeFrameCount() {
+wtf_size_t PNGImageDecoder::DecodeFrameCount() {
   Parse(ParseQuery::kMetaData);
   return Failed() ? frame_buffer_cache_.size() : reader_->FrameCount();
 }
 
-void PNGImageDecoder::Decode(size_t index) {
+void PNGImageDecoder::Decode(wtf_size_t index) {
   Parse(ParseQuery::kMetaData);
 
   if (Failed())
@@ -90,7 +90,7 @@ void PNGImageDecoder::Decode(size_t index) {
 
   UpdateAggressivePurging(index);
 
-  Vector<size_t> frames_to_decode = FindFramesToDecode(index);
+  Vector<wtf_size_t> frames_to_decode = FindFramesToDecode(index);
   for (auto i = frames_to_decode.rbegin(); i != frames_to_decode.rend(); i++) {
     current_frame_ = *i;
     if (!reader_->Decode(*data_, *i)) {
@@ -121,13 +121,13 @@ void PNGImageDecoder::Parse(ParseQuery query) {
     SetFailed();
 }
 
-void PNGImageDecoder::ClearFrameBuffer(size_t index) {
+void PNGImageDecoder::ClearFrameBuffer(wtf_size_t index) {
   if (reader_)
     reader_->ClearDecodeState(index);
   ImageDecoder::ClearFrameBuffer(index);
 }
 
-bool PNGImageDecoder::CanReusePreviousFrameBuffer(size_t index) const {
+bool PNGImageDecoder::CanReusePreviousFrameBuffer(wtf_size_t index) const {
   DCHECK(index < frame_buffer_cache_.size());
   return frame_buffer_cache_[index].GetDisposalMethod() !=
          ImageFrame::kDisposeOverwritePrevious;
@@ -141,7 +141,7 @@ int PNGImageDecoder::RepetitionCount() const {
   return Failed() ? kAnimationLoopOnce : repetition_count_;
 }
 
-void PNGImageDecoder::InitializeNewFrame(size_t index) {
+void PNGImageDecoder::InitializeNewFrame(wtf_size_t index) {
   const PNGImageReader::FrameInfo& frame_info = reader_->GetFrameInfo(index);
   ImageFrame& buffer = frame_buffer_cache_[index];
   if (decode_to_half_float_)
@@ -154,7 +154,7 @@ void PNGImageDecoder::InitializeNewFrame(size_t index) {
   buffer.SetDisposalMethod(frame_info.disposal_method);
   buffer.SetAlphaBlendSource(frame_info.alpha_blend);
 
-  size_t previous_frame_index = FindRequiredPreviousFrame(index, false);
+  wtf_size_t previous_frame_index = FindRequiredPreviousFrame(index, false);
   buffer.SetRequiredPreviousFrameIndex(previous_frame_index);
 }
 
@@ -769,7 +769,7 @@ void PNGImageDecoder::FrameComplete() {
   buffer.SetStatus(ImageFrame::kFrameComplete);
 }
 
-bool PNGImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool PNGImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   if (!IsDecodedSizeAvailable())
     return false;
 
@@ -783,7 +783,7 @@ bool PNGImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
   return reader_->FrameIsReceivedAtIndex(index);
 }
 
-base::TimeDelta PNGImageDecoder::FrameDurationAtIndex(size_t index) const {
+base::TimeDelta PNGImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   if (index < frame_buffer_cache_.size())
     return frame_buffer_cache_[index].Duration();
   return base::TimeDelta();

@@ -179,17 +179,18 @@ NSAttributedString* SubstringUtil::AttributedWordAtPoint(
   return string;
 }
 
-NSAttributedString* SubstringUtil::AttributedSubstringInRange(LocalFrame* frame,
-                                                              size_t location,
-                                                              size_t length) {
+NSAttributedString* SubstringUtil::AttributedSubstringInRange(
+    LocalFrame* frame,
+    wtf_size_t location,
+    wtf_size_t length) {
   return SubstringUtil::AttributedSubstringInRange(frame, location, length,
                                                    nil);
 }
 
 NSAttributedString* SubstringUtil::AttributedSubstringInRange(
     LocalFrame* frame,
-    size_t location,
-    size_t length,
+    wtf_size_t location,
+    wtf_size_t length,
     gfx::Point* baseline_point) {
   frame->View()->UpdateStyleAndLayout();
 

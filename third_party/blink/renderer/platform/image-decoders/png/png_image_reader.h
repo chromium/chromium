@@ -56,17 +56,17 @@ class PLATFORM_EXPORT PNGImageReader final {
   USING_FAST_MALLOC(PNGImageReader);
 
  public:
-  PNGImageReader(PNGImageDecoder*, size_t initial_offset);
+  PNGImageReader(PNGImageDecoder*, wtf_size_t initial_offset);
   PNGImageReader(const PNGImageReader&) = delete;
   PNGImageReader& operator=(const PNGImageReader&) = delete;
   ~PNGImageReader();
 
   struct FrameInfo {
     // The offset where the frame data of this frame starts.
-    size_t start_offset;
+    wtf_size_t start_offset;
     // The number of bytes that contain frame data, starting at start_offset.
-    size_t byte_length;
-    size_t duration;
+    wtf_size_t byte_length;
+    wtf_size_t duration;
     IntRect frame_rect;
     ImageFrame::DisposalMethod disposal_method;
     ImageFrame::AlphaBlendSource alpha_blend;
@@ -77,21 +77,21 @@ class PLATFORM_EXPORT PNGImageReader final {
   bool Parse(SegmentReader&, ParseQuery);
 
   // Returns false on a fatal error.
-  bool Decode(SegmentReader&, size_t);
-  const FrameInfo& GetFrameInfo(size_t) const;
+  bool Decode(SegmentReader&, wtf_size_t);
+  const FrameInfo& GetFrameInfo(wtf_size_t) const;
 
   // Number of complete frames parsed so far; includes frame 0 even if partial.
-  size_t FrameCount() const { return frame_info_.size(); }
+  wtf_size_t FrameCount() const { return frame_info_.size(); }
 
   bool ParseCompleted() const { return parse_completed_; }
 
-  bool FrameIsReceivedAtIndex(size_t index) const {
+  bool FrameIsReceivedAtIndex(wtf_size_t index) const {
     if (!index)
       return FirstFrameFullyReceived();
     return index < FrameCount();
   }
 
-  void ClearDecodeState(size_t);
+  void ClearDecodeState(wtf_size_t);
 
   png_structp PngPtr() const { return png_; }
   png_infop InfoPtr() const { return info_; }
@@ -111,12 +111,12 @@ class PLATFORM_EXPORT PNGImageReader final {
   PNGImageDecoder* decoder_;
 
   // The offset in the stream where the PNG image starts.
-  const size_t initial_offset_;
+  const wtf_size_t initial_offset_;
   // How many bytes have been read during parsing.
-  size_t read_offset_;
-  size_t progressive_decode_offset_;
-  size_t ihdr_offset_;
-  size_t idat_offset_;
+  wtf_size_t read_offset_;
+  wtf_size_t progressive_decode_offset_;
+  wtf_size_t ihdr_offset_;
+  wtf_size_t idat_offset_;
 
   bool idat_is_part_of_animation_;
   // All IDAT chunks must precede the first fdAT chunk, and all fdAT chunks
@@ -140,25 +140,25 @@ class PLATFORM_EXPORT PNGImageReader final {
   // Value used for the byte_length of a FrameInfo struct to indicate that it is
   // the first frame and its byte_length is not yet known. 1 is a safe value
   // since the byte_length field of a frame is at least 12.
-  static constexpr size_t kFirstFrameIndicator = 1;
+  static constexpr wtf_size_t kFirstFrameIndicator = 1;
 
   // Stores information about a frame until it can be pushed to |frame_info|
   // once all the frame data has been read from the stream.
   FrameInfo new_frame_;
   Vector<FrameInfo, 1> frame_info_;
 
-  size_t ProcessData(const FastSharedBufferReader&,
-                     size_t offset,
-                     size_t length);
+  wtf_size_t ProcessData(const FastSharedBufferReader&,
+                         wtf_size_t offset,
+                         wtf_size_t length);
   // Returns false on a fatal error.
   bool ParseSize(const FastSharedBufferReader&);
   // Returns false on an error.
   bool ParseFrameInfo(const png_byte* data);
-  bool ShouldDecodeWithNewPNG(size_t) const;
-  void StartFrameDecoding(const FastSharedBufferReader&, size_t);
+  bool ShouldDecodeWithNewPNG(wtf_size_t) const;
+  void StartFrameDecoding(const FastSharedBufferReader&, wtf_size_t);
   // Returns whether the frame was completely decoded.
   bool ProgressivelyDecodeFirstFrame(const FastSharedBufferReader&);
-  void DecodeFrame(const FastSharedBufferReader&, size_t);
+  void DecodeFrame(const FastSharedBufferReader&, wtf_size_t);
   void ProcessFdatChunkAsIdat(png_uint_32 fdat_length);
   // Returns false on a fatal error.
   bool CheckSequenceNumber(const png_byte* position);

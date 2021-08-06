@@ -174,7 +174,7 @@ namespace blink {
 
 WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
                                    const ColorBehavior& color_behavior,
-                                   size_t max_decoded_bytes)
+                                   wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
@@ -272,7 +272,7 @@ int WEBPImageDecoder::RepetitionCount() const {
   return Failed() ? kAnimationLoopOnce : repetition_count_;
 }
 
-bool WEBPImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool WEBPImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   if (!demux_ || demux_state_ <= WEBP_DEMUX_PARSING_HEADER)
     return false;
   if (!(format_flags_ & ANIMATION_FLAG))
@@ -286,7 +286,7 @@ bool WEBPImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
   return frame_is_received_at_index;
 }
 
-base::TimeDelta WEBPImageDecoder::FrameDurationAtIndex(size_t index) const {
+base::TimeDelta WEBPImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   return index < frame_buffer_cache_.size()
              ? frame_buffer_cache_[index].Duration()
              : base::TimeDelta();
@@ -317,12 +317,12 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   if (IsAllDataReceived() && !consolidated_data_) {
     consolidated_data_ = data_->GetAsSkData();
   } else {
-    buffer_.ReserveCapacity(data_->size());
+    buffer_.ReserveCapacity(base::checked_cast<wtf_size_t>(data_->size()));
     while (buffer_.size() < data_->size()) {
       const char* segment;
       const size_t bytes = data_->GetSomeData(segment, buffer_.size());
       DCHECK(bytes);
-      buffer_.Append(segment, bytes);
+      buffer_.Append(segment, base::checked_cast<wtf_size_t>(bytes));
     }
     DCHECK_EQ(buffer_.size(), data_->size());
     consolidated_data_ =
@@ -385,17 +385,17 @@ bool WEBPImageDecoder::UpdateDemuxer() {
 
   DCHECK(IsDecodedSizeAvailable());
 
-  size_t frame_count = WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT);
+  wtf_size_t frame_count = WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT);
   UpdateAggressivePurging(frame_count);
 
   return true;
 }
 
-void WEBPImageDecoder::OnInitFrameBuffer(size_t frame_index) {
+void WEBPImageDecoder::OnInitFrameBuffer(wtf_size_t frame_index) {
   // ImageDecoder::InitFrameBuffer does a DCHECK if |frame_index| exists.
   ImageFrame& buffer = frame_buffer_cache_[frame_index];
 
-  const size_t required_previous_frame_index =
+  const wtf_size_t required_previous_frame_index =
       buffer.RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
     frame_background_has_alpha_ =
@@ -433,8 +433,9 @@ void WEBPImageDecoder::DecodeToYUV() {
   } else {
     std::unique_ptr<WebPIterator, void (*)(WebPIterator*)> webp_frame(
         &webp_iter, WebPDemuxReleaseIterator);
-    DecodeSingleFrameToYUV(webp_frame->fragment.bytes,
-                           webp_frame->fragment.size);
+    DecodeSingleFrameToYUV(
+        webp_frame->fragment.bytes,
+        base::checked_cast<wtf_size_t>(webp_frame->fragment.size));
   }
 }
 
@@ -451,13 +452,13 @@ IntSize WEBPImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   return IntSize(0, 0);
 }
 
-size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
+wtf_size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   switch (index) {
     case cc::YUVIndex::kY:
-      return base::checked_cast<size_t>(Size().Width());
+      return base::checked_cast<wtf_size_t>(Size().Width());
     case cc::YUVIndex::kU:
     case cc::YUVIndex::kV:
-      return base::checked_cast<size_t>((Size().Width() + 1) / 2);
+      return base::checked_cast<wtf_size_t>((Size().Width() + 1) / 2);
   }
   NOTREACHED();
   return 0;
@@ -478,13 +479,14 @@ cc::YUVSubsampling WEBPImageDecoder::GetYUVSubsampling() const {
   return cc::YUVSubsampling::kUnknown;
 }
 
-bool WEBPImageDecoder::CanReusePreviousFrameBuffer(size_t frame_index) const {
+bool WEBPImageDecoder::CanReusePreviousFrameBuffer(
+    wtf_size_t frame_index) const {
   DCHECK(frame_index < frame_buffer_cache_.size());
   return frame_buffer_cache_[frame_index].GetAlphaBlendSource() !=
          ImageFrame::kBlendAtopPreviousFrame;
 }
 
-void WEBPImageDecoder::ClearFrameBuffer(size_t frame_index) {
+void WEBPImageDecoder::ClearFrameBuffer(wtf_size_t frame_index) {
   if (demux_ && demux_state_ >= WEBP_DEMUX_PARSED_HEADER &&
       frame_buffer_cache_[frame_index].GetStatus() ==
           ImageFrame::kFramePartial) {
@@ -504,7 +506,8 @@ void WEBPImageDecoder::ReadColorProfile() {
 
   const char* profile_data =
       reinterpret_cast<const char*>(chunk_iterator.chunk.bytes);
-  size_t profile_size = chunk_iterator.chunk.size;
+  wtf_size_t profile_size =
+      base::checked_cast<wtf_size_t>(chunk_iterator.chunk.size);
 
   if (auto profile = ColorProfile::Create(profile_data, profile_size)) {
     if (profile->GetProfile()->data_color_space == skcms_Signature_RGB) {
@@ -517,7 +520,7 @@ void WEBPImageDecoder::ReadColorProfile() {
   WebPDemuxReleaseChunkIterator(&chunk_iterator);
 }
 
-void WEBPImageDecoder::ApplyPostProcessing(size_t frame_index) {
+void WEBPImageDecoder::ApplyPostProcessing(wtf_size_t frame_index) {
   ImageFrame& buffer = frame_buffer_cache_[frame_index];
   int width;
   int decoded_height;
@@ -605,7 +608,7 @@ void WEBPImageDecoder::ApplyPostProcessing(size_t frame_index) {
   buffer.SetPixelsChanged(true);
 }
 
-size_t WEBPImageDecoder::DecodeFrameCount() {
+wtf_size_t WEBPImageDecoder::DecodeFrameCount() {
   // If UpdateDemuxer() fails, return the existing number of frames. This way if
   // we get halfway through the image before decoding fails, we won't suddenly
   // start reporting that the image has zero frames.
@@ -613,7 +616,7 @@ size_t WEBPImageDecoder::DecodeFrameCount() {
                          : frame_buffer_cache_.size();
 }
 
-void WEBPImageDecoder::InitializeNewFrame(size_t index) {
+void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
   if (!(format_flags_ & ANIMATION_FLAG)) {
     DCHECK(!index);
     return;
@@ -640,13 +643,13 @@ void WEBPImageDecoder::InitializeNewFrame(size_t index) {
   WebPDemuxReleaseIterator(&animated_frame);
 }
 
-void WEBPImageDecoder::Decode(size_t index) {
+void WEBPImageDecoder::Decode(wtf_size_t index) {
   DCHECK(!IsDoingYuvDecode());
 
   if (Failed())
     return;
 
-  Vector<size_t> frames_to_decode = FindFramesToDecode(index);
+  Vector<wtf_size_t> frames_to_decode = FindFramesToDecode(index);
 
   DCHECK(demux_);
   for (auto i = frames_to_decode.rbegin(); i != frames_to_decode.rend(); ++i) {
@@ -661,8 +664,9 @@ void WEBPImageDecoder::Decode(size_t index) {
     } else {
       std::unique_ptr<WebPIterator, void (*)(WebPIterator*)> webp_frame(
           &webp_iter, WebPDemuxReleaseIterator);
-      DecodeSingleFrame(webp_frame->fragment.bytes, webp_frame->fragment.size,
-                        *i);
+      DecodeSingleFrame(
+          webp_frame->fragment.bytes,
+          base::checked_cast<wtf_size_t>(webp_frame->fragment.size), *i);
     }
 
     if (Failed())
@@ -681,7 +685,7 @@ void WEBPImageDecoder::Decode(size_t index) {
 }
 
 bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
-                                              size_t data_size) {
+                                              wtf_size_t data_size) {
   DCHECK(IsDoingYuvDecode());
   DCHECK(!Failed());
 
@@ -737,8 +741,8 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
 }
 
 bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
-                                         size_t data_size,
-                                         size_t frame_index) {
+                                         wtf_size_t data_size,
+                                         wtf_size_t frame_index) {
   DCHECK(!IsDoingYuvDecode());
   if (Failed())
     return false;

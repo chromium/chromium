@@ -612,19 +612,19 @@ class BitmapImageTestWithMockDecoder : public BitmapImageTest,
 
   void DecoderBeingDestroyed() override {}
   void DecodeRequested() override {}
-  ImageFrame::Status GetStatus(size_t index) override {
+  ImageFrame::Status GetStatus(wtf_size_t index) override {
     if (index < frame_count_ - 1 || last_frame_complete_)
       return ImageFrame::Status::kFrameComplete;
     return ImageFrame::Status::kFramePartial;
   }
-  size_t FrameCount() override { return frame_count_; }
+  wtf_size_t FrameCount() override { return frame_count_; }
   int RepetitionCount() const override { return repetition_count_; }
   base::TimeDelta FrameDuration() const override { return duration_; }
 
  protected:
   base::TimeDelta duration_;
   int repetition_count_;
-  size_t frame_count_;
+  wtf_size_t frame_count_;
   bool last_frame_complete_;
 };
 

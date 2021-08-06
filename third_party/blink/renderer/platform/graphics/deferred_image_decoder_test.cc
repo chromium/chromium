@@ -105,11 +105,11 @@ class DeferredImageDecoderTest : public testing::Test,
 
   void DecodeRequested() override { ++decode_request_count_; }
 
-  size_t FrameCount() override { return frame_count_; }
+  wtf_size_t FrameCount() override { return frame_count_; }
 
   int RepetitionCount() const override { return repetition_count_; }
 
-  ImageFrame::Status GetStatus(size_t index) override { return status_; }
+  ImageFrame::Status GetStatus(wtf_size_t index) override { return status_; }
 
   base::TimeDelta FrameDuration() const override { return frame_duration_; }
 
@@ -149,7 +149,7 @@ class DeferredImageDecoderTest : public testing::Test,
   std::unique_ptr<cc::PaintCanvas> canvas_;
   int decode_request_count_;
   scoped_refptr<SharedBuffer> data_;
-  size_t frame_count_;
+  wtf_size_t frame_count_;
   int repetition_count_;
   ImageFrame::Status status_;
   base::TimeDelta frame_duration_;
@@ -392,7 +392,7 @@ TEST_F(DeferredImageDecoderTest, frameOpacity) {
     size_t row_bytes = pix_info.minRowBytes();
     size_t size = pix_info.computeByteSize(row_bytes);
 
-    Vector<char> storage(size);
+    Vector<char> storage(base::checked_cast<wtf_size_t>(size));
     SkPixmap pixmap(pix_info, storage.data(), row_bytes);
 
     // Before decoding, the frame is not known to be opaque.
@@ -430,12 +430,12 @@ TEST_F(DeferredImageDecoderTest, data) {
 
 class MultiFrameDeferredImageDecoderTest : public DeferredImageDecoderTest {
  public:
-  ImageFrame::Status GetStatus(size_t index) override {
+  ImageFrame::Status GetStatus(wtf_size_t index) override {
     return index > last_complete_frame_ ? ImageFrame::Status::kFramePartial
                                         : ImageFrame::Status::kFrameComplete;
   }
 
-  size_t last_complete_frame_ = 0u;
+  wtf_size_t last_complete_frame_ = 0u;
 };
 
 TEST_F(MultiFrameDeferredImageDecoderTest, PaintImage) {

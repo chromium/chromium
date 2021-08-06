@@ -41,11 +41,11 @@ class MockImageDecoderClient {
 
   virtual void DecoderBeingDestroyed() = 0;
   virtual void DecodeRequested() = 0;
-  virtual ImageFrame::Status GetStatus(size_t index) = 0;
-  virtual size_t FrameCount() = 0;
+  virtual ImageFrame::Status GetStatus(wtf_size_t index) = 0;
+  virtual wtf_size_t FrameCount() = 0;
   virtual int RepetitionCount() const = 0;
   virtual base::TimeDelta FrameDuration() const = 0;
-  virtual void ClearCacheExceptFrameRequested(size_t) {}
+  virtual void ClearCacheExceptFrameRequested(wtf_size_t) {}
   virtual void MemoryAllocatorSet() {}
 
   // Clients can control the behavior of MockImageDecoder::decodedSize() by
@@ -85,20 +85,20 @@ class MockImageDecoder : public ImageDecoder {
 
   int RepetitionCount() const override { return client_->RepetitionCount(); }
 
-  bool FrameIsReceivedAtIndex(size_t index) const override {
+  bool FrameIsReceivedAtIndex(wtf_size_t index) const override {
     return client_->GetStatus(index) == ImageFrame::kFrameComplete;
   }
 
-  base::TimeDelta FrameDurationAtIndex(size_t) const override {
+  base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override {
     return client_->FrameDuration();
   }
 
-  size_t ClearCacheExceptFrame(size_t clear_except_frame) override {
+  wtf_size_t ClearCacheExceptFrame(wtf_size_t clear_except_frame) override {
     client_->ClearCacheExceptFrameRequested(clear_except_frame);
     return 0;
   }
 
-  size_t FrameBytesAtIndex(size_t index) const override {
+  wtf_size_t FrameBytesAtIndex(wtf_size_t index) const override {
     if (client_->FirstFrameForcedToBeEmpty() && index == 0)
       return 0;
     return ImageDecoder::FrameBytesAtIndex(index);
@@ -119,16 +119,16 @@ class MockImageDecoder : public ImageDecoder {
  private:
   void DecodeSize() override {}
 
-  size_t DecodeFrameCount() override { return client_->FrameCount(); }
+  wtf_size_t DecodeFrameCount() override { return client_->FrameCount(); }
 
-  void Decode(size_t index) override {
+  void Decode(wtf_size_t index) override {
     client_->DecodeRequested();
     frame_buffer_cache_[index].ClearPixelData();
     InitializeNewFrame(index);
     frame_buffer_cache_[index].SetStatus(client_->GetStatus(index));
   }
 
-  void InitializeNewFrame(size_t index) override {
+  void InitializeNewFrame(wtf_size_t index) override {
     if (frame_buffer_cache_[index].AllocatePixelData(
             Size().Width(), Size().Height(), ColorSpaceForSkImages()))
       frame_buffer_cache_[index].ZeroFillPixelData();

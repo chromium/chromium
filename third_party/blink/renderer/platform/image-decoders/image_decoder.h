@@ -74,18 +74,18 @@ class PLATFORM_EXPORT ImagePlanes final {
   // TODO(crbug/910276): To support YUVA, ImagePlanes needs to support a
   // variable number of planes.
   ImagePlanes(void* planes[cc::kNumYUVPlanes],
-              const size_t row_bytes[cc::kNumYUVPlanes],
+              const wtf_size_t row_bytes[cc::kNumYUVPlanes],
               SkColorType color_type);
 
   void* Plane(cc::YUVIndex);
-  size_t RowBytes(cc::YUVIndex) const;
+  wtf_size_t RowBytes(cc::YUVIndex) const;
   SkColorType color_type() const { return color_type_; }
   void SetHasCompleteScan() { has_complete_scan_ = true; }
   bool HasCompleteScan() const { return has_complete_scan_; }
 
  private:
   void* planes_[cc::kNumYUVPlanes];
-  size_t row_bytes_[cc::kNumYUVPlanes];
+  wtf_size_t row_bytes_[cc::kNumYUVPlanes];
   SkColorType color_type_;
   bool has_complete_scan_ = false;
 };
@@ -130,7 +130,7 @@ class PLATFORM_EXPORT ImageDecoder {
   USING_FAST_MALLOC(ImageDecoder);
 
  public:
-  static const size_t kNoDecodedImageByteLimit;
+  static const wtf_size_t kNoDecodedImageByteLimit;
 
   enum AlphaOption { kAlphaPremultiplied, kAlphaNotPremultiplied };
   enum HighBitDepthDecodingOption {
@@ -270,7 +270,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Image decoders that support YUV decoding must override this to
   // return the width of each row of the memory allocation.
-  virtual size_t DecodedYUVWidthBytes(cc::YUVIndex) const {
+  virtual wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const {
     NOTREACHED();
     return 0;
   }
@@ -300,7 +300,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // sizes. This does NOT differ from Size() for GIF or WebP, since
   // decoding GIF or WebP composites any smaller frames against previous
   // frames to create full-size frames.
-  virtual IntSize FrameSizeAtIndex(size_t) const { return Size(); }
+  virtual IntSize FrameSizeAtIndex(wtf_size_t) const { return Size(); }
 
   // Returns whether the size is legal (i.e. not going to result in
   // overflow elsewhere).  If not, marks decoding as failed.
@@ -323,33 +323,33 @@ class PLATFORM_EXPORT ImageDecoder {
   //
   // Note: FrameCount() returns the return value of DecodeFrameCount(). For more
   // information on the return value, see the comment for DecodeFrameCount().
-  size_t FrameCount();
+  wtf_size_t FrameCount();
 
   virtual int RepetitionCount() const { return kAnimationNone; }
 
   // Decodes as much of the requested frame as possible, and returns an
   // ImageDecoder-owned pointer.
-  ImageFrame* DecodeFrameBufferAtIndex(size_t);
+  ImageFrame* DecodeFrameBufferAtIndex(wtf_size_t);
 
   // Whether the requested frame has alpha.
-  virtual bool FrameHasAlphaAtIndex(size_t) const;
+  virtual bool FrameHasAlphaAtIndex(wtf_size_t) const;
 
   // Whether or not the frame is fully received.
-  virtual bool FrameIsReceivedAtIndex(size_t) const;
+  virtual bool FrameIsReceivedAtIndex(wtf_size_t) const;
 
   // Returns true if a cached complete decode is available.
-  bool FrameIsDecodedAtIndex(size_t) const;
+  bool FrameIsDecodedAtIndex(wtf_size_t) const;
 
   // Duration for displaying a frame. This method is only used by animated
   // images.
-  virtual base::TimeDelta FrameDurationAtIndex(size_t) const {
+  virtual base::TimeDelta FrameDurationAtIndex(wtf_size_t) const {
     return base::TimeDelta();
   }
 
   // Number of bytes in the decoded frame. Returns 0 if the decoder doesn't
   // have this frame cached (either because it hasn't been decoded, or because
   // it has been cleared).
-  virtual size_t FrameBytesAtIndex(size_t) const;
+  virtual wtf_size_t FrameBytesAtIndex(wtf_size_t) const;
 
   ImageOrientation Orientation() const { return orientation_; }
   IntSize DensityCorrectedSize() const { return density_corrected_size_; }
@@ -376,7 +376,7 @@ class PLATFORM_EXPORT ImageDecoder {
     return premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
   }
 
-  size_t GetMaxDecodedBytes() const { return max_decoded_bytes_; }
+  wtf_size_t GetMaxDecodedBytes() const { return max_decoded_bytes_; }
 
   // Sets the "decode failure" flag.  For caller convenience (since so
   // many callers want to return false after calling this), returns false
@@ -395,7 +395,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // Callers may pass WTF::kNotFound to clear all frames.
   // Note: If |frame_buffer_cache_| contains only one frame, it won't be
   // cleared. Returns the number of bytes of frame data actually cleared.
-  virtual size_t ClearCacheExceptFrame(size_t);
+  virtual wtf_size_t ClearCacheExceptFrame(wtf_size_t);
 
   // If the image has a cursor hot-spot, stores it in the argument
   // and returns true. Otherwise returns false.
@@ -438,7 +438,7 @@ class PLATFORM_EXPORT ImageDecoder {
   ImageDecoder(AlphaOption alpha_option,
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
                const ColorBehavior& color_behavior,
-               size_t max_decoded_bytes)
+               wtf_size_t max_decoded_bytes)
       : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
         high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
         color_behavior_(color_behavior),
@@ -463,13 +463,13 @@ class PLATFORM_EXPORT ImageDecoder {
   // Image formats which do not use more than one frame do not need to
   // worry about this; see comments on
   // ImageFrame::required_previous_frame_index_.
-  size_t FindRequiredPreviousFrame(size_t frame_index,
-                                   bool frame_rect_is_opaque);
+  wtf_size_t FindRequiredPreviousFrame(wtf_size_t frame_index,
+                                       bool frame_rect_is_opaque);
 
   // This is called by ClearCacheExceptFrame() if that method decides it wants
   // to preserve another frame, to avoid unnecessary redecoding.
-  size_t ClearCacheExceptTwoFrames(size_t, size_t);
-  virtual void ClearFrameBuffer(size_t frame_index);
+  wtf_size_t ClearCacheExceptTwoFrames(wtf_size_t, wtf_size_t);
+  virtual void ClearFrameBuffer(wtf_size_t frame_index);
 
   // Decodes the image sufficiently to determine the image size.
   virtual void DecodeSize() = 0;
@@ -488,7 +488,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // parsed. Alternatively, if the total frame count is available in the image
   // header, this method may return the total frame count without checking how
   // many frames are received.
-  virtual size_t DecodeFrameCount() { return 1; }
+  virtual wtf_size_t DecodeFrameCount() { return 1; }
 
   // Called to initialize the frame buffer with the given index, based on the
   // provided and previous frame's characteristics. Returns true on success.
@@ -496,27 +496,27 @@ class PLATFORM_EXPORT ImageDecoder {
   // On failure, the client should call SetFailed. This method does not call
   // SetFailed itself because that might delete the object directly making this
   // call.
-  bool InitFrameBuffer(size_t);
+  bool InitFrameBuffer(wtf_size_t);
 
   // Performs any decoder-specific setup of the requested frame after it has
   // been newly created, e.g. setting the frame's duration or disposal method.
-  virtual void InitializeNewFrame(size_t) {}
+  virtual void InitializeNewFrame(wtf_size_t) {}
 
   // Decodes the requested frame.
-  virtual void Decode(size_t) = 0;
+  virtual void Decode(wtf_size_t) = 0;
 
   // This method is only required for animated images. It returns a vector with
   // all frame indices that need to be decoded in order to succesfully decode
   // the provided frame.  The indices are returned in reverse order, so the
   // last frame needs to be decoded first.  Before calling this method, the
   // caller must verify that the frame exists.
-  Vector<size_t> FindFramesToDecode(size_t) const;
+  Vector<wtf_size_t> FindFramesToDecode(wtf_size_t) const;
 
   // This is called by Decode() after decoding a frame in an animated image.
   // Before calling this method, the caller must verify that the frame exists.
   // @return true  if the frame was fully decoded,
   //         false otherwise.
-  bool PostDecodeProcessing(size_t);
+  bool PostDecodeProcessing(wtf_size_t);
 
   // The GIF and PNG decoders set the default alpha setting of the ImageFrame to
   // true. When the frame rect does not contain any (semi-) transparent pixels,
@@ -528,7 +528,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // This method should be called by the GIF and PNG decoder when the pixels in
   // the frame rect do *not* contain any transparent pixels. Before calling
   // this method, the caller must verify that the frame exists.
-  void CorrectAlphaWhenFrameBufferSawNoAlpha(size_t);
+  void CorrectAlphaWhenFrameBufferSawNoAlpha(wtf_size_t);
 
   scoped_refptr<SegmentReader> data_;  // The encoded data.
   Vector<ImageFrame, 1> frame_buffer_cache_;
@@ -543,13 +543,13 @@ class PLATFORM_EXPORT ImageDecoder {
   // (and then return the downsampled size from DecodedSize()). Ignoring
   // this limit can cause excessive memory use or even crashes on low-
   // memory devices.
-  const size_t max_decoded_bytes_;
+  const wtf_size_t max_decoded_bytes_;
 
   // While decoding, we may learn that there are so many animation frames that
   // we would go beyond our cache budget.
   // If that happens, purge_aggressively_ is set to true. This signals
   // future decodes to purge old frames as it goes.
-  void UpdateAggressivePurging(size_t index);
+  void UpdateAggressivePurging(wtf_size_t index);
 
   // The method is only relevant for multi-frame images.
   //
@@ -596,11 +596,11 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // This methods gets called at the end of InitFrameBuffer. Subclasses can do
   // format specific initialization, for e.g. alpha settings, here.
-  virtual void OnInitFrameBuffer(size_t) {}
+  virtual void OnInitFrameBuffer(wtf_size_t) {}
 
   // Called by InitFrameBuffer to determine if it can take the bitmap of the
   // previous frame. This condition is different for GIF and WEBP.
-  virtual bool CanReusePreviousFrameBuffer(size_t) const { return false; }
+  virtual bool CanReusePreviousFrameBuffer(wtf_size_t) const { return false; }
 
   IntSize size_;
   bool size_available_ = false;

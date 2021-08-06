@@ -38,12 +38,12 @@ namespace blink {
 // Number of bits in .ICO/.CUR used to store the directory and its entries,
 // respectively (doesn't match sizeof values for member structs since we omit
 // some fields).
-static const size_t kSizeOfDirectory = 6;
-static const size_t kSizeOfDirEntry = 16;
+static const wtf_size_t kSizeOfDirectory = 6;
+static const wtf_size_t kSizeOfDirEntry = 16;
 
 ICOImageDecoder::ICOImageDecoder(AlphaOption alpha_option,
                                  const ColorBehavior& color_behavior,
-                                 size_t max_decoded_bytes)
+                                 wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
@@ -59,7 +59,7 @@ void ICOImageDecoder::OnSetData(SegmentReader* data) {
     if (*i)
       (*i)->SetData(data);
   }
-  for (size_t i = 0; i < png_decoders_.size(); ++i)
+  for (wtf_size_t i = 0; i < png_decoders_.size(); ++i)
     SetDataForPNGDecoderAtIndex(i);
 }
 
@@ -67,7 +67,7 @@ IntSize ICOImageDecoder::Size() const {
   return frame_size_.IsEmpty() ? ImageDecoder::Size() : frame_size_;
 }
 
-IntSize ICOImageDecoder::FrameSizeAtIndex(size_t index) const {
+IntSize ICOImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
   return (index && (index < dir_entries_.size())) ? dir_entries_[index].size_
                                                   : Size();
 }
@@ -80,7 +80,7 @@ bool ICOImageDecoder::SetSize(unsigned width, unsigned height) {
              : ((IntSize(width, height) == frame_size_) || SetFailed());
 }
 
-bool ICOImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool ICOImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   if (index >= dir_entries_.size())
     return false;
 
@@ -102,7 +102,8 @@ bool ICOImageDecoder::HotSpot(IntPoint& hot_spot) const {
   return HotSpotAtIndex(0, hot_spot);
 }
 
-bool ICOImageDecoder::HotSpotAtIndex(size_t index, IntPoint& hot_spot) const {
+bool ICOImageDecoder::HotSpotAtIndex(wtf_size_t index,
+                                     IntPoint& hot_spot) const {
   if (index >= dir_entries_.size() || file_type_ != CURSOR)
     return false;
 
@@ -120,7 +121,7 @@ bool ICOImageDecoder::CompareEntries(const IconDirectoryEntry& a,
                                         : (a_entry_area > b_entry_area);
 }
 
-size_t ICOImageDecoder::DecodeFrameCount() {
+wtf_size_t ICOImageDecoder::DecodeFrameCount() {
   DecodeSize();
 
   // If DecodeSize() fails, return the existing number of frames.  This way
@@ -135,7 +136,7 @@ size_t ICOImageDecoder::DecodeFrameCount() {
   // the file, and we still want to display these if they don't trigger decoding
   // failures elsewhere.
   if (!IsAllDataReceived()) {
-    for (size_t i = 0; i < dir_entries_.size(); ++i) {
+    for (wtf_size_t i = 0; i < dir_entries_.size(); ++i) {
       const IconDirectoryEntry& dir_entry = dir_entries_[i];
       if ((dir_entry.image_offset_ + dir_entry.byte_size_) > data_->size())
         return i;
@@ -144,14 +145,14 @@ size_t ICOImageDecoder::DecodeFrameCount() {
   return dir_entries_.size();
 }
 
-void ICOImageDecoder::SetDataForPNGDecoderAtIndex(size_t index) {
+void ICOImageDecoder::SetDataForPNGDecoderAtIndex(wtf_size_t index) {
   if (!png_decoders_[index])
     return;
 
   png_decoders_[index]->SetData(data_.get(), IsAllDataReceived());
 }
 
-void ICOImageDecoder::Decode(size_t index, bool only_size) {
+void ICOImageDecoder::Decode(wtf_size_t index, bool only_size) {
   if (Failed() || !data_)
     return;
 
@@ -186,7 +187,7 @@ bool ICOImageDecoder::DecodeDirectory() {
          ProcessDirectoryEntries();
 }
 
-bool ICOImageDecoder::DecodeAtIndex(size_t index) {
+bool ICOImageDecoder::DecodeAtIndex(wtf_size_t index) {
   SECURITY_DCHECK(index < dir_entries_.size());
   const IconDirectoryEntry& dir_entry = dir_entries_[index];
   const ImageType image_type = ImageTypeAtIndex(index);
@@ -331,7 +332,7 @@ ICOImageDecoder::IconDirectoryEntry ICOImageDecoder::ReadDirectoryEntry() {
   return entry;
 }
 
-ICOImageDecoder::ImageType ICOImageDecoder::ImageTypeAtIndex(size_t index) {
+ICOImageDecoder::ImageType ICOImageDecoder::ImageTypeAtIndex(wtf_size_t index) {
   // Check if this entry is a BMP or a PNG; we need 4 bytes to check the magic
   // number.
   SECURITY_DCHECK(data_);

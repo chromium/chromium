@@ -39,7 +39,7 @@ template <typename Callback>
 void IterateMemoryDumps(base::trace_event::ProcessMemoryDump& dump,
                         const std::string dump_prefix,
                         Callback callback) {
-  int dump_prefix_depth =
+  auto dump_prefix_depth =
       std::count(dump_prefix.begin(), dump_prefix.end(), '/');
   for (auto& it : dump.allocator_dumps()) {
     const std::string& key = it.first;

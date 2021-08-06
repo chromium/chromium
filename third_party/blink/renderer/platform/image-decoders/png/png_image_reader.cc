@@ -74,7 +74,8 @@ void PNGAPI pngFailed(png_structp png, png_const_charp) {
 
 namespace blink {
 
-PNGImageReader::PNGImageReader(PNGImageDecoder* decoder, size_t initial_offset)
+PNGImageReader::PNGImageReader(PNGImageDecoder* decoder,
+                               wtf_size_t initial_offset)
     : width_(0),
       height_(0),
       decoder_(decoder),
@@ -124,17 +125,17 @@ PNGImageReader::~PNGImageReader() {
 // method. If the data is not consecutive, it is stored in |buffer|, which must
 // have the size of (at least) |length|, but there's no need for it to be larger
 // than |kPngReadBufferSize|.
-static constexpr size_t kPngReadBufferSize = 33;
+static constexpr wtf_size_t kPngReadBufferSize = 33;
 const png_byte* ReadAsConstPngBytep(const FastSharedBufferReader& reader,
-                                    size_t read_offset,
-                                    size_t length,
+                                    wtf_size_t read_offset,
+                                    wtf_size_t length,
                                     char* buffer) {
   DCHECK_LE(length, kPngReadBufferSize);
   return reinterpret_cast<const png_byte*>(
       reader.GetConsecutiveData(read_offset, length, buffer));
 }
 
-bool PNGImageReader::ShouldDecodeWithNewPNG(size_t index) const {
+bool PNGImageReader::ShouldDecodeWithNewPNG(wtf_size_t index) const {
   if (!png_)
     return true;
   const bool first_frame_decode_in_progress = progressive_decode_offset_;
@@ -146,7 +147,7 @@ bool PNGImageReader::ShouldDecodeWithNewPNG(size_t index) const {
 }
 
 // Return false on a fatal error.
-bool PNGImageReader::Decode(SegmentReader& data, size_t index) {
+bool PNGImageReader::Decode(SegmentReader& data, wtf_size_t index) {
   if (index >= frame_info_.size())
     return true;
 
@@ -197,7 +198,7 @@ bool PNGImageReader::Decode(SegmentReader& data, size_t index) {
 }
 
 void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
-                                        size_t index) {
+                                        wtf_size_t index) {
   DCHECK_GT(ihdr_offset_, initial_offset_);
   ProcessData(reader, initial_offset_, ihdr_offset_ - initial_offset_);
 
@@ -210,7 +211,7 @@ void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
 
   // Process the IHDR chunk, but change the width and height so it reflects
   // the frame's width and height. ImageDecoder will apply the x,y offset.
-  constexpr size_t kHeaderSize = 25;
+  constexpr wtf_size_t kHeaderSize = 25;
   char read_buffer[kHeaderSize];
   const png_byte* chunk =
       ReadAsConstPngBytep(reader, ihdr_offset_, kHeaderSize, read_buffer);
@@ -238,7 +239,7 @@ static inline bool IsChunk(const png_byte* chunk, const char* tag) {
 
 bool PNGImageReader::ProgressivelyDecodeFirstFrame(
     const FastSharedBufferReader& reader) {
-  size_t offset = frame_info_[0].start_offset;
+  wtf_size_t offset = frame_info_[0].start_offset;
 
   // Loop while there is enough data to do progressive decoding.
   while (reader.size() >= offset + 8) {
@@ -255,7 +256,7 @@ bool PNGImageReader::ProgressivelyDecodeFirstFrame(
       return true;
     }
 
-    const size_t chunk_end_offset = offset + length + 12;
+    const wtf_size_t chunk_end_offset = offset + length + 12;
     DCHECK_GT(chunk_end_offset, offset);
 
     // If this chunk was already decoded, move on to the next.
@@ -280,8 +281,8 @@ bool PNGImageReader::ProgressivelyDecodeFirstFrame(
       offset += 8;
     }
 
-    size_t bytes_left_in_chunk = chunk_end_offset - offset;
-    size_t bytes_decoded = ProcessData(reader, offset, bytes_left_in_chunk);
+    wtf_size_t bytes_left_in_chunk = chunk_end_offset - offset;
+    wtf_size_t bytes_decoded = ProcessData(reader, offset, bytes_left_in_chunk);
     progressive_decode_offset_ = offset + bytes_decoded;
     if (bytes_decoded < bytes_left_in_chunk)
       return false;
@@ -312,9 +313,9 @@ void PNGImageReader::ProcessFdatChunkAsIdat(png_uint_32 fdat_length) {
 }
 
 void PNGImageReader::DecodeFrame(const FastSharedBufferReader& reader,
-                                 size_t index) {
-  size_t offset = frame_info_[index].start_offset;
-  size_t end_offset = offset + frame_info_[index].byte_length;
+                                 wtf_size_t index) {
+  wtf_size_t offset = frame_info_[index].start_offset;
+  wtf_size_t end_offset = offset + frame_info_[index].byte_length;
   char read_buffer[8];
 
   while (offset < end_offset) {
@@ -338,9 +339,9 @@ void PNGImageReader::DecodeFrame(const FastSharedBufferReader& reader,
 
 // Compute the CRC and compare to the stored value.
 static bool CheckCrc(const FastSharedBufferReader& reader,
-                     size_t chunk_start,
-                     size_t chunk_length) {
-  constexpr size_t kSizeNeededForfcTL = 26 + 4;
+                     wtf_size_t chunk_start,
+                     wtf_size_t chunk_length) {
+  constexpr wtf_size_t kSizeNeededForfcTL = 26 + 4;
   char read_buffer[kSizeNeededForfcTL];
   DCHECK_LE(chunk_length + 4u, kSizeNeededForfcTL);
   const png_byte* chunk = ReadAsConstPngBytep(reader, chunk_start + 4,
@@ -406,10 +407,10 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
   while (reader.size() >= read_offset_ + 8) {
     const png_byte* chunk =
         ReadAsConstPngBytep(reader, read_offset_, 8, read_buffer);
-    const size_t length = png_get_uint_32(chunk);
+    const wtf_size_t length = png_get_uint_32(chunk);
     if (length > PNG_UINT_31_MAX)
       return false;
-    size_t chunk_end_offset;
+    wtf_size_t chunk_end_offset;
     if (!base::CheckAdd(read_offset_, base::CheckAdd(12, length))
              .AssignIfValid(&chunk_end_offset)) {
       // Overflow
@@ -503,11 +504,11 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
 
 // If |length| == 0, read until the stream ends. Return number of bytes
 // processed.
-size_t PNGImageReader::ProcessData(const FastSharedBufferReader& reader,
-                                   size_t offset,
-                                   size_t length) {
+wtf_size_t PNGImageReader::ProcessData(const FastSharedBufferReader& reader,
+                                       wtf_size_t offset,
+                                       wtf_size_t length) {
   const char* segment;
-  size_t total_processed_bytes = 0;
+  wtf_size_t total_processed_bytes = 0;
   while (reader.size() > offset) {
     size_t segment_length = reader.GetSomeData(segment, offset);
     if (length > 0 && segment_length + total_processed_bytes > length)
@@ -557,7 +558,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
     length = png_get_uint_32(chunk);
     if (length > PNG_UINT_31_MAX)
       return false;
-    size_t chunk_end_offset;
+    wtf_size_t chunk_end_offset;
     if (!base::CheckAdd(read_offset_, base::CheckAdd(12, length))
              .AssignIfValid(&chunk_end_offset)) {
       // Overflow
@@ -657,7 +658,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
   return true;
 }
 
-void PNGImageReader::ClearDecodeState(size_t index) {
+void PNGImageReader::ClearDecodeState(wtf_size_t index) {
   if (index)
     return;
   png_destroy_read_struct(png_ ? &png_ : nullptr, info_ ? &info_ : nullptr,
@@ -667,7 +668,7 @@ void PNGImageReader::ClearDecodeState(size_t index) {
 }
 
 const PNGImageReader::FrameInfo& PNGImageReader::GetFrameInfo(
-    size_t index) const {
+    wtf_size_t index) const {
   DCHECK(index < frame_info_.size());
   return frame_info_[index];
 }

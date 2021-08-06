@@ -229,7 +229,7 @@ static JOCTET* ReadPointerOffset(JOCTET* data,
                                  JOCTET* start,
                                  JOCTET* end,
                                  bool is_big_endian) {
-  unsigned max_offset = end - start;
+  unsigned max_offset = base::checked_cast<unsigned>(end - start);
   unsigned offset = ReadUint32(data, is_big_endian);
   if (offset > max_offset)
     return nullptr;
@@ -445,8 +445,8 @@ static IntSize ComputeYUVSize(const jpeg_decompress_struct* info,
                  info->comp_info[component].downsampled_height);
 }
 
-static size_t ComputeYUVWidthBytes(const jpeg_decompress_struct* info,
-                                   int component) {
+static wtf_size_t ComputeYUVWidthBytes(const jpeg_decompress_struct* info,
+                                       int component) {
   return info->comp_info[component].width_in_blocks * DCTSIZE;
 }
 
@@ -465,7 +465,7 @@ class JPEGImageReader final {
   USING_FAST_MALLOC(JPEGImageReader);
 
  public:
-  JPEGImageReader(JPEGImageDecoder* decoder, size_t initial_offset)
+  JPEGImageReader(JPEGImageDecoder* decoder, wtf_size_t initial_offset)
       : decoder_(decoder),
         needs_restart_(false),
         restart_position_(initial_offset),
@@ -514,7 +514,7 @@ class JPEGImageReader final {
     if (num_bytes <= 0)
       return;
 
-    size_t bytes_to_skip = static_cast<size_t>(num_bytes);
+    wtf_size_t bytes_to_skip = static_cast<wtf_size_t>(num_bytes);
 
     if (bytes_to_skip < info_.src->bytes_in_buffer) {
       // The next byte needed is in the buffer. Move to it.
@@ -522,14 +522,15 @@ class JPEGImageReader final {
       info_.src->next_input_byte += bytes_to_skip;
     } else {
       // Move beyond the buffer and empty it.
-      next_read_position_ =
-          next_read_position_ + bytes_to_skip - info_.src->bytes_in_buffer;
+      next_read_position_ = static_cast<wtf_size_t>(
+          next_read_position_ + bytes_to_skip - info_.src->bytes_in_buffer);
       info_.src->bytes_in_buffer = 0;
       info_.src->next_input_byte = nullptr;
     }
 
     // This is a valid restart position.
-    restart_position_ = next_read_position_ - info_.src->bytes_in_buffer;
+    restart_position_ = static_cast<wtf_size_t>(next_read_position_ -
+                                                info_.src->bytes_in_buffer);
     // We updated |next_input_byte|, so we need to update |last_byte_set_|
     // so we know not to update |restart_position_| again.
     last_set_byte_ = info_.src->next_input_byte;
@@ -944,7 +945,8 @@ class JPEGImageReader final {
     if (last_set_byte_ != info_.src->next_input_byte) {
       // next_input_byte was updated by jpeg, meaning that it found a restart
       // position.
-      restart_position_ = next_read_position_ - info_.src->bytes_in_buffer;
+      restart_position_ = static_cast<wtf_size_t>(next_read_position_ -
+                                                  info_.src->bytes_in_buffer);
     }
   }
 
@@ -961,9 +963,9 @@ class JPEGImageReader final {
   // Input reading: True if we need to back up to restart_position_.
   bool needs_restart_;
   // If libjpeg needed to restart, this is the position to restart from.
-  size_t restart_position_;
+  wtf_size_t restart_position_;
   // This is the position where we will read from, unless there is a restart.
-  size_t next_read_position_;
+  wtf_size_t next_read_position_;
   // This is how we know to update the restart position. It is the last value
   // we set to next_input_byte. libjpeg will update next_input_byte when it
   // has found the next restart position, so if it no longer matches this
@@ -1023,8 +1025,8 @@ void term_source(j_decompress_ptr jd) {
 
 JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
                                    const ColorBehavior& color_behavior,
-                                   size_t max_decoded_bytes,
-                                   size_t offset)
+                                   wtf_size_t max_decoded_bytes,
+                                   wtf_size_t offset)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
@@ -1094,7 +1096,7 @@ IntSize JPEGImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   return ComputeYUVSize(info, static_cast<int>(index));
 }
 
-size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
+wtf_size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   DCHECK(reader_);
   const jpeg_decompress_struct* info = reader_->Info();
 
@@ -1103,7 +1105,7 @@ size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
 }
 
 unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
-  size_t original_bytes = Size().Width() * Size().Height() * 4;
+  wtf_size_t original_bytes = Size().Width() * Size().Height() * 4;
 
   if (original_bytes <= max_decoded_bytes_)
     return g_scale_denominator;
@@ -1270,9 +1272,9 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
       static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kU));
   JSAMPROW output_v =
       static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kV));
-  size_t row_bytes_y = image_planes->RowBytes(cc::YUVIndex::kY);
-  size_t row_bytes_u = image_planes->RowBytes(cc::YUVIndex::kU);
-  size_t row_bytes_v = image_planes->RowBytes(cc::YUVIndex::kV);
+  wtf_size_t row_bytes_y = image_planes->RowBytes(cc::YUVIndex::kY);
+  wtf_size_t row_bytes_u = image_planes->RowBytes(cc::YUVIndex::kU);
+  wtf_size_t row_bytes_v = image_planes->RowBytes(cc::YUVIndex::kV);
 
   // Request 8 or 16 scanlines: returns 0 or more scanlines.
   int y_scanlines_to_read = DCTSIZE * v;

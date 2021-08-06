@@ -89,7 +89,7 @@ bool LayoutThemeMac::IsAccentColorCustomized(
       return false;
     }
   } else {
-    int user_custom_color = [[NSUserDefaults standardUserDefaults]
+    NSInteger user_custom_color = [[NSUserDefaults standardUserDefaults]
         integerForKey:@"AppleAquaColorVariant"];
     if (user_custom_color == NSBlueControlTint ||
         user_custom_color == NSDefaultControlTint) {
@@ -104,8 +104,8 @@ Color LayoutThemeMac::GetAccentColor(
   if (@available(macOS 10.14, *)) {
     return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
   } else {
-    return [[NSUserDefaults standardUserDefaults]
-        integerForKey:@"AppleAquaColorVariant"];
+    return static_cast<RGBA32>([[NSUserDefaults standardUserDefaults]
+        integerForKey:@"AppleAquaColorVariant"]);
   }
 }
 

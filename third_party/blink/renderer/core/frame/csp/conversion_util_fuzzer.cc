@@ -36,8 +36,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return EXIT_SUCCESS;
   }
 
-  String url = String(data, it - 1 - data);
-  String header = String(it, size - (it - data));
+  String url = String(data, static_cast<unsigned>(it - 1 - data));
+  String header = String(it, static_cast<unsigned>(size - (it - data)));
   unsigned hash = header.IsNull() ? 0 : header.Impl()->GetHash();
 
   // Use the 'hash' value to pick header_type and header_source input.

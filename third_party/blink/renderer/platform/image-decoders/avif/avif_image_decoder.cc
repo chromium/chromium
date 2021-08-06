@@ -256,7 +256,7 @@ namespace blink {
 AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
                                    HighBitDepthDecodingOption hbd_option,
                                    const ColorBehavior& color_behavior,
-                                   size_t max_decoded_bytes,
+                                   wtf_size_t max_decoded_bytes,
                                    AnimationOption animation_option)
     : ImageDecoder(alpha_option, hbd_option, color_behavior, max_decoded_bytes),
       animation_option_(animation_option) {}
@@ -306,14 +306,15 @@ IntSize AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   return Size();
 }
 
-size_t AVIFImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
+wtf_size_t AVIFImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
   // Try to return the same width bytes as used by the dav1d library. This will
   // allow DecodeToYUV() to copy each plane with a single memcpy() call.
   //
   // The comments for Dav1dPicAllocator in dav1d/picture.h require the pixel
   // width be padded to a multiple of 128 pixels.
-  int aligned_width = base::bits::AlignUp(Size().Width(), 128);
+  wtf_size_t aligned_width =
+      static_cast<wtf_size_t>(base::bits::AlignUp(Size().Width(), 128));
   if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
     aligned_width >>= chroma_shift_x_;
   }
@@ -387,11 +388,12 @@ void AVIFImageDecoder::DecodeToYUV() {
   uint32_t width = image->width;
   uint32_t height = image->height;
 
-  for (size_t plane_index = 0; plane_index < cc::kNumYUVPlanes; ++plane_index) {
+  for (wtf_size_t plane_index = 0; plane_index < cc::kNumYUVPlanes;
+       ++plane_index) {
     const cc::YUVIndex plane = static_cast<cc::YUVIndex>(plane_index);
-    const size_t src_row_bytes =
-        base::strict_cast<size_t>(image->yuvRowBytes[plane_index]);
-    const size_t dst_row_bytes = image_planes_->RowBytes(plane);
+    const wtf_size_t src_row_bytes =
+        base::strict_cast<wtf_size_t>(image->yuvRowBytes[plane_index]);
+    const wtf_size_t dst_row_bytes = image_planes_->RowBytes(plane);
 
     if (bit_depth_ == 8) {
       DCHECK_EQ(image_planes_->color_type(), kGray_8_SkColorType);
@@ -405,8 +407,8 @@ void AVIFImageDecoder::DecodeToYUV() {
           reinterpret_cast<uint16_t*>(image->yuvPlanes[plane_index]);
       uint16_t* dst = static_cast<uint16_t*>(image_planes_->Plane(plane));
       if (image_planes_->color_type() == kA16_unorm_SkColorType) {
-        const size_t src_stride = src_row_bytes / 2;
-        const size_t dst_stride = dst_row_bytes / 2;
+        const wtf_size_t src_stride = src_row_bytes / 2;
+        const wtf_size_t dst_stride = dst_row_bytes / 2;
         for (uint32_t j = 0; j < height; ++j) {
           for (uint32_t i = 0; i < width; ++i) {
             dst[j * dst_stride + i] =
@@ -436,7 +438,7 @@ int AVIFImageDecoder::RepetitionCount() const {
   return decoded_frame_count_ > 1 ? kAnimationLoopInfinite : kAnimationNone;
 }
 
-bool AVIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool AVIFImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   if (!IsDecodedSizeAvailable())
     return false;
   if (decoded_frame_count_ == 1)
@@ -454,7 +456,7 @@ bool AVIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
          data_extent.offset + data_extent.size <= data_->size();
 }
 
-base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(size_t index) const {
+base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   return index < frame_buffer_cache_.size()
              ? frame_buffer_cache_[index].Duration()
              : base::TimeDelta();
@@ -466,8 +468,8 @@ bool AVIFImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
   if (decoded_frame_count_ > 1)
     return true;
 
-  constexpr size_t kMajorBrandOffset = 8;
-  constexpr size_t kMajorBrandSize = 4;
+  constexpr wtf_size_t kMajorBrandOffset = 8;
+  constexpr wtf_size_t kMajorBrandSize = 4;
   if (data_->size() < kMajorBrandOffset + kMajorBrandSize)
     return false;
 
@@ -516,14 +518,14 @@ void AVIFImageDecoder::DecodeSize() {
   ParseMetadata();
 }
 
-size_t AVIFImageDecoder::DecodeFrameCount() {
+wtf_size_t AVIFImageDecoder::DecodeFrameCount() {
   if (!Failed())
     ParseMetadata();
   return IsDecodedSizeAvailable() ? decoded_frame_count_
                                   : frame_buffer_cache_.size();
 }
 
-void AVIFImageDecoder::InitializeNewFrame(size_t index) {
+void AVIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
   auto& buffer = frame_buffer_cache_[index];
   if (decode_to_half_float_)
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
@@ -537,7 +539,7 @@ void AVIFImageDecoder::InitializeNewFrame(size_t index) {
   buffer.SetDuration(base::TimeDelta::FromSecondsD(timing.duration));
 }
 
-void AVIFImageDecoder::Decode(size_t index) {
+void AVIFImageDecoder::Decode(wtf_size_t index) {
   if (Failed())
     return;
 
@@ -607,7 +609,7 @@ void AVIFImageDecoder::Decode(size_t index) {
   }
 }
 
-bool AVIFImageDecoder::CanReusePreviousFrameBuffer(size_t index) const {
+bool AVIFImageDecoder::CanReusePreviousFrameBuffer(wtf_size_t index) const {
   // (a) Technically we can reuse the bitmap of the previous frame because the
   // AVIF decoder handles frame dependence internally and we never need to
   // preserve previous frames to decode later ones, and (b) since this function
@@ -636,7 +638,7 @@ avifResult AVIFImageDecoder::ReadFromSegmentReader(avifIO* io,
                                       : AVIF_RESULT_WAITING_ON_IO;
   }
 
-  // It is more convenient to work with a variable of the size_t type. Since
+  // It is more convenient to work with a variable of the wtf_size_t type. Since
   // offset <= io_data->reader->size() <= SIZE_MAX, this cast is safe.
   size_t position = static_cast<size_t>(offset);
   const size_t available_size = io_data->reader->size() - position;
@@ -868,7 +870,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   return SetSize(container->width, container->height);
 }
 
-avifResult AVIFImageDecoder::DecodeImage(size_t index) {
+avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
   const auto ret = avifDecoderNthImage(decoder_.get(), index);
   // |index| should be less than what DecodeFrameCount() returns, so we should
   // not get the AVIF_RESULT_NO_IMAGES_REMAINING error.

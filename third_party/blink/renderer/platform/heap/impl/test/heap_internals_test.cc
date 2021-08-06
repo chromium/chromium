@@ -919,8 +919,8 @@ namespace {
 class DynamicallySizedObject : public GarbageCollected<DynamicallySizedObject> {
  public:
   static DynamicallySizedObject* Create(size_t size) {
-    return MakeGarbageCollected<DynamicallySizedObject>(
-        AdditionalBytes(size - sizeof(DynamicallySizedObject)));
+    return MakeGarbageCollected<DynamicallySizedObject>(AdditionalBytes(
+        base::checked_cast<wtf_size_t>(size - sizeof(DynamicallySizedObject))));
   }
 
   uint8_t Get(int i) { return *(reinterpret_cast<uint8_t*>(this) + i); }

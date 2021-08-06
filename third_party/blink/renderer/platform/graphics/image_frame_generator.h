@@ -100,7 +100,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
                    SkColorType color_type,
                    const SkISize component_sizes[cc::kNumYUVPlanes],
                    void* planes[cc::kNumYUVPlanes],
-                   const size_t row_bytes[cc::kNumYUVPlanes]);
+                   const wtf_size_t row_bytes[cc::kNumYUVPlanes]);
 
   const SkISize& GetFullSize() const { return full_size_; }
 

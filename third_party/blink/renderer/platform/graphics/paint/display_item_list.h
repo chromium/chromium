@@ -133,7 +133,9 @@ class PLATFORM_EXPORT DisplayItemList {
         : begin_(begin), end_(end) {}
     Iterator begin() const { return begin_; }
     Iterator end() const { return end_; }
-    wtf_size_t size() const { return end_ - begin_; }
+    wtf_size_t size() const {
+      return base::checked_cast<wtf_size_t>(end_ - begin_);
+    }
 
     // To meet the requirement of gmock ElementsAre().
     using value_type = DisplayItem;

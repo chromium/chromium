@@ -208,9 +208,6 @@ component("wtf") {
 
   public_configs = [
     ":wtf_config",
-
-    # TODO(crbug.com/879657): Fix size_t to int truncations.
-    "//build/config/compiler:no_shorten_64_warnings",
     "//third_party/blink/renderer:features",
   ]
 

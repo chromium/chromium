@@ -49,7 +49,7 @@ JXLImageDecoder::JXLImageDecoder(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     const ColorBehavior& color_behavior,
-    size_t max_decoded_bytes)
+    wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    high_bit_depth_decoding_option,
                    color_behavior,
@@ -58,7 +58,7 @@ JXLImageDecoder::JXLImageDecoder(
 }
 
 bool JXLImageDecoder::ReadBytes(size_t remaining,
-                                size_t* offset,
+                                wtf_size_t* offset,
                                 WTF::Vector<uint8_t>* segment,
                                 FastSharedBufferReader* reader,
                                 const uint8_t** jxl_data,
@@ -110,7 +110,7 @@ bool JXLImageDecoder::ReadBytes(size_t remaining,
     for (;;) {
       if (read) {
         *offset += read;
-        segment->Append(buffer, read);
+        segment->Append(buffer, base::checked_cast<wtf_size_t>(read));
       }
       if (segment->size() > remaining) {
         *jxl_data = segment->data();
@@ -132,7 +132,7 @@ bool JXLImageDecoder::ReadBytes(size_t remaining,
   return true;
 }
 
-void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
+void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
   if (Failed())
     return;
 
@@ -352,7 +352,7 @@ void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
         break;
       }
       case JXL_DEC_NEED_IMAGE_OUT_BUFFER: {
-        const size_t frame_index = num_decoded_frames_++;
+        const wtf_size_t frame_index = num_decoded_frames_++;
         ImageFrame& frame = frame_buffer_cache_[frame_index];
         // This is guaranteed to occur after JXL_DEC_BASIC_INFO so the size
         // is correct.
@@ -385,8 +385,10 @@ void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
           ImageFrame& frame =
               self->frame_buffer_cache_[self->num_decoded_frames_ - 1];
           void* row_dst = self->decode_to_half_float_
-                              ? reinterpret_cast<void*>(frame.GetAddrF16(x, y))
-                              : reinterpret_cast<void*>(frame.GetAddr(x, y));
+                              ? reinterpret_cast<void*>(frame.GetAddrF16(
+                                    static_cast<int>(x), static_cast<int>(y)))
+                              : reinterpret_cast<void*>(frame.GetAddr(
+                                    static_cast<int>(x), static_cast<int>(y)));
 
           bool dst_premultiply = frame.PremultiplyAlpha();
 
@@ -461,7 +463,7 @@ bool JXLImageDecoder::MatchesJXLSignature(
   return false;
 }
 
-void JXLImageDecoder::InitializeNewFrame(size_t index) {
+void JXLImageDecoder::InitializeNewFrame(wtf_size_t index) {
   auto& buffer = frame_buffer_cache_[index];
   if (decode_to_half_float_)
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
@@ -469,7 +471,7 @@ void JXLImageDecoder::InitializeNewFrame(size_t index) {
   buffer.SetPremultiplyAlpha(premultiply_alpha_);
 }
 
-bool JXLImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool JXLImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   return IsAllDataReceived() ||
          (index < num_decoded_frames_ &&
           frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete);
@@ -488,14 +490,14 @@ int JXLImageDecoder::RepetitionCount() const {
   return info_.animation.num_loops;
 }
 
-base::TimeDelta JXLImageDecoder::FrameDurationAtIndex(size_t index) const {
+base::TimeDelta JXLImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   if (index < frame_durations_.size())
     return base::TimeDelta::FromSecondsD(frame_durations_[index]);
 
   return base::TimeDelta();
 }
 
-size_t JXLImageDecoder::DecodeFrameCount() {
+wtf_size_t JXLImageDecoder::DecodeFrameCount() {
   DecodeSize();
   if (!info_.have_animation) {
     frame_durations_.resize(1);

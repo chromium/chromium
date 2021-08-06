@@ -56,10 +56,10 @@ SkBitmap WebImage::FromData(const WebData& data,
   // Frames are arranged by decreasing size, then decreasing bit depth.
   // Pick the frame closest to |desiredSize|'s area without being smaller,
   // which has the highest bit depth.
-  const size_t frame_count = decoder->FrameCount();
-  size_t index = 0;  // Default to first frame if none are large enough.
+  const wtf_size_t frame_count = decoder->FrameCount();
+  wtf_size_t index = 0;  // Default to first frame if none are large enough.
   int frame_area_at_index = 0;
-  for (size_t i = 0; i < frame_count; ++i) {
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
     const IntSize frame_size = decoder->FrameSizeAtIndex(i);
     if (gfx::Size(frame_size) == desired_size) {
       index = i;
@@ -122,7 +122,7 @@ SkBitmap WebImage::DecodeSVG(const WebData& data,
 WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   // This is to protect from malicious images. It should be big enough that it's
   // never hit in practice.
-  const size_t kMaxFrameCount = 8;
+  const wtf_size_t kMaxFrameCount = 8;
 
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
@@ -133,11 +133,11 @@ WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
 
   // Frames are arranged by decreasing size, then decreasing bit depth.
   // Keep the first frame at every size, has the highest bit depth.
-  const size_t frame_count = decoder->FrameCount();
+  const wtf_size_t frame_count = decoder->FrameCount();
   IntSize last_size;
 
   WebVector<SkBitmap> frames;
-  for (size_t i = 0; i < std::min(frame_count, kMaxFrameCount); ++i) {
+  for (wtf_size_t i = 0; i < std::min(frame_count, kMaxFrameCount); ++i) {
     const IntSize frame_size = decoder->FrameSizeAtIndex(i);
     if (frame_size == last_size)
       continue;
@@ -164,12 +164,12 @@ WebVector<WebImage::AnimationFrame> WebImage::AnimationFromData(
   if (!decoder || !decoder->IsSizeAvailable() || decoder->FrameCount() == 0)
     return {};
 
-  const size_t frame_count = decoder->FrameCount();
+  const wtf_size_t frame_count = decoder->FrameCount();
   IntSize last_size = decoder->FrameSizeAtIndex(0);
 
   WebVector<WebImage::AnimationFrame> frames;
   frames.reserve(frame_count);
-  for (size_t i = 0; i < frame_count; ++i) {
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
     // If frame size changes, this is most likely not an animation and is
     // instead an image with multiple versions at different resolutions. If
     // that's the case, return only the first frame (or no frames if we failed

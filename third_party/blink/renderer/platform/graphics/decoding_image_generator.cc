@@ -263,7 +263,7 @@ bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
 
   SkISize plane_sizes[3];
-  size_t plane_row_bytes[3];
+  wtf_size_t plane_row_bytes[3];
   void* plane_addrs[3];
 
   // Verify sizes and extract DecodeToYUV parameters
@@ -274,7 +274,7 @@ bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
     if (plane.colorType() != pixmaps.plane(0).colorType())
       return false;
     plane_sizes[i] = plane.dimensions();
-    plane_row_bytes[i] = plane.rowBytes();
+    plane_row_bytes[i] = base::checked_cast<wtf_size_t>(plane.rowBytes());
     plane_addrs[i] = plane.writable_addr();
   }
   if (!pixmaps.plane(3).dimensions().isEmpty()) {
