@@ -567,7 +567,7 @@ void ResponseBodyLoader::OnStateChange() {
 
   size_t num_bytes_consumed = 0;
   while (!aborted_ && (!IsSuspended() || IsSuspendedForBackForwardCache())) {
-    uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    const uint32_t chunk_size = network::features::GetLoaderChunkSize();
     if (chunk_size == num_bytes_consumed) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.

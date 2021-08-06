@@ -233,7 +233,7 @@ void NavigationBodyLoader::ReadFromDataPipe() {
       NotifyCompletionIfAppropriate();
       return;
     }
-    uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    const uint32_t chunk_size = network::features::GetLoaderChunkSize();
     DCHECK_LE(num_bytes_consumed, chunk_size);
     available = std::min(available, chunk_size - num_bytes_consumed);
     if (available == 0) {
