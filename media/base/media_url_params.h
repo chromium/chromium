@@ -6,6 +6,7 @@
 #define MEDIA_BASE_MEDIA_URL_PARAMS_H_
 
 #include "media/base/media_export.h"
+#include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -15,9 +16,9 @@ namespace media {
 // playback (as opposed to stream based).
 // See MediaUrlDemuxer and MediaPlayerRenderer.
 struct MEDIA_EXPORT MediaUrlParams {
-  MediaUrlParams(GURL media_url,
-                 GURL site_for_cookies,
-                 url::Origin top_frame_origin,
+  MediaUrlParams(const GURL& media_url,
+                 const net::SiteForCookies& site_for_cookies,
+                 const url::Origin& top_frame_origin,
                  bool allow_credentials,
                  bool is_hls);
   MediaUrlParams(const MediaUrlParams& other);
@@ -30,7 +31,7 @@ struct MEDIA_EXPORT MediaUrlParams {
   // In the MediaPlayerRenderer case, it will ultimately be used in
   // MediaResourceGetterTask::CheckPolicyForCookies, to limit the scope of the
   // cookies that the MediaPlayerRenderer has access to.
-  GURL site_for_cookies;
+  net::SiteForCookies site_for_cookies;
 
   // Used to check for cookie content settings.
   url::Origin top_frame_origin;

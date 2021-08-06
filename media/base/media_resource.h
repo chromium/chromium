@@ -13,7 +13,6 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/media_url_params.h"
-#include "url/gurl.h"
 
 namespace media {
 

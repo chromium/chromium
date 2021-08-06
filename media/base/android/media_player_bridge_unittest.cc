@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +34,7 @@ class MediaPlayerBridgeTest : public testing::Test {
  public:
   MediaPlayerBridgeTest()
       : bridge_(GURL(),
-                GURL(),
+                net::SiteForCookies(),
                 url::Origin(),
                 "",
                 false,

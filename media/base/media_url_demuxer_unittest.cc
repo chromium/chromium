@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,14 +21,15 @@ namespace media {
 class MediaUrlDemuxerTest : public testing::Test {
  public:
   MediaUrlDemuxerTest()
-      : default_media_url_("http://example.com/file.mp4"),
-        default_first_party_url_("http://example.com/") {}
+      : default_media_url_(GURL("http://example.com/file.mp4")),
+        default_first_party_url_(GURL("http://example.com/")) {}
 
   void InitializeTest(const GURL& media_url,
                       const GURL& first_party,
                       bool allow_credentials) {
     demuxer_ = std::make_unique<MediaUrlDemuxer>(
-        base::ThreadTaskRunnerHandle::Get(), media_url, first_party,
+        base::ThreadTaskRunnerHandle::Get(), media_url,
+        net::SiteForCookies::FromUrl(first_party),
         url::Origin::Create(first_party), allow_credentials, false);
   }
 
@@ -39,8 +41,8 @@ class MediaUrlDemuxerTest : public testing::Test {
     EXPECT_EQ(PIPELINE_OK, status);
   }
 
-  GURL default_media_url_;
-  GURL default_first_party_url_;
+  const GURL default_media_url_;
+  const GURL default_first_party_url_;
   std::unique_ptr<Demuxer> demuxer_;
 
   // Necessary, or else base::ThreadTaskRunnerHandle::Get() fails.
@@ -57,7 +59,8 @@ TEST_F(MediaUrlDemuxerTest, BaseCase) {
 
   const MediaUrlParams& params = demuxer_->GetMediaUrlParams();
   EXPECT_EQ(default_media_url_, params.media_url);
-  EXPECT_EQ(default_first_party_url_, params.site_for_cookies);
+  EXPECT_TRUE(net::SiteForCookies::FromUrl(default_first_party_url_)
+                  .IsEquivalent(params.site_for_cookies));
   EXPECT_EQ(true, params.allow_credentials);
 }
 
@@ -66,7 +69,8 @@ TEST_F(MediaUrlDemuxerTest, AcceptsEmptyStrings) {
 
   const MediaUrlParams& params = demuxer_->GetMediaUrlParams();
   EXPECT_EQ(GURL::EmptyGURL(), params.media_url);
-  EXPECT_EQ(GURL::EmptyGURL(), params.site_for_cookies);
+  EXPECT_TRUE(net::SiteForCookies::FromUrl(GURL::EmptyGURL())
+                  .IsEquivalent(params.site_for_cookies));
   EXPECT_EQ(false, params.allow_credentials);
 }
 

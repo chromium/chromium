@@ -372,6 +372,7 @@ source_set("base") {
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:common",
+    "//net",
     "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
@@ -629,15 +630,14 @@ source_set("unit_tests") {
     "video_util_unittest.cc",
     "wall_clock_time_source_unittest.cc",
   ]
-  configs += [
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/viz/common",
     "//gpu/command_buffer/common",
     "//media:test_support",
+    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
@@ -675,9 +675,7 @@ source_set("perftests") {
     "sinc_resampler_perftest.cc",
     "vector_math_perftest.cc",
   ]
-  configs += [
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//base/test:test_support",

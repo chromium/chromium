@@ -2798,8 +2798,7 @@ void WebMediaPlayerImpl::StartPipeline() {
     video_decode_stats_reporter_.reset();
 
     SetDemuxer(std::make_unique<media::MediaUrlDemuxer>(
-        media_task_runner_, loaded_url_,
-        frame_->GetDocument().SiteForCookies().RepresentativeUrl(),
+        media_task_runner_, loaded_url_, frame_->GetDocument().SiteForCookies(),
         frame_->GetDocument().TopFrameOrigin(),
         allow_media_player_renderer_credentials_, demuxer_found_hls_));
     pipeline_controller_->Start(media::Pipeline::StartType::kNormal,

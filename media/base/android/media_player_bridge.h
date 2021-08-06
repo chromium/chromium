@@ -21,6 +21,7 @@
 #include "media/base/android/media_player_listener.h"
 #include "media/base/media_export.h"
 #include "media/base/simple_watch_timer.h"
+#include "net/cookies/site_for_cookies.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -77,7 +78,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   // MediaPlayerBridge also forwards Android MediaPlayer callbacks to
   // the `client` when needed.
   MediaPlayerBridge(const GURL& url,
-                    const GURL& site_for_cookies,
+                    const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
                     const std::string& user_agent,
                     bool hide_url_log,
@@ -105,7 +106,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   GURL GetUrl();
 
   // The site whose cookies should be given to the MediaPlayer if needed.
-  GURL GetSiteForCookies();
+  const net::SiteForCookies& GetSiteForCookies();
 
   // Set the player volume, and take effect immediately.
   // The volume should be between 0.0 and 1.0.
@@ -216,7 +217,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   GURL url_;
 
   // Used to determine if cookies are accessed in a third-party context.
-  GURL site_for_cookies_;
+  net::SiteForCookies site_for_cookies_;
 
   // Used to check for cookie content settings.
   url::Origin top_frame_origin_;

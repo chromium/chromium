@@ -69,6 +69,7 @@ if (is_android) {
       "//media/base",
       "//media/cdm",
       "//media/formats",
+      "//net",
       "//third_party/widevine/cdm:headers",
       "//ui/gl",
       "//url",
@@ -95,6 +96,7 @@ if (is_android) {
     deps = [
       "//base/test:test_support",
       "//media:test_support",
+      "//net",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/libyuv",

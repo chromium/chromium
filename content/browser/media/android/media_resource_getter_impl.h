@@ -17,6 +17,7 @@
 #include "media/base/android/media_url_interceptor.h"
 #include "net/base/auth.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/site_for_cookies.h"
 
 namespace storage {
 class FileSystemContext;
@@ -45,7 +46,7 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
   void GetAuthCredentials(const GURL& url,
                           GetAuthCredentialsCB callback) override;
   void GetCookies(const GURL& url,
-                  const GURL& site_for_cookies,
+                  const net::SiteForCookies& site_for_cookies,
                   const url::Origin& top_frame_origin,
                   GetCookieCB callback) override;
   void GetPlatformPathFromURL(const GURL& url,

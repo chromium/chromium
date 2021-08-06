@@ -75,6 +75,7 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:cookies_mojom",
     "//services/service_manager/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
