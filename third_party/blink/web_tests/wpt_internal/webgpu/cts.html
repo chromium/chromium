@@ -658,13 +658,12 @@
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:mip_levels:initMethod="CopyB2T";checkMethod="FullCopyT2B";format="bc7-rgba-unorm";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:mip_levels:initMethod="CopyB2T";checkMethod="FullCopyT2B";format="bc7-rgba-unorm-srgb";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:undefined_params:*'>
-<meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:copy_from_stencil_aspect:*'>
-<meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_upload_to_stencil_aspect:*'>
-<meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_upload_to_stencil_aspect:*'>
+<meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_copy_with_stencil_aspect:*'>
+<meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:*'>
 <meta name=variant content='?q=webgpu:api,operation,compute,basic:memcpy:*'>
 <meta name=variant content='?q=webgpu:api,operation,compute,basic:large_dispatch:*'>
 <meta name=variant content='?q=webgpu:api,operation,device,lost:not_lost_on_gc:*'>
-<meta name=variant content='?q=webgpu:api,operation,device,lost:not_lost_on_destroy:*'>
+<meta name=variant content='?q=webgpu:api,operation,device,lost:lost_on_destroy:*'>
 <meta name=variant content='?q=webgpu:api,operation,device,lost:same_object:*'>
 <meta name=variant content='?q=webgpu:api,operation,memory_sync,buffer,ww:same_cmdbuf:*'>
 <meta name=variant content='?q=webgpu:api,operation,memory_sync,buffer,ww:separate_cmdbufs:*'>
@@ -1948,3 +1947,5 @@
 <meta name=variant content='?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl2";dstColorFormat="bgra8unorm-srgb";*'>
 <meta name=variant content='?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl2";dstColorFormat="rgb10a2unorm";*'>
 <meta name=variant content='?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="offscreen";contextName="webgl2";dstColorFormat="rg8unorm";*'>
+<meta name=variant content='?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:*'>
+<meta name=variant content='?q=webgpu:web_platform,external_texture,video:importExternalTexture,compute:*'>

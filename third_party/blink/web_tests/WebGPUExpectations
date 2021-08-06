@@ -120,6 +120,9 @@ crbug.com/dawn/802 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering
 ### Platform-independent failures
 ###
 
+# Need to set the resource path
+wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,* [ Skip ]
+
 crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
 crbug.com/dawn/999 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,full_getMappedRange:* [ Failure ]
 
@@ -209,6 +212,8 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:format:viewForma
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:format:viewFormat="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:textureDimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:viewDimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
 
 # Dawn treats 0 and undefined as the same
 crbug.com/dawn/1026 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:mipLevelCount=0;* [ Failure ]
@@ -250,6 +255,10 @@ crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executio
 # Only on Mac Intel, baseVertex is always 0 for drawIndirect.
 crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;base_vertex=9;* [ Failure ]
 
+# Only Mac Intel
+crbug.com/dawn/704 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:* [ Failure ]
+crbug.com/dawn/704 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_copy_with_stencil_aspect:* [ Failure ]
+
 ###
 ### Linux (Vulkan) specific
 ###
@@ -287,3 +296,12 @@ crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executio
 
 # Handling of base_vertex base_instance is not implemented for indirect draws on D3D12.
 crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;* [ Failure ]
+
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToBuffer";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rg32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
+crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="CopyToTexture";format="rgba32float";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=7;nonPowerOfTwo=true;canaryOnCreation=true [ Failure ]
