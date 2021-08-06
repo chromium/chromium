@@ -834,7 +834,7 @@
   {
       "name": "cross-origin-embedder-policy-credentialless",
       "owners": ["arthursonzogni", "clamy", "mkwst"],
-      "expiry_milestone": 93
+      "expiry_milestone": 96
   },
   {
     "name": "crostini-container-install",
