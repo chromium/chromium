@@ -78,6 +78,11 @@ void TextFragmentsManagerImpl::OnProcessingComplete(int success_count,
       /*success=*/success_count == fragment_count);
 }
 
+void TextFragmentsManagerImpl::OnClick() {
+  // TODO(crbug.com/1230576): Update URL to no longer display text fragment
+  GetJSFeature()->RemoveHighlights(web_state_);
+}
+
 void TextFragmentsManagerImpl::DidFinishNavigation(
     WebState* web_state,
     NavigationContext* navigation_context) {

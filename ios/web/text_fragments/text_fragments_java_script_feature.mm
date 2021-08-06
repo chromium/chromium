@@ -17,7 +17,9 @@
 
 namespace {
 const char kScriptName[] = "text_fragments_js";
+const char kScriptHandlerName[] = "textFragments";
 const char kHandleFragmentsScript[] = "textFragments.handleTextFragments";
+const char kRemoveHighlightsScript[] = "textFragments.removeHighlights";
 
 const double kMaxSelectorCount = 200.0;
 const double kMinSelectorCount = 0.0;
@@ -67,6 +69,13 @@ void TextFragmentsJavaScriptFeature::ProcessTextFragments(
   CallJavaScriptFunction(frame, kHandleFragmentsScript, parameters);
 }
 
+void TextFragmentsJavaScriptFeature::RemoveHighlights(WebState* web_state) {
+  DCHECK(web_state);
+  auto* frame = web::GetMainFrame(web_state);
+  DCHECK(frame);
+  CallJavaScriptFunction(frame, kRemoveHighlightsScript, {});
+}
+
 void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {
@@ -80,32 +89,46 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  // Extract success metrics.
-  absl::optional<double> optional_fragment_count =
-      response->FindDoublePath("result.fragmentsCount");
-  absl::optional<double> optional_success_count =
-      response->FindDoublePath("result.successCount");
-
-  // Since the response can't be trusted, don't log metrics if the results look
-  // invalid.
-  if (!optional_fragment_count ||
-      optional_fragment_count.value() > kMaxSelectorCount ||
-      optional_fragment_count.value() <= kMinSelectorCount) {
-    return;
-  }
-  if (!optional_success_count ||
-      optional_success_count.value() > kMaxSelectorCount ||
-      optional_success_count.value() < kMinSelectorCount) {
-    return;
-  }
-  if (optional_success_count.value() > optional_fragment_count.value()) {
+  const std::string* command = response->FindStringKey("command");
+  if (!command) {
     return;
   }
 
-  int fragment_count = static_cast<int>(optional_fragment_count.value());
-  int success_count = static_cast<int>(optional_success_count.value());
+  if (*command == "textFragments.processingComplete") {
+    // Extract success metrics.
+    absl::optional<double> optional_fragment_count =
+        response->FindDoublePath("result.fragmentsCount");
+    absl::optional<double> optional_success_count =
+        response->FindDoublePath("result.successCount");
 
-  manager->OnProcessingComplete(success_count, fragment_count);
+    // Since the response can't be trusted, don't log metrics if the results
+    // look invalid.
+    if (!optional_fragment_count ||
+        optional_fragment_count.value() > kMaxSelectorCount ||
+        optional_fragment_count.value() <= kMinSelectorCount) {
+      return;
+    }
+    if (!optional_success_count ||
+        optional_success_count.value() > kMaxSelectorCount ||
+        optional_success_count.value() < kMinSelectorCount) {
+      return;
+    }
+    if (optional_success_count.value() > optional_fragment_count.value()) {
+      return;
+    }
+
+    int fragment_count = static_cast<int>(optional_fragment_count.value());
+    int success_count = static_cast<int>(optional_success_count.value());
+
+    manager->OnProcessingComplete(success_count, fragment_count);
+  } else if (*command == "textFragments.onClick") {
+    manager->OnClick();
+  }
+}
+
+absl::optional<std::string>
+TextFragmentsJavaScriptFeature::GetScriptMessageHandlerName() const {
+  return kScriptHandlerName;
 }
 
 }  // namespace web

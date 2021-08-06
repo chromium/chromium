@@ -17,6 +17,8 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
 
   __gCrWeb['textFragments'] = {};
 
+  var marks;
+
   /**
    * Attempts to identify and highlight the given text fragments and
    * optionally, scroll them into view, and apply default colors.
@@ -44,13 +46,19 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
         doHandleTextFragments(fragments, scroll, markDefaultStyle);
       });
     }
-  }
+  };
+
+  __gCrWeb.textFragments.removeHighlights = function() {
+    utils.removeMarks(marks);
+    document.removeEventListener("click", handleClick,
+                                 /*useCapture=*/true);
+  };
 
   /**
    * Does the actual work for handleTextFragments.
    */
   const doHandleTextFragments = function(fragments, scroll, markStyle) {
-    const marks = [];
+    marks = [];
     let successCount = 0;
 
     if (markStyle) utils.setDefaultTextFragmentsStyle(markStyle);
@@ -80,18 +88,20 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
     // Clean-up marks whenever the user taps somewhere on the page. Use capture
     // to make sure the event listener is executed immediately and cannot be
     // prevented by the event target (during bubble phase).
-    document.addEventListener("click", function removeMarksFunction() {
-      utils.removeMarks(marks);
-      document.removeEventListener("click", removeMarksFunction,
-                                   /*useCapture=*/true);
-    }, /*useCapture=*/true);
+    document.addEventListener("click", handleClick, /*useCapture=*/true);
 
-    __gCrWeb.message.invokeOnHost({
-      command: 'textFragments.response',
+    __gCrWeb.common.sendWebKitMessage('textFragments', {
+      command: 'textFragments.processingComplete',
       result: {
         successCount: successCount,
         fragmentsCount: fragments.length
       }
     });
-  }
+  };
+
+  const handleClick = function () {
+      __gCrWeb.common.sendWebKitMessage('textFragments', {
+        command: 'textFragments.onClick'
+      });
+    }
 })();

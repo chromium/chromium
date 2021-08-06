@@ -60,6 +60,7 @@ class MockJSFeature : public web::TextFragmentsJavaScriptFeature {
                std::string background_color_hex_rgb,
                std::string foreground_color_hex_rgb),
               (override));
+  MOCK_METHOD(void, RemoveHighlights, (web::WebState * web_state), (override));
 };
 
 base::Value ValueForTestURL() {
@@ -407,6 +408,12 @@ TEST_F(TextFragmentsManagerImplTest, OnProcessingCompleteSuccessMetrics) {
     ValidateLinkOpenedUkm(ukm_recorder, /*success=*/false,
                           TextFragmentLinkOpenSource::kSearchEngine);
   }
+}
+
+TEST_F(TextFragmentsManagerImplTest, ClickRemovesHighlights) {
+  TextFragmentsManagerImpl* manager = CreateDefaultManager();
+  EXPECT_CALL(feature_, RemoveHighlights(_));
+  manager->OnClick();
 }
 
 }  // namespace web

@@ -39,6 +39,9 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // highlighted.
   void OnProcessingComplete(int success_count, int fragment_count);
 
+  // Cleans up highlights on the page in response to user click.
+  void OnClick();
+
   // WebStateObserver methods:
   void DidFinishNavigation(WebState* web_state,
                            NavigationContext* navigation_context) override;

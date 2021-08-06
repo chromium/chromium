@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
@@ -29,9 +30,15 @@ class TextFragmentsJavaScriptFeature : public JavaScriptFeature {
                                     std::string background_color_hex_rgb,
                                     std::string foreground_color_hex_rgb);
 
+  // Removes all highlights that are currently being displayed on the page as a
+  // result of invoking ProcessTextFragments.
+  virtual void RemoveHighlights(WebState* web_state);
+
  protected:
+  // JavaScriptFeature:
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& script_message) override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   TextFragmentsJavaScriptFeature();
   ~TextFragmentsJavaScriptFeature() override;
 
