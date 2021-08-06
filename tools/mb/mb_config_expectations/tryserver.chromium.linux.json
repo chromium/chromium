@@ -605,13 +605,9 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-version-skew-fyi": {
@@ -620,12 +616,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-layout-tests-edit-ng": {

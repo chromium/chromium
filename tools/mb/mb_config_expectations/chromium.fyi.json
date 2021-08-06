@@ -1011,12 +1011,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-builder-rel (goma cache silo)": {
@@ -1026,12 +1022,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-builder-rel (reclient)": {
@@ -1041,11 +1033,7 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "target_os": "chromeos",
-      "use_gtk": false,
-      "use_ozone": true,
       "use_rbe": true
     }
   },
@@ -1057,14 +1045,10 @@
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-dbg-fyi": {
@@ -1073,13 +1057,9 @@
       "chromeos_is_browser_only": true,
       "is_component_build": true,
       "is_debug": true,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-dbg-tests-fyi": {
@@ -1088,13 +1068,9 @@
       "chromeos_is_browser_only": true,
       "is_component_build": true,
       "is_debug": true,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-tester-fyi-rel": {
@@ -1104,12 +1080,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-lacros-version-skew-fyi": {
@@ -1118,12 +1090,8 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_wayland": true,
       "target_os": "chromeos",
-      "use_goma": true,
-      "use_gtk": false,
-      "use_ozone": true
+      "use_goma": true
     }
   },
   "linux-perfetto-rel": {
