@@ -2789,6 +2789,7 @@
                     "name": "RecipeTasksRuleBasedDiscountDrive_Enabled",
                     "params": {
                         "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
+                        "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
                         "NtpChromeCartModuleHeuristicsImprovementParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000"
                     },
