@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -145,11 +144,11 @@ public class IncognitoUtils {
             @Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
 
-        CustomTabIncognitoManager customTabIncognitoManager =
-                CustomTabIncognitoManager.from(windowAndroid);
+        IncognitoCctProfileManager incognitoCctProfileManager =
+                IncognitoCctProfileManager.from(windowAndroid);
 
-        if (customTabIncognitoManager == null) return null;
-        return customTabIncognitoManager.getProfile();
+        if (incognitoCctProfileManager == null) return null;
+        return incognitoCctProfileManager.getProfile();
     }
 
     /**

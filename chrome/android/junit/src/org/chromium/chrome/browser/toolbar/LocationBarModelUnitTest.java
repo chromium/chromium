@@ -24,7 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
+import org.chromium.chrome.browser.incognito.IncognitoCctProfileManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -49,7 +49,7 @@ public class LocationBarModelUnitTest {
     private WindowAndroid mWindowAndroidMock;
 
     @Mock
-    private CustomTabIncognitoManager mCustomTabIncognitoManagerMock;
+    private IncognitoCctProfileManager mIncognitoCctProfileManagerMock;
 
     @Mock
     private Profile mRegularProfileMock;
@@ -68,10 +68,9 @@ public class LocationBarModelUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mRegularProfileMock);
-        CustomTabIncognitoManager.setCustomTabIncognitoManagerUsedForTesting(
-                mCustomTabIncognitoManagerMock);
-
-        when(mCustomTabIncognitoManagerMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
+        IncognitoCctProfileManager.setIncognitoCctProfileManagerForTesting(
+                mIncognitoCctProfileManagerMock);
+        when(mIncognitoCctProfileManagerMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
         when(mRegularProfileMock.hasPrimaryOTRProfile()).thenReturn(true);
         when(mRegularProfileMock.getPrimaryOTRProfile(/*createIfNeeded=*/true))
                 .thenReturn(mPrimaryOTRProfileMock);
@@ -82,7 +81,7 @@ public class LocationBarModelUnitTest {
     @After
     public void tearDown() {
         Profile.setLastUsedProfileForTesting(null);
-        CustomTabIncognitoManager.setCustomTabIncognitoManagerUsedForTesting(null);
+        IncognitoCctProfileManager.setIncognitoCctProfileManagerForTesting(null);
     }
 
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
@@ -125,7 +124,7 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_IncognitoTab_ReturnsPrimaryOTRProfile() {
-        when(mCustomTabIncognitoManagerMock.getProfile()).thenReturn(null);
+        when(mIncognitoCctProfileManagerMock.getProfile()).thenReturn(null);
         LocationBarModel incognitoLocationBarModel =
                 new TestIncognitoLocationBarModel(mIncognitoTabMock, mSearchEngineLogoUtils);
         Profile otrProfile = incognitoLocationBarModel.getProfile();
