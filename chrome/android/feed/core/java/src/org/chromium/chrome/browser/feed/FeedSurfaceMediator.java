@@ -253,7 +253,6 @@ public class FeedSurfaceMediator
     // that Feed content is still loading at that time and the {@link mContentFirstAvailableTimeMs}
     // hasn't been set yet.
     private boolean mHasPendingUmaRecording;
-    private int mToggleswitchMenuIndex;
     private ScrollState mRestoreScrollState;
 
     private final HashMap<Integer, Stream> mTabToStreamMap = new HashMap<>();
@@ -829,7 +828,7 @@ public class FeedSurfaceMediator
         final int sectionHeaderStringId;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED) && isSignedIn()) {
-            sectionHeaderStringId = R.string.ntp_for_you;
+            sectionHeaderStringId = R.string.ntp_discover_on;
         } else if (isDefaultSearchEngineGoogle) {
             sectionHeaderStringId =
                     isExpanded ? R.string.ntp_discover_on : R.string.ntp_discover_off;
@@ -868,7 +867,6 @@ public class FeedSurfaceMediator
         itemList.add(getMenuToggleSwitch(
                 mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY),
                 iconId));
-        mToggleswitchMenuIndex = itemList.size() - 1;
         return itemList;
     }
 

@@ -25,6 +25,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.R;
@@ -88,6 +90,9 @@ public class SectionHeaderView extends LinearLayout {
     // Cached the indicator drawables for easy swapping.
     private Drawable mEnabledIndicatorDrawable;
     private Drawable mNoIndicatorDrawable;
+
+    // BadgeDrawable for badging.
+    private @Nullable BadgeDrawable mBadge;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -178,13 +183,22 @@ public class SectionHeaderView extends LinearLayout {
     void setHeaderAt(String text, boolean hasUnreadContent, int index) {
         TabLayout.Tab tab = getTabAt(index);
         if (tab != null) {
-            tab.setText(text);
-            ImageView badgeView = tab.getCustomView().findViewById(R.id.badge);
             if (hasUnreadContent) {
-                badgeView.setVisibility(VISIBLE);
+                if (mBadge == null) {
+                    mBadge = BadgeDrawable.createFromResource(getContext(), R.xml.tab_layout_badge);
+                    mBadge.setContentDescriptionNumberless(getResources().getString(
+                            R.string.accessibility_ntp_following_unread_content));
+                }
+                mBadge.setVisible(true);
+
+                BadgeUtils.attachBadgeDrawable(mBadge, tab.getCustomView());
             } else {
-                badgeView.setVisibility(GONE);
+                if (mBadge != null) {
+                    mBadge.setVisible(false);
+                    BadgeUtils.detachBadgeDrawable(mBadge, tab.getCustomView());
+                }
             }
+            tab.setText(text);
         }
     }
 

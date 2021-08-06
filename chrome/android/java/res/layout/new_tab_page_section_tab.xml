@@ -3,35 +3,11 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_gravity="center_horizontal"
+    android:maxLines="1"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:ignore="UseCompoundDrawables"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
     android:duplicateParentState="true"
-    android:focusable="true" >
-
-    <TextView
-        android:id="@android:id/text1"
-        android:layout_gravity="center_horizontal"
-        android:maxLines="2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:duplicateParentState="true"
-        android:textAppearance="@style/TextAppearance.TabLayout"
-        />
-
-    <ImageView
-        android:id="@+id/badge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/accessibility_ntp_following_unread_content"
-        android:src="@drawable/new_tab_section_header_content_circle"
-        android:paddingStart="2dp"
-        android:layout_gravity="top|end"
-        android:visibility="gone"
-        />
-
-</FrameLayout>
+    android:textAppearance="@style/TextAppearance.TabLayout" />
