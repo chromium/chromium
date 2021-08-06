@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -260,10 +259,7 @@ class PDFiumEngine : public PDFEngine,
   friend class PDFiumTestBase;
   friend class SelectionChangeInvalidator;
 
-  gfx::Size plugin_size() const {
-    DCHECK(plugin_size_.has_value());
-    return plugin_size_.value_or(gfx::Size());
-  }
+  const gfx::Size& plugin_size() const { return plugin_size_.value(); }
 
   // We finished getting the pdf file, so load it. This will complete
   // asynchronously (due to password fetching) and may be run multiple times.
