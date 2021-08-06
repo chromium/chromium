@@ -729,10 +729,8 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
-  std::string extension_id;
-  CHECK(args->GetString(0, &extension_id));
-  double source = -1.0;
-  CHECK(args->GetDouble(1, &source));
+  const std::string& extension_id = args->GetList()[0].GetString();
+  double source = args->GetList()[1].GetDouble();
   GURL override_url;
 
   extension_misc::AppLaunchBucket launch_bucket =
@@ -834,10 +832,8 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
-  std::string app_id;
-  double launch_type_double;
-  CHECK(args->GetString(0, &app_id));
-  CHECK(args->GetDouble(1, &launch_type_double));
+  const std::string& app_id = args->GetList()[0].GetString();
+  double launch_type_double = args->GetList()[1].GetDouble();
   extensions::LaunchType launch_type =
       static_cast<extensions::LaunchType>(static_cast<int>(launch_type_double));
 
@@ -1047,7 +1043,7 @@ void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {
   base::Value::ConstListView args_list = args->GetList();
   CHECK_EQ(args_list.size(), 2u);
 
-  std::string dragged_app_id = args_list[0].GetString();
+  const std::string& dragged_app_id = args_list[0].GetString();
   base::Value::ConstListView app_order = args_list[1].GetList();
 
   std::string predecessor_to_moved_ext;
@@ -1074,10 +1070,8 @@ void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {
 void AppLauncherHandler::HandleSetPageIndex(const base::ListValue* args) {
   AppSorting* app_sorting =
       ExtensionSystem::Get(extension_service_->profile())->app_sorting();
-  std::string extension_id;
-  double page_index;
-  CHECK(args->GetString(0, &extension_id));
-  CHECK(args->GetDouble(1, &page_index));
+  const std::string& extension_id = args->GetList()[0].GetString();
+  double page_index = args->GetList()[1].GetDouble();
   const syncer::StringOrdinal& page_ordinal =
       app_sorting->PageIntegerAsStringOrdinal(static_cast<size_t>(page_index));
 
@@ -1087,11 +1081,8 @@ void AppLauncherHandler::HandleSetPageIndex(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleSaveAppPageName(const base::ListValue* args) {
-  std::string name;
-  CHECK(args->GetString(0, &name));
-
-  double page_index;
-  CHECK(args->GetDouble(1, &page_index));
+  const std::string& name = args->GetList()[0].GetString();
+  double page_index = args->GetList()[1].GetDouble();
 
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
@@ -1102,9 +1093,8 @@ void AppLauncherHandler::HandleSaveAppPageName(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
-  std::string url;
-  CHECK(args->GetString(0, &url));
-  GURL launch_url(url);
+  base::Value::ConstListView list = args->GetList();
+  GURL launch_url(list[0].GetString());
   // Do not install app for invalid url.
   if (!launch_url.SchemeIsHTTPOrHTTPS())
     return;
@@ -1112,11 +1102,9 @@ void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
   if (attempting_web_app_install_page_ordinal_.has_value())
     return;
 
-  std::u16string title;
-  CHECK(args->GetString(1, &title));
+  std::u16string title = base::UTF8ToUTF16(list[1].GetString());
 
-  double page_index;
-  CHECK(args->GetDouble(2, &page_index));
+  double page_index = list[2].GetDouble();
   AppSorting* app_sorting =
       ExtensionSystem::Get(extension_service_->profile())->app_sorting();
   const syncer::StringOrdinal& page_ordinal =
@@ -1145,8 +1133,7 @@ void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandlePageSelected(const base::ListValue* args) {
-  double index_double;
-  CHECK(args->GetDouble(0, &index_double));
+  double index_double = args->GetList()[0].GetDouble();
   int index = static_cast<int>(index_double);
 
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();

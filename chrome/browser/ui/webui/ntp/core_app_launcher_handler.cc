@@ -29,10 +29,8 @@ void CoreAppLauncherHandler::RegisterProfilePrefs(
 
 void CoreAppLauncherHandler::HandleRecordAppLaunchByUrl(
     const base::ListValue* args) {
-  std::string url;
-  CHECK(args->GetString(0, &url));
-  double source;
-  CHECK(args->GetDouble(1, &source));
+  const std::string& url = args->GetList()[0].GetString();
+  double source = args->GetList()[1].GetDouble();
 
   extension_misc::AppLaunchBucket bucket =
       static_cast<extension_misc::AppLaunchBucket>(static_cast<int>(source));

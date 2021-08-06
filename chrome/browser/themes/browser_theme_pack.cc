@@ -35,6 +35,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/data_pack.h"
@@ -1196,21 +1197,25 @@ void BrowserThemePack::SetTintsFromJSON(
   std::map<int, color_utils::HSL> temp_tints;
   for (base::DictionaryValue::Iterator iter(*tints_value); !iter.IsAtEnd();
        iter.Advance()) {
-    const base::ListValue* tint_list;
-    if (iter.value().GetAsList(&tint_list) &&
-        (tint_list->GetSize() == 3)) {
-      color_utils::HSL hsl = { -1, -1, -1 };
+    if (!iter.value().is_list())
+      continue;
 
-      if (tint_list->GetDouble(0, &hsl.h) &&
-          tint_list->GetDouble(1, &hsl.s) &&
-          tint_list->GetDouble(2, &hsl.l)) {
-        MakeHSLShiftValid(&hsl);
-        int id = GetIntForString(iter.key(), kTintTable, kTintTableLength);
-        if (id != -1) {
-          temp_tints[id] = hsl;
-        }
-      }
-    }
+    base::Value::ConstListView tint_list = iter.value().GetList();
+    if (tint_list.size() != 3)
+      continue;
+
+    absl::optional<double> h = tint_list[0].GetIfDouble();
+    absl::optional<double> s = tint_list[1].GetIfDouble();
+    absl::optional<double> l = tint_list[2].GetIfDouble();
+    if (!h || !s || !l)
+      continue;
+
+    color_utils::HSL hsl = {*h, *s, *l};
+    MakeHSLShiftValid(&hsl);
+
+    int id = GetIntForString(iter.key(), kTintTable, kTintTableLength);
+    if (id != -1)
+      temp_tints[id] = hsl;
   }
 
   // Copy data from the intermediary data structure to the array.

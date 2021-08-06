@@ -100,12 +100,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // new time. Expects the time as the number of seconds since the Unix
   // epoch, treated as a double.
   void OnSetTime(const base::ListValue* args) {
-    double seconds;
-    if (!args->GetDouble(0, &seconds)) {
-      NOTREACHED();
-      return;
-    }
-
+    double seconds = args->GetList()[0].GetDouble();
     SystemClockClient::Get()->SetTime(static_cast<int64_t>(seconds));
   }
 
@@ -131,12 +126,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    double seconds;
-    if (!args->GetDouble(0, &seconds)) {
-      NOTREACHED();
-      return;
-    }
-
+    double seconds = args->GetList()[0].GetDouble();
     AccountId account_id;
     bool is_user_logged_in = user_manager::UserManager::Get()->IsUserLoggedIn();
     if (is_user_logged_in) {
