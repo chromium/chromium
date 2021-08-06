@@ -1437,15 +1437,34 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const auto& fragmentainer = container_builder_->Children()[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const NGBlockNode& node = container_builder_->Node();
-  const auto& fragment =
-      To<NGPhysicalBoxFragment>(*fragmentainer.fragment.get());
+  const auto* fragment =
+      To<NGPhysicalBoxFragment>(fragmentainer.fragment.get());
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  // If the last existing fragmentainer does not have a break token, and we will
+  // need to add a new subsequent fragmentainer to hold an OOF, create a break
+  // token for the old fragmentainer now.
+  if (is_new_fragment && !fragment->BreakToken()) {
+    const NGBlockBreakToken* previous_break_token =
+        PreviousFragmentainerBreakToken(*container_builder_, index);
+    NGLayoutAlgorithmParams params(node, fragment_geometry, space,
+                                   previous_break_token,
+                                   /* early_break */ nullptr);
+    NGSimplifiedOOFLayoutAlgorithm algorithm(params, *fragment,
+                                             /* is_new_fragment */ false,
+                                             /* should_break_for_oof */ true);
+    ReplaceFragmentainer(index, fragmentainer.offset,
+                         /* create_new_fragment */ false, &algorithm);
+    fragment = To<NGPhysicalBoxFragment>(
+        container_builder_->Children()[index].fragment.get());
+  }
+
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
       fragmentainer.offset, index, column_inline_progression, is_new_fragment);
 
   const NGBlockBreakToken* previous_break_token =
       PreviousFragmentainerBreakToken(*container_builder_, original_index);
-  NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(space, node);
   NGLayoutAlgorithmParams params(node, fragment_geometry, space,
                                  previous_break_token,
                                  /* early_break */ nullptr);
@@ -1453,7 +1472,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   // |algorithm| corresponds to the "mutable copy" of our original
   // fragmentainer. As long as this "copy" hasn't been laid out via
   // NGSimplifiedOOFLayoutAlgorithm::Layout, we can append new items to it.
-  NGSimplifiedOOFLayoutAlgorithm algorithm(params, fragment, is_new_fragment);
+  NGSimplifiedOOFLayoutAlgorithm algorithm(params, *fragment, is_new_fragment);
 
   // Layout any OOF elements that are a continuation of layout first.
   for (auto& descendant : descendants_continued) {

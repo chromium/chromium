@@ -257,8 +257,22 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     return is_fragmentation_context_root_;
   }
 
-  void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
-  bool FoundColumnSpanner() const { return !!column_spanner_; }
+  // There may be cases where a column spanner was previously found but is no
+  // longer accessible. For example, in simplified OOF layout, we may want to
+  // recreate a spanner break for an existing fragment being relaid out, but
+  // the spanner node is no longer available. In such cases,
+  // |has_column_spanner_| may be true while |column_spanner_| is not set.
+  void SetHasColumnSpanner(bool has_column_spanner) {
+    has_column_spanner_ = has_column_spanner;
+  }
+  void SetColumnSpanner(NGBlockNode spanner) {
+    column_spanner_ = spanner;
+    SetHasColumnSpanner(!!column_spanner_);
+  }
+  bool FoundColumnSpanner() const {
+    DCHECK(has_column_spanner_ || !column_spanner_);
+    return has_column_spanner_;
+  }
 
   // See NGLayoutResult::AnnotationOverflow().
   void SetAnnotationOverflow(LayoutUnit overflow) {
@@ -356,6 +370,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   bool has_descendant_that_depends_on_percentage_block_size_ = false;
   bool has_block_fragmentation_ = false;
   bool is_fragmentation_context_root_ = false;
+  bool has_column_spanner_ = false;
 
   bool has_oof_candidate_that_needs_block_offset_adjustment_ = false;
 };

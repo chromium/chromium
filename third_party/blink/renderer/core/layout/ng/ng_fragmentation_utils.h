@@ -213,6 +213,10 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
                                   LayoutUnit space_left,
                                   NGBoxFragmentBuilder*);
 
+// Special rules apply for finishing fragmentation when building fragmentainers.
+NGBreakStatus FinishFragmentationForFragmentainer(const NGConstraintSpace&,
+                                                  NGBoxFragmentBuilder*);
+
 // Insert a fragmentainer break before the child if necessary. In that case, the
 // previous in-flow position will be updated, we'll return |kBrokeBefore|. If we
 // don't break inside, we'll consider the appeal of doing so anyway (and store

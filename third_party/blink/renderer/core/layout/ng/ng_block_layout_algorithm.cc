@@ -2308,54 +2308,8 @@ NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
   }
 
   if (container_builder_.IsFragmentainerBoxType()) {
-    // We're building fragmentainers. Finish fragmentation on our own, since
-    // special-rules apply.
-    LayoutUnit consumed_block_size =
-        BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
-    if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
-      // Just copy the block-size from the constraint space. Calculating the
-      // size the regular way would cause some problems with overflow. For one,
-      // we don't want to produce a break token if there's no child content that
-      // requires it. When we lay out, we use FragmentainerCapacity(), so this
-      // is what we need to add to consumed block-size for the next break
-      // token. The fragment block-size itself will be based directly on the
-      // fragmentainer size from the constraint space, though.
-      LayoutUnit block_size = ConstraintSpace().FragmentainerBlockSize();
-      LayoutUnit fragmentainer_capacity =
-          FragmentainerCapacity(ConstraintSpace());
-      container_builder_.SetFragmentBlockSize(block_size);
-      consumed_block_size += fragmentainer_capacity;
-      container_builder_.SetConsumedBlockSize(consumed_block_size);
-
-      // We clamp the fragmentainer block size from 0 to 1 for legacy write-back
-      // if there is content that overflows the zero-height fragmentainer.
-      // Set the consumed block size adjustment for legacy if this results
-      // in a different consumed block size than is used for NG layout.
-      LayoutUnit consumed_block_size_for_legacy =
-          BreakToken() ? BreakToken()->ConsumedBlockSizeForLegacy()
-                       : LayoutUnit();
-      LayoutUnit legacy_fragmentainer_block_size =
-          (container_builder_.IntrinsicBlockSize() > LayoutUnit())
-              ? fragmentainer_capacity
-              : block_size;
-      LayoutUnit consumed_block_size_legacy_adjustment =
-          consumed_block_size_for_legacy + legacy_fragmentainer_block_size -
-          consumed_block_size;
-      container_builder_.SetConsumedBlockSizeLegacyAdjustment(
-          consumed_block_size_legacy_adjustment);
-    } else {
-      // When we are in the initial column balancing pass, use the block-size
-      // calculated by the algorithm. Since any previously consumed block-size
-      // is already baked in (in order to correctly honor specified block-size
-      // (which makes sense to everyone but fragmentainers)), we need to extract
-      // it again now.
-      LayoutUnit fragments_total_block_size =
-          container_builder_.FragmentsTotalBlockSize();
-      container_builder_.SetFragmentBlockSize(fragments_total_block_size -
-                                              consumed_block_size);
-      container_builder_.SetConsumedBlockSize(fragments_total_block_size);
-    }
-    return NGBreakStatus::kContinue;
+    return FinishFragmentationForFragmentainer(ConstraintSpace(),
+                                               &container_builder_);
   }
 
   LayoutUnit space_left = kIndefiniteSize;

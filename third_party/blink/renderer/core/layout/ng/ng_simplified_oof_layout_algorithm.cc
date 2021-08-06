@@ -16,7 +16,8 @@ namespace blink {
 NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params,
     const NGPhysicalBoxFragment& previous_fragment,
-    bool is_new_fragment)
+    bool is_new_fragment,
+    bool should_break_for_oof)
     : NGLayoutAlgorithm(params),
       writing_direction_(Style().GetWritingDirection()),
       incoming_break_token_(params.break_token) {
@@ -26,6 +27,14 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   container_builder_.SetBoxType(previous_fragment.BoxType());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
+  if (should_break_for_oof)
+    container_builder_.SetDidBreakSelf();
+  if (!is_new_fragment && previous_fragment.BreakToken()) {
+    bool has_column_spanner =
+        To<NGBlockBreakToken>(previous_fragment.BreakToken())
+            ->IsCausedByColumnSpanner();
+    container_builder_.SetHasColumnSpanner(has_column_spanner);
+  }
 
   if (incoming_break_token_)
     break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
@@ -60,6 +69,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
 }
 
 scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
+  FinishFragmentationForFragmentainer(ConstraintSpace(), &container_builder_);
   return container_builder_.ToBoxFragment();
 }
 
