@@ -132,6 +132,8 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
       "//remoting/base:breakpad",
       "//remoting/host",
       "//remoting/host:base",
+      "//remoting/host:common",
+      "//remoting/host:host_main_headers",
       "//remoting/host/native_messaging",
       "//remoting/host/setup",
       "//services/network:network_service",

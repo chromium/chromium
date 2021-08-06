@@ -78,6 +78,25 @@ source_set("logging") {
   deps = [ "//base" ]
 }
 
+source_set("host_main_headers") {
+  visibility = [
+    ":*",
+    "//remoting/host/it2me:remote_assistance_host",
+    "//remoting/host/it2me:remote_assistance_host_executable",
+    "//remoting/host/linux:remoting_native_messaging_host",
+    "//remoting/host/mac:remoting_native_messaging_host",
+    "//remoting/host/mac:remoting_native_messaging_host_executable",
+    "//remoting/host/win:remoting_console",
+    "//remoting/host/win:remoting_core",
+    "//remoting/host/win:remoting_desktop",
+    "//remoting/host/win:remoting_me2me_host",
+  ]
+  sources = [
+    "host_export.h",
+    "host_main.h",
+  ]
+}
+
 source_set("common_headers") {
   visibility = [ ":base" ]
   sources = [
@@ -288,7 +307,6 @@ static_library("common") {
     "host_event_logger.h",
     "host_experiment_session_plugin.cc",
     "host_experiment_session_plugin.h",
-    "host_export.h",
     "host_extension_session_manager.cc",
     "host_extension_session_manager.h",
     "host_power_save_blocker.cc",
@@ -395,6 +413,7 @@ static_library("common") {
     ":base",
     ":client_session_control",
     ":clipboard",
+    ":host_main_headers",
     ":host_settings",
     ":remote_open_url_support",
     "//base:i18n",
@@ -594,19 +613,6 @@ static_library("common") {
       "url_forwarder_configurator_win.cc",
       "url_forwarder_configurator_win.h",
       "usage_stats_consent_win.cc",
-
-      # TODO(crbug.com/1184893): These are in //remoting/host/win:remoting_core, but we can't add a
-      # dep for it because it would make a circular dependency. These should be
-      # moved to a new build target that both can depend on if possible.
-      "host_main.h",
-      "win/core_resource.h",
-      "win/etw_trace_consumer.h",
-      "win/host_event_file_logger.h",
-      "win/host_event_logger.h",
-      "win/host_event_windows_event_logger.h",
-      "win/host_service.h",
-      "win/unprivileged_process_delegate.h",
-      "win/wts_session_process_delegate.h",
     ]
     libs += [ "crypt32.lib" ]
     deps += [
@@ -839,6 +845,7 @@ if (enable_remoting_host) {
 
       deps += [
         ":common",
+        ":host_main_headers",
         "//google_apis",
         "//mojo/core/embedder",
         "//net",
@@ -1003,6 +1010,7 @@ if (enable_me2me_host) {
       deps = [
         ":base",
         ":common",
+        ":host_main_headers",
         "//base",
         "//base:debugging_buildflags",
         "//mojo/core/embedder:embedder",
@@ -1024,12 +1032,13 @@ if (enable_me2me_host) {
         ]
 
         deps = [
+          ":base",
+          ":common",
+          ":host_main_headers",
           ":remoting_me2me_host_static",
           "//base",
           "//mojo/core/embedder:embedder",
           "//remoting/base:breakpad",
-          "//remoting/host:base",
-          "//remoting/host:common",
           "//remoting/host/installer:credits",
           "//remoting/host/setup:common",
           "//remoting/resources",
@@ -1092,6 +1101,7 @@ if (enable_me2me_host && (is_linux || is_win)) {
       ]
       deps = [
         ":common",
+        ":host_main_headers",
         ":host_settings",
         ":logging",
         ":remoting_me2me_host_static",

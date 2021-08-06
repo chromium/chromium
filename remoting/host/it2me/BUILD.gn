@@ -112,7 +112,10 @@ source_set("common") {
     deps += [ "//ui/base:base" ]
   }
   if (is_win) {
-    deps += [ "//remoting/host/win:elevated_native_messaging_host" ]
+    deps += [
+      "//remoting/host/win",
+      "//remoting/host/win:elevated_native_messaging_host",
+    ]
   }
 }
 
@@ -288,6 +291,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
       deps = [
         ":common",
         "//remoting/host",
+        "//remoting/host:host_main_headers",
         "//remoting/host/native_messaging",
         "//remoting/proto",
         "//third_party/webrtc_overrides:webrtc_component",
