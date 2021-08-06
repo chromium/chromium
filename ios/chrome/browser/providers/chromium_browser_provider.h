@@ -13,7 +13,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
   ~ChromiumBrowserProvider() override;
 
   // ChromeBrowserProvider implementation
-  ios::SigninErrorProvider* GetSigninErrorProvider() override;
   ios::SigninResourcesProvider* GetSigninResourcesProvider() override;
   void SetChromeIdentityServiceForTesting(
       std::unique_ptr<ios::ChromeIdentityService> service) override;
@@ -28,7 +27,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
 
  private:
-  std::unique_ptr<ios::SigninErrorProvider> signin_error_provider_;
   std::unique_ptr<ios::SigninResourcesProvider> signin_resources_provider_;
   std::unique_ptr<ios::ChromeIdentityService> chrome_identity_service_;
   std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;

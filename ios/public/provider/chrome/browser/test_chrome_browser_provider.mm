@@ -12,7 +12,6 @@
 #include "ios/public/provider/chrome/browser/omaha/test_omaha_service_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
-#include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
 #include "ios/public/provider/chrome/browser/signin/test_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/public/provider/chrome/browser/voice/test_voice_search_provider.h"
@@ -26,7 +25,6 @@ namespace ios {
 
 TestChromeBrowserProvider::TestChromeBrowserProvider()
     : omaha_service_provider_(std::make_unique<TestOmahaServiceProvider>()),
-      signin_error_provider_(std::make_unique<SigninErrorProvider>()),
       signin_resources_provider_(
           std::make_unique<TestSigninResourcesProvider>()),
       voice_search_provider_(std::make_unique<TestVoiceSearchProvider>()),
@@ -51,10 +49,6 @@ void TestChromeBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ChromeIdentityService> service) {
   chrome_identity_service_ = std::move(service);
   FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
-}
-
-SigninErrorProvider* TestChromeBrowserProvider::GetSigninErrorProvider() {
-  return signin_error_provider_.get();
 }
 
 ChromeIdentityService* TestChromeBrowserProvider::GetChromeIdentityService() {

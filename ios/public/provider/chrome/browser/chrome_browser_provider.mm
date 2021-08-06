@@ -50,10 +50,6 @@ void ChromeBrowserProvider::AppendSwitchesFromExperimentalSettings(
 
 void ChromeBrowserProvider::Initialize() const {}
 
-SigninErrorProvider* ChromeBrowserProvider::GetSigninErrorProvider() {
-  return nullptr;
-}
-
 SigninResourcesProvider* ChromeBrowserProvider::GetSigninResourcesProvider() {
   return nullptr;
 }
