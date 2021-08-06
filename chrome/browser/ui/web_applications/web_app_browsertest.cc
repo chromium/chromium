@@ -933,8 +933,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   // Performing a user install on the page should not override the "policy"
   // install source.
   EXPECT_FALSE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
-  const WebApp& web_app =
-      *provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp& web_app = *provider->registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app.IsSynced());
   EXPECT_TRUE(web_app.IsPolicyInstalledApp());
 }
@@ -1437,7 +1436,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NullManifestId) {
 
   const AppId app_id = InstallPwaForCurrentUrl();
   auto* provider = WebAppProvider::Get(profile());
-  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  auto* app = provider->registrar().GetAppById(app_id);
 
   EXPECT_EQ(absl::nullopt, app->manifest_id());
 }
@@ -1565,7 +1564,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
 
   const AppId app_id = InstallPwaForCurrentUrl();
   auto* provider = WebAppProvider::Get(profile());
-  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  auto* app = provider->registrar().GetAppById(app_id);
 
   EXPECT_EQ(
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
@@ -1584,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
 
   const AppId app_id = InstallPwaForCurrentUrl();
   auto* provider = WebAppProvider::Get(profile());
-  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  auto* app = provider->registrar().GetAppById(app_id);
 
   EXPECT_EQ(web_app::GenerateAppId(app->manifest_id(), app->start_url()),
             app_id);

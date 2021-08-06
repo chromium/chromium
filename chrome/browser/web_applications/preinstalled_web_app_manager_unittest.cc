@@ -114,8 +114,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     auto* provider = WebAppProvider::Get(profile);
     DCHECK(provider);
     preinstalled_web_app_manager->SetSubsystems(
-        provider->registrar().AsWebAppRegistrar(),
-        &provider->externally_managed_app_manager());
+        &provider->registrar(), &provider->externally_managed_app_manager());
 
     std::vector<ExternalInstallOptions> result;
     base::RunLoop run_loop;

@@ -172,10 +172,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
-  EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
+  auto& web_app_registrar =
+      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -186,11 +185,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   InjectBookmarkAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
+  auto& web_app_registrar =
+      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
 
-  EXPECT_EQ(web_app_registrar->GetAppById(app_id), nullptr);
+  EXPECT_EQ(web_app_registrar.GetAppById(app_id), nullptr);
 }
 
 // Make sure bookmark app is not installed by BMO migration on
@@ -202,11 +200,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
+  auto& web_app_registrar =
+      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
 
-  EXPECT_FALSE(web_app_registrar->IsInstalled(app_id));
+  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
 
 // Web app install should not commit APPS sync entity.
@@ -237,11 +234,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
+  auto& web_app_registrar =
+      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
 
-  EXPECT_FALSE(web_app_registrar->IsInstalled(app_id));
+  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -254,11 +250,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
+  auto& web_app_registrar =
+      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
 
-  EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
+  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
   WebApplicationInfo info;
   std::string name = "Test name";
@@ -284,11 +279,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto* web_app_registrar = web_app::WebAppProvider::Get(GetProfile(0))
-                                ->registrar()
-                                .AsWebAppRegistrar();
+  auto& web_app_registrar =
+      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
 
-  EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
+  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
   WebApplicationInfo info;
   std::string name = "Test name";

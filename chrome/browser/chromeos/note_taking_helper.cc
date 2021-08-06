@@ -83,9 +83,9 @@ bool LooksLikeAndroidPackageName(const std::string& app_id) {
 
 // Returns a |WebApp| that matches |app_id| if one exists, otherwise nullptr.
 const web_app::WebApp* GetWebApp(const std::string& app_id, Profile* profile) {
-  web_app::WebAppRegistrar* web_app_registrar =
-      web_app::WebAppProvider::Get(profile)->registrar().AsWebAppRegistrar();
-  return web_app_registrar->GetAppById(app_id);
+  web_app::WebAppRegistrar& web_app_registrar =
+      web_app::WebAppProvider::Get(profile)->registrar();
+  return web_app_registrar.GetAppById(app_id);
 }
 
 // Creates a new Mojo IntentInfo struct for launching an Android note-taking app
@@ -571,10 +571,9 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
   }
 
   auto* web_app_provider = web_app::WebAppProvider::Get(profile);
-  web_app::WebAppRegistrar* web_app_registrar =
-      web_app_provider->registrar().AsWebAppRegistrar();
+  web_app::WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
   if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking)) {
-    for (const web_app::WebApp& web_app : web_app_registrar->GetApps()) {
+    for (const web_app::WebApp& web_app : web_app_registrar.GetApps()) {
       if (base::Contains(app_ids, web_app.app_id()))
         continue;
 

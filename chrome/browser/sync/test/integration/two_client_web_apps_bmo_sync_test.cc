@@ -160,10 +160,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
-    auto* web_app_registrar =
-        WebAppProvider::Get(profile)->registrar().AsWebAppRegistrar();
-    EXPECT_TRUE(web_app_registrar);
-    return *web_app_registrar;
+    return WebAppProvider::Get(profile)->registrar();
   }
 
   TestOsIntegrationManager& GetOsIntegrationManager(Profile* profile) {

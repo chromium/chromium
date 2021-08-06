@@ -56,7 +56,7 @@ base::Value BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
 
   std::vector<const web_app::WebApp*> web_apps;
   for (const web_app::WebApp& web_app :
-       provider.registrar().AsWebAppRegistrar()->GetAppsIncludingStubs()) {
+       provider.registrar().GetAppsIncludingStubs()) {
     web_apps.push_back(&web_app);
   }
   base::ranges::sort(web_apps, {}, &web_app::WebApp::name);

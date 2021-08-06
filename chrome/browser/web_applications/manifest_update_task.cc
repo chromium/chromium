@@ -95,7 +95,7 @@ IconDiff HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
 // considered safe and permitted to update their names.
 bool AllowUnpromptedNameUpdate(const AppId& app_id,
                                const WebAppRegistrar& registrar) {
-  const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app)
     return false;
   return CanWebAppUpdateIdentity(web_app);
@@ -106,7 +106,7 @@ bool AllowUnpromptedNameUpdate(const AppId& app_id,
 // flag needs to be on.
 bool AllowUnpromptedIconUpdate(const AppId& app_id,
                                const WebAppRegistrar& registrar) {
-  const WebApp* web_app = registrar.AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app)
     return false;
   return CanWebAppUpdateIdentity(web_app) ||
@@ -227,7 +227,7 @@ void ManifestUpdateTask::OnDidGetInstallableData(
 
 bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   DCHECK(web_application_info_.has_value());
-  const WebApp* app = registrar_.AsWebAppRegistrar()->GetAppById(app_id_);
+  const WebApp* app = registrar_.GetAppById(app_id_);
   DCHECK(app);
 
   // Allows updating start_url and manifest_id when kWebAppEnableManifestId is

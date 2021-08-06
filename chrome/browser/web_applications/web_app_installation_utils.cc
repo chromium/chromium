@@ -129,12 +129,10 @@ void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
                                InstallOsHooksOptions* options) {
 #if !defined(OS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
   DCHECK(app_registrar);
-  const WebAppRegistrar* web_app_registrar = app_registrar->AsWebAppRegistrar();
 
   // Disable OS integration if the app was installed by default only, and not
   // through any other means like an enterprise policy or store.
-  if (web_app_registrar &&
-      web_app_registrar->WasInstalledByDefaultOnly(app_id)) {
+  if (app_registrar->WasInstalledByDefaultOnly(app_id)) {
     options->add_to_desktop = false;
     options->add_to_quick_launch_bar = false;
     options->os_hooks[OsHookType::kShortcuts] = false;

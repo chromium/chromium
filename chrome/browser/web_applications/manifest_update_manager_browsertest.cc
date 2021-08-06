@@ -1492,8 +1492,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app->share_target().has_value());
   EXPECT_EQ(web_app->share_target()->method, apps::ShareTarget::Method::kGet);
 }
@@ -1526,8 +1525,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app->share_target().has_value());
   EXPECT_EQ(web_app->share_target()->method, apps::ShareTarget::Method::kPost);
 }
@@ -1570,8 +1568,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_FALSE(web_app->share_target().has_value());
 }
 
@@ -1623,8 +1620,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_FALSE(web_app->file_handlers().empty());
   const auto& file_handler = web_app->file_handlers()[0];
   EXPECT_EQ("plaintext", file_handler.action.query());
@@ -1662,8 +1658,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_FALSE(web_app->file_handlers().empty());
 }
 
@@ -1691,8 +1686,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate,
                    {".txt", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   const auto& old_file_handler = web_app->file_handlers()[0];
   EXPECT_EQ(1u, old_file_handler.accept.size());
   auto old_extensions = old_file_handler.accept[0].file_extensions;
@@ -1742,8 +1736,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   const auto& old_file_handler = web_app->file_handlers()[0];
   auto old_extensions = old_file_handler.accept[0].file_extensions;
   EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
@@ -1843,9 +1836,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate,
                    {".txt", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebAppRegistrar* registrar =
-      GetProvider().registrar().AsWebAppRegistrar();
-  const WebApp* web_app = registrar->GetAppById(app_id);
+  WebAppRegistrar& registrar = GetProvider().registrar();
+  const WebApp* web_app = registrar.GetAppById(app_id);
 
   EXPECT_FALSE(web_app->file_handler_permission_blocked());
   ASSERT_FALSE(web_app->file_handlers().empty());
@@ -1870,12 +1862,12 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   // App should be updated to permission blocked by
   // `WebAppInstallFinalizer::OnContentSettingChanged`.
-  EXPECT_TRUE(registrar->GetAppById(app_id)->file_handler_permission_blocked());
+  EXPECT_TRUE(registrar.GetAppById(app_id)->file_handler_permission_blocked());
   // Update manifest.
   OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   // Manifest update task should preserve the permission blocked state.
-  EXPECT_TRUE(registrar->GetAppById(app_id)->file_handler_permission_blocked());
+  EXPECT_TRUE(registrar.GetAppById(app_id)->file_handler_permission_blocked());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -1918,8 +1910,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app->file_handlers().empty());
 }
 
@@ -2761,8 +2752,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_FALSE(web_app->protocol_handlers().empty());
   const auto& protocol_handler = web_app->protocol_handlers()[0];
   EXPECT_EQ("mailto", protocol_handler.protocol);
@@ -2797,8 +2787,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_FALSE(web_app->protocol_handlers().empty());
 }
 
@@ -2823,8 +2812,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   OverrideManifest(kProtocolHandlerManifestTemplate,
                    {"mailto", "mailto", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_EQ(1u, web_app->protocol_handlers().size());
   const auto& old_protocol_handler = web_app->protocol_handlers()[0];
   EXPECT_EQ("mailto", old_protocol_handler.protocol);
@@ -2882,8 +2870,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app->protocol_handlers().empty());
 }
 
@@ -2920,8 +2907,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_TRUE(web_app->note_taking_new_note_url().is_empty());
 
   OverrideManifest(kNewNoteUrlManifestTemplate, {kInstallableIconList});
@@ -2950,8 +2936,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
 
   OverrideManifest(kNewNoteUrlManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_EQ(http_server_.GetURL("/new"),
             web_app->note_taking_new_note_url().spec());
 
@@ -2982,8 +2967,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
   OverrideManifest(kNewNoteUrlManifestTemplate,
                    {"old-relative-url", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   // URL parsed relative to manifest URL, which is in /banners/.
   EXPECT_EQ(http_server_.GetURL("/banners/old-relative-url"),
             web_app->note_taking_new_note_url().spec());
@@ -3025,8 +3009,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
 
   OverrideManifest(kNewNoteUrlManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
-  const WebApp* web_app =
-      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
   EXPECT_FALSE(web_app->note_taking_new_note_url().is_empty());
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
@@ -3110,12 +3093,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   AppId app_id = InstallWebApp();
 
   // manifest_id should default to start_url when it's not provided in manifest.
-  EXPECT_EQ(GetProvider()
-                .registrar()
-                .AsWebAppRegistrar()
-                ->GetAppById(app_id)
-                ->manifest_id()
-                .value(),
+  EXPECT_EQ(GetProvider().registrar().GetAppById(app_id)->manifest_id().value(),
             "start");
 
   constexpr char kManifestTemplate2[] = R"(
@@ -3162,21 +3140,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
     WebApp* app = update->UpdateApp(app_id);
     app->SetManifestId(absl::nullopt);
   }
-  EXPECT_FALSE(GetProvider()
-                   .registrar()
-                   .AsWebAppRegistrar()
-                   ->GetAppById(app_id)
-                   ->manifest_id()
-                   .has_value());
+  EXPECT_FALSE(
+      GetProvider().registrar().GetAppById(app_id)->manifest_id().has_value());
   // Reload page to trigger an manifest update that re-fetches the manifest with
   // id specified to be same as the default start_url.
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
-  EXPECT_TRUE(GetProvider()
-                  .registrar()
-                  .AsWebAppRegistrar()
-                  ->GetAppById(app_id)
-                  ->manifest_id()
-                  .has_value());
+  EXPECT_TRUE(
+      GetProvider().registrar().GetAppById(app_id)->manifest_id().has_value());
 }
 }  // namespace web_app

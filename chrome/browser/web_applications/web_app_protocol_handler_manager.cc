@@ -17,8 +17,7 @@ WebAppProtocolHandlerManager::~WebAppProtocolHandlerManager() = default;
 std::vector<apps::ProtocolHandlerInfo>
 WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
     const std::string& app_id) const {
-  const WebApp* web_app =
-      app_registrar_->AsWebAppRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = app_registrar_->GetAppById(app_id);
 
   if (!web_app)
     return {};

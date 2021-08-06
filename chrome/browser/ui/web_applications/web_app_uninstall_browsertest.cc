@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
       }));
 
   // Validate that uninstalling flag is set
-  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  auto* app = provider->registrar().GetAppById(app_id);
   EXPECT_TRUE(app);
   EXPECT_TRUE(app->is_uninstalling());
 

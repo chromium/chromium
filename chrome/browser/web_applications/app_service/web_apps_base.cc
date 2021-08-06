@@ -113,7 +113,7 @@ void WebAppsBase::Initialize(
 
 const WebAppRegistrar* WebAppsBase::GetRegistrar() const {
   DCHECK(provider_);
-  return provider_->registrar().AsWebAppRegistrar();
+  return &provider_->registrar();
 }
 
 void WebAppsBase::Connect(

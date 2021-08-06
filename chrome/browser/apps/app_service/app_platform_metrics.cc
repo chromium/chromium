@@ -143,12 +143,7 @@ apps::AppTypeName GetAppTypeNameForWebApp(
   auto* provider = web_app::WebAppProvider::Get(profile);
   DCHECK(provider);
 
-  const auto* registrar = provider->registrar().AsWebAppRegistrar();
-  if (!registrar) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  const auto* web_app = registrar->GetAppById(app_id);
+  const auto* web_app = provider->registrar().GetAppById(app_id);
   if (!web_app) {
     return apps::AppTypeName::kChromeBrowser;
   }
@@ -167,7 +162,7 @@ apps::AppTypeName GetAppTypeNameForWebApp(
   }
 
   if (web_app::ConvertDisplayModeToAppLaunchContainer(
-          registrar->GetAppEffectiveDisplayMode(app_id)) ==
+          provider->registrar().GetAppEffectiveDisplayMode(app_id)) ==
       apps::mojom::LaunchContainer::kLaunchContainerTab) {
     return apps::AppTypeName::kChromeBrowser;
   }

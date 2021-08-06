@@ -270,7 +270,7 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
 
 std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfo(
     const AppId& app_id) {
-  const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
+  const WebApp* app = registrar_->GetAppById(app_id);
   DCHECK(app);
   return BuildShortcutInfoForWebApp(app);
 }
@@ -278,7 +278,7 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfo(
 void WebAppShortcutManager::GetShortcutInfoForApp(
     const AppId& app_id,
     GetShortcutInfoCallback callback) {
-  const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
+  const WebApp* app = registrar_->GetAppById(app_id);
 
   // app could be nullptr if registry profile is being deleted.
   if (!app) {
@@ -316,7 +316,7 @@ void WebAppShortcutManager::OnIconsRead(
     GetShortcutInfoCallback callback,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
   // |icon_bitmaps| can be empty here if no icon found.
-  const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
+  const WebApp* app = registrar_->GetAppById(app_id);
   if (!app) {
     std::move(callback).Run(nullptr);
     return;
@@ -371,12 +371,6 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
   }
 
   return shortcut_info;
-}
-
-WebAppRegistrar& WebAppShortcutManager::GetWebAppRegistrar() {
-  WebAppRegistrar* web_app_registrar = registrar_->AsWebAppRegistrar();
-  DCHECK(web_app_registrar);
-  return *web_app_registrar;
 }
 
 }  // namespace web_app

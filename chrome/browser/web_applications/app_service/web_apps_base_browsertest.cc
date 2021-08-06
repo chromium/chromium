@@ -122,10 +122,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
 
   // Install file handling web app.
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  const WebAppRegistrar* registrar = WebAppProvider::Get(browser()->profile())
-                                         ->registrar()
-                                         .AsWebAppRegistrar();
-  const WebApp* web_app = registrar->GetAppById(app_id);
+  const WebAppRegistrar& registrar =
+      WebAppProvider::Get(browser()->profile())->registrar();
+  const WebApp* web_app = registrar.GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
   // Check the publisher_id is the app's start url.

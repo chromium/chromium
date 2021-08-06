@@ -247,10 +247,8 @@ class PreinstalledAppsMigrationBrowserTest
   bool CanWebAppAlwaysUpdateIdentity() {
     const web_app::AppId app_id =
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
-    const web_app::WebApp* web_app = web_app::WebAppProvider::Get(profile())
-                                         ->registrar()
-                                         .AsWebAppRegistrar()
-                                         ->GetAppById(app_id);
+    const web_app::WebApp* web_app =
+        web_app::WebAppProvider::Get(profile())->registrar().GetAppById(app_id);
     return CanWebAppUpdateIdentity(web_app);
   }
 

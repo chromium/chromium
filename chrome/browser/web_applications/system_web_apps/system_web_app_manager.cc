@@ -349,13 +349,7 @@ absl::optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
 
 absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     AppId app_id) const {
-  WebAppRegistrar* web_registrar = registrar_->AsWebAppRegistrar();
-
-  if (!web_registrar) {
-    return absl::nullopt;
-  }
-
-  const WebApp* web_app = web_registrar->GetAppById(app_id);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
   if (!web_app || !web_app->client_data().system_web_app_data.has_value()) {
     return absl::nullopt;
   }

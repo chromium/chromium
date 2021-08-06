@@ -306,14 +306,14 @@ void WebAppIntegrationBrowserTestBase::InstallPolicyAppInternal(
     base::Value default_launch_container,
     const bool create_shortcut) {
   GURL url = GetInstallableAppURL(action_mode);
-  auto* web_app_registrar =
-      WebAppProvider::Get(profile())->registrar().AsWebAppRegistrar();
+  WebAppRegistrar& web_app_registrar =
+      WebAppProvider::Get(profile())->registrar();
   base::RunLoop run_loop;
   WebAppInstallObserver observer(profile());
   observer.SetWebAppInstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
-        bool is_installed = web_app_registrar->IsInstalled(app_id);
-        GURL installed_url = web_app_registrar->GetAppStartUrl(app_id);
+        bool is_installed = web_app_registrar.IsInstalled(app_id);
+        GURL installed_url = web_app_registrar.GetAppStartUrl(app_id);
         if (is_installed && installed_url.is_valid() &&
             installed_url.spec() == url.spec()) {
           active_app_id_ = app_id;
@@ -465,9 +465,7 @@ void WebAppIntegrationBrowserTestBase::LaunchInternal(
 }
 
 void WebAppIntegrationBrowserTestBase::ListAppsInternal() {
-  auto* web_app_registrar =
-      WebAppProvider::Get(profile())->registrar().AsWebAppRegistrar();
-  app_ids_ = web_app_registrar->GetAppIds();
+  app_ids_ = WebAppProvider::Get(profile())->registrar().GetAppIds();
 }
 
 void WebAppIntegrationBrowserTestBase::NavigateTabbedBrowserToSite(
@@ -839,17 +837,16 @@ StateSnapshot WebAppIntegrationBrowserTestBase::ConstructStateSnapshot() {
                                 install_icon_visible, launch_icon_visible));
     }
 
-    auto* registrar =
-        GetProviderForProfile(profile)->registrar().AsWebAppRegistrar();
-    auto app_ids = registrar->GetAppIds();
+    WebAppRegistrar& registrar = GetProviderForProfile(profile)->registrar();
+    auto app_ids = registrar.GetAppIds();
     base::flat_map<AppId, AppState> app_state;
     for (const auto& app_id : app_ids) {
       app_state.emplace(app_id,
-                        AppState(app_id, registrar->GetAppShortName(app_id),
-                                 registrar->GetAppScope(app_id),
-                                 registrar->GetAppEffectiveDisplayMode(app_id),
-                                 registrar->GetAppUserDisplayMode(app_id),
-                                 registrar->IsLocallyInstalled(app_id)));
+                        AppState(app_id, registrar.GetAppShortName(app_id),
+                                 registrar.GetAppScope(app_id),
+                                 registrar.GetAppEffectiveDisplayMode(app_id),
+                                 registrar.GetAppUserDisplayMode(app_id),
+                                 registrar.IsLocallyInstalled(app_id)));
     }
     profile_state_map.emplace(
         profile, ProfileState(std::move(browser_state), std::move(app_state)));

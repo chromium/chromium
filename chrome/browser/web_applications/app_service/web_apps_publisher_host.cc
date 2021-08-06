@@ -40,11 +40,6 @@ WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
 WebAppsPublisherHost::~WebAppsPublisherHost() = default;
 
 void WebAppsPublisherHost::Init() {
-  // Allow for web app migration tests.
-  if (!provider_->registrar().AsWebAppRegistrar()) {
-    return;
-  }
-
   if (!remote_publisher_) {
     auto* service = chromeos::LacrosService::Get();
     if (!service) {
@@ -73,7 +68,7 @@ void WebAppsPublisherHost::Shutdown() {
 }
 
 WebAppRegistrar& WebAppsPublisherHost::registrar() const {
-  return *provider_->registrar().AsWebAppRegistrar();
+  return provider_->registrar();
 }
 
 void WebAppsPublisherHost::SetPublisherForTesting(

@@ -506,11 +506,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
-  EXPECT_EQ(registrar()
-                .AsWebAppRegistrar()
-                ->GetAppById(app_id)
-                ->file_handlers()
-                .size(),
+  EXPECT_EQ(registrar().GetAppById(app_id)->file_handlers().size(),
             kNumHandlers);
 
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
@@ -1084,10 +1080,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
                        PRE_PolicySettingsBlockedUrl) {
   InstallFileHandlingPWA();
   EXPECT_EQ(registrar().GetAppIds().size(), 1u);
-  EXPECT_FALSE(registrar()
-                   .AsWebAppRegistrar()
-                   ->GetAppById(app_id())
-                   ->file_handler_permission_blocked());
+  EXPECT_FALSE(
+      registrar().GetAppById(app_id())->file_handler_permission_blocked());
 }
 
 // Test that the app's `file_handler_permission_blocked` state should be updated
@@ -1100,10 +1094,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
 
   std::vector<AppId> app_ids = registrar().GetAppIds();
   EXPECT_EQ(app_ids.size(), 1u);
-  EXPECT_TRUE(registrar()
-                  .AsWebAppRegistrar()
-                  ->GetAppById(app_ids[0])
-                  ->file_handler_permission_blocked());
+  EXPECT_TRUE(
+      registrar().GetAppById(app_ids[0])->file_handler_permission_blocked());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,

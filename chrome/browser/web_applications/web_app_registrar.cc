@@ -637,14 +637,6 @@ bool WebAppRegistrar::GetWindowControlsOverlayEnabled(
   return web_app ? web_app->window_controls_overlay_enabled() : false;
 }
 
-WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() {
-  return this;
-}
-
-const WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() const {
-  return this;
-}
-
 void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
     Profile* profile_to_be_deleted) {
   if (profile() != profile_to_be_deleted)

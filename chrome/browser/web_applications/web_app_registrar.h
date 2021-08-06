@@ -167,10 +167,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   std::vector<AppId> GetAppIds() const;
 
-  // TODO: Remove AsWebAppRegistrar.
-  WebAppRegistrar* AsWebAppRegistrar();
-  const WebAppRegistrar* AsWebAppRegistrar() const;
-
   void SetSubsystems(OsIntegrationManager* os_integration_manager);
 
   // Returns the "scope" field from the app manifest, or infers a scope from the

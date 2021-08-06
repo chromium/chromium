@@ -709,7 +709,7 @@ content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
 }
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
-  return *provider_->registrar().AsWebAppRegistrar();
+  return provider_->registrar();
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
@@ -955,8 +955,7 @@ void WebAppPublisherHelper::OnContentSettingChanged(
 
 void WebAppPublisherHelper::Init(bool observe_media_requests) {
   // Allow for web app migration tests.
-  if (!AreWebAppsEnabled(profile_) ||
-      !provider_->registrar().AsWebAppRegistrar()) {
+  if (!AreWebAppsEnabled(profile_)) {
     return;
   }
 

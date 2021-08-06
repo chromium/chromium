@@ -455,9 +455,7 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
     OsHooksResults os_hooks_info) {
-  WebAppRegistrar* web_app_registrar = registrar().AsWebAppRegistrar();
-  DCHECK(web_app_registrar);
-  const WebApp* web_app = web_app_registrar->GetAppById(app_id);
+  const WebApp* web_app = registrar().GetAppById(app_id);
   DCHECK(web_app);
   RemoveAppIsolationState(profile_->GetPrefs(),
                           url::Origin::Create(web_app->scope()));
@@ -581,9 +579,7 @@ bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
 #else
   // If the app being updated was installed by default and not also manually
   // installed by the user or an enterprise policy, disable os integration.
-  WebAppRegistrar* web_app_registrar = registrar().AsWebAppRegistrar();
-  DCHECK(web_app_registrar);
-  return !web_app_registrar->WasInstalledByDefaultOnly(app_id);
+  return !registrar().WasInstalledByDefaultOnly(app_id);
 #endif  // defined(OS_CHROMEOS)
 }
 
@@ -610,9 +606,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
 }
 
 WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {
-  WebAppRegistrar* web_app_registrar = registrar().AsWebAppRegistrar();
-  DCHECK(web_app_registrar);
-  return *web_app_registrar;
+  return registrar();
 }
 
 }  // namespace web_app

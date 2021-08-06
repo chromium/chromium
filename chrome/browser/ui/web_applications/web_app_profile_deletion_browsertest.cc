@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
       base::BindLambdaForTesting([&](const AppId& app_to_be_uninstalled) {
         EXPECT_EQ(app_to_be_uninstalled, app_id);
         EXPECT_TRUE(registrar().IsInstalled(app_id));
-        EXPECT_TRUE(registrar().AsWebAppRegistrar()->GetAppById(app_id));
+        EXPECT_TRUE(registrar().GetAppById(app_id));
 
         run_loop.Quit();
       }));
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
   run_loop.Run();
 
   EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_FALSE(registrar().AsWebAppRegistrar()->GetAppById(app_id));
+  EXPECT_FALSE(registrar().GetAppById(app_id));
 }
 
 }  // namespace web_app

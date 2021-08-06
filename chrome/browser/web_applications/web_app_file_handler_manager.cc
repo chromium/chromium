@@ -19,10 +19,7 @@ WebAppFileHandlerManager::~WebAppFileHandlerManager() = default;
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
     const AppId& app_id) {
-  WebAppRegistrar* web_app_registrar = registrar()->AsWebAppRegistrar();
-  DCHECK(web_app_registrar);
-
-  const WebApp* web_app = web_app_registrar->GetAppById(app_id);
+  const WebApp* web_app = registrar()->GetAppById(app_id);
   return web_app ? &web_app->file_handlers() : nullptr;
 }
 

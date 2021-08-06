@@ -23,7 +23,6 @@ class FileHandlerManager;
 class ProtocolHandlerManager;
 class WebApp;
 class WebAppIconManager;
-class WebAppRegistrar;
 struct ShortcutInfo;
 
 using ShortcutLocationCallback =
@@ -144,8 +143,6 @@ class WebAppShortcutManager {
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   std::unique_ptr<ShortcutInfo> BuildShortcutInfoForWebApp(const WebApp* app);
-
-  WebAppRegistrar& GetWebAppRegistrar();
 
   bool suppress_shortcuts_for_testing_ = false;
 
