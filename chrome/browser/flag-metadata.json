@@ -4116,7 +4116,7 @@
   {
     "name": "omnibox-adaptive-suggestions-count",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "omnibox-assistant-voice-search",
@@ -4146,7 +4146,7 @@
   {
     "name": "omnibox-compact-suggestions",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 97
   },
   {
     "name": "omnibox-default-typed-navigations-to-https",
@@ -4196,7 +4196,7 @@
   {
     "name": "omnibox-local-history-zero-suggest",
     "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 92
+    "expiry_milestone": 97
   },
   {
     "name": "omnibox-local-zero-suggest-frecency-ranking",
@@ -4216,7 +4216,7 @@
   {
     "name": "omnibox-most-visited-tiles",
     "owners": [ "fgorski", "ender", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 92
+    "expiry_milestone": 97
   },
   {
       "name": "omnibox-new-textfield-implementation",
@@ -4235,8 +4235,8 @@
   },
   {
     "name": "omnibox-on-focus-suggestions",
-    "owners": [ "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 90
+    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "omnibox-on-focus-suggestions-contextual-web",
@@ -4336,7 +4336,7 @@
   {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
     "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 97
   },
   {
     "name": "omnibox-ui-hide-steady-state-url-path-query-and-ref-on-interaction",
