@@ -4328,26 +4328,6 @@ const char kCrostiniResetLxdDbName[] = "Crostini Reset LXD DB on launch";
 const char kCrostiniResetLxdDbDescription[] =
     "Recreates the LXD database every time we launch it";
 
-const char kCryptAuthV2DeviceActivityStatusName[] =
-    "CryptAuth Device Activity Status";
-const char kCryptAuthV2DeviceActivityStatusDescription[] =
-    "Use the CryptAuth GetDevicesActivityStatus API to sort devices.";
-
-const char kCryptAuthV2DeviceActivityStatusUseConnectivityName[] =
-    "CryptAuth Device Activity Status: Use connectivity status";
-const char kCryptAuthV2DeviceActivityStatusUseConnectivityDescription[] =
-    "Utilize the connectivity status from the CryptAuth "
-    "GetDevicesActivityStatus API to sort devices.";
-
-const char kCryptAuthV2DeviceSyncName[] = "CryptAuth v2 DeviceSync";
-const char kCryptAuthV2DeviceSyncDescription[] =
-    "Use the CryptAuth v2 DeviceSync protocol. Note: v1 DeviceSync will "
-    "continue to run until the deprecation flag is flipped.";
-
-const char kCryptAuthV2EnrollmentName[] = "CryptAuth v2 Enrollment";
-const char kCryptAuthV2EnrollmentDescription[] =
-    "Use the CryptAuth v2 Enrollment protocol.";
-
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =
@@ -4363,12 +4343,6 @@ const char kDisableCancelAllTouchesName[] = "Disable CancelAllTouches()";
 const char kDisableCancelAllTouchesDescription[] =
     "If enabled, a canceled touch will not force all other touches to be "
     "canceled.";
-
-const char kDisableCryptAuthV1DeviceSyncName[] =
-    "Disable CryptAuth v1 DeviceSync";
-const char kDisableCryptAuthV1DeviceSyncDescription[] =
-    "Disable the CryptAuth v1 DeviceSync protocol. The v2 DeviceSync flag "
-    "should be enabled before this flag is flipped.";
 
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";

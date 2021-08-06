@@ -867,26 +867,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "cryptauth-v2-device-activity-status",
-    "owners": [ "khorimoto", "nohle", "themaxli" ],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "cryptauth-v2-device-activity-status-use-connectivity",
-    "owners": [ "khorimoto", "nohle", "themaxli" ],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "cryptauth-v2-devicesync",
-    "owners": [ "khorimoto", "nohle" ],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "cryptauth-v2-enrollment",
-    "owners": [ "khorimoto", "nohle" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "cups-ipp-printing-backend",
     "owners": [ "dhoss", "//printing/OWNERS" ],
     "expiry_milestone": 94
@@ -1084,11 +1064,6 @@
     // This flag is use to disable CancelAllTouches() function, which enable the
     // testing for implementation of canceling single touches.
     "expiry_milestone": 86
-  },
-  {
-    "name": "disable-cryptauth-v1-devicesync",
-    "owners": [ "khorimoto", "nohle" ],
-    "expiry_milestone": 93
   },
   {
     "name": "disable-explicit-dma-fences",
