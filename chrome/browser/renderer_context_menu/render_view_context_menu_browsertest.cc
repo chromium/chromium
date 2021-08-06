@@ -1581,8 +1581,15 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   ASSERT_TRUE(response_received);
 }
 
+// Flaky on Linux. http://crbug.com/1234671
+#if defined(OS_LINUX)
+#define MAYBE_LensImageSearchWithValidImage \
+  DISABLED_LensImageSearchWithValidImage
+#else
+#define MAYBE_LensImageSearchWithValidImage LensImageSearchWithValidImage
+#endif
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
-                       LensImageSearchWithValidImage) {
+                       MAYBE_LensImageSearchWithValidImage) {
   static const char kValidImage[] = "/image_search/valid.png";
   SetupAndLoadImagePage(kValidImage);
 
