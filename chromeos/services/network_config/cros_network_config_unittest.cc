@@ -4,7 +4,6 @@
 
 #include "chromeos/services/network_config/cros_network_config.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -13,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -112,8 +110,6 @@ void CompareTrafficCounters(
 class CrosNetworkConfigTest : public testing::Test {
  public:
   CrosNetworkConfigTest() {
-    feature_list.InitAndEnableFeature(
-        ash::features::kUpdatedCellularActivationUi);
     LoginState::Initialize();
     SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
@@ -652,7 +648,6 @@ class CrosNetworkConfigTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;
@@ -890,24 +885,6 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
   // The network's name should be the profile name (from Hermes), not the name
   // from Shill.
   EXPECT_EQ(kTestProfileName, network->name);
-}
-
-TEST_F(CrosNetworkConfigTest, SimAbsentMeansCellularIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      ash::features::kUpdatedCellularActivationUi);
-
-  mojom::DeviceStatePropertiesPtr cellular =
-      GetDeviceStateFromList(mojom::NetworkType::kCellular);
-  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
-
-  helper()->device_test()->SetDeviceProperty(
-      kCellularDevicePath, shill::kSIMPresentProperty, base::Value(false),
-      /*notify_changed=*/true);
-  base::RunLoop().RunUntilIdle();
-
-  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
-  EXPECT_EQ(mojom::DeviceStateType::kDisabled, cellular->device_state);
 }
 
 TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
