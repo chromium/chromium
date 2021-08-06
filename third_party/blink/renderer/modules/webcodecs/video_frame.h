@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
@@ -41,6 +40,7 @@ class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
+class V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -66,16 +66,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             const V8CanvasImageSource* source,
                             const VideoFrameInit* init,
                             ExceptionState& exception_state);
-  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer Create() below when
-  // [AllowShared] BufferSource is supported.
-  static VideoFrame* Create(ScriptState*,
-                            const MaybeShared<DOMArrayBufferView>&,
-                            const VideoFrameBufferInit*,
-                            ExceptionState&);
-  static VideoFrame* Create(ScriptState*,
-                            DOMArrayBufferBase*,
-                            const VideoFrameBufferInit*,
-                            ExceptionState&);
+  static VideoFrame* Create(
+      ScriptState*,
+      const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared*,
+      const VideoFrameBufferInit*,
+      ExceptionState&);
 
   absl::optional<V8VideoPixelFormat> format() const;
 
@@ -95,16 +90,12 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer copyTo() below when
-  // [AllowShared] BufferSource is supported.
-  ScriptPromise copyTo(ScriptState* script_state,
-                       const MaybeShared<DOMArrayBufferView>& destination,
-                       VideoFrameCopyToOptions* options,
-                       ExceptionState& exception_state);
-  ScriptPromise copyTo(ScriptState* script_state,
-                       DOMArrayBufferBase* destination,
-                       VideoFrameCopyToOptions* options,
-                       ExceptionState& exception_state);
+  ScriptPromise copyTo(
+      ScriptState* script_state,
+      const V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared*
+          destination,
+      VideoFrameCopyToOptions* options,
+      ExceptionState& exception_state);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.
@@ -142,12 +133,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                   absl::optional<IntRect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
-
-  ScriptPromise CopyToImpl(ScriptState* script_state,
-                           unsigned char* destination,
-                           size_t dest_byte_length,
-                           VideoFrameCopyToOptions* options,
-                           ExceptionState& exception_state);
 
   // Underlying frame
   scoped_refptr<VideoFrameHandle> handle_;

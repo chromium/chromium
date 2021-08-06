@@ -1,14 +1,13 @@
 // META: global=window,dedicatedworker
 // META: script=/webcodecs/videoFrame-utils.js
 
-// TODO(crbug.com/1231806): Enable this test once direct SAB usage is supported.
-// promise_test(async t => {
-//   // *.headers file should ensure we sesrve COOP and COEP headers.
-//   assert_true(self.crossOriginIsolated,
-//     "Cross origin isolation is required to construct SharedArrayBuffer");
-//   const destination = new SharedArrayBuffer(I420_DATA.length);
-//   await testI420_4x2_copyTo(destination);
-// }, 'Test copying I420 frame to SharedArrayBuffer.');
+promise_test(async t => {
+  // *.headers file should ensure we sesrve COOP and COEP headers.
+  assert_true(self.crossOriginIsolated,
+    "Cross origin isolation is required to construct SharedArrayBuffer");
+  const destination = new SharedArrayBuffer(I420_DATA.length);
+  await testI420_4x2_copyTo(destination);
+}, 'Test copying I420 frame to SharedArrayBuffer.');
 
 promise_test(async t => {
   // *.headers file should ensure we sesrve COOP and COEP headers.
