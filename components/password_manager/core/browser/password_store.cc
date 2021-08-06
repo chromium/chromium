@@ -56,14 +56,6 @@ bool FormSupportsPSL(const PasswordFormDigest& digest) {
          !GetRegistryControlledDomain(GURL(digest.signon_realm)).empty();
 }
 
-std::vector<PasswordFormDigest> ConvertToForms(
-    const std::vector<std::string>& realms) {
-  std::vector<PasswordFormDigest> forms;
-  for (const auto& realm : realms)
-    forms.emplace_back(PasswordForm::Scheme::kHtml, realm, GURL(realm));
-  return forms;
-}
-
 // Helper function which invokes |notifying_callback| and |completion_callback|
 // when changes are received.
 void InvokeCallbackOnChanges(
@@ -257,15 +249,15 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
                                     consumer);
 
   scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler =
-      new GetLoginsWithAffiliationsRequestHandler(consumer->GetWeakPtr(), this);
+      new GetLoginsWithAffiliationsRequestHandler(form, consumer->GetWeakPtr(),
+                                                  this);
 
   if (affiliated_match_helper_) {
     // The backend *is* the password_store and can therefore be passed with
     // base::Unretained.
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
-        form,
-        base::BindOnce(ConvertToForms)
-            .Then(base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
+        form, request_handler->AffiliationsClosure().Then(
+                  base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
                                  base::Unretained(backend_),
                                  request_handler->AffiliatedLoginsClosure(),
                                  /*include_psl=*/false)));

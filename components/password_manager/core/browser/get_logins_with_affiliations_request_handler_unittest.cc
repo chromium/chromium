@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 
 #include "base/callback.h"
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -18,12 +19,27 @@ namespace password_manager {
 
 namespace {
 
+using ::testing::ElementsAre;
+
+constexpr const char kTestWebURL1[] = "https://one.example.com/path";
+constexpr const char kAffiliatedWebURL1[] = "https://noneexample.com/path";
+constexpr const char kAffiliatedRealm1[] = "https://noneexample.com/";
+
+PasswordFormDigest CreateHTMLFormDigest(base::StringPiece url_string) {
+  return PasswordFormDigest{PasswordForm::Scheme::kHtml,
+                            GURL(url_string).GetOrigin().spec(),
+                            GURL(url_string)};
+}
+
 // Creates a form.
-PasswordForm CreateForm(base::StringPiece16 username,
+PasswordForm CreateForm(base::StringPiece url_string,
+                        base::StringPiece16 username,
                         base::StringPiece16 password) {
   PasswordForm form;
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
+  form.url = GURL(url_string);
+  form.signon_realm = form.url.GetOrigin().spec();
   return form;
 }
 
@@ -66,7 +82,8 @@ class GetLoginsWithAffiliationsRequestHandlerTest : public testing::Test {
   MockPasswordStoreInterface* store() { return store_.get(); }
   scoped_refptr<GetLoginsWithAffiliationsRequestHandler> MakeRequestHandler() {
     return base::MakeRefCounted<GetLoginsWithAffiliationsRequestHandler>(
-        consumer_->GetWeakPtr(), store_.get());
+        CreateHTMLFormDigest(kTestWebURL1), consumer_->GetWeakPtr(),
+        store_.get());
   }
 
   void TearDown() override { store()->ShutdownOnUIThread(); }
@@ -79,17 +96,21 @@ class GetLoginsWithAffiliationsRequestHandlerTest : public testing::Test {
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, LoginsReceivedFirst) {
   std::vector<PasswordForm> forms = {
-      CreateForm(u"username1", u"password"),
-      CreateForm(u"username2", u"password"),
+      CreateForm(kTestWebURL1, u"username1", u"password"),
+      CreateForm(kTestWebURL1, u"username2", u"password"),
   };
-  PasswordForm affiliated_form = CreateForm(u"username3", u"password");
-
-  std::vector<PasswordForm> expected_forms = forms;
-  expected_forms.push_back(affiliated_form);
-  expected_forms.back().is_affiliation_based_match = true;
 
   auto handler = MakeRequestHandler();
   handler->LoginsForFormClosure().Run(MakeCopy(forms));
+
+  EXPECT_THAT(handler->AffiliationsClosure().Run({kAffiliatedRealm1}),
+              ElementsAre(CreateHTMLFormDigest(kAffiliatedRealm1)));
+
+  PasswordForm affiliated_form =
+      CreateForm(kAffiliatedWebURL1, u"username3", u"password");
+  std::vector<PasswordForm> expected_forms = forms;
+  expected_forms.push_back(affiliated_form);
+  expected_forms.back().is_affiliation_based_match = true;
 
   EXPECT_CALL(*consumer(),
               OnGetPasswordStoreResultsConstRef(
@@ -101,17 +122,20 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, LoginsReceivedFirst) {
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
        AffiliatedLoginsReceivedFirst) {
   std::vector<PasswordForm> forms = {
-      CreateForm(u"username1", u"password"),
-      CreateForm(u"username2", u"password"),
+      CreateForm(kTestWebURL1, u"username1", u"password"),
+      CreateForm(kTestWebURL1, u"username2", u"password"),
   };
-  PasswordForm affiliated_form = CreateForm(u"username3", u"password");
+
+  auto handler = MakeRequestHandler();
+  EXPECT_THAT(handler->AffiliationsClosure().Run({kAffiliatedRealm1}),
+              ElementsAre(CreateHTMLFormDigest(kAffiliatedRealm1)));
+  PasswordForm affiliated_form =
+      CreateForm(kAffiliatedWebURL1, u"username3", u"password");
+  handler->AffiliatedLoginsClosure().Run(MakeCopy({affiliated_form}));
+
   std::vector<PasswordForm> expected_forms = forms;
   expected_forms.push_back(affiliated_form);
   expected_forms.back().is_affiliation_based_match = true;
-
-  auto handler = MakeRequestHandler();
-  handler->AffiliatedLoginsClosure().Run(MakeCopy({affiliated_form}));
-
   EXPECT_CALL(*consumer(),
               OnGetPasswordStoreResultsConstRef(
                   testing::UnorderedElementsAreArray(expected_forms)));
@@ -122,14 +146,16 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ConsumerNotNotified) {
   auto handler = MakeRequestHandler();
   std::vector<PasswordForm> forms = {
-      CreateForm(u"username1", u"password"),
-      CreateForm(u"username2", u"password"),
+      CreateForm(kTestWebURL1, u"username1", u"password"),
+      CreateForm(kTestWebURL1, u"username2", u"password"),
   };
-  PasswordForm affiliated_form = CreateForm(u"username3", u"password");
+  PasswordForm affiliated_form =
+      CreateForm(kAffiliatedWebURL1, u"username3", u"password");
 
   consumer()->CancelAllRequests();
   EXPECT_CALL(*consumer(), OnGetPasswordStoreResultsConstRef).Times(0);
 
+  handler->AffiliationsClosure().Run({kAffiliatedRealm1});
   handler->AffiliatedLoginsClosure().Run(MakeCopy({affiliated_form}));
   handler->LoginsForFormClosure().Run(MakeCopy(forms));
 }
@@ -138,18 +164,22 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ConsumerNotNotified) {
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, LivesLongerThanScope) {
   base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
       forms_callback;
+  base::OnceCallback<std::vector<PasswordFormDigest>(
+      const std::vector<std::string>&)>
+      affiliations_callback;
   base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
       affiliated_callback;
 
   {
     auto handler = MakeRequestHandler();
     forms_callback = handler->LoginsForFormClosure();
+    affiliations_callback = handler->AffiliationsClosure();
     affiliated_callback = handler->LoginsForFormClosure();
   };
 
   std::vector<PasswordForm> forms = {
-      CreateForm(u"username1", u"password"),
-      CreateForm(u"username2", u"password"),
+      CreateForm(kTestWebURL1, u"username1", u"password"),
+      CreateForm(kTestWebURL1, u"username2", u"password"),
   };
 
   std::move(forms_callback).Run(MakeCopy(forms));
@@ -157,6 +187,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, LivesLongerThanScope) {
   EXPECT_CALL(*consumer(), OnGetPasswordStoreResultsConstRef(
                                testing::UnorderedElementsAreArray(forms)));
 
+  std::move(affiliations_callback).Run({});
   std::move(affiliated_callback).Run({});
 }
 

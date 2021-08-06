@@ -43,10 +43,12 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
       const std::vector<AffiliationAndBrandingInformation>& results_to_inject);
 
  private:
-  MOCK_METHOD1(OnGetAffiliatedAndroidRealmsCalled,
-               std::vector<std::string>(const PasswordFormDigest&));
-  MOCK_METHOD0(OnInjectAffiliationAndBrandingInformationCalled,
-               std::vector<AffiliationAndBrandingInformation>());
+  MOCK_METHOD(std::vector<std::string>,
+              OnGetAffiliatedAndroidRealmsCalled,
+              (const PasswordFormDigest&));
+  MOCK_METHOD(std::vector<AffiliationAndBrandingInformation>,
+              OnInjectAffiliationAndBrandingInformationCalled,
+              ());
 
   void GetAffiliatedAndroidAndWebRealms(
       const PasswordFormDigest& observed_form,

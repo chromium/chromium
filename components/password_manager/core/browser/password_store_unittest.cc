@@ -59,6 +59,10 @@ namespace password_manager {
 
 namespace {
 
+constexpr const char kTestAffiliatedRealm[] = "https://one.example/";
+constexpr const char kTestAffiliatedURL[] = "https://one.example/path";
+constexpr const char kTestAffiliatedPSLWebRealm[] = "https://two.example/";
+constexpr const char kTestAffiliatedPSLWebURL[] = "https://two.example/path";
 constexpr const char kTestWebRealm1[] = "https://one.example.com/";
 constexpr const char kTestWebOrigin1[] = "https://one.example.com/origin";
 constexpr const char kTestWebRealm2[] = "https://two.example.com/";
@@ -721,8 +725,8 @@ TEST_F(PasswordStoreTest, GetLoginsPSLDisabled) {
 }
 
 // When no Android applications are actually affiliated with the realm of the
-// observed form, GetLoginsWithAffiliations() should still return the exact and
-// PSL matching results, but not any stored Android credentials.
+// observed form, GetLogins() should still return the exact and PSL matching
+// results, but not any stored Android credentials.
 TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
   /* clang-format off */
   static const PasswordFormData kTestCredentials[] = {
@@ -787,9 +791,9 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
 
 // There are 3 Android applications affiliated with the realm of the observed
 // form, with the PasswordStore having credentials for two of these (even two
-// credentials for one). GetLoginsWithAffiliations() should return the exact,
-// and PSL matching credentials, and the credentials for these two Android
-// applications, but not for the unaffiliated Android application.
+// credentials for one). GetLogins() should return the exact, and PSL matching
+// credentials, and the credentials for these two Android applications, but not
+// for the unaffiliated Android application.
 TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
   static constexpr const struct {
     PasswordFormData form_data;
@@ -901,6 +905,93 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
+
+// The 'bool' param corresponds to 'use_federated_login' in the test.
+class PasswordStoreFederationTest : public PasswordStoreTest,
+                                    public testing::WithParamInterface<bool> {};
+
+// Retrieve matching passwords for affiliated, affiliated/PSL-matched,
+// PSL-matched, exact matched credentials and make sure the properties are set
+// correctly.
+TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
+  static const PasswordFormData kTestCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
+       u"", u"", u"username_1", u"12345"},
+
+      // Credential that is a PSL, non affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+       kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_2", u"asdf"},
+
+      // Credential that is a PSL and affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", u"",
+       u"", u"", u"username_3", u"password"},
+
+      // Credential that is an affiliated match of the observed form.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedRealm, kTestAffiliatedURL,
+       "", u"", u"", u"", u"username_4", u"password1"},
+
+      // Credential that is a PSL match of an affiliated form. It should be
+      // filtered out.
+      {PasswordForm::Scheme::kHtml, kTestAffiliatedPSLWebRealm,
+       kTestAffiliatedPSLWebURL, "", u"", u"", u"", u"username_5",
+       u"password3"},
+
+      // Credential for unrelated origin.
+      {PasswordForm::Scheme::kUsernameOnly, kTestUnrelatedWebRealm2,
+       kTestUnrelatedWebOrigin2, "", u"", u"", u"", u"username_6",
+       u"password2"}};
+
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(nullptr);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const PasswordFormData& i : kTestCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(i, GetParam()));
+    store->AddLogin(*all_credentials.back());
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[0]));
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[1]));
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[2]));
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[3]));
+
+  expected_results[1]->is_public_suffix_match = true;
+  expected_results[2]->is_public_suffix_match = true;
+  expected_results[2]->is_affiliation_based_match = true;
+  expected_results[3]->is_affiliation_based_match = true;
+
+  // In the production 'kTestWebRealm1' won't be in the list but the code should
+  // protect against it.
+  std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2,
+                                                kTestAffiliatedRealm};
+
+  auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
+  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(observed_form,
+                                                      affiliated_realms);
+  store->SetAffiliatedMatchHelper(std::move(mock_helper));
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsConstRef(
+                  UnorderedPasswordFormElementsAre(&expected_results)));
+
+  store->GetLogins(observed_form, &mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
+INSTANTIATE_TEST_SUITE_P(Federation,
+                         PasswordStoreFederationTest,
+                         testing::Bool());
 
 TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
   scoped_refptr<PasswordStore> store;
