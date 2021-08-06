@@ -11052,7 +11052,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageInfoBubble">
-  <owner>chlily@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
   <summary>
     Recorded when an action on the Page Info Bubble (aka Origin Info Bubble or
     WebsiteSettings Bubble) is taken. May be recorded multiple times for a
