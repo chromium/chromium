@@ -54,13 +54,13 @@ luci.bucket(
                 "service-account-chromeperf",
                 "service-account-cq",
             ],
-            projects = branches.value(for_main = [
+            projects = [
                 "angle",
                 "dawn",
                 "skia",
                 "swiftshader",
                 "v8",
-            ]),
+            ] if settings.is_main else None,
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
@@ -72,17 +72,13 @@ luci.bucket(
 luci.cq_group(
     name = "cq",
     retry_config = cq.RETRY_ALL_FAILURES,
-    tree_status_host = branches.value(for_main = "chromium-status.appspot.com"),
+    tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
     watch = cq.refset(
         repo = "https://chromium.googlesource.com/chromium/src",
-        refs = [branches.value(
-            # The chromium project's CQ covers all of the refs under refs/heads,
-            # which includes refs/heads/main
-            for_main = "refs/heads/.+",
-            # For projects running out of a branch, the CQ only runs for that
-            # ref
-            for_branches = settings.ref,
-        )],
+        # The chromium project's CQ covers all of the refs under refs/heads,
+        # which includes refs/heads/main, for projects running out of a branch
+        # the CQ only runs for that ref
+        refs = ["refs/heads/.+" if settings.is_main else settings.ref],
     ),
     acls = [
         acl.entry(
@@ -373,7 +369,7 @@ try_.chromium_android_builder(
     name = "android-lollipop-arm-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
-    cores = branches.value(for_main = 16, for_branches = 8),
+    cores = 16 if settings.is_main else 8,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -385,7 +381,7 @@ try_.chromium_android_builder(
     name = "android-marshmallow-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
-    cores = branches.value(for_main = 32, for_branches = 16),
+    cores = 32 if settings.is_main else 16,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     ssd = True,
