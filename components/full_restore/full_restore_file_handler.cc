@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -71,10 +72,10 @@ void FullRestoreFileHandler::WriteDataBlocking(
     const std::string& full_restore_data) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  bool write_success = base::WriteFile(file_path_, full_restore_data.c_str(),
-                                       full_restore_data.size()) != -1;
-  if (!write_success)
-    DVLOG(0) << "Fail to write full restore data to " << file_path_;
+  if (!base::ImportantFileWriter::WriteFileAtomically(file_path_,
+                                                      full_restore_data)) {
+    LOG(ERROR) << "Fail to write full restore data to " << file_path_;
+  }
 }
 
 bool FullRestoreFileHandler::ReadDataBlocking(std::string& full_restore_data) {
