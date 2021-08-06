@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
@@ -46,7 +48,7 @@
 }
 
 // First run screen delegate.
-@property(nonatomic, weak) id<SigninScreenDelegate> delegate;
+@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 // Sign-in screen view controller.
 @property(nonatomic, strong) SigninScreenViewController* viewController;
 // Sign-in screen mediator.
@@ -75,8 +77,8 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                                        delegate:
-                                            (id<SigninScreenDelegate>)delegate {
+                                        delegate:(id<FirstRunScreenDelegate>)
+                                                     delegate {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -96,6 +98,19 @@
     return;
   }
 
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  if (authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show sign in screen if there is already an account signed in (for
+    // example going through the FRE then killing the app and restarting the
+    // FRE). Don't record any metric as the user didn't take any action.
+    [self.delegate willFinishPresenting];
+    return;
+  }
+
   PolicyWatcherBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_policyWatcherObserverBridge.get());
 
@@ -104,9 +119,6 @@
 
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
   self.mediator = [[SigninScreenMediator alloc]
@@ -166,7 +178,6 @@
 }
 
 - (void)didTapSecondaryActionButton {
-  [self.delegate userSkippedSignIn];
   [self finishPresentingAndSkipRemainingScreens:NO];
   base::UmaHistogramEnumeration(
       "FirstRun.Stage", first_run::kSignInScreenCompletionWithoutSignIn);

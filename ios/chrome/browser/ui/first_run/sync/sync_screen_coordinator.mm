@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -84,7 +87,22 @@
   if (!authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // Don't show sync screen if no logged-in user account.
-    return [self.delegate willFinishPresenting];
+    [self.delegate willFinishPresenting];
+    return;
+  }
+
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+
+  BOOL shouldSkipSyncScreen =
+      syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      syncSetupService->IsFirstSetupComplete();
+  if (shouldSkipSyncScreen) {
+    [self.delegate willFinishPresenting];
+    return;
   }
 
   self.viewController = [[SyncScreenViewController alloc] init];
@@ -97,8 +115,7 @@
                                         browserState)
                      consentAuditor:ConsentAuditorFactory::GetForBrowserState(
                                         browserState)
-                   syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
-                                        browserState)
+                   syncSetupService:syncSetupService
               unifiedConsentService:UnifiedConsentServiceFactory::
                                         GetForBrowserState(browserState)];
 
