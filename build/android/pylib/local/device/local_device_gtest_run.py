@@ -248,6 +248,7 @@ class _ApkDelegate(object):
     self._tool = tool
     self._coverage_dir = test_instance.coverage_dir
     self._coverage_index = 0
+    self._use_existing_test_data = test_instance.use_existing_test_data
 
   def GetTestDataRoot(self, device):
     # pylint: disable=no-self-use
@@ -255,6 +256,8 @@ class _ApkDelegate(object):
                           'chromium_tests_root')
 
   def Install(self, device):
+    if self._use_existing_test_data:
+      return
     if self._test_apk_incremental_install_json:
       installer.Install(device, self._test_apk_incremental_install_json,
                         apk=self._apk_helper, permissions=self._permissions)
@@ -492,6 +495,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         self._delegate.Install(dev)
 
       def push_test_data(dev):
+        if self._test_instance.use_existing_test_data:
+          return
         # Push data dependencies.
         device_root = self._delegate.GetTestDataRoot(dev)
         host_device_tuples_substituted = [
