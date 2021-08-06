@@ -4924,6 +4924,8 @@ crbug.com/1207342 http/tests/devtools/sources/debugger-ui/debugger-inline-values
 crbug.com/1207342 http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/debugger/stop-on-debugger-from-detached-iframe.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/version-controller.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/components/throttler.js [ Failure Pass ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
