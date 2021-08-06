@@ -149,7 +149,7 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
-  // TODO(crbug.com/1195916): Don't display SODA status if the Dictation
+  // TODO(crbug.com/1173135): Don't display SODA status if the Dictation
   // language is not a downloaded or available SODA language.
   if (features::IsDictationOfflineAvailableAndEnabled()) {
     const std::string dictation_locale =

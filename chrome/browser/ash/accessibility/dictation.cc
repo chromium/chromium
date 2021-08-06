@@ -316,7 +316,7 @@ void Dictation::OnSpeechResult(
   // NetworkSpeechRecognizer adds the preceding space but
   // OnDeviceSpeechRecognizer does not. This is also done in
   // CaptionBubbleModel::CommitPartialText.
-  // TODO(crbug.com/1055150): This feature is launching for English first.
+  // TODO(crbug.com/1237583): This feature is launching for English first.
   // Make sure spacing is correct for all languages.
   if (has_committed_text_ && transcription.size() > 0 &&
       transcription.compare(0, 1, u" ") != 0) {
