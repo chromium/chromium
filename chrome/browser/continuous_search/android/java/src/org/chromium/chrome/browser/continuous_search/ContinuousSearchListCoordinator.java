@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
@@ -98,6 +100,14 @@ public class ContinuousSearchListCoordinator {
         container.addView(rootView, /*index=*/0, lp);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+
+        OnScrollListener userInputScrollListener = new OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                // onScrolled is also called after a layout calculation. dx will be 0 in that case.
+                if (dx != 0) mListMediator.onScrolled();
+            }
+        };
         // TODO(crbug.com/1231562): Add tests.
         LinearLayoutManager layoutManager = new LinearLayoutManager(
                 container.getContext(), LinearLayoutManager.HORIZONTAL, false) {
@@ -115,6 +125,20 @@ public class ContinuousSearchListCoordinator {
                                         - (viewStart + (viewEnd - viewStart) / 2);
                             }
                         };
+                // Remove the user input OnScrollListener to avoid calling onScrolled() when the
+                // scroll is done programmatically.
+                recyclerView.removeOnScrollListener(userInputScrollListener);
+                recyclerView.addOnScrollListener(new OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(
+                            @NonNull RecyclerView recyclerView, int newState) {
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                            recyclerView.removeOnScrollListener(this);
+                            recyclerView.addOnScrollListener(userInputScrollListener);
+                        }
+                    }
+                });
+
                 scroller.setTargetPosition(position);
                 startSmoothScroll(scroller);
             }
@@ -122,18 +146,17 @@ public class ContinuousSearchListCoordinator {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new SpaceItemDecoration(mContext.getResources()));
         recyclerView.setAdapter(mRecyclerViewAdapter);
-        recyclerView.addOnScrollListener(new OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                // onScrolled is also called after a layout calculation. dx will be 0 in that case.
-                if (dx != 0) mListMediator.onScrolled();
-            }
-        });
+        recyclerView.addOnScrollListener(userInputScrollListener);
     }
 
     void destroy() {
         mTabSupplier.removeObserver(mListMediator);
         mListMediator.destroy();
+    }
+
+    @VisibleForTesting
+    ContinuousSearchListMediator getMediatorForTesting() {
+        return mListMediator;
     }
 
     private static class SpaceItemDecoration extends ItemDecoration {
