@@ -18,6 +18,8 @@ source_set("elements") {
     "selector_picker_view_controller.h",
     "selector_picker_view_controller.mm",
     "selector_view_controller_delegate.h",
+    "self_sizing_table_view.h",
+    "self_sizing_table_view.mm",
     "text_field_configuration.h",
     "text_field_configuration.mm",
     "text_view_selection_disabled.h",

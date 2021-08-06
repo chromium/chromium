@@ -73,8 +73,6 @@ source_set("popup_ui") {
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
-    "self_sizing_table_view.h",
-    "self_sizing_table_view.mm",
     "simple_omnibox_icon.h",
     "simple_omnibox_icon.mm",
   ]
