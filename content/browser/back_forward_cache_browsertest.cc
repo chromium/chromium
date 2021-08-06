@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
@@ -63,6 +62,7 @@
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/idle_test_utils.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -152,10 +152,11 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   void DisableCheckingMetricsForAllSites() { check_all_sites_ = false; }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeUIForMediaStream);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kIgnoreCertificateErrors);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     // TODO(sreejakshetty): Initialize ScopedFeatureLists from test constructor.
@@ -192,7 +193,16 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     // Unfortunately needed for one test on slow bots, TextInputStateUpdated,
     // where deferred commits delays input too much.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-    ContentBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   void SetupFeaturesAndParameters() {
@@ -241,6 +251,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   }
 
   void SetUpOnMainThread() override {
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     host_resolver()->AddRule("*", "127.0.0.1");
     // TestAutoSetUkmRecorder's constructor requires a sequenced context.
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -626,6 +637,8 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
                     expected_browsing_instance_not_swapped_reasons_))
         << location.ToString();
   }
+
+  content::ContentMockCertVerifier mock_cert_verifier_;
 
   base::test::ScopedFeatureList feature_list_;
 
