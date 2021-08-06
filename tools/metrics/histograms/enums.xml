@@ -69208,6 +69208,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Increment"/>
 </enum>
 
+<enum name="RefineActionUsage">
+  <int value="0" label="Not used"/>
+  <int value="1" label="Used on Search Suggestion in zero-prefix context"/>
+  <int value="2" label="Used on Search Suggestion in non-zero-prefix context"/>
+  <int value="3" label="Used on Search Suggestion in both contexts"/>
+</enum>
+
 <enum name="RefreshTrigger">
   <int value="0" label="NTP shown"/>
   <int value="1" label="Foregrounded"/>

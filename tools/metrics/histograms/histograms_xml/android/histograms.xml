@@ -1868,6 +1868,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.RefineActionUsage" enum="RefineActionUsage"
+    expires_after="2022-08-01">
+  <owner>ender@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Records interactions with the Search Refine button, differentiating by
+    context (zero-prefix vs non-zero-prefix), including the cases where the User
+    did not interact with the Refine button placed beside the Search suggestion
+    at all.
+
+    Recorded once per interaction with the Omnibox and Sugestions, when the
+    Omnibox loses focus. This includes cases where the User chooses to navigate
+    somewhere (both by using a suggestion or pressing Go button on keyboard), or
+    abandons the Omnibox.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime"
     units="microseconds" expires_after="2021-11-21">
   <owner>ender@chromium.org</owner>
