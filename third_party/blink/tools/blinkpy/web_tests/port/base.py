@@ -268,7 +268,7 @@ class Port(object):
         ])
 
     @memoized
-    def _flag_specific_config_name(self):
+    def flag_specific_config_name(self):
         """Returns the name of the flag-specific configuration which best matches
            self._specified_additional_driver_flags(), or the first specified flag
            with leading '-'s stripped if no match in the configuration is found.
@@ -1642,14 +1642,14 @@ class Port(object):
         return test_configurations
 
     def _flag_specific_expectations_path(self):
-        config_name = self._flag_specific_config_name()
+        config_name = self.flag_specific_config_name()
         if config_name:
             return self._filesystem.join(self.web_tests_dir(),
                                          self.FLAG_EXPECTATIONS_PREFIX,
                                          config_name)
 
     def _flag_specific_baseline_search_path(self):
-        config_name = self._flag_specific_config_name()
+        config_name = self.flag_specific_config_name()
         if not config_name:
             return []
         flag_dir = self._filesystem.join(self.web_tests_dir(), 'flag-specific',

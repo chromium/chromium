@@ -129,6 +129,10 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': 'CRASH'
             },
             {
+                'key': 'web_tests_flag_specific_config_name',
+                'value': ''
+            },
+            {
                 'key': 'raw_typ_expectation',
                 'value': 'Failure'
             },
@@ -159,6 +163,10 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_result_type',
                 'value': 'CRASH'
+            },
+            {
+                'key': 'web_tests_flag_specific_config_name',
+                'value': ''
             },
         ]
         sent_data = self.sink(True, tr)
