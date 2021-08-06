@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
+#include "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 
@@ -43,6 +45,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  base::UmaHistogramEnumeration("FirstRun.Stage",
+                                first_run::kDefaultBrowserScreenStart);
+
   self.viewController = [[DefaultBrowserScreenViewController alloc] init];
   self.viewController.delegate = self;
 
@@ -60,6 +65,8 @@
 #pragma mark - FirstRunScreenViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  base::UmaHistogramEnumeration(
+      "FirstRun.Stage", first_run::kDefaultBrowserScreenCompletionWithSettings);
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
@@ -68,6 +75,9 @@
 }
 
 - (void)didTapSecondaryActionButton {
+  base::UmaHistogramEnumeration(
+      "FirstRun.Stage",
+      first_run::kDefaultBrowserScreenCompletionWithoutSettings);
   [self.delegate willFinishPresenting];
 }
 

@@ -10,6 +10,7 @@ source_set("default_browser") {
   ]
   deps = [
     ":default_browser_ui",
+    "//base",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:screen_delegate",

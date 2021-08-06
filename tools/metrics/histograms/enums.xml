@@ -35953,6 +35953,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Show sign in screen"/>
   <int value="7" label="Close sign in screen with sign in"/>
   <int value="8" label="Close sign in screen without sign in"/>
+  <int value="9" label="Show default browser screen"/>
+  <int value="10"
+      label="Close default browser screen with opening Settings.app"/>
+  <int value="11"
+      label="Close default browser screen without opening Settings.app"/>
 </enum>
 
 <enum name="FirstUserActionType">
