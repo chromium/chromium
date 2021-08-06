@@ -2422,7 +2422,7 @@
   {
     "name": "enable-removing-all-third-party-cookies",
     "owners": [ "dullweber" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "enable-resampling-input-events",
@@ -4391,11 +4391,6 @@
     "name": "page-info-performance-hints",
     "owners": [ "jds" ],
     "expiry_milestone": 90
-  },
-  {
-    "name": "page-info-version-2",
-    "owners": [ "eokoyomon", "dullweber" ],
-    "expiry_milestone": 91
   },
   {
     "name": "page-info-version-2-desktop",
