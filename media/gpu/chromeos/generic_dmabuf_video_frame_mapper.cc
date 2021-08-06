@@ -81,7 +81,7 @@ bool IsFormatSupported(VideoPixelFormat format) {
       PIXEL_FORMAT_YV12,
   };
   return std::find(std::cbegin(supported_formats), std::cend(supported_formats),
-                   format) != std::cend(supported_formats);
+                   format);
 }
 
 }  // namespace
