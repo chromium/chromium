@@ -969,26 +969,31 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        UserVerificationFailsThenSucceeds) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/false);
-  EXPECT_EQ(
-      "NotAllowedError: The operation either timed out or was not allowed. "
-      "See: "
-      "https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
-                             GetDefaultIconURL()))
-          .ExtractString());
 
-  int expected_enroll_histogram_value_ =
-      (GetParam() == APIVersion::kApiV3) ? 0 : 1;
-  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
-                          expected_enroll_histogram_value_);
-  ExpectEnrollDialogResult(
-      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
-      expected_enroll_histogram_value_);
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled, 1);
+  // SPC API V3 re-enables the WebAuthn UI for SPC. It causes the renderer to
+  // be blocked from returning the NotAllowedError until the user acknowledges
+  // the error on the UI. This can be tested if the test can fake a user
+  // acknowledgement.
+  bool is_v3 = GetParam() == APIVersion::kApiV3;
+  if (!is_v3) {
+    ReplaceFidoDiscoveryFactory(/*should_succeed=*/false);
+    EXPECT_EQ(
+        "NotAllowedError: The operation either timed out or was not allowed. "
+        "See: "
+        "https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.",
+        content::EvalJs(
+            GetActiveWebContents(),
+            content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                               GetDefaultIconURL()))
+            .ExtractString());
+
+    ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
+                            1);
+    ExpectEnrollDialogResult(
+        SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
+    ExpectEnrollSystemPromptResult(
+        SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled, 1);
+  }
 
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
@@ -1008,7 +1013,7 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                                         "getTotalAmountFromClientData($1, $2);",
                                         credentialIdentifier, "0.01")));
 
-  expected_enroll_histogram_value_ = (GetParam() == APIVersion::kApiV3) ? 0 : 2;
+  int expected_enroll_histogram_value_ = is_v3 ? 0 : 2;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
                           expected_enroll_histogram_value_);
   ExpectEnrollDialogResult(
@@ -1017,11 +1022,12 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   histogram_tester_.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmation.Funnel."
       "EnrollSystemPromptResult",
-      2);
+      is_v3 ? 1 : 2);
   histogram_tester_.ExpectBucketCount(
       "PaymentRequest.SecurePaymentConfirmation.Funnel."
       "EnrollSystemPromptResult",
-      SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled, 1);
+      SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled,
+      is_v3 ? 0 : 1);
   histogram_tester_.ExpectBucketCount(
       "PaymentRequest.SecurePaymentConfirmation.Funnel."
       "EnrollSystemPromptResult",

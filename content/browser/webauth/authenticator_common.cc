@@ -1018,7 +1018,10 @@ void AuthenticatorCommon::MakeCredential(
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin);
   if (origin_is_crypto_token_extension ||
-      options->is_payment_credential_creation || disable_ui_) {
+      (!base::FeatureList::IsEnabled(
+           features::kSecurePaymentConfirmationAPIV3) &&
+       options->is_payment_credential_creation) ||
+      disable_ui_) {
     request_delegate_->DisableUI();
   }
 
