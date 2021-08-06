@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -127,6 +128,7 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
 }
 
 void SendTabToSelfToolbarBubbleView::Timeout() {
+  send_tab_to_self::RecordNotificationTimedOut();
   GetWidget()->Close();
 }
 
