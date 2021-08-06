@@ -1787,6 +1787,60 @@ TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
       GetDocument().GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
 }
 
+namespace {
+
+class TestEventListener : public NativeEventListener {
+ public:
+  TestEventListener() = default;
+  void Invoke(ExecutionContext*, Event*) final { count_++; }
+  int GetCallCount() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+}  // namespace
+
+TEST_P(FrameThrottlingTest, ThrottledIframeGetsResizeEvents) {
+  ScopedThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesForTest
+      scoped_flag_override(true);
+  WebView().GetSettings()->SetJavaScriptEnabled(true);
+
+  // Set up child-iframe that can be throttled and make sure it still gets a
+  // resize event when it loads.
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://sub.example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+
+  // The frame is initially throttled.
+  main_resource.Complete(R"HTML(
+      <iframe id="frame" src="https://sub.example.com/iframe.html"
+              style="margin-top: 2000px"></iframe>
+  )HTML");
+  frame_resource.Complete(R"HTML(
+    Hello, world!
+  )HTML");
+
+  // Load and verify throttling.
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* listener = MakeGarbageCollected<TestEventListener>();
+  frame_element->contentWindow()->addEventListener("resize", listener);
+  EXPECT_EQ(listener->GetCallCount(), 0);
+  CompositeFrame();
+  EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
+  EXPECT_EQ(listener->GetCallCount(), 1);
+
+  // Composite a second frame to pick up the resize.
+  frame_element->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
+  // This should trigger resize event without clearing NeedsBeginMainFrame().
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  CompositeFrame();
+  EXPECT_EQ(listener->GetCallCount(), 2);
+
+  frame_element->contentWindow()->removeEventListener("resize", listener);
+}
+
 TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);

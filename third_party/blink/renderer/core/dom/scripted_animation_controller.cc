@@ -80,7 +80,10 @@ void ScriptedAnimationController::ContextLifecycleStateChanged(
 }
 
 void ScriptedAnimationController::DispatchEventsAndCallbacksForPrinting() {
-  DispatchEvents(event_interface_names::kMediaQueryListEvent);
+  DispatchEvents([](const Event* event) {
+    return event->InterfaceName() ==
+           event_interface_names::kMediaQueryListEvent;
+  });
   CallMediaQueryListListeners();
 }
 
@@ -114,16 +117,15 @@ void ScriptedAnimationController::RunTasks() {
     std::move(task).Run();
 }
 
-void ScriptedAnimationController::DispatchEvents(
-    const AtomicString& event_interface_filter) {
+void ScriptedAnimationController::DispatchEvents(const DispatchFilter& filter) {
   HeapVector<Member<Event>> events;
-  if (event_interface_filter.IsEmpty()) {
+  if (!filter.has_value()) {
     events.swap(event_queue_);
     per_frame_events_.clear();
   } else {
     HeapVector<Member<Event>> remaining;
     for (auto& event : event_queue_) {
-      if (event && event->InterfaceName() == event_interface_filter) {
+      if (event && filter.value()(event)) {
         EraseFromPerFrameEventsMap(event.Get());
         events.push_back(event.Release());
       } else {
@@ -192,12 +194,20 @@ PageAnimator* ScriptedAnimationController::GetPageAnimator() {
 }
 
 void ScriptedAnimationController::ServiceScriptedAnimations(
-    base::TimeTicks monotonic_time_now) {
+    base::TimeTicks monotonic_time_now,
+    bool can_throttle) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextPaused())
     return;
   auto* loader = GetWindow()->document()->Loader();
   if (!loader)
     return;
+
+  if (can_throttle) {
+    DispatchEvents([](const Event* event) {
+      return event->type() == event_type_names::kResize;
+    });
+    return;
+  }
 
   current_frame_time_ms_ =
       loader->GetTiming()

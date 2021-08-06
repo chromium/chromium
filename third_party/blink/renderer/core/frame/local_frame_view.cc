@@ -3664,34 +3664,38 @@ void LocalFrameView::SetTracksRasterInvalidations(
 }
 
 void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
+  bool can_throttle = CanThrottleRendering();
   // Disallow throttling in case any script needs to do a synchronous
   // lifecycle update in other frames which are throttled.
   DisallowThrottlingScope disallow_throttling(*this);
-  if (ScrollableArea* scrollable_area = GetScrollableArea()) {
-    scrollable_area->ServiceScrollAnimations(
-        start_time.since_origin().InSecondsF());
-  }
-  if (const ScrollableAreaSet* animating_scrollable_areas =
-          AnimatingScrollableAreas()) {
-    // Iterate over a copy, since ScrollableAreas may deregister
-    // themselves during the iteration.
-    HeapVector<Member<PaintLayerScrollableArea>>
-        animating_scrollable_areas_copy;
-    CopyToVector(*animating_scrollable_areas, animating_scrollable_areas_copy);
-    for (PaintLayerScrollableArea* scrollable_area :
-         animating_scrollable_areas_copy) {
+  Document* document = GetFrame().GetDocument();
+  DCHECK(document);
+  if (!can_throttle) {
+    if (ScrollableArea* scrollable_area = GetScrollableArea()) {
       scrollable_area->ServiceScrollAnimations(
           start_time.since_origin().InSecondsF());
     }
+    if (const ScrollableAreaSet* animating_scrollable_areas =
+            AnimatingScrollableAreas()) {
+      // Iterate over a copy, since ScrollableAreas may deregister
+      // themselves during the iteration.
+      HeapVector<Member<PaintLayerScrollableArea>>
+          animating_scrollable_areas_copy;
+      CopyToVector(*animating_scrollable_areas,
+                   animating_scrollable_areas_copy);
+      for (PaintLayerScrollableArea* scrollable_area :
+           animating_scrollable_areas_copy) {
+        scrollable_area->ServiceScrollAnimations(
+            start_time.since_origin().InSecondsF());
+      }
+    }
+    GetFrame().AnimateSnapFling(start_time);
+    if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document))
+      GetPage()->Animator().SetHasSmilAnimation();
+    SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(*document);
+    document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
   }
-  GetFrame().AnimateSnapFling(start_time);
-  Document* document = GetFrame().GetDocument();
-  DCHECK(document);
-  if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document))
-    GetPage()->Animator().SetHasSmilAnimation();
-  SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(*document);
-  document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
-  document->ServiceScriptedAnimations(start_time);
+  document->ServiceScriptedAnimations(start_time, can_throttle);
 }
 
 void LocalFrameView::ScheduleAnimation(base::TimeDelta delay) {
