@@ -157,38 +157,53 @@ std::string GetSimilarDomainFromTop500(
   return std::string();
 }
 
-// Returns the first matching engaged domain with an edit distance of at most
-// one to |domain_and_registry|.
-std::string GetSimilarDomainFromEngagedSites(
+// Scans the engaged site list for edit distance and character swap matches.
+// Returns true if there is a match and fills |matched_domain| with the first
+// matching engaged domain and |match_type| with the matching heuristic type.
+bool GetSimilarDomainFromEngagedSites(
     const DomainInfo& navigated_domain,
     const std::vector<DomainInfo>& engaged_sites,
-    const LookalikeTargetAllowlistChecker& target_allowlisted) {
+    const LookalikeTargetAllowlistChecker& target_allowlisted,
+    std::string* matched_domain,
+    LookalikeUrlMatchType* match_type) {
   for (const std::string& navigated_skeleton : navigated_domain.skeletons) {
     for (const DomainInfo& engaged_site : engaged_sites) {
+      DCHECK_NE(navigated_domain.domain_and_registry,
+                engaged_site.domain_and_registry);
+
       if (!url_formatter::top_domains::IsEditDistanceCandidate(
               engaged_site.domain_and_registry)) {
         continue;
       }
+      // Skip past domains that are allowed to be spoofed.
+      if (target_allowlisted.Run(engaged_site.domain_and_registry)) {
+        continue;
+      }
       for (const std::string& engaged_skeleton : engaged_site.skeletons) {
-        if (!IsEditDistanceAtMostOne(base::UTF8ToUTF16(navigated_skeleton),
-                                     base::UTF8ToUTF16(engaged_skeleton))) {
-          continue;
+        // Check edit distance on skeletons.
+        if (IsEditDistanceAtMostOne(base::UTF8ToUTF16(navigated_skeleton),
+                                    base::UTF8ToUTF16(engaged_skeleton)) &&
+            !IsLikelyEditDistanceFalsePositive(navigated_domain,
+                                               engaged_site)) {
+          *matched_domain = engaged_site.domain_and_registry;
+          *match_type = LookalikeUrlMatchType::kEditDistanceSiteEngagement;
+          return true;
         }
-
-        if (IsLikelyEditDistanceFalsePositive(navigated_domain, engaged_site)) {
-          continue;
+        // Check character swap on skeletons.
+        // TODO(crbug/1109056): Also check character swap on actual hostnames
+        // with diacritics etc removed. This is because some characters have two
+        // character skeletons such as m -> rn, and this prevents us from
+        // detecting character swaps between example.com and exapmle.com.
+        if (HasOneCharacterSwap(base::UTF8ToUTF16(navigated_skeleton),
+                                base::UTF8ToUTF16(engaged_skeleton))) {
+          *matched_domain = engaged_site.domain_and_registry;
+          *match_type = LookalikeUrlMatchType::kCharacterSwapSiteEngagement;
+          return true;
         }
-
-        // Skip past domains that are allowed to be spoofed.
-        if (target_allowlisted.Run(engaged_site.domain_and_registry)) {
-          continue;
-        }
-
-        return engaged_site.domain_and_registry;
       }
     }
   }
-  return std::string();
+  return false;
 }
 
 void RecordEvent(NavigationSuggestionEvent event) {
@@ -662,13 +677,11 @@ bool GetMatchingDomain(
   if (url_formatter::top_domains::IsEditDistanceCandidate(
           navigated_domain.domain_and_registry)) {
     // If we can't find an exact top domain or an engaged site, try to find an
-    // engaged domain within an edit distance of one.
-    const std::string similar_engaged_domain = GetSimilarDomainFromEngagedSites(
-        navigated_domain, engaged_sites, in_target_allowlist);
-    if (!similar_engaged_domain.empty() &&
-        navigated_domain.domain_and_registry != similar_engaged_domain) {
-      *matched_domain = similar_engaged_domain;
-      *match_type = LookalikeUrlMatchType::kEditDistanceSiteEngagement;
+    // engaged domain within an edit distance of one or a single character swap.
+    if (GetSimilarDomainFromEngagedSites(navigated_domain, engaged_sites,
+                                         in_target_allowlist, matched_domain,
+                                         match_type)) {
+      DCHECK_NE(navigated_domain.domain_and_registry, *matched_domain);
       return true;
     }
 
@@ -724,6 +737,9 @@ void RecordUMAFromMatchType(LookalikeUrlMatchType match_type) {
       break;
     case LookalikeUrlMatchType::kFailedSpoofChecks:
       RecordEvent(NavigationSuggestionEvent::kFailedSpoofChecks);
+      break;
+    case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+      RecordEvent(NavigationSuggestionEvent::kMatchCharacterSwapSiteEngagement);
       break;
     case LookalikeUrlMatchType::kNone:
       break;

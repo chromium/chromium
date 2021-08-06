@@ -56320,6 +56320,9 @@ Called by update_use_counter_css.py.-->
   <int value="11"
       label="The hostname failed spoof checks but didn't match a safe
              hostname. (e.g. whole-script-confusable IDN)"/>
+  <int value="12"
+      label="A navigation suggestion is found using a character swap match
+             against an engaged site."/>
 </enum>
 
 <enum name="NavigationURLScheme">

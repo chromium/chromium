@@ -123,7 +123,11 @@ bool ShouldTriggerSafetyTipFromLookalike(
       // We should only ever reach these cases when the lookalike interstitial
       // is disabled. Now that interstitial is fully launched, this only happens
       // in tests.
-      FALLTHROUGH;
+      NOTREACHED();
+      return false;
+    case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+      // For now, no UI is shown for character swap matches.
+      return false;
     case LookalikeUrlMatchType::kNone:
       NOTREACHED();
   }

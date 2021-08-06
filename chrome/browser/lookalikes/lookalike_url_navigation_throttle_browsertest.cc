@@ -763,6 +763,34 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
            LookalikeUrlMatchType::kEditDistanceSiteEngagement);
 }
 
+// Navigate to a domain with a character swap of 1 to an engaged domain.
+// This should record metrics, but should not show a lookalike warning
+// interstitial yet.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       CharacterSwap_EngagedDomain_Match) {
+  base::HistogramTester histograms;
+  SetEngagementScore(browser(), GURL("https://character-swap.com"),
+                     kHighEngagement);
+
+  // The skeleton of this domain is one character swap from the skeleton of
+  // character-swap.com.
+  const GURL kNavigatedUrl = GetURL("character-wsap.com");
+  // Even if the navigated site has a low engagement score, it should be
+  // considered for lookalike suggestions.
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  // Advance clock to force a fetch of new engaged sites list.
+  test_clock()->Advance(base::TimeDelta::FromHours(1));
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(
+      lookalikes::kHistogramName,
+      NavigationSuggestionEvent::kMatchCharacterSwapSiteEngagement, 1);
+
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kCharacterSwapSiteEngagement);
+}
+
 // Navigate to a domain within an edit distance of 1 to a top domain.
 // This should record metrics, but should not show a lookalike warning
 // interstitial yet.
