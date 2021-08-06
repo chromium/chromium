@@ -134,15 +134,6 @@ base::Value ControllerParamsToValue(HttpAuth::Target target, const GURL& url) {
   return params;
 }
 
-base::Value AuthHandleChallengeEndParams(const HttpAuthController& controller,
-                                         int net_error) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetIntKey("net_error", net_error);
-  params.SetBoolKey("has_handler", controller.HaveAuthHandler());
-  params.SetBoolKey("has_valid_identity", controller.HaveValidIdentity());
-  return params;
-}
-
 }  // namespace
 
 HttpAuthController::HttpAuthController(
@@ -351,17 +342,13 @@ int HttpAuthController::HandleAuthChallenge(
         // active network attacker could control its contents.  Instead, we just
         // fail to establish the tunnel.
         DCHECK_EQ(target_, HttpAuth::AUTH_PROXY);
-        net_log_.EndEvent(NetLogEventType::AUTH_HANDLE_CHALLENGE, [this] {
-          return AuthHandleChallengeEndParams(*this,
-                                              ERR_PROXY_AUTH_UNSUPPORTED);
-        });
+        net_log_.EndEventWithNetErrorCode(
+            NetLogEventType::AUTH_HANDLE_CHALLENGE, ERR_PROXY_AUTH_UNSUPPORTED);
         return ERR_PROXY_AUTH_UNSUPPORTED;
       }
       // We found no supported challenge -- let the transaction continue so we
       // end up displaying the error page.
-      net_log_.EndEvent(NetLogEventType::AUTH_HANDLE_CHALLENGE, [this] {
-        return AuthHandleChallengeEndParams(*this, OK);
-      });
+      net_log_.EndEvent(NetLogEventType::AUTH_HANDLE_CHALLENGE);
       return OK;
     }
 
@@ -395,8 +382,7 @@ int HttpAuthController::HandleAuthChallenge(
     // TODO(asanka): Instead we should create a priority list of
     //     <handler,identity> and iterate through that.
   } while(!handler_.get());
-  net_log_.EndEvent(NetLogEventType::AUTH_HANDLE_CHALLENGE,
-                    [this] { return AuthHandleChallengeEndParams(*this, OK); });
+  net_log_.EndEvent(NetLogEventType::AUTH_HANDLE_CHALLENGE);
   return OK;
 }
 
@@ -449,10 +435,6 @@ bool HttpAuthController::HaveAuthHandler() const {
 
 bool HttpAuthController::HaveAuth() const {
   return handler_.get() && !identity_.invalid;
-}
-
-bool HttpAuthController::HaveValidIdentity() const {
-  return !identity_.invalid;
 }
 
 bool HttpAuthController::NeedsHTTP11() const {

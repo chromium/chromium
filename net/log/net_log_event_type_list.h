@@ -2677,13 +2677,6 @@ EVENT_TYPE(AUTH_GENERATE_TOKEN)
 //                                "different_realm" depending on the outcome of
 //                                the handling the challenge>
 //  }
-//
-// The END phase has the following parameters:
-//  {
-//      "net_error": <The error code.>
-//      "has_handle": <Whether it has an auth handler.>
-//      "has_valid_identity": <Whether it has a valid identity.>
-//  }
 EVENT_TYPE(AUTH_HANDLE_CHALLENGE)
 
 // An attempt was made to load an authentication library.
@@ -3932,15 +3925,3 @@ EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION)
 EVENT_TYPE(TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION)
 
 EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_SIGNING)
-
-// Temporarily added to for https://crbug.com/1186863. Logged at
-// net::URLRequestJob::NotifyHeadersComplete.
-EVENT_TYPE(URL_REQUEST_JOB_NOTIFY_HEADERS_COMPLETE_NEEDS_AUTH)
-
-// Temporarily added to for https://crbug.com/1186863. Logged at
-// net::URLRequestHttpJob::NotifyHeadersComplete.
-// The following parameters are attached:
-//   {
-//     "ready_to_restart_for_auth": <boolean>,
-//   }
-EVENT_TYPE(URL_REQUEST_HTTP_JOB_NOTIFY_HEADERS_COMPLETE)

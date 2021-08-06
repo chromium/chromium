@@ -485,8 +485,6 @@ void URLRequestJob::NotifyHeadersComplete() {
   }
 
   if (NeedsAuth()) {
-    request_->net_log().AddEvent(
-        NetLogEventType::URL_REQUEST_JOB_NOTIFY_HEADERS_COMPLETE_NEEDS_AUTH);
     std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
     // Need to check for a NULL auth_info because the server may have failed
     // to send a challenge with the 401 response.
