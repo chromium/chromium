@@ -169,9 +169,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // If the user triggers an HTTPS-Only Mode interstitial for a host and then
@@ -182,9 +181,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   // Proceed through the interstitial, which will add the host to the allowlist
   // and navigate to the HTTP fallback URL.
@@ -203,9 +201,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // Navigations in subframes should not get upgraded by HTTPS-Only Mode. They
@@ -241,9 +238,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, parent_url));
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
   // Proceeding through the interstitial will add the hostname to the allowlist.
   ProceedThroughInterstitial(contents);
 
@@ -268,9 +264,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, url));
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // Tests that an HTTP POST form navigation to "bar.com" from an HTTP page on
@@ -291,9 +286,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, HttpPageHttpPost_NotUpgraded) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(
       contents, http_server()->GetURL("bad-https.test", replacement_path)));
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   // Proceed through the interstitial to add the hostname to the allowlist.
   ProceedThroughInterstitial(contents);
@@ -360,9 +354,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   GURL url = downgrading_server.GetURL("foo.com", "/");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(content::NavigateToURL(contents, url));
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // Tests that (if no testing port is specified), the upgraded HTTPS version of
@@ -386,9 +379,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, HttpsUpgrade_DefaultPort) {
   EXPECT_EQ(url::kHttpsScheme, contents->GetLastCommittedURL().scheme());
   EXPECT_EQ(443, contents->GetLastCommittedURL().EffectiveIntPort());
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // Tests that the security level is WARNING when the HTTPS-Only Mode
@@ -404,9 +396,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
@@ -430,9 +421,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
@@ -484,9 +474,8 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 
   // The HTTPS-First Mode interstitial should trigger first.
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetMainFrame(),
-      l10n_util::GetStringUTF8(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH)));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 
   // Proceeding through the HTTPS-First Mode interstitial will hit the upgrading
   // server's HTTP->HTTPS redirect. This should result in an SSL interstitial
@@ -500,4 +489,30 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
   auto* helper = SecurityStateTabHelper::FromWebContents(contents);
   EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
+}
+
+// Tests that clicking the "Learn More" link in the HTTPS-First Mode
+// interstitial opens a new tab for the help center article.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, InterstitialLearnMoreLink) {
+  GURL http_url = http_server()->GetURL("foo.com", "/close-socket");
+  GURL https_url = https_server()->GetURL("foo.com", "/close-socket");
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+
+  // Simulate clicking the learn more link (CMD_OPEN_HELP_CENTER).
+  ASSERT_TRUE(content::ExecuteScript(
+      contents, "window.certificateErrorPageController.openHelpCenter();"));
+
+  // New tab should include the p-link "first_mode".
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL()
+                .query(),
+            "p=first_mode");
 }

@@ -11,11 +11,17 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
+#include "components/security_interstitials/core/controller_client.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {
+
+namespace {
+const char kLearnMoreLink[] = "https://support.google.com/chrome?p=first_mode";
+}  // namespace
 
 // static
 const SecurityInterstitialPage::TypeID
@@ -53,13 +59,18 @@ void HttpsOnlyModeBlockingPage::CommandReceived(const std::string& command) {
     case security_interstitials::CMD_PROCEED:
       controller()->Proceed();
       break;
+    case security_interstitials::CMD_OPEN_HELP_CENTER: {
+      controller()->metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::SHOW_LEARN_MORE);
+      controller()->OpenUrlInNewForegroundTab(GURL(kLearnMoreLink));
+      break;
+    }
     case security_interstitials::CMD_DO_REPORT:
     case security_interstitials::CMD_DONT_REPORT:
     case security_interstitials::CMD_SHOW_MORE_SECTION:
     case security_interstitials::CMD_OPEN_DATE_SETTINGS:
     case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
     case security_interstitials::CMD_OPEN_WHITEPAPER:
-    case security_interstitials::CMD_OPEN_HELP_CENTER:
     case security_interstitials::CMD_RELOAD:
     case security_interstitials::CMD_OPEN_DIAGNOSTIC:
     case security_interstitials::CMD_OPEN_LOGIN:
