@@ -9,7 +9,6 @@
 #include "cc/raster/playback_image_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
-#include "third_party/blink/renderer/platform/graphics/identifiability_paint_op_digest.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
@@ -236,14 +235,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void OnDestroyResource();
 
-  // Gets an immutable reference to the IdentifiabilityPaintOpDigest, which
-  // contains the current PaintOp digest, and taint bits (encountered
-  // partially-digested images, encountered skipped ops).
-  //
-  // The digest is updated based on the results of every FlushCanvas(); this
-  // method also calls FlushCanvas() to ensure that all operations are accounted
-  // for in the digest.
-  const IdentifiabilityPaintOpDigest& GetIdentifiablityPaintOpDigest();
   virtual void OnAcquireRecyclableCanvasResource() {}
   virtual void OnDestroyRecyclableCanvasResource(
       const gpu::SyncToken& sync_token) {}
@@ -355,10 +346,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t max_inflight_resources_ = 0;
 
   RestoreMatrixClipStackCb restore_clip_stack_callback_;
-
-  // For identifiability metrics -- PaintOps are serialized so that digests can
-  // be calculated using hashes of the serialized output.
-  IdentifiabilityPaintOpDigest identifiability_paint_op_digest_;
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };
