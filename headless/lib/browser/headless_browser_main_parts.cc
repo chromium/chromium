@@ -134,8 +134,9 @@ void HeadlessBrowserMainParts::CreatePrefService() {
         browser_->options()->user_data_dir.Append(kLocalStateFilename);
     pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
     auto result = pref_store->ReadPrefs();
-    CHECK(result == JsonPrefStore::PREF_READ_ERROR_NONE ||
-          result == JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+    if (result != JsonPrefStore::PREF_READ_ERROR_NONE) {
+      CHECK_EQ(result, JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+    }
   }
 
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
