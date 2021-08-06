@@ -170,8 +170,9 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&BindRemoteAppsFactory));
   }
 
-  if (features::IsEnhancedNetworkVoicesEnabled()) {
-    // TODO(crbug.com/1217301): Add a permission check for the binding.
+  // Limit the binding to EnhancedNetworkTts Extension.
+  if (features::IsEnhancedNetworkVoicesEnabled() &&
+      extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
     binder_map->Add<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>(
         base::BindRepeating(&BindEnhancedNetworkTts));
   }

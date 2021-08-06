@@ -14,5 +14,28 @@ const char kReadAloudServerUrl[] =
 
 const char kNetworkRequestUploadType[] = "application/json";
 
+const char kFullRequestTemplate[] =
+    R"({
+        "advanced_options": {
+          "audio_generation_options": {"speed_factor": %.1f},
+          "force_language": "%s"
+        },
+        "text": {
+          "text_parts": ["%s"]
+        },
+        "voice_settings": {
+          "voice_criteria_and_selections": [{
+            "criteria": {"language": "%s"},
+            "selection": {"default_voice": "%s"}
+          }]
+        }
+      })";
+
+extern const char kSimpleRequestTemplate[] =
+    R"({"advanced_options": {
+          "audio_generation_options": {"speed_factor": %.1f}
+        },
+        "text": {"text_parts": ["%s"]}})";
+
 }  // namespace enhanced_network_tts
 }  // namespace ash

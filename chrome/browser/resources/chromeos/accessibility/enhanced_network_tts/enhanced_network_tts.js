@@ -64,6 +64,9 @@ export class EnhancedNetworkTts {
    * @return {!ash.enhancedNetworkTts.mojom.TtsRequest}
    */
   static generateRequest(utterance, options) {
+    // Gets the playback rate.
+    const rate = options.rate || 1.0;
+
     // Unpack voice and lang. For lang, the server takes lang code only.
     let voice = options.voiceName || '';
     let lang = options.lang || '';
@@ -86,7 +89,7 @@ export class EnhancedNetworkTts {
     }
 
     return /** @type {!ash.enhancedNetworkTts.mojom.TtsRequest} */ (
-        {utterance, voice, lang});
+        {utterance, rate, voice, lang});
   }
 
   /**
