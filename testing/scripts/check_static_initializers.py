@@ -56,10 +56,10 @@ _MAC_SI_FILE_ALLOWLIST = [
 # Two static initializers are needed on Mac for libc++ to set up
 # std::cin/cout/cerr before main() runs. Only iostream.cpp needs to be counted
 # here.
-FALLBACK_EXPECTED_MAC_SI_COUNT = 2
+FALLBACK_EXPECTED_MAC_SI_COUNT = 2 + 1
 
 # For coverage builds, also allow 'IntrProfilingRuntime.cpp'
-COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 3
+COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 3 + 1
 
 
 def run_process(command):
