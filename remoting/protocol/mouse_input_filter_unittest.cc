@@ -94,7 +94,7 @@ class MouseInputFilterTest : public testing::Test {
 };
 
 // Verify that no events get through if we don't set either dimensions.
-TEST_F(MouseInputFilterTest, BothDimensionsZero) {
+TEST_F(MouseInputFilterTest, NoDimensionsSet) {
   ExpectNoMouse();
   InjectMouse({10, 10});
 }
@@ -110,6 +110,46 @@ TEST_F(MouseInputFilterTest, InputDimensionsZero) {
 // Verify that no events get through if there's no output size.
 TEST_F(MouseInputFilterTest, OutputDimensionsZero) {
   SetClientSize(40, 40);
+
+  ExpectNoMouse();
+  InjectMouse({10, 10});
+}
+
+// Verify that no events get through when input and output are both set to zero.
+TEST_F(MouseInputFilterTest, BothDimensionsZero) {
+  SetClientSize(0, 0);
+  SetHostDesktop(0, 0);
+
+  ExpectNoMouse();
+  InjectMouse({10, 10});
+}
+
+// Verify that no events get through if the input and output are both set to
+// one.  This is an edge case as a 1x1 desktop is nonsensical but it's good to
+// have a test to exercise the code path in case of errant values being set.
+TEST_F(MouseInputFilterTest, BothDimensionsOne) {
+  SetClientSize(1, 1);
+  SetHostDesktop(1, 1);
+
+  ExpectNoMouse();
+  InjectMouse({10, 10});
+}
+
+// Verify that a min-size desktop (2x2) is handled. This is an edge case test,
+// not something we'd expect to need to handle in the real world.
+TEST_F(MouseInputFilterTest, BothDimensionsTwo) {
+  SetClientSize(2, 2);
+  SetHostDesktop(2, 2);
+
+  const Point injected[] = {{1, 1}};
+  const Point expected[] = {{1, 1}};
+  RunMouseTests(base::size(expected), injected, expected, true);
+}
+
+// Verify that no events get through if negative dimensions are provided.
+TEST_F(MouseInputFilterTest, NegativeDimensionsHandled) {
+  SetClientSize(-42, -42);
+  SetHostDesktop(-84, -84);
 
   ExpectNoMouse();
   InjectMouse({10, 10});
