@@ -32,6 +32,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogChoice;
@@ -43,14 +44,13 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.net.ConnectionType;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit test for {@link DownloadDialogBridge}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
     private static final int FAKE_NATIVE_HOLDER = 1;
@@ -73,6 +73,9 @@ public class DownloadDialogBridgeUnitTest {
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     private DownloadDialogBridge.Natives mNativeMock;
