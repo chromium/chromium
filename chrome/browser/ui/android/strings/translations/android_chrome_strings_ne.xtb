@@ -162,7 +162,6 @@
 <translation id="2067805253194386918">पाठ</translation>
 <translation id="2068748236079642969">अर्को भिडियो हेर्नुहोस्</translation>
 <translation id="2074143993849053708">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI बन्द गरिएको छ</translation>
-<translation id="2075835334924942448">तपाईं यहाँ स्टोरिज देख्नु हुने छ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2096012225669085171">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्</translation>
 <translation id="2100273922101894616">स्वत: साइन-इन</translation>
@@ -570,7 +569,6 @@
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
-<translation id="4697543623252708062">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> सम्बन्धी लेखहरू देखाइने छन्। तपाईं 'फलो गरिएका साइटहरू व्यवस्थापन गर्नुहोस्' नामक खण्डमा गई आफूले फलो गरिरहेका साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
@@ -649,7 +647,6 @@
 <translation id="5152843274749979095">समर्थन गरिने कुनै एप स्थापना गरिएको छैन</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{१ डाउनलोड असफल भयो।}other{# डाउनलोडहरू असफल भए।}}</translation>
-<translation id="5168824020667180049"><ph name="SITE_NAME" /> फलो गरियो</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
@@ -1281,7 +1278,6 @@
 <translation id="8993760627012879038">इनकोग्निटो मोडमा एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="8996847606757455498">अर्को सेवा प्रदायक छनौट गर्नुहोस्</translation>
 <translation id="8998729206196772491">तपाईं <ph name="MANAGED_DOMAIN" /> द्वारा व्यवस्थापन गरिएको खाता मार्फत साइन इन गर्दै हुनुहुन्छ र त्यसको प्रशासकलाई तपाईंको Chrome को डेटालाई नियन्त्रण गर्न दिँदै हुनुहुन्छ। तपाईंको डेटा सदाका लागि यस खातामा बाँधिनेछ। Chrome बाट साइन आउट गर्नाले तपाईंको डेटा यस डिभाइसबाट मेटिनेछ तर यो तपाईंको Google खातामा भण्डारण गरिएको अवस्थामा रहनेछ।</translation>
-<translation id="9000233047676755924">तपाईंले नयाँ ट्याब खोल्दा अब <ph name="SITE_NAME" /> सम्बन्धी लेखहरू देखाइने छन्। तपाईं 'फलो गरिएका साइटहरू व्यवस्थापन गर्नुहोस्' नामक खण्डमा गई आफूले फलो गरिरहेका साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="9022774213089566801">बारम्बार हेरिएका</translation>
 <translation id="9028914725102941583">यन्त्रहरूभरि आदान प्रदान गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="9040142327097499898">सूचनाहरूलाई अनुमति दिइएको छ। यो डिभाइसमा स्थानसम्बन्धी सुविधा निष्क्रिय पारिएको छ।</translation>

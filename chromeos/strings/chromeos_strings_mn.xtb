@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
+<translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
@@ -415,6 +416,7 @@
 <translation id="8798441408945964110">Үйлчилгээ үзүүлэгчийн нэр</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="8818152010000655963">Дэлгэцийн зураг</translation>
+<translation id="8834539327799336565">Одоогоор холбогдсон</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>

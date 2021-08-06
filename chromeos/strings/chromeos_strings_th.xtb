@@ -14,7 +14,7 @@
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
-<translation id="1264369926465113395">ดูนิตยสารดิจิทัลใหม่ของ Chromebook สำหรับผู้สร้าง</translation>
+<translation id="1264369926465113395">ดูนิตยสารดิจิทัลใหม่ของ Chromebook สำหรับผู้สร้างสรรค์งานศิลปะและการออกแบบ</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้ง}=1{สแกนหน้า {PAGE_NUMBER} อีกครั้ง}other{สแกนหน้า {PAGE_NUMBER} อีกครั้ง}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
@@ -296,7 +297,7 @@
 <translation id="65587193855025101">แผ่นกระจกสำหรับสแกน</translation>
 <translation id="6564646048574748301">ไม่สำเร็จ - เข้าถึงเครื่องพิมพ์ไม่ได้</translation>
 <translation id="6574762126505704998">เติม</translation>
-<translation id="6579235177984085399">สำรวจเครื่องมือใหม่สำหรับการวาดเขียนและการออกแบบ</translation>
+<translation id="6579235177984085399">สำรวจเครื่องมือใหม่ๆ สำหรับการวาดเขียนและการออกแบบ</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6603230386432466813">หากพบปัญหาในการเชื่อมต่อ</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
@@ -415,6 +416,7 @@
 <translation id="8798441408945964110">ชื่อผู้ให้บริการ</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
+<translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>

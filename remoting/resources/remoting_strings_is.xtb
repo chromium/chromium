@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Óvænt villa kom upp. Tilkynntu forriturunum um þetta vandamál.</translation>
 <translation id="1697532407822776718">Nú er allt tilbúið!</translation>
 <translation id="1742469581923031760">Tengist…</translation>
+<translation id="177040763384871009">Þú verður að breyta netvafra kerfisins í „<ph name="URL_FORWARDER_NAME" />“ til að leyfa opnun tengla sem smellt er á í fjartengda tækinu í vafra biðlarans.</translation>
 <translation id="177096447311351977">IP-tala rásar fyrir biðlara: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Eyða</translation>
 <translation id="2009755455353575666">Tenging mistókst</translation>
@@ -56,6 +57,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="369442766917958684">Án nettengingar</translation>
 <translation id="3695446226812920698">Kynntu þér hvernig</translation>
 <translation id="3776024066357219166">Lotu fjarstjórnunar tölvu í Chrome er lokið.</translation>
+<translation id="3858860766373142691">Heiti</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3905196214175737742">Ógilt lén hýsilseiganda.</translation>
 <translation id="3931191050278863510">Hýsill stöðvaður.</translation>
@@ -141,6 +143,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="7434397035092923453">Aðgangi hafnað fyrir biðlara: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Biðlari tengdur: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Skipta um reikning</translation>
+<translation id="7535110896613603182">Opna sjálfgefnar stillingar forrits</translation>
 <translation id="7628469622942688817">Muna eftir PIN-númerinu mínu á þessu tæki.</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>

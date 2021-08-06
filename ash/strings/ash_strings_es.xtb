@@ -177,6 +177,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2322173485024759474">Retroceder por carácter</translation>
 <translation id="2339073806695260576">Toca el botón del lápiz óptico situado en la estantería para tomar una nota, hacer una captura de pantalla o utilizar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Bloqueada en vertical</translation>
+<translation id="2350794187831162545">Ahora, el <ph name="LANGUAGE" /> se procesa localmente y funciona sin conexión. Puedes cambiar el idioma de dictado en Configuración &gt; Accesibilidad.</translation>
 <translation id="2352467521400612932">Configuración del lápiz óptico</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -438,6 +439,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4379531060876907730">Estas son las herramientas del lápiz óptico</translation>
 <translation id="4389184120735010762">Has pulsado la combinación de teclas que activa la lupa fijada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivado.</translation>
 <translation id="4421231901400348175">Compartiendo control de la pantalla con <ph name="HELPER_NAME" /> a través de Asistencia remota.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>

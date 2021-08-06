@@ -2786,6 +2786,7 @@
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> पुराना है</translation>
 <translation id="3908501907586732282">एक्‍सटेंशन चालू करें</translation>
+<translation id="3909701002594999354">सारे कंट्रोल कमांड दिखाएं</translation>
 <translation id="3909791450649380159">&amp;काटें</translation>
 <translation id="39103738135459590">ऐक्टिव करने वाला कोड</translation>
 <translation id="3911824782900911339">नया टैब पेज</translation>
@@ -3524,6 +3525,7 @@
 <translation id="4733793249294335256">स्थान</translation>
 <translation id="473546211690256853">यह खाता <ph name="DOMAIN" /> द्वारा प्रबंधित किया जाता है</translation>
 <translation id="4735803855089279419">सिस्‍टम इस डिवाइस के लिए डिवाइस पहचानकर्ताओं को तय नहीं कर सका.</translation>
+<translation id="473581466100273252">हाल ही में बंद की गई एंट्री को टॉगल करें</translation>
 <translation id="4736292055110123391">अपने बुकमार्क, पासवर्ड, इतिहास, और दूसरी कई चीज़ें अपने सभी डिवाइस पर सिंक करना</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="473936925429402449">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से<ph name="CURRENT_ELEMENT" /> पेज चुना गया</translation>
@@ -4138,6 +4140,7 @@
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
 <translation id="543338862236136125">पासवर्ड में बदलाव करें</translation>
+<translation id="5433791271511851494">आपका संगठन, शेयर करने के विकल्प मैनेज करता है.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA सुरक्षित करने का तरीका</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> को, हमेशा अपनी जगह की जानकारी को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="5436492226391861498">प्रॉक्सी टनेल की प्रतीक्षा कर रहा है...</translation>
@@ -5176,6 +5179,7 @@
 <translation id="657402800789773160">&amp;यह पेज फिर से लोड करें</translation>
 <translation id="6577284282025554716">डाउनलोड रोका गया: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">नेटवर्क हेल्थ स्नैपशॉट</translation>
+<translation id="6579369886355986318">सारे कंट्रोल कमांड दिखाएं</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - डेस्कटॉप की सामग्री शेयर की गई</translation>
 <translation id="6580203076670148210">स्कैन करने की रफ़्तार</translation>
 <translation id="6582080224869403177">अपनी सुरक्षा बेहतर बनाने के लिए अपना <ph name="DEVICE_TYPE" /> रीसेट करें.</translation>
@@ -5617,6 +5621,7 @@
 <translation id="7044124535091449260">साइट ऐक्सेस के बारे में ज़्यादा जानें</translation>
 <translation id="7044606776288350625">डेटा सिंक करें</translation>
 <translation id="7047059339731138197">कोई बैकग्राउंड चुनें</translation>
+<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> पर लिंक शेयर करें</translation>
 <translation id="7049293980323620022">फ़ाइल रखें?</translation>
 <translation id="7052237160939977163">निष्पादन ट्रेस डेटा भेजें</translation>
 <translation id="7053983685419859001">ब्लॉक करें</translation>

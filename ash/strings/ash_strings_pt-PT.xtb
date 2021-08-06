@@ -177,6 +177,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2322173485024759474">Recuar por letra</translation>
 <translation id="2339073806695260576">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã, utilizar o ponteiro de laser ou a lupa.</translation>
 <translation id="2341729377289034582">Bloqueado na vertical</translation>
+<translation id="2350794187831162545">Agora, a voz em <ph name="LANGUAGE" /> é processada localmente e funciona offline. Pode alterar o idioma do ditado em Definições &gt; Acessibilidade.</translation>
 <translation id="2352467521400612932">Definições da caneta stylus</translation>
 <translation id="2354174487190027830">A ativar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -437,6 +438,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4379531060876907730">Estas são as suas ferramentas da caneta stylus</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4421231901400348175">A partilhar o controlo do seu ecrã com <ph name="HELPER_NAME" /> através da Assistência remota.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>

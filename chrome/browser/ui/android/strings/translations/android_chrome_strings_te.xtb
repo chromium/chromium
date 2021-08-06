@@ -128,7 +128,7 @@
 <translation id="1856325424225101786">లైట్ మోడ్‌ని రీసెట్ చేయాలా?</translation>
 <translation id="1868024384445905608">Chrome ఇప్పుడు ఫైల్‌లను మరింత వేగంగా డౌన్‌లోడ్ చేస్తుంది</translation>
 <translation id="1877026089748256423">Chrome కాలం చెల్లినది</translation>
-<translation id="1883903952484604915">నా ఫైల్‌లు</translation>
+<translation id="1883903952484604915">నా ఫైళ్లు</translation>
 <translation id="1888378517829496315">విండోలన్నింటినీ మేనేజ్ చేయండి</translation>
 <translation id="189358972401248634">ఇతర భాషలు</translation>
 <translation id="1918175104945982129">Assistant వాయిస్ సెర్చ్ సమ్మతి UI సగం ఎత్తులో తెరవబడింది</translation>
@@ -149,7 +149,7 @@
 <translation id="1986685561493779662">పేరు ఇప్పటికే ఉంది</translation>
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> బటన్</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
-<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైల్‌లు}}</translation>
+<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="2021896219286479412">పూర్తి స్క్రీన్ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ అభ్యర్థనను ఆన్ చేయండి</translation>
 <translation id="2039379262107991683">రిమైండర్ పొందటానికి పేజీలను మీ చదవాల్సిన లిస్ట్‌కు జోడించండి</translation>
@@ -162,7 +162,6 @@
 <translation id="2067805253194386918">వచనం</translation>
 <translation id="2068748236079642969">తర్వాతి వీడియోను చూడండి</translation>
 <translation id="2074143993849053708">Assistant వాయిస్ సెర్చ్ సమ్మతి UI మూసివేయబడింది</translation>
-<translation id="2075835334924942448">మీరు కథనాలను ఇక్కడ కనుగొంటారు</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
 <translation id="2096012225669085171">అన్ని పరికరాలలో సింక్ చేయండి మరియు వ్యక్తిగతీకరించండి</translation>
 <translation id="2100273922101894616">ఆటోమేటిక్ సైన్-ఇన్</translation>
@@ -218,7 +217,7 @@
 <translation id="2369533728426058518">తెరిచిన ట్యాబ్‌లు</translation>
 <translation id="2386938421315164605">అంశాలను దాచండి లేదా చూపండి</translation>
 <translation id="2387895666653383613">వచన ప్రమాణం</translation>
-<translation id="2394602618534698961">మీరు డౌన్‌లోడ్ చేసే ఫైల్‌లు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="2394602618534698961">మీరు డౌన్‌లోడ్ చేసే ఫైళ్లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="2407481962792080328">మీ Google ఖాతాకు మీరు సైన్ ఇన్ చేసినప్పుడు, ఈ ఫీచర్ ఆన్ చేయబడుతుంది</translation>
 <translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
 <translation id="2414886740292270097">ముదురు</translation>
@@ -261,7 +260,7 @@
 <translation id="2645657967708199252">మీ <ph name="CONNECTION_TYPE" /> కనెక్షన్ మీ డౌన్‌లోడ్‌ను నెమ్మదించవచ్చు</translation>
 <translation id="2647434099613338025">భాషను జోడించు</translation>
 <translation id="2650751991977523696">ఫైల్‌ను మళ్లీ డౌన్‌లోడ్ చేయాలా?</translation>
-<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ఆడియో ఫైల్}other{# ఆడియో ఫైల్‌లు}}</translation>
+<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ఆడియో ఫైల్}other{# ఆడియో ఫైళ్లు}}</translation>
 <translation id="2656405586795711023">వెబ్ యాప్‌లు</translation>
 <translation id="2689830683995595741">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="2702516483241149200">కొత్తది: ఈ టెక్స్ట్‌కు స్క్రోల్ చేసే లింక్‌ను షేర్ చేయండి</translation>
@@ -533,7 +532,7 @@
 <translation id="4472118726404937099">మీ అన్ని పరికరాలలో సమకాలీకరణ చేయాలన్నా లేదా మీ అభిరుచికి అనుగుణంగా సెట్ చేయాలన్నా, సైన్ ఇన్ చేసి సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="447252321002412580">Chrome ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="4479972344484327217">Chromeలో <ph name="MODULE" /> ఇన్‌స్టాల్ చేయబడుతోంది…</translation>
-<translation id="4487967297491345095">Chrome యాప్‌ డేటా మొత్తం శాశ్వతంగా తొలగించబడుతుంది. డేటాలో అన్ని ఫైల్‌లు, సెట్టింగ్‌లు, ఖాతాలు, డేటాబేస్‌లు మొదలైనవి ఉంటాయి.</translation>
+<translation id="4487967297491345095">Chrome యాప్‌ డేటా మొత్తం శాశ్వతంగా తొలగించబడుతుంది. డేటాలో అన్ని ఫైళ్లు, సెట్టింగ్‌లు, ఖాతాలు, డేటాబేస్‌లు మొదలైనవి ఉంటాయి.</translation>
 <translation id="449126573531210296">సింక్ చేయబడిన పాస్‌వర్డ్‌లను మీ Google ఖాతాతో ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="4493497663118223949">లైట్ మోడ్ ఆన్ చేయబడింది</translation>
 <translation id="4504667196171871375">Wi-Fi &amp; మొబైల్ డేటా ద్వారా</translation>
@@ -571,8 +570,7 @@
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">వచనాన్ని మీ పరికరాలకు పంపండి</translation>
-<translation id="4697543623252708062">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. 'ఫాలోలను మేనేజ్ చేయి'లో మీరు ఫాలో చేసే సైట్‌లను కంట్రోల్ చేయవచ్చు.</translation>
-<translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైల్‌లు</translation>
+<translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
 <translation id="4714588616299687897">మీ డేటాలో 60% వరకు ఆదా చేసుకోండి</translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />లో తెరువు</translation>
@@ -650,7 +648,6 @@
 <translation id="5152843274749979095">మద్దతు గల యాప్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ విఫలమైంది.}other{# డౌన్‌లోడ్‌లు విఫలమయ్యాయి.}}</translation>
-<translation id="5168824020667180049"><ph name="SITE_NAME" />ను ఫాలో చేశారు</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5171045022955879922">URLను వెతకండి లేదా టైప్ చేయండి</translation>
 <translation id="5184329579814168207">Chromeలో తెరువు</translation>
@@ -719,7 +716,7 @@
 <translation id="5599455543593328020">అజ్ఞాత మోడ్</translation>
 <translation id="5599941490345670218">Google Assistant మీకోసం వెబ్‌సైట్‌లు అంతటా చర్యలను పూర్తి చేయగలదు</translation>
 <translation id="5620163320393916465">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
-<translation id="5620928963363755975">'మరిన్ని ఎంపికలు' బటన్ నొక్కి, డౌన్‌లోడ్‌లలో మీ ఫైల్‌లు మరియు పేజీలను కనుగొనండి</translation>
+<translation id="5620928963363755975">'మరిన్ని ఎంపికలు' బటన్ నొక్కి, డౌన్‌లోడ్‌లలో మీ ఫైళ్లు మరియు పేజీలను కనుగొనండి</translation>
 <translation id="562168087174703495">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధపడదు. పేజీకి లింక్‌ను షేర్ చేయండి.</translation>
 <translation id="562289928968387744">ప్రతిస్పందనలను మేనేజ్ చేయండి</translation>
 <translation id="5626134646977739690">పేరు:</translation>
@@ -783,7 +780,7 @@
 <translation id="5952764234151283551">మీరు చేరుకోవాలని ప్రయత్నిస్తున్న పేజీ URLని Googleకి పంపుతుంది</translation>
 <translation id="5956665950594638604">Chrome సహాయ కేంద్రాన్ని కొత్త ట్యాబ్‌లో తెరవండి</translation>
 <translation id="5957442310066583693">మీ టాప్ సైట్‍లు చూడటానికి, హోమ్ బటన్‍ను ట్యాప్ చేయండి</translation>
-<translation id="5958275228015807058">డౌన్‌లోడ్‌లలో మీ ఫైల్‌లు మరియు పేజీలను కనుగొనండి</translation>
+<translation id="5958275228015807058">డౌన్‌లోడ్‌లలో మీ ఫైళ్లు మరియు పేజీలను కనుగొనండి</translation>
 <translation id="5962718611393537961">కుదించడానికి నొక్కండి</translation>
 <translation id="5964805880140440652">ఈ పేజీని మరొక పరికరానికి షేర్ చేయడానికి, Chrome సెట్టింగ్‌లలో సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="5964869237734432770">ఇమేజ్ వివరణలను ఆపివేయి</translation>
@@ -1045,7 +1042,7 @@
 <translation id="7562080006725997899">బ్రౌజింగ్ డేటాను తీసివేస్తోంది</translation>
 <translation id="756809126120519699">Chrome డేటా తీసివేయబడింది</translation>
 <translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
-<translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ఫైల్ డౌన్‌లోడ్ చేయబడింది}other{<ph name="FILES_DOWNLOADED_MANY" /> ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి}}</translation>
+<translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ఫైల్ డౌన్‌లోడ్ చేయబడింది}other{<ph name="FILES_DOWNLOADED_MANY" /> ఫైళ్లు డౌన్‌లోడ్ చేయబడ్డాయి}}</translation>
 <translation id="7581273696622423628">సర్వేలో పాల్గొనండి</translation>
 <translation id="7583262514280211622">మీ చదవాల్సిన లిస్ట్‌ను మీరు ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="7588219262685291874">మీ పరికరం బ్యాటరీ సేవర్ ఆన్‌లో ఉన్నప్పుడు ముదురు రంగు థీమ్‌ను ఆన్ చేస్తుంది</translation>
@@ -1152,7 +1149,7 @@
 <translation id="8153351135626613369">సపోర్ట్ చేసే వెబ్‌సైట్‌లలో మీకు సాయం చేయగలదు అని తనకు తానుగా గుర్తించినప్పుడు Assistant మీకు కనిపిస్తుంది</translation>
 <translation id="8156139159503939589">మీరు ఏ భాషలను చదవగలరు?</translation>
 <translation id="8168435359814927499">కంటెంట్</translation>
-<translation id="8186512483418048923"><ph name="FILES" /> ఫైల్‌లు మిగిలి ఉన్నాయి</translation>
+<translation id="8186512483418048923"><ph name="FILES" /> ఫైళ్లు మిగిలి ఉన్నాయి</translation>
 <translation id="8189750580333936930">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్</translation>
 <translation id="8190358571722158785">1 రోజు మిగిలి ఉంది</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
@@ -1282,7 +1279,6 @@
 <translation id="8993760627012879038">కొత్త ట్యాబ్‌ను అజ్ఞాత మోడ్‌లో తెరవండి</translation>
 <translation id="8996847606757455498">మరొక ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="8998729206196772491">మీరు <ph name="MANAGED_DOMAIN" /> నిర్వహణలో ఉన్న ఖాతా నుండి సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకులకు మీ Chrome డేటాపై నియంత్రణను అందిస్తున్నారు. మీ డేటా శాశ్వతంగా ఈ ఖాతాకు అనుబంధించబడుతుంది. Chrome నుండి సైన్ అవుట్ చేయడం వ‌ల్ల ఈ పరికరం నుండి మీ డేటా తొలగించబడుతుంది. కానీ ఇది మీ Google ఖాతాలో అలాగే నిల్వ చేయబడి ఉంటుంది.</translation>
-<translation id="9000233047676755924">మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు ఇప్పుడు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. 'ఫాలోలను మేనేజ్ చేయి'లో మీరు ఫాలో చేసే సైట్‌లను కంట్రోల్ చేయవచ్చు.</translation>
 <translation id="9022774213089566801">తరచుగా సందర్శించినవి</translation>
 <translation id="9028914725102941583">పరికరాలలో షేర్ చేయడానికి, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="9040142327097499898">నోటిఫికేషన్‌లు అనుమతించబడ్డాయి. ఈ పరికరానికి స్థానం ఆఫ్ చేయబడింది.</translation>

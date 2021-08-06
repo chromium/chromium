@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">ਅਚਾਨਕ ਇੱਕ ਗੜਬੜ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਵਿਕਾਸਕਾਰਾਂ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ।</translation>
 <translation id="1697532407822776718">ਤੁਸੀਂ ਸਾਰਾ ਸੈਟ ਕਰ ਲਿਆ ਹੈ!</translation>
 <translation id="1742469581923031760">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ…</translation>
+<translation id="177040763384871009">ਰਿਮੋਟ ਡੀਵਾਈਸ 'ਤੇ ਕਲਿੱਕ ਕੀਤੇ ਲਿੰਕਾਂ ਨੂੰ ਕਲਾਇੰਟ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਿਸਟਮ ਦੇ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ "<ph name="URL_FORWARDER_NAME" />" ਵਿੱਚ ਬਦਲਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="177096447311351977">ਕਲਾਇੰਟ ਲਈ ਚੈਨਲ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ਚੈਨਲ='<ph name="CHANNEL_TYPE" />' ਕਨੈਕਸ਼ਨ='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ਮਿਟਾਓ</translation>
 <translation id="2009755455353575666">ਕਨੈਕਸ਼ਨ ਅਸਫਲ</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">ਆਫ਼ਲਾਈਨ।</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
 <translation id="3776024066357219166">ਤੁਹਾਡਾ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਸੈਸ਼ਨ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ।</translation>
+<translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3905196214175737742">ਅਵੈਧ ਹੋਸਟ ਮਾਲਕ ਡੋਮੇਨ।</translation>
 <translation id="3931191050278863510">ਹੋਸਟ ਬੰਦ ਕੀਤਾ।</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453">ਕਲਾਇੰਟ ਲਈ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ਕਲਾਇੰਟ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ਖਾਤਾ ਬਦਲੋ</translation>
+<translation id="7535110896613603182">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7628469622942688817">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੇਰਾ ਪਿੰਨ ਯਾਦ ਰੱਖੋ।</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>

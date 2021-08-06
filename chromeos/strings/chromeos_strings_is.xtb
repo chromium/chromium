@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
+<translation id="3708186454126126312">Áður tengt</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Skanna aftur síðu}=1{Skanna aftur síðu {PAGE_NUMBER}}one{Skanna aftur síðu {PAGE_NUMBER}}other{Skanna aftur síðu {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
@@ -415,6 +416,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8798441408945964110">Heiti veitu</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Veggfóður</translation>
+<translation id="8834539327799336565">Tengt núna</translation>
 <translation id="8845001906332463065">Fá hjálp</translation>
 <translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8881098542468797602">Próf tókst</translation>

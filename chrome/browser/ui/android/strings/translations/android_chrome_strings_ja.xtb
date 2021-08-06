@@ -162,7 +162,6 @@
 <translation id="2067805253194386918">テキスト</translation>
 <translation id="2068748236079642969">次の動画を見る</translation>
 <translation id="2074143993849053708">アシスタントの音声検索の同意ダイアログが閉じられました</translation>
-<translation id="2075835334924942448">ここに記事が表示されます</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
 <translation id="2096012225669085171">デバイス間の同期とカスタマイズ</translation>
 <translation id="2100273922101894616">自動ログイン</translation>
@@ -226,6 +225,7 @@
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> のダウンロードをやり直してもよろしいですか？</translation>
+<translation id="2450209325949418501">ダウンロードの状況は通知で確認できます</translation>
 <translation id="2450907520913474542">ウェブサイト上のトピックについて、ページを移動せずに調べることができます。「タップして検索」では、単語とその周囲のコンテキストが Google 検索に送信され、定義、画像、検索結果などの情報が返されます。
 
 検索するには、対象の単語を長押しします。検索を絞り込むには、単語の選択範囲を変更します。パネルを開いてアイコンをタップすると、新しいタブで検索ボックスの内容を編集できます。</translation>
@@ -396,6 +396,7 @@
 プライバシー サンドボックスは、サイトの機能を損なったり、ユーザーが同意なくウェブ上でトラッキングされたりすることがないよう、より優れた方法でこうしたサービスを実現して、オープンウェブの理念を支える取り組みです。
 
 プライバシー サンドボックスはまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 件のダウンロードがスケジュール設定されました}other{# 件のダウンロードがスケジュール設定されました}}</translation>
 <translation id="3478363558367712427">検索エンジンを選択できます</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -571,7 +572,6 @@
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
 <translation id="4696983787092045100">デバイスにテキストを送信</translation>
-<translation id="4697543623252708062">まもなく、新しいタブを開くと、<ph name="SITE_NAME" /> のストーリーが表示されるようになります。[フォローを管理] でフォローするサイトを管理できます。</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4714588616299687897">データを最大 60% 削減できます</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
@@ -650,7 +650,6 @@
 <translation id="5152843274749979095">サポートされているアプリがインストールされていません</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました。}other{# 件のダウンロードが失敗しました。}}</translation>
-<translation id="5168824020667180049"><ph name="SITE_NAME" /> をフォローしました</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
@@ -660,6 +659,7 @@
 <translation id="5199929503336119739">仕事用プロファイル</translation>
 <translation id="5201464744567315552"><ph name="TIME" /> にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="5204967432542742771">パスワードを入力</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{ファイルをダウンロードしています…}other{# 件のファイルをダウンロードしています…}}</translation>
 <translation id="5210286577605176222">前のタブに移動する</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5213672942202814946">音声検索を使う</translation>
@@ -821,6 +821,7 @@
 <translation id="6159729262978459665">同期しているすべてのデバイスから履歴を削除します。</translation>
 <translation id="6186394685773237175">漏洩した可能性のあるパスワードは見つかりませんでした</translation>
 <translation id="6192907950379606605">画像の説明文を取得する</translation>
+<translation id="6203593061661911168">Wi-Fi 接続時にダウンロードを開始します</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
 <translation id="6221633008163990886">ロックを解除してパスワードをエクスポート</translation>
@@ -877,6 +878,7 @@
 <translation id="6489610539826642779">リーディング リスト<ph name="BEGIN_NEW" />新機能<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">選択箇所へのリンク</translation>
 <translation id="6496823230996795692"><ph name="APP_NAME" /> を初めて使用する場合は、インターネットに接続してください。</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{ファイルをダウンロードしました}other{# 件のダウンロードが完了しました}}</translation>
 <translation id="6508722015517270189">Chrome を再起動する</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6532866250404780454">Chrome でアクセスしたサイトは表示されなくなり、サイトに設定したタイマーはすべて削除されます。</translation>
@@ -1072,6 +1074,7 @@
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7725024127233776428">ブックマークしたページがここに表示されます</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
+<translation id="7760558538939385512">（<ph name="MEGABYTES" />）\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">日付と時間を選択</translation>
 <translation id="7762668264895820836">SD カード <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">住所を追加</translation>
@@ -1269,6 +1272,7 @@
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8920114477895755567">保護者の情報を待っています。</translation>
 <translation id="8922289737868596582">[その他のオプション] からページをダウンロードするとオフラインで使用できるようになります</translation>
+<translation id="892496902842311796"><ph name="LANG" /> を使用できるようになりました</translation>
 <translation id="8928626432984354940">ブックマーク フォルダのリストが画面の下半分に表示されています</translation>
 <translation id="8937267401510745927">タスクを完了するため、アシスタントを使用したサイトの URL とコンテンツ、およびアシスタントで送信した情報が Google に送られます。この情報は、Google アカウントに保存される可能性があります。アシスタントは、Chrome の設定で無効にできます。</translation>
 <translation id="8937772741022875483">Chrome のアクティビティを Digital Wellbeing から削除しますか？</translation>
@@ -1282,7 +1286,6 @@
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
-<translation id="9000233047676755924">新しいタブを開くと、<ph name="SITE_NAME" /> のストーリーが表示されるようになります。[フォローを管理] でフォローするサイトを管理できます。</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9028914725102941583">デバイス間で共有するには同期をオンにします</translation>
 <translation id="9040142327097499898">通知が許可されていますが、位置情報がデバイスでオフになっています。</translation>

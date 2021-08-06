@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">Eerder verbonden</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Pagina opnieuw scannen}=1{Pagina {PAGE_NUMBER} opnieuw scannen}other{Pagina {PAGE_NUMBER} opnieuw scannen}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Niet verbonden</translation>
@@ -415,6 +416,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8798441408945964110">Naam provider</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Achtergrond</translation>
+<translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>

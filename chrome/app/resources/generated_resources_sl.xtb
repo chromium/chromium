@@ -2789,6 +2789,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3905761538810670789">Popravi aplikacijo</translation>
 <translation id="3908393983276948098">Vtičnik <ph name="PLUGIN_NAME" /> je zastarel</translation>
 <translation id="3908501907586732282">Omogoči razširitev</translation>
+<translation id="3909701002594999354">Pokaži vse &amp;kontrolnike</translation>
 <translation id="3909791450649380159">Izrež&amp;i</translation>
 <translation id="39103738135459590">Koda za aktiviranje</translation>
 <translation id="3911824782900911339">Nov zavihek s povezavami</translation>
@@ -3528,6 +3529,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4733793249294335256">Lokacija</translation>
 <translation id="473546211690256853">Ta račun upravlja domena <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Sistemu ni uspelo določiti identifikatorjev naprave za to napravo.</translation>
+<translation id="473581466100273252">Preklopi nedavno zaprte vnose</translation>
 <translation id="4736292055110123391">Sinhronizirajte zaznamke, gesla, zgodovino in druge podatke v vseh vaših napravah</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="473936925429402449">Izbrano, element dodatne vsebine št. <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4142,6 +4144,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
 <translation id="543338862236136125">Uredi geslo</translation>
+<translation id="5433791271511851494">Možnosti za deljenje z drugimi upravlja vaša organizacija.</translation>
 <translation id="5434065355175441495">PKCS #1 s šifriranjem RSA</translation>
 <translation id="5435779377906857208">Vedno dovoli gostitelju <ph name="HOST" /> dostop do lokacije</translation>
 <translation id="5436492226391861498">Čakanje na tunel namestniškega strežnika ...</translation>
@@ -5182,6 +5185,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="657402800789773160">Znov&amp;a naloži to stran</translation>
 <translation id="6577284282025554716">Prenos preklican: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Posnetek stanja omrežja</translation>
+<translation id="6579369886355986318">Pokaži vse &amp;kontrolnike</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – vsebina namizja v skupni rabi</translation>
 <translation id="6580203076670148210">Hitrost iskanja</translation>
 <translation id="6582080224869403177">Ponastavite napravo <ph name="DEVICE_TYPE" />, da nadgradite varnost.</translation>
@@ -5623,6 +5627,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7044124535091449260">Preberite več o dostopu do spletnih mest</translation>
 <translation id="7044606776288350625">Sinhronizacija podatkov</translation>
 <translation id="7047059339731138197">Izbira ozadja</translation>
+<translation id="7048457618657122233">Deljenje povezave s ciljem <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Želite obdržati datoteko?</translation>
 <translation id="7052237160939977163">Pošlji podatke za sledenje učinkovitosti delovanja</translation>
 <translation id="7053983685419859001">Blokiraj</translation>

@@ -177,6 +177,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2322173485024759474">Volver letra por letra</translation>
 <translation id="2339073806695260576">Presiona el botón de la pluma stylus en la biblioteca para tomar notas y capturas de pantalla, y usar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Se bloqueó en posición vertical</translation>
+<translation id="2350794187831162545">La voz en <ph name="LANGUAGE" /> se procesa de manera local y funciona sin conexión. Para cambiar tu idioma de Dictado, ve a Configuración &gt; Accesibilidad.</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -438,6 +439,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4379531060876907730">Estas son las herramientas de la pluma stylus</translation>
 <translation id="4389184120735010762">Presionaste la combinación de teclas para activar la lupa con vista acoplada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">Pausado: <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4421231901400348175">Se está compartiendo el control de la pantalla con <ph name="HELPER_NAME" /> mediante la Asistencia remota.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>

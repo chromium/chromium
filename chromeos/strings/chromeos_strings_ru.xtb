@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
+<translation id="3708186454126126312">Ранее подключенные устройства</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу}=1{Повторно сканировать страницу {PAGE_NUMBER}}one{Повторно сканировать страницу {PAGE_NUMBER}}few{Повторно сканировать страницу {PAGE_NUMBER}}many{Повторно сканировать страницу {PAGE_NUMBER}}other{Повторно сканировать страницу {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
@@ -415,6 +416,7 @@
 <translation id="8798441408945964110">Название провайдера</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Обои</translation>
+<translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8868741746785112895">Глобальный уникальный идентификатор</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>

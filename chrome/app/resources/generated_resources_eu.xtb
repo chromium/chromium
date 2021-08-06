@@ -2770,6 +2770,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3905761538810670789">Konpondu aplikazioa</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> zaharkituta dago</translation>
 <translation id="3908501907586732282">Gaitu luzapena</translation>
+<translation id="3909701002594999354">Erakutsi &amp;kontrolatzeko aukera guztiak</translation>
 <translation id="3909791450649380159">&amp;Ebaki</translation>
 <translation id="39103738135459590">Aktibazio-kodea</translation>
 <translation id="3911824782900911339">Fitxa berrien orria</translation>
@@ -3508,6 +3509,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4733793249294335256">Kokapena</translation>
 <translation id="473546211690256853"><ph name="DOMAIN" /> domeinuak kudeatzen du kontua</translation>
 <translation id="4735803855089279419">Sistemak ezin izan ditu zehaztu gailuaren identifikatzaileak.</translation>
+<translation id="473581466100273252">Zabaldu/Tolestu itxitako azken sarrerak</translation>
 <translation id="4736292055110123391">Sinkronizatu laster-markak, pasahitzak, historia eta beste gauza asko zure gailu guztietan</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="473936925429402449">Hautatuta, <ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
@@ -4122,6 +4124,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5430931332414098647">Konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
+<translation id="5433791271511851494">Zure erakundeak kudeatzen ditu partekatzeko aukerak.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA enkriptatzea</translation>
 <translation id="5435779377906857208">Eman beti kokapena atzitzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="5436492226391861498">Proxy-tunelaren zain…</translation>
@@ -5160,6 +5163,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="657402800789773160">&amp;Kargatu orria berriro</translation>
 <translation id="6577284282025554716">Bertan behera utzi da <ph name="FILE_NAME" /> fitxategia deskargatzeko prozesua</translation>
 <translation id="657866106756413002">Sarearen egoeraren laburpena</translation>
+<translation id="6579369886355986318">Erakutsi &amp;kontrolatzeko aukera guztiak</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: ordenagailuko edukia partekatzen ari da</translation>
 <translation id="6580203076670148210">Bilaketa-abiadura</translation>
 <translation id="6582080224869403177">Berrezarri <ph name="DEVICE_TYPE" /> gailua segurtasuna eguneratzeko.</translation>
@@ -5601,6 +5605,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7044124535091449260">Lortu informazio gehiago webguneetarako sarbideari buruz</translation>
 <translation id="7044606776288350625">Sinkronizatu datuak</translation>
 <translation id="7047059339731138197">Aukeratu atzeko plano bat</translation>
+<translation id="7048457618657122233">Partekatu esteka hemen: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Fitxategia gorde nahi duzu?</translation>
 <translation id="7052237160939977163">Bidali errendimenduaren jarraipena egiteko datuak</translation>
 <translation id="7053983685419859001">Blokeatu</translation>

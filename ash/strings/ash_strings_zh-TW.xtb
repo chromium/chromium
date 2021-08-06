@@ -177,6 +177,7 @@
 <translation id="2322173485024759474">移至上一個字母</translation>
 <translation id="2339073806695260576">輕觸檔案櫃的觸控筆圖示即可做筆記、擷取螢幕畫面，以及使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直畫面</translation>
+<translation id="2350794187831162545"><ph name="LANGUAGE" />語音處理程序已在本機執行，相關內容會離線運作。你可以前往 [設定] &gt; [無障礙中心] 變更語音輸入語言。</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -437,6 +438,7 @@
 <translation id="4379531060876907730">這些是可用的觸控筆工具</translation>
 <translation id="4389184120735010762">你按下了停駐放大鏡的鍵盤快速鍵。確定要啟用這項功能嗎？</translation>
 <translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">系統不支援連接的周邊裝置類型</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過遠端協助與<ph name="HELPER_NAME" />分享螢幕控制功能。</translation>
 <translation id="4424159417645388645">桌面 5</translation>

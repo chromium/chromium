@@ -2771,6 +2771,7 @@
 <translation id="3905761538810670789">修復應用程式</translation>
 <translation id="3908393983276948098">「<ph name="PLUGIN_NAME" />」版本過舊</translation>
 <translation id="3908501907586732282">啟用擴充功能</translation>
+<translation id="3909701002594999354">顯示所有控制項(&amp;C)</translation>
 <translation id="3909791450649380159">剪下(&amp;T)</translation>
 <translation id="39103738135459590">啟用代碼</translation>
 <translation id="3911824782900911339">新分頁</translation>
@@ -3508,6 +3509,7 @@
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理。</translation>
 <translation id="4735803855089279419">系統無法判別這個裝置的裝置 ID。</translation>
+<translation id="473581466100273252">顯示/隱藏最近關閉的項目</translation>
 <translation id="4736292055110123391">讓你在所有裝置上的書籤、密碼、歷史記錄及其他設定保持同步</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">已選取 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
@@ -4122,6 +4124,7 @@
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="543338862236136125">修改密碼</translation>
+<translation id="5433791271511851494">共用選項是由貴機構所管理。</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
@@ -5160,6 +5163,7 @@
 <translation id="657402800789773160">重新載入這個網頁(&amp;R)</translation>
 <translation id="6577284282025554716">已取消下載：<ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">網路健康狀態數據匯報</translation>
+<translation id="6579369886355986318">顯示所有控制項(&amp;C)</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面內容</translation>
 <translation id="6580203076670148210">掃描速度</translation>
 <translation id="6582080224869403177">請重設 <ph name="DEVICE_TYPE" />，以便進行安全性更新。</translation>
@@ -5601,6 +5605,7 @@
 <translation id="7044124535091449260">進一步瞭解網站存取權</translation>
 <translation id="7044606776288350625">同步處理資料</translation>
 <translation id="7047059339731138197">選擇背景</translation>
+<translation id="7048457618657122233">將連結分享至「<ph name="SHARE_TARGET" />」</translation>
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
 <translation id="7052237160939977163">傳送效能追蹤資料</translation>
 <translation id="7053983685419859001">封鎖</translation>

@@ -2786,6 +2786,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3905761538810670789">Sửa ứng dụng</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> đã lỗi thời</translation>
 <translation id="3908501907586732282">Bật tiện ích</translation>
+<translation id="3909701002594999354">Hiển thị tất cả &amp;nút điều khiển</translation>
 <translation id="3909791450649380159">Cắ&amp;t</translation>
 <translation id="39103738135459590">Mã kích hoạt</translation>
 <translation id="3911824782900911339">Trang thẻ mới</translation>
@@ -3525,6 +3526,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4733793249294335256">Vị trí</translation>
 <translation id="473546211690256853">Tài khoản này do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="4735803855089279419">Hệ thống không xác định được mã nhận dạng thiết bị cho thiết bị này.</translation>
+<translation id="473581466100273252">Ẩn/hiện các mục đã đóng gần đây</translation>
 <translation id="4736292055110123391">Đồng bộ hóa dấu trang, mật khẩu, lịch sử và nhiều nội dung khác trên tất cả các thiết bị của bạn</translation>
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="473936925429402449">Nội dung bổ sung đã chọn <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
@@ -4139,6 +4141,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5430931332414098647">Chia sẻ Internet tức thì</translation>
 <translation id="5431318178759467895">Màu</translation>
 <translation id="543338862236136125">Chỉnh sửa mật khẩu</translation>
+<translation id="5433791271511851494">Các lựa chọn chia sẻ do tổ chức của bạn quản lý.</translation>
 <translation id="5434065355175441495">PKCS #1 Mã hóa RSA</translation>
 <translation id="5435779377906857208">Luôn cho phép <ph name="HOST" /> truy cập thông tin vị trí của bạn</translation>
 <translation id="5436492226391861498">Chờ đường hầm proxy...</translation>
@@ -5177,6 +5180,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="657402800789773160">&amp;Tải lại trang này</translation>
 <translation id="6577284282025554716">Đã hủy tải xuống: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Tổng quan nhanh về tình trạng mạng</translation>
+<translation id="6579369886355986318">Hiển thị tất cả &amp;nút điều khiển</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Đã chia sẻ nội dung trên màn hình</translation>
 <translation id="6580203076670148210">Tốc độ quét</translation>
 <translation id="6582080224869403177">Đặt lại <ph name="DEVICE_TYPE" /> của bạn để nâng cấp bảo mật.</translation>
@@ -5618,6 +5622,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7044124535091449260">Tìm hiểu thêm về quyền truy cập vào trang web</translation>
 <translation id="7044606776288350625">Dữ liệu đồng bộ hóa</translation>
 <translation id="7047059339731138197">Chọn nền</translation>
+<translation id="7048457618657122233">Chia sẻ đường liên kết đến <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Giữ tệp?</translation>
 <translation id="7052237160939977163">Gửi dữ liệu theo dõi hoạt động</translation>
 <translation id="7053983685419859001">Chặn</translation>

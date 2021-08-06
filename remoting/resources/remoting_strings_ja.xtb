@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">予期しないエラーが発生しました。この問題をデベロッパーに報告してください。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
 <translation id="1742469581923031760">接続しています...</translation>
+<translation id="177040763384871009">リモート デバイスでクリックしたリンクをクライアント ブラウザで開くことを許可するには、システムのウェブブラウザを「<ph name="URL_FORWARDER_NAME" />」に変更する必要があります。</translation>
 <translation id="177096447311351977">クライアントのチャンネル IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'</translation>
 <translation id="1897488610212723051">削除</translation>
 <translation id="2009755455353575666">接続失敗</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">オフラインです。</translation>
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3776024066357219166">Chrome リモート デスクトップ セッションが終了しました。</translation>
+<translation id="3858860766373142691">名前</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3905196214175737742">ホストの所有者ドメインが無効です。</translation>
 <translation id="3931191050278863510">ホストが停止しました。</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453">次のクライアントのアクセスを拒否しました: <ph name="CLIENT_USERNAME" />。</translation>
 <translation id="7444276978508498879">次のクライアントが接続しました: <ph name="CLIENT_USERNAME" />。</translation>
 <translation id="7526139040829362392">アカウントを変更</translation>
+<translation id="7535110896613603182">デフォルトのアプリ設定を開く</translation>
 <translation id="7628469622942688817">このデバイスに PIN を保存する。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>

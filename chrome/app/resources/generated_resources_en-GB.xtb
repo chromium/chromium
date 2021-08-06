@@ -2786,6 +2786,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3905761538810670789">Repair app</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> is out of date</translation>
 <translation id="3908501907586732282">Enable extension</translation>
+<translation id="3909701002594999354">Show all controls</translation>
 <translation id="3909791450649380159">Cu&amp;t</translation>
 <translation id="39103738135459590">Activation code</translation>
 <translation id="3911824782900911339">New Tab page</translation>
@@ -3525,6 +3526,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4733793249294335256">Location</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
+<translation id="473581466100273252">Toggle recently closed entries</translation>
 <translation id="4736292055110123391">Sync your bookmarks, passwords, history and more on all your devices</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4139,6 +4141,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
 <translation id="543338862236136125">Edit password</translation>
+<translation id="5433791271511851494">Options for sharing are managed by your organisation.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Encryption</translation>
 <translation id="5435779377906857208">Always allow <ph name="HOST" /> to access your location</translation>
 <translation id="5436492226391861498">Waiting for proxy tunnel...</translation>
@@ -5177,6 +5180,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="657402800789773160">&amp;Reload This Page</translation>
 <translation id="6577284282025554716">Download cancelled: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Network health snapshot</translation>
+<translation id="6579369886355986318">Show all controls</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Desktop content shared</translation>
 <translation id="6580203076670148210">Scanning speed</translation>
 <translation id="6582080224869403177">Reset your <ph name="DEVICE_TYPE" /> to upgrade your security.</translation>
@@ -5618,6 +5622,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7044124535091449260">Learn more about site access</translation>
 <translation id="7044606776288350625">Sync data</translation>
 <translation id="7047059339731138197">Pick a background</translation>
+<translation id="7048457618657122233">Share link to <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Keep file?</translation>
 <translation id="7052237160939977163">Send performance trace data</translation>
 <translation id="7053983685419859001">Block</translation>

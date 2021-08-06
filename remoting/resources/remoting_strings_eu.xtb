@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Ustekabeko errore bat gertatu da. Eman arazoaren berri garatzaileei.</translation>
 <translation id="1697532407822776718">Prest zaude!</translation>
 <translation id="1742469581923031760">Konektatzen…</translation>
+<translation id="177040763384871009">Urruneko gailuko estekaren batean klik eginez gero hura arakatzailean irekitzeko baimena eman nahi baduzu, "<ph name="URL_FORWARDER_NAME" />" ezarri behar duzu sistemaren web-arakatzaile gisa.</translation>
 <translation id="177096447311351977">Bezeroaren kanalaren IDa: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Ezabatu</translation>
 <translation id="2009755455353575666">Ezin izan da konektatu</translation>
@@ -56,6 +57,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="369442766917958684">Konexiorik gabe.</translation>
 <translation id="3695446226812920698">Lortu argibideak</translation>
 <translation id="3776024066357219166">Chrome-ren Urruneko pantaila eginbideko saioa amaitu duzu.</translation>
+<translation id="3858860766373142691">Izena</translation>
 <translation id="3897092660631435901">Menua</translation>
 <translation id="3905196214175737742">Ez du balio ostalari-jabearen domeinuak.</translation>
 <translation id="3931191050278863510">Ostalaria gelditu egin da.</translation>
@@ -141,6 +143,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="7434397035092923453">Sarbidea ukatu zaio bezero honi: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Konektatutako bezeroa: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Aldatu kontua</translation>
+<translation id="7535110896613603182">Ireki aplikazio lehenetsien ezarpenak</translation>
 <translation id="7628469622942688817">Gogoratu nire PINa gailu honetan.</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>

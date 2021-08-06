@@ -2771,6 +2771,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3905761538810670789">Reparar aplicación</translation>
 <translation id="3908393983276948098">El complemento <ph name="PLUGIN_NAME" /> no está actualizado</translation>
 <translation id="3908501907586732282">Habilitar extensión</translation>
+<translation id="3909701002594999354">Mostrar todos los &amp;controles</translation>
 <translation id="3909791450649380159">Cor&amp;tar</translation>
 <translation id="39103738135459590">Código de activación</translation>
 <translation id="3911824782900911339">Página Nueva pestaña</translation>
@@ -3508,6 +3509,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4733793249294335256">Ubicación</translation>
 <translation id="473546211690256853">Esta cuenta está administrada por <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">El sistema no ha podido determinar los identificadores de este dispositivo.</translation>
+<translation id="473581466100273252">Mostrar/Ocultar entradas cerradas recientemente</translation>
 <translation id="4736292055110123391">Sincroniza tus marcadores, tus contraseñas, tu historial y mucho más en todos tus dispositivos</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="473936925429402449">Seleccionado contenido adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4122,6 +4124,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="543338862236136125">Cambiar contraseña</translation>
+<translation id="5433791271511851494">Las opciones de compartir las gestiona tu organización.</translation>
 <translation id="5434065355175441495">PKCS #1 con cifrado RSA</translation>
 <translation id="5435779377906857208">Permitir siempre que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="5436492226391861498">Esperando túnel proxy...</translation>
@@ -5160,6 +5163,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="657402800789773160">Volver a &amp;cargar la página</translation>
 <translation id="6577284282025554716">Descarga cancelada: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Instantánea del estado de la red</translation>
+<translation id="6579369886355986318">Mostrar todos los &amp;controles</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Contenido del ordenador compartido</translation>
 <translation id="6580203076670148210">Velocidad de búsqueda</translation>
 <translation id="6582080224869403177">Restablece tu <ph name="DEVICE_TYPE" /> para actualizar la seguridad.</translation>
@@ -5601,6 +5605,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7044124535091449260">Más información sobre el acceso del sitio web</translation>
 <translation id="7044606776288350625">Sincronización de datos</translation>
 <translation id="7047059339731138197">Selecciona un fondo de pantalla</translation>
+<translation id="7048457618657122233">Compartir enlace con <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">¿Quieres conservar el archivo?</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>

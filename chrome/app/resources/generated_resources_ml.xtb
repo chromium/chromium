@@ -2770,6 +2770,7 @@
 <translation id="3905761538810670789">ആപ്പ് റിപ്പയർ ചെയ്യുക</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> കാലഹരണപ്പെട്ടു</translation>
 <translation id="3908501907586732282">വിപുലീകരണം പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="3909701002594999354">എല്ലാ നിയന്ത്രണങ്ങളും കാണിക്കുക</translation>
 <translation id="3909791450649380159">&amp;മുറിക്കുക</translation>
 <translation id="39103738135459590">സജീവമാക്കൽ കോഡ്</translation>
 <translation id="3911824782900911339">പുതിയ ടാബ് പേജ്</translation>
@@ -3507,6 +3508,7 @@
 <translation id="4733793249294335256">ലൊക്കേഷൻ</translation>
 <translation id="473546211690256853"><ph name="DOMAIN" />, ഈ അക്കൗണ്ട് നിയന്ത്രിക്കുന്നു</translation>
 <translation id="4735803855089279419">ഈ ഉപകരണത്തിനായി ഉപകരണ ഐഡന്റിഫയറുകൾ നിർണ്ണയിക്കാൻ സിസ്‌റ്റത്തിനായില്ല.</translation>
+<translation id="473581466100273252">അടുത്തിടെ അടച്ച എൻട്രികൾ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="4736292055110123391">ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം എന്നിവയും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കം തിരഞ്ഞെടുത്തു</translation>
@@ -4121,6 +4123,7 @@
 <translation id="5430931332414098647">തൽക്ഷണ ടെതറിംഗ്</translation>
 <translation id="5431318178759467895">വര്‍ണ്ണം</translation>
 <translation id="543338862236136125">പാസ്‌വേഡ് എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="5433791271511851494">പങ്കിടുന്നതിനുള്ള ഓപ്ഷനുകൾ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA എന്‍‌ക്രിപ്‌ഷന്‍‌</translation>
 <translation id="5435779377906857208">നിങ്ങളുടെ ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാൻ <ph name="HOST" /> -നെ എല്ലായ്‌പ്പോഴും അനുവദിക്കുക</translation>
 <translation id="5436492226391861498">പ്രോക്സി ടണലിനായി കാത്തിരിക്കുന്നു...</translation>
@@ -5161,6 +5164,7 @@
 <translation id="657402800789773160">&amp;ഈ പേജ് വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="6577284282025554716">ഡൗൺലോഡ് റദ്ദാക്കി: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">നെ‌റ്റ്‌വർക്ക് ഹെൽത്ത് സ്‌നാപ്പ്ഷോട്ട്</translation>
+<translation id="6579369886355986318">എല്ലാ നിയന്ത്രണങ്ങളും കാണിക്കുക</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ഡെസ്‌ക്‌ടോപ്പ് ഉള്ളടക്കം പങ്കിട്ടു</translation>
 <translation id="6580203076670148210">സ്‌കാനിംഗ് വേഗത</translation>
 <translation id="6582080224869403177">സുരക്ഷ അപ്‌ഗ്രേഡ് ചെയ്യാനായി നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> പുനഃക്രമീകരിക്കുക.</translation>
@@ -5602,6 +5606,7 @@
 <translation id="7044124535091449260">സൈറ്റ് ആക്‌സസിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="7044606776288350625">ഡാറ്റ സമന്വയിപ്പിക്കൽ</translation>
 <translation id="7047059339731138197">ഒരു പശ്ചാത്തലം തിരഞ്ഞെടുക്കുക</translation>
+<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> എന്നതിലേക്ക് ലിങ്ക് പങ്കിടുക</translation>
 <translation id="7049293980323620022">ഫയൽ സൂക്ഷിക്കണോ?</translation>
 <translation id="7052237160939977163">പ്രകടന ട്രെയിസ് ഡാറ്റ അയയ്‌ക്കുക</translation>
 <translation id="7053983685419859001">തടയുക</translation>

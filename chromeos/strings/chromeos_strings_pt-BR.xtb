@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="360565022852130722">A rede Wi-Fi é protegida pelo protocolo fraco WEP 802.1x</translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Verificar novamente a página}=1{Verificar novamente a página {PAGE_NUMBER}}one{Verificar novamente a página {PAGE_NUMBER}}other{Verificar novamente a página {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avaliações)</translation>
 <translation id="3748026146096797577">Não conectado</translation>
@@ -415,6 +416,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8798441408945964110">Nome do provedor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Plano de fundo</translation>
+<translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8845001906332463065">Ajuda</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>

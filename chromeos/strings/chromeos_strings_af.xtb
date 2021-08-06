@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Battery is vol</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />-toets</translation>
+<translation id="3708186454126126312">Voorheen gekoppel</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Herskandeer bladsy}=1{Herskandeer bladsy {PAGE_NUMBER}}other{Herskandeer bladsy {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> resensies)</translation>
 <translation id="3748026146096797577">Nie gekoppel nie</translation>
@@ -415,6 +416,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8798441408945964110">Verskaffer se naam</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Muurpapier</translation>
+<translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>

@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2717722538473713889">Адреси за е-пошта</translation>
+<translation id="2785051990912111074">Изборов ќе ги избрише колачињата за <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Сигурно ли сакате да ги ресетирате сите дозволи на сајтот за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">Последно посетено на <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Не се најдени контакти</translation>
 <translation id="4996978546172906250">Сподели преку</translation>
+<translation id="5014906230196386306">Да се избришат колачињата?</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5048398596102334565">Дозволете сајтовите да пристапуваат до сензорите за движење (препорачано)</translation>
 <translation id="5050380848339752099">Сајтов ќе сподели информации со апликација надвор од режимот „Инкогнито“.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
 <translation id="5403592356182871684">Имиња</translation>
+<translation id="5438097262470833822">Изборов ќе ги ресетира дозволите за <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Изминато време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај ги рекламите на сајтови што прикажуваат нападни или лажни реклами</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> е одобрена, <ph name="PERMISSION_2" /> е блокирана</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6697925417670533197">Активни преземања</translation>
 <translation id="6746124502594467657">Премести долу</translation>
+<translation id="6749077623962119521">Да се ресетираат дозволите?</translation>
 <translation id="6766622839693428701">Повлечете надолу за да затворите.</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6818926723028410516">Изберете ставки</translation>

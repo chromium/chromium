@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
+<translation id="2785051990912111074">Denne handling rydder cookies for <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Forrige nummer</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
+<translation id="5014906230196386306">Vil du rydde cookies?</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5048398596102334565">Tillad, at websites kan få adgang til bevægelsessensorer (anbefales)</translation>
 <translation id="5050380848339752099">Dette website skal til at dele oplysninger med en app uden for inkognitotilstand.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
+<translation id="5438097262470833822">Denne handling nulstiller tilladelserne for <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloker annoncer på websites, der viser påtrængende eller vildledende annoncer</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> blev tilladt, <ph name="PERMISSION_2" /> blev blokeret</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
 <translation id="6746124502594467657">Flyt ned</translation>
+<translation id="6749077623962119521">Vil du nulstille tilladelserne?</translation>
 <translation id="6766622839693428701">Stryg ned for at lukke.</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6818926723028410516">Vælg elementer</translation>

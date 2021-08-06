@@ -177,6 +177,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2322173485024759474">Yksi kirjain taaksepäin</translation>
 <translation id="2339073806695260576">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää laserosoitinta tai suurennuslasia.</translation>
 <translation id="2341729377289034582">Lukittu pystysuuntaiseksi</translation>
+<translation id="2350794187831162545">Puhe (<ph name="LANGUAGE" />) käsitellään paikallisesti ja toimii ilman verkkoyhteyttä. Voit muuttaa sanalukieltä kohdasta Asetukset &gt; Esteettömyys.</translation>
 <translation id="2352467521400612932">Näyttökynäasetukset</translation>
 <translation id="2354174487190027830">Aktivoidaan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
@@ -437,6 +438,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4379531060876907730">Tässä ovat näyttökynätyökalusi</translation>
 <translation id="4389184120735010762">Painoit kiinnitetyn suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="439598569299422042">Keskeytetty, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Yhdistettyä lisälaitetyyppiä ei tueta</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
 <translation id="4421231901400348175">Näyttösi hallinta jaetaan käyttäjän <ph name="HELPER_NAME" /> kanssa Etätuen kautta.</translation>
 <translation id="4424159417645388645">Työpöytä 5</translation>

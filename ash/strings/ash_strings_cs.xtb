@@ -177,6 +177,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2322173485024759474">Zpět o písmeno</translation>
 <translation id="2339073806695260576">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít laserové ukazovátko nebo lupu.</translation>
 <translation id="2341729377289034582">Uzamknuto na výšku</translation>
+<translation id="2350794187831162545">Řeč v jazyce <ph name="LANGUAGE" /> se teď zpracovává místně a funguje offline. Jazyk diktování můžete změnit v sekci Nastavení &gt; Přístupnost.</translation>
 <translation id="2352467521400612932">Nastavení dotykového pera</translation>
 <translation id="2354174487190027830">Aktivace sítě <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Pokračovat</translation>
@@ -437,6 +438,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4379531060876907730">Toto jsou nástroje pro dotykové pero</translation>
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
 <translation id="439598569299422042">Pozastaveno, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Připojený typ periferního zařízení není podporován</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>

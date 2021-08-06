@@ -2784,6 +2784,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3905761538810670789">Alkalmazás javítása</translation>
 <translation id="3908393983276948098">A(z) <ph name="PLUGIN_NAME" /> elavult</translation>
 <translation id="3908501907586732282">Bővítmény engedélyezése</translation>
+<translation id="3909701002594999354">Az összes &amp;vezérlő megjelenítése</translation>
 <translation id="3909791450649380159">Ki&amp;vágás</translation>
 <translation id="39103738135459590">Aktiváló kód</translation>
 <translation id="3911824782900911339">Új lap oldal</translation>
@@ -3522,6 +3523,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4733793249294335256">Hely</translation>
 <translation id="473546211690256853">Ennek a fióknak a kezelője: <ph name="DOMAIN" />.</translation>
 <translation id="4735803855089279419">A rendszer nem tudta megállapítani az eszközazonosítókat ehhez az eszközhöz.</translation>
+<translation id="473581466100273252">Nemrég bezárt bejegyzések ki-, illetve bekapcsolása</translation>
 <translation id="4736292055110123391">Könyvjelzők, jelszavak, előzmények és más adatok szinkronizálása minden eszközén</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="473936925429402449">Kiválasztva, <ph name="TOTAL_ELEMENTS" />/<ph name="CURRENT_ELEMENT" />. extra tartalom</translation>
@@ -4137,6 +4139,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5430931332414098647">Azonnali internetmegosztás</translation>
 <translation id="5431318178759467895">Színes</translation>
 <translation id="543338862236136125">Jelszó módosítása</translation>
+<translation id="5433791271511851494">A megosztási beállításokat a szervezete kezeli.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA titkosítás</translation>
 <translation id="5435779377906857208">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön tartózkodási helyéhez</translation>
 <translation id="5436492226391861498">Várakozás a proxy alagútra...</translation>
@@ -5176,6 +5179,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="657402800789773160">Az oldal új&amp;ratöltése</translation>
 <translation id="6577284282025554716">Letöltés megszakítva: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Pillanatkép a hálózat állapotáról</translation>
+<translation id="6579369886355986318">Az összes &amp;vezérlő megjelenítése</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Megosztott asztali tartalom</translation>
 <translation id="6580203076670148210">Keresési sebesség</translation>
 <translation id="6582080224869403177">A biztonsági frissítés alkalmazásához állítsa vissza <ph name="DEVICE_TYPE" /> eszközét.</translation>
@@ -5617,6 +5621,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7044124535091449260">További információ a webhelyekhez való hozzáférésről</translation>
 <translation id="7044606776288350625">Adatok szinkronizálása</translation>
 <translation id="7047059339731138197">Háttér kiválasztása</translation>
+<translation id="7048457618657122233">Link megosztása itt: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Megtartja a fájlt?</translation>
 <translation id="7052237160939977163">Teljesítménykövetési adatok elküldése</translation>
 <translation id="7053983685419859001">Letiltás</translation>

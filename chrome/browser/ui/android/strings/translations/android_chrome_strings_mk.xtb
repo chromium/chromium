@@ -162,7 +162,6 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Гледајте го следното видео</translation>
 <translation id="2074143993849053708">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е затворен</translation>
-<translation id="2075835334924942448">Новите стории ќе ги најдете тука</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Синхронизирајте и персонализирајте низ уредите</translation>
 <translation id="2100273922101894616">Автоматско најавување</translation>
@@ -226,6 +225,7 @@
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2450083983707403292">Дали сакате да започнете со преземање на <ph name="FILE_NAME" /> одново?</translation>
+<translation id="2450209325949418501">Може да го видите статусот на преземање во известувањата</translation>
 <translation id="2450907520913474542">Дознајте повеќе за темите на веб-сајтовите без да ја напуштите страницата. Функцијата „Допри за пребарување“ го испраќа зборот и околниот контекст во „Пребарување на Google“, а враќа дефиниции, слики, резултати од пребарување и други детали.
 
 Допрете и задржете на кој било збор за пребарување. За да го рафинирате пребарувањето, изберете повеќе или помалку зборови. За да го измените пребарувањето, отворете ја таблата, допрете на иконата за да отворите во нова картичка и извршете ги измените во полето за пребарување.</translation>
@@ -396,6 +396,7 @@
 Privacy Sandbox ја зачувува виталноста на отворениот интернет преку создавање подобри начини за извршување на овие функции, без бесправно влегување на сајтовите, а притоа спречува да бидете притаено следени на интернет.
 
 Privacy Sandbox сѐ уште активно се развива и таа е достапна само во одредени региони. Засега, сајтовите може да ја испробаат Privacy Sandbox, а притоа да продолжат да ги користат тековните веб-технологии, како што се колачињата од трети страни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{Закажано е 1 преземање}one{Закажани се # преземање}other{Закажани се # преземања}}</translation>
 <translation id="3478363558367712427">Може да го изберете вашиот пребарувач</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за предложените содржини</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -571,7 +572,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4684427112815847243">Синхронизирај сѐ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Испратете SMS до вашите уреди</translation>
-<translation id="4697543623252708062">Наскоро ќе гледате стории од <ph name="SITE_NAME" /> при отворање нова картичка. Може да ги контролирате сајтовите што ги следите во „Управувајте со сајтовите што ги следите“.</translation>
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4714588616299687897">Заштедете до 60% од сообраќајот</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
@@ -650,7 +650,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5152843274749979095">Не се инсталирани поддржани апликации</translation>
 <translation id="5161254044473106830">Потребен е наслов</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 неуспешно преземање.}one{# неуспешно преземање.}other{# неуспешни преземања.}}</translation>
-<translation id="5168824020667180049">Се следи <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5171045022955879922">Барај или впиши URL</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
@@ -660,6 +659,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5199929503336119739">Работен профил</translation>
 <translation id="5201464744567315552">Ќе видите известување кога преземањево ќе започне во <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Внеси лозинка</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{Се презема датотека…}one{Се преземаат # датотека…}other{Се преземаат # датотеки…}}</translation>
 <translation id="5210286577605176222">Скокнете на претходната картичка</translation>
 <translation id="5210365745912300556">Затвори ја картичката</translation>
 <translation id="5213672942202814946">Користење гласовно пребарување</translation>
@@ -821,6 +821,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6159729262978459665">Ќе ја исчисти историјата од сите синхронизирани уреди.</translation>
 <translation id="6186394685773237175">Не се најдени компромитирани лозинки</translation>
 <translation id="6192907950379606605">Добивајте описи на слики</translation>
+<translation id="6203593061661911168">Преземањето ќе започне кога ќе бидете на Wi-Fi</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
 <translation id="6221633008163990886">Отклучете за да ги извезете лозинките</translation>
@@ -877,6 +878,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6489610539826642779">Список за читање <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">Линк до нагласената ставка</translation>
 <translation id="6496823230996795692">За да ја користите <ph name="APP_NAME" /> првпат, поврзете се на интернет.</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{Преземена е датотека}one{# преземање се завршени}other{# преземања се завршени}}</translation>
 <translation id="6508722015517270189">Рестартирајте го Chrome</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6532866250404780454">Сајтовите што ги посетувате во Chrome нема да се прикажуваат. Сите тајмери за сајтови ќе се избришат.</translation>
@@ -1072,6 +1074,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
 <translation id="7725024127233776428">Страниците што ќе ги обележите се појавуваат тука</translation>
 <translation id="7757787379047923882">Текстот е споделен од <ph name="DEVICE_NAME" /></translation>
+<translation id="7760558538939385512">(<ph name="MEGABYTES" />)\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">Изберете датум и време</translation>
 <translation id="7762668264895820836">SD-картичка <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Додај адреса</translation>
@@ -1269,6 +1272,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8920114477895755567">Се чекаат детали за родителите.</translation>
 <translation id="8922289737868596582">Преземете ги страниците преку копчето „Повеќе опции“ за да ги користите офлајн</translation>
+<translation id="892496902842311796"><ph name="LANG" /> е подготвен</translation>
 <translation id="8928626432984354940">Список со папки за обележувачи отворени на половина екран</translation>
 <translation id="8937267401510745927">За да ви помогне да завршувате задачи, Google ќе ги добива URL-адресите и содржините на сајтовите на коишто го користите „Помошникот“, како и податоците што ги испраќате преку него. Податоциве може да се зачуваат во вашата сметка на Google. Може да го исклучите „Помошникот“ во поставките за Chrome.</translation>
 <translation id="8937772741022875483">Да се отстрани вашата активност на Chrome од „Дигитална благосостојба“?</translation>
@@ -1282,7 +1286,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998729206196772491">Се најавувате со сметка управувана од <ph name="MANAGED_DOMAIN" /> и му давате контрола над податоците на Chrome на нејзиниот администратор. Вашите податоци ќе бидат трајно врзани за оваа сметка. Одјавувањето од Chrome ќе ги избрише податоците од уредов, но тие ќе останат зачувани на сметката на Google.</translation>
-<translation id="9000233047676755924">Сега ќе гледате стории од <ph name="SITE_NAME" /> при отворање нова картичка. Може да ги контролирате сајтовите што ги следите во „Управувајте со сајтовите што ги следите“.</translation>
 <translation id="9022774213089566801">Често посетувани</translation>
 <translation id="9028914725102941583">Вклучете ја синхронизацијата за да споделувате на сите уреди</translation>
 <translation id="9040142327097499898">Дозволени се известувања. Локацијата е исклучена за уредов.</translation>

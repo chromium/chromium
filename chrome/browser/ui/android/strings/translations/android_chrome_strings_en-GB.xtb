@@ -162,7 +162,6 @@
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Watch next video</translation>
 <translation id="2074143993849053708">Assistant voice search consent UI closed</translation>
-<translation id="2075835334924942448">You'll find stories here</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sync and personalise across devices</translation>
 <translation id="2100273922101894616">Auto Sign-in</translation>
@@ -226,6 +225,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2450083983707403292">Do you want to start downloading <ph name="FILE_NAME" /> again?</translation>
+<translation id="2450209325949418501">You can see the download status in your notifications</translation>
 <translation id="2450907520913474542">Learn about topics on websites without leaving the page. Touch to search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results and other details.
 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
@@ -396,6 +396,7 @@ Today, websites rely on many technologies, such as third-party cookies, for impo
 Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services – without breaking sites, and while preventing you from being surreptitiously tracked across the web.
 
 Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download scheduled}other{# downloads scheduled}}</translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -571,7 +572,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4696983787092045100">Send text to Your Devices</translation>
-<translation id="4697543623252708062">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. You can control the sites that you’re following in Manage Follows.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4714588616299687897">Save up to 60% of your data</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
@@ -650,7 +650,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5152843274749979095">No supported apps installed</translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download failed.}other{# downloads failed.}}</translation>
-<translation id="5168824020667180049">Followed <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5171045022955879922">Search or type URL</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
@@ -660,6 +659,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5199929503336119739">Work profile</translation>
 <translation id="5201464744567315552">You’ll see a notification when this download starts at <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Enter password</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{Downloading file…}other{Downloading # files…}}</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
 <translation id="5213672942202814946">Use voice search</translation>
@@ -821,6 +821,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6159729262978459665">Clears history from all synced devices.</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
 <translation id="6192907950379606605">Get image descriptions</translation>
+<translation id="6203593061661911168">Download will start when on Wi-Fi</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
 <translation id="6221633008163990886">Unlock to export your passwords</translation>
@@ -877,6 +878,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6489610539826642779">Reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="6490496612063106490">Link to highlight</translation>
 <translation id="6496823230996795692">To use <ph name="APP_NAME" /> for the first time, please connect to the Internet.</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{File downloaded}other{# downloads complete}}</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6532866250404780454">Sites that you visit in Chrome won't show. All site timers will be deleted.</translation>
@@ -1072,6 +1074,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7725024127233776428">Pages that you bookmark appear here</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
+<translation id="7760558538939385512">(<ph name="MEGABYTES" />)\n<ph name="URL" /></translation>
 <translation id="7761849928583394409">Select date and time</translation>
 <translation id="7762668264895820836">SD Card <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Add address</translation>
@@ -1269,6 +1272,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8920114477895755567">Waiting for details of parents.</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
+<translation id="892496902842311796"><ph name="LANG" /> is ready</translation>
 <translation id="8928626432984354940">List of bookmark folders opened at half height</translation>
 <translation id="8937267401510745927">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant. This information may be stored in your Google Account. You can turn off Assistant in Chrome settings.</translation>
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
@@ -1282,7 +1286,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
-<translation id="9000233047676755924">You’ll now see stories from <ph name="SITE_NAME" /> when you open a new tab. You can control the sites that you’re following in Manage Follows.</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9028914725102941583">Turn on sync to share across devices</translation>
 <translation id="9040142327097499898">Notifications are allowed. Location is off for this device.</translation>

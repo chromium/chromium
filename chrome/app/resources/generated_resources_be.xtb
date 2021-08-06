@@ -2773,6 +2773,7 @@
 <translation id="3905761538810670789">Выправіць праграму</translation>
 <translation id="3908393983276948098">Убудова <ph name="PLUGIN_NAME" /> састарэла</translation>
 <translation id="3908501907586732282">Уключыць пашырэнне</translation>
+<translation id="3909701002594999354">Паказаць усе элементы кіравання</translation>
 <translation id="3909791450649380159">Вы&amp;разаць</translation>
 <translation id="39103738135459590">Код актывацыі</translation>
 <translation id="3911824782900911339">Старонка новай укладкі</translation>
@@ -3511,6 +3512,7 @@
 <translation id="4733793249294335256">Месцазнаходжанне</translation>
 <translation id="473546211690256853">Гэты ўліковы запіс належыць дамену <ph name="DOMAIN" />.</translation>
 <translation id="4735803855089279419">Сістэма не змагла вызначыць ідэнтыфікатары прылад для гэтай прылады.</translation>
+<translation id="473581466100273252">Паказаць або схаваць нядаўна закрытыя элементы</translation>
 <translation id="4736292055110123391">Сінхранізацыя закладак, пароляў, гісторыі і іншага на ўсіх вашых прыладах</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="473936925429402449">Выбрана, дадатковае змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4123,6 +4125,7 @@
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
+<translation id="5433791271511851494">Параметрамі абагульвання кіруе ваша арганізацыя.</translation>
 <translation id="5434065355175441495">Шыфраванне PKCS #1 RSA</translation>
 <translation id="5435779377906857208">Заўсёды даваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="5436492226391861498">Чакаецца проксі-тунэль...</translation>
@@ -5161,6 +5164,7 @@
 <translation id="657402800789773160">&amp;Перазагрузіць старонку</translation>
 <translation id="6577284282025554716">Спампоўванне скасавана: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Зводка па стане сеткі</translation>
+<translation id="6579369886355986318">Паказаць усе элементы кіравання</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – абагульваецца змесціва працоўнага стала</translation>
 <translation id="6580203076670148210">Хуткасць праверкі</translation>
 <translation id="6582080224869403177">Каб палепшыць сістэму бяспекі, скіньце налады прылады <ph name="DEVICE_TYPE" />.</translation>
@@ -5602,6 +5606,7 @@
 <translation id="7044124535091449260">Даведацца больш пра доступ да сайта</translation>
 <translation id="7044606776288350625">Сінхранізацыя даных</translation>
 <translation id="7047059339731138197">Выбар фону</translation>
+<translation id="7048457618657122233">Абагуліць спасылку на: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Захаваць файл?</translation>
 <translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>

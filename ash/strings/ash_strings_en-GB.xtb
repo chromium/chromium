@@ -177,6 +177,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2322173485024759474">Back by letter</translation>
 <translation id="2339073806695260576">Tap the stylus button on the shelf to take a note, screenshot, use the laser pointer or magnifying glass.</translation>
 <translation id="2341729377289034582">Locked to vertical</translation>
+<translation id="2350794187831162545"><ph name="LANGUAGE" /> speech is now processed locally and works offline. You can change your dictation language in Settings &gt; Accessibility.</translation>
 <translation id="2352467521400612932">Stylus settings</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continue</translation>
@@ -437,6 +438,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
 <translation id="4389184120735010762">You pressed the keyboard shortcut for the docked magnifier. Do you want to turn it on?</translation>
 <translation id="439598569299422042">Paused, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">The connected peripheral type is not supported</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>

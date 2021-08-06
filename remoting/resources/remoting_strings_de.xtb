@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Ein unerwarteter Fehler ist aufgetreten. Bitte melden Sie dieses Problem den Entwicklern.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
 <translation id="1742469581923031760">Verbindung wird hergestellt…</translation>
+<translation id="177040763384871009">Damit Links, die auf dem Remote-Gerät angeklickt werden, im Client-Browser geöffnet werden können, müssen Sie den Webbrowser des Systems zu „<ph name="URL_FORWARDER_NAME" />“ ändern.</translation>
 <translation id="177096447311351977">Kanal-IP für Client: <ph name="CLIENT_GAIA_IDENTIFIER" /> IP="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" Host-IP="<ph name="HOST_IP_ADDRESS_AND_PORT" />" Kanal="<ph name="CHANNEL_TYPE" />" Verbindung="<ph name="CONNECTION_TYPE" />"</translation>
 <translation id="1897488610212723051">Löschen</translation>
 <translation id="2009755455353575666">Verbindung fehlgeschlagen</translation>
@@ -56,6 +57,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="369442766917958684">Offline</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3776024066357219166">Ihre Chrome Remote Desktop-Sitzung wurde beendet.</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3905196214175737742">Ungültige Hostinhaberdomain</translation>
 <translation id="3931191050278863510">Host angehalten</translation>
@@ -141,6 +143,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="7434397035092923453">Zugriff für folgenden Client verweigert: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">Client verbunden: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7526139040829362392">Konto ändern</translation>
+<translation id="7535110896613603182">Standard-App-Einstellungen öffnen</translation>
 <translation id="7628469622942688817">Meine PIN auf diesem Gerät speichern.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>

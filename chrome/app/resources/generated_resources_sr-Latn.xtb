@@ -2770,6 +2770,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
 <translation id="3908393983276948098">Dodatna komponenta <ph name="PLUGIN_NAME" /> je zastarela</translation>
 <translation id="3908501907586732282">Omogući dodatak</translation>
+<translation id="3909701002594999354">Prikaži sve &amp;kontrole</translation>
 <translation id="3909791450649380159">Is&amp;eci</translation>
 <translation id="39103738135459590">Aktivacioni kôd</translation>
 <translation id="3911824782900911339">Stranica Nova kartica</translation>
@@ -3508,6 +3509,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4733793249294335256">Lokacija</translation>
 <translation id="473546211690256853">Ovim nalogom upravlja <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Sistem nije uspeo da odredi identifikatore za ovaj uređaj.</translation>
+<translation id="473581466100273252">Uključi/isključi nedavno zatvorene unose</translation>
 <translation id="4736292055110123391">Sinhronizujte obeleživače, lozinke, istoriju i drugi sadržaj na svim uređajima</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="473936925429402449">Izabrano je, <ph name="CURRENT_ELEMENT" />. element dodatnog sadržaja od <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4122,6 +4124,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5430931332414098647">Trenutno privezivanje</translation>
 <translation id="5431318178759467895">U boji</translation>
 <translation id="543338862236136125">Izmenite lozinku</translation>
+<translation id="5433791271511851494">Opcijama za deljenje upravlja organizacija.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA šifrovanje</translation>
 <translation id="5435779377906857208">Uvek dozvoli da <ph name="HOST" /> pristupa mikrofonu</translation>
 <translation id="5436492226391861498">Čekanje na proksi tunel...</translation>
@@ -5161,6 +5164,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="657402800789773160">&amp;Reload This Page (Ponovo učitaj ovu stranicu)</translation>
 <translation id="6577284282025554716">Preuzimanje je otkazano: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Stanje ispravnosti mreže</translation>
+<translation id="6579369886355986318">Prikaži sve &amp;kontrole</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – deli se sadržaj ekrana</translation>
 <translation id="6580203076670148210">Brzina traženja</translation>
 <translation id="6582080224869403177">Resetujte uređaj <ph name="DEVICE_TYPE" /> da biste nadogradili bezbednosnu funkciju.</translation>
@@ -5602,6 +5606,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7044124535091449260">Saznajte više o pristupu sajtovima</translation>
 <translation id="7044606776288350625">Sinhronizacija podataka</translation>
 <translation id="7047059339731138197">Izaberite pozadinu</translation>
+<translation id="7048457618657122233">Delite link na: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Želite li da zadržite datoteku?</translation>
 <translation id="7052237160939977163">Šalji podatke o praćenju učinka</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
