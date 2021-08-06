@@ -96,7 +96,7 @@ void Screens::UpdateScreenInfos(LocalDOMWindow* window,
   // before we send out any events.
   current_display_id_ = new_infos.current_display_id;
 
-  // (2) At this point, all data strutures are up to date.
+  // (2) At this point, all data structures are up to date.
   // screens_ has the current set of screens.
   // current_screen_ has new values pushed to it.
   // (prior to this function) individual ScreenAdvanced objects have new values.
@@ -115,7 +115,11 @@ void Screens::UpdateScreenInfos(LocalDOMWindow* window,
   // (5) Send change events to individual screens if they have changed.
   // It's not guaranteed that screen_infos are ordered, so for each screen
   // find the info that corresponds to it in old_info and new_infos.
-  for (const auto& screen : screens_) {
+  //
+  // Note: we cannot use an iterator-based loop here, as iterators may be
+  // invalidated by DispatchEvent(), which may call ContextDestroyed().
+  for (wtf_size_t i = 0; i < screens_.size(); ++i) {
+    const auto& screen = screens_[i];
     auto id = screen->DisplayId();
     auto new_it = base::ranges::find(new_infos.screen_infos, id,
                                      &display::ScreenInfo::display_id);
@@ -126,6 +130,9 @@ void Screens::UpdateScreenInfos(LocalDOMWindow* window,
       // TODO(enne): http://crbug.com/1202981 only send this event when
       // properties on ScreenAdvanced (vs anything in ScreenInfo) change.
       screen->DispatchEvent(*Event::Create(event_type_names::kChange));
+
+      // Note: screen may no longer be valid and screens_ may have been
+      // cleared at this point via DispatchEvent calling ContextDestroyed.
     }
   }
 
