@@ -186,5 +186,20 @@ TEST_F(AppListBubblePresenterTest, ClickOnHomeButtonClosesBubble) {
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
+// Regression test for https://crbug.com/1237264.
+TEST_F(AppListBubblePresenterTest, ClickInCornerOfScreenClosesBubble) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Click the bottom left corner of the screen.
+  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
+  GetEventGenerator()->MoveMouseTo(GetPrimaryDisplay().bounds().bottom_left());
+  GetEventGenerator()->ClickLeftButton();
+  waiter.Wait();
+
+  // Bubble is closed (and did not reopen).
+  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+}
+
 }  // namespace
 }  // namespace ash
