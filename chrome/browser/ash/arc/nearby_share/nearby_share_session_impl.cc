@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -123,7 +124,7 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(
   absl::optional<int> task_id = arc::GetWindowTaskId(window);
   DCHECK(task_id.has_value());
   DCHECK_GE(task_id.value(), 0);
-  if (visible && (task_id.value() == task_id_)) {
+  if (visible && (base::checked_cast<uint32_t>(task_id.value()) == task_id_)) {
     VLOG(1) << "ARC Window is visible";
     if (window_initialization_timer_.IsRunning()) {
       window_initialization_timer_.Stop();
