@@ -276,14 +276,6 @@ Polymer({
       },
     },
 
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
-
     /**
      * When true, all inputs that allow state to be changed (e.g., toggles,
      * inputs) are disabled.
@@ -2113,9 +2105,6 @@ Polymer({
     /** @type {!Array<string>} */ const fields = [];
     switch (this.managedProperties_.type) {
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
-        if (!this.isUpdatedCellularUiEnabled_) {
-          fields.push('cellular.activationState');
-        }
         fields.push('cellular.servingOperator.name');
         break;
       case chromeos.networkConfig.mojom.NetworkType.kTether:
@@ -2192,10 +2181,7 @@ Polymer({
     const type = this.managedProperties_.type;
     switch (type) {
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
-        if (this.isUpdatedCellularUiEnabled_) {
-          fields.push('cellular.activationState');
-        }
-        fields.push('cellular.networkTechnology');
+        fields.push('cellular.activationState', 'cellular.networkTechnology');
         break;
       case chromeos.networkConfig.mojom.NetworkType.kWiFi:
         fields.push(
@@ -2222,8 +2208,7 @@ Polymer({
     const fields = [];
     const networkState =
         OncMojo.managedPropertiesToNetworkState(this.managedProperties_);
-    if (!this.isUpdatedCellularUiEnabled_ ||
-        isActiveSim(networkState, this.deviceState_)) {
+    if (isActiveSim(networkState, this.deviceState_)) {
       // These fields are only known for the SIM in the active slot.
       fields.push(
           'cellular.homeProvider.name', 'cellular.homeProvider.country');
@@ -2350,20 +2335,8 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  showCellularSim_(managedProperties) {
-    return !!managedProperties && !this.isUpdatedCellularUiEnabled_ &&
-        managedProperties.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        managedProperties.typeProperties.cellular.family !== 'CDMA';
-  },
-
-  /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
-   * @return {boolean}
-   * @private
-   */
   showCellularSimUpdatedUi_(managedProperties) {
-    return !!managedProperties && this.isUpdatedCellularUiEnabled_ &&
+    return !!managedProperties &&
         managedProperties.type ===
         chromeos.networkConfig.mojom.NetworkType.kCellular &&
         managedProperties.typeProperties.cellular.family !== 'CDMA';
@@ -2457,8 +2430,7 @@ Polymer({
    * @private
    */
   computeShowConfigurableSections_() {
-    if (!this.isUpdatedCellularUiEnabled_ || !this.managedProperties_ ||
-        !this.deviceState_) {
+    if (!this.managedProperties_ || !this.deviceState_) {
       return true;
     }
 
@@ -2477,9 +2449,6 @@ Polymer({
    * @private
    */
   computeDisabled_() {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!this.deviceState_ ||
         this.deviceState_.type !==
             chromeos.networkConfig.mojom.NetworkType.kCellular) {

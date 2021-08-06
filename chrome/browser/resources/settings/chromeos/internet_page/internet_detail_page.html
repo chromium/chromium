@@ -243,19 +243,6 @@
         prefs="{{prefs}}">
       </cellular-roaming-toggle-button>
     </template>
-    <!-- SIM Info (Cellular only). -->
-    <!-- TODO(crbug/1093185): Remove when updatedCellularActivationUi
-        flag launches -->
-    <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
-        restamp>
-      <div class="settings-box single-column stretch">
-        <network-siminfo id="cellularSimInfo"
-            network-state="[[getNetworkState_(managedProperties_)]]"
-            device-state="[[deviceState_]]"
-            disabled="[[disabled_]]">
-        </network-siminfo>
-      </div>
-    </template>
     <!-- IP Address. -->
     <div
       class="settings-box two-line single-column stretch settings-box-text"
