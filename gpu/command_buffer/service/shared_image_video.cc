@@ -438,6 +438,10 @@ std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
 }
 
 void SharedImageVideo::BeginGLReadAccess(const GLuint service_id) {
+  // TODO(vasilyt): We never should change gl bindings and not update tracking.
+  // UpdateAndBindTexImage might change one, so we do restore here as a
+  // temporary fix to merge to M93.
+  ScopedRestoreTextureBinding restore_bindings;
   stream_texture_sii_->UpdateAndBindTexImage(service_id);
 }
 
