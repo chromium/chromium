@@ -6,12 +6,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DragManager, DragManagerDelegate, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip.top-chrome/drag_manager.js';
 import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
-import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip.top-chrome/tab_strip_embedder_proxy.js';
-import {TabData, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
+import {Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
-import {TestTabStripEmbedderProxy} from './test_tab_strip_embedder_proxy.js';
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
 /** @implements {DragManagerDelegate} */
@@ -94,9 +93,6 @@ suite('DragManager', () => {
   let dragManager;
   let testTabsApiProxy;
 
-  /** @type {!TestTabStripEmbedderProxy} */
-  let testTabStripEmbedderProxy;
-
   const tabs = [
     {
       active: true,
@@ -133,7 +129,7 @@ suite('DragManager', () => {
     delegate.replaceChild(groupElement, tabElement);
 
     tabElement.tab =
-        /** @type {!TabData} */ (Object.assign({}, tabElement.tab, {groupId}));
+        /** @type {!Tab} */ (Object.assign({}, tabElement.tab, {groupId}));
     groupElement.appendChild(tabElement);
     return groupElement;
   }
@@ -142,9 +138,6 @@ suite('DragManager', () => {
     loadTimeData.overrideValues(strings);
     testTabsApiProxy = new TestTabsApiProxy();
     TabsApiProxyImpl.instance_ = testTabsApiProxy;
-
-    testTabStripEmbedderProxy = new TestTabStripEmbedderProxy();
-    TabStripEmbedderProxyImpl.instance_ = testTabStripEmbedderProxy;
 
     delegate = new MockDelegate();
     tabs.forEach(tab => {
@@ -671,8 +664,7 @@ suite('DragManager', () => {
         'dragover', Object.assign({}, dragDetails, {clientX: 200})));
     draggedTab.dispatchEvent(new DragEvent('dragend', dragDetails));
 
-    assertEquals(
-        0, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
+    assertEquals(0, testTabsApiProxy.getCallCount('showTabContextMenu'));
   });
 
   test('DropPlaceholderWithoutMovingDoesNotShowContextMenu', () => {
@@ -690,8 +682,7 @@ suite('DragManager', () => {
       composed: true,
       dataTransfer: mockDataTransfer,
     }));
-    assertEquals(
-        0, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
+    assertEquals(0, testTabsApiProxy.getCallCount('showTabContextMenu'));
   });
 
   test('DragEndWithDropEffectMoveDoesNotRemoveDraggedOutAttribute', () => {

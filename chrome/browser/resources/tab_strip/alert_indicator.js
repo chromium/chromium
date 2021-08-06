@@ -7,7 +7,7 @@ import './strings.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {TabAlertState} from './tabs_api_proxy.js';
+import {TabAlertState} from './tab_strip.mojom-webui.js';
 
 /** @const {string} */
 const MAX_WIDTH = '16px';
@@ -24,31 +24,55 @@ function getAriaLabel(alertState) {
   // allows for multiple labels for the same title (eg. "Website - Audio is
   // playing - VR is presenting").
   switch (alertState) {
-    case TabAlertState.MEDIA_RECORDING:
+    case TabAlertState.kMediaRecording:
       return loadTimeData.getStringF('mediaRecording', '');
-    case TabAlertState.TAB_CAPTURING:
+    case TabAlertState.kTabCapturing:
       return loadTimeData.getStringF('tabCapturing', '');
-    case TabAlertState.AUDIO_PLAYING:
+    case TabAlertState.kAudioPlaying:
       return loadTimeData.getStringF('audioPlaying', '');
-    case TabAlertState.AUDIO_MUTING:
+    case TabAlertState.kAudioMuting:
       return loadTimeData.getStringF('audioMuting', '');
-    case TabAlertState.BLUETOOTH_CONNECTED:
+    case TabAlertState.kBluetoothConnected:
       return loadTimeData.getStringF('bluetoothConnected', '');
-    case TabAlertState.USB_CONNECTED:
+    case TabAlertState.kUsbConnected:
       return loadTimeData.getStringF('usbConnected', '');
-    case TabAlertState.HID_CONNECTED:
+    case TabAlertState.kHidConnected:
       return loadTimeData.getStringF('hidConnected', '');
-    case TabAlertState.SERIAL_CONNECTED:
+    case TabAlertState.kSerialConnected:
       return loadTimeData.getStringF('serialConnected', '');
-    case TabAlertState.PIP_PLAYING:
+    case TabAlertState.kPipPlaying:
       return loadTimeData.getStringF('pipPlaying', '');
-    case TabAlertState.DESKTOP_CAPTURING:
+    case TabAlertState.kDesktopCapturing:
       return loadTimeData.getStringF('desktopCapturing', '');
-    case TabAlertState.VR_PRESENTING_IN_HEADSET:
+    case TabAlertState.kVrPresentingInHeadset:
       return loadTimeData.getStringF('vrPresenting', '');
     default:
       return '';
   }
+}
+
+/** @type {!Map<!TabAlertState, string>} */
+const ALERT_STATE_MAP = new Map([
+  [TabAlertState.kMediaRecording, 'media-recording'],
+  [TabAlertState.kTabCapturing, 'tab-capturing'],
+  [TabAlertState.kAudioPlaying, 'audio-playing'],
+  [TabAlertState.kAudioMuting, 'audio-muting'],
+  [TabAlertState.kBluetoothConnected, 'bluetooth-connected'],
+  [TabAlertState.kUsbConnected, 'usb-connected'],
+  [TabAlertState.kHidConnected, 'hid-connected'],
+  [TabAlertState.kSerialConnected, 'serial-connected'],
+  [TabAlertState.kPipPlaying, 'pip-playing'],
+  [TabAlertState.kDesktopCapturing, 'desktop-capturing'],
+  [TabAlertState.kVrPresentingInHeadset, 'vr-presenting'],
+]);
+
+/**
+ * Use for mapping to CSS attributes.
+ * @param {!TabAlertState} alertState
+ * @return {string}
+ */
+function getAlertStateAttribute(alertState) {
+  return ALERT_STATE_MAP.get(alertState) || '';
 }
 
 export class AlertIndicatorElement extends CustomElement {
@@ -92,7 +116,7 @@ export class AlertIndicatorElement extends CustomElement {
 
   /** @param {!TabAlertState} alertState */
   set alertState(alertState) {
-    this.setAttribute('alert-state_', alertState);
+    this.setAttribute('alert-state_', getAlertStateAttribute(alertState));
     this.setAttribute('aria-label', getAriaLabel(alertState));
     this.alertState_ = alertState;
   }
@@ -118,9 +142,9 @@ export class AlertIndicatorElement extends CustomElement {
     }
 
 
-    if (this.alertState_ === TabAlertState.MEDIA_RECORDING ||
-        this.alertState_ === TabAlertState.TAB_CAPTURING ||
-        this.alertState_ === TabAlertState.DESKTOP_CAPTURING) {
+    if (this.alertState_ === TabAlertState.kMediaRecording ||
+        this.alertState_ === TabAlertState.kTabCapturing ||
+        this.alertState_ === TabAlertState.kDesktopCapturing) {
       // Fade in and out 2 times and then fade in
       const totalDuration = 2600;
       this.fadeInAnimation_ = this.animate(

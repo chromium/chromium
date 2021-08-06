@@ -4,7 +4,7 @@
 
 import {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicator.js';
 import {AlertIndicatorsElement} from 'chrome://tab-strip.top-chrome/alert_indicators.js';
-import {TabAlertState} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
+import {TabAlertState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 
 import {assertEquals} from '../chai_assert.js';
 
@@ -29,8 +29,8 @@ suite('AlertIndicators', () => {
 
   test('creates an alert indicator for each alert state', () => {
     alertIndicatorsElement.updateAlertStates([
-      TabAlertState.PIP_PLAYING,
-      TabAlertState.VR_PRESENTING_IN_HEADSET,
+      TabAlertState.kPipPlaying,
+      TabAlertState.kVrPresentingInHeadset,
     ]);
     const createdAlertIndicators = getAlertIndicators();
     assertEquals(createdAlertIndicators.length, 2);
@@ -56,21 +56,21 @@ suite('AlertIndicators', () => {
         }
 
         await assertSharedIndicator(
-            TabAlertState.AUDIO_MUTING, TabAlertState.AUDIO_PLAYING);
+            TabAlertState.kAudioMuting, TabAlertState.kAudioPlaying);
         await assertSharedIndicator(
-            TabAlertState.MEDIA_RECORDING, TabAlertState.DESKTOP_CAPTURING);
+            TabAlertState.kMediaRecording, TabAlertState.kDesktopCapturing);
       });
 
   test('removes alert indicators when needed', async () => {
     await alertIndicatorsElement.updateAlertStates([
-      TabAlertState.PIP_PLAYING,
-      TabAlertState.VR_PRESENTING_IN_HEADSET,
+      TabAlertState.kPipPlaying,
+      TabAlertState.kVrPresentingInHeadset,
     ]);
 
-    await alertIndicatorsElement.updateAlertStates([TabAlertState.PIP_PLAYING]);
+    await alertIndicatorsElement.updateAlertStates([TabAlertState.kPipPlaying]);
     const alertIndicators = getAlertIndicators();
     assertEquals(alertIndicators.length, 1);
-    assertEquals(alertIndicators[0].alertState, TabAlertState.PIP_PLAYING);
+    assertEquals(alertIndicators[0].alertState, TabAlertState.kPipPlaying);
   });
 
   test(
@@ -79,19 +79,19 @@ suite('AlertIndicators', () => {
       async () => {
         assertEquals(
             await alertIndicatorsElement.updateAlertStates([
-              TabAlertState.PIP_PLAYING,
-              TabAlertState.VR_PRESENTING_IN_HEADSET,
+              TabAlertState.kPipPlaying,
+              TabAlertState.kVrPresentingInHeadset,
             ]),
             2);
         assertEquals(
             await alertIndicatorsElement.updateAlertStates([
-              TabAlertState.PIP_PLAYING,
+              TabAlertState.kPipPlaying,
             ]),
             1);
         assertEquals(
             await alertIndicatorsElement.updateAlertStates([
-              TabAlertState.AUDIO_MUTING,
-              TabAlertState.AUDIO_PLAYING,
+              TabAlertState.kAudioMuting,
+              TabAlertState.kAudioPlaying,
             ]),
             1);
       });
@@ -101,20 +101,20 @@ suite('AlertIndicators', () => {
           'last update',
       async () => {
         alertIndicatorsElement.updateAlertStates([
-          TabAlertState.PIP_PLAYING,
-          TabAlertState.VR_PRESENTING_IN_HEADSET,
+          TabAlertState.kPipPlaying,
+          TabAlertState.kVrPresentingInHeadset,
         ]);
         alertIndicatorsElement.updateAlertStates([]);
 
         await alertIndicatorsElement.updateAlertStates([
-          TabAlertState.PIP_PLAYING,
-          TabAlertState.AUDIO_PLAYING,
+          TabAlertState.kPipPlaying,
+          TabAlertState.kAudioPlaying,
         ]);
 
         const alertIndicators = getAlertIndicators();
         assertEquals(alertIndicators.length, 2);
-        assertEquals(alertIndicators[0].alertState, TabAlertState.PIP_PLAYING);
+        assertEquals(alertIndicators[0].alertState, TabAlertState.kPipPlaying);
         assertEquals(
-            alertIndicators[1].alertState, TabAlertState.AUDIO_PLAYING);
+            alertIndicators[1].alertState, TabAlertState.kAudioPlaying);
       });
 });

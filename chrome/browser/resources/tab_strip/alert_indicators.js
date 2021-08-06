@@ -5,7 +5,7 @@
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {AlertIndicatorElement} from './alert_indicator.js';
-import {TabAlertState} from './tabs_api_proxy.js';
+import {TabAlertState} from './tab_strip.mojom-webui.js';
 
 export class AlertIndicatorsElement extends CustomElement {
   static get template() {
@@ -23,17 +23,17 @@ export class AlertIndicatorsElement extends CustomElement {
 
     /** @private {!Map<!TabAlertState, !AlertIndicatorElement>} */
     this.alertIndicators_ = new Map([
-      [TabAlertState.MEDIA_RECORDING, recordingIndicator],
-      [TabAlertState.TAB_CAPTURING, new AlertIndicatorElement()],
-      [TabAlertState.AUDIO_PLAYING, audioIndicator],
-      [TabAlertState.AUDIO_MUTING, audioIndicator],
-      [TabAlertState.BLUETOOTH_CONNECTED, new AlertIndicatorElement()],
-      [TabAlertState.USB_CONNECTED, new AlertIndicatorElement()],
-      [TabAlertState.HID_CONNECTED, new AlertIndicatorElement()],
-      [TabAlertState.SERIAL_CONNECTED, new AlertIndicatorElement()],
-      [TabAlertState.PIP_PLAYING, new AlertIndicatorElement()],
-      [TabAlertState.DESKTOP_CAPTURING, recordingIndicator],
-      [TabAlertState.VR_PRESENTING_IN_HEADSET, new AlertIndicatorElement()],
+      [TabAlertState.kMediaRecording, recordingIndicator],
+      [TabAlertState.kTabCapturing, new AlertIndicatorElement()],
+      [TabAlertState.kAudioPlaying, audioIndicator],
+      [TabAlertState.kAudioMuting, audioIndicator],
+      [TabAlertState.kBluetoothConnected, new AlertIndicatorElement()],
+      [TabAlertState.kUsbConnected, new AlertIndicatorElement()],
+      [TabAlertState.kHidConnected, new AlertIndicatorElement()],
+      [TabAlertState.kSerialConnected, new AlertIndicatorElement()],
+      [TabAlertState.kPipPlaying, new AlertIndicatorElement()],
+      [TabAlertState.kDesktopCapturing, recordingIndicator],
+      [TabAlertState.kVrPresentingInHeadset, new AlertIndicatorElement()],
     ]);
   }
 

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_handler.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 
 #include <memory>
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -21,22 +22,32 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
 
+using testing::_;
+using testing::AtLeast;
+using testing::Truly;
+
 namespace {
 
-class TestTabStripUIHandler : public TabStripUIHandler {
+class TestTabStripPageHandler : public TabStripPageHandler {
  public:
-  explicit TestTabStripUIHandler(content::WebUI* web_ui,
-                                 Browser* browser,
-                                 TabStripUIEmbedder* embedder)
-      : TabStripUIHandler(browser, embedder) {
-    set_web_ui(web_ui);
-  }
+  explicit TestTabStripPageHandler(
+      mojo::PendingRemote<tab_strip::mojom::Page> page,
+      content::WebUI* web_ui,
+      Browser* browser,
+      TabStripUIEmbedder* embedder)
+      : TabStripPageHandler(
+            mojo::PendingReceiver<tab_strip::mojom::PageHandler>(),
+            std::move(page),
+            web_ui,
+            browser,
+            embedder) {}
 };
 
 class StubTabStripUIEmbedder : public TabStripUIEmbedder {
@@ -62,20 +73,57 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   }
 };
 
+class MockPage : public tab_strip::mojom::Page {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<tab_strip::mojom::Page> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  mojo::Receiver<tab_strip::mojom::Page> receiver_{this};
+
+  MOCK_METHOD1(LayoutChanged,
+               void(const base::flat_map<std::string, std::string>& layout));
+  MOCK_METHOD0(ReceivedKeyboardFocus, void());
+  MOCK_METHOD0(ContextMenuClosed, void());
+  MOCK_METHOD0(LongPress, void());
+  MOCK_METHOD2(TabGroupVisualsChanged,
+               void(const std::string& group_id,
+                    tab_strip::mojom::TabGroupVisualDataPtr tab_group));
+  MOCK_METHOD2(TabGroupMoved, void(const std::string& group_id, int32_t index));
+  MOCK_METHOD1(TabGroupClosed, void(const std::string& group_id));
+  MOCK_METHOD3(TabGroupStateChanged,
+               void(int32_t tab_id,
+                    int32_t index,
+                    const absl::optional<std::string>& group_id));
+  MOCK_METHOD1(TabCloseCancelled, void(int32_t tab_id));
+  MOCK_METHOD1(TabCreated, void(tab_strip::mojom::TabPtr tab));
+  MOCK_METHOD1(TabRemoved, void(int32_t tab_id));
+  MOCK_METHOD3(TabMoved,
+               void(int32_t tab_id, int32_t to_index, bool in_pinned));
+  MOCK_METHOD2(TabReplaced, void(int32_t tab_id, int32_t new_tab_id));
+  MOCK_METHOD1(TabActiveChanged, void(int32_t tab_id));
+  MOCK_METHOD1(TabUpdated, void(tab_strip::mojom::TabPtr tab));
+  MOCK_METHOD2(TabThumbnailUpdated,
+               void(int32_t tab_id, const std::string& data_uri));
+  MOCK_METHOD0(ShowContextMenu, void());
+};
+
 }  // namespace
 
-class TabStripUIHandlerTest : public BrowserWithTestWindowTest {
+class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
  public:
-  TabStripUIHandlerTest() = default;
+  TabStripPageHandlerTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     web_ui_.set_web_contents(web_contents_.get());
-    handler_ = std::make_unique<TestTabStripUIHandler>(web_ui(), browser(),
-                                                       &stub_embedder_);
-    handler()->AllowJavascriptForTesting();
+    handler_ = std::make_unique<TestTabStripPageHandler>(
+        page_.BindAndGetRemote(), web_ui(), browser(), &stub_embedder_);
     web_ui()->ClearTrackedCalls();
   }
   void TearDown() override {
@@ -83,71 +131,67 @@ class TabStripUIHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  TabStripUIHandler* handler() { return handler_.get(); }
+  TabStripPageHandler* handler() { return handler_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
 
-  void ExpectVisualDataDictionary(
-      const tab_groups::TabGroupVisualData visual_data,
-      const base::DictionaryValue* visual_data_dict) {
-    std::string group_title;
-    ASSERT_TRUE(visual_data_dict->GetString("title", &group_title));
-    EXPECT_EQ(base::UTF16ToASCII(visual_data.title()), group_title);
-
-    std::string group_color;
-    ASSERT_TRUE(visual_data_dict->GetString("color", &group_color));
-    EXPECT_EQ(color_utils::SkColorToRgbString(SK_ColorWHITE), group_color);
+  void ExpectVisualData(const tab_groups::TabGroupVisualData& visual_data,
+                        const tab_strip::mojom::TabGroupVisualData& tab_group) {
+    EXPECT_EQ(base::UTF16ToASCII(visual_data.title()), tab_group.title);
+    EXPECT_EQ(color_utils::SkColorToRgbString(SK_ColorWHITE), tab_group.color);
   }
+
+ protected:
+  MockPage page_;
 
  private:
   StubTabStripUIEmbedder stub_embedder_;
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
-  std::unique_ptr<TestTabStripUIHandler> handler_;
+  std::unique_ptr<TestTabStripPageHandler> handler_;
 };
 
-TEST_F(TabStripUIHandlerTest, GroupClosedEvent) {
+TEST_F(TabStripPageHandlerTest, GroupClosedEvent) {
   AddTab(browser(), GURL("http://foo"));
   tab_groups::TabGroupId expected_group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
   browser()->tab_strip_model()->RemoveFromGroup({0});
 
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-group-closed", call_data.arg1()->GetString());
-  EXPECT_EQ(expected_group_id.ToString(), call_data.arg2()->GetString());
+  EXPECT_CALL(page_, TabGroupClosed(expected_group_id.ToString()));
 }
 
-TEST_F(TabStripUIHandlerTest, GroupStateChangedEvents) {
+TEST_F(TabStripPageHandlerTest, GroupStateChangedEvents) {
   AddTab(browser(), GURL("http://foo/1"));
   AddTab(browser(), GURL("http://foo/2"));
 
   // Add one of the tabs to a group to test for a tab-group-state-changed event.
   tab_groups::TabGroupId expected_group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
-  int expected_tab_id = extensions::ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetWebContentsAt(1));
 
-  const content::TestWebUI::CallData& grouped_call_data =
-      *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", grouped_call_data.function_name());
-  EXPECT_EQ("tab-group-state-changed", grouped_call_data.arg1()->GetString());
-  EXPECT_EQ(expected_tab_id, grouped_call_data.arg2()->GetInt());
-  EXPECT_EQ(1, grouped_call_data.arg3()->GetInt());
-  EXPECT_EQ(expected_group_id.ToString(),
-            grouped_call_data.arg4()->GetString());
+  EXPECT_CALL(
+      page_, TabGroupStateChanged(
+                 extensions::ExtensionTabUtil::GetTabId(
+                     browser()->tab_strip_model()->GetWebContentsAt(0)),
+                 0, absl::optional<std::string>(expected_group_id.ToString())));
+  EXPECT_CALL(
+      page_, TabGroupStateChanged(
+                 extensions::ExtensionTabUtil::GetTabId(
+                     browser()->tab_strip_model()->GetWebContentsAt(1)),
+                 1, absl::optional<std::string>(expected_group_id.ToString())));
 
   // Remove the tab from the group to test for a tab-group-state-changed event.
   browser()->tab_strip_model()->RemoveFromGroup({1});
-  const content::TestWebUI::CallData& ungrouped_call_data =
-      *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", ungrouped_call_data.function_name());
-  EXPECT_EQ("tab-group-state-changed", ungrouped_call_data.arg1()->GetString());
-  EXPECT_EQ(expected_tab_id, ungrouped_call_data.arg2()->GetInt());
-  EXPECT_EQ(1, ungrouped_call_data.arg3()->GetInt());
-  EXPECT_EQ(nullptr, ungrouped_call_data.arg4());
+
+  EXPECT_CALL(page_, TabGroupStateChanged(
+                         extensions::ExtensionTabUtil::GetTabId(
+                             browser()->tab_strip_model()->GetWebContentsAt(1)),
+                         1, absl::optional<std::string>()));
+  EXPECT_CALL(page_, TabGroupStateChanged(
+                         extensions::ExtensionTabUtil::GetTabId(
+                             browser()->tab_strip_model()->GetWebContentsAt(0)),
+                         0, absl::optional<std::string>()));
 }
 
-TEST_F(TabStripUIHandlerTest, GetGroupVisualData) {
+TEST_F(TabStripPageHandlerTest, GetGroupVisualData) {
   AddTab(browser(), GURL("http://foo/1"));
   AddTab(browser(), GURL("http://foo/2"));
   tab_groups::TabGroupId group1 =
@@ -169,28 +213,20 @@ TEST_F(TabStripUIHandlerTest, GetGroupVisualData) {
       ->GetTabGroup(group2)
       ->SetVisualData(group2_visuals);
 
-  base::ListValue args;
-  args.AppendString("callback-id");
-  handler()->HandleGetGroupVisualData(&args);
-
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-  EXPECT_EQ("callback-id", call_data.arg1()->GetString());
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-
-  const base::DictionaryValue* returned_data;
-  ASSERT_TRUE(call_data.arg3()->GetAsDictionary(&returned_data));
-
-  const base::DictionaryValue* group1_dict;
-  ASSERT_TRUE(returned_data->GetDictionary(group1.ToString(), &group1_dict));
-  ExpectVisualDataDictionary(group1_visuals, group1_dict);
-
-  const base::DictionaryValue* group2_dict;
-  ASSERT_TRUE(returned_data->GetDictionary(group2.ToString(), &group2_dict));
-  ExpectVisualDataDictionary(group2_visuals, group2_dict);
+  tab_strip::mojom::PageHandler::GetGroupVisualDataCallback callback =
+      base::BindLambdaForTesting(
+          [=](base::flat_map<std::string,
+                             tab_strip::mojom::TabGroupVisualDataPtr>
+                  group_visual_datas) {
+            ExpectVisualData(group1_visuals,
+                             *group_visual_datas[group1.ToString()]);
+            ExpectVisualData(group2_visuals,
+                             *group_visual_datas[group2.ToString()]);
+          });
+  handler()->GetGroupVisualData(std::move(callback));
 }
 
-TEST_F(TabStripUIHandlerTest, GroupVisualDataChangedEvent) {
+TEST_F(TabStripPageHandlerTest, GroupVisualDataChangedEvent) {
   AddTab(browser(), GURL("http://foo"));
   tab_groups::TabGroupId expected_group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
@@ -202,17 +238,21 @@ TEST_F(TabStripUIHandlerTest, GroupVisualDataChangedEvent) {
       ->GetTabGroup(expected_group_id)
       ->SetVisualData(new_visual_data);
 
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-group-visuals-changed", call_data.arg1()->GetString());
-  EXPECT_EQ(expected_group_id.ToString(), call_data.arg2()->GetString());
-
-  const base::DictionaryValue* visual_data;
-  ASSERT_TRUE(call_data.arg3()->GetAsDictionary(&visual_data));
-  ExpectVisualDataDictionary(new_visual_data, visual_data);
+  EXPECT_CALL(
+      page_,
+      TabGroupVisualsChanged(
+          expected_group_id.ToString(),
+          Truly(
+              [=](const tab_strip::mojom::TabGroupVisualDataPtr& visual_data) {
+                if (visual_data->title.size() > 0) {
+                  ExpectVisualData(new_visual_data, *visual_data);
+                }
+                return true;
+              })))
+      .Times(2);
 }
 
-TEST_F(TabStripUIHandlerTest, GroupTab) {
+TEST_F(TabStripPageHandlerTest, GroupTab) {
   // Add a tab inside of a group.
   AddTab(browser(), GURL("http://foo"));
   tab_groups::TabGroupId group_id =
@@ -220,16 +260,14 @@ TEST_F(TabStripUIHandlerTest, GroupTab) {
 
   // Add another tab, and try to group it.
   AddTab(browser(), GURL("http://foo"));
-  base::ListValue args;
-  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetWebContentsAt(0)));
-  args.AppendString(group_id.ToString());
-  handler()->HandleGroupTab(&args);
+  handler()->GroupTab(extensions::ExtensionTabUtil::GetTabId(
+                          browser()->tab_strip_model()->GetWebContentsAt(0)),
+                      group_id.ToString());
 
   ASSERT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(0));
 }
 
-TEST_F(TabStripUIHandlerTest, MoveGroup) {
+TEST_F(TabStripPageHandlerTest, MoveGroup) {
   AddTab(browser(), GURL("http://foo/1"));
   AddTab(browser(), GURL("http://foo/2"));
   tab_groups::TabGroupId group_id =
@@ -238,10 +276,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroup) {
 
   // Move the group to index 1.
   int new_index = 1;
-  base::ListValue args;
-  args.AppendString(group_id.ToString());
-  args.AppendInteger(new_index);
-  handler()->HandleMoveGroup(&args);
+  handler()->MoveGroup(group_id.ToString(), new_index);
 
   gfx::Range tabs_in_group = browser()
                                  ->tab_strip_model()
@@ -251,15 +286,10 @@ TEST_F(TabStripUIHandlerTest, MoveGroup) {
   ASSERT_EQ(new_index, static_cast<int>(tabs_in_group.start()));
   ASSERT_EQ(new_index, static_cast<int>(tabs_in_group.end()) - 1);
 
-  EXPECT_EQ(1U, web_ui()->call_data().size());
-  const content::TestWebUI::CallData& call_data =
-      *web_ui()->call_data().front();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-group-moved", call_data.arg1()->GetString());
-  EXPECT_EQ(group_id.ToString(), call_data.arg2()->GetString());
+  EXPECT_CALL(page_, TabGroupMoved(group_id.ToString(), new_index));
 }
 
-TEST_F(TabStripUIHandlerTest, MoveGroupAcrossWindows) {
+TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {
   AddTab(browser(), GURL("http://foo"));
 
   // Create a new window with the same profile, and add a group to it.
@@ -287,10 +317,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroupAcrossWindows) {
   web_ui()->ClearTrackedCalls();
 
   int new_index = -1;
-  base::ListValue args;
-  args.AppendString(group_id.ToString());
-  args.AppendInteger(new_index);
-  handler()->HandleMoveGroup(&args);
+  handler()->MoveGroup(group_id.ToString(), new_index);
 
   ASSERT_EQ(0U, new_browser.get()
                     ->tab_strip_model()
@@ -316,7 +343,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroupAcrossWindows) {
   ASSERT_EQ(visual_data.color(), new_visual_data->color());
 }
 
-TEST_F(TabStripUIHandlerTest, MoveGroupAcrossProfiles) {
+TEST_F(TabStripPageHandlerTest, MoveGroupAcrossProfiles) {
   AddTab(browser(), GURL("http://foo"));
 
   TestingProfile* different_profile =
@@ -329,10 +356,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroupAcrossProfiles) {
       new_browser.get()->tab_strip_model()->AddToNewGroup({0});
 
   int new_index = -1;
-  base::ListValue args;
-  args.AppendString(group_id.ToString());
-  args.AppendInteger(new_index);
-  handler()->HandleMoveGroup(&args);
+  handler()->MoveGroup(group_id.ToString(), new_index);
 
   ASSERT_TRUE(
       new_browser.get()->tab_strip_model()->group_model()->ContainsTabGroup(
@@ -342,7 +366,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroupAcrossProfiles) {
   new_browser.get()->tab_strip_model()->CloseAllTabs();
 }
 
-TEST_F(TabStripUIHandlerTest, MoveTab) {
+TEST_F(TabStripPageHandlerTest, MoveTab) {
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://foo"));
 
@@ -352,11 +376,8 @@ TEST_F(TabStripUIHandlerTest, MoveTab) {
       browser()->tab_strip_model()->GetWebContentsAt(1);
 
   // Move tab at index 0 to index 1.
-  base::ListValue args;
-  args.AppendInteger(
-      extensions::ExtensionTabUtil::GetTabId(contents_prev_at_0));
-  args.AppendInteger(1);
-  handler()->HandleMoveTab(&args);
+  handler()->MoveTab(extensions::ExtensionTabUtil::GetTabId(contents_prev_at_0),
+                     1);
 
   ASSERT_EQ(1, browser()->tab_strip_model()->GetIndexOfWebContents(
                    contents_prev_at_0));
@@ -364,7 +385,7 @@ TEST_F(TabStripUIHandlerTest, MoveTab) {
                    contents_prev_at_1));
 }
 
-TEST_F(TabStripUIHandlerTest, MoveTabAcrossProfiles) {
+TEST_F(TabStripPageHandlerTest, MoveTabAcrossProfiles) {
   AddTab(browser(), GURL("http://foo"));
 
   TestingProfile* different_profile =
@@ -374,11 +395,9 @@ TEST_F(TabStripUIHandlerTest, MoveTabAcrossProfiles) {
       different_profile, browser()->type(), false, new_window.get());
   AddTab(new_browser.get(), GURL("http://foo"));
 
-  base::ListValue args;
-  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
-      new_browser->tab_strip_model()->GetWebContentsAt(0)));
-  args.AppendInteger(1);
-  handler()->HandleMoveTab(&args);
+  handler()->MoveTab(extensions::ExtensionTabUtil::GetTabId(
+                         new_browser->tab_strip_model()->GetWebContentsAt(0)),
+                     1);
 
   ASSERT_FALSE(browser()->tab_strip_model()->ContainsIndex(1));
 
@@ -386,7 +405,7 @@ TEST_F(TabStripUIHandlerTest, MoveTabAcrossProfiles) {
   new_browser.get()->tab_strip_model()->CloseAllTabs();
 }
 
-TEST_F(TabStripUIHandlerTest, MoveTabAcrossWindows) {
+TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindows) {
   AddTab(browser(), GURL("http://foo"));
 
   std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
@@ -396,11 +415,9 @@ TEST_F(TabStripUIHandlerTest, MoveTabAcrossWindows) {
   content::WebContents* moved_contents =
       new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
 
-  base::ListValue args;
-  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
-      new_browser->tab_strip_model()->GetWebContentsAt(0)));
-  args.AppendInteger(1);
-  handler()->HandleMoveTab(&args);
+  handler()->MoveTab(extensions::ExtensionTabUtil::GetTabId(
+                         new_browser->tab_strip_model()->GetWebContentsAt(0)),
+                     1);
 
   ASSERT_EQ(moved_contents, browser()->tab_strip_model()->GetWebContentsAt(1));
 
@@ -408,50 +425,28 @@ TEST_F(TabStripUIHandlerTest, MoveTabAcrossWindows) {
   new_browser.get()->tab_strip_model()->CloseAllTabs();
 }
 
-TEST_F(TabStripUIHandlerTest, TabCreated) {
+TEST_F(TabStripPageHandlerTest, TabCreated) {
   AddTab(browser(), GURL("http://foo"));
 
-  const content::TestWebUI::CallData& call_data =
-      *web_ui()->call_data().front();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-created", call_data.arg1()->GetString());
-
-  const base::DictionaryValue* tab_data;
-  ASSERT_TRUE(call_data.arg2()->GetAsDictionary(&tab_data));
-
-  int tab_id;
-  ASSERT_TRUE(tab_data->GetInteger("id", &tab_id));
-  ASSERT_EQ(extensions::ExtensionTabUtil::GetTabId(
-                browser()->tab_strip_model()->GetWebContentsAt(0)),
-            tab_id);
-
-  bool is_active;
-  ASSERT_TRUE(tab_data->GetBoolean("active", &is_active));
-  ASSERT_TRUE(is_active);
-
-  int tab_index;
-  ASSERT_TRUE(tab_data->GetInteger("index", &tab_index));
-  ASSERT_EQ(0, tab_index);
+  int expected_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  EXPECT_CALL(page_, TabCreated(Truly([=](const tab_strip::mojom::TabPtr& tab) {
+                return tab->id =
+                           expected_tab_id && tab->active && tab->index == 0;
+              })));
 }
 
-TEST_F(TabStripUIHandlerTest, TabRemoved) {
+TEST_F(TabStripPageHandlerTest, TabRemoved) {
   // Two tabs so the browser does not close when a tab is closed.
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://foo"));
   int expected_tab_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-
-  web_ui()->ClearTrackedCalls();
   browser()->tab_strip_model()->GetWebContentsAt(0)->Close();
-
-  const content::TestWebUI::CallData& call_data =
-      *web_ui()->call_data().front();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-removed", call_data.arg1()->GetString());
-  EXPECT_EQ(expected_tab_id, call_data.arg2()->GetInt());
+  EXPECT_CALL(page_, TabRemoved(expected_tab_id));
 }
 
-TEST_F(TabStripUIHandlerTest, TabMoved) {
+TEST_F(TabStripPageHandlerTest, TabMoved) {
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://foo"));
 
@@ -463,15 +458,10 @@ TEST_F(TabStripUIHandlerTest, TabMoved) {
   browser()->tab_strip_model()->MoveWebContentsAt(from_index, expected_to_index,
                                                   false);
 
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-moved", call_data.arg1()->GetString());
-  EXPECT_EQ(expected_tab_id, call_data.arg2()->GetInt());
-  EXPECT_EQ(expected_to_index, call_data.arg3()->GetInt());
-  EXPECT_EQ(false, call_data.arg4()->GetBool());
+  EXPECT_CALL(page_, TabMoved(expected_tab_id, expected_to_index, false));
 }
 
-TEST_F(TabStripUIHandlerTest, TabMovedAndPinned) {
+TEST_F(TabStripPageHandlerTest, TabMovedAndPinned) {
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://foo"));
   web_ui()->ClearTrackedCalls();
@@ -483,26 +473,14 @@ TEST_F(TabStripUIHandlerTest, TabMovedAndPinned) {
 
   browser()->tab_strip_model()->SetTabPinned(from_index, true);
 
-  const content::TestWebUI::CallData& moved_event =
-      *web_ui()->call_data().front();
-  EXPECT_EQ("cr.webUIListenerCallback", moved_event.function_name());
-  EXPECT_EQ("tab-moved", moved_event.arg1()->GetString());
-  EXPECT_EQ(expected_tab_id, moved_event.arg2()->GetInt());
-  EXPECT_EQ(expected_to_index, moved_event.arg3()->GetInt());
-  EXPECT_EQ(true, moved_event.arg4()->GetBool());
-
-  const content::TestWebUI::CallData& updated_event =
-      *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", updated_event.function_name());
-  EXPECT_EQ("tab-updated", updated_event.arg1()->GetString());
-  const base::DictionaryValue* updated_data;
-  ASSERT_TRUE(updated_event.arg2()->GetAsDictionary(&updated_data));
-  bool pinned;
-  ASSERT_TRUE(updated_data->GetBoolean("pinned", &pinned));
-  ASSERT_TRUE(pinned);
+  EXPECT_CALL(page_, TabMoved(expected_tab_id, expected_to_index, true));
+  EXPECT_CALL(page_, TabUpdated(_)).Times(AtLeast(1));
+  EXPECT_CALL(page_, TabUpdated(Truly([=](const tab_strip::mojom::TabPtr& tab) {
+                return tab->pinned;
+              })));
 }
 
-TEST_F(TabStripUIHandlerTest, TabReplaced) {
+TEST_F(TabStripPageHandlerTest, TabReplaced) {
   AddTab(browser(), GURL("http://foo"));
   int expected_previous_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0));
@@ -513,15 +491,10 @@ TEST_F(TabStripUIHandlerTest, TabReplaced) {
   int expected_new_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
-  const content::TestWebUI::CallData& call_data =
-      *web_ui()->call_data().front();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-replaced", call_data.arg1()->GetString());
-  ASSERT_EQ(expected_previous_id, call_data.arg2()->GetInt());
-  ASSERT_EQ(expected_new_id, call_data.arg3()->GetInt());
+  EXPECT_CALL(page_, TabReplaced(expected_previous_id, expected_new_id));
 }
 
-TEST_F(TabStripUIHandlerTest, TabActivated) {
+TEST_F(TabStripPageHandlerTest, TabActivated) {
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://foo"));
@@ -529,42 +502,39 @@ TEST_F(TabStripUIHandlerTest, TabActivated) {
   web_ui()->ClearTrackedCalls();
   browser()->tab_strip_model()->ActivateTabAt(1);
 
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-active-changed", call_data.arg1()->GetString());
-  EXPECT_EQ(extensions::ExtensionTabUtil::GetTabId(
-                browser()->tab_strip_model()->GetWebContentsAt(1)),
-            call_data.arg2()->GetInt());
+  EXPECT_CALL(page_, TabActiveChanged(extensions::ExtensionTabUtil::GetTabId(
+                         browser()->tab_strip_model()->GetWebContentsAt(0))));
+  EXPECT_CALL(page_, TabActiveChanged(extensions::ExtensionTabUtil::GetTabId(
+                         browser()->tab_strip_model()->GetWebContentsAt(1))))
+      .Times(2);
+  EXPECT_CALL(page_, TabActiveChanged(extensions::ExtensionTabUtil::GetTabId(
+                         browser()->tab_strip_model()->GetWebContentsAt(2))));
 }
 
-TEST_F(TabStripUIHandlerTest, UngroupTab) {
+TEST_F(TabStripPageHandlerTest, UngroupTab) {
   // Add a tab inside of a group.
   AddTab(browser(), GURL("http://foo"));
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   // Add another tab at index 1, and try to group it.
-  base::ListValue args;
-  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
+  handler()->UngroupTab(extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0)));
-  handler()->HandleUngroupTab(&args);
 
   ASSERT_FALSE(browser()->tab_strip_model()->GetTabGroupForTab(0).has_value());
 }
 
-TEST_F(TabStripUIHandlerTest, CloseTab) {
+TEST_F(TabStripPageHandlerTest, CloseTab) {
   AddTab(browser(), GURL("http://foo"));
   AddTab(browser(), GURL("http://bar"));
 
-  base::ListValue args;
-  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetWebContentsAt(0)));
-  args.AppendBoolean(false);  // If the tab is closed by swipe.
-  handler()->HandleCloseTab(&args);
+  handler()->CloseTab(extensions::ExtensionTabUtil::GetTabId(
+                          browser()->tab_strip_model()->GetWebContentsAt(0)),
+                      false /* closed_by_swiped */);
 
   ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
 }
 
-TEST_F(TabStripUIHandlerTest, RemoveTabIfInvalidContextMenu) {
+TEST_F(TabStripPageHandlerTest, RemoveTabIfInvalidContextMenu) {
   AddTab(browser(), GURL("http://foo"));
 
   std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
@@ -574,20 +544,13 @@ TEST_F(TabStripUIHandlerTest, RemoveTabIfInvalidContextMenu) {
 
   web_ui()->ClearTrackedCalls();
 
-  base::ListValue args;
-  args.AppendInteger(extensions::ExtensionTabUtil::GetTabId(
-      new_browser->tab_strip_model()->GetWebContentsAt(0)));
-  args.Append(50.0);
-  args.Append(100.0);
-  handler()->HandleShowTabContextMenu(&args);
+  handler()->ShowTabContextMenu(
+      extensions::ExtensionTabUtil::GetTabId(
+          new_browser->tab_strip_model()->GetWebContentsAt(0)),
+      50.0, 100.0);
 
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-  EXPECT_EQ("tab-removed", call_data.arg1()->GetString());
-  EXPECT_EQ(extensions::ExtensionTabUtil::GetTabId(
-                new_browser->tab_strip_model()->GetWebContentsAt(0)),
-            call_data.arg2()->GetInt());
+  EXPECT_CALL(page_, TabRemoved(extensions::ExtensionTabUtil::GetTabId(
+                         new_browser->tab_strip_model()->GetWebContentsAt(0))));
 
-  // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();
 }

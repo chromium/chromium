@@ -259,6 +259,11 @@
 #include "extensions/common/api/mime_handler.mojom.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+#include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
+#endif
+
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
 #endif
@@ -761,6 +766,11 @@ void PopulateChromeWebUIFrameBinders(
       ::mojom::app_service_internals::AppServiceInternalsPageHandler,
       AppServiceInternalsUI>(map);
 #endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,
+                                         TabStripUI>(map);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterWebUIControllerInterfaceBinder<
