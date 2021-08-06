@@ -44,7 +44,7 @@ TYPED_TEST_P(FakeIAsyncOperationTest, MultipleCompletions) {
   ASSERT_NO_FATAL_FAILURE(
       operation->CompleteWithResults(test_values.GetTestValue_T()));
   // EXPECT_FATAL_FAILURE() can only reference globals and statics.
-  // https://chromium.googlesource.com/external/github.com/google/googletest/+/HEAD/googletest/docs/advanced.md#catching-failures
+  // https://github.com/google/googletest/blob/master/docs/advanced.md#catching-failures
   static auto test_value_t = test_values.GetTestValue_T();
   static auto& static_operation = operation;
   EXPECT_FATAL_FAILURE(static_operation->CompleteWithResults(test_value_t),
