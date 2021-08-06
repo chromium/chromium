@@ -97,11 +97,6 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-const char kDefaultBrowserSettingsName[] = "Setting to change Default Browser";
-const char kDefaultBrowserSettingsDescription[] =
-    "When enabled, adds a button in the settings to allow changing the default "
-    "browser in the Settings.app.";
-
 const char kDefaultPromoNonModalName[] = "Default Browser Non-Modal Promo";
 const char kDefaultPromoNonModalDescription[] =
     "When enabled non-modal default browser promos can be triggered.";

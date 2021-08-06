@@ -88,11 +88,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-// Title and description for the flag to add the button in the settings to send
-// the users in the Settings.app to update the default browser.
-extern const char kDefaultBrowserSettingsName[];
-extern const char kDefaultBrowserSettingsDescription[];
-
 // Title and description for the flag to show tailored fullscreen default
 // browser promos.
 extern const char kDefaultPromoTailoredName[];

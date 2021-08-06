@@ -42,10 +42,6 @@ extern const base::Feature kEnableFREUIModuleIOS;
 // Feature flag that enables taking fullpage screenshots of a webpage.
 extern const base::Feature kEnableFullPageScreenshot;
 
-// Feature flag that enables the button in the settings to send the users in the
-// Settings.app to update the default browser.
-extern const base::Feature kDefaultBrowserSettings;
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 extern const base::Feature kModernTabStrip;

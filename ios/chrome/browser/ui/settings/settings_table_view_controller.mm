@@ -445,34 +445,33 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // Defaults section.
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   if (@available(iOS 14, *)) {
-    if (base::FeatureList::IsEnabled(kDefaultBrowserSettings)) {
-      [model addSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-      [model addItem:[self defaultBrowserCellItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-    }
+    [model addSectionWithIdentifier:SettingsSectionIdentifierDefaults];
+    [model addItem:[self defaultBrowserCellItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
 
-  // Basics section
-  [model addSectionWithIdentifier:SettingsSectionIdentifierBasics];
   // Show managed UI if default search engine is managed by policy.
   if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
       [self isDefaultSearchEngineManagedByPolicy]) {
-    [model addItem:[self managedSearchEngineItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+    if (@available(iOS 14, *)) {
+      [model addItem:[self managedSearchEngineItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
+    } else {
+      [model addItem:[self managedSearchEngineItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+    }
   } else {
     if (@available(iOS 14, *)) {
-      if (base::FeatureList::IsEnabled(kDefaultBrowserSettings)) {
-        [model addItem:[self searchEngineDetailItem]
-            toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
-      } else {
-        [model addItem:[self searchEngineDetailItem]
-            toSectionWithIdentifier:SettingsSectionIdentifierBasics];
-      }
+      [model addItem:[self searchEngineDetailItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
     } else {
       [model addItem:[self searchEngineDetailItem]
           toSectionWithIdentifier:SettingsSectionIdentifierBasics];
     }
   }
+
+  // Basics section
+  [model addSectionWithIdentifier:SettingsSectionIdentifierBasics];
   [model addItem:[self passwordsDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   [model addItem:[self autoFillCreditCardDetailItem]
