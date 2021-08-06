@@ -18,6 +18,7 @@ payments_java_resources = [
   "//components/payments/content/android/java/res/layout/payments_request_editor_textview.xml",
   "//components/payments/content/android/java/res/layout/secure_payment_confirmation_authn_ui.xml",
   "//components/payments/content/android/java/res/layout/secure_payment_confirmation_enrollment_ui.xml",
+  "//components/payments/content/android/java/res/layout/secure_payment_confirmation_no_credential_match_ui.xml",
   "//components/payments/content/android/java/res/values-sw600dp/dimens.xml",
   "//components/payments/content/android/java/res/values/colors.xml",
   "//components/payments/content/android/java/res/values/dimens.xml",

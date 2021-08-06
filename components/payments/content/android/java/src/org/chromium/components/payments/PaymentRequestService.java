@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -125,6 +126,10 @@ public class PaymentRequestService
     // mSpcAuthnUiController is null when it is closed and before it is shown.
     @Nullable
     private SecurePaymentConfirmationAuthnController mSpcAuthnUiController;
+
+    // mNoMatchingController is null when it is closed and before it is shown.
+    @Nullable
+    private SecurePaymentConfirmationNoMatchingCredController mNoMatchingController;
 
     /**
      * A mapping of the payment method names to the corresponding payment method specific data. If
@@ -835,6 +840,22 @@ public class PaymentRequestService
         assert mIsFinishedQueryingPaymentApps;
         assert mBrowserPaymentRequest != null;
 
+        if (PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_API_V3)
+                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
+                && mSpec != null && !mSpec.isDestroyed()
+                && mSpec.isSecurePaymentConfirmationRequested()
+                && !mBrowserPaymentRequest.hasAvailableApps()) {
+            mNoMatchingController =
+                    SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
+            mNoMatchingController.show(() -> {
+                mJourneyLogger.setAborted(AbortReason.NO_MATCHING_PAYMENT_METHOD);
+                disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                        PaymentErrorReason.NOT_SUPPORTED);
+            });
+            return null;
+        }
+
         PaymentNotShownError ensureError = ensureHasSupportedPaymentMethods();
         if (ensureError != null) return ensureError;
         // Send AppListReady signal when all apps are created and request.show() is called.
@@ -1509,6 +1530,11 @@ public class PaymentRequestService
         if (mSpcAuthnUiController != null) {
             mSpcAuthnUiController.hide();
             mSpcAuthnUiController = null;
+        }
+
+        if (mNoMatchingController != null) {
+            mNoMatchingController.hide();
+            mNoMatchingController = null;
         }
 
         if (mBrowserPaymentRequest != null) {

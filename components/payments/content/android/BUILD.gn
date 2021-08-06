@@ -193,6 +193,8 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
