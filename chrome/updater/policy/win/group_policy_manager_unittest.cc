@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -22,6 +23,8 @@ class GroupPolicyManagerTests : public ::testing::Test {
   void SetUp() override;
   void TearDown() override;
 
+  registry_util::RegistryOverrideManager registry_override_;
+
  private:
   void DeletePolicyKey();
 };
@@ -35,6 +38,8 @@ void GroupPolicyManagerTests::TearDown() {
 }
 
 void GroupPolicyManagerTests::DeletePolicyKey() {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE);
   LONG result = key.DeleteKey(UPDATER_POLICIES_KEY);
   ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
@@ -103,6 +108,8 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
 }
 
 TEST_F(GroupPolicyManagerTests, PolicyRead) {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
                         KEY_ALL_ACCESS);
 
@@ -210,6 +217,8 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
 }
 
 TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
                         KEY_ALL_ACCESS);
 
