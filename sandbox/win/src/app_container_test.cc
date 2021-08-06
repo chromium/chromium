@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include <windows.h>
+#include <winsock2.h>
+
+#include <iphlpapi.h>
 
 #include <sddl.h>
 
@@ -20,10 +23,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sync_policy_test.h"
 #include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -201,6 +208,69 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   return SBOX_ALL_OK;
 }
 
+void InitWinsock() {
+  WORD winsock_ver = MAKEWORD(2, 2);
+  WSAData wsa_data;
+  WSAStartup(winsock_ver, &wsa_data);
+}
+
+class WSAEventHandleTraits {
+ public:
+  typedef HANDLE Handle;
+
+  WSAEventHandleTraits() = delete;
+  WSAEventHandleTraits(const WSAEventHandleTraits&) = delete;
+  WSAEventHandleTraits& operator=(const WSAEventHandleTraits&) = delete;
+
+  static bool CloseHandle(HANDLE handle) {
+    return ::WSACloseEvent(handle) == TRUE;
+  }
+  static bool IsHandleValid(HANDLE handle) {
+    return handle != INVALID_HANDLE_VALUE;
+  }
+  static HANDLE NullHandle() { return INVALID_HANDLE_VALUE; }
+};
+
+typedef base::win::GenericScopedHandle<WSAEventHandleTraits,
+                                       base::win::DummyVerifierTraits>
+    ScopedWSAEventHandle;
+
+class SocketHandleTraits {
+ public:
+  typedef SOCKET Handle;
+
+  SocketHandleTraits() = delete;
+  SocketHandleTraits(const SocketHandleTraits&) = delete;
+  SocketHandleTraits& operator=(const SocketHandleTraits&) = delete;
+
+  static bool CloseHandle(SOCKET handle) { return ::closesocket(handle) == 0; }
+  static bool IsHandleValid(SOCKET handle) { return handle != INVALID_SOCKET; }
+  static SOCKET NullHandle() { return INVALID_SOCKET; }
+};
+
+class DummySocketVerifierTraits {
+ public:
+  using Handle = SOCKET;
+
+  DummySocketVerifierTraits() = delete;
+  DummySocketVerifierTraits(const DummySocketVerifierTraits&) = delete;
+  DummySocketVerifierTraits& operator=(const DummySocketVerifierTraits&) =
+      delete;
+
+  static void StartTracking(SOCKET handle,
+                            const void* owner,
+                            const void* pc1,
+                            const void* pc2) {}
+  static void StopTracking(SOCKET handle,
+                           const void* owner,
+                           const void* pc1,
+                           const void* pc2) {}
+};
+
+typedef base::win::GenericScopedHandle<SocketHandleTraits,
+                                       DummySocketVerifierTraits>
+    ScopedSocketHandle;
+
 class AppContainerTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -247,6 +317,126 @@ class AppContainerTest : public ::testing::Test {
   scoped_refptr<TargetPolicy> policy_;
   base::win::ScopedProcessInformation scoped_process_info_;
 };
+
+// A Very Simple UDP test server.
+// Binds to all interfaces on a random port, and then waits to receive some
+// data, then sends it back to the peer.
+class UDPEchoServer {
+ public:
+  UDPEchoServer() = default;
+  ~UDPEchoServer();
+
+  // Start server.
+  bool Start();
+  // Get the listening port. Must be called after Start().
+  int GetPort();
+
+ private:
+  void RecvTask();
+  ScopedSocketHandle socket_;
+  int port_;
+  base::test::TaskEnvironment environment_;
+};
+
+UDPEchoServer::~UDPEchoServer() {
+  // Make sure to drain threads before destructing.
+  environment_.RunUntilIdle();
+}
+
+bool UDPEchoServer::Start() {
+  SOCKET s = ::WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, nullptr, 0,
+                         WSA_FLAG_OVERLAPPED);
+  if (s == INVALID_SOCKET)
+    return false;
+  socket_ = ScopedSocketHandle(s);
+
+  struct sockaddr_in server;
+  server.sin_family = AF_INET;
+  server.sin_addr.s_addr = INADDR_ANY;
+  // Pick a random port.
+  server.sin_port = 0;
+
+  int ret =
+      bind(socket_.Get(), reinterpret_cast<sockaddr*>(&server), sizeof(server));
+  if (ret == SOCKET_ERROR)
+    return false;
+
+  struct sockaddr_in bound_server;
+  int bound_server_len = sizeof(bound_server);
+  ret = getsockname(socket_.Get(), reinterpret_cast<sockaddr*>(&bound_server),
+                    &bound_server_len);
+  if (ret == SOCKET_ERROR)
+    return false;
+  port_ = ntohs(bound_server.sin_port);
+  return base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindOnce(&UDPEchoServer::RecvTask, base::Unretained(this)));
+}
+
+void UDPEchoServer::RecvTask() {
+  char buf[1024];
+  WSABUF wsa_buf;
+  wsa_buf.buf = buf;
+  wsa_buf.len = sizeof(buf);
+  struct sockaddr_in other;
+  int other_len = sizeof(other);
+
+  HANDLE recv_event_handle = WSACreateEvent();
+  ASSERT_NE(WSA_INVALID_EVENT, recv_event_handle);
+  ScopedWSAEventHandle recv_event(recv_event_handle);
+
+  OVERLAPPED read_overlapped = {};
+  read_overlapped.hEvent = recv_event.Get();
+  DWORD flags = 0;
+  int ret = WSARecvFrom(socket_.Get(), &wsa_buf, 1, nullptr, &flags,
+                        reinterpret_cast<sockaddr*>(&other), &other_len,
+                        &read_overlapped, nullptr);
+  // Return value of 0 means operation completed immediately which should never
+  // happen. SOCKET_ERROR returned means operation is pending.
+  ASSERT_EQ(SOCKET_ERROR, ret);
+  // Operation should be pending.
+  ASSERT_EQ(WSA_IO_PENDING, ::WSAGetLastError());
+
+  // Wait to receive data from the child process. Only wait 1 second.
+  DWORD wait = WaitForSingleObject(
+      recv_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+
+  if (wait != WAIT_OBJECT_0)
+    return;  // No connections. Expected for certain types of tests.
+
+  DWORD num_bytes_recv = 0;
+  flags = 0;
+  BOOL overlapped_result = WSAGetOverlappedResult(
+      socket_.Get(), &read_overlapped, &num_bytes_recv, FALSE, &flags);
+  ASSERT_TRUE(overlapped_result);
+
+  // Now reply.
+  HANDLE send_event_handle = WSACreateEvent();
+  ASSERT_NE(WSA_INVALID_EVENT, send_event_handle);
+  ScopedWSAEventHandle send_event(send_event_handle);
+
+  OVERLAPPED send_overlapped = {};
+  read_overlapped.hEvent = send_event.Get();
+
+  ret = WSASendTo(socket_.Get(), &wsa_buf, 1, nullptr, 0,
+                  reinterpret_cast<sockaddr*>(&other), other_len,
+                  &send_overlapped, nullptr);
+  // Return value of 0 means operation completed immediately, which means data
+  // was successfully sent to the peer.
+  if (ret == 0)
+    return;
+  // If not, the operation should be pending.
+  ASSERT_EQ(WSA_IO_PENDING, ::WSAGetLastError());
+  // Wait for send. Only wait 1 second.
+  wait = WaitForSingleObject(send_event.Get(),
+                             TestTimeouts::tiny_timeout().InMilliseconds());
+  // Send should always succeed in a timely manner.
+  EXPECT_EQ(wait, WAIT_OBJECT_0);
+}
+
+int UDPEchoServer::GetPort() {
+  return port_;
+}
 
 }  // namespace
 
@@ -418,6 +608,189 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
+// Attempts to create a TCP socket,  connect to specified address on a specified
+// port.
+//
+// First parameter should contain the host. Second parameter should contain the
+// port to connect to. Third parameter indicates whether the socket should be
+// brokered (1) or created in-process (0).
+//
+// SBOX_TEST_FAILED_TO_RUN_TEST - Test failed to run e.g. invalid parameters.
+//
+// SBOX_TEST_FIRST_ERROR - Could not create socket from call to WSASocket or
+// socket broker operation.
+//
+// SBOX_TEST_SECOND_ERROR - Could not call successfully perform a non-blocking
+// TCP connect().
+//
+// SBOX_TEST_TIMED_OUT - The connect timed out. This might be the correct result
+// for certain types of tests e.g. when App Container is blocking either a TCP
+// connect.
+SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
+  InitWinsock();
+  SOCKET socket_handle = INVALID_SOCKET;
+
+  if (argc < 3)
+    return SBOX_TEST_FAILED_TO_RUN_TEST;
+
+  if (::_wtoi(argv[2]) == 1) {
+    TargetServices* target_services = SandboxFactory::GetTargetServices();
+    if (!target_services)
+      return SBOX_TEST_FAILED_TO_RUN_TEST;
+    socket_handle = target_services->CreateBrokeredSocket(AF_INET, SOCK_STREAM,
+                                                          IPPROTO_TCP);
+  } else {
+    socket_handle = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0,
+                                WSA_FLAG_OVERLAPPED);
+  }
+
+  if (socket_handle == INVALID_SOCKET)
+    return SBOX_TEST_FIRST_ERROR;
+
+  ScopedSocketHandle socket(socket_handle);
+
+  sockaddr_in local_service = {};
+  local_service.sin_family = AF_INET;
+  std::string hostname = base::WideToUTF8(argv[0]);
+  local_service.sin_addr.s_addr = inet_addr(hostname.c_str());
+  local_service.sin_port = htons(::_wtoi(argv[1]));
+
+  HANDLE connect_event_handle = WSACreateEvent();
+  if (connect_event_handle == WSA_INVALID_EVENT)
+    return SBOX_TEST_FAILED_TO_RUN_TEST;
+  ScopedWSAEventHandle connect_event(connect_event_handle);
+  // For TCP sockets, wait on the connect.
+  int event_select =
+      WSAEventSelect(socket.Get(), connect_event.Get(), FD_CONNECT);
+
+  if (event_select)
+    return SBOX_TEST_FAILED_TO_RUN_TEST;
+  int ret = ::connect(socket.Get(), reinterpret_cast<sockaddr*>(&local_service),
+                      sizeof(local_service));
+  if (ret != SOCKET_ERROR || WSAGetLastError() != WSAEWOULDBLOCK) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+  // Non-blocking socket, always returns SOCKET_ERROR and sets WSAlastError to
+  // WSAEWOULDBLOCK.
+  // Wait for the connect to succeed.
+  DWORD wait = WaitForSingleObject(
+      connect_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+
+  if (wait != WAIT_OBJECT_0)
+    return SBOX_TEST_TIMED_OUT;
+
+  return SBOX_TEST_SUCCEEDED;
+}
+
+// Attempts to create a UDP socket, connect to specified address on a specified
+// port, and transmit/receive data.
+//
+// First parameter should contain the host. Second parameter should contain the
+// port to connect to. Third parameter indicates whether the socket should be
+// brokered (1) or created in-process (0).
+//
+// Returns:
+//
+// SBOX_TEST_FAILED_TO_RUN_TEST - Test failed to run e.g. invalid parameters.
+//
+// SBOX_TEST_FIRST_ERROR - Could not create socket from call to WSASocket or
+// socket broker operation.
+//
+// SBOX_TEST_THIRD_ERROR - Could not successfully perform a non-blocking UDP
+// sendto().
+//
+// SBOX_TEST_FOURTH_ERROR - Could not successfully perform a non-blocking UDP
+// recv().
+//
+// SBOX_TEST_TIMED_OUT - One of the above operations (connect, sendto, recv)
+// timed out. This might be the correct result for certain types of tests e.g.
+// when App Container is blocking either a TCP connect or UDP recv.
+SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
+  InitWinsock();
+  SOCKET socket_handle = INVALID_SOCKET;
+
+  if (argc < 3)
+    return SBOX_TEST_FAILED_TO_RUN_TEST;
+
+  if (::_wtoi(argv[2]) == 1) {
+    TargetServices* target_services = SandboxFactory::GetTargetServices();
+    if (!target_services)
+      return SBOX_TEST_FAILED_TO_RUN_TEST;
+    socket_handle =
+        target_services->CreateBrokeredSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  } else {
+    socket_handle = ::WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, nullptr, 0,
+                                WSA_FLAG_OVERLAPPED);
+  }
+
+  if (socket_handle == INVALID_SOCKET)
+    return SBOX_TEST_FIRST_ERROR;
+
+  ScopedSocketHandle socket(socket_handle);
+  sockaddr_in local_service = {};
+  local_service.sin_family = AF_INET;
+  std::string hostname = base::WideToUTF8(argv[0]);
+  local_service.sin_addr.s_addr = inet_addr(hostname.c_str());
+  local_service.sin_port = htons(::_wtoi(argv[1]));
+
+  char data[] = "hello";
+
+  WSABUF write_buffer = {};
+  write_buffer.buf = data;
+  write_buffer.len = sizeof(data);
+  HANDLE send_event_handle = WSACreateEvent();
+  if (send_event_handle == WSA_INVALID_EVENT)
+    return SBOX_TEST_FAILED_TO_RUN_TEST;
+  ScopedWSAEventHandle send_event(send_event_handle);
+  OVERLAPPED write_overlapped = {};
+  write_overlapped.hEvent = send_event.Get();
+  int ret = ::WSASendTo(socket.Get(), &write_buffer, 1, nullptr, 0,
+                        reinterpret_cast<sockaddr*>(&local_service),
+                        sizeof(local_service), &write_overlapped, nullptr);
+  if (ret == 0) {
+    // Operation completed immediately!
+  } else {
+    // Winsock should return WSA_IO_PENDING and we wait on the event.
+    if (WSAGetLastError() != WSA_IO_PENDING)
+      return SBOX_TEST_THIRD_ERROR;
+    DWORD wait = WaitForSingleObject(
+        send_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+
+    if (wait != WAIT_OBJECT_0)
+      return SBOX_TEST_TIMED_OUT;
+  }
+
+  // Now try to read the response.
+  WSABUF read_buffer = {};
+  char recv_buf[10] = {};
+  read_buffer.buf = recv_buf;
+  read_buffer.len = sizeof(recv_buf);
+  HANDLE read_event_handle = WSACreateEvent();
+  if (read_event_handle == WSA_INVALID_EVENT)
+    return SBOX_TEST_FAILED_TO_RUN_TEST;
+  ScopedWSAEventHandle read_event(read_event_handle);
+  OVERLAPPED read_overlapped = {};
+  read_overlapped.hEvent = read_event.Get();
+  DWORD flags = MSG_PARTIAL;
+  ret = ::WSARecv(socket.Get(), &read_buffer, 1, nullptr, &flags,
+                  &read_overlapped, nullptr);
+  if (ret == 0) {
+    // Operation completed immediately!
+  } else {
+    // Winsock should return WSA_IO_PENDING and we wait on the event.
+    if (WSAGetLastError() != WSA_IO_PENDING) {
+      return SBOX_TEST_FOURTH_ERROR;
+    }
+    DWORD wait = WaitForSingleObject(
+        read_event.Get(), TestTimeouts::tiny_timeout().InMilliseconds());
+
+    if (wait != WAIT_OBJECT_0)
+      return SBOX_TEST_TIMED_OUT;
+  }
+
+  return SBOX_TEST_SUCCEEDED;
+}
+
 TEST(AppContainerLaunchTest, CheckLPACACE) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
@@ -445,5 +818,155 @@ TEST(AppContainerLaunchTest, IsNotAppContainer) {
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
 }
+
+class SocketBrokerTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<
+          ::testing::tuple</* using app container */ bool,
+                           /* using socket brokering */ bool,
+                           /* connect to real adapter */ bool,
+                           /* add brokering rule */ bool>> {
+ public:
+  void SetUp() override {
+    InitWinsock();
+    SetUpSandboxPolicy();
+  }
+
+  void TearDown() override {
+    if (IsTestInAppContainer())
+      AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+  }
+
+ protected:
+  bool IsTestInAppContainer() { return ::testing::get<0>(GetParam()); }
+  bool IsTestUsingBrokeredSockets() { return ::testing::get<1>(GetParam()); }
+  bool IsTestConnectingToRealAdapter() { return ::testing::get<2>(GetParam()); }
+  bool ShouldBrokerRuleBeAdded() { return ::testing::get<3>(GetParam()); }
+  SboxTestResult GetExpectedTestResult() {
+    if (!IsTestInAppContainer())
+      return SBOX_TEST_SUCCEEDED;
+
+    if (IsTestUsingBrokeredSockets()) {
+      if (ShouldBrokerRuleBeAdded())
+        return SBOX_TEST_SUCCEEDED;
+      return SBOX_TEST_FIRST_ERROR;
+    }
+
+    return SBOX_TEST_TIMED_OUT;
+  }
+
+  std::wstring GetTestHostName() {
+    if (!IsTestConnectingToRealAdapter())
+      return L"127.0.0.1";
+    // Try and obtain a local network address.
+    // MSDN recommends a 15KB buffer for the first try at GetAdaptersAddresses.
+    size_t buffer_size = 16384;
+    std::unique_ptr<char[]> adapter_info(new char[buffer_size]);
+    PIP_ADAPTER_ADDRESSES adapter_addrs =
+        reinterpret_cast<PIP_ADAPTER_ADDRESSES>(adapter_info.get());
+    ULONG flags = (GAA_FLAG_SKIP_DNS_SERVER | GAA_FLAG_SKIP_ANYCAST |
+                   GAA_FLAG_SKIP_MULTICAST);
+    ULONG ret = 0;
+    do {
+      adapter_info.reset(new char[buffer_size]);
+      adapter_addrs =
+          reinterpret_cast<PIP_ADAPTER_ADDRESSES>(adapter_info.get());
+      ret = GetAdaptersAddresses(AF_INET, flags, 0, adapter_addrs,
+                                 reinterpret_cast<PULONG>(&buffer_size));
+    } while (ret == ERROR_BUFFER_OVERFLOW);
+    if (ret != ERROR_SUCCESS)
+      return std::wstring();
+    while (adapter_addrs) {
+      if (adapter_addrs->OperStatus == IfOperStatusUp) {
+        PIP_ADAPTER_UNICAST_ADDRESS address =
+            adapter_addrs->FirstUnicastAddress;
+        for (; address; address = address->Next) {
+          if (address->Address.lpSockaddr->sa_family != AF_INET)
+            continue;
+          sockaddr_in* ipv4_addr =
+              reinterpret_cast<sockaddr_in*>(address->Address.lpSockaddr);
+          return base::UTF8ToWide(inet_ntoa(ipv4_addr->sin_addr));
+        }
+      }
+      adapter_addrs = adapter_addrs->Next;
+    }
+    return std::wstring();
+  }
+
+  void SetUpSandboxPolicy() {
+    if (IsTestInAppContainer()) {
+      AddNetworkAppContainerPolicy(runner_.GetPolicy());
+    } else {
+      TargetPolicy* policy = runner_.GetPolicy();
+      policy->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+    }
+    if (ShouldBrokerRuleBeAdded()) {
+      TargetPolicy* policy = runner_.GetPolicy();
+      policy->AddRule(TargetPolicy::SUBSYS_SOCKET,
+                      TargetPolicy::SOCKET_ALLOW_BROKER, nullptr);
+    }
+  }
+
+ protected:
+  TestRunner runner_;
+};
+
+TEST_P(SocketBrokerTest, SocketBrokerTestUDP) {
+  // App Container socket brokering only supported on Win10 RS1 and above.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return;
+
+  UDPEchoServer server;
+  ASSERT_TRUE(server.Start());
+
+  std::wstring hostname = GetTestHostName();
+  ASSERT_TRUE(!hostname.empty());
+  EXPECT_EQ(
+      GetExpectedTestResult(),
+      runner_.RunTest(base::StringPrintf(L"Socket_CreateUDP %ls %d %d",
+                                         hostname.c_str(), server.GetPort(),
+                                         IsTestUsingBrokeredSockets() ? 1 : 0)
+                          .c_str()));
+}
+
+TEST_P(SocketBrokerTest, SocketBrokerTestTCP) {
+  // App Container socket brokering only supported on Win10 RS1 and above.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return;
+
+  std::wstring hostname = GetTestHostName();
+  ASSERT_TRUE(!hostname.empty());
+  EXPECT_EQ(
+      GetExpectedTestResult(),
+      runner_.RunTest(base::StringPrintf(L"Socket_CreateTCP %ls 445 %d",
+                                         hostname.c_str(),
+                                         IsTestUsingBrokeredSockets() ? 1 : 0)
+                          .c_str()));
+}
+
+INSTANTIATE_TEST_CASE_P(
+    AppContainerBrokered,
+    SocketBrokerTest,
+    ::testing::Combine(
+        /* using app container */ ::testing::Values(true),
+        /* using socket brokering */ ::testing::Values(true),
+        /* connect to real adapter */ ::testing::Values(true, false),
+        /* add brokering rule */ ::testing::Values(true, false)));
+INSTANTIATE_TEST_CASE_P(
+    AppContainerNonBrokered,
+    SocketBrokerTest,
+    ::testing::Combine(
+        /* using app container */ ::testing::Values(true),
+        /* using socket brokering */ ::testing::Values(false),
+        /* connect to real adapter */ ::testing::Values(true, false),
+        /* add brokering rule */ ::testing::Values(true, false)));
+INSTANTIATE_TEST_CASE_P(
+    NoAppContainerNonBrokered,
+    SocketBrokerTest,
+    ::testing::Combine(
+        /* using app container */ ::testing::Values(false),
+        /* using socket brokering */ ::testing::Values(false),
+        /* connect to real adapter */ ::testing::Values(true, false),
+        /* add brokering rule */ ::testing::Values(true, false)));
 
 }  // namespace sandbox

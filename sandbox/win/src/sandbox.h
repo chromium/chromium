@@ -21,6 +21,7 @@
 
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include <windows.h>
+#include <winsock2.h>
 #else
 #include "sandbox/win/fuzzer/fuzzer_types.h"
 #endif
@@ -160,6 +161,12 @@ class TargetServices {
   // information about the current state of the process, such as whether
   // LowerToken has been called or not.
   virtual ProcessState* GetState() = 0;
+
+  // Attempts to create a socket in the broker process, and duplicates it back
+  // to the target. The socket will be created with default flags and no group.
+  // Only TCP/UDP and IPV4/IPV6 sockets are supported by the broker.
+  // The socket will be created with WSA_FLAG_OVERLAPPED flags.
+  virtual SOCKET CreateBrokeredSocket(int af, int family, int protocol) = 0;
 
  protected:
   ~TargetServices() {}

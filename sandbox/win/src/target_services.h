@@ -41,10 +41,11 @@ class TargetServicesBase : public TargetServices {
  public:
   TargetServicesBase();
 
-  // Public interface of TargetServices.
+  // Public interface of TargetServices. See comments in sandbox.h.
   ResultCode Init() override;
   void LowerToken() override;
   ProcessState* GetState() override;
+  SOCKET CreateBrokeredSocket(int af, int type, int protocol) override;
 
   // Factory method.
   static TargetServicesBase* GetInstance();

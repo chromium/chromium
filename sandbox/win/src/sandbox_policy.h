@@ -32,7 +32,8 @@ class TargetPolicy {
     SUBSYS_REGISTRY,         // Creation and opening of registry keys.
     SUBSYS_SYNC,             // Creation of named sync objects.
     SUBSYS_WIN32K_LOCKDOWN,  // Win32K Lockdown related policy.
-    SUBSYS_SIGNED_BINARY     // Signed binary policy.
+    SUBSYS_SIGNED_BINARY,    // Signed binary policy.
+    SUBSYS_SOCKET            // Socket brokering policy.
   };
 
   // Allowable semantics when a rule is matched.
@@ -59,7 +60,8 @@ class TargetPolicy {
     FAKE_USER_GDI_INIT,     // Fakes user32 and gdi32 initialization. This can
                             // be used to allow the DLLs to load and initialize
                             // even if the process cannot access that subsystem.
-    SIGNED_ALLOW_LOAD       // Allows loading the module when CIG is enabled.
+    SIGNED_ALLOW_LOAD,      // Allows loading the module when CIG is enabled.
+    SOCKET_ALLOW_BROKER     // Allows brokering of sockets.
   };
 
   // Increments the reference count of this object. The reference count must

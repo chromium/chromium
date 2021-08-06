@@ -43,6 +43,7 @@ class TopLevelDispatcher : public Dispatcher {
   std::unique_ptr<Dispatcher> handle_dispatcher_;
   std::unique_ptr<Dispatcher> process_mitigations_win32k_dispatcher_;
   std::unique_ptr<Dispatcher> signed_dispatcher_;
+  std::unique_ptr<Dispatcher> socket_dispatcher_;
   Dispatcher* ipc_targets_[kMaxIpcTag];
 
   DISALLOW_COPY_AND_ASSIGN(TopLevelDispatcher);
