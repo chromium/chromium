@@ -1,0 +1,2 @@
+#BUG: The expected result is '123 45'
+textField name='12345' nameFrom=relatedElement

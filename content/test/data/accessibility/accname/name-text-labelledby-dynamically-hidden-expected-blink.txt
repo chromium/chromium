@@ -1,0 +1,4 @@
+# This test hides the test node to trigger corner cases in the cached
+# accessibility tree construction and maintenance that can lead to a failure.
+# Notice the expected result is really 'Test node not found.'
+Test node not found.

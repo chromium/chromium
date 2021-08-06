@@ -253,6 +253,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
   RunAccNameTest(FILE_PATH_LITERAL("name-checkbox-css-before-in-label.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameCheckboxCssBeforeAndAfterWithWhitespace) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-checkbox-css-before-and-after-with-whitespace.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameCheckboxInputInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-checkbox-input-in-label.html"));
 }
@@ -759,8 +765,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
   RunAccNameTest(FILE_PATH_LITERAL("name-text-label-embedded-spinbutton.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelInlineWithWhitespace) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-text-label-inline-with-whitespace.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-label.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyDynamicallyHidden) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-text-labelledby-dynamically-hidden.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
