@@ -958,13 +958,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
 }
 
 #if defined(OS_MAC) || defined(OS_WIN)
-// Flaky on Windows, see crbug.com/1236524.
-#if defined(OS_WIN)
-#define MAYBE_ShortcutIconCorrectColor DISABLED_ShortcutIconCorrectColor
-#else
-#define MAYBE_ShortcutIconCorrectColor ShortcutIconCorrectColor
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_ShortcutIconCorrectColor) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1001,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_ShortcutIconCorrectColor) {
 
   base::FilePath shortcut_path;
   auto* provider = WebAppProvider::Get(profile());
-  SkColor expected_pixel_color = SkColorSetRGB(92, 92, 92);
+  std::vector<SkColor> expected_pixel_colors = {SkColorSetRGB(92, 92, 92)};
 #if defined(OS_MAC)
   shortcut_path = application_dir.Append(
       provider->registrar().GetAppShortName(app_id) + ".app");
@@ -1009,10 +1003,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_ShortcutIconCorrectColor) {
   shortcut_path = application_dir.AppendASCII(
       provider->registrar().GetAppShortName(app_id) + ".lnk");
   if (base::win::GetVersion() == base::win::Version::WIN7)
-    expected_pixel_color = SkColorSetRGB(91, 91, 91);
+    expected_pixel_colors.push_back(SkColorSetRGB(91, 91, 91));
 #endif
   SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
-  EXPECT_EQ(expected_pixel_color, icon_pixel_color);
+  EXPECT_TRUE(std::find(expected_pixel_colors.begin(),
+                        expected_pixel_colors.end(),
+                        icon_pixel_color) != expected_pixel_colors.end());
 }
 #endif
 
