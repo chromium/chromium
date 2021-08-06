@@ -910,9 +910,6 @@ void ManagePasswordsUIController::
     return;
   }
   MovePasswordToAccountStore();
-  ClearPopUpFlagForBubble();
-  passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
-  UpdateBubbleAndIconVisibility();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController)
