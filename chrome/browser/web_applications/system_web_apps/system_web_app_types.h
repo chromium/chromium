@@ -102,6 +102,9 @@ enum class SystemAppType {
   //    incognito or guest sessions).
   //
   // 6. Update kMaxValue.
+  //
+  // 7. Have one of System Web App Platform owners review the CL.
+  //    See: //chromeos/components/system_apps/PLATFORM_OWNERS
   kMaxValue = OS_FEEDBACK
 };
 
