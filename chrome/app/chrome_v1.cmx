@@ -21,7 +21,7 @@
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sysmem.Allocator",
-      "fuchsia.vulkan.loader.Loader",
+      "fuchsia.vulkan.loader.Loader"
     ]
   }
 }
