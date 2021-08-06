@@ -1957,9 +1957,12 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   // the spanner to the column layout algorithm, so that it can take care of it.
   if (UNLIKELY(ConstraintSpace().IsInColumnBfc())) {
     if (NGBlockNode spanner_node = layout_result->ColumnSpanner()) {
-      DCHECK(container_builder_.HasInflowChildBreakInside());
+      DCHECK(container_builder_.HasInflowChildBreakInside() ||
+             !physical_fragment.IsBox());
       container_builder_.SetColumnSpanner(spanner_node);
     }
+  } else {
+    DCHECK(!layout_result->ColumnSpanner());
   }
 
   // Update |lines_until_clamp_| from the LayoutResult.

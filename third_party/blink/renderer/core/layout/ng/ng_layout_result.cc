@@ -90,9 +90,6 @@ NGLayoutResult::NGLayoutResult(
 
     rare_data->has_violating_break = builder->has_violating_break_;
 
-    if (builder->column_spanner_)
-      rare_data->column_spanner = builder->column_spanner_;
-
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
@@ -240,6 +237,9 @@ NGLayoutResult::NGLayoutResult(
     rare_data->early_break = builder->early_break_;
     rare_data->early_break_appeal = builder->break_appeal_;
   }
+
+  if (builder->column_spanner_)
+    EnsureRareData()->column_spanner = builder->column_spanner_;
 
   if (HasRareData()) {
     rare_data_->bfc_line_offset = builder->bfc_line_offset_;

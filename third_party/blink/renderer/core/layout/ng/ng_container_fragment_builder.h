@@ -257,6 +257,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     return is_fragmentation_context_root_;
   }
 
+  void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
+  bool FoundColumnSpanner() const { return !!column_spanner_; }
+
   // See NGLayoutResult::AnnotationOverflow().
   void SetAnnotationOverflow(LayoutUnit overflow) {
     annotation_overflow_ = overflow;
@@ -327,6 +330,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // a virtual function call.
   NGBreakTokenVector child_break_tokens_;
   scoped_refptr<const NGInlineBreakToken> last_inline_break_token_;
+
+  NGBlockNode column_spanner_ = nullptr;
 
   scoped_refptr<const NGEarlyBreak> early_break_;
   NGBreakAppeal break_appeal_ = kBreakAppealLastResort;

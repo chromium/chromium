@@ -394,9 +394,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     may_have_descendant_above_block_start_ = b;
   }
 
-  void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
-  bool FoundColumnSpanner() const { return !!column_spanner_; }
-
   void SetLinesUntilClamp(const absl::optional<int>& value) {
     lines_until_clamp_ = value;
   }
@@ -618,8 +615,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   absl::optional<LogicalRect> inflow_bounds_;
 
   NGFragmentItemsBuilder* items_builder_ = nullptr;
-
-  NGBlockNode column_spanner_ = nullptr;
 
   NGPhysicalFragment::NGBoxType box_type_;
   bool may_have_descendant_above_block_start_ = false;
