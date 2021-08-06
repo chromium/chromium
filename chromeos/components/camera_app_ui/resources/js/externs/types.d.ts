@@ -181,3 +181,17 @@ declare class IdleDetector extends EventTarget {
   screenState: 'locked'|'unlocked';
   start: () => Promise<void>;
 }
+
+// CSS Properties and Values API Level 1: The spec is still in working draft
+// stage.
+// https://www.w3.org/TR/css-properties-values-api-1/
+interface PropertyDefinition {
+  name: string;
+  inherits: boolean;
+  syntax?: string;
+  initialValue?: string;
+}
+
+declare namespace CSS {
+  function registerProperty(definition: PropertyDefinition): void;
+}

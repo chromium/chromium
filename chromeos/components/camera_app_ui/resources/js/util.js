@@ -241,3 +241,13 @@ export async function createUntrustedJSModule(scriptUrl) {
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Gets value in px of a property in a StylePropertyMapReadOnly
+ * @param {!StylePropertyMapReadOnly} style
+ * @param {string} prop
+ * @return {number}
+ */
+export function getStyleValueInPx(style, prop) {
+  return assertInstanceof(style.get(prop), CSSNumericValue).to('px').value;
+}

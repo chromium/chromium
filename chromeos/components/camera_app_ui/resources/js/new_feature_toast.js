@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as animation from './animation.js';
+import {assertInstanceof} from './chrome_util.js';
 import {cssStyle} from './css.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
@@ -39,22 +40,20 @@ class RippleEffect {
     this.el_ = el;
 
     const style = this.el_.computedStyleMap();
-    const getValue = (name) =>
-        CSSNumericValue.parse(style.get(name).toString()).value;
 
     /**
      * Initial width of ripple in px.
      * @const {!number}
      * @private
      */
-    this.width_ = getValue('--ripple-start-width');
+    this.width_ = util.getStyleValueInPx(style, '--ripple-start-width');
 
     /**
      * Initial height of ripple in px.
      * @const {!number}
      * @private
      */
-    this.height_ = getValue('--ripple-start-height');
+    this.height_ = util.getStyleValueInPx(style, '--ripple-start-height');
 
     /**
      * @const {number}
@@ -65,8 +64,10 @@ class RippleEffect {
     }, RIPPLE_DURATION_MS / RIPPLE_COUNT);
 
     RIPPLE_STYLE.setProperty('--duration', `${RIPPLE_DURATION_MS}ms`);
-    const scaleX = getValue('--ripple-scale-x');
-    const scaleY = getValue('--ripple-scale-y');
+    const scaleX =
+        assertInstanceof(style.get('--ripple-scale-x'), CSSUnitValue).value;
+    const scaleY =
+        assertInstanceof(style.get('--ripple-scale-y'), CSSUnitValue).value;
     RIPPLE_STYLE.setProperty('--scale', `scale(${scaleX}, ${scaleY})`);
 
     this.addRipple_();
@@ -124,6 +125,20 @@ const PositionProperty = {
   TOP: 'top',
 };
 
+// TODO(pihsun): This introduce some global effect on module import, consider
+// some way to move this into some kind of initialization method.
+for (const elProperty of Object.values(PositionProperty)) {
+  for (const toastProperty of Object.values(PositionProperty)) {
+    const cssName = `--toast-${toastProperty}-to-element-${elProperty}`;
+    CSS.registerProperty({
+      name: cssName,
+      syntax: '<length>',
+      inherits: true,
+      initialValue: '0',
+    });
+  }
+}
+
 /**
  * Controller for showing new feature toast.
  */
@@ -158,8 +173,7 @@ class Toast {
           if (!style.has(cssName)) {
             continue;
           }
-          const offset =
-              CSSNumericValue.parse(style.get(cssName).toString()).value;
+          const offset = util.getStyleValueInPx(style, cssName);
           properties.push({elProperty, toastProperty, offset});
         }
       }

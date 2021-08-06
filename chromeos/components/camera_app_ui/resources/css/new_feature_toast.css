@@ -2,6 +2,30 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+@property --ripple-start-width {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --ripple-start-height {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --ripple-scale-x {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --ripple-scale-y {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
 #new-feature-toast {
   align-items: center;
   background-color: rgb(26, 115, 232);
