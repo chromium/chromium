@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -17,12 +18,20 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 
+#if defined(OS_MAC)
+#include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
+#endif
+
 namespace {
 
+// New fields must be added to BuildIndexJson().
 constexpr char kInstalledWebApps[] = "InstalledWebApps";
 constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
 constexpr char kIconErrorLog[] = "IconErrorLog";
+#if defined(OS_MAC)
+constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
+#endif
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -44,6 +53,9 @@ base::Value BuildIndexJson() {
   index.Append(kPreinstalledWebAppConfigs);
   index.Append(kExternallyManagedWebAppPrefs);
   index.Append(kIconErrorLog);
+#if defined(OS_MAC)
+  index.Append(kAppShimRegistryLocalStorage);
+#endif
 
   return root;
 }
@@ -182,6 +194,15 @@ base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   return root;
 }
 
+#if defined(OS_MAC)
+base::Value BuildAppShimRegistryLocalStorageJson() {
+  base::Value root(base::Value::Type::DICTIONARY);
+  root.SetKey(kAppShimRegistryLocalStorage,
+              AppShimRegistry::Get()->AsDebugValue());
+  return root;
+}
+#endif
+
 base::Value BuildWebAppInternalsJson(Profile* profile) {
   auto* provider = web_app::WebAppProvider::Get(profile);
   if (!provider)
@@ -193,6 +214,9 @@ base::Value BuildWebAppInternalsJson(Profile* profile) {
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
   root.Append(BuildIconErrorLogJson(*provider));
+#if defined(OS_MAC)
+  root.Append(BuildAppShimRegistryLocalStorageJson());
+#endif
 
   return root;
 }

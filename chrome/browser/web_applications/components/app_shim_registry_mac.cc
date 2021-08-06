@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -131,6 +130,14 @@ void AppShimRegistry::SetPrefServiceAndUserDataDirForTesting(
     const base::FilePath& user_data_dir) {
   override_pref_service_ = pref_service;
   override_user_data_dir_ = user_data_dir;
+}
+
+base::Value AppShimRegistry::AsDebugValue() const {
+  const base::Value* app_shims = GetPrefService()->GetDictionary(kAppShims);
+  if (!app_shims)
+    return base::Value(base::Value::Type::DICTIONARY);
+
+  return app_shims->Clone();
 }
 
 PrefService* AppShimRegistry::GetPrefService() const {

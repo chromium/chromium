@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
+#include "base/values.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -68,6 +69,9 @@ class AppShimRegistry {
   void SetPrefServiceAndUserDataDirForTesting(
       PrefService* pref_service,
       const base::FilePath& user_data_dir);
+
+  // For logging and debug purposes.
+  base::Value AsDebugValue() const;
 
  protected:
   friend class base::NoDestructor<AppShimRegistry>;
