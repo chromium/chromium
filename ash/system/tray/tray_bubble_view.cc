@@ -228,8 +228,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().
-  DCHECK(((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
-          anchor_widget()));
+  DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
+         anchor_widget());
   bubble_border_->set_use_theme_background_color(!init_params.bg_color);
   if (init_params.corner_radius)
     bubble_border_->SetCornerRadius(init_params.corner_radius.value());
