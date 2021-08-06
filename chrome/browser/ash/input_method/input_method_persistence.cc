@@ -22,7 +22,7 @@
 #include "components/user_manager/known_user.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 namespace {
 
@@ -125,7 +125,7 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
 // static
 void InputMethodPersistence::SetUserLastLoginInputMethod(
     const std::string& input_method_id,
-    const chromeos::input_method::InputMethodManager* const manager,
+    const InputMethodManager* const manager,
     Profile* profile) {
   if (!profile)
     return;
@@ -148,4 +148,4 @@ void SetUserLastInputMethodPreferenceForTesting(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

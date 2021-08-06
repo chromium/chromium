@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -96,4 +96,4 @@ void Shutdown() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

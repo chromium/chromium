@@ -68,7 +68,7 @@ class L10nUtilTest : public testing::Test {
 
 L10nUtilTest::L10nUtilTest()
     : input_manager_(new MockInputMethodManagerWithInputMethods) {
-  chromeos::input_method::InitializeForTesting(input_manager_);
+  ash::input_method::InitializeForTesting(input_manager_);
   auto mock_component_extension_ime_manager_delegate = std::make_unique<
       input_method::MockComponentExtensionIMEManagerDelegate>();
   input_manager_->SetComponentExtensionIMEManager(
@@ -79,7 +79,7 @@ L10nUtilTest::L10nUtilTest()
 }
 
 L10nUtilTest::~L10nUtilTest() {
-  chromeos::input_method::Shutdown();
+  ash::input_method::Shutdown();
 }
 
 void L10nUtilTest::SetInputMethods1() {

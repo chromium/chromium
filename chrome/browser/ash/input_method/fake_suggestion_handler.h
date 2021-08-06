@@ -9,7 +9,8 @@
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // Fake suggestion handler used for testing.
 //
@@ -65,6 +66,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   std::vector<std::u16string> announcements_;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_FAKE_SUGGESTION_HANDLER_H_

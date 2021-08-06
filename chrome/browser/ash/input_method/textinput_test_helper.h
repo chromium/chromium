@@ -18,7 +18,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // The base class of text input testing.
 class TextInputTestBase : public InProcessBrowserTest {
@@ -101,6 +102,7 @@ class TextInputTestHelper : public ui::InputMethodObserver {
   DISALLOW_COPY_AND_ASSIGN(TextInputTestHelper);
 };
 
-} // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_TEXTINPUT_TEST_HELPER_H_

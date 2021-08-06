@@ -21,7 +21,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/init/input_method_factory.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 TextInputTestBase::TextInputTestBase() = default;
 TextInputTestBase::~TextInputTestBase() = default;
@@ -232,4 +233,5 @@ bool TextInputTestHelper::ClickElement(const std::string& id,
   return true;
 }
 
-} // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

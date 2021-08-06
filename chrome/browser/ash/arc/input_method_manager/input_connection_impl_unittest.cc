@@ -21,7 +21,7 @@ namespace arc {
 namespace {
 
 class DummyInputMethodEngineObserver
-    : public chromeos::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   DummyInputMethodEngineObserver() = default;
   ~DummyInputMethodEngineObserver() override = default;
@@ -48,7 +48,8 @@ class DummyInputMethodEngineObserver
   void OnCandidateClicked(
       const std::string& component_id,
       int candidate_id,
-      chromeos::InputMethodEngineBase::MouseButtonEvent button) override {}
+      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
+      override {}
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
@@ -168,7 +169,7 @@ class InputConnectionImplTest : public testing::Test {
                                                  context_id);
   }
 
-  chromeos::InputMethodEngine* engine() { return engine_.get(); }
+  ash::input_method::InputMethodEngine* engine() { return engine_.get(); }
 
   TestIMEInputContextHandler* context_handler() { return &context_handler_; }
 
@@ -188,7 +189,7 @@ class InputConnectionImplTest : public testing::Test {
     chromeos::input_method::InputMethodManager::Initialize(
         new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();
-    engine_ = std::make_unique<chromeos::InputMethodEngine>();
+    engine_ = std::make_unique<ash::input_method::InputMethodEngine>();
     engine_->Initialize(std::make_unique<DummyInputMethodEngineObserver>(),
                         "test_extension_id", nullptr);
     chrome_keyboard_controller_client_test_helper_ =
@@ -212,7 +213,7 @@ class InputConnectionImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestInputMethodManagerBridge> bridge_;
-  std::unique_ptr<chromeos::InputMethodEngine> engine_;
+  std::unique_ptr<ash::input_method::InputMethodEngine> engine_;
   MockTextInputClient text_input_client_;
   ui::MockInputMethod input_method_{nullptr};
   TestIMEInputContextHandler context_handler_{&input_method_};

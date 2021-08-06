@@ -19,7 +19,8 @@ class IMEEngineHandlerInterface;
 class KeyEvent;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 class MockInputMethodEngine : public ui::IMEEngineHandlerInterface {
  public:
@@ -58,6 +59,14 @@ class MockInputMethodEngine : public ui::IMEEngineHandlerInterface {
   std::string last_activated_property_;
 };
 
+}  // namespace input_method
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::MockInputMethodEngine;
+}  // namespace input_method
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_MOCK_INPUT_METHOD_ENGINE_H_

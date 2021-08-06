@@ -7,13 +7,11 @@
 
 namespace ui {
 namespace ime {
-
 struct AssistiveWindowButton;
-
 }  // namespace ime
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class AssistiveWindowControllerDelegate {
@@ -27,6 +25,6 @@ class AssistiveWindowControllerDelegate {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_CONTROLLER_DELEGATE_H_

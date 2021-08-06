@@ -13,7 +13,8 @@
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using ::chromeos::ime::TextCompletionCandidate;
@@ -86,7 +87,8 @@ class SuggestionsCollectorTest : public ::testing::Test {
     return personal_info_address_result_;
   }
 
-  void OnSuggestionsReturned(ime::mojom::SuggestionsResponsePtr response) {
+  void OnSuggestionsReturned(
+      chromeos::ime::mojom::SuggestionsResponsePtr response) {
     suggestions_returned_ = response->candidates;
   }
 
@@ -110,7 +112,7 @@ TEST_F(SuggestionsCollectorTest, ReturnsResultsFromAssistiveSuggester) {
   SuggestionsCollector collector(&suggester, std::move(requestor));
 
   collector.GatherSuggestions(
-      ime::mojom::SuggestionsRequest::New(),
+      chromeos::ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -127,7 +129,7 @@ TEST_F(SuggestionsCollectorTest, ReturnsResultsFromSuggestionsRequestor) {
   SuggestionsCollector collector(&suggester, std::move(requestor));
 
   collector.GatherSuggestions(
-      ime::mojom::SuggestionsRequest::New(),
+      chromeos::ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -152,7 +154,7 @@ TEST_F(SuggestionsCollectorTest, ReturnsCombinedResultsIfAvailable) {
   };
 
   collector.GatherSuggestions(
-      ime::mojom::SuggestionsRequest::New(),
+      chromeos::ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -178,7 +180,7 @@ TEST_F(SuggestionsCollectorTest,
   };
 
   collector.GatherSuggestions(
-      ime::mojom::SuggestionsRequest::New(),
+      chromeos::ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -186,4 +188,5 @@ TEST_F(SuggestionsCollectorTest,
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

@@ -43,7 +43,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/test/event_generator.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 namespace {
 
@@ -673,9 +673,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     )";
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        set_assistive_window_test_script));
-    auto* assistive_window_controller =
-        static_cast<chromeos::input_method::AssistiveWindowController*>(
-            ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+    auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
+        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -700,9 +699,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     )";
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        set_assistive_window_test_script));
-    auto* assistive_window_controller =
-        static_cast<chromeos::input_method::AssistiveWindowController*>(
-            ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+    auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
+        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -723,9 +721,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     )";
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        set_assistive_window_test_script));
-    auto* assistive_window_controller =
-        static_cast<chromeos::input_method::AssistiveWindowController*>(
-            ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+    auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
+        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -769,9 +766,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     ASSERT_TRUE(content::ExecuteScript(
         host->host_contents(),
         set_assistive_window_button_highlighted_test_script));
-    auto* assistive_window_controller =
-        static_cast<chromeos::input_method::AssistiveWindowController*>(
-            ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+    auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
+        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -808,9 +804,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     ASSERT_TRUE(content::ExecuteScript(
         host->host_contents(),
         set_assistive_window_button_highlighted_test_script));
-    auto* assistive_window_controller =
-        static_cast<chromeos::input_method::AssistiveWindowController*>(
-            ui::IMEBridge::Get()->GetAssistiveWindowHandler());
+    auto* assistive_window_controller = static_cast<AssistiveWindowController*>(
+        ui::IMEBridge::Get()->GetAssistiveWindowHandler());
 
     ui::ime::UndoWindow* undo_window =
         assistive_window_controller->GetUndoWindowForTesting();
@@ -1523,4 +1518,4 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
 
 }  // namespace
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

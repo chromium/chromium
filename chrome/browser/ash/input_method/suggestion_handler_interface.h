@@ -14,7 +14,8 @@ struct SuggestionDetails;
 }  // namespace ime
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 struct AssistiveWindowProperties;
 
@@ -66,6 +67,7 @@ class SuggestionHandlerInterface {
   virtual void Announce(const std::u16string& message) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_HANDLER_INTERFACE_H_

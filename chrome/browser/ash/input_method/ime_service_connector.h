@@ -19,12 +19,12 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace chromeos {
-
+namespace ash {
 namespace input_method {
 
 // The connector of an ImeService which runs in its own process.
-class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
+class ImeServiceConnector
+    : public chromeos::ime::mojom::PlatformAccessProvider {
  public:
   explicit ImeServiceConnector(Profile* profile);
   ~ImeServiceConnector() override;
@@ -58,6 +58,6 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_IME_SERVICE_CONNECTOR_H_

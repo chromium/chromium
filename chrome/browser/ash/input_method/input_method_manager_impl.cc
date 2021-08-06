@@ -57,7 +57,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -81,10 +81,8 @@ enum InputMethodCategory {
   INPUT_METHOD_CATEGORY_MAX
 };
 
-const chromeos::input_method::ImeKeyset kKeysets[] = {
-    chromeos::input_method::ImeKeyset::kEmoji,
-    chromeos::input_method::ImeKeyset::kHandwriting,
-    chromeos::input_method::ImeKeyset::kVoice};
+const ImeKeyset kKeysets[] = {ImeKeyset::kEmoji, ImeKeyset::kHandwriting,
+                              ImeKeyset::kVoice};
 
 InputMethodCategory GetInputMethodCategory(const std::string& input_method_id) {
   const std::string component_id =
@@ -114,15 +112,15 @@ InputMethodCategory GetInputMethodCategory(const std::string& input_method_id) {
   return category;
 }
 
-std::string KeysetToString(chromeos::input_method::ImeKeyset keyset) {
+std::string KeysetToString(ImeKeyset keyset) {
   switch (keyset) {
-    case chromeos::input_method::ImeKeyset::kNone:
+    case ImeKeyset::kNone:
       return "";
-    case chromeos::input_method::ImeKeyset::kEmoji:
+    case ImeKeyset::kEmoji:
       return "emoji";
-    case chromeos::input_method::ImeKeyset::kHandwriting:
+    case ImeKeyset::kHandwriting:
       return "hwt";
-    case chromeos::input_method::ImeKeyset::kVoice:
+    case ImeKeyset::kVoice:
       return "voice";
   }
 }
@@ -742,9 +740,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
     // Otherwise, determine the hardware keyboard from the locale.
     std::vector<std::string> input_method_ids;
     if (manager_->util_.GetInputMethodIdsFromLanguageCode(
-            locale,
-            chromeos::input_method::kKeyboardLayoutsOnly,
-            &input_method_ids)) {
+            locale, kKeyboardLayoutsOnly, &input_method_ids)) {
       // The output list |input_method_ids| is sorted by popularity, hence
       // input_method_ids[0] now contains the most popular keyboard layout
       // for the given locale.
@@ -978,7 +974,7 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     }
   }
 
-  if (IsRunningAsSystemCompositor()) {
+  if (chromeos::IsRunningAsSystemCompositor()) {
     keyboard_ = std::make_unique<ImeKeyboardImpl>(
         ui::OzonePlatform::GetInstance()->GetInputController());
   } else {
@@ -1384,8 +1380,7 @@ void InputMethodManagerImpl::MaybeNotifyImeMenuActivationChanged() {
                         is_ime_menu_activated_);
 }
 
-void InputMethodManagerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+void InputMethodManagerImpl::OverrideKeyboardKeyset(ImeKeyset keyset) {
   GURL url = state_->GetInputViewUrl();
 
   // If fails to find ref or tag "id" in the ref, it means the current IME is
@@ -1399,7 +1394,7 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(
   if (id_start == std::string::npos)
     return;
 
-  if (keyset == chromeos::input_method::ImeKeyset::kNone) {
+  if (keyset == ImeKeyset::kNone) {
     // Resets the url as the input method default url and notify the hash
     // changed to VK.
     state_->ResetInputViewUrl();
@@ -1415,7 +1410,7 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(
   auto id_end = overridden_ref.find("&", id_start + 1);
   std::string id_string = overridden_ref.substr(id_start, id_end - id_start);
   // Remove existing keyset string.
-  for (const chromeos::input_method::ImeKeyset keyset : kKeysets) {
+  for (const ImeKeyset keyset : kKeysets) {
     std::string keyset_string = KeysetToString(keyset);
     auto keyset_start = id_string.find("." + keyset_string);
     if (keyset_start != std::string::npos) {
@@ -1495,4 +1490,4 @@ void InputMethodManagerImpl::ReloadKeyboard() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

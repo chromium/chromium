@@ -146,7 +146,7 @@ class ArcInputMethodManagerService
   // from/to ARC IMEs in the container. The below two variables are for the
   // proxy IME.
   const std::string proxy_ime_extension_id_;
-  std::unique_ptr<chromeos::InputMethodEngine> proxy_ime_engine_;
+  std::unique_ptr<ash::input_method::InputMethodEngine> proxy_ime_engine_;
 
   // The currently active input method, observed for
   // OnShowVirtualKeyboardIfEnabled.

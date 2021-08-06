@@ -14,7 +14,8 @@
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // A client interface to the TextSuggestions service found in the ML service.
 class SuggestionsServiceClient : public AsyncSuggestionsSource {
@@ -43,6 +44,7 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   bool text_suggester_loaded_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTIONS_SERVICE_CLIENT_H_

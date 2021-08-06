@@ -24,7 +24,8 @@
 #include "ui/base/ime/chromeos/input_method_ukm.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 
@@ -329,33 +330,30 @@ bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
 }
 
 bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kAssistPersonalInfo) &&
+  return base::FeatureList::IsEnabled(features::kAssistPersonalInfo) &&
          profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled);
 }
 
 bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kEmojiSuggestAddition) &&
+  return base::FeatureList::IsEnabled(features::kEmojiSuggestAddition) &&
          profile_->GetPrefs()->GetBoolean(
              prefs::kEmojiSuggestionEnterpriseAllowed) &&
          profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
-  return chromeos::features::IsAssistiveMultiWordEnabled() &&
+  return features::IsAssistiveMultiWordEnabled() &&
          profile_->GetPrefs()->GetBoolean(
              prefs::kAssistPredictiveWritingEnabled);
 }
 
 bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
   return IsMultiWordSuggestEnabled() &&
-         base::FeatureList::IsEnabled(
-             chromeos::features::kAssistMultiWordExpanded);
+         base::FeatureList::IsEnabled(features::kAssistMultiWordExpanded);
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kAssistPersonalInfo)) {
+  if (!base::FeatureList::IsEnabled(features::kAssistPersonalInfo)) {
     return DisabledReason::kFeatureFlagOff;
   }
   if (!profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled)) {
@@ -368,8 +366,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kEmojiSuggestAddition)) {
+  if (!base::FeatureList::IsEnabled(features::kEmojiSuggestAddition)) {
     return DisabledReason::kFeatureFlagOff;
   }
   if (!profile_->GetPrefs()->GetBoolean(
@@ -386,7 +383,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
-  if (!chromeos::features::IsAssistiveMultiWordEnabled()) {
+  if (!features::IsAssistiveMultiWordEnabled()) {
     return DisabledReason::kFeatureFlagOff;
   }
   if (!profile_->GetPrefs()->GetBoolean(
@@ -609,4 +606,5 @@ std::vector<ime::TextSuggestion> AssistiveSuggester::GetSuggestions() {
   return {};
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

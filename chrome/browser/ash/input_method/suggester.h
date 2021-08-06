@@ -12,7 +12,8 @@
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // A generic agent to suggest when the user types, and adopt or dismiss the
 // suggestion according to the user action.
@@ -51,6 +52,7 @@ class Suggester : public SuggestionsSource {
   virtual bool HasSuggestions() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTER_H_

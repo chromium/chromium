@@ -8,7 +8,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 TEST(InputMethodConfigurationTest, TestInitialize) {
@@ -34,4 +34,4 @@ TEST(InputMethodConfigurationTest, TestInitializeForTesting) {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

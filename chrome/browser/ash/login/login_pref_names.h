@@ -38,15 +38,16 @@ namespace prefs {
 using ::chromeos::prefs::kGaiaLastOnlineSignInTime;
 using ::chromeos::prefs::kGaiaLockScreenOfflineSigninTimeLimitDays;
 using ::chromeos::prefs::kGaiaOfflineSigninTimeLimitDays;
+using ::chromeos::prefs::kLastLoginInputMethod;
 using ::chromeos::prefs::kLockScreenReauthenticationEnabled;
 using ::chromeos::prefs::kOobeMarketingOptInChoice;
 using ::chromeos::prefs::kOobeMarketingOptInScreenFinished;
 using ::chromeos::prefs::kOobeOnboardingTime;
 using ::chromeos::prefs::kOobeScreenPending;
-using ::chromeos::prefs::kSAMLLastGAIASignInTime;
-using ::chromeos::prefs::kSAMLOfflineSigninTimeLimit;
 using ::chromeos::prefs::kSamlInSessionPasswordChangeEnabled;
+using ::chromeos::prefs::kSAMLLastGAIASignInTime;
 using ::chromeos::prefs::kSamlLockScreenOfflineSigninTimeLimitDays;
+using ::chromeos::prefs::kSAMLOfflineSigninTimeLimit;
 using ::chromeos::prefs::kSamlPasswordExpirationAdvanceWarningDays;
 using ::chromeos::prefs::kSamlPasswordSyncToken;
 }

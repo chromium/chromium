@@ -41,7 +41,8 @@ class TestAccessibilityHandler : public AccessibilityHandler {
 class AccessibilityHandlerTest : public InProcessBrowserTest {
  public:
   AccessibilityHandlerTest()
-      : mock_ime_engine_handler_(std::make_unique<MockInputMethodEngine>()) {}
+      : mock_ime_engine_handler_(
+            std::make_unique<input_method::MockInputMethodEngine>()) {}
   AccessibilityHandlerTest(const AccessibilityHandlerTest&) = delete;
   AccessibilityHandlerTest& operator=(const AccessibilityHandlerTest&) = delete;
   ~AccessibilityHandlerTest() override = default;
@@ -122,7 +123,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
 
   void MaybeAddDictationLocales() { handler_->MaybeAddDictationLocales(); }
 
-  std::unique_ptr<MockInputMethodEngine> mock_ime_engine_handler_;
+  std::unique_ptr<input_method::MockInputMethodEngine> mock_ime_engine_handler_;
 
  private:
   std::unique_ptr<TestingProfile> profile_;

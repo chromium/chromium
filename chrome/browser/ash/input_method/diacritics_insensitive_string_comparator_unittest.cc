@@ -5,7 +5,8 @@
 #include "chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 TEST(DiacriticsInsensitiveStringComparatorTest, TestEqual) {
   DiacriticsInsensitiveStringComparator comparator;
@@ -37,4 +38,5 @@ TEST(DiacriticsInsensitiveStringComparatorTest, TestNotEqual) {
   EXPECT_FALSE(comparator.Equal(u"Noël", u"Christmas"));
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

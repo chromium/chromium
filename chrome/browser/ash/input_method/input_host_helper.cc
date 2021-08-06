@@ -8,9 +8,8 @@
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 
-namespace chromeos {
-
-namespace input_host_helper {
+namespace ash {
+namespace input_method {
 
 void PopulateInputHost(InputAssociatedHost* host) {
   aura::Window* window = ash::window_util::GetActiveWindow();
@@ -23,5 +22,5 @@ void PopulateInputHost(InputAssociatedHost* host) {
   }
 }
 
-}  // namespace input_host_helper
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

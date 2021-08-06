@@ -19,7 +19,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -133,4 +133,4 @@ void ImeServiceConnector::OnFileDownloadComplete(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

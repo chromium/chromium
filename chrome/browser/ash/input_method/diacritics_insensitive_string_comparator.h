@@ -9,7 +9,8 @@
 
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 class DiacriticsInsensitiveStringComparator {
  public:
@@ -27,6 +28,7 @@ class DiacriticsInsensitiveStringComparator {
   std::unique_ptr<icu::Transliterator> diacritics_stripper_;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_DIACRITICS_INSENSITIVE_STRING_COMPARATOR_H_

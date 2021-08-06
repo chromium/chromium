@@ -39,9 +39,7 @@ class Profile;
 namespace ui {
 class IMEEngineHandlerInterface;
 
-using chromeos::InputMethodEngineBase;
-
-class ImeObserver : public InputMethodEngineBase::Observer {
+class ImeObserver : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   ImeObserver(const std::string& extension_id, Profile* profile);
 

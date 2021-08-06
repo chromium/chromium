@@ -45,6 +45,8 @@
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 
+namespace {
+
 namespace input_method_private = extensions::api::input_method_private;
 namespace AddWordToDictionary =
     extensions::api::input_method_private::AddWordToDictionary;
@@ -84,10 +86,8 @@ namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
 
-namespace {
-
-using chromeos::InputMethodEngine;
-using chromeos::InputMethodEngineBase;
+using ::ash::input_method::InputMethodEngine;
+using ::ash::input_method::InputMethodEngineBase;
 
 // Prefix, which is used by XKB.
 const char kXkbPrefix[] = "xkb:";
@@ -451,7 +451,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
     }
   }
 
-  if (!engine->chromeos::InputMethodEngineBase::SetCompositionRange(
+  if (!engine->InputMethodEngineBase::SetCompositionRange(
           params.context_id, params.selection_before, params.selection_after,
           segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -495,7 +495,7 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
     }
   }
 
-  if (!engine->chromeos::InputMethodEngineBase::SetComposingRange(
+  if (!engine->InputMethodEngineBase::SetComposingRange(
           params.context_id, params.start, params.end, segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
@@ -512,9 +512,8 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
 
   const auto parent_params = GetAutocorrectRange::Params::Create(*args_);
   const auto& params = parent_params->parameters;
-  const gfx::Range range =
-      engine->chromeos::InputMethodEngineBase::GetAutocorrectRange(
-          params.context_id, &error);
+  const gfx::Range range = engine->InputMethodEngineBase::GetAutocorrectRange(
+      params.context_id, &error);
   auto ret = std::make_unique<base::DictionaryValue>();
   ret->SetInteger("start", range.is_empty() ? 0 : range.start());
   ret->SetInteger("end", range.is_empty() ? 0 : range.end());
@@ -534,7 +533,7 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
       GetAutocorrectCharacterBounds::Params::Create(*args_);
   const auto& params = parent_params->parameters;
   const gfx::Rect rect =
-      engine->chromeos::InputMethodEngineBase::GetAutocorrectCharacterBounds(
+      engine->InputMethodEngineBase::GetAutocorrectCharacterBounds(
           params.context_id, &error);
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -558,7 +557,7 @@ InputMethodPrivateSetAutocorrectRangeFunction::Run() {
 
   const auto parent_params = SetAutocorrectRange::Params::Create(*args_);
   const auto& params = parent_params->parameters;
-  if (!engine->chromeos::InputMethodEngineBase::SetAutocorrectRange(
+  if (!engine->InputMethodEngineBase::SetAutocorrectRange(
           params.context_id,
           gfx::Range(params.selection_start, params.selection_end), &error)) {
     auto results = std::make_unique<base::ListValue>();
@@ -581,7 +580,7 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
   const SetSelectionRange::Params::Parameters& params =
       parent_params->parameters;
 
-  if (!engine->chromeos::InputMethodEngineBase::SetSelectionRange(
+  if (!engine->InputMethodEngineBase::SetSelectionRange(
           params.context_id, *params.selection_start, *params.selection_end,
           &error)) {
     auto results = std::make_unique<base::ListValue>();
@@ -609,8 +608,8 @@ InputMethodPrivateOnAutocorrectFunction::Run() {
       OnAutocorrect::Params::Create(*args_));
   const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
   std::string error;
-  chromeos::NativeInputMethodEngine* engine =
-      static_cast<chromeos::NativeInputMethodEngine*>(
+  ash::input_method::NativeInputMethodEngine* engine =
+      static_cast<ash::input_method::NativeInputMethodEngine*>(
           GetEngineIfActive(Profile::FromBrowserContext(browser_context()),
                             extension_id(), &error));
   if (!engine)

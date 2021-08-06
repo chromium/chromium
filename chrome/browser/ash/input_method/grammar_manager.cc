@@ -16,12 +16,9 @@
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
-
-using text_utils::FindCurrentSentence;
-using text_utils::FindLastSentence;
-using text_utils::Sentence;
 
 constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromSeconds(2);
 const int HashMultiplier = 1024;
@@ -66,8 +63,7 @@ GrammarManager::GrammarManager(
 GrammarManager::~GrammarManager() = default;
 
 bool GrammarManager::IsOnDeviceGrammarEnabled() {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kOnDeviceGrammarCheck);
+  return base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck);
 }
 
 void GrammarManager::OnFocus(int context_id, int text_input_flags) {
@@ -333,4 +329,5 @@ void GrammarManager::SetButtonHighlighted(
   }
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

@@ -9,7 +9,7 @@
 
 #include "ui/base/ime/chromeos/input_method_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 MockInputMethodManagerImpl::State::State(MockInputMethodManagerImpl* manager)
@@ -135,4 +135,4 @@ void MockInputMethodManagerImpl::set_application_locale(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

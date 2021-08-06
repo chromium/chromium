@@ -7,7 +7,8 @@
 
 #include <map>
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 MockInputMethodEngine::MockInputMethodEngine() = default;
 
@@ -58,4 +59,5 @@ const std::string& MockInputMethodEngine::GetActiveComponentId() const {
   return active_component_id_;
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

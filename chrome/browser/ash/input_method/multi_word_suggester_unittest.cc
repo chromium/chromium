@@ -13,7 +13,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using ::chromeos::ime::TextSuggestion;
@@ -615,4 +616,5 @@ TEST(MultiWordSuggesterTest,
   ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2);
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

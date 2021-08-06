@@ -38,7 +38,8 @@
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 
@@ -168,8 +169,9 @@ void OnFilePathChecked(Profile* profile,
 ComponentExtensionIMEManagerDelegateImpl::
     ComponentExtensionIMEManagerDelegateImpl() {
   ReadComponentExtensionsInfo(&component_extension_list_);
-  login_layout_set_.insert(std::begin(input_method::kLoginXkbLayoutIds),
-                           std::end(input_method::kLoginXkbLayoutIds));
+  login_layout_set_.insert(
+      std::begin(chromeos::input_method::kLoginXkbLayoutIds),
+      std::end(chromeos::input_method::kLoginXkbLayoutIds));
 }
 
 ComponentExtensionIMEManagerDelegateImpl::
@@ -197,7 +199,7 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
     // IME extension when the feature 'ImeMojoDecoder' is enabled.
     // See http://b/181170189 for more details.
     // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
-    if (base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
+    if (base::FeatureList::IsEnabled(features::kImeMojoDecoder)) {
       base::ReplaceFirstSubstringAfterOffset(manifest_cp, 0, "background.html",
                                              "background_mojo.html");
     }
@@ -411,8 +413,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
 
       if (base::StartsWith(engine.engine_id, "experimental_",
                            base::CompareCase::SENSITIVE) &&
-          !base::FeatureList::IsEnabled(
-              chromeos::features::kMultilingualTyping)) {
+          !base::FeatureList::IsEnabled(features::kMultilingualTyping)) {
         continue;
       }
 
@@ -422,4 +423,5 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
   }
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

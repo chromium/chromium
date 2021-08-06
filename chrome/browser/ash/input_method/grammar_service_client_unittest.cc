@@ -19,8 +19,11 @@
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/gfx/range/range.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
+
+namespace machine_learning = ::chromeos::machine_learning;
 
 class GrammarServiceClientTest : public testing::Test {
  public:
@@ -157,4 +160,5 @@ TEST_F(GrammarServiceClientTest, RejectsLongQueries) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

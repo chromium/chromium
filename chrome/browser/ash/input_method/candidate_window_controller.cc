@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/input_method/candidate_window_controller_impl.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // static
@@ -16,4 +16,4 @@ CandidateWindowController::CreateCandidateWindowController() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

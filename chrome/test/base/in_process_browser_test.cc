@@ -312,7 +312,7 @@ void InProcessBrowserTest::SetUp() {
   command_line->AppendSwitch(switches::kDisableLoggingRedirect);
 
   // Disable IME extension loading to avoid many browser tests failures.
-  chromeos::input_method::DisableExtensionLoading();
+  ash::input_method::DisableExtensionLoading();
 
   if (!command_line->HasSwitch(switches::kHostWindowBounds) &&
       !base::SysInfo::IsRunningOnChromeOS()) {

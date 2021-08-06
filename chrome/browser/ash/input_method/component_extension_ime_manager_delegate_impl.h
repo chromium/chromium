@@ -19,7 +19,8 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // The implementation class of ComponentExtensionIMEManagerDelegate.
 class ComponentExtensionIMEManagerDelegateImpl
@@ -70,6 +71,7 @@ class ComponentExtensionIMEManagerDelegateImpl
   DISALLOW_COPY_AND_ASSIGN(ComponentExtensionIMEManagerDelegateImpl);
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_IMPL_H_

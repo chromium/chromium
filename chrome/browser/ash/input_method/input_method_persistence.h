@@ -12,7 +12,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Observes input method and session state changes, and persists input method
@@ -35,7 +35,7 @@ class InputMethodPersistence : public InputMethodManager::Observer {
   // Update user last keyboard layout for login screen.
   static void SetUserLastLoginInputMethod(
       const std::string& input_method_id,
-      const chromeos::input_method::InputMethodManager* const manager,
+      const InputMethodManager* const manager,
       Profile* profile);
 
  private:
@@ -47,6 +47,13 @@ void SetUserLastInputMethodPreferenceForTesting(
     const AccountId& account_id,
     const std::string& input_method);
 
+}  // namespace input_method
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::SetUserLastInputMethodPreferenceForTesting;
 }  // namespace input_method
 }  // namespace chromeos
 

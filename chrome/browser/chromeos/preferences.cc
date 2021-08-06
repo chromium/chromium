@@ -153,7 +153,7 @@ void Preferences::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
   TurnSyncOnHelper::RegisterProfilePrefs(registry);
-  input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
+  ash::input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
   crosapi::browser_util::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;
@@ -596,7 +596,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   if (user_is_primary_ && !login_input_method_used.empty()) {
     // Persist input method when transitioning from Login screen into the
     // session.
-    input_method::InputMethodPersistence::SetUserLastLoginInputMethod(
+    ash::input_method::InputMethodPersistence::SetUserLastLoginInputMethod(
         login_input_method_used, input_method::InputMethodManager::Get(),
         profile);
   }
@@ -612,7 +612,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
     input_method_manager_->SetState(ime_state_);
 
   input_method_syncer_ =
-      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
+      std::make_unique<ash::input_method::InputMethodSyncer>(prefs, ime_state_);
   input_method_syncer_->Initialize();
 
   // If a guest is logged in, initialize the prefs as if this is the first
@@ -636,7 +636,7 @@ void Preferences::InitUserPrefsForTesting(
   InitUserPrefs(prefs);
 
   input_method_syncer_ =
-      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
+      std::make_unique<ash::input_method::InputMethodSyncer>(prefs, ime_state_);
   input_method_syncer_->Initialize();
 }
 

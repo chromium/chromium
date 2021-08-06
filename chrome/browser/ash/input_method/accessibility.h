@@ -9,12 +9,11 @@
 #include "base/scoped_observation.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Accessibility is a class handling accessibility feedbacks.
-class Accessibility
-    : public InputMethodManager::Observer {
+class Accessibility : public InputMethodManager::Observer {
  public:
   // `imm` needs to be alive for the lifetime of this instance.
   explicit Accessibility(InputMethodManager* imm);
@@ -33,6 +32,6 @@ class Accessibility
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_ACCESSIBILITY_H_

@@ -28,7 +28,8 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 
@@ -118,8 +119,7 @@ AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
     return AssistiveType::kGenericAction;
   }
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kAssistPersonalInfoAddress)) {
+  if (base::FeatureList::IsEnabled(features::kAssistPersonalInfoAddress)) {
     if (RE2::PartialMatch(
             lower_case_utf8_text,
             base::StringPrintf("%s%s%s$", kSingleOrPluralSubjectRegex,
@@ -128,8 +128,7 @@ AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kAssistPersonalInfoEmail)) {
+  if (base::FeatureList::IsEnabled(features::kAssistPersonalInfoEmail)) {
     if (RE2::PartialMatch(lower_case_utf8_text,
                           base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
                                              kEmailRegex, kTriggersRegex))) {
@@ -137,8 +136,7 @@ AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kAssistPersonalInfoName)) {
+  if (base::FeatureList::IsEnabled(features::kAssistPersonalInfoName)) {
     if (RE2::PartialMatch(lower_case_utf8_text,
                           base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
                                              kNameRegex, kTriggersRegex))) {
@@ -157,8 +155,7 @@ AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kAssistPersonalInfoPhoneNumber)) {
+  if (base::FeatureList::IsEnabled(features::kAssistPersonalInfoPhoneNumber)) {
     if (RE2::PartialMatch(
             lower_case_utf8_text,
             base::StringPrintf("%s%s%s$", kSingleSubjectRegex,
@@ -478,4 +475,5 @@ void PersonalInfoSuggester::SetButtonHighlighted(
   }
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

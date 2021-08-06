@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 Accessibility::Accessibility(InputMethodManager* imm) {
@@ -36,4 +36,4 @@ void Accessibility::InputMethodChanged(InputMethodManager* imm,
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

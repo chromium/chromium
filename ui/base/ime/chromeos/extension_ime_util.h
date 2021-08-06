@@ -107,4 +107,30 @@ bool COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 }  // namespace extension_ime_util
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace extension_ime_util {
+using ::chromeos::extension_ime_util::GetArcInputMethodID;
+using ::chromeos::extension_ime_util::GetComponentIDByInputMethodID;
+using ::chromeos::extension_ime_util::GetComponentInputMethodID;
+using ::chromeos::extension_ime_util::GetExtensionIDFromInputMethodID;
+using ::chromeos::extension_ime_util::GetInputMethodID;
+using ::chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+using ::chromeos::extension_ime_util::IsArcIME;
+using ::chromeos::extension_ime_util::IsComponentExtensionIME;
+using ::chromeos::extension_ime_util::IsExperimentalMultilingual;
+using ::chromeos::extension_ime_util::IsExtensionIME;
+using ::chromeos::extension_ime_util::kBrailleImeEngineId;
+using ::chromeos::extension_ime_util::kBrailleImeExtensionId;
+using ::chromeos::extension_ime_util::kChineseCangjieExtensionId;
+using ::chromeos::extension_ime_util::kChinesePinyinExtensionId;
+using ::chromeos::extension_ime_util::kChineseZhuyinExtensionId;
+using ::chromeos::extension_ime_util::kHangulExtensionId;
+using ::chromeos::extension_ime_util::kM17nExtensionId;
+using ::chromeos::extension_ime_util::kMozcExtensionId;
+using ::chromeos::extension_ime_util::kT13nExtensionId;
+using ::chromeos::extension_ime_util::kXkbExtensionId;
+}  // namespace extension_ime_util
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_EXTENSION_IME_UTIL_H_

@@ -39,8 +39,7 @@
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/ui_base_features.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace input_method {
 namespace {
 
@@ -728,7 +727,7 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsThenLock) {
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
   // Lock screen
-  scoped_refptr<input_method::InputMethodManager::State> saved_ime_state =
+  scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
@@ -777,7 +776,7 @@ TEST_F(InputMethodManagerImplTest, SwitchInputMethodTest) {
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
   // Lock screen
-  scoped_refptr<input_method::InputMethodManager::State> saved_ime_state =
+  scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
@@ -1169,7 +1168,7 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
   // Lock the screen. This is for crosbug.com/27049.
-  scoped_refptr<input_method::InputMethodManager::State> saved_ime_state =
+  scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
@@ -1278,7 +1277,7 @@ TEST_F(InputMethodManagerImplTest, OverrideKeyboardUrlRefWithKeyset) {
       "chrome-extension://"
       "inputview.html#id=us.compact.qwerty.emoji&language=en-US&passwordLayout="
       "us.compact.qwerty&name=keyboard_us");
-  manager_->OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset::kEmoji);
+  manager_->OverrideKeyboardKeyset(ImeKeyset::kEmoji);
   EXPECT_THAT(manager_->GetActiveIMEState()->GetInputViewUrl().spec(),
               ::testing::StartsWith(overridden_url_emoji.spec()));
 
@@ -1287,8 +1286,7 @@ TEST_F(InputMethodManagerImplTest, OverrideKeyboardUrlRefWithKeyset) {
       "chrome-extension://"
       "inputview.html#id=us.compact.qwerty.hwt&language=en-US&passwordLayout="
       "us.compact.qwerty&name=keyboard_us");
-  manager_->OverrideKeyboardKeyset(
-      chromeos::input_method::ImeKeyset::kHandwriting);
+  manager_->OverrideKeyboardKeyset(ImeKeyset::kHandwriting);
   EXPECT_THAT(manager_->GetActiveIMEState()->GetInputViewUrl().spec(),
               ::testing::StartsWith(overridden_url_hwt.spec()));
 
@@ -1297,7 +1295,7 @@ TEST_F(InputMethodManagerImplTest, OverrideKeyboardUrlRefWithKeyset) {
       "chrome-extension://"
       "inputview.html#id=us.compact.qwerty.voice&language=en-US"
       "&passwordLayout=us.compact.qwerty&name=keyboard_us");
-  manager_->OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset::kVoice);
+  manager_->OverrideKeyboardKeyset(ImeKeyset::kVoice);
   EXPECT_THAT(manager_->GetActiveIMEState()->GetInputViewUrl().spec(),
               ::testing::StartsWith(overridden_url_voice.spec()));
 }
@@ -1320,7 +1318,7 @@ TEST_F(InputMethodManagerImplTest, OverrideDefaultKeyboardUrlRef) {
   manager_->GetActiveIMEState()->ChangeInputMethod(ime_id, false);
   manager_->GetActiveIMEState()->EnableInputView();
 
-  manager_->OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset::kEmoji);
+  manager_->OverrideKeyboardKeyset(ImeKeyset::kEmoji);
   EXPECT_EQ(default_url, manager_->GetActiveIMEState()->GetInputViewUrl());
 }
 
@@ -1351,7 +1349,7 @@ TEST_F(InputMethodManagerImplTest, DoesNotResetInputViewUrlWhenOverridden) {
       "inputview.html#id=us.compact.qwerty.emoji&language=en-US&passwordLayout="
       "us.compact.qwerty&name=keyboard_us");
 
-  manager_->OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset::kEmoji);
+  manager_->OverrideKeyboardKeyset(ImeKeyset::kEmoji);
   EXPECT_THAT(manager_->GetActiveIMEState()->GetInputViewUrl().spec(),
               ::testing::StartsWith(overridden_url_emoji.spec()));
 
@@ -1482,7 +1480,7 @@ TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
   EXPECT_EQ(ImeIdFromEngineId(ids[1]), ime_controller.current_ime_id_);
 
   // Lock the screen.
-  scoped_refptr<input_method::InputMethodManager::State> saved_ime_state =
+  scoped_refptr<InputMethodManager::State> saved_ime_state =
       manager_->GetActiveIMEState();
   manager_->SetState(saved_ime_state->Clone());
   manager_->GetActiveIMEState()->EnableLockScreenLayouts();
@@ -1639,4 +1637,4 @@ TEST_F(InputMethodManagerImplPositionalTest, ValidatePositionalShortcutLayout) {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

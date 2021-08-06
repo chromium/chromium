@@ -19,7 +19,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using ::testing::_;
@@ -101,16 +102,17 @@ class GrammarManagerTest : public testing::Test {
     ui::IMEBridge::Initialize();
     ui::IMEBridge::Get()->SetInputContextHandler(
         &mock_ime_input_context_handler_);
-    machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    machine_learning::ServiceConnection::GetInstance()->Initialize();
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<TestingProfile> profile_;
-  machine_learning::FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::machine_learning::FakeServiceConnectionImpl
+      fake_service_connection_;
   ui::MockIMEInputContextHandler mock_ime_input_context_handler_;
 };
 
@@ -427,4 +429,5 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

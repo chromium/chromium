@@ -13,9 +13,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
+namespace input_method {
+namespace {
 using TextInput_SurroundingTextChangedTest = TextInputTestBase;
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
                        SurroundingTextChangedWithInsertText) {
@@ -138,4 +140,5 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
 // TODO(nona): Add test for JavaScript focusing to textarea containing text.
 // TODO(nona): Add test for text changing by JavaScript.
 // TODO(nona): Add test for onload focusing to textarea containing text.
-} // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

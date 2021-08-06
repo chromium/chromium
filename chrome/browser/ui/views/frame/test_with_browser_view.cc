@@ -70,8 +70,8 @@ TestWithBrowserView::~TestWithBrowserView() {}
 
 void TestWithBrowserView::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::InitializeForTesting(
-      new chromeos::input_method::MockInputMethodManagerImpl);
+  ash::input_method::InitializeForTesting(
+      new ash::input_method::MockInputMethodManagerImpl);
 #endif
   BrowserWithTestWindowTest::SetUp();
   browser_view_ = static_cast<BrowserView*>(browser()->window());
@@ -91,7 +91,7 @@ void TestWithBrowserView::TearDown() {
   content::RunAllTasksUntilIdle();
   BrowserWithTestWindowTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::Shutdown();
+  ash::input_method::Shutdown();
 #endif
 }
 

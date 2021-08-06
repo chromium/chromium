@@ -17,9 +17,11 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 struct AssistiveWindowProperties;
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 namespace views {
 class ImageButton;
@@ -52,7 +54,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   void Show(const SuggestionDetails& details);
 
   void ShowMultipleCandidates(
-      const chromeos::AssistiveWindowProperties& properties);
+      const ash::input_method::AssistiveWindowProperties& properties);
 
   // Sets |button|'s highlight state to |highlighted|. At most one button with
   // the same id will be highlighted at any given time.

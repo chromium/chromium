@@ -21,7 +21,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/character_composer.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // An InputMethodEngine used for the official Chrome OS build. It's a bridge
 // between the Chrome OS input framework and the IME service. Although it
@@ -82,7 +83,7 @@ class NativeInputMethodEngine
 
  private:
   class ImeObserver : public InputMethodEngineBase::Observer,
-                      public ime::mojom::InputMethodHost {
+                      public chromeos::ime::mojom::InputMethodHost {
    public:
     // |ime_base_observer| is to forward events to extension during this
     // migration. It will be removed when the official extension is completely
@@ -130,28 +131,29 @@ class NativeInputMethodEngine
     void OnInputMethodOptionsChanged(const std::string& engine_id) override;
 
     // ime::mojom::InputMethodHost:
-    void CommitText(
-        const std::u16string& text,
-        ime::mojom::CommitTextCursorBehavior cursor_behavior) override;
+    void CommitText(const std::u16string& text,
+                    chromeos::ime::mojom::CommitTextCursorBehavior
+                        cursor_behavior) override;
     void SetComposition(
         const std::u16string& text,
-        std::vector<ime::mojom::CompositionSpanPtr> spans) override;
+        std::vector<chromeos::ime::mojom::CompositionSpanPtr> spans) override;
     void SetCompositionRange(uint32_t start_index, uint32_t end_index) override;
     void FinishComposition() override;
     void DeleteSurroundingText(uint32_t num_before_cursor,
                                uint32_t num_after_cursor) override;
     void HandleAutocorrect(
-        ime::mojom::AutocorrectSpanPtr autocorrect_span) override;
-    void RequestSuggestions(ime::mojom::SuggestionsRequestPtr request,
+        chromeos::ime::mojom::AutocorrectSpanPtr autocorrect_span) override;
+    void RequestSuggestions(chromeos::ime::mojom::SuggestionsRequestPtr request,
                             RequestSuggestionsCallback callback) override;
     void DisplaySuggestions(
         const std::vector<ime::TextSuggestion>& suggestions) override;
-    void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
+    void RecordUkm(chromeos::ime::mojom::UkmEntryPtr entry) override;
 
     // Called when suggestions are collected from the system via
     // suggestions_collector_.
-    void OnSuggestionsGathered(RequestSuggestionsCallback request_callback,
-                               ime::mojom::SuggestionsResponsePtr response);
+    void OnSuggestionsGathered(
+        RequestSuggestionsCallback request_callback,
+        chromeos::ime::mojom::SuggestionsResponsePtr response);
 
     // Flush all relevant Mojo pipes.
     void FlushForTesting();
@@ -165,9 +167,9 @@ class NativeInputMethodEngine
     PrefService* prefs_ = nullptr;
 
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
-    mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
-    mojo::Remote<ime::mojom::InputMethod> input_method_;
-    mojo::Receiver<ime::mojom::InputMethodHost> host_receiver_{this};
+    mojo::Remote<chromeos::ime::mojom::InputEngineManager> remote_manager_;
+    mojo::Remote<chromeos::ime::mojom::InputMethod> input_method_;
+    mojo::Receiver<chromeos::ime::mojom::InputMethodHost> host_receiver_{this};
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
@@ -188,6 +190,7 @@ class NativeInputMethodEngine
       chrome_keyboard_controller_client_observer_{this};
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_

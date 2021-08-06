@@ -6,8 +6,8 @@
 
 // TODO(crbug/1223597) The rules to detect sentence end is not perfect, and we
 // may want to use regex to improve readability.
-namespace chromeos {
-namespace text_utils {
+namespace ash {
+namespace input_method {
 namespace {
 
 const int kMaxSearchRange = 200;
@@ -168,5 +168,5 @@ Sentence FindCurrentSentence(const std::u16string& text, int pos) {
                   text.substr(start, end - start + 1));
 }
 
-}  // namespace text_utils
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

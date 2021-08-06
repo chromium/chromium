@@ -13,13 +13,16 @@
 #include "components/user_prefs/user_prefs.h"
 #include "ui/gfx/range/range.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
-using machine_learning::mojom::GrammarCheckerQuery;
-using machine_learning::mojom::GrammarCheckerResult;
-using machine_learning::mojom::GrammarCheckerResultPtr;
-using machine_learning::mojom::LoadModelResult;
+using ::chromeos::machine_learning::mojom::GrammarCheckerQuery;
+using ::chromeos::machine_learning::mojom::GrammarCheckerQueryPtr;
+using ::chromeos::machine_learning::mojom::GrammarCheckerResult;
+using ::chromeos::machine_learning::mojom::GrammarCheckerResultPtr;
+using ::chromeos::machine_learning::mojom::LoadModelResult;
+using ::chromeos::machine_learning::mojom::TextLanguagePtr;
 
 const uint32_t kMaxQueryLength = 200;
 const uint32_t kMinQueryLength = 5;
@@ -35,10 +38,10 @@ GrammarServiceClient::GrammarServiceClient() {
 GrammarServiceClient::~GrammarServiceClient() = default;
 
 void GrammarServiceClient::OnLoadGrammarCheckerDone(
-    machine_learning::mojom::GrammarCheckerQueryPtr query,
+    GrammarCheckerQueryPtr query,
     const std::string& query_text,
     TextCheckCompleteCallback callback,
-    machine_learning::mojom::LoadModelResult result) {
+    LoadModelResult result) {
   grammar_checker_loaded_ = result == LoadModelResult::OK;
   if (!grammar_checker_loaded_) {
     std::move(callback).Run(false, {});
@@ -53,7 +56,7 @@ void GrammarServiceClient::OnLoadGrammarCheckerDone(
 void GrammarServiceClient::OnLoadTextClassifierDone(
     const std::string& query_text,
     TextCheckCompleteCallback callback,
-    machine_learning::mojom::LoadModelResult result) {
+    LoadModelResult result) {
   text_classifier_loaded_ = result == LoadModelResult::OK;
   if (!text_classifier_loaded_) {
     std::move(callback).Run(false, {});
@@ -81,7 +84,7 @@ bool GrammarServiceClient::RequestTextCheck(
                        weak_this_, base::UTF16ToUTF8(text),
                        std::move(callback)));
   } else {
-    machine_learning::ServiceConnection::GetInstance()
+    chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
         .LoadTextClassifier(
             text_classifier_.BindNewPipeAndPassReceiver(),
@@ -96,7 +99,7 @@ bool GrammarServiceClient::RequestTextCheck(
 void GrammarServiceClient::OnLanguageDetectionDone(
     const std::string& query_text,
     TextCheckCompleteCallback callback,
-    std::vector<machine_learning::mojom::TextLanguagePtr> languages) {
+    std::vector<TextLanguagePtr> languages) {
   if (languages.empty() ||
       languages[0]->confidence < kLanguageConfidenceThreshold ||
       languages[0]->locale != kEnglishLocale) {
@@ -114,7 +117,7 @@ void GrammarServiceClient::OnLanguageDetectionDone(
         base::BindOnce(&GrammarServiceClient::ParseGrammarCheckerResult,
                        weak_this_, query_text, std::move(callback)));
   } else {
-    machine_learning::ServiceConnection::GetInstance()
+    chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
         .LoadGrammarChecker(
             grammar_checker_.BindNewPipeAndPassReceiver(),
@@ -127,7 +130,7 @@ void GrammarServiceClient::OnLanguageDetectionDone(
 void GrammarServiceClient::ParseGrammarCheckerResult(
     const std::string& query_text,
     TextCheckCompleteCallback callback,
-    machine_learning::mojom::GrammarCheckerResultPtr result) const {
+    GrammarCheckerResultPtr result) const {
   if (result->status == GrammarCheckerResult::Status::OK &&
       !result->candidates.empty()) {
     const auto& top_candidate = result->candidates.front();
@@ -166,4 +169,5 @@ bool GrammarServiceClient::IsAvailable(Profile* profile) const {
          !profile->IsOffTheRecord();
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

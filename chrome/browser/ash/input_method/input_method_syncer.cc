@@ -26,14 +26,14 @@
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 namespace {
 
 // Checks input method IDs, converting engine IDs to input method IDs and
 // removing unsupported IDs from |values|.
 void CheckAndResolveInputMethodIDs(
-    const input_method::InputMethodDescriptors& supported_descriptors,
+    const InputMethodDescriptors& supported_descriptors,
     std::vector<std::string>* values) {
   // Extract the supported input method IDs into a set.
   std::set<std::string> supported_input_method_ids;
@@ -117,7 +117,7 @@ void MergeLists(std::vector<base::StringPiece>* dest,
 
 InputMethodSyncer::InputMethodSyncer(
     sync_preferences::PrefServiceSyncable* prefs,
-    scoped_refptr<input_method::InputMethodManager::State> ime_state)
+    scoped_refptr<InputMethodManager::State> ime_state)
     : prefs_(prefs), ime_state_(ime_state), merging_(false) {}
 
 InputMethodSyncer::~InputMethodSyncer() {
@@ -249,17 +249,15 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
   // Check and convert the new tokens.
   if (pref_name == prefs::kLanguagePreloadEngines ||
       pref_name == prefs::kLanguageEnabledImes) {
-    input_method::InputMethodManager* manager =
-        input_method::InputMethodManager::Get();
-    std::unique_ptr<input_method::InputMethodDescriptors>
-        supported_descriptors =
-            std::make_unique<input_method::InputMethodDescriptors>();
+    InputMethodManager* manager = InputMethodManager::Get();
+    std::unique_ptr<InputMethodDescriptors> supported_descriptors =
+        std::make_unique<InputMethodDescriptors>();
 
     if (pref_name == prefs::kLanguagePreloadEngines) {
       // Add the available component extension IMEs.
       ComponentExtensionIMEManager* component_extension_manager =
           manager->GetComponentExtensionIMEManager();
-      input_method::InputMethodDescriptors component_descriptors =
+      InputMethodDescriptors component_descriptors =
           component_extension_manager->GetAllIMEAsInputMethodDescriptor();
       supported_descriptors->insert(supported_descriptors->end(),
                                     component_descriptors.begin(),
@@ -319,7 +317,7 @@ void InputMethodSyncer::OnIsSyncingChanged() {
   if (!prefs_->GetBoolean(prefs::kLanguageShouldMergeInputMethods))
     return;
   // Wait for the correct type of prefs to sync before merging.
-  bool is_syncing = chromeos::features::IsSplitSettingsSyncEnabled()
+  bool is_syncing = features::IsSplitSettingsSyncEnabled()
                         ? prefs_->AreOsPrefsSyncing()
                         : prefs_->IsSyncing();
   if (is_syncing)
@@ -327,4 +325,4 @@ void InputMethodSyncer::OnIsSyncingChanged() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

@@ -9,9 +9,8 @@
 
 #include "ash/constants/app_types.h"
 
-namespace chromeos {
-
-namespace input_host_helper {
+namespace ash {
+namespace input_method {
 
 struct InputAssociatedHost {
   // Type of app associated with this text field.
@@ -22,7 +21,7 @@ struct InputAssociatedHost {
 
 void PopulateInputHost(InputAssociatedHost* host);
 
-}  // namespace input_host_helper
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_HOST_HELPER_H_

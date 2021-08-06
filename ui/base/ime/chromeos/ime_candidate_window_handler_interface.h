@@ -54,4 +54,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::IMECandidateWindowHandlerInterface;
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_IME_CANDIDATE_WINDOW_HANDLER_INTERFACE_H_

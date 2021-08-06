@@ -180,7 +180,7 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   void SetUp() override {
     input_method_manager_mock_ = new input_method::MockInputMethodManagerImpl;
-    chromeos::input_method::InitializeForTesting(
+    input_method::InitializeForTesting(
         input_method_manager_mock_);  // pass ownership
     auto deprecation_controller =
         std::make_unique<ash::DeprecationNotificationController>(
@@ -198,7 +198,7 @@ class EventRewriterTest : public ChromeAshTestBase {
   void TearDown() override {
     ChromeAshTestBase::TearDown();
     // Shutdown() deletes the IME mock object.
-    chromeos::input_method::Shutdown();
+    input_method::Shutdown();
   }
 
   ui::EventRewriter* rewriter() { return rewriter_.get(); }

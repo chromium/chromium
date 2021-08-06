@@ -12,7 +12,8 @@
 #include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Needs to match ImeAutocorrectActions
@@ -83,6 +84,7 @@ class AutocorrectManager {
   bool in_diacritical_autocorrect_session_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_:w

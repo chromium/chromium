@@ -21,7 +21,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Helper class to handle syncing of language and input method preferences.
@@ -32,9 +32,8 @@ namespace input_method {
 // will be brought down when signing in to a new device but not in future syncs.
 class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
  public:
-  InputMethodSyncer(
-      sync_preferences::PrefServiceSyncable* prefs,
-      scoped_refptr<input_method::InputMethodManager::State> ime_state);
+  InputMethodSyncer(sync_preferences::PrefServiceSyncable* prefs,
+                    scoped_refptr<InputMethodManager::State> ime_state);
   ~InputMethodSyncer() override;
 
   // Registers the syncable input method prefs.
@@ -80,7 +79,7 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   StringPrefMember enabled_imes_syncable_;
 
   sync_preferences::PrefServiceSyncable* prefs_;
-  scoped_refptr<input_method::InputMethodManager::State> ime_state_;
+  scoped_refptr<InputMethodManager::State> ime_state_;
 
   // Used to ignore PrefChanged events while InputMethodManager is merging.
   bool merging_;
@@ -89,6 +88,6 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_SYNCER_H_

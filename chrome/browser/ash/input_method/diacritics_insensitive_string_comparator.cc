@@ -8,7 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 DiacriticsInsensitiveStringComparator::DiacriticsInsensitiveStringComparator() {
   UErrorCode status = U_ZERO_ERROR;
@@ -53,4 +54,5 @@ bool DiacriticsInsensitiveStringComparator::Equal(
   return unicode_str_a.compare(unicode_str_b) == 0;
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

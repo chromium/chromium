@@ -17,7 +17,8 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 constexpr int kEmojiSuggesterShowSettingMaxCount = 10;
 
@@ -92,6 +93,7 @@ class EmojiSuggester : public Suggester {
   base::WeakPtrFactory<EmojiSuggester> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EMOJI_SUGGESTER_H_

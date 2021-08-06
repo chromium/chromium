@@ -13,11 +13,11 @@
 #include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #include "extensions/browser/extension_function.h"
 
-namespace chromeos {
-
+namespace ash {
+namespace input_method {
 class InputMethodEngine;
-
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 namespace extensions {
 
@@ -199,8 +199,9 @@ class InputImeEventRouter : public InputImeEventRouterBase {
       const std::vector<extensions::InputComponentInfo>& input_components);
   void UnregisterAllImes(const std::string& extension_id);
 
-  chromeos::InputMethodEngine* GetEngine(const std::string& extension_id);
-  chromeos::InputMethodEngine* GetEngineIfActive(
+  ash::input_method::InputMethodEngine* GetEngine(
+      const std::string& extension_id);
+  ash::input_method::InputMethodEngine* GetEngineIfActive(
       const std::string& extension_id,
       std::string* error) override;
 
@@ -214,7 +215,7 @@ class InputImeEventRouter : public InputImeEventRouterBase {
 
  private:
   // The engine map from extension_id to an engine.
-  std::map<std::string, std::unique_ptr<chromeos::InputMethodEngine>>
+  std::map<std::string, std::unique_ptr<ash::input_method::InputMethodEngine>>
       engine_map_;
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;

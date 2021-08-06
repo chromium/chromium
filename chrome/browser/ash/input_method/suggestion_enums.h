@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // Must match with IMEAssistiveAction in enums.xml
 enum class AssistiveType {
@@ -45,6 +46,7 @@ enum class DisabledReason {
   kMaxValue = kUrlOrAppNotAllowed,
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_

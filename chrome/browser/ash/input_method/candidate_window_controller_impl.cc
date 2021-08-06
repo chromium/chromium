@@ -15,12 +15,8 @@
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
-
-namespace {
-
-}  // namespace
 
 CandidateWindowControllerImpl::CandidateWindowControllerImpl() {
   ui::IMEBridge::Get()->SetCandidateWindowHandler(this);
@@ -199,4 +195,4 @@ void CandidateWindowControllerImpl::RemoveObserver(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

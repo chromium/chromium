@@ -19,7 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -272,4 +272,4 @@ ui::ime::UndoWindow* AssistiveWindowController::GetUndoWindowForTesting()
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

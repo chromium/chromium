@@ -8,11 +8,12 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
 namespace chromeos {
 namespace input_method {
-class InputMethodUtil;
 class ImeKeyboard;
 
 // The mock InputMethodManager for testing.
@@ -146,5 +147,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
 
 }  // namespace input_method
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace input_method {
+using ::chromeos::input_method::MockInputMethodManager;
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // UI_BASE_IME_CHROMEOS_MOCK_INPUT_METHOD_MANAGER_H_

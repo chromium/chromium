@@ -14,7 +14,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using TextSuggestion = ::chromeos::ime::TextSuggestion;
@@ -396,4 +397,5 @@ TEST_F(EmojiSuggesterTest,
   EXPECT_TRUE(emoji_suggester_->GetSuggestions().empty());
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

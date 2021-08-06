@@ -31,7 +31,8 @@ struct AssistiveWindowButton;
 }  // namespace ime
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
                               public ProfileObserver {
@@ -338,6 +339,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_BASE_H_

@@ -33,8 +33,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace input_method {
 namespace {
 
@@ -349,30 +348,30 @@ TEST_F(InputMethodEngineTest, TestSetSelectionRange) {
   CreateEngine(true);
   const int context = engine_->GetContextIdForTesting();
   std::string error;
-  engine_->chromeos::InputMethodEngineBase::SetSelectionRange(
-      context, /* start */ 0, /* end */ 0, &error);
+  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
+                                                    /* end */ 0, &error);
   EXPECT_EQ(kErrorNotActive, error);
   EXPECT_EQ(0,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
   engine_->Enable(kTestImeComponentId);
-  engine_->chromeos::InputMethodEngineBase::SetSelectionRange(
-      context, /* start */ 0, /* end */ 0, &error);
+  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
+                                                    /* end */ 0, &error);
   EXPECT_EQ("", error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
-  engine_->chromeos::InputMethodEngineBase::SetSelectionRange(
-      context, /* start */ -1, /* end */ 0, &error);
+  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ -1,
+                                                    /* end */ 0, &error);
   EXPECT_EQ(base::StringPrintf(kErrorInvalidValue, "start", -1), error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
-  engine_->chromeos::InputMethodEngineBase::SetSelectionRange(
-      context, /* start */ 0, /* end */ -1, &error);
+  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
+                                                    /* end */ -1, &error);
   EXPECT_EQ(base::StringPrintf(kErrorInvalidValue, "end", -1), error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
@@ -393,8 +392,8 @@ TEST_F(InputMethodEngineTest, TestDisableAfterSetCompositionRange) {
   EXPECT_EQ(u"text", mock_ime_input_context_handler_->last_commit_text());
 
   // Change composition range to include "text".
-  engine_->chromeos::InputMethodEngineBase::SetCompositionRange(context, 0, 4,
-                                                                {}, &error);
+  engine_->InputMethodEngineBase::SetCompositionRange(context, 0, 4, {},
+                                                      &error);
   EXPECT_EQ("", error);
 
   // Disable to commit
@@ -420,4 +419,4 @@ TEST_F(InputMethodEngineTest, KeyEventHandledRecordsLatencyHistogram) {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

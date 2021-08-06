@@ -47,7 +47,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 constexpr char kEmojiData[] = "happy,😀;😃;😄";
@@ -580,8 +581,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       "InputMethod.Assistive.Disabled.PersonalInfo",
       DisabledReason::kUrlOrAppNotAllowed, 0);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
-                                      chromeos::AssistiveType::kPersonalName,
-                                      0);
+                                      AssistiveType::kPersonalName, 0);
 
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "my name is ");
@@ -590,8 +590,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       "InputMethod.Assistive.Disabled.PersonalInfo",
       DisabledReason::kUrlOrAppNotAllowed, 1);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
-                                      chromeos::AssistiveType::kPersonalName,
-                                      1);
+                                      AssistiveType::kPersonalName, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
@@ -793,9 +792,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   engine_->OnAutocorrect(u"typed", u"corrected", 0);
 
   auto* controller =
-      ((input_method::
-            AssistiveWindowController*)(ui::IMEBridge::Get()
-                                            ->GetAssistiveWindowHandler()));
+      ((AssistiveWindowController*)(ui::IMEBridge::Get()
+                                        ->GetAssistiveWindowHandler()));
 
   EXPECT_FALSE(controller->GetUndoWindowForTesting());
 
@@ -952,8 +950,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   // More prod-like way to change input method; required because "multilingual
   // experiment" metrics rely on real CrOS IMF "input method management".
-  scoped_refptr<input_method::InputMethodManager::State> active_ime_state =
-      input_method::InputMethodManager::Get()->GetActiveIMEState();
+  scoped_refptr<InputMethodManager::State> active_ime_state =
+      InputMethodManager::Get()->GetActiveIMEState();
   active_ime_state->EnableInputMethod(full_input_method_id);
   active_ime_state->ChangeInputMethod(full_input_method_id,
                                       false /* show_message */);
@@ -1049,8 +1047,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   // More prod-like way to change input method; required because "multilingual
   // experiment" metrics rely on real CrOS IMF "input method management".
-  scoped_refptr<input_method::InputMethodManager::State> active_ime_state =
-      input_method::InputMethodManager::Get()->GetActiveIMEState();
+  scoped_refptr<InputMethodManager::State> active_ime_state =
+      InputMethodManager::Get()->GetActiveIMEState();
   active_ime_state->EnableInputMethod(full_input_method_id);
   active_ime_state->ChangeInputMethod(full_input_method_id,
                                       false /* show_message */);
@@ -1208,4 +1206,5 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
                                       DisabledReason::kFeatureFlagOff, 1);
 }  // namespace
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

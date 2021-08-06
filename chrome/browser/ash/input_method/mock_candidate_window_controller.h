@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // The mock CandidateWindowController implementation for testing.
@@ -38,6 +38,6 @@ class MockCandidateWindowController : public CandidateWindowController {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_MOCK_CANDIDATE_WINDOW_CONTROLLER_H_

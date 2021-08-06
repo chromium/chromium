@@ -16,7 +16,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/grammar_fragment.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // A class that sends grammar check request to ML service, parses the reponse
 // and calls a provided callback method. A simple usage is creating a
@@ -62,39 +63,43 @@ class GrammarServiceClient {
 
  private:
   void OnLoadGrammarCheckerDone(
-      machine_learning::mojom::GrammarCheckerQueryPtr query,
+      chromeos::machine_learning::mojom::GrammarCheckerQueryPtr query,
       const std::string& query_text,
       TextCheckCompleteCallback callback,
-      machine_learning::mojom::LoadModelResult result);
+      chromeos::machine_learning::mojom::LoadModelResult result);
 
   void OnLoadTextClassifierDone(
       const std::string& query_text,
       TextCheckCompleteCallback callback,
-      machine_learning::mojom::LoadModelResult result);
+      chromeos::machine_learning::mojom::LoadModelResult result);
 
   void OnLanguageDetectionDone(
       const std::string& query_text,
       TextCheckCompleteCallback callback,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
+      std::vector<chromeos::machine_learning::mojom::TextLanguagePtr>
+          languages);
 
   // Parse the result returned from grammar check service.
   void ParseGrammarCheckerResult(
       const std::string& query_text,
       TextCheckCompleteCallback callback,
-      machine_learning::mojom::GrammarCheckerResultPtr result) const;
+      chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const;
 
   // Returns whether the grammar service is enabled by user settings and the
   // service is ready to use.
   bool IsAvailable(Profile* profile) const;
 
   base::WeakPtr<GrammarServiceClient> weak_this_;
-  mojo::Remote<machine_learning::mojom::GrammarChecker> grammar_checker_;
+  mojo::Remote<chromeos::machine_learning::mojom::GrammarChecker>
+      grammar_checker_;
   bool grammar_checker_loaded_ = false;
-  mojo::Remote<machine_learning::mojom::TextClassifier> text_classifier_;
+  mojo::Remote<chromeos::machine_learning::mojom::TextClassifier>
+      text_classifier_;
   bool text_classifier_loaded_ = false;
   base::WeakPtrFactory<GrammarServiceClient> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_GRAMMAR_SERVICE_CLIENT_H_

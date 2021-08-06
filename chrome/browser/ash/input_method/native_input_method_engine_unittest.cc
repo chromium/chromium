@@ -33,18 +33,20 @@
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ime = ::chromeos::ime;
 
 MATCHER_P(MojoEq, value, "") {
   return *arg == value;
 }
 
-using input_method::InputMethodManager;
-using input_method::StubInputMethodEngineObserver;
-using testing::_;
-using testing::NiceMock;
-using testing::StrictMock;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::StrictMock;
 
 constexpr char kEngineIdUs[] = "xkb:us::eng";
 
@@ -118,7 +120,7 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
   MockInputMethod* mock_input_method_;
 };
 
-class TestInputMethodManager : public input_method::MockInputMethodManager {
+class TestInputMethodManager : public MockInputMethodManager {
  public:
   // TestInputMethodManager is responsible for connecting
   // NativeInputMethodEngine with an InputMethod.
@@ -156,9 +158,9 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
 
-    machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    machine_learning::ServiceConnection::GetInstance()->Initialize();
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
  private:
@@ -166,7 +168,8 @@ class NativeInputMethodEngineTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_test_helper_;
-  machine_learning::FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::machine_learning::FakeServiceConnectionImpl
+      fake_service_connection_;
 };
 
 TEST_F(NativeInputMethodEngineTest, DoesNotLaunchImeServiceIfAutocorrectIsOff) {
@@ -174,7 +177,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotLaunchImeServiceIfAutocorrectIsOff) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -191,7 +194,7 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -206,7 +209,7 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -226,7 +229,7 @@ TEST_F(NativeInputMethodEngineTest, EnableInitializesConnection) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -246,7 +249,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -277,7 +280,7 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::NiceMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -307,7 +310,7 @@ TEST_F(NativeInputMethodEngineTest,
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
@@ -346,7 +349,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
@@ -400,7 +403,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
@@ -455,7 +458,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
 
   testing::StrictMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
@@ -511,9 +514,9 @@ class NativeInputMethodEngineWithRenderViewHostTest
     keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
 
-    machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection_);
-    machine_learning::ServiceConnection::GetInstance()->Initialize();
+    chromeos::machine_learning::ServiceConnection::
+        UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
@@ -524,7 +527,8 @@ class NativeInputMethodEngineWithRenderViewHostTest
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_test_helper_;
-  machine_learning::FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::machine_learning::FakeServiceConnectionImpl
+      fake_service_connection_;
 };
 
 TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
@@ -537,7 +541,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   SetPhysicalTypingAutocorrectEnabled(*testing_profile, true);
 
   testing::NiceMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -587,7 +591,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
 
   auto* testing_profile = static_cast<TestingProfile*>(browser_context());
   testing::NiceMock<MockInputMethod> mock_input_method;
-  input_method::InputMethodManager::Initialize(
+  InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
@@ -622,4 +626,5 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

@@ -37,7 +37,8 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 
@@ -426,13 +427,13 @@ void InputMethodEngine::Announce(const std::u16string& message) {
 }
 
 bool InputMethodEngine::SetMenuItems(
-    const std::vector<input_method::InputMethodManager::MenuItem>& items,
+    const std::vector<InputMethodManager::MenuItem>& items,
     std::string* error) {
   return UpdateMenuItems(items, error);
 }
 
 bool InputMethodEngine::UpdateMenuItems(
-    const std::vector<input_method::InputMethodManager::MenuItem>& items,
+    const std::vector<InputMethodManager::MenuItem>& items,
     std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
@@ -449,8 +450,8 @@ bool InputMethodEngine::UpdateMenuItems(
   ui::ime::InputMethodMenuManager::GetInstance()
       ->SetCurrentInputMethodMenuItemList(menu_item_list);
 
-  input_method::InputMethodManager::Get()->NotifyImeMenuItemsChanged(
-      active_component_id_, items);
+  InputMethodManager::Get()->NotifyImeMenuItemsChanged(active_component_id_,
+                                                       items);
   return true;
 }
 
@@ -568,9 +569,7 @@ bool InputMethodEngine::SendKeyEvent(const ui::KeyEvent& event,
 }
 
 void InputMethodEngine::EnableInputView() {
-  input_method::InputMethodManager::Get()
-      ->GetActiveIMEState()
-      ->EnableInputView();
+  InputMethodManager::Get()->GetActiveIMEState()->EnableInputView();
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   if (keyboard_client->is_keyboard_enabled())
     keyboard_client->ReloadKeyboardIfNeeded();
@@ -579,7 +578,7 @@ void InputMethodEngine::EnableInputView() {
 
 // TODO(uekawa): rename this method to a more reasonable name.
 void InputMethodEngine::MenuItemToProperty(
-    const input_method::InputMethodManager::MenuItem& item,
+    const InputMethodManager::MenuItem& item,
     ui::ime::InputMethodMenuItem* property) {
   property->key = item.id;
 
@@ -594,16 +593,16 @@ void InputMethodEngine::MenuItemToProperty(
       // TODO(nona): Implement it.
     } else {
       switch (item.style) {
-        case input_method::InputMethodManager::MENU_ITEM_STYLE_NONE:
+        case InputMethodManager::MENU_ITEM_STYLE_NONE:
           NOTREACHED();
           break;
-        case input_method::InputMethodManager::MENU_ITEM_STYLE_CHECK:
+        case InputMethodManager::MENU_ITEM_STYLE_CHECK:
           // TODO(nona): Implement it.
           break;
-        case input_method::InputMethodManager::MENU_ITEM_STYLE_RADIO:
+        case InputMethodManager::MENU_ITEM_STYLE_RADIO:
           property->is_selection_item = true;
           break;
-        case input_method::InputMethodManager::MENU_ITEM_STYLE_SEPARATOR:
+        case InputMethodManager::MENU_ITEM_STYLE_SEPARATOR:
           // TODO(nona): Implement it.
           break;
       }
@@ -613,4 +612,5 @@ void InputMethodEngine::MenuItemToProperty(
   // TODO(nona): Support item.children.
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

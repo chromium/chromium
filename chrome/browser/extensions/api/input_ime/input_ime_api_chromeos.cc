@@ -33,6 +33,8 @@
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
 
+namespace {
+
 namespace input_ime = extensions::api::input_ime;
 namespace input_method_private = extensions::api::input_method_private;
 namespace DeleteSurroundingText =
@@ -59,11 +61,11 @@ namespace SetSelectionRange =
     extensions::api::input_method_private::SetSelectionRange;
 namespace FinishComposingText =
     extensions::api::input_method_private::FinishComposingText;
-using chromeos::InputMethodEngine;
-using chromeos::InputMethodEngineBase;
-using ui::IMEEngineHandlerInterface;
 
-namespace {
+using ::ash::input_method::InputMethodEngine;
+using ::ash::input_method::InputMethodEngineBase;
+using ::ui::IMEEngineHandlerInterface;
+
 const char kErrorEngineNotAvailable[] = "The engine is not available.";
 const char kErrorSetMenuItemsFail[] = "Could not create menu items.";
 const char kErrorUpdateMenuItemsFail[] = "Could not update menu items.";
@@ -279,8 +281,8 @@ class ImeObserverChromeOS : public ui::ImeObserver {
 
       // Populate app key for private OnFocus.
       // TODO(b/163645900): Add app type later.
-      chromeos::input_host_helper::InputAssociatedHost host;
-      chromeos::input_host_helper::PopulateInputHost(&host);
+      ash::input_method::InputAssociatedHost host;
+      ash::input_method::PopulateInputHost(&host);
       input_context.app_key = std::make_unique<std::string>(host.app_key);
 
       auto args(input_method_private::OnFocus::Create(input_context));
@@ -589,9 +591,10 @@ bool InputImeEventRouter::RegisterImeExtension(
   }
 
   auto observer = std::make_unique<ImeObserverChromeOS>(extension_id, profile);
-  auto engine = extension_id == "jkghodnilhceideoidjikpgommlajknk"
-                    ? std::make_unique<chromeos::NativeInputMethodEngine>()
-                    : std::make_unique<chromeos::InputMethodEngine>();
+  auto engine =
+      extension_id == "jkghodnilhceideoidjikpgommlajknk"
+          ? std::make_unique<ash::input_method::NativeInputMethodEngine>()
+          : std::make_unique<InputMethodEngine>();
   engine->Initialize(std::move(observer), extension_id.c_str(), profile);
   engine_map_[extension_id] = std::move(engine);
 
@@ -688,7 +691,7 @@ InputImeSetAssistiveWindowPropertiesFunction::Run() {
   const SetAssistiveWindowProperties::Params::Parameters& params =
       parent_params->parameters;
   const input_ime::AssistiveWindowProperties& window = params.properties;
-  chromeos::AssistiveWindowProperties assistive_window;
+  ash::input_method::AssistiveWindowProperties assistive_window;
 
   assistive_window.visible = window.visible;
   assistive_window.type = ConvertAssistiveWindowType(window.type);

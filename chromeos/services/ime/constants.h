@@ -36,4 +36,11 @@ extern const char kGoogleKeyboardDownloadDomain[];
 }  // namespace ime
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace ime {
+using ::chromeos::ime::kBundledInputMethodsDirPath;
+}  // namespace ime
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_IME_CONSTANTS_H_

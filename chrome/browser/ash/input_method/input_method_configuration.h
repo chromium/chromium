@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_CONFIGURATION_H_
 
 #include "base/sequenced_task_runner.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ui/base/ime/chromeos/input_method_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
-
-class InputMethodManager;
 
 // Initializes the InputMethodManager. Must be called before any calls to
 // GetInstance(). We explicitly initialize and shut down the global instance,
@@ -30,6 +30,15 @@ void DisableExtensionLoading();
 // Destroys the global InputMethodManager instance.
 void Shutdown();
 
+}  // namespace input_method
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::Initialize;
+using ::ash::input_method::InitializeForTesting;
+using ::ash::input_method::Shutdown;
 }  // namespace input_method
 }  // namespace chromeos
 

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 FakeSuggestionHandler::FakeSuggestionHandler() = default;
 
@@ -71,4 +72,5 @@ void FakeSuggestionHandler::Announce(const std::u16string& message) {
   announcements_.push_back(message);
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

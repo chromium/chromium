@@ -19,11 +19,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
+
 namespace {
 
 bool IsCurrentInputMethodExperimentalMultilingual() {
-  auto* input_method_manager = input_method::InputMethodManager::Get();
+  auto* input_method_manager = InputMethodManager::Get();
   if (!input_method_manager) {
     return false;
   }
@@ -164,7 +166,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     if (!window_visible_) {
       const std::u16string autocorrected_text =
           text.substr(range.start(), range.length());
-      chromeos::AssistiveWindowProperties properties;
+      AssistiveWindowProperties properties;
       properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
       properties.visible = true;
       properties.announce_string = l10n_util::GetStringFUTF8(
@@ -179,7 +181,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     }
     key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
   } else if (window_visible_) {
-    chromeos::AssistiveWindowProperties properties;
+    AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     properties.visible = false;
     window_visible_ = false;
@@ -202,7 +204,7 @@ void AutocorrectManager::OnFocus(int context_id) {
 void AutocorrectManager::UndoAutocorrect() {
   // TODO(crbug/1111135): error handling and metrics
   std::string error;
-  chromeos::AssistiveWindowProperties properties;
+  AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = false;
   window_visible_ = false;
@@ -259,4 +261,5 @@ void AutocorrectManager::UndoAutocorrect() {
   LogAssistiveAutocorrectDelay(base::TimeTicks::Now() - autocorrect_time_);
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

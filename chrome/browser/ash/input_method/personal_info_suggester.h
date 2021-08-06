@@ -22,7 +22,8 @@ class PersonalDataManager;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 const char kPersonalInfoSuggesterAcceptanceCount[] =
     "personal_info_suggester_acceptance_count";
@@ -115,6 +116,7 @@ class PersonalInfoSuggester : public Suggester {
   base::TimeTicks session_start_;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_PERSONAL_INFO_SUGGESTER_H_

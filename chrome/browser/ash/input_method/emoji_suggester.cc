@@ -28,7 +28,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 
@@ -53,7 +54,7 @@ std::string ReadEmojiDataFromFile() {
   std::string emoji_data;
   base::FilePath::StringType path(ime::kBundledInputMethodsDirPath);
   std::string value = base::GetFieldTrialParamValueByFeature(
-      chromeos::features::kEmojiSuggestAddition, "map");
+      features::kEmojiSuggestAddition, "map");
   std::string file_path =
       base::StringPrintf(kEmojiMapFilePathTemplateName, value.c_str());
   path.append(FILE_PATH_LITERAL(file_path));
@@ -378,4 +379,5 @@ size_t EmojiSuggester::GetCandidatesSizeForTesting() const {
   return candidates_.size();
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

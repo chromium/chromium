@@ -45,4 +45,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 }  // namespace input_method
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace input_method {
+using ::chromeos::input_method::MockComponentExtensionIMEManagerDelegate;
+}  // namespace input_method
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_MOCK_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_H_

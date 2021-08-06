@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_engine_base.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
@@ -49,6 +49,6 @@ class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_STUB_INPUT_METHOD_ENGINE_OBSERVER_H_

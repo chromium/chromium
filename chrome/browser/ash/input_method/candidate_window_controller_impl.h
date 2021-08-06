@@ -27,7 +27,7 @@ namespace views {
 class Widget;
 }  // namespace views
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // The implementation of CandidateWindowController.
@@ -93,6 +93,6 @@ class CandidateWindowControllerImpl
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_CANDIDATE_WINDOW_CONTROLLER_IMPL_H_

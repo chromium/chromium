@@ -51,8 +51,8 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
-          extension_id)) {
+  if (ash::input_method::ComponentExtensionIMEManagerDelegateImpl::
+          IsIMEExtensionID(extension_id)) {
     return true;
   }
 #endif

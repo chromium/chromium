@@ -14,7 +14,7 @@
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/mock_input_method_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // The mock implementation of InputMethodManager for testing.
@@ -99,14 +99,13 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::MockInputMethodManagerImpl;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::MockInputMethodManagerImpl;
+}  // namespace input_method
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_MOCK_INPUT_METHOD_MANAGER_IMPL_H_

@@ -21,4 +21,11 @@ enum class ImeKeyset {
 }  // namespace input_method
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace input_method {
+using ::chromeos::input_method::ImeKeyset;
+}  // namespace input_method
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_IME_KEYSET_H_

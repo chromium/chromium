@@ -12,8 +12,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
+
+namespace machine_learning = ::chromeos::machine_learning;
 
 using ::chromeos::ime::TextCompletionCandidate;
 using ::chromeos::ime::TextSuggestion;
@@ -124,4 +127,5 @@ TEST_F(SuggestionsServiceClientTest, ReturnsPredictionResultsFromMojoService) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

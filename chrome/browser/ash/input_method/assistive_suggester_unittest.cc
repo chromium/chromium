@@ -15,11 +15,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
+namespace {
 
 using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
+
+}  // namespace
 
 class AssistiveSuggesterTest : public testing::Test {
  protected:
@@ -49,9 +53,9 @@ TEST_F(AssistiveSuggesterTest,
        EmojiSuggestionPrefFalseFeatureFlagTrue_UserPrefEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kEmojiSuggestAddition},
-      /*disabled_features=*/{chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kAssistMultiWord});
+      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
                                    true);
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
@@ -63,9 +67,9 @@ TEST_F(AssistiveSuggesterTest,
        EmojiSuggestionPrefFalseFeatureFlagTrue_EnterprisePrefEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kEmojiSuggestAddition},
-      /*disabled_features=*/{chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kAssistMultiWord});
+      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
                                    false);
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
@@ -77,9 +81,9 @@ TEST_F(AssistiveSuggesterTest,
        EmojiSuggestionPrefTrueFeatureFlagTrue_BothPrefsEnabledTrue) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kEmojiSuggestAddition},
-      /*disabled_features=*/{chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kAssistMultiWord});
+      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
                                    true);
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
@@ -91,9 +95,9 @@ TEST_F(AssistiveSuggesterTest,
        EmojiSuggestionPrefTrueFeatureFlagTrue_BothPrefsEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kEmojiSuggestAddition},
-      /*disabled_features=*/{chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kAssistMultiWord});
+      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*disabled_features=*/{features::kAssistPersonalInfo,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
                                    false);
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
@@ -106,9 +110,9 @@ TEST_F(
     AssistPersonalInfoEnabledPrefFalseFeatureFlagTrue_AssitiveFeatureEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistPersonalInfo},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistMultiWord});
+      /*enabled_features=*/{features::kAssistPersonalInfo},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPersonalInfoEnabled, false);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -119,9 +123,9 @@ TEST_F(
     AssistPersonalInfoEnabledTrueFeatureFlagTrue_AssitiveFeatureEnabledTrue) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistPersonalInfo},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistMultiWord});
+      /*enabled_features=*/{features::kAssistPersonalInfo},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPersonalInfoEnabled, true);
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -131,9 +135,9 @@ TEST_F(AssistiveSuggesterTest,
        MultiWordEnabledWhenFeatureFlagEnabledAndPrefEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistMultiWord},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo});
+      /*enabled_features=*/{features::kAssistMultiWord},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistPersonalInfo});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    true);
 
@@ -144,9 +148,9 @@ TEST_F(AssistiveSuggesterTest,
        MultiWordDisabledWhenFeatureFlagEnabledAndPrefDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistMultiWord},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo});
+      /*enabled_features=*/{features::kAssistMultiWord},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistPersonalInfo});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    false);
 
@@ -158,9 +162,9 @@ TEST_F(AssistiveSuggesterTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kAssistMultiWord});
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistPersonalInfo,
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    false);
 
@@ -171,10 +175,10 @@ TEST_F(AssistiveSuggesterTest,
        MultiWordDisabledWhenFeatureFlagEnabledButImeServiceDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistMultiWord},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kImeMojoDecoder});
+      /*enabled_features=*/{features::kAssistMultiWord},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistPersonalInfo,
+                             features::kImeMojoDecoder});
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -183,11 +187,11 @@ TEST_F(AssistiveSuggesterTest,
        MultiWordDisabledWhenFeatureFlagAndImeServiceEnableButSystemPkDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistMultiWord,
-                            chromeos::features::kImeMojoDecoder},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo,
-                             chromeos::features::kSystemLatinPhysicalTyping});
+      /*enabled_features=*/{features::kAssistMultiWord,
+                            features::kImeMojoDecoder},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistPersonalInfo,
+                             features::kSystemLatinPhysicalTyping});
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -195,13 +199,14 @@ TEST_F(AssistiveSuggesterTest,
 TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kAssistMultiWord,
-                            chromeos::features::kImeMojoDecoder,
-                            chromeos::features::kSystemLatinPhysicalTyping},
-      /*disabled_features=*/{chromeos::features::kEmojiSuggestAddition,
-                             chromeos::features::kAssistPersonalInfo});
+      /*enabled_features=*/{features::kAssistMultiWord,
+                            features::kImeMojoDecoder,
+                            features::kSystemLatinPhysicalTyping},
+      /*disabled_features=*/{features::kEmojiSuggestAddition,
+                             features::kAssistPersonalInfo});
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

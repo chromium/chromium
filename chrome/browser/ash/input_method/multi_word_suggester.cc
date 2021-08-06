@@ -11,7 +11,8 @@
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using ::chromeos::ime::TextSuggestion;
@@ -308,4 +309,5 @@ void MultiWordSuggester::SuggestionState::UpdateState(const State& state) {
   state_ = state;
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

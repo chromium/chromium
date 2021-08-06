@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/mock_candidate_window_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 MockCandidateWindowController::MockCandidateWindowController()
@@ -42,4 +42,4 @@ void MockCandidateWindowController::NotifyCandidateWindowClosed() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

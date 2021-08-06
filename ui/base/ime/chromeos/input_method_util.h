@@ -199,4 +199,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
 }  // namespace input_method
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace input_method {
+using ::chromeos::input_method::InputMethodUtil;
+using ::chromeos::input_method::kKeyboardLayoutsOnly;
+}  // namespace input_method
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_INPUT_METHOD_UTIL_H_

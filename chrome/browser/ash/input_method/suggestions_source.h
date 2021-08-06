@@ -10,7 +10,8 @@
 #include "base/callback.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // Represents a source of text based suggestions.
 class SuggestionsSource {
@@ -44,6 +45,7 @@ class AsyncSuggestionsSource {
   virtual bool IsAvailable() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTIONS_SOURCE_H_

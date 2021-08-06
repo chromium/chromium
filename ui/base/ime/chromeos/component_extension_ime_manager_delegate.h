@@ -36,4 +36,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ComponentExtensionIMEManagerDelegate;
+}  // namespace ash
+
 #endif  // UI_BASE_IME_CHROMEOS_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_H_

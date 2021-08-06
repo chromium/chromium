@@ -10,8 +10,8 @@
 #include "ui/gfx/range/range.h"
 
 // TODO(crbug/1223213): Move these to a sandbox environment.
-namespace chromeos {
-namespace text_utils {
+namespace ash {
+namespace input_method {
 
 const int kUndefined = -1;
 
@@ -43,7 +43,7 @@ Sentence FindLastSentence(const std::u16string& text, int pos);
 // Find the sentence containing the cursor position |pos|.
 Sentence FindCurrentSentence(const std::u16string& text, int pos);
 
-}  // namespace text_utils
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_UTILS_H_

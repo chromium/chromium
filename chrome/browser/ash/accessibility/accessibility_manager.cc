@@ -99,7 +99,6 @@
 namespace ash {
 namespace {
 
-namespace extension_ime_util = ::chromeos::extension_ime_util;
 using ::extensions::api::braille_display_private::BrailleController;
 using ::extensions::api::braille_display_private::DisplayState;
 using ::extensions::api::braille_display_private::KeyEvent;

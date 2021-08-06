@@ -17,7 +17,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "ui/events/event.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Needs to match ImeGrammarActions
@@ -67,10 +68,10 @@ class GrammarManager {
   void IgnoreSuggestion();
 
  private:
-  void Check(const text_utils::Sentence& sentence);
+  void Check(const Sentence& sentence);
 
   void OnGrammarCheckDone(
-      const text_utils::Sentence& sentence,
+      const Sentence& sentence,
       bool success,
       const std::vector<ui::GrammarFragment>& results) const;
 
@@ -91,12 +92,13 @@ class GrammarManager {
   const ui::ime::AssistiveWindowButton ignore_button_;
   bool suggestion_shown_ = false;
   ui::ime::ButtonId highlighted_button_ = ui::ime::ButtonId::kNone;
-  text_utils::Sentence current_sentence_;
-  text_utils::Sentence last_sentence_;
+  Sentence current_sentence_;
+  Sentence last_sentence_;
   int text_input_flags_ = 0;
   std::unordered_map<std::u16string, std::unordered_set<int>> ignored_markers_;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_GRAMMAR_MANAGER_H_

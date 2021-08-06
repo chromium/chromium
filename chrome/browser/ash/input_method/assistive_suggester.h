@@ -18,7 +18,8 @@
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // An agent to suggest assistive information when the user types, and adopt or
 // dismiss the suggestion according to the user action.
@@ -110,6 +111,7 @@ class AssistiveSuggester : public SuggestionsSource {
   Suggester* current_suggester_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_H_

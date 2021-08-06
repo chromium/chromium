@@ -16,7 +16,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 struct InputTypeExpectation {
@@ -287,4 +288,5 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
 }
 
-} // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

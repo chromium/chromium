@@ -13,7 +13,8 @@
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // Used to collect any text suggestions from the system
 class SuggestionsCollector {
@@ -26,10 +27,10 @@ class SuggestionsCollector {
   ~SuggestionsCollector();
 
   using GatherSuggestionsCallback =
-      base::OnceCallback<void(ime::mojom::SuggestionsResponsePtr)>;
+      base::OnceCallback<void(chromeos::ime::mojom::SuggestionsResponsePtr)>;
 
   // Collects all suggestions from the system.
-  void GatherSuggestions(ime::mojom::SuggestionsRequestPtr request,
+  void GatherSuggestions(chromeos::ime::mojom::SuggestionsRequestPtr request,
                          GatherSuggestionsCallback callback);
 
  private:
@@ -47,6 +48,7 @@ class SuggestionsCollector {
   std::unique_ptr<AsyncSuggestionsSource> suggestions_service_client_;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTIONS_COLLECTOR_H_

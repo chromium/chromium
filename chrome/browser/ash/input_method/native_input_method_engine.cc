@@ -29,11 +29,12 @@
 #include "ui/base/ime/chromeos/input_method_ukm.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 namespace {
 
-namespace mojom = ime::mojom;
+namespace mojom = ::chromeos::ime::mojom;
 
 // Returns the current input context. This may change during the session, even
 // if the IME engine does not change.
@@ -80,8 +81,8 @@ std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
   return engine_id;
 }
 
-ime::mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
-  auto modifier_state = ime::mojom::ModifierState::New();
+mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
+  auto modifier_state = mojom::ModifierState::New();
   modifier_state->alt = event.flags() & ui::EF_ALT_DOWN;
   modifier_state->alt_graph = event.flags() & ui::EF_ALTGR_DOWN;
   modifier_state->caps_lock = event.flags() & ui::EF_CAPS_LOCK_ON;
@@ -90,8 +91,8 @@ ime::mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
   return modifier_state;
 }
 
-ime::mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
-  using ime::mojom::InputFieldType;
+mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
+  using mojom::InputFieldType;
   switch (type) {
     case ui::TEXT_INPUT_TYPE_PASSWORD:
       return InputFieldType::kPassword;
@@ -114,12 +115,12 @@ ime::mojom::InputFieldType TextInputTypeToMojoType(ui::TextInputType type) {
   }
 }
 
-ime::mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags) {
+mojom::AutocorrectMode AutocorrectFlagsToMojoType(int flags) {
   if ((flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF) ||
       (flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)) {
-    return ime::mojom::AutocorrectMode::kDisabled;
+    return mojom::AutocorrectMode::kDisabled;
   }
-  return ime::mojom::AutocorrectMode::kEnabled;
+  return mojom::AutocorrectMode::kEnabled;
 }
 
 enum class ImeServiceEvent {
@@ -312,9 +313,9 @@ mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
     return nullptr;
   }
 
-  return ime::mojom::PhysicalKeyEvent::New(
-      event.type() == ui::ET_KEY_PRESSED ? ime::mojom::KeyEventType::kKeyDown
-                                         : ime::mojom::KeyEventType::kKeyUp,
+  return mojom::PhysicalKeyEvent::New(
+      event.type() == ui::ET_KEY_PRESSED ? mojom::KeyEventType::kKeyDown
+                                         : mojom::KeyEventType::kKeyUp,
       std::move(key), DomCodeToMojom(event.code()),
       ModifierStateFromEvent(event));
 }
@@ -340,21 +341,21 @@ uint32_t Utf16ToCodepoint(const std::u16string& str) {
 }
 
 ui::ImeTextSpan::Thickness GetCompositionSpanThickness(
-    const ime::mojom::CompositionSpanStyle& style) {
+    const mojom::CompositionSpanStyle& style) {
   switch (style) {
-    case ime::mojom::CompositionSpanStyle::kNone:
+    case mojom::CompositionSpanStyle::kNone:
       return ui::ImeTextSpan::Thickness::kNone;
-    case ime::mojom::CompositionSpanStyle::kDefault:
+    case mojom::CompositionSpanStyle::kDefault:
       return ui::ImeTextSpan::Thickness::kThin;
   }
 }
 
 // Not using a StructTraits here because the mapping is not 1:1.
 ui::ImeTextSpan CompositionSpanToImeTextSpan(
-    const ime::mojom::CompositionSpan& span) {
+    const mojom::CompositionSpan& span) {
   return ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, span.start,
                          span.end, GetCompositionSpanThickness(span.style),
-                         span.style == ime::mojom::CompositionSpanStyle::kNone
+                         span.style == mojom::CompositionSpanStyle::kNone
                              ? ui::ImeTextSpan::UnderlineStyle::kNone
                              : ui::ImeTextSpan::UnderlineStyle::kSolid);
 }
@@ -396,12 +397,12 @@ void NativeInputMethodEngine::Initialize(
   autocorrect_manager_ = autocorrect_manager.get();
 
   auto suggestions_service_client =
-      chromeos::features::IsAssistiveMultiWordEnabled()
+      features::IsAssistiveMultiWordEnabled()
           ? std::make_unique<SuggestionsServiceClient>()
           : nullptr;
 
   auto suggestions_collector =
-      chromeos::features::IsAssistiveMultiWordEnabled()
+      features::IsAssistiveMultiWordEnabled()
           ? std::make_unique<SuggestionsCollector>(
                 assistive_suggester_, std::move(suggestions_service_client))
           : nullptr;
@@ -411,13 +412,11 @@ void NativeInputMethodEngine::Initialize(
 
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
-  auto native_observer =
-      std::make_unique<chromeos::NativeInputMethodEngine::ImeObserver>(
-          profile->GetPrefs(), std::move(observer),
-          std::move(assistive_suggester), std::move(autocorrect_manager),
-          std::move(suggestions_collector),
-          std::make_unique<GrammarManager>(
-              profile, std::make_unique<GrammarServiceClient>(), this));
+  auto native_observer = std::make_unique<NativeInputMethodEngine::ImeObserver>(
+      profile->GetPrefs(), std::move(observer), std::move(assistive_suggester),
+      std::move(autocorrect_manager), std::move(suggestions_collector),
+      std::make_unique<GrammarManager>(
+          profile, std::make_unique<GrammarServiceClient>(), this));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }
@@ -485,7 +484,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
   if (ShouldRouteToRuleBasedEngine(engine_id)) {
     if (!remote_manager_.is_bound()) {
-      auto* ime_manager = input_method::InputMethodManager::Get();
+      auto* ime_manager = InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
           remote_manager_.BindNewPipeAndPassReceiver());
       remote_manager_.set_disconnect_handler(
@@ -508,7 +507,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (!remote_manager_.is_bound()) {
-      auto* ime_manager = input_method::InputMethodManager::Get();
+      auto* ime_manager = InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
           remote_manager_.BindNewPipeAndPassReceiver());
       remote_manager_.set_disconnect_handler(
@@ -548,12 +547,11 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
   }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
-      input_method_->OnFocus(ime::mojom::InputFieldInfo::New(
+      input_method_->OnFocus(mojom::InputFieldInfo::New(
           TextInputTypeToMojoType(context.type),
           AutocorrectFlagsToMojoType(context.flags),
-          context.should_do_learning
-              ? ime::mojom::PersonalizationMode::kEnabled
-              : ime::mojom::PersonalizationMode::kDisabled));
+          context.should_do_learning ? mojom::PersonalizationMode::kEnabled
+                                     : mojom::PersonalizationMode::kDisabled));
     }
   } else {
     ime_base_observer_->OnFocus(engine_id, context_id, context);
@@ -626,9 +624,9 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
           base::BindOnce(
               [](ui::IMEEngineHandlerInterface::KeyEventDoneCallback
                      original_callback,
-                 ime::mojom::KeyEventResult result) {
+                 mojom::KeyEventResult result) {
                 std::move(original_callback)
-                    .Run(result == ime::mojom::KeyEventResult::kConsumedByIme);
+                    .Run(result == mojom::KeyEventResult::kConsumedByIme);
               },
               std::move(callback)));
     } else {
@@ -689,7 +687,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
       std::string utf8_text =
           base::UTF16ToUTF8AndAdjustOffsets(text, &selection_indices);
 
-      auto selection = ime::mojom::SelectionRange::New();
+      auto selection = mojom::SelectionRange::New();
       selection->anchor = selection_indices[0];
       selection->focus = selection_indices[1];
 
@@ -768,7 +766,7 @@ void NativeInputMethodEngine::ImeObserver::OnScreenProjectionChanged(
 
 void NativeInputMethodEngine::ImeObserver::OnSuggestionsGathered(
     RequestSuggestionsCallback callback,
-    ime::mojom::SuggestionsResponsePtr response) {
+    mojom::SuggestionsResponsePtr response) {
   std::move(callback).Run(std::move(response));
 }
 
@@ -784,11 +782,10 @@ void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
 
 void NativeInputMethodEngine::ImeObserver::CommitText(
     const std::u16string& text,
-    ime::mojom::CommitTextCursorBehavior cursor_behavior) {
+    mojom::CommitTextCursorBehavior cursor_behavior) {
   GetInputContext()->CommitText(
       text,
-      cursor_behavior ==
-              ime::mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
+      cursor_behavior == mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
           ? ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText
           : ui::TextInputClient::InsertTextCursorBehavior::
                 kMoveCursorAfterText);
@@ -796,7 +793,7 @@ void NativeInputMethodEngine::ImeObserver::CommitText(
 
 void NativeInputMethodEngine::ImeObserver::SetComposition(
     const std::u16string& text,
-    std::vector<ime::mojom::CompositionSpanPtr> spans) {
+    std::vector<mojom::CompositionSpanPtr> spans) {
   ui::CompositionText composition;
   composition.text = text;
 
@@ -838,14 +835,14 @@ void NativeInputMethodEngine::ImeObserver::DeleteSurroundingText(
 }
 
 void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
-    ime::mojom::AutocorrectSpanPtr autocorrect_span) {
+    mojom::AutocorrectSpanPtr autocorrect_span) {
   autocorrect_manager_->HandleAutocorrect(autocorrect_span->autocorrect_range,
                                           autocorrect_span->original_text,
                                           autocorrect_span->current_text);
 }
 
 void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
-    ime::mojom::SuggestionsRequestPtr request,
+    mojom::SuggestionsRequestPtr request,
     RequestSuggestionsCallback callback) {
   suggestions_collector_->GatherSuggestions(
       std::move(request),
@@ -859,8 +856,7 @@ void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
 }
 
-void NativeInputMethodEngine::ImeObserver::RecordUkm(
-    ime::mojom::UkmEntryPtr entry) {
+void NativeInputMethodEngine::ImeObserver::RecordUkm(mojom::UkmEntryPtr entry) {
   if (entry->is_non_compliant_api()) {
     ui::RecordUkmNonCompliantApi(
         GetInputContext()->GetClientSourceForMetrics(),
@@ -888,4 +884,5 @@ void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

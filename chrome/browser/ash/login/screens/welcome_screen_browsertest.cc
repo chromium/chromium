@@ -47,10 +47,6 @@
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 
 namespace ash {
-
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-namespace extension_ime_util = ::chromeos::extension_ime_util;
-
 namespace {
 
 const char kStartupManifestEnglish[] =

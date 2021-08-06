@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 AssistiveWindowProperties::AssistiveWindowProperties() = default;
 AssistiveWindowProperties::~AssistiveWindowProperties() = default;
@@ -22,4 +23,5 @@ bool AssistiveWindowProperties::operator==(
          show_setting_link == other.show_setting_link;
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

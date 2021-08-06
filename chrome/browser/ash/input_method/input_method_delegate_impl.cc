@@ -12,7 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 InputMethodDelegateImpl::InputMethodDelegateImpl() = default;
@@ -51,4 +51,4 @@ void InputMethodDelegateImpl::SetHardwareKeyboardLayoutForTesting(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

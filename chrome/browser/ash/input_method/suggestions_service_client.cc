@@ -9,7 +9,8 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using ::chromeos::ime::TextSuggestion;
@@ -22,13 +23,13 @@ using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
 
 constexpr size_t kMaxNumberCharsSent = 100;
 
-machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
+chromeos::machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
     TextSuggestionMode suggestion_mode) {
   switch (suggestion_mode) {
     case TextSuggestionMode::kCompletion:
-      return machine_learning::mojom::TextSuggestionMode::kCompletion;
+      return chromeos::machine_learning::mojom::TextSuggestionMode::kCompletion;
     case TextSuggestionMode::kPrediction:
-      return machine_learning::mojom::TextSuggestionMode::kPrediction;
+      return chromeos::machine_learning::mojom::TextSuggestionMode::kPrediction;
   }
 }
 
@@ -131,4 +132,5 @@ bool SuggestionsServiceClient::IsAvailable() {
   return text_suggester_loaded_;
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

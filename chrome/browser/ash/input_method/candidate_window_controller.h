@@ -7,8 +7,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_CANDIDATE_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_CANDIDATE_WINDOW_CONTROLLER_H_
 
-
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // CandidateWindowController is used for controlling the input method
@@ -40,6 +39,6 @@ class CandidateWindowController {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_CANDIDATE_WINDOW_CONTROLLER_H_

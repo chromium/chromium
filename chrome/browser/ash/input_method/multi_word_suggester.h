@@ -12,7 +12,8 @@
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 // TODO(crbug/1146266): move these to an internal state class / struct
 struct LastKnownTextState {
@@ -111,6 +112,7 @@ class MultiWordSuggester : public Suggester {
   SuggestionState state_;
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_

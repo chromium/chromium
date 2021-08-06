@@ -87,6 +87,7 @@ using InputMethodDescriptors = std::vector<InputMethodDescriptor>;
 namespace ash {
 namespace input_method {
 using ::chromeos::input_method::InputMethodDescriptor;
+using ::chromeos::input_method::InputMethodDescriptors;
 }
 }  // namespace ash
 

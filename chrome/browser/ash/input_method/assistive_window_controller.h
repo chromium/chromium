@@ -23,8 +23,7 @@ namespace views {
 class Widget;
 }  // namespace views
 
-namespace chromeos {
-
+namespace ash {
 namespace input_method {
 
 class AssistiveWindowControllerDelegate;
@@ -83,6 +82,6 @@ class AssistiveWindowController : public views::WidgetObserver,
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_WINDOW_CONTROLLER_H_

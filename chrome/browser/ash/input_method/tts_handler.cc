@@ -8,7 +8,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
+
 TtsHandler::TtsHandler(Profile* profile) : profile_(profile) {}
 TtsHandler::~TtsHandler() = default;
 
@@ -41,4 +43,6 @@ void TtsHandler::Speak(const std::string& text) {
   auto* tts_controller = content::TtsController::GetInstance();
   tts_controller->SpeakOrEnqueue(std::move(utterance));
 }
-}  // namespace chromeos
+
+}  // namespace input_method
+}  // namespace ash

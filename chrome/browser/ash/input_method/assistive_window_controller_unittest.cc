@@ -23,7 +23,7 @@ namespace {
 const char kAnnounceString[] = "announce string";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class MockDelegate : public AssistiveWindowControllerDelegate {
@@ -96,7 +96,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   std::unique_ptr<TestingProfile> profile_;
   const std::u16string suggestion_ = u"test";
   ui::ime::AssistiveWindowButton emoji_button_;
-  chromeos::AssistiveWindowProperties emoji_window_;
+  AssistiveWindowProperties emoji_window_;
   TestTtsHandler* tts_handler_;
 
   void TearDown() override {
@@ -324,4 +324,4 @@ TEST_F(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

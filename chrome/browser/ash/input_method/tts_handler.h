@@ -12,7 +12,8 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 class TtsHandler : public content::UtteranceEventDelegate {
  public:
@@ -38,6 +39,8 @@ class TtsHandler : public content::UtteranceEventDelegate {
   Profile* const profile_;
   std::unique_ptr<base::OneShotTimer> delay_timer_;
 };
-}  // namespace chromeos
+
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_TTS_HANDLER_H_

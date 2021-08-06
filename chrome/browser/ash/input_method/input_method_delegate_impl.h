@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "ui/base/ime/chromeos/input_method_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Accesses the hardware keyboard layout and application locale from the
@@ -33,6 +33,6 @@ class InputMethodDelegateImpl : public InputMethodDelegate {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_DELEGATE_IMPL_H_

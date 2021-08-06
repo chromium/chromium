@@ -182,7 +182,7 @@ class ArcInputMethodManagerService::ArcInputMethodBoundsObserver
 };
 
 class ArcInputMethodManagerService::InputMethodEngineObserver
-    : public chromeos::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   explicit InputMethodEngineObserver(ArcInputMethodManagerService* owner)
       : owner_(owner) {}
@@ -237,7 +237,8 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   void OnCandidateClicked(
       const std::string& component_id,
       int candidate_id,
-      chromeos::InputMethodEngineBase::MouseButtonEvent button) override {}
+      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
+      override {}
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
@@ -333,12 +334,13 @@ ArcInputMethodManagerService::ArcInputMethodManagerService(
       is_updating_imm_entry_(false),
       proxy_ime_extension_id_(
           crx_file::id_util::GenerateId(kArcIMEProxyExtensionName)),
-      proxy_ime_engine_(std::make_unique<chromeos::InputMethodEngine>()),
+      proxy_ime_engine_(
+          std::make_unique<ash::input_method::InputMethodEngine>()),
       tablet_mode_observer_(std::make_unique<TabletModeObserver>(this)),
       input_method_observer_(std::make_unique<InputMethodObserver>(this)),
       input_method_bounds_observer_(
           std::make_unique<ArcInputMethodBoundsObserver>(this)) {
-  auto* imm = chromeos::input_method::InputMethodManager::Get();
+  auto* imm = ash::input_method::InputMethodManager::Get();
   imm->AddObserver(this);
   imm->AddImeMenuObserver(this);
 

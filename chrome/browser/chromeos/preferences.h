@@ -20,13 +20,19 @@
 class ContentTracingManager;
 class PrefRegistrySimple;
 
+namespace ash {
+namespace input_method {
+class InputMethodSyncer;
+}  // namespace input_method
+}  // namespace ash
+
 namespace sync_preferences {
 class PrefServiceSyncable;
-}
+}  // namespace sync_preferences
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
 namespace chromeos {
 
@@ -34,8 +40,7 @@ class User;
 
 namespace input_method {
 class InputMethodManager;
-class InputMethodSyncer;
-}
+}  // namespace input_method
 
 // The Preferences class handles Chrome OS preferences. When the class
 // is first initialized, it will initialize the OS settings to what's stored in
@@ -177,7 +182,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   // Input Methods state for this user.
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;
 
-  std::unique_ptr<input_method::InputMethodSyncer> input_method_syncer_;
+  std::unique_ptr<ash::input_method::InputMethodSyncer> input_method_syncer_;
 
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 

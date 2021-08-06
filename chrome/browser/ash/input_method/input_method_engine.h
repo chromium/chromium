@@ -32,7 +32,8 @@ struct SuggestionDetails;
 }  // namespace ime
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 
 struct AssistiveWindowProperties;
 
@@ -154,14 +155,12 @@ class InputMethodEngine : public InputMethodEngineBase,
 
   // Set the list of items that appears in the language menu when this IME is
   // active.
-  bool SetMenuItems(
-      const std::vector<input_method::InputMethodManager::MenuItem>& items,
-      std::string* error);
+  bool SetMenuItems(const std::vector<InputMethodManager::MenuItem>& items,
+                    std::string* error);
 
   // Update the state of the menu items.
-  bool UpdateMenuItems(
-      const std::vector<input_method::InputMethodManager::MenuItem>& items,
-      std::string* error);
+  bool UpdateMenuItems(const std::vector<InputMethodManager::MenuItem>& items,
+                       std::string* error);
 
   // Hides the input view window (from API call).
   void HideInputView();
@@ -202,9 +201,8 @@ class InputMethodEngine : public InputMethodEngineBase,
   void EnableInputView();
 
   // Converts MenuItem to InputMethodMenuItem.
-  void MenuItemToProperty(
-      const input_method::InputMethodManager::MenuItem& item,
-      ui::ime::InputMethodMenuItem* property);
+  void MenuItemToProperty(const InputMethodManager::MenuItem& item,
+                          ui::ime::InputMethodMenuItem* property);
 
   // The current candidate window.
   ui::CandidateWindow candidate_window_;
@@ -230,6 +228,7 @@ class InputMethodEngine : public InputMethodEngineBase,
   DISALLOW_COPY_AND_ASSIGN(InputMethodEngine);
 };
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_H_

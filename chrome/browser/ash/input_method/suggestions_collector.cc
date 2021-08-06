@@ -8,7 +8,8 @@
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
 namespace {
 
 using ::chromeos::ime::TextSuggestion;
@@ -35,13 +36,13 @@ SuggestionsCollector::SuggestionsCollector(
 SuggestionsCollector::~SuggestionsCollector() = default;
 
 void SuggestionsCollector::GatherSuggestions(
-    ime::mojom::SuggestionsRequestPtr request,
+    chromeos::ime::mojom::SuggestionsRequestPtr request,
     GatherSuggestionsCallback callback) {
-  std::vector<ime::TextSuggestion> assistive_suggestions =
+  std::vector<TextSuggestion> assistive_suggestions =
       assistive_suggester_->GetSuggestions();
 
   if (!suggestions_service_client_->IsAvailable()) {
-    auto response = ime::mojom::SuggestionsResponse::New(
+    auto response = chromeos::ime::mojom::SuggestionsResponse::New(
         /*candidates=*/assistive_suggestions);
     std::move(callback).Run(std::move(response));
     return;
@@ -56,11 +57,12 @@ void SuggestionsCollector::GatherSuggestions(
 
 void SuggestionsCollector::OnSuggestionsGathered(
     GatherSuggestionsCallback callback,
-    const std::vector<ime::TextSuggestion>& assistive_suggestions,
-    const std::vector<ime::TextSuggestion>& system_suggestions) {
-  auto response = ime::mojom::SuggestionsResponse::New(
+    const std::vector<TextSuggestion>& assistive_suggestions,
+    const std::vector<TextSuggestion>& system_suggestions) {
+  auto response = chromeos::ime::mojom::SuggestionsResponse::New(
       /*candidates=*/CombineResults(assistive_suggestions, system_suggestions));
   std::move(callback).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

@@ -6,8 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace text_utils {
+namespace ash {
+namespace input_method {
 namespace {
 
 TEST(TextUtilsTest, FindsLastSentenceEnd) {
@@ -100,5 +100,5 @@ TEST(TextUtilsTest, FindCurrentSentence) {
 }
 
 }  // namespace
-}  // namespace text_utils
-}  // namespace chromeos
+}  // namespace input_method
+}  // namespace ash

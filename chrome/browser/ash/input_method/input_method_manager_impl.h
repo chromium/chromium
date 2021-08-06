@@ -23,7 +23,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ui/base/ime/chromeos/ime_keyboard.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ui/base/ime/chromeos/input_method_delegate.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 
@@ -31,12 +37,8 @@ namespace ui {
 class IMEEngineHandlerInterface;
 }  // namespace ui
 
-namespace chromeos {
-class ComponentExtensionIMEManager;
-class ComponentExtensionIMEManagerDelegate;
+namespace ash {
 namespace input_method {
-class InputMethodDelegate;
-class ImeKeyboard;
 
 // The implementation of InputMethodManager.
 class InputMethodManagerImpl : public InputMethodManager,
@@ -219,8 +221,7 @@ class InputMethodManagerImpl : public InputMethodManager,
       const std::string& engine_id,
       const std::vector<InputMethodManager::MenuItem>& items) override;
   void MaybeNotifyImeMenuActivationChanged() override;
-  void OverrideKeyboardKeyset(
-      chromeos::input_method::ImeKeyset keyset) override;
+  void OverrideKeyboardKeyset(ImeKeyset keyset) override;
   void SetImeMenuFeatureEnabled(ImeMenuFeature feature, bool enabled) override;
   bool GetImeMenuFeatureEnabled(ImeMenuFeature feature) const override;
   void NotifyObserversImeExtraInputStateChange() override;
@@ -358,6 +359,13 @@ class InputMethodManagerImpl : public InputMethodManager,
   DISALLOW_COPY_AND_ASSIGN(InputMethodManagerImpl);
 };
 
+}  // namespace input_method
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::InputMethodManagerImpl;
 }  // namespace input_method
 }  // namespace chromeos
 
