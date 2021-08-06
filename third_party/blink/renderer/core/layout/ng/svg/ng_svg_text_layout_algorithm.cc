@@ -74,58 +74,7 @@ void NGSvgTextLayoutAlgorithm::Layout(
   // 8. Position on path
   PositionOnPath(items);
 
-  // Write back the result to NGFragmentItems.
-  FloatRect unscaled_visual_rect;
-  for (const SvgPerCharacterInfo& info : result_) {
-    if (info.middle)
-      continue;
-    NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
-    const auto* layout_object =
-        To<LayoutSVGInlineText>(item->GetLayoutObject());
-    const auto font_baseline = item->Style().GetFontBaseline();
-    const auto& font_metrics =
-        layout_object->ScaledFont().PrimaryFont()->GetFontMetrics();
-    float x = *info.x;
-    float y = *info.y;
-    float width;
-    float height;
-    if (horizontal_) {
-      y -= font_metrics.FixedAscent(font_baseline);
-      width = info.inline_size;
-      height = item->Size().height;
-    } else {
-      x -= font_metrics.FixedDescent(font_baseline);
-      width = item->Size().width;
-      height = info.inline_size;
-    }
-    FloatRect scaled_rect(x, y, width, height);
-    const float scaling_factor = layout_object->ScalingFactor();
-    DCHECK_NE(scaling_factor, 0.0f);
-    FloatRect unscaled_rect = scaled_rect;
-    unscaled_rect.Scale(1 / scaling_factor);
-    auto data = std::make_unique<NGSvgFragmentData>();
-    data->shape_result = item->TextShapeResult();
-    data->text_offset = item->TextOffset();
-    data->rect = scaled_rect;
-    data->length_adjust_scale = info.length_adjust_scale;
-    data->angle = info.rotate.value_or(0.0f);
-    data->baseline_shift = info.baseline_shift;
-    data->in_text_path = info.in_text_path;
-    item.item.ConvertToSvgText(std::move(data),
-                               PhysicalRect::EnclosingRect(unscaled_rect),
-                               info.hidden);
-    unscaled_visual_rect.Unite(item.item.ObjectBoundingBox());
-  }
-  if (items[0]->Type() == NGFragmentItem::kLine) {
-    items[0].item.SetSvgLineLocalRect(
-        PhysicalRect(EnclosingIntRect(unscaled_visual_rect)));
-  }
-  // |items| should not have kLine items other than the first one.
-  DCHECK_EQ(std::find_if(items.begin() + 1, items.end(),
-                         [](const auto& item) {
-                           return item->Type() == NGFragmentItem::kLine;
-                         }),
-            items.end());
+  WriteBackToFragmentItems(items);
 }
 
 bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
@@ -783,6 +732,61 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
     if (range_index < ranges.size() && index == ranges[range_index].end_index)
       ++range_index;
   }
+}
+
+void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
+    NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+  FloatRect unscaled_visual_rect;
+  for (const SvgPerCharacterInfo& info : result_) {
+    if (info.middle)
+      continue;
+    NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
+    const auto* layout_object =
+        To<LayoutSVGInlineText>(item->GetLayoutObject());
+    const auto font_baseline = item->Style().GetFontBaseline();
+    const auto& font_metrics =
+        layout_object->ScaledFont().PrimaryFont()->GetFontMetrics();
+    float x = *info.x;
+    float y = *info.y;
+    float width;
+    float height;
+    if (horizontal_) {
+      y -= font_metrics.FixedAscent(font_baseline);
+      width = info.inline_size;
+      height = item->Size().height;
+    } else {
+      x -= font_metrics.FixedDescent(font_baseline);
+      width = item->Size().width;
+      height = info.inline_size;
+    }
+    FloatRect scaled_rect(x, y, width, height);
+    const float scaling_factor = layout_object->ScalingFactor();
+    DCHECK_NE(scaling_factor, 0.0f);
+    FloatRect unscaled_rect = scaled_rect;
+    unscaled_rect.Scale(1 / scaling_factor);
+    auto data = std::make_unique<NGSvgFragmentData>();
+    data->shape_result = item->TextShapeResult();
+    data->text_offset = item->TextOffset();
+    data->rect = scaled_rect;
+    data->length_adjust_scale = info.length_adjust_scale;
+    data->angle = info.rotate.value_or(0.0f);
+    data->baseline_shift = info.baseline_shift;
+    data->in_text_path = info.in_text_path;
+    item.item.ConvertToSvgText(std::move(data),
+                               PhysicalRect::EnclosingRect(unscaled_rect),
+                               info.hidden);
+    unscaled_visual_rect.Unite(item.item.ObjectBoundingBox());
+  }
+  if (items[0]->Type() == NGFragmentItem::kLine) {
+    items[0].item.SetSvgLineLocalRect(
+        PhysicalRect(EnclosingIntRect(unscaled_visual_rect)));
+  }
+  // |items| should not have kLine items other than the first one.
+  DCHECK_EQ(std::find_if(items.begin() + 1, items.end(),
+                         [](const auto& item) {
+                           return item->Type() == NGFragmentItem::kLine;
+                         }),
+            items.end());
 }
 
 float NGSvgTextLayoutAlgorithm::ScalingFactorAt(
