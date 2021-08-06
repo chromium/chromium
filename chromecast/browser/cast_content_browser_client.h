@@ -295,6 +295,10 @@ class CastContentBrowserClient
     CHECK(connector_);
     return connector_.get();
   }
+  external_service_support::ExternalConnector* media_connector() {
+    CHECK(media_connector_);
+    return media_connector_.get();
+  }
 
  protected:
   explicit CastContentBrowserClient(
@@ -377,6 +381,9 @@ class CastContentBrowserClient
   // of CastBrowserMainParts.
   std::unique_ptr<external_mojo::BrokerService> broker_service_;
   std::unique_ptr<external_service_support::ExternalConnector> connector_;
+
+  // ExternalConnector for running on the media task runner.
+  std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
 
   CastFeatureListCreator* cast_feature_list_creator_;
 

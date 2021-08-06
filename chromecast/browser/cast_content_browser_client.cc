@@ -195,6 +195,7 @@ void CastContentBrowserClient::InitializeExternalConnector() {
       std::make_unique<external_mojo::BrokerService>(service_manager_connector);
   connector_ = external_service_support::ExternalConnector::Create(
       broker_service_->CreateConnector());
+  media_connector_ = connector_->Clone();
 }
 
 std::unique_ptr<ServiceConnector>
