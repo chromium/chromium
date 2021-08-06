@@ -13,6 +13,7 @@ import os
 import shutil
 import sys
 import tempfile
+import urllib2
 
 import common
 
@@ -129,7 +130,7 @@ def _run_tests():
   try:
     # Starts Chrome without seed.
     driver = webdriver.Chrome(path_chromedriver, chrome_options=chrome_options)
-    driver.close()
+    driver.quit()
 
     # Verify a production version of variations seed was fetched successfully.
     current_seed, current_signature = _get_current_seed(user_data_dir)
@@ -169,12 +170,12 @@ def _run_tests():
             'visiting url: "%s"', t['expected_text'], t['url'])
         return 1
 
-    driver.close()
+    driver.quit()
 
     # Starts Chrome again to allow it to download a seed delta and update the
     # seed with it.
     driver = webdriver.Chrome(path_chromedriver, chrome_options=chrome_options)
-    driver.close()
+    driver.quit()
 
     # Verify seed has been updated successfully and it's different from the
     # injected test seed.
@@ -201,7 +202,11 @@ def _run_tests():
 
     shutil.rmtree(log_file, ignore_errors=True)
     if driver:
-      driver.quit()
+      try:
+        driver.quit()
+      except urllib2.URLError:
+        # Ignore the error as ChromeDriver may have already exited.
+        pass
 
   return 0
 
