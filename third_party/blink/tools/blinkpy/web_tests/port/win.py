@@ -156,6 +156,8 @@ class WinPort(base.Port):
         # Make TMP an alias for TEMP
         self.host.environ['TMP'] = self.host.environ['TEMP']
         env = super(WinPort, self).setup_environ_for_server()
+        # App Container needs a valid LOCALAPPDATA to function correctly.
+        env['LOCALAPPDATA'] = self.host.environ['TEMP']
         apache_envvars = ['SYSTEMDRIVE', 'SYSTEMROOT', 'TEMP', 'TMP']
         for key, value in self.host.environ.copy().items():
             if key not in env and key in apache_envvars:
