@@ -27,7 +27,7 @@ class EmulatorNetworkNotFoundError(Exception):
 
 
 class FvdlTarget(emu_target.EmuTarget):
-  EMULATOR_NAME = 'fvdl'
+  EMULATOR_NAME = 'aemu'
 
   def __init__(self, out_dir, target_cpu, system_log_file, require_kvm,
                enable_graphics, hardware_gpu, with_network):
@@ -69,12 +69,38 @@ class FvdlTarget(emu_target.EmuTarget):
     fvm_image = common.EnsurePathExists(
         boot_data.GetTargetFile('storage-full.blk', self._GetTargetSdkArch(),
                                 boot_data.TARGET_TYPE_QEMU))
+    aemu_path = common.EnsurePathExists(
+        os.path.join(common.GetEmuRootForPlatform(self.EMULATOR_NAME),
+                     'emulator'))
+
     emu_command = [
-        _FVDL_PATH, '--sdk', 'start', '--nopackageserver', '--nointeractive',
-        '--port-map', 'hostfwd=tcp::{}-:22'.format(self._host_ssh_port),
-        '--vdl-output', self._vdl_output_file.name, '--kernel-image',
-        kernel_image, '--zbi-image', zbi_image, '--fvm-image', fvm_image,
-        '--image-architecture', 'x64'
+        _FVDL_PATH,
+        '--sdk',
+        'start',
+        '--nopackageserver',
+        '--nointeractive',
+
+        # Host port mapping for user-networking mode.
+        '--port-map',
+        'hostfwd=tcp::{}-:22'.format(self._host_ssh_port),
+
+        # no-interactive requires a --vdl-output flag to shutdown the emulator.
+        '--vdl-output',
+        self._vdl_output_file.name,
+
+        # Use existing images instead of downloading new ones.
+        '--kernel-image',
+        kernel_image,
+        '--zbi-image',
+        zbi_image,
+        '--fvm-image',
+        fvm_image,
+        '--image-architecture',
+        self._target_cpu,
+
+        # Use an existing emulator checked out by Chromium.
+        '--aemu-path',
+        aemu_path
     ]
 
     if not self._require_kvm:
