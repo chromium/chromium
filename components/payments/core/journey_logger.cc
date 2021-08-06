@@ -649,4 +649,8 @@ void JourneyLogger::SetPaymentAppUkmSourceId(
   payment_app_source_id_ = payment_app_source_id;
 }
 
+base::WeakPtr<JourneyLogger> JourneyLogger::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments

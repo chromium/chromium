@@ -45,6 +45,10 @@ class SecurePaymentConfirmationDialogViewTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  base::WeakPtr<SecurePaymentConfirmationDialogViewTest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void CreateModel() {
     model_.set_title(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
@@ -74,7 +78,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents->GetMainFrame(), model_.GetWeakPtr(), this);
+            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
 
     ResetEventWaiter(DialogEvent::DIALOG_OPENED);
     test_delegate_->ShowDialog(nullptr);
@@ -244,6 +248,9 @@ class SecurePaymentConfirmationDialogViewTest
   bool cancel_pressed_ = false;
 
   base::HistogramTester histogram_tester_;
+
+  base::WeakPtrFactory<SecurePaymentConfirmationDialogViewTest>
+      weak_ptr_factory_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,

@@ -94,6 +94,8 @@ class PaymentRequestBrowserTestBase
     PAYMENT_HANDLER_WINDOW_OPENED,
   };
 
+  base::WeakPtr<PaymentRequestBrowserTestBase> GetWeakPtr();
+
  protected:
   PaymentRequestBrowserTestBase();
   ~PaymentRequestBrowserTestBase() override;
@@ -282,6 +284,7 @@ class PaymentRequestBrowserTestBase
   bool is_browser_window_active_ = true;
   bool skip_ui_for_basic_card_ = false;
 
+  base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PaymentRequestBrowserTestBase);
 };
 

@@ -54,7 +54,7 @@ END_METADATA
 // static
 base::WeakPtr<SecurePaymentConfirmationView>
 SecurePaymentConfirmationView::Create(
-    const PaymentUIObserver* payment_ui_observer) {
+    const base::WeakPtr<PaymentUIObserver> payment_ui_observer) {
   // On desktop, the SecurePaymentConfirmationView object is memory managed by
   // the views:: machinery. It is deleted when the window is closed and
   // views::DialogDelegateView::DeleteDelegate() is called by its corresponding
@@ -68,8 +68,8 @@ SecurePaymentConfirmationView::SecurePaymentConfirmationView() = default;
 SecurePaymentConfirmationView::~SecurePaymentConfirmationView() = default;
 
 SecurePaymentConfirmationDialogView::SecurePaymentConfirmationDialogView(
-    ObserverForTest* observer_for_test,
-    const PaymentUIObserver* ui_observer_for_test)
+    base::WeakPtr<ObserverForTest> observer_for_test,
+    const base::WeakPtr<PaymentUIObserver> ui_observer_for_test)
     : observer_for_test_(observer_for_test),
       ui_observer_for_test_(ui_observer_for_test) {}
 SecurePaymentConfirmationDialogView::~SecurePaymentConfirmationDialogView() =

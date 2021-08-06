@@ -75,7 +75,8 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
 
   virtual PaymentRequestDialog* GetDialogForTesting() = 0;
 
-  virtual const PaymentUIObserver* GetPaymentUIObserver() const = 0;
+  virtual const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver()
+      const = 0;
 
   // Returns a weak pointer to this delegate.
   base::WeakPtr<ContentPaymentRequestDelegate> GetContentWeakPtr();

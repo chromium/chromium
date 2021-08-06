@@ -79,6 +79,11 @@ PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
 PaymentRequestBrowserTestBase::PaymentRequestBrowserTestBase() = default;
 PaymentRequestBrowserTestBase::~PaymentRequestBrowserTestBase() = default;
 
+base::WeakPtr<PaymentRequestBrowserTestBase>
+PaymentRequestBrowserTestBase::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PaymentRequestBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   // HTTPS server only serves a valid cert for localhost, so this is needed to
@@ -507,7 +512,7 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
   PaymentRequestWebContentsManager::GetOrCreateForWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host))
       ->CreatePaymentRequest(render_frame_host, std::move(delegate),
-                             std::move(receiver), this);
+                             std::move(receiver), GetWeakPtr());
 }
 
 void PaymentRequestBrowserTestBase::ClickOnDialogViewAndWait(

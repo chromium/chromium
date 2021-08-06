@@ -53,7 +53,7 @@ class PaymentRequestWebContentsManager
       content::RenderFrameHost* render_frame_host,
       std::unique_ptr<ContentPaymentRequestDelegate> delegate,
       mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
-      PaymentRequest::ObserverForTest* observer_for_testing);
+      base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing);
 
   // Destroys the given `request`.
   void DestroyRequest(base::WeakPtr<PaymentRequest> request);

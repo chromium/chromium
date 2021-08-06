@@ -108,7 +108,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const std::string& app_locale,
       autofill::PersonalDataManager* personal_data_manager,
       base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
-      JourneyLogger* journey_logger);
+      base::WeakPtr<JourneyLogger> journey_logger);
   ~PaymentRequestState() override;
 
   // PaymentAppFactory::Delegate
@@ -373,10 +373,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
+  base::WeakPtr<JourneyLogger> journey_logger_;
 
   // Not owned. Never null. Will outlive this object.
   autofill::PersonalDataManager* personal_data_manager_;
-  JourneyLogger* journey_logger_;
 
   StatusCallback can_make_payment_callback_;
   StatusCallback has_enrolled_instrument_callback_;

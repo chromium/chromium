@@ -306,8 +306,8 @@ content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()
   return rfh ? rfh->GetBrowserContext() : nullptr;
 }
 
-const PaymentUIObserver* ChromePaymentRequestDelegate::GetPaymentUIObserver()
-    const {
+const base::WeakPtr<PaymentUIObserver>
+ChromePaymentRequestDelegate::GetPaymentUIObserver() const {
   return nullptr;
 }
 

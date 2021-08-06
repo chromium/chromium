@@ -25,7 +25,8 @@ class TestSecurePaymentConfirmationPaymentRequestDelegate
   TestSecurePaymentConfirmationPaymentRequestDelegate(
       content::RenderFrameHost* render_frame_host,
       base::WeakPtr<SecurePaymentConfirmationModel> model,
-      SecurePaymentConfirmationDialogView::ObserverForTest* observer);
+      base::WeakPtr<SecurePaymentConfirmationDialogView::ObserverForTest>
+          observer);
   ~TestSecurePaymentConfirmationPaymentRequestDelegate() override;
 
   // ChromePaymentRequestDelegate:

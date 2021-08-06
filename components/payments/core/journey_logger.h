@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -329,6 +330,8 @@ class JourneyLogger {
   // Sets the UKM source id of the selected app when it gets invoked.
   void SetPaymentAppUkmSourceId(ukm::SourceId payment_app_source_id);
 
+  base::WeakPtr<JourneyLogger> GetWeakPtr();
+
  private:
   // Records that an event occurred.
   void SetEventOccurred(Event event);
@@ -411,6 +414,7 @@ class JourneyLogger {
   ukm::SourceId payment_request_source_id_;
   ukm::SourceId payment_app_source_id_ = ukm::kInvalidSourceId;
 
+  base::WeakPtrFactory<JourneyLogger> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(JourneyLogger);
 };
 

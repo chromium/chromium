@@ -67,7 +67,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   autofill::TestAddressNormalizer* test_address_normalizer();
   void DelayFullCardRequestCompletion();
   void CompleteFullCardRequest();
-  const PaymentUIObserver* GetPaymentUIObserver() const override;
+  const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
 
  private:
   TestPaymentRequestDelegate core_delegate_;

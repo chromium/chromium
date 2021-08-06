@@ -70,7 +70,7 @@ class PaymentRequest : public mojom::PaymentRequest,
                  PaymentRequestWebContentsManager* manager,
                  PaymentRequestDisplayManager* display_manager,
                  mojo::PendingReceiver<mojom::PaymentRequest> receiver,
-                 ObserverForTest* observer_for_testing);
+                 base::WeakPtr<ObserverForTest> observer_for_testing);
   ~PaymentRequest() override;
 
   // mojom::PaymentRequest
@@ -246,7 +246,7 @@ class PaymentRequest : public mojom::PaymentRequest,
   const url::Origin frame_security_origin_;
 
   // May be null, must outlive this object.
-  ObserverForTest* observer_for_testing_;
+  base::WeakPtr<ObserverForTest> observer_for_testing_;
 
   JourneyLogger journey_logger_;
 

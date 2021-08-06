@@ -78,7 +78,7 @@ PaymentRequest::PaymentRequest(
     PaymentRequestWebContentsManager* manager,
     PaymentRequestDisplayManager* display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
-    ObserverForTest* observer_for_testing)
+    base::WeakPtr<ObserverForTest> observer_for_testing)
     : initiator_frame_routing_id_(content::GlobalRenderFrameHostId(
           render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRoutingID())),
@@ -210,7 +210,7 @@ void PaymentRequest::Init(
       initiator_frame, top_level_origin_, frame_origin_, frame_security_origin_,
       spec(), /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale(), delegate_->GetPersonalDataManager(),
-      delegate_->GetContentWeakPtr(), &journey_logger_);
+      delegate_->GetContentWeakPtr(), journey_logger_.GetWeakPtr());
 
   journey_logger_.SetRequestedInformation(
       spec_->request_shipping(), spec_->request_payer_email(),

@@ -31,7 +31,7 @@ void PaymentRequestWebContentsManager::CreatePaymentRequest(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
     mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
-    PaymentRequest::ObserverForTest* observer_for_testing) {
+    base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing) {
   auto new_request = std::make_unique<PaymentRequest>(
       render_frame_host, std::move(delegate), /*manager=*/this,
       delegate->GetDisplayManager(), std::move(receiver), observer_for_testing);
