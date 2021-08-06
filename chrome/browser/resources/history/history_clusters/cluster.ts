@@ -82,9 +82,7 @@ class HistoryClusterElement extends PolymerElement {
    * chance to remove their matching visits.
    */
   private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
-    // A matching visit is a visit to the removed visit's URL whose timespan
-    // falls within that of the removed visit.
-    const matchingVisit = (visit: URLVisit) => {
+    const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
         return visit.normalizedUrl.url === removedVisit.normalizedUrl.url &&
             visit.lastVisitTime.internalValue <=
@@ -93,29 +91,44 @@ class HistoryClusterElement extends PolymerElement {
             removedVisit.firstVisitTime.internalValue;
       }) !== -1;
     };
-    this.cluster.visits.forEach((visit, visitIndex) => {
-      if (matchingVisit(visit)) {
-        this.splice('cluster.visits', visitIndex, 1);
+    this.cluster.visits.forEach((topVisit: URLVisit, visitIndex: number) => {
+      // Reconstitute each cluster by flattening the list of visits and related
+      // visits, and removing the gone ones. Early exit if nothing removed.
+      const allVisits = [topVisit, ...topVisit.relatedVisits];
+      const remainingVisits = allVisits.filter(v => !visitHasBeenRemoved(v));
+      if (allVisits.length === remainingVisits.length) {
         return;
       }
-      visit.relatedVisits.forEach((relatedVisit, relatedVisitIndex) => {
-        if (matchingVisit(relatedVisit)) {
-          this.splice(
-              `cluster.visits.${visitIndex}.relatedVisits`, relatedVisitIndex,
-              1);
-          return;
-        }
-      });
+
+      if (!remainingVisits.length) {
+        // If all visits are gone, remove this top visit entirely.
+        this.splice('cluster.visits', visitIndex, 1);
+      } else {
+        // Splice in the re-constituted top visit.
+        const newTopVisit = remainingVisits.shift()!;
+        this.splice('cluster.visits', visitIndex, 1, newTopVisit);
+
+        // This looks weird, but it just replaces all the existing
+        // `newTopVisit.relatedVisits` with the `remainingVisits` using
+        // Polymer's special array mutation methods, so the DOM gets updated.
+        this.splice(
+            `cluster.visits.${visitIndex}.relatedVisits`, 0,
+            newTopVisit.relatedVisits.length, ...remainingVisits);
+      }
     });
 
-    // Depending on the selected option, removing a top visit results in the
-    // Cluster to either be removed or restructured. Notify the enclosing
-    // <history-clusters> to refresh the list of displayed Clusters.
-    if (this.cluster.visits.length === 0) {
-      this.dispatchEvent(new CustomEvent('cluster-changed-or-removed', {
+    this.dispatchEvent(new CustomEvent('iron-resize', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    // Now if all top visits for this cluster have been removed, send an event
+    // to also remove this cluster from the list.
+    if (!this.cluster.visits.length) {
+      this.dispatchEvent(new CustomEvent('cluster-emptied', {
         bubbles: true,
         composed: true,
-        detail: this.cluster.id,
+        detail: this.cluster,
       }));
     }
   }

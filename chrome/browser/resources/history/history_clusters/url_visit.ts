@@ -168,6 +168,10 @@ class VisitRowElement extends PolymerElement {
     return this.visit.relatedVisits
                .filter(visit => {
                  // "Ghost" visits with scores of 0 (or below) are never shown.
+                 // TODO(tommycli): If there are only ghost visits within the
+                 // related visits, and the user deletes the top visit, the
+                 // ghost visits don't get deleted and get attached to a nearby
+                 // cluster next time. We should fix this semantics issue.
                  return visit.score > 0;
                })
                .length > 0;

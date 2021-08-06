@@ -28,10 +28,11 @@
 
   <iron-list id="clusters" scroll-target="container"
       items="[[result_.clusters]]"
-      on-remove-visits="onRemoveVisits_"
-      on-cluster-changed-or-removed="onClusterChangedOrRemoved_">
+      on-remove-visits="onRemoveVisits_">
     <template>
-      <history-cluster cluster="[[item]]"></history-cluster>
+      <history-cluster cluster="[[item]]"
+          on-cluster-emptied="onClusterEmptied_">
+      </history-cluster>
     </template>
   </iron-list>
 </div>

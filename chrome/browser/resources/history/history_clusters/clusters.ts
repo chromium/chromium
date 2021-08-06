@@ -20,7 +20,7 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
+import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a custom element that requests and shows
@@ -151,22 +151,15 @@ class HistoryClustersElement extends PolymerElement {
     this.$.confirmationDialog.get().close();
   }
 
-  /**
-   * Called when an event is received from a cluster that should be removed or
-   * restructured due to all its visits or its top visit having been removed.
-   * Contains the id of the Cluster in question.
-   * @private
-   */
-  private onClusterChangedOrRemoved_() {
-    // Request up to as many of the freshest clusters as currently shown until
-    // now.
-    this.onBrowserIdle_().then(() => {
-      this.queryClusters_({
-        query: this.query.trim(),
-        maxCount: this.result_.clusters.length,
-        endTime: undefined,
-      });
-    });
+  private onClusterEmptied_(event: CustomEvent<Cluster>) {
+    // Find and remove the emptied cluster from the list. We don't pass an
+    // index, as then that's one more piece of state to keep consistent.
+    if (this.result_ && this.result_.clusters) {
+      const index = this.result_.clusters.indexOf(event.detail);
+      if (index !== -1) {
+        this.splice('result_.clusters', index, 1);
+      }
+    }
   }
 
   private onConfirmationDialogCancel_() {
