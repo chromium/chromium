@@ -5881,8 +5881,11 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     function_type = kTexSubImage;
 
   auto local_handle = frame->handle()->CloneForInternalUse();
-  if (!local_handle)
+  if (!local_handle) {
+    SynthesizeGLError(GL_INVALID_OPERATION, func_name,
+                      "can't texture a closed VideoFrame.");
     return;
+  }
 
   const auto natural_size = local_handle->frame()->natural_size();
   if (!ValidateTexFunc(func_name, function_type, kSourceVideoFrame, target,
