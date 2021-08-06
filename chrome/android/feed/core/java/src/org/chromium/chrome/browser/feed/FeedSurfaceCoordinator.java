@@ -529,7 +529,8 @@ public class FeedSurfaceCoordinator
             view = (RecyclerView) mHybridListRenderer.bind(mContentManager);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
-            view.setBackgroundColor(MaterialColors.getColor(context, R.attr.default_bg_color, TAG));
+            view.setBackgroundColor(
+                    MaterialColors.getColor(context, R.attr.default_bg_color_dynamic, TAG));
         } else {
             view = null;
         }
@@ -579,7 +580,7 @@ public class FeedSurfaceCoordinator
         mStream = createFeedStream(true);
         mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
         mRecyclerView.setBackgroundColor(
-                MaterialColors.getColor(mActivity, R.attr.default_bg_color, TAG));
+                MaterialColors.getColor(mActivity, R.attr.default_bg_color_dynamic, TAG));
 
         // For New Tab Page, mSwipeRefreshLayout has not been added to a view container. We need to
         // do it here.
