@@ -10,7 +10,7 @@ load("//console-header.star", "HEADER")
 load("//project.star", "settings")
 
 def main_console_if_on_branch():
-    return branches.value(for_branches = "main")
+    return "main" if not settings.is_main else None
 
 ci.defaults.set(
     bucket = "ci",
@@ -22,7 +22,7 @@ ci.defaults.set(
     execution_timeout = 3 * time.hour,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
-    project_trigger_overrides = branches.value(for_branches = {"chromium": settings.project}),
+    project_trigger_overrides = {"chromium": settings.project} if not settings.is_main else None,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     swarming_tags = ["vpython:native-python-wrapper"],
     triggered_by = ["chromium-gitiles-trigger"],
@@ -904,10 +904,7 @@ ci.android_builder(
         short_name = "M",
     ),
     cq_mirrors_console_view = "mirrors",
-    execution_timeout = branches.value(
-        for_main = 3 * time.hour,
-        for_branches = 4 * time.hour,
-    ),
+    execution_timeout = 3 * time.hour if settings.is_main else 4 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
     os = os.LINUX_BIONIC_REMOVE,
