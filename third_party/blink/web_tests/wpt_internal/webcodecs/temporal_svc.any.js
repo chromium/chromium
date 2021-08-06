@@ -4,7 +4,7 @@
 async function svc_test(codec, layers, base_layer_decimator) {
   const w = 320;
   const h = 200;
-  let acc = "deny";
+  let acc = "prefer-software";
   let frames_to_encode = 40;
   let frames_decoded = 0;
   let frames_encoded = 0;

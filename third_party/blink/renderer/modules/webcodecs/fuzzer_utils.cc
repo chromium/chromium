@@ -107,11 +107,11 @@ String ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type) {
   switch (type) {
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_ALLOW:
-      return "allow";
+      return "no-preference";
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_DENY:
-      return "deny";
+      return "prefer-software";
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_REQUIRE:
-      return "require";
+      return "prefer-hardware";
   }
 }
 

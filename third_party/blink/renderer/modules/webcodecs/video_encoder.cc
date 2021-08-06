@@ -457,21 +457,21 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     const ParsedConfig& config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   switch (config.hw_pref) {
-    case HardwarePreference::kRequire: {
+    case HardwarePreference::kPreferHardware: {
       auto result = CreateAcceleratedVideoEncoder(
           config.profile, config.options, gpu_factories);
       if (result)
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
       return result;
     }
-    case HardwarePreference::kAllow:
+    case HardwarePreference::kNoPreference:
       if (auto result = CreateAcceleratedVideoEncoder(
               config.profile, config.options, gpu_factories)) {
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
         return result;
       }
       FALLTHROUGH;
-    case HardwarePreference::kDeny: {
+    case HardwarePreference::kPreferSoftware: {
       std::unique_ptr<media::VideoEncoder> result;
       switch (config.codec) {
         case media::kCodecVP8:
@@ -711,7 +711,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 
   stall_request_processing_ = true;
 
-  if (active_config_->hw_pref == HardwarePreference::kDeny) {
+  if (active_config_->hw_pref == HardwarePreference::kPreferSoftware) {
     ContinueConfigureWithGpuFactories(request, nullptr);
     return;
   }
@@ -958,7 +958,7 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
   // put them into |promises|. Simultaneously run both versions of
   // isConfigSupported(), each version fulfills its own promise.
   HeapVector<ScriptPromise> promises;
-  if (parsed_config->hw_pref != HardwarePreference::kDeny) {
+  if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware) {
     // Hardware support not denied, detect support by hardware encoders.
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     promises.push_back(resolver->Promise());
@@ -972,7 +972,7 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
         std::move(gpu_retrieved_callback));
   }
 
-  if (parsed_config->hw_pref != HardwarePreference::kRequire) {
+  if (parsed_config->hw_pref != HardwarePreference::kPreferHardware) {
     // Hardware support not required, detect support by software encoders.
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     promises.push_back(resolver->Promise());

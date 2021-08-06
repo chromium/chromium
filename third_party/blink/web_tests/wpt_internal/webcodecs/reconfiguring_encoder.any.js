@@ -89,17 +89,21 @@ async function change_encoding_params_test(codec, acc) {
   assert_equals(errors, 0);
 }
 
-promise_test(change_encoding_params_test.bind(null, "vp8", "allow"),
-  "reconfiguring vp8");
+promise_test(
+    change_encoding_params_test.bind(null, 'vp8', 'no-preference'),
+    'reconfiguring vp8');
 
-promise_test(change_encoding_params_test.bind(null, "vp09.00.10.08", "allow"),
-  "reconfiguring vp9 profile0");
+promise_test(
+    change_encoding_params_test.bind(null, 'vp09.00.10.08', 'no-preference'),
+    'reconfiguring vp9 profile0');
 
-promise_test(change_encoding_params_test.bind(null, "vp09.02.10.10", "allow"),
-  "reconfiguring vp9 profile2");
+promise_test(
+    change_encoding_params_test.bind(null, 'vp09.02.10.10', 'no-preference'),
+    'reconfiguring vp9 profile2');
 
-promise_test(change_encoding_params_test.bind(null, "avc1.42001E", "allow"),
-  "reconfiguring avc1.42001E");
+promise_test(
+    change_encoding_params_test.bind(null, 'avc1.42001E', 'no-preference'),
+    'reconfiguring avc1.42001E');
 
 /* Uncomment this for manual testing, before we have GPU tests for that */
 //promise_test(change_encoding_params_test.bind(null, "avc1.42001E", "require"),

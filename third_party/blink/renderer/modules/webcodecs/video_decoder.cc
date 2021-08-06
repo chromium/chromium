@@ -316,7 +316,7 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   HardwarePreference hw_pref = GetHardwareAccelerationPreference(*config);
 
-  if (hw_pref == HardwarePreference::kRequire)
+  if (hw_pref == HardwarePreference::kPreferHardware)
     return IsAcceleratedConfigSupported(script_state, config, exception_state);
 
   media::VideoType video_type;

@@ -16,7 +16,7 @@ data_path = os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
 
 frame_sources = ["camera", "capture", "offscreen", "hw_decoder", "sw_decoder"]
 codecs = ["avc1.42001E", "vp8", "vp09.00.10.08"]
-accelerations = ["require", "deny"]
+accelerations = ["prefer-hardware", "prefer-software"]
 
 
 class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):

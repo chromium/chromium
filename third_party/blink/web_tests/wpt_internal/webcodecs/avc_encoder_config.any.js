@@ -89,15 +89,18 @@ function cycleAvcOutputFormats(acc, desc) {
   }, desc);
 }
 
-cycleAvcOutputFormats("deny",
-  "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'deny')");
+cycleAvcOutputFormats(
+    "prefer-software",
+    "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'prefer-software')");
 
-cycleAvcOutputFormats("allow",
-  "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'allow')");
+cycleAvcOutputFormats(
+    "no-preference",
+    "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'no-preference')");
 
 /* Uncomment this for manual testing, before we have GPU tests for that */
-// cycleAvcOutputFormats("require",
-//   "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'require')");
+// cycleAvcOutputFormats(
+//     "prefer-hardware",
+//     "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'prefer-hardware')");
 
 promise_test(async t => {
   let encoder = new VideoEncoder({
@@ -107,7 +110,7 @@ promise_test(async t => {
 
   const vp8Config = {
     codec: 'vp8',
-    hardwareAcceleration: "allow",
+    hardwareAcceleration: "no-preference",
     width: defaultWidth,
     height: defaultHeight,
     avc: { outputFormat: "avc" },

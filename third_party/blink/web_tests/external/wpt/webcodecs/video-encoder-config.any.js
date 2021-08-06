@@ -68,7 +68,7 @@ const validButUnsupportedConfigs = [
     comment: 'Too strenuous accelerated encoding parameters',
     config: {
       codec: "vp8",
-      hardwareAcceleration: "require",
+      hardwareAcceleration: "prefer-hardware",
       width: 7000,
       height: 7000,
       bitrate: 1,
@@ -97,7 +97,7 @@ validButUnsupportedConfigs.forEach(entry => {
 const validConfigs = [
   {
     codec: "avc1.42001E",
-    hardwareAcceleration: "allow",
+    hardwareAcceleration: "no-preference",
     width: 640,
     height: 480,
     bitrate: 5000000,
@@ -109,7 +109,7 @@ const validConfigs = [
   },
   {
     codec: "vp8",
-    hardwareAcceleration: "allow",
+    hardwareAcceleration: "no-preference",
     width: 800,
     height: 600,
     bitrate: 7000000,
@@ -121,7 +121,7 @@ const validConfigs = [
   },
   {
     codec: "vp09.00.10.08",
-    hardwareAcceleration: "allow",
+    hardwareAcceleration: "no-preference",
     width: 1280,
     height: 720,
     bitrate: 7000000,

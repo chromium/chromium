@@ -112,7 +112,7 @@ bool DecoderTemplate<Traits>::IsClosed() {
 template <typename Traits>
 HardwarePreference DecoderTemplate<Traits>::GetHardwarePreference(
     const ConfigType&) {
-  return HardwarePreference::kAllow;
+  return HardwarePreference::kNoPreference;
 }
 
 template <typename Traits>

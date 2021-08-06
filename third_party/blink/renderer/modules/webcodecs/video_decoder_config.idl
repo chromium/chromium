@@ -28,7 +28,7 @@ dictionary VideoDecoderConfig {
   // Hint about the color space of the content.
   VideoColorSpaceInit colorSpace;
 
-  HardwarePreference hardwareAcceleration = "allow";
+  HardwarePreference hardwareAcceleration = "no-preference";
 
   // Hint that decoders should be configured for latency versus throughput.
   boolean optimizeForLatency;

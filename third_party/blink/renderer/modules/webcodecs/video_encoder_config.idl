@@ -8,7 +8,7 @@
 // video_encoder.cc.
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  HardwarePreference hardwareAcceleration = "allow";
+  HardwarePreference hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
 
   [EnforceRange] unsigned long long bitrate;

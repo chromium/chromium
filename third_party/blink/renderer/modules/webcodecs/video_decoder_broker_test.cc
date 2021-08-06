@@ -363,7 +363,7 @@ TEST_F(VideoDecoderBrokerTest, Init_RequireAcceleration) {
   ConstructDecoder(*v8_scope.GetExecutionContext());
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 
-  decoder_broker_->SetHardwarePreference(HardwarePreference::kRequire);
+  decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferHardware);
 
   InitializeDecoder(media::TestVideoConfig::Normal(), /*expect_success*/ false);
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
@@ -378,7 +378,7 @@ TEST_F(VideoDecoderBrokerTest, Init_DenyAcceleration) {
   ConstructDecoder(*execution_context);
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 
-  decoder_broker_->SetHardwarePreference(HardwarePreference::kDeny);
+  decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferSoftware);
 
   // Use an extra-large video to push us towards a hardware decoder.
   media::VideoDecoderConfig config = media::TestVideoConfig::ExtraLarge();
@@ -395,14 +395,14 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   EXPECT_EQ(GetDecoderType(), media::VideoDecoderType::kBroker);
 
   // Make sure we can decode software only.
-  decoder_broker_->SetHardwarePreference(HardwarePreference::kDeny);
+  decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferSoftware);
   InitializeDecoder(media::TestVideoConfig::Normal());
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(1U, output_frames_.size());
 
   // Make sure we can decoder with hardware only.
-  decoder_broker_->SetHardwarePreference(HardwarePreference::kRequire);
+  decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferHardware);
 
   // Use an extra-large video to ensure we don't get a software decoder.
   media::VideoDecoderConfig large_config = media::TestVideoConfig::ExtraLarge();
@@ -413,7 +413,7 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   ASSERT_EQ(2U, output_frames_.size());
 
   // Make sure we can decode with both HW or SW as appropriate.
-  decoder_broker_->SetHardwarePreference(HardwarePreference::kAllow);
+  decoder_broker_->SetHardwarePreference(HardwarePreference::kNoPreference);
 
   // Use a large frame to force hardware decode.
   InitializeDecoder(large_config);

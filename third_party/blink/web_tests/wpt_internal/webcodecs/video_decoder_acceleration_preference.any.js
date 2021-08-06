@@ -48,12 +48,20 @@ function cycleAccelerationPreferences(codec, expected_success, desc) {
   }, desc);
 }
 
-cycleAccelerationPreferences("vp8",
-  { "require" : false, "deny": true, "allow" : true, },
-  "Test VP8 configurations with all acceleration preferences");
+cycleAccelerationPreferences(
+    'vp8', {
+      'prefer-hardware': false,
+      'prefer-software': true,
+      'no-preference': true,
+    },
+    'Test VP8 configurations with all acceleration preferences');
 
 /* Uncomment this for manual testing, before we have GPU tests for that */
 /* Note: these values might vary per platform */
-// cycleAccelerationPreferences("avc1.42001E",
-//   { "require" : true, "deny": true, "allow" : true, },
-//   "Test H264 configurations with all acceleration preferences");
+// cycleAccelerationPreferences(
+//     'avc1.42001E', {
+//       'prefer-hardware': true,
+//       'prefer-software': true,
+//       'no-preference': true,
+//     },
+//     'Test H264 configurations with all acceleration preferences');

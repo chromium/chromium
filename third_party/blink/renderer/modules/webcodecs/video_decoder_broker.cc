@@ -197,13 +197,13 @@ class MediaVideoTaskWrapper {
     // |external_decoder_factory|.
     std::unique_ptr<media::DecoderFactory> external_decoder_factory;
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-    if (hardware_preference_ != HardwarePreference::kDeny) {
+    if (hardware_preference_ != HardwarePreference::kPreferSoftware) {
       external_decoder_factory = std::make_unique<media::MojoDecoderFactory>(
           media_interface_factory_.get());
     }
 #endif
 
-    if (hardware_preference_ == HardwarePreference::kRequire) {
+    if (hardware_preference_ == HardwarePreference::kPreferHardware) {
       decoder_factory_ = std::move(external_decoder_factory);
       return;
     }
@@ -310,7 +310,7 @@ class MediaVideoTaskWrapper {
   std::unique_ptr<media::DecoderFactory> decoder_factory_;
   std::unique_ptr<media::VideoDecoder> decoder_;
   gfx::ColorSpace target_color_space_;
-  HardwarePreference hardware_preference_ = HardwarePreference::kAllow;
+  HardwarePreference hardware_preference_ = HardwarePreference::kNoPreference;
   bool decoder_factory_needs_update_ = true;
 
   std::unique_ptr<media::MediaLog> media_log_;

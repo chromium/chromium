@@ -124,25 +124,28 @@ async function encode_test(codec, acc) {
   assert_equals(errors, 0);
 }
 
-promise_test(encode_test.bind(null, "vp09.00.10.08", "allow"),
-  "encoding vp9 profile0");
-
-promise_test(encode_test.bind(null, "vp09.02.10.10", "allow"),
-  "encoding vp9 profile2");
-
-promise_test(encode_decode_test.bind(null, "vp09.02.10.10", "allow", null),
-  "encoding and decoding vp9 profile2");
-
-promise_test(encode_test.bind(null, "vp8", "allow"),
-  "encoding vp8");
-
-promise_test(encode_decode_test.bind(null, "vp8", "allow", null),
-  "encoding and decoding vp8");
+promise_test(
+    encode_test.bind(null, 'vp09.00.10.08', 'no-preference'),
+    'encoding vp9 profile0');
 
 promise_test(
-  encode_decode_test.bind(null, "avc1.42001E", "allow", "annexb"),
-  "encoding and decoding avc1.42001E (annexb)");
+    encode_test.bind(null, 'vp09.02.10.10', 'no-preference'),
+    'encoding vp9 profile2');
 
 promise_test(
-  encode_decode_test.bind(null, "avc1.42001E", "allow", "avc"),
-  "encoding and decoding avc1.42001E (avc)");
+    encode_decode_test.bind(null, 'vp09.02.10.10', 'no-preference', null),
+    'encoding and decoding vp9 profile2');
+
+promise_test(encode_test.bind(null, 'vp8', 'no-preference'), 'encoding vp8');
+
+promise_test(
+    encode_decode_test.bind(null, 'vp8', 'no-preference', null),
+    'encoding and decoding vp8');
+
+promise_test(
+    encode_decode_test.bind(null, 'avc1.42001E', 'no-preference', 'annexb'),
+    'encoding and decoding avc1.42001E (annexb)');
+
+promise_test(
+    encode_decode_test.bind(null, 'avc1.42001E', 'no-preference', 'avc'),
+    'encoding and decoding avc1.42001E (avc)');

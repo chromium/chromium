@@ -9,7 +9,11 @@
 
 namespace blink {
 
-enum class HardwarePreference { kAllow, kDeny, kRequire };
+enum class HardwarePreference {
+  kNoPreference,
+  kPreferSoftware,
+  kPreferHardware
+};
 
 HardwarePreference StringToHardwarePreference(const String& value);
 

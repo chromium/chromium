@@ -274,13 +274,13 @@ async function createFrameSource(type, width, height) {
     }
     case 'hw_decoder': {
       // Trying to find any hardware decoder supported by the platform.
-      let src =
-          prepareDecoderSource(40, width, height, 'avc1.42001E', 'require');
+      let src = prepareDecoderSource(
+          40, width, height, 'avc1.42001E', 'prefer-hardware');
       if (!src)
-        src = prepareDecoderSource(40, width, height, 'vp8', 'require');
+        src = prepareDecoderSource(40, width, height, 'vp8', 'prefer-hardware');
       if (!src) {
-        src =
-            prepareDecoderSource(40, width, height, 'vp09.00.10.08', 'require');
+        src = prepareDecoderSource(
+            40, width, height, 'vp09.00.10.08', 'prefer-hardware');
       }
       if (!src) {
         TEST.log('Can\'t find a supported hardware decoder.');
@@ -288,7 +288,7 @@ async function createFrameSource(type, width, height) {
       return src;
     }
     case 'sw_decoder': {
-      return prepareDecoderSource(40, width, height, 'vp8', 'deny');
+      return prepareDecoderSource(40, width, height, 'vp8', 'prefer-software');
     }
   }
 }
