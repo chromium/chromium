@@ -181,8 +181,13 @@ class TabDesktopMediaListTest : public testing::Test {
   }
 
   void CreateDefaultList() {
-    list_ = std::make_unique<TabDesktopMediaList>(base::BindRepeating(
-        [](content::WebContents* contents) { return true; }));
+    // The actual "default" for |include_chrome_app_windows| is false; but for
+    // the purposes of the tests we make the default true, so that all paths are
+    // exercised.
+    list_ = std::make_unique<TabDesktopMediaList>(
+        base::BindRepeating(
+            [](content::WebContents* contents) { return true; }),
+        /*include_chrome_app_windows=*/true);
     list_->SetThumbnailSize(gfx::Size(kThumbnailSize, kThumbnailSize));
 
     // Set update period to reduce the time it takes to run tests.

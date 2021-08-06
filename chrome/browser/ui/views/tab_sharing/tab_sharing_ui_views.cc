@@ -57,6 +57,8 @@ const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
 
 void InitContentsBorderWidget(WebContents* contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  if (!browser)
+    return;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (browser_view->contents_border_widget())
     return;

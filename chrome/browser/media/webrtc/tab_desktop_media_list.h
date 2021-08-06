@@ -12,8 +12,9 @@
 // Implementation of DesktopMediaList that shows tab/WebContents.
 class TabDesktopMediaList : public DesktopMediaListBase {
  public:
-  explicit TabDesktopMediaList(
-      DesktopMediaList::WebContentsFilter includable_web_contents_filter);
+  TabDesktopMediaList(
+      DesktopMediaList::WebContentsFilter includable_web_contents_filter,
+      bool include_chrome_app_windows);
   ~TabDesktopMediaList() override;
 
  private:
@@ -23,6 +24,7 @@ class TabDesktopMediaList : public DesktopMediaListBase {
 
   ImageHashesMap favicon_hashes_;
   const DesktopMediaList::WebContentsFilter includable_web_contents_filter_;
+  const bool include_chrome_app_windows_;
 
   // Task runner used for the |worker_|.
   scoped_refptr<base::SequencedTaskRunner> thumbnail_task_runner_;

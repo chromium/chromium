@@ -19,6 +19,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "media/base/video_util.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -64,11 +66,13 @@ const int kDefaultTabDesktopMediaListUpdatePeriod = 1000;
 }  // namespace
 
 TabDesktopMediaList::TabDesktopMediaList(
-    DesktopMediaList::WebContentsFilter includable_web_contents_filter)
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter,
+    bool include_chrome_app_windows)
     : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
           kDefaultTabDesktopMediaListUpdatePeriod)),
       includable_web_contents_filter_(
-          std::move(includable_web_contents_filter)) {
+          std::move(includable_web_contents_filter)),
+      include_chrome_app_windows_(include_chrome_app_windows) {
   type_ = DesktopMediaList::Type::kWebContents;
   thumbnail_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -94,12 +98,8 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
     }
   }
 
-  ImageHashesMap new_favicon_hashes;
-  std::vector<SourceDescription> sources;
-  std::map<base::TimeTicks, SourceDescription> tab_map;
-  std::vector<std::pair<DesktopMediaID, gfx::ImageSkia>> favicon_pairs;
-
-  // Enumerate all tabs with their titles and favicons for a user profile.
+  std::vector<content::WebContents*> contents_list;
+  // Enumerate all tabs for a user profile.
   for (auto* browser : browsers) {
     const TabStripModel* tab_strip_model = browser->tab_strip_model();
     DCHECK(tab_strip_model);
@@ -108,38 +108,57 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
       // Create id for tab.
       content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
       DCHECK(contents);
-      if (!includable_web_contents_filter_.Run(contents))
-        continue;
-      content::RenderFrameHost* main_frame = contents->GetMainFrame();
-      DCHECK(main_frame);
-      DesktopMediaID media_id(
-          DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
-          content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                             main_frame->GetRoutingID()));
+      contents_list.push_back(contents);
+    }
+  }
 
-      // Get tab's last active time stamp.
-      const base::TimeTicks t = contents->GetLastActiveTime();
-      tab_map.insert(
-          std::make_pair(t, SourceDescription(media_id, contents->GetTitle())));
+  if (include_chrome_app_windows_) {
+    // Find all AppWindows for the given profile.
+    const extensions::AppWindowRegistry::AppWindowList& window_list =
+        extensions::AppWindowRegistry::Get(profile)->app_windows();
+    for (const auto* app_window : window_list) {
+      if (!app_window->is_hidden())
+        contents_list.push_back(app_window->web_contents());
+    }
+  }
 
-      // Get favicon for tab.
-      favicon::FaviconDriver* favicon_driver =
-          favicon::ContentFaviconDriver::FromWebContents(contents);
-      if (!favicon_driver)
-        continue;
+  ImageHashesMap new_favicon_hashes;
+  std::vector<SourceDescription> sources;
+  std::map<base::TimeTicks, SourceDescription> tab_map;
+  std::vector<std::pair<DesktopMediaID, gfx::ImageSkia>> favicon_pairs;
+  // Fetch title, favicons, and update time for all tabs to show.
+  for (auto* contents : contents_list) {
+    if (!includable_web_contents_filter_.Run(contents))
+      continue;
+    content::RenderFrameHost* main_frame = contents->GetMainFrame();
+    DCHECK(main_frame);
+    DesktopMediaID media_id(
+        DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
+        content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
+                                           main_frame->GetRoutingID()));
 
-      gfx::Image favicon = favicon_driver->GetFavicon();
-      if (favicon.IsEmpty())
-        continue;
+    // Get tab's last active time stamp.
+    const base::TimeTicks t = contents->GetLastActiveTime();
+    tab_map.insert(
+        std::make_pair(t, SourceDescription(media_id, contents->GetTitle())));
 
-      // Only new or changed favicon need update.
-      new_favicon_hashes[media_id] = GetImageHash(favicon);
-      if (!favicon_hashes_.count(media_id) ||
-          (favicon_hashes_[media_id] != new_favicon_hashes[media_id])) {
-        gfx::ImageSkia image = favicon.AsImageSkia();
-        image.MakeThreadSafe();
-        favicon_pairs.push_back(std::make_pair(media_id, image));
-      }
+    // Get favicon for tab.
+    favicon::FaviconDriver* favicon_driver =
+        favicon::ContentFaviconDriver::FromWebContents(contents);
+    if (!favicon_driver)
+      continue;
+
+    gfx::Image favicon = favicon_driver->GetFavicon();
+    if (favicon.IsEmpty())
+      continue;
+
+    // Only new or changed favicon need update.
+    new_favicon_hashes[media_id] = GetImageHash(favicon);
+    if (!favicon_hashes_.count(media_id) ||
+        (favicon_hashes_[media_id] != new_favicon_hashes[media_id])) {
+      gfx::ImageSkia image = favicon.AsImageSkia();
+      image.MakeThreadSafe();
+      favicon_pairs.push_back(std::make_pair(media_id, image));
     }
   }
   favicon_hashes_ = new_favicon_hashes;

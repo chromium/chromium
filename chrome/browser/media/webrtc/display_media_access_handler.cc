@@ -229,9 +229,9 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
 
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
+  const GURL& request_origin = pending_request.request.security_origin;
   AllowedScreenCaptureLevel capture_level =
-      capture_policy::GetAllowedCaptureLevel(
-          pending_request.request.security_origin, web_contents);
+      capture_policy::GetAllowedCaptureLevel(request_origin, web_contents);
 
   // If Capture is not allowed, then reject.
   if (capture_level == AllowedScreenCaptureLevel::kDisallowed) {
@@ -271,8 +271,8 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   }
 
   auto includable_web_contents_filter =
-      capture_policy::GetIncludableWebContentsFilter(
-          pending_request.request.security_origin, capture_level);
+      capture_policy::GetIncludableWebContentsFilter(request_origin,
+                                                     capture_level);
 
   auto source_lists = picker_factory_->CreateMediaList(
       media_types, web_contents, includable_web_contents_filter);
