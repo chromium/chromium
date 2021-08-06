@@ -17,6 +17,7 @@
 #include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
@@ -67,7 +68,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
   void AllowStorageAccess(int32_t render_frame_id,
                           StorageType storage_type,
                           const url::Origin& origin,
-                          const GURL& site_for_cookies,
+                          const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
                           base::OnceCallback<void(bool)> callback) override {
     ++log_->allow_storage_access_count;

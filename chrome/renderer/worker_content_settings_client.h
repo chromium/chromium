@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -46,7 +47,7 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
   // Loading document context for this worker.
   bool is_unique_origin_ = false;
   url::Origin document_origin_;
-  GURL site_for_cookies_;
+  net::SiteForCookies site_for_cookies_;
   url::Origin top_frame_origin_;
   bool allow_running_insecure_content_;
   const int32_t render_frame_id_;

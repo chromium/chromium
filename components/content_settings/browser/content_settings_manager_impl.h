@@ -17,6 +17,10 @@ namespace content_settings {
 class CookieSettings;
 }  // namespace content_settings
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace content_settings {
 
 class ContentSettingsManagerImpl
@@ -60,7 +64,7 @@ class ContentSettingsManagerImpl
   void AllowStorageAccess(int32_t render_frame_id,
                           StorageType storage_type,
                           const url::Origin& origin,
-                          const GURL& site_for_cookies,
+                          const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
                           base::OnceCallback<void(bool)> callback) override;
   void OnContentBlocked(int32_t render_frame_id,

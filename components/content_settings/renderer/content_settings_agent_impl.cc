@@ -297,8 +297,7 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
 
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
-      frame->GetSecurityOrigin(),
-      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
+      frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), std::move(new_cb));
 }
 
@@ -318,8 +317,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
-      frame->GetSecurityOrigin(),
-      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
+      frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
   return result;

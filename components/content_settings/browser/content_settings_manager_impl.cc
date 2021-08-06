@@ -15,6 +15,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/cookies/site_for_cookies.h"
 
 using content_settings::PageSpecificContentSettings;
 
@@ -162,14 +163,14 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     int32_t render_frame_id,
     StorageType storage_type,
     const url::Origin& origin,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GURL url = origin.GetURL();
 
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin);
+      url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
   if (delegate_->AllowStorageAccess(render_process_id_, render_frame_id,
                                     storage_type, url, allowed, &callback)) {
     DCHECK(!callback);
