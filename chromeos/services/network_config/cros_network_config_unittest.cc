@@ -1621,8 +1621,9 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   ASSERT_TRUE(policy);
   EXPECT_EQ(false, policy->allow_only_policy_cellular_networks);
   EXPECT_EQ(true, policy->allow_only_policy_networks_to_autoconnect);
-  EXPECT_EQ(false, policy->allow_only_policy_networks_to_connect);
-  EXPECT_EQ(false, policy->allow_only_policy_networks_to_connect_if_available);
+  EXPECT_EQ(false, policy->allow_only_policy_wifi_networks_to_connect);
+  EXPECT_EQ(false,
+            policy->allow_only_policy_wifi_networks_to_connect_if_available);
   ASSERT_EQ(2u, policy->blocked_hex_ssids.size());
   EXPECT_EQ("blocked_ssid1", policy->blocked_hex_ssids[0]);
   EXPECT_EQ("blocked_ssid2", policy->blocked_hex_ssids[1]);

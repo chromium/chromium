@@ -388,7 +388,7 @@ Polymer({
 
     if (this.mojoType_ === mojom.NetworkType.kVPN ||
         (this.globalPolicy_ &&
-         this.globalPolicy_.allowOnlyPolicyNetworksToConnect)) {
+         this.globalPolicy_.allowOnlyPolicyWifiNetworksToConnect)) {
       this.autoConnect_ = false;
     } else {
       this.autoConnect_ = true;

@@ -209,7 +209,7 @@ suite('InternetSubpage', function() {
         simInfos: [{eid: 'eid'}],
       };
       cellularNetworkList.globalPolicy = {
-        allowOnlyPolicyNetworksToConnect: false,
+        allowOnlyPolicyWifiNetworksToConnect: false,
       };
       await flushAsync();
 

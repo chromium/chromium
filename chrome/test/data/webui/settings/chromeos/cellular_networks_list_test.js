@@ -346,7 +346,7 @@ suite('CellularNetworksList', function() {
     };
     addESimSlot();
     cellularNetworkList.globalPolicy = {
-      allowOnlyPolicyNetworksToConnect: true,
+      allowOnlyPolicyCellularNetworks: true,
     };
     await flushAsync();
 
@@ -355,7 +355,7 @@ suite('CellularNetworksList', function() {
     assertFalse(!!addESimButton);
 
     cellularNetworkList.globalPolicy = {
-      allowOnlyPolicyNetworksToConnect: false,
+      allowOnlyPolicyCellularNetworks: false,
     };
 
     await flushAsync();

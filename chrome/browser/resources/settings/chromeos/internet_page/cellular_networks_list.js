@@ -500,7 +500,7 @@ Polymer({
     if (!this.deviceIsEnabled_(cellularDeviceState)) {
       return false;
     }
-    return globalPolicy && !globalPolicy.allowOnlyPolicyNetworksToConnect;
+    return globalPolicy && !globalPolicy.allowOnlyPolicyCellularNetworks;
   },
 
   /**

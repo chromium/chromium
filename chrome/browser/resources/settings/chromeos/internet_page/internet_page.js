@@ -817,8 +817,8 @@ Polymer({
       return true;
     }
 
-    return !globalPolicy.allowOnlyPolicyNetworksToConnect &&
-        (!globalPolicy.allowOnlyPolicyNetworksToConnectIfAvailable ||
+    return !globalPolicy.allowOnlyPolicyWifiNetworksToConnect &&
+        (!globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable ||
          !managedNetworkAvailable);
   },
 

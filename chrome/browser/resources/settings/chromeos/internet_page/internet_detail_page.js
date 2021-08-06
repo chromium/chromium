@@ -1230,8 +1230,8 @@ Polymer({
     }
     const hexSsid =
         OncMojo.getActiveString(managedProperties.typeProperties.wifi.hexSsid);
-    return !!globalPolicy.allowOnlyPolicyNetworksToConnect ||
-        (!!globalPolicy.allowOnlyPolicyNetworksToConnectIfAvailable &&
+    return !!globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||
+        (!!globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
          !!managedNetworkAvailable) ||
         (!!hexSsid && !!globalPolicy.blockedHexSsids &&
          globalPolicy.blockedHexSsids.includes(hexSsid));
