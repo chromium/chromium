@@ -46,7 +46,8 @@ def GeneralOptions(parser):
   general_options.add_option('--view',
                              help='Open resulting trace file in a '
                              'browser.',
-                             action='store_true')
+                             action='store_true',
+                             dest='view')
 
   return general_options
 

@@ -12,18 +12,17 @@ import subprocess
 import webbrowser
 
 
-def DisplayInBrowser(trace_file, options):
+def DisplayInBrowser(trace_file, trace_format='proto'):
   """Displays trace in browser.
 
   Args:
-    options: Command line flags with their specified values as
-        returned by optparse.
     trace_file: Saved trace filename.
+    trace_format: Storage format of trace file.
   """
-  if options.trace_format == 'json':
+  if trace_format == 'json':
     raise Exception('The --view option and --trace_format=json are not'
                     'supported together')
-  if options.trace_format == 'proto':
+  if trace_format == 'proto':
     logging.info('Opening trace in browser')
     open_trace_ui_path = os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir,
