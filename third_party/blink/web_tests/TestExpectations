@@ -4172,6 +4172,8 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/text-match-highlight.htm
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/transformed-outlines.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/visibility-collapse.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dom/undefined-null.html [ Crash Pass ]
+crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-dom-textLength-attr.html [ Failure ]
+crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-svgdom-textLength-prop.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-dom-lengthAdjust-attr.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-dom-transform-attr.html [ Failure Pass ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-svgdom-lengthAdjust-prop.html [ Failure ]

@@ -711,7 +711,10 @@ void NGBlockNode::FinishLayout(
     input.override_inline_size = fragment.InlineSize();
     input.override_block_size = fragment.BlockSize();
     box_->ComputeAndSetBlockDirectionMargins(box_->ContainingBlock());
-    box_->ForceLayout();
+    if (box_->NeedsLayout())
+      box_->LayoutIfNeeded();
+    else
+      box_->ForceLayout();
     DCHECK_EQ(box_->Size(), physical_fragment.Size().ToLayoutSize())
         << "Legacy layout was supposed to use the size that NG computed";
   }
