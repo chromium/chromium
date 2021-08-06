@@ -83,6 +83,8 @@ cast_source_set("common") {
     "global_descriptors.h",
     "identification_settings_manager.cc",
     "identification_settings_manager.h",
+    "user_agent.cc",
+    "user_agent.h",
   ]
 
   public_deps = [ "//base" ]
@@ -137,6 +139,5 @@ cast_source_set("common") {
   if (enable_library_cdms) {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
-
   defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
 }

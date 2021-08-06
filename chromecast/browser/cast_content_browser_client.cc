@@ -51,8 +51,8 @@
 #include "chromecast/browser/service_connector.h"
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/service_manager_context.h"
-#include "chromecast/common/cast_content_client.h"
 #include "chromecast/common/global_descriptors.h"
+#include "chromecast/common/user_agent.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/cdm/cast_cdm_factory.h"
 #include "chromecast/media/cdm/cast_cdm_origin_provider.h"
@@ -956,7 +956,7 @@ bool CastContentBrowserClient::DoesSiteRequireDedicatedProcess(
 }
 
 std::string CastContentBrowserClient::GetUserAgent() {
-  return chromecast::shell::GetUserAgent();
+  return chromecast::GetUserAgent();
 }
 
 void CastContentBrowserClient::CreateGeneralAudienceBrowsingService() {

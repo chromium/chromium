@@ -15,7 +15,7 @@
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/webview_input_method_observer.h"
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
-#include "chromecast/common/cast_content_client.h"
+#include "chromecast/common/user_agent.h"
 #include "chromecast/graphics/cast_focus_client_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -569,7 +569,7 @@ void WebContentController::HandleGetUserAgent(int64_t id) {
       std::make_unique<webview::WebviewResponse>();
 
   response->set_id(id);
-  response->mutable_get_user_agent()->set_user_agent(shell::GetUserAgent());
+  response->mutable_get_user_agent()->set_user_agent(GetUserAgent());
   client_->EnqueueSend(std::move(response));
 }
 
