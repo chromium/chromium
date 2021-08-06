@@ -8,8 +8,8 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/save_passwords_consumer.h"
 
@@ -57,7 +57,7 @@ class PasswordStoreObserverBridge
 @interface PasswordFetcher () <SavePasswordsConsumerDelegate,
                                PasswordStoreObserver> {
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
   // A helper object for passing data about saved passwords from a finished
   // password store request to the SavePasswordsCollectionViewController.
   std::unique_ptr<ios::SavePasswordsConsumer> _savedPasswordsConsumer;
@@ -79,7 +79,7 @@ class PasswordStoreObserverBridge
 #pragma mark - Initialization
 
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
                              delegate:(id<PasswordFetcherDelegate>)delegate
                                   URL:(const GURL&)URL {

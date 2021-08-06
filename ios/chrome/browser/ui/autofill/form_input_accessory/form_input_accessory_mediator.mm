@@ -135,7 +135,8 @@ using base::UmaHistogramEnumeration;
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
              passwordStore:
-                 (scoped_refptr<password_manager::PasswordStore>)passwordStore
+                 (scoped_refptr<password_manager::PasswordStoreInterface>)
+                     passwordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
   self = [super init];
