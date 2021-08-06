@@ -4140,6 +4140,8 @@ crbug.com/1179585 [ Mac10.13 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Mac10.14 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Win7 ] virtual/layout_ng_svg_text/* [ Skip ]
 
+crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]
+
 # [css-animations]
 crbug.com/993365 external/wpt/css/css-transitions/Element-getAnimations.tentative.html [ Failure Pass ]
 
