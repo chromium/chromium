@@ -159,32 +159,35 @@ void FullRestoreService::Close(bool by_user) {
 void FullRestoreService::Click(const absl::optional<int>& button_index,
                                const absl::optional<std::u16string>& reply) {
   DCHECK(notification_);
+  skip_notification_histogram_ = true;
 
-  if (!button_index.has_value()) {
-    if (notification_->id() == kRestoreNotificationId) {
-      // Show the 'On Startup' OS setting page.
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kAppsSectionPath);
+  if (!button_index.has_value() ||
+      button_index.value() ==
+          static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
+    // Restore if the user clicks the notification body.
+    RecordRestoreAction(notification_->id(), RestoreAction::kRestore);
+    RecordWindowCount(kRestoreHistogramSuffix);
+    Restore();
+
+    if (!is_shut_down_) {
+      NotificationDisplayService::GetForProfile(profile_)->Close(
+          NotificationHandler::Type::TRANSIENT, notification_->id());
     }
     return;
   }
 
-  skip_notification_histogram_ = true;
-  RecordRestoreAction(
-      notification_->id(),
-      button_index.value() ==
-              static_cast<int>(RestoreNotificationButtonIndex::kRestore)
-          ? RestoreAction::kRestore
-          : RestoreAction::kCancel);
-
-  if (button_index.value() ==
-      static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
-    RecordWindowCount(kRestoreHistogramSuffix);
-    Restore();
-  } else {
-    RecordWindowCount(kNotRestoreHistogramSuffix);
+  if (notification_->id() == kRestoreNotificationId) {
+    // Show the 'On Startup' OS setting page if the user clicks the settings
+    // button of the restore notification.
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile_, chromeos::settings::mojom::kAppsSectionPath);
+    return;
   }
 
+  // Close the crash notification if the user clicks the cancel button of the
+  // crash notification.
+  RecordRestoreAction(notification_->id(), RestoreAction::kCancel);
+  RecordWindowCount(kNotRestoreHistogramSuffix);
   if (!is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
@@ -208,12 +211,17 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
 
   message_center::RichNotificationData notification_data;
 
-  message_center::ButtonInfo restore_button(l10n_util::GetStringUTF16(
-      base::ToUpperASCII(IDS_RESTORE_NOTIFICATION_RESTORE_BUTTON)));
+  message_center::ButtonInfo restore_button(
+      l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_RESTORE_BUTTON));
   notification_data.buttons.push_back(restore_button);
 
-  message_center::ButtonInfo cancel_button(l10n_util::GetStringUTF16(
-      base::ToUpperASCII(IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON)));
+  int button_id;
+  if (id == kRestoreForCrashNotificationId)
+    button_id = IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON;
+  else
+    button_id = IDS_RESTORE_NOTIFICATION_SETTINGS_BUTTON;
+  message_center::ButtonInfo cancel_button(
+      l10n_util::GetStringUTF16(button_id));
   notification_data.buttons.push_back(cancel_button);
 
   std::u16string title;

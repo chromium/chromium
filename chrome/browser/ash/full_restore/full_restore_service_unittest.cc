@@ -525,8 +525,8 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
-// notification, and verify the restore flag when click the cancel button.
-TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndCancel) {
+// notification, and verify the restore flag when click the Settings button.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -537,6 +537,8 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndCancel) {
   VerifyNotification(false /* has_crash_notification */,
                      true /* has_restore_notification */);
 
+  // For the restore notification, the cancel button is used to show the full
+  // restore settings.
   SimulateClick(kRestoreNotificationId,
                 RestoreNotificationButtonIndex::kCancel);
 
@@ -544,7 +546,9 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndCancel) {
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
 
-  VerifyNotification(false, false);
+  // Click the setting button, the restore notification should not be closed.
+  VerifyNotification(false /* has_crash_notification */,
+                     true /* has_restore_notification */);
 }
 
 // If the OS restore setting is 'Always', after reboot, don't show any
