@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
@@ -91,14 +92,28 @@ MathMLOperatorElement::MathMLOperatorElement(Document& doc)
 MathMLOperatorElement::OperatorContent
 MathMLOperatorElement::ParseOperatorContent() {
   MathMLOperatorElement::OperatorContent operator_content;
-  if (HasOneTextChild()) {
-    operator_content.characters = textContent();
-    operator_content.characters.Ensure16Bit();
-    operator_content.code_point =
-        OperatorCodepoint(operator_content.characters);
-    operator_content.is_vertical =
-        Character::IsVerticalMathCharacter(operator_content.code_point);
+  // Build the text content of the <mo> element. If it contains something other
+  // than character data, exit early since no special handling is required.
+  StringBuilder text_content;
+  for (auto* child = firstChild(); child; child = child->nextSibling()) {
+    auto* character_data = DynamicTo<CharacterData>(child);
+    if (!character_data)
+      return operator_content;
+    if (child->getNodeType() == kTextNode) {
+      text_content.Append(character_data->data());
+      // TODO(crbug.com/6606): Is it worth checking the length of text_content
+      // and exiting early here? For example the MathML Operator dictionary only
+      // contains content which (as a UTF-16 string) is of length 1 or 2, and
+      // other things rely on the assumption that OperatorContent::code_point
+      // is not kNonCharacter.
+    }
   }
+  // Parse the operator content.
+  operator_content.characters = text_content.ToString();
+  operator_content.characters.Ensure16Bit();
+  operator_content.code_point = OperatorCodepoint(operator_content.characters);
+  operator_content.is_vertical =
+      Character::IsVerticalMathCharacter(operator_content.code_point);
   return operator_content;
 }
 
