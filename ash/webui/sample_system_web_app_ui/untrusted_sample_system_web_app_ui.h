@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
-#define CHROMEOS_COMPONENTS_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
+#ifndef ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
+#define ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
 
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/webui_config.h"
@@ -38,4 +38,4 @@ class UntrustedSampleSystemWebAppUI : public ui::UntrustedWebUIController {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
+#endif  // ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_

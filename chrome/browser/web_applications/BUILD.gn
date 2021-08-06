@@ -336,7 +336,7 @@ source_set("web_applications") {
     ]
 
     if (!is_official_build) {
-      deps += [ "//chromeos/components/sample_system_web_app_ui" ]
+      deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
   }
 

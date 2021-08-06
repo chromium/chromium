@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/sample_system_web_app_ui/sample_system_web_app_ui.h"
+#include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 
 #include <memory>
 
+#include "ash/grit/ash_sample_system_web_app_resources.h"
+#include "ash/grit/ash_sample_system_web_app_resources_map.h"
+#include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/sample_system_web_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_sample_system_web_app_resources.h"
-#include "chromeos/grit/chromeos_sample_system_web_app_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -24,11 +24,9 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   auto trusted_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUISampleSystemWebAppHost));
 
-  trusted_source->AddResourcePath(
-      "", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
-  trusted_source->AddResourcePaths(
-      base::make_span(kChromeosSampleSystemWebAppResources,
-                      kChromeosSampleSystemWebAppResourcesSize));
+  trusted_source->AddResourcePath("", IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
+  trusted_source->AddResourcePaths(base::make_span(
+      kAshSampleSystemWebAppResources, kAshSampleSystemWebAppResourcesSize));
 
   // TODO(https://crbug/1169829): Don't simply disable trusted types. Do the
   // right thing.
@@ -42,8 +40,7 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   // is set, serve a default page so the user sees your default page instead
   // of an unexpected error. But if DCHECK is set, the user will be a
   // developer and be able to identify an error occurred.
-  trusted_source->SetDefaultResource(
-      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
+  trusted_source->SetDefaultResource(IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
 #endif  // !DCHECK_IS_ON()
 
   // We need a CSP override to use the chrome-untrusted:// scheme in the host.

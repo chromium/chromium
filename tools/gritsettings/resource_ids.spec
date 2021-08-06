@@ -463,11 +463,11 @@
     "includes": [2600],
     "structures": [2620],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2640],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_untrusted_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2645],
   },

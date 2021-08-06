@@ -100,20 +100,6 @@ chromeos_generated_grit("projector_app_trusted_resources") {
 }
 
 if (!is_official_build) {
-  # Resources used by chrome://sample-system-web-app
-  chromeos_generated_grit("sample_system_web_app_resources") {
-    source = "$root_gen_dir/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_resources.grd"
-    deps =
-        [ "//chromeos/components/sample_system_web_app_ui:build_trusted_grd" ]
-  }
-
-  # Resources used by chrome-untrusted://sample-system-web-app
-  chromeos_generated_grit("sample_system_web_app_untrusted_resources") {
-    source = "$root_gen_dir/chromeos/components/sample_system_web_app_ui/chromeos_sample_system_web_app_untrusted_resources.grd"
-    deps =
-        [ "//chromeos/components/sample_system_web_app_ui:build_untrusted_grd" ]
-  }
-
   # Resources used by chrome://demo-mode-app
   chromeos_generated_grit("demo_mode_app_resources") {
     source = "$root_gen_dir/chromeos/components/demo_mode_app_ui/chromeos_demo_mode_app_resources.grd"

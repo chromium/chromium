@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
+#include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 
-#include "chromeos/components/sample_system_web_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_sample_system_web_app_untrusted_resources_map.h"
+#include "ash/grit/ash_sample_system_web_app_untrusted_resources_map.h"
+#include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -33,8 +33,8 @@ UntrustedSampleSystemWebAppUI::UntrustedSampleSystemWebAppUI(
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::Create(kChromeUIUntrustedSampleSystemWebAppURL);
   untrusted_source->AddResourcePaths(
-      base::make_span(kChromeosSampleSystemWebAppUntrustedResources,
-                      kChromeosSampleSystemWebAppUntrustedResourcesSize));
+      base::make_span(kAshSampleSystemWebAppUntrustedResources,
+                      kAshSampleSystemWebAppUntrustedResourcesSize));
   untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();

@@ -2248,8 +2248,8 @@ if (!is_android) {
 
         if (!is_official_build) {
           deps += [
+            "//ash/webui/sample_system_web_app_ui:browser_tests_js",
             "//chromeos/components/demo_mode_app_ui:browser_tests_js",
-            "//chromeos/components/sample_system_web_app_ui:browser_tests_js",
             "//chromeos/components/telemetry_extension_ui/test:browser_tests_js",
           ]
         }
@@ -3397,8 +3397,8 @@ if (!is_android) {
           "../browser/ash/web_applications/telemetry_extension_integration_browsertest.cc",
         ]
         deps += [
+          "//ash/webui/sample_system_web_app_ui",
           "//chromeos/components/demo_mode_app_ui",
-          "//chromeos/components/sample_system_web_app_ui",
           "//chromeos/components/telemetry_extension_ui",
         ]
       }

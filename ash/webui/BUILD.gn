@@ -48,4 +48,8 @@ group("closure_compile") {
     "//ash/webui/shimless_rma:closure_compile",
     "//ash/webui/shortcut_customization_ui:closure_compile",
   ]
+
+  if (!is_official_build) {
+    deps += [ "//ash/webui/sample_system_web_app_ui:closure_compile" ]
+  }
 }

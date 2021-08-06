@@ -25,7 +25,7 @@ enum class SystemAppType {
   // This App is only enabled on non-official builds. You can find a brief SWA
   // platform introduction (Google internal) at: http://go/system-web-apps.
   //
-  // Source: //chromeos/components/sample_system_web_app_ui/
+  // Source: //ash/webui/sample_system_web_app_ui/
   // Contact: dominicshulz@google.com, ortuno@chromium.org
   SAMPLE = 3,
 
