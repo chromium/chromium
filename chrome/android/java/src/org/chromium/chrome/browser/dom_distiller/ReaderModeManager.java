@@ -21,6 +21,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -134,17 +135,17 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** The tab this manager is attached to. */
     private final Tab mTab;
 
-    /** The MessageDispatcher to display the message. */
-    private final MessageDispatcher mMessageDispatcher;
+    /** The supplier of MessageDispatcher to display the message. */
+    private final Supplier<MessageDispatcher> mMessageDispatcherSupplier;
 
     // Hold on to the InterceptNavigationDelegate that the custom tab uses.
     InterceptNavigationDelegate mCustomTabNavigationDelegate;
 
-    ReaderModeManager(Tab tab, MessageDispatcher messageDispatcher) {
+    ReaderModeManager(Tab tab, Supplier<MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
         mTab.addObserver(this);
-        mMessageDispatcher = messageDispatcher;
+        mMessageDispatcherSupplier = messageDispatcherSupplier;
     }
 
     /**
@@ -152,11 +153,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
      * @param tab The tab that will have a manager instance attached to it.
      */
     public static void createForTab(Tab tab) {
-        MessageDispatcher messageDispatcher =
-                MessageDispatcherProvider.from(tab.getWindowAndroid());
-
-        tab.getUserDataHost().setUserData(
-                USER_DATA_KEY, new ReaderModeManager(tab, messageDispatcher));
+        tab.getUserDataHost().setUserData(USER_DATA_KEY,
+                new ReaderModeManager(
+                        tab, () -> MessageDispatcherProvider.from(tab.getWindowAndroid())));
     }
 
     /**
@@ -432,14 +431,15 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             return;
         }
 
-        if (mMessageDispatcher != null && DomDistillerTabUtils.useMessagesForReaderModePrompt()) {
-            showReaderModeMessage();
+        MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
+        if (messageDispatcher != null && DomDistillerTabUtils.useMessagesForReaderModePrompt()) {
+            showReaderModeMessage(messageDispatcher);
         } else {
             ReaderModeInfoBar.showReaderModeInfoBar(mTab);
         }
     }
 
-    private void showReaderModeMessage() {
+    private void showReaderModeMessage(MessageDispatcher messageDispatcher) {
         Resources resources = mTab.getContext().getResources();
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -454,7 +454,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::activateReaderMode)
                         .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
                         .build();
-        mMessageDispatcher.enqueueMessage(
+        messageDispatcher.enqueueMessage(
                 message, mTab.getWebContents(), MessageScopeType.NAVIGATION, false);
     }
 
