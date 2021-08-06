@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -186,9 +187,8 @@ void WebLaunchFilesHelper::SetLaunchPathsIfPermitted(
 }
 
 void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
-  // TODO(estade): use GetLastCommittedOrigin(). See crbug.com/698985
   const GURL current_url =
-      web_contents()->GetMainFrame()->GetLastCommittedURL();
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
   if (launch_url_.GetOrigin() == current_url.GetOrigin()) {
     if (!permission_was_checked_) {
       permission_was_checked_ = true;

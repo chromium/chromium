@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -55,8 +56,8 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Description of permission.
-  // TODO(estade): use GetLastCommittedOrigin(). See crbug.com/698985
-  const GURL app_url = web_contents->GetMainFrame()->GetLastCommittedURL();
+  const GURL app_url =
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
   auto* description_label =
       AddChildView(std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
           plural ? IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION_MULTIPLE
