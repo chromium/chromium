@@ -5,6 +5,7 @@
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
 <script src='../../../external/wpt/web-animations/testcommon.js'></script>
+<script src='../../../external/wpt/scroll-animations/testcommon.js'></script>
 <style>
   body {
     height: 800px;
@@ -21,8 +22,7 @@ promise_test(async t => {
 
   const scroller = document.scrollingElement;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  const timeline = new ScrollTimeline(
-    {scrollSource: scroller, timeRange: maxScroll});
+  const timeline = new ScrollTimeline({scrollSource: scroller});
 
   eventSender.keyDown("ArrowDown");
   // Wait for the scroll to change.
@@ -31,7 +31,9 @@ promise_test(async t => {
     await waitForNextFrame();
   } while(scroller.scrollTop == startScroll);
 
-  assert_times_equal(timeline.currentTime, scroller.scrollTop,
-    'Scroll timeline current time corresponds to the scroll position.');
+  assert_percents_equal(
+      timeline.currentTime,
+      (scroller.scrollTop / maxScroll) * 100,
+      'Scroll timeline current time corresponds to the scroll position.');
 }, 'Scroll timeline current time is updated after handling user-driven scroll.');
 </script>

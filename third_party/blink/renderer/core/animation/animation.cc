@@ -200,7 +200,7 @@ Animation* Animation::Create(AnimationEffect* effect,
   }
   DCHECK(IsA<DocumentTimeline>(timeline) || timeline->IsScrollTimeline());
 
-  if (timeline->IsProgressBasedTimeline()) {
+  if (effect && timeline->IsProgressBasedTimeline()) {
     if (effect->timing_.iteration_duration) {
       if (effect->timing_.iteration_duration->is_inf()) {
         exception_state.ThrowTypeError(

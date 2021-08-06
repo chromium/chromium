@@ -31,12 +31,6 @@
 <script>
 'use strict';
 
-// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
-// functions that include ...WithTimeRange() should be replaced with the same
-// function but without that ending. For example:
-//
-// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
-
 function createAnimation(t) {
   const elem = createDiv(t);
   const animation = elem.animate({ opacity: [1, 0] }, 1000);
@@ -59,24 +53,42 @@ function updateScrollPosition(timeline, offset) {
 }
 
 function assert_timeline_current_time(animation, timeline_current_time) {
-  assert_times_equal(animation.timeline.currentTime.value, timeline_current_time,
-                     'Timeline\'s currentTime aligns with the scroll ' +
-                     'position even when paused');
+  if (animation.currentTime instanceof CSSUnitValue){
+    assert_percents_equal(animation.timeline.currentTime, timeline_current_time,
+                          `Timeline's currentTime aligns with the scroll ` +
+                          `position even when paused`);
+  }
+  else {
+    assert_times_equal(animation.timeline.currentTime, timeline_current_time,
+                       `Timeline's currentTime aligns with the scroll ` +
+                       `position even when paused`);
+  }
 }
 
 function assert_scroll_synced_times(animation, timeline_current_time,
                                     animation_current_time) {
   assert_timeline_current_time(animation, timeline_current_time);
-  assert_times_equal(animation.currentTime.value, animation_current_time,
-                     'Animation\'s currentTime aligns with the scroll ' +
-                     'position');
+  if (animation.currentTime instanceof CSSUnitValue){
+    assert_percents_equal(animation.currentTime, animation_current_time,
+        `Animation's currentTime aligns with the scroll position`);
+  }
+  else {
+    assert_times_equal(animation.currentTime, animation_current_time,
+        `Animation's currentTime aligns with the scroll position`);
+  }
 }
 
 function assert_paused_times(animation, timeline_current_time,
                              animation_current_time) {
   assert_timeline_current_time(animation, timeline_current_time);
-  assert_times_equal(animation.currentTime.value, animation_current_time,
-                     'Animation\'s currentTime is fixed while paused');
+  if (animation.currentTime instanceof CSSUnitValue){
+    assert_percents_equal(animation.currentTime, animation_current_time,
+                          `Animation's currentTime is fixed while paused`);
+  }
+  else {
+    assert_times_equal(animation.currentTime, animation_current_time,
+                       `Animation's currentTime is fixed while paused`);
+  }
 }
 
 promise_test(async t => {
@@ -90,8 +102,8 @@ promise_test(async t => {
 
   assert_equals(animation.playState, 'running');
   assert_scroll_synced_times(animation, 10, 10);
-},  'Setting a scroll timeline on a play-pending animation synchronizes ' +
-    'currentTime of the animation with the scroll position.');
+}, 'Setting a scroll timeline on a play-pending animation synchronizes ' +
+   'currentTime of the animation with the scroll position.');
 
 promise_test(async t => {
   const scrollTimeline = createScrollTimeline(t);
@@ -192,7 +204,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createAnimation(t);
-  const scrollTimeline = createScrollTimelineWithTimeRange(t);
+  const scrollTimeline = createScrollTimeline(t);
   animation.timeline = scrollTimeline;
   await animation.ready;
   await updateScrollPosition(scrollTimeline, 100);
@@ -204,7 +216,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createAnimation(t);
-  const scrollTimeline = createScrollTimelineWithTimeRange(t);
+  const scrollTimeline = createScrollTimeline(t);
   animation.timeline = scrollTimeline;
   await animation.ready;
   await updateScrollPosition(scrollTimeline, 100);
@@ -264,7 +276,7 @@ promise_test(async t => {
 
   animation.timeline = scrollTimeline;
   assert_equals(animation.playState, 'running');
-  assert_times_equal(animation.currentTime.value, 10);
+  assert_percents_equal(animation.currentTime, 10);
 }, 'Switching from a null timeline to a scroll timeline on an animation with ' +
    'a resolved start time preserved the play state');
 
@@ -278,10 +290,10 @@ promise_test(async t => {
   const animation = createAnimation(t);
   animation.timeline = firstScrollTimeline;
   await animation.ready;
-  assert_times_equal(animation.currentTime.value, 10);
+  assert_percents_equal(animation.currentTime, 10);
 
   animation.timeline = secondScrollTimeline;
-  assert_times_equal(animation.currentTime.value, 20);
+  assert_percents_equal(animation.currentTime, 20);
 }, 'Switching from one scroll timeline to another updates currentTime');
 
 
@@ -293,53 +305,53 @@ promise_test(async t => {
   animation.timeline = scrollTimeline;
   await animation.ready;
   assert_equals(animation.playState, 'paused');
-  assert_times_equal(animation.currentTime.value, 0);
+  assert_percents_equal(animation.currentTime, 0);
 
   const target = animation.effect.target;
   target.style.animationPlayState = 'running';
   await animation.ready;
 
-  assert_times_equal(animation.currentTime.value, 10);
+  assert_percents_equal(animation.currentTime, 10);
 }, 'Switching from a document timeline to a scroll timeline updates ' +
    'currentTime when unpaused via CSS.');
 
 promise_test(async t => {
-  const scrollTimeline = createScrollTimelineWithTimeRange(t);
+  const scrollTimeline = createScrollTimeline(t);
   await updateScrollPosition(scrollTimeline, 100);
 
   const animation = createAnimation(t);
   animation.pause();
   animation.timeline = scrollTimeline;
   await animation.ready;
-  assert_times_equal(animation.currentTime, 0);
+  assert_percents_equal(animation.currentTime, 0);
 
-  animation.currentTime = 500;
+  animation.currentTime = CSSNumericValue.parse("50%");
 
   animation.play();
   await animation.ready;
-  assert_times_equal(animation.currentTime, 500);
+  assert_percents_equal(animation.currentTime, 50);
 }, 'Switching from a document timeline to a scroll timeline and updating ' +
    'currentTime preserves the new value when unpaused.');
 
 promise_test(async t => {
-  const scrollTimeline = createScrollTimelineWithTimeRange(t);
+  const scrollTimeline = createScrollTimeline(t);
   await updateScrollPosition(scrollTimeline, 100);
 
   const animation = createAnimation(t);
   animation.pause();
   animation.timeline = scrollTimeline;
   await animation.ready;
-  assert_times_equal(animation.currentTime, 0);
+  assert_percents_equal(animation.currentTime, 0);
   assert_equals(animation.playState, 'paused');
 
   // Set a start time that will ensure that current time is in the active
   // region in order not to trigger a seek when play is called.
-  animation.startTime = -100;
+  animation.startTime = CSSNumericValue.parse("-10%");
   assert_equals(animation.playState, 'running');
 
   animation.play();
   await animation.ready;
-  assert_times_equal(animation.startTime, -100);
+  assert_percents_equal(animation.startTime, -10);
 }, 'Switching from a document timeline to a scroll timeline and updating ' +
    'startTime preserves the new value when play is called.');
 

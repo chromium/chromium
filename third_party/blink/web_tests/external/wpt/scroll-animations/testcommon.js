@@ -1,3 +1,46 @@
+'use strict';
+
+// Builds a generic structure that looks like:
+//
+// <div class="scroller">  // 100x100 viewport
+//   <div class="contents"></div>  // 500x500
+// </div>
+//
+// The |scrollerOverrides| and |contentOverrides| parameters are maps which
+// are applied to the scroller and contents style after basic setup.
+//
+// Appends the outer 'scroller' element to the document body, and returns it.
+function setupScrollTimelineTest(
+    scrollerOverrides = new Map(), contentOverrides = new Map()) {
+  let scroller = document.createElement('div');
+  scroller.style.width = '100px';
+  scroller.style.height = '100px';
+  scroller.style.overflow = 'scroll';
+  for (const [key, value] of scrollerOverrides) {
+    scroller.style[key] = value;
+  }
+
+  let contents = document.createElement('div');
+  contents.style.width = '500px';
+  contents.style.height = '500px';
+  for (const [key, value] of contentOverrides) {
+    contents.style[key] = value;
+  }
+
+  scroller.appendChild(contents);
+  document.body.appendChild(scroller);
+  return scroller;
+}
+
+// Helper method to calculate the current time, implementing only step 5 of
+// https://wicg.github.io/scroll-animations/#current-time-algorithm
+function calculateCurrentTime(
+    currentScrollOffset, startScrollOffset, endScrollOffset) {
+  return ((currentScrollOffset - startScrollOffset) /
+          (endScrollOffset - startScrollOffset)) *
+         100;
+}
+
 function createScroller(test) {
   var scroller = createDiv(test);
   scroller.innerHTML = "<div class='contents'></div>";
@@ -42,8 +85,6 @@ function createScrollLinkedAnimation(test, timeline) {
 function createScrollLinkedAnimationWithTiming(test, timing, timeline) {
   if (timeline === undefined)
     timeline = createScrollTimeline(test);
-  if (timing === undefined)
-    timing = 1000; // ms
   const KEYFRAMES = { opacity: [0, 1] };
   return new Animation(
     new KeyframeEffect(createDiv(test), KEYFRAMES, timing), timeline);
@@ -56,21 +97,6 @@ function assert_approx_equals_or_null(actual, expected, tolerance, name){
   else {
     assert_approx_equals(actual, expected, tolerance, name);
   }
-}
-
-// actual should be a CSSUnitValue and expected should be a double value 0-100
-function assert_percent_css_unit_value_approx_equals(actual, expected, tolerance, name){
-  assert_true(actual instanceof CSSUnitValue, "'actual' must be of type CSSUnitValue for \"" + name + "\"");
-  assert_equals(typeof expected, "number", "'expected' should be a number (0-100) for \"" + name + "\"");
-  assert_equals(actual.unit, "percent", "'actual' unit type must be 'percent' for \"" + name + "\"");
-  assert_approx_equals(actual.value, expected, tolerance, name);
-}
-
-function assert_css_numberish_equals(actual, expected, name){
-  assert_true(actual instanceof CSSUnitValue, "'actual' must be of type CSSNumberish for \"" + name + "\"");
-  assert_true(expected instanceof CSSUnitValue, "'expected' must be of type CSSNumberish for \"" + name + "\"");
-  assert_equals(actual.unit, expected.unit, "units do not match for  \"" + name + "\"");
-  assert_equals(actual.value, expected.value, "values do not match for  \"" + name + "\"");
 }
 
 function assert_percents_equal(actual, expected, description){
