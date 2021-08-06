@@ -105,10 +105,6 @@ suite('internet-detail-dialog', () => {
   }
 
   test('Network not on active sim, hide configurations', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     await setupCellularNetwork(/*isPrimary=*/ false, /*isInhibited=*/ false);
 
     await init();
@@ -123,10 +119,6 @@ suite('internet-detail-dialog', () => {
   });
 
   test('Network on active sim, show configurations', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
 
     await init();
@@ -138,10 +130,6 @@ suite('internet-detail-dialog', () => {
   });
 
   test('Dialog disabled when inhibited', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
-
     // Start uninhibited.
     await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
     await init();
