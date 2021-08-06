@@ -61,6 +61,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegateFactory() override;
 
+  LoginsResult GetAllLoginsInternal();
+  LoginsResult GetAutofillableLoginsInternal();
   LoginsResult FillMatchingLoginsInternal(
       const std::vector<PasswordFormDigest>& forms,
       bool include_psl);
@@ -68,6 +70,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
                                         bool include_psl);
   PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
+  void DisableAutoSignInForOriginsInternal(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
   PasswordMap stored_passwords_;
 };

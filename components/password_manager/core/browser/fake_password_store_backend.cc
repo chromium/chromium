@@ -26,12 +26,20 @@ void FakePasswordStoreBackend::InitBackend(
 }
 
 void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsReply callback) {
-  NOTIMPLEMENTED();
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
+                     base::Unretained(this)),
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
     LoginsReply callback) {
-  NOTIMPLEMENTED();
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::GetAutofillableLoginsInternal,
+                     base::Unretained(this)),
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
@@ -68,7 +76,7 @@ void FakePasswordStoreBackend::UpdateLoginAsync(
 void FakePasswordStoreBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
@@ -77,20 +85,25 @@ void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordStoreChangeListReply callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordStoreChangeListReply callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void FakePasswordStoreBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  NOTIMPLEMENTED();
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          &FakePasswordStoreBackend::DisableAutoSignInForOriginsInternal,
+          base::Unretained(this), origin_filter),
+      std::move(completion));
 }
 
 SmartBubbleStatsStore* FakePasswordStoreBackend::GetSmartBubbleStatsStore() {
@@ -105,6 +118,27 @@ std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 FakePasswordStoreBackend::CreateSyncControllerDelegateFactory() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
+  LoginsResult result;
+  for (const auto& elements : stored_passwords_) {
+    for (const auto& stored_form : elements.second) {
+      result.push_back(std::make_unique<PasswordForm>(stored_form));
+    }
+  }
+  return result;
+}
+
+LoginsResult FakePasswordStoreBackend::GetAutofillableLoginsInternal() {
+  LoginsResult result;
+  for (const auto& elements : stored_passwords_) {
+    for (const auto& stored_form : elements.second) {
+      if (!stored_form.blocked_by_user)
+        result.push_back(std::make_unique<PasswordForm>(stored_form));
+    }
+  }
+  return result;
 }
 
 LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
@@ -188,6 +222,17 @@ PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
     }
   }
   return changes;
+}
+
+void FakePasswordStoreBackend::DisableAutoSignInForOriginsInternal(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+  for (auto& realm : stored_passwords_) {
+    if (origin_filter.Run(GURL(realm.first))) {
+      for (auto& form : realm.second) {
+        form.skip_zero_click = true;
+      }
+    }
+  }
 }
 
 }  // namespace password_manager

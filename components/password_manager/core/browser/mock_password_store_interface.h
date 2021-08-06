@@ -65,6 +65,7 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               CreateSyncControllerDelegate,
               (),
               (override));
+  MOCK_METHOD(PasswordStoreBackend*, GetBackendForTesting, (), (override));
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;

@@ -360,6 +360,10 @@ PasswordStore::CreateSyncControllerDelegate() {
   return backend_->CreateSyncControllerDelegateFactory();
 }
 
+PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
+  return backend_;
+}
+
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
 }

@@ -125,6 +125,7 @@ class PasswordStore : public PasswordStoreInterface {
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  PasswordStoreBackend* GetBackendForTesting() override;
 
   // Reports usage metrics for the database. |sync_username|, and
   // |custom_passphrase_sync_enabled|, and |is_under_advanced_protection|
@@ -139,10 +140,6 @@ class PasswordStore : public PasswordStoreInterface {
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
-
-#if defined(UNIT_TEST)
-  PasswordStoreBackend* GetBackendForTesting() { return backend_; }
-#endif
 
  protected:
   friend class base::RefCountedThreadSafe<PasswordStore>;

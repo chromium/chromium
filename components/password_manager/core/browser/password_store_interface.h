@@ -21,6 +21,7 @@ namespace password_manager {
 struct PasswordForm;
 
 class FieldInfoStore;
+class PasswordStoreBackend;
 class PasswordStoreConsumer;
 class SmartBubbleStatsStore;
 
@@ -153,6 +154,9 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // interact with PasswordSyncBridge. Must be called from the UI thread.
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
+
+  // Tests only can retrieve the backend.
+  virtual PasswordStoreBackend* GetBackendForTesting() = 0;
 
  protected:
   ~PasswordStoreInterface() override = default;

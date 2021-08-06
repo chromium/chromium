@@ -19,9 +19,9 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -81,11 +81,9 @@ class CapturedSitesPasswordManagerBrowserTest
   bool AddCredential(const std::string& origin,
                      const std::string& username,
                      const std::string& password) override {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        PasswordStoreFactory::GetInterfaceForProfile(
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
     password_manager::PasswordForm signin_form;
     signin_form.url = GURL(origin);
     signin_form.signon_realm = origin;
@@ -145,14 +143,15 @@ class CapturedSitesPasswordManagerBrowserTest
   bool HasChromeStoredCredential(const std::string& origin,
                                  const std::string& username,
                                  const std::string& password) override {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        PasswordStoreFactory::GetInterfaceForProfile(
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+    FakePasswordStoreBackend* fake_backend =
+        static_cast<FakePasswordStoreBackend*>(
+            password_store->GetBackendForTesting());
 
-    auto found = password_store->stored_passwords().find(origin);
-    if (password_store->stored_passwords().end() == found) {
+    auto found = fake_backend->stored_passwords().find(origin);
+    if (fake_backend->stored_passwords().end() == found) {
       return false;
     }
 
@@ -186,10 +185,10 @@ class CapturedSitesPasswordManagerBrowserTest
                       context, base::BindRepeating(&BuildTestSyncService));
 
                   PasswordStoreFactory::GetInstance()->SetTestingFactory(
-                      context, base::BindRepeating(
-                                   &password_manager::BuildPasswordStore<
-                                       content::BrowserContext,
-                                       password_manager::TestPasswordStore>));
+                      context,
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithFakeBackend<
+                              content::BrowserContext>));
                 }));
   }
 

@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -54,7 +53,7 @@
 
 using password_manager::FakePasswordStoreBackend;
 using password_manager::PasswordForm;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using ::testing::_;
 using ::testing::ElementsAre;
 
@@ -80,7 +79,8 @@ PasswordForm CreatePasswordFormWithPhishedEntry(std::string signon_realm,
   return form;
 }
 
-void AddFormToStore(PasswordStore* password_store, const PasswordForm& form) {
+void AddFormToStore(PasswordStoreInterface* password_store,
+                    const PasswordForm& form) {
   password_store->AddLogin(form);
   base::RunLoop().RunUntilIdle();
   FakePasswordStoreBackend* fake_backend =
@@ -371,15 +371,16 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   // Simulate removing the compromised credentials on mark site as legitimate
   // action.
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-          PasswordStoreFactory::GetInstance()
-              ->SetTestingFactoryAndUse(
-                  browser()->profile(),
-                  base::BindRepeating(
-                      &password_manager::BuildPasswordStoreWithFakeBackend<
-                          content::BrowserContext>))
-              .get()));
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      base::WrapRefCounted(
+          static_cast<password_manager::PasswordStoreInterface*>(
+              PasswordStoreFactory::GetInstance()
+                  ->SetTestingFactoryAndUse(
+                      browser()->profile(),
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithFakeBackend<
+                              content::BrowserContext>))
+                  .get()));
 
   // In order to test removal, we need to make sure it was added first.
   const std::string kSignonRealm = "https://example.test";
