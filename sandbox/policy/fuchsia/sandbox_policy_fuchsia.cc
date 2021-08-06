@@ -233,20 +233,20 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
     options->paths_to_clone.push_back(base::FilePath("/config/ssl"));
 
   if (config->features & kProvideVulkanResources) {
-    // /dev/class/gpu and /config/vulkan/icd.d are to used configure and
-    // access the GPU.
-    options->paths_to_clone.push_back(base::FilePath("/dev/class/gpu"));
-    const auto vulkan_icd_path = base::FilePath("/config/vulkan/icd.d");
-    if (base::PathExists(vulkan_icd_path))
-      options->paths_to_clone.push_back(vulkan_icd_path);
-
-    // The following devices are used for Fuchsia Emulator.
-    options->paths_to_clone.insert(
-        options->paths_to_clone.end(),
-        {base::FilePath("/dev/class/goldfish-address-space"),
-         base::FilePath("/dev/class/goldfish-control"),
-         base::FilePath("/dev/class/goldfish-pipe"),
-         base::FilePath("/dev/class/goldfish-sync")});
+    static const char* const kPathsToCloneForVulkan[] = {
+        // Used configure and access the GPU.
+        "/dev/class/gpu", "/config/vulkan/icd.d",
+        // Used for Fuchsia Emulator.
+        "/dev/class/goldfish-address-space", "/dev/class/goldfish-control",
+        "/dev/class/goldfish-pipe", "/dev/class/goldfish-sync"};
+    for (const char* path_str : kPathsToCloneForVulkan) {
+      base::FilePath path(path_str);
+      // Vulkan paths aren't needed with newer Fuchsia versions, so they may not
+      // be available.
+      if (base::PathExists(path)) {
+        options->paths_to_clone.push_back(path);
+      }
+    }
   }
 
   // If the process needs access to any services then transfer the
