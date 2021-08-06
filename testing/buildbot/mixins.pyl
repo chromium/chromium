@@ -422,6 +422,13 @@
       ],
     },
   },
+  'fuchsia-fvdl': {
+    '$mixin_append': {
+      'args': [
+        '--device=fvdl',
+      ],
+    },
+  },
   'fuchsia_runner_logs': {
     '$mixin_append': {
       'args': [
