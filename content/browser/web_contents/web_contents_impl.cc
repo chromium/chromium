@@ -1716,8 +1716,11 @@ void WebContentsImpl::SetUserAgentOverride(
   // NavigationRequest supplied to DidStartNavigation() as NavigationRequest
   // handles it.
   ForEachFrameTree(base::BindRepeating([](FrameTree* frame_tree) {
-    if (!frame_tree->IsLoading())
+    // For prerendering, we don't want to activate a prerendered page loaded
+    // with a stale UA and will handle it even if it finishes loading.
+    if (!frame_tree->IsLoading() && !frame_tree->is_prerendering())
       return;
+
     NavigationEntry* entry = frame_tree->controller().GetVisibleEntry();
     if (!entry || !entry->GetIsOverridingUserAgent())
       return;
