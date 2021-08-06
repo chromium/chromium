@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cbor/values.h"
 
 namespace device {
@@ -217,10 +217,9 @@ constexpr StepOrByte<S> Element(const Is required,
 }
 
 template <typename S>
-constexpr StepOrByte<S> Element(
-    const Is required,
-    CheckedPtr<const std::vector<uint8_t>> S::*member,
-    uintptr_t offset) {
+constexpr StepOrByte<S> Element(const Is required,
+                                raw_ptr<const std::vector<uint8_t>> S::*member,
+                                uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kBytestring);
 }
 
@@ -233,7 +232,7 @@ constexpr StepOrByte<S> Element(const Is required,
 
 template <typename S>
 constexpr StepOrByte<S> Element(const Is required,
-                                CheckedPtr<const std::string> S::*member,
+                                raw_ptr<const std::string> S::*member,
                                 uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kString);
 }
@@ -247,7 +246,7 @@ constexpr StepOrByte<S> Element(const Is required,
 
 template <typename S>
 constexpr StepOrByte<S> Element(const Is required,
-                                CheckedPtr<const int64_t> S::*member,
+                                raw_ptr<const int64_t> S::*member,
                                 uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kInt);
 }
@@ -262,7 +261,7 @@ constexpr StepOrByte<S> Element(const Is required,
 template <typename S>
 constexpr StepOrByte<S> Element(
     const Is required,
-    CheckedPtr<const std::vector<cbor::Value>> S::*member,
+    raw_ptr<const std::vector<cbor::Value>> S::*member,
     uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kArray);
 }
@@ -276,7 +275,7 @@ constexpr StepOrByte<S> Element(const Is required,
 
 template <typename S>
 constexpr StepOrByte<S> Element(const Is required,
-                                CheckedPtr<const cbor::Value> S::*member,
+                                raw_ptr<const cbor::Value> S::*member,
                                 uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kValue);
 }
@@ -290,7 +289,7 @@ constexpr StepOrByte<S> Element(const Is required,
 
 template <typename S>
 constexpr StepOrByte<S> Element(const Is required,
-                                CheckedPtr<const bool> S::*member,
+                                raw_ptr<const bool> S::*member,
                                 uintptr_t offset) {
   return ElementImpl<S>(required, offset, internal::Type::kBoolean);
 }

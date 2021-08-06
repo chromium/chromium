@@ -18,7 +18,7 @@ config("find_bad_constructs") {
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
-      "checked-ptr-as-trivial-member",
+      "raw-ptr-template-as-trivial-member",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {

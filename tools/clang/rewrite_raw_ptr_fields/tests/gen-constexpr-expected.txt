@@ -1,14 +1,14 @@
 ==== BEGIN EDITS ====
-include-user-header:::gen-constexpr-actual.cc:::-1:::-1:::base/memory/checked_ptr.h
-r:::gen-constexpr-actual.cc:::1094:::5:::CheckedPtr<int> 
-r:::gen-constexpr-actual.cc:::1202:::5:::CheckedPtr<int> 
-r:::gen-constexpr-actual.cc:::1320:::5:::CheckedPtr<int> 
-r:::gen-constexpr-actual.cc:::2030:::16:::CheckedPtr<const char16_t> 
-r:::gen-constexpr-actual.cc:::2439:::16:::CheckedPtr<const char16_t> 
-r:::gen-constexpr-actual.cc:::2862:::12:::CheckedPtr<const char> 
-r:::gen-constexpr-actual.cc:::2893:::12:::CheckedPtr<const char> 
-r:::gen-constexpr-actual.cc:::2922:::12:::CheckedPtr<const char> 
-r:::gen-constexpr-actual.cc:::2944:::12:::CheckedPtr<const char> 
+include-user-header:::gen-constexpr-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-constexpr-actual.cc:::1094:::5:::raw_ptr<int>
+r:::gen-constexpr-actual.cc:::1202:::5:::raw_ptr<int>
+r:::gen-constexpr-actual.cc:::1320:::5:::raw_ptr<int>
+r:::gen-constexpr-actual.cc:::2030:::16:::raw_ptr<const char16_t>
+r:::gen-constexpr-actual.cc:::2439:::16:::raw_ptr<const char16_t>
+r:::gen-constexpr-actual.cc:::2862:::12:::raw_ptr<const char>
+r:::gen-constexpr-actual.cc:::2893:::12:::raw_ptr<const char>
+r:::gen-constexpr-actual.cc:::2922:::12:::raw_ptr<const char>
+r:::gen-constexpr-actual.cc:::2944:::12:::raw_ptr<const char>
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
 constexpr_variable_designated_initializers::foo()::(anonymous struct)::str2  # const-char, constexpr-var-initializer

@@ -8,17 +8,17 @@
 #include <tuple>    // for std::tie
 #include <utility>  // for std::swap
 
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 class SomeClass {};
 class DerivedClass : public SomeClass {};
 
 struct MyStruct {
-  CheckedPtr<SomeClass> ptr;
-  CheckedPtr<SomeClass> ptr2;
-  CheckedPtr<const SomeClass> const_ptr;
+  raw_ptr<SomeClass> ptr;
+  raw_ptr<SomeClass> ptr2;
+  raw_ptr<const SomeClass> const_ptr;
   int (*func_ptr_field)();
-  CheckedPtr<const char> const_char_ptr;
+  raw_ptr<const char> const_char_ptr;
 };
 
 namespace auto_tests {
@@ -76,11 +76,11 @@ void foo() {
   // No rewrite expected.
   auto* not_affected_field_var = ConvertSomeClassToSomeClass(my_struct.ptr);
 
-  // Test for pointer |auto| assigned from non-CheckedPtr-elligible field.
+  // Test for pointer |auto| assigned from non-raw_ptr-elligible field.
   // No rewrite expected.
   auto* func_ptr_var = my_struct.func_ptr_field;
 
-  // Test for non-pointer |auto| assigned from CheckedPtr-elligible field.
+  // Test for non-pointer |auto| assigned from raw_ptr-elligible field.
   // No rewrite expected.
   auto non_pointer_auto_var = my_struct.ptr;
 
@@ -153,7 +153,7 @@ void foo(int x) {
   SomeClass* other_ptr = nullptr;
 
   // To avoid the following error type:
-  //     conditional expression is ambiguous; 'const CheckedPtr<SomeClass>'
+  //     conditional expression is ambiguous; 'const raw_ptr<SomeClass>'
   //     can be converted to 'SomeClass *' and vice versa
   // we need to append |.get()| to |my_struct.ptr| below.
   //
@@ -182,7 +182,7 @@ void foo(int x) {
 
   // To avoid the following error type:
   //   error: invalid operands to binary expression ... basic_string ... and ...
-  //   CheckedPtr ...
+  //   raw_ptr ...
   // we need to append |.get()| to |my_struct.const_char_ptr| below.
   //
   // Expected rewrite: ... my_struct.const_char_ptr.get() ...
@@ -240,11 +240,11 @@ void AffectedFunctionWithDeepT(MyTemplate<T>* blah) {}
 
 // StructWithPointerToTemplate is used to test AffectedFunctionWithDeepT.
 // StructWithPointerToTemplate mimics ResourceArrayOutputAdapter<T>
-// (and its |output_| field that will be converted to a CheckedPtr)
+// (and its |output_| field that will be converted to a raw_ptr)
 // from //ppapi/cpp/array_output.h
 template <typename T>
 struct StructWithPointerToTemplate {
-  CheckedPtr<MyTemplate<T>> ptr_to_template;
+  raw_ptr<MyTemplate<T>> ptr_to_template;
 };
 
 void foo() {
@@ -304,7 +304,7 @@ void foo() {
   // Expected rewrite - appending: .get().  This avoids the following error:
   // error: no matching function for call to 'FunctionTakingBasicStringPiece'
   // note: candidate function not viable: no known conversion from
-  // 'base::CheckedPtr<const char>' to 'templated_functions::StringPiece' (aka
+  // 'base::raw_ptr<const char>' to 'templated_functions::StringPiece' (aka
   // 'BasicStringPiece<char>') for 1st argument
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr.get());
   FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr.get());
@@ -324,20 +324,20 @@ namespace affected_implicit_template_specialization {
 
 template <typename T, typename T2>
 struct MyTemplate {
-  CheckedPtr<T> t_ptr;
-  CheckedPtr<T2> t2_ptr;
+  raw_ptr<T> t_ptr;
+  raw_ptr<T2> t2_ptr;
 
   struct NestedStruct {
-    CheckedPtr<SomeClass> nested_ptr_field;
-    CheckedPtr<T> nested_t_ptr_field;
+    raw_ptr<SomeClass> nested_ptr_field;
+    raw_ptr<T> nested_t_ptr_field;
   };
   NestedStruct nested_struct_field;
 };
 
 template <typename T3>
 struct MyTemplate<SomeClass, T3> {
-  CheckedPtr<SomeClass> some_ptr;
-  CheckedPtr<T3> t3_ptr;
+  raw_ptr<SomeClass> some_ptr;
+  raw_ptr<T3> t3_ptr;
 };
 
 // The example that forces explicit |isAnonymousStructOrUnion| checks in
@@ -349,15 +349,15 @@ struct MyStringTemplate {
     union {
       long l;
       short s;
-      CheckedPtr<T> t_ptr;
-      CheckedPtr<int> i_ptr;
+      raw_ptr<T> t_ptr;
+      raw_ptr<int> i_ptr;
     };  // Unnamed / anonymous union *field*.
 
     struct {
       long l2;
       short s2;
-      CheckedPtr<T> t_ptr2;
-      CheckedPtr<int> i_ptr2;
+      raw_ptr<T> t_ptr2;
+      raw_ptr<int> i_ptr2;
     };  // Unnamed / anonymous struct *field*.
   };
   NestedStruct s;
@@ -423,7 +423,7 @@ struct ListContainer {
 class SharedQuadState;
 
 struct DrawQuad {
-  CheckedPtr<const SharedQuadState> shared_quad_state;
+  raw_ptr<const SharedQuadState> shared_quad_state;
 };
 
 struct RenderPass {

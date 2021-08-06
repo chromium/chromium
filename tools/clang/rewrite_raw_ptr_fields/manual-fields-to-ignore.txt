@@ -27,7 +27,7 @@ WebUITabStripContainerView::tab_counter_
 DownloadItemView::review_button_
 
 # Populated manually to avoid returning a reference to a temporary T* (result of
-# implicitly casting CheckedPtr<T> to T*).  This covers functions that return
+# implicitly casting raw_ptr<T> to T*).  This covers functions that return
 # |SomeClass*&| and local variables with that type.
 AllTabContentsesList::Iterator::cur_
 blink::NormalPage::CompactionContext::current_page_
@@ -86,7 +86,7 @@ blink::PaintController::IdAsHashKey::client
 ui::AXPlatformNodeAuraLinux::atk_object_
 
 # Populated manually - problems related to passing to a templated && parameter,
-# which is later forwarded to something that doesn't vibe with CheckedPtr. The
+# which is later forwarded to something that doesn't vibe with raw_ptr<T>. The
 # rewriter has no visibility into where the parameter is forwarded to.
 ProfileDestroyer::profile_
 (anonymous namespace)::BluetoothLowEnergyApiTest::mock_adapter_
@@ -94,7 +94,7 @@ content::RenderProcessHostImpl::browser_context_
 device::BluetoothDevice::adapter_
 
 # Populated manually - problems related to lambdas with no return type, where
-# the return value is CheckedPtr, but variable/parameter receiving the lambda
+# the return value is raw_ptr<T>, but variable/parameter receiving the lambda
 # expects the raw pointer type.
 vr::LocationBarState::vector_icon
 vr::OmniboxSuggestion::icon
@@ -131,7 +131,7 @@ courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expe
 # as a pointer to PA memory
 sandbox::TargetProcess::base_address_ # https://crbug.com/1173374
 
-# Populated manually - uninitialized memory reinterpret_cast to CheckedPtr
+# Populated manually - uninitialized memory reinterpret_cast to raw_ptr<T>
 # causing AddRef/Deref mismatch.
 sandbox::(anonymous namespace)::_HEAP_32::Heap
 sandbox::(anonymous namespace)::_HEAP_64::Heap
@@ -155,7 +155,7 @@ views::internal::ClassPropertyValueSetter::property_  # passed to templated para
 KeyedServiceBaseFactory::service_name_ # used in decltype
 OutOfMemoryTest::value_ # used to pass non const pointer to pointer
 
-# ELEMENT() treats the CheckedPtr as a void*, and so when a pointer is written
+# ELEMENT() treats the raw_ptr<T> as a void*, and so when a pointer is written
 # AddRef() won't be called, causing AddRef/Deref mismatch.
 device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::alg
 device::AttestedCredentialData::ConsumeFromCtapResponse(base::span<const uint8_t>)::COSEKey::kty

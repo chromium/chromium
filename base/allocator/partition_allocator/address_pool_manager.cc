@@ -356,14 +356,14 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
     // This is required to avoid crash caused by the following code:
     //   {
     //     // Assume this allocation happens outside of PartitionAlloc.
-    //     CheckedPtr<T> ptr = new T[20];
+    //     raw_ptr<T> ptr = new T[20];
     //     for (size_t i = 0; i < 20; i ++) { ptr++; }
     //     // |ptr| may point to an address inside 'B'.
     //   }
     //
     // Suppose that |ptr| points to an address inside B after the loop. If
-    // IsManagedByBRPPoolPool(ptr) were to return true, ~CheckedPtr would crash,
-    // since the memory is not allocated by Partition.
+    // IsManagedByBRPPoolPool(ptr) were to return true, ~raw_ptr<T>() would
+    // crash, since the memory is not allocated by PartitionAlloc.
     SetBitmap(
         AddressPoolManagerBitmap::brp_pool_bits_,
         (ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +

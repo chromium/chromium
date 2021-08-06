@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 class SomeClass;
 
@@ -13,8 +13,8 @@ struct MyStruct {
   SomeClass* my_field;
   SomeClass* my_field2;
 
-  // Non-blocklisted - expected rewrite: CheckedPtr<SomeClass> my_field3;
-  CheckedPtr<SomeClass> my_field3;
+  // Non-blocklisted - expected rewrite: raw_ptr<SomeClass> my_field3;
+  raw_ptr<SomeClass> my_field3;
 };
 
 template <typename T>
@@ -23,8 +23,8 @@ class MyTemplate {
   // Blocklisted - no rewrite expected.
   SomeClass* my_field;
 
-  // Non-blocklisted - expected rewrite: CheckedPtr<SomeClass> my_field2;
-  CheckedPtr<SomeClass> my_field2;
+  // Non-blocklisted - expected rewrite: raw_ptr<SomeClass> my_field2;
+  raw_ptr<SomeClass> my_field2;
 };
 
 }  // namespace my_namespace
@@ -33,8 +33,8 @@ namespace other_namespace {
 
 struct MyStruct {
   // Blocklisted in another namespace, but not here.
-  // Expected rewrite: CheckedPtr<SomeClass> my_field;
-  CheckedPtr<SomeClass> my_field;
+  // Expected rewrite: raw_ptr<SomeClass> my_field;
+  raw_ptr<SomeClass> my_field;
 };
 
 }  // namespace other_namespace
