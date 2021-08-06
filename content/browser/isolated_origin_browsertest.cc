@@ -14,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -37,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -130,6 +130,30 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         false /* does_site_request_dedicated_process_for_coop */,
         false /* is_jit_disabled */));
   }
+
+ protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+ private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 class IsolatedOriginTest : public IsolatedOriginTestBase {
@@ -141,6 +165,7 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
   IsolatedOriginTest& operator=(const IsolatedOriginTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolatedOriginTestBase::SetUpCommandLine(command_line);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
     std::string origin_list =
@@ -150,6 +175,7 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
   }
 
   void SetUpOnMainThread() override {
+    IsolatedOriginTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->StartAcceptingConnections();
   }
@@ -185,7 +211,6 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
     //  --site-per-process isn't the default, such as Android.
     IsolateAllSitesForTesting(command_line);
 
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
 
     // Start the HTTPS server here so derived tests can use it if they override
@@ -3641,8 +3666,6 @@ class DynamicIsolatedOriginTest : public IsolatedOriginTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
-    // This is necessary to use https with arbitrary hostnames.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
 
     if (AreAllSitesIsolatedForTesting()) {
       LOG(WARNING) << "This test should be run without strict site isolation. "
@@ -4935,13 +4958,12 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
   ~COOPIsolationTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolatedOriginTestBase::SetUpCommandLine(command_line);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-
-    // This is necessary to use HTTPS with arbitrary hostnames.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetUpOnMainThread() override {
+    IsolatedOriginTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->StartAcceptingConnections();
 
@@ -4952,6 +4974,7 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
   }
 
   void TearDownOnMainThread() override {
+    IsolatedOriginTestBase::TearDownOnMainThread();
     SetBrowserClientForTesting(original_client_);
   }
 
