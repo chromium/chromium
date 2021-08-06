@@ -124,7 +124,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   AgentGroupSchedulerImpl& GetAgentGroupScheduler() override;
 
   void Unregister(FrameSchedulerImpl*);
-  void OnNavigation();
 
   void OnThrottlingStatusUpdated();
 
@@ -262,8 +261,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void MaybeInitializeBackgroundCPUTimeBudgetPool(
       base::sequence_manager::LazyNow* lazy_now);
 
-  void OnThrottlingReported(base::TimeDelta throttling_duration);
-
   // Depending on page visibility, either turns throttling off, or schedules a
   // call to enable it after a grace period.
   void UpdatePolicyOnVisibilityChange(NotificationPolicy notification_policy);
@@ -322,7 +319,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   base::TimeTicks page_visibility_changed_time_;
   AudioState audio_state_;
   bool is_frozen_;
-  bool reported_background_throttling_since_navigation_;
   bool opted_out_from_aggressive_throttling_;
   bool nested_runloop_;
   bool is_main_frame_local_;

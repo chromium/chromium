@@ -44,11 +44,6 @@ constexpr double kDefaultMaxBackgroundBudgetLevelInSeconds = 3;
 constexpr double kDefaultInitialBackgroundBudgetInSeconds = 1;
 constexpr double kDefaultMaxBackgroundThrottlingDelayInSeconds = 0;
 
-// Given that we already align timers to 1Hz, do not report throttling if
-// it is under 3s.
-constexpr base::TimeDelta kMinimalBackgroundThrottlingDurationToReport =
-    base::TimeDelta::FromSeconds(3);
-
 // Delay for fully throttling the page after backgrounding.
 constexpr base::TimeDelta kThrottlingDelayAfterBackgrounding =
     base::TimeDelta::FromSeconds(10);
@@ -188,7 +183,6 @@ PageSchedulerImpl::PageSchedulerImpl(
           main_thread_scheduler_->GetTickClock()->NowTicks()),
       audio_state_(AudioState::kSilent),
       is_frozen_(false),
-      reported_background_throttling_since_navigation_(false),
       opted_out_from_aggressive_throttling_(false),
       nested_runloop_(false),
       is_main_frame_local_(false),
@@ -447,10 +441,6 @@ void PageSchedulerImpl::Unregister(FrameSchedulerImpl* frame_scheduler) {
   frame_schedulers_.erase(frame_scheduler);
 }
 
-void PageSchedulerImpl::OnNavigation() {
-  reported_background_throttling_since_navigation_ = false;
-}
-
 void PageSchedulerImpl::ReportIntervention(const String& message) {
   delegate_->ReportIntervention(message);
 }
@@ -626,8 +616,6 @@ void PageSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context,
   dict.Add("page_visible", page_visibility_ == PageVisibilityState::kVisible);
   dict.Add("is_audio_playing", IsAudioPlaying());
   dict.Add("is_frozen", is_frozen_);
-  dict.Add("reported_background_throttling_since_navigation",
-           reported_background_throttling_since_navigation_);
   dict.Add("is_page_freezable", IsBackgrounded());
 
   dict.Add("cpu_time_budget_pool", [&](perfetto::TracedValue context) {
@@ -759,26 +747,6 @@ void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
       ->AllowLowerAlignmentIfNoRecentWakeUp(kDefaultThrottledWakeUpInterval);
 
   UpdateWakeUpBudgetPools(lazy_now);
-}
-
-void PageSchedulerImpl::OnThrottlingReported(
-    base::TimeDelta throttling_duration) {
-  if (throttling_duration < kMinimalBackgroundThrottlingDurationToReport)
-    return;
-
-  if (reported_background_throttling_since_navigation_)
-    return;
-  reported_background_throttling_since_navigation_ = true;
-
-  String message = String::Format(
-      "Timer tasks have taken too much time while the page was in the "
-      "background. "
-      "As a result, they have been deferred for %.3f seconds. "
-      "See https://www.chromestatus.com/feature/6172836527865856 "
-      "for more details",
-      throttling_duration.InSecondsF());
-
-  delegate_->ReportIntervention(message);
 }
 
 void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
