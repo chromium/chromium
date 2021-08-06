@@ -5380,12 +5380,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSignInProfileCreationDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kSignInProfileCreation)},
-
-    {"enable-sign-in-profile-creation-enterprise",
-     flag_descriptions::kSignInProfileCreationEnterpriseName,
-     flag_descriptions::kSignInProfileCreationEnterpriseDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kSignInProfileCreationEnterprise)},
 #endif
 
     {"destroy-profile-on-browser-close",

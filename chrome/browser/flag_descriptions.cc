@@ -1670,11 +1670,6 @@ const char kSignInProfileCreationName[] = "Profile creation flow with sign-in";
 const char kSignInProfileCreationDescription[] =
     "Enables a new sign-in flow in profile creation";
 
-const char kSignInProfileCreationEnterpriseName[] =
-    "Profile creation flow support for enterprise sign-in";
-const char kSignInProfileCreationEnterpriseDescription[] =
-    "Enables smoother enterprise experience in signed-in profile creation flow";
-
 const char kSyncingCompromisedCredentialsName[] = "Syncing of Security Issues";
 const char kSyncingCompromisedCredentialsDescription[] =
     "Enables syncing of Security issues which includes compromised and phished "

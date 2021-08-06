@@ -977,9 +977,6 @@ extern const char kNewCanvas2DAPIDescription[];
 extern const char kSignInProfileCreationName[];
 extern const char kSignInProfileCreationDescription[];
 
-extern const char kSignInProfileCreationEnterpriseName[];
-extern const char kSignInProfileCreationEnterpriseDescription[];
-
 extern const char kSyncingCompromisedCredentialsName[];
 extern const char kSyncingCompromisedCredentialsDescription[];
 

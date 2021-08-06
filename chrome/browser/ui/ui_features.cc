@@ -105,11 +105,6 @@ const base::Feature kSyncConfirmationUpdatedText{
 const base::Feature kSignInProfileCreation{"SignInProfileCreation",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Smoother enterprise experience in the sign-in profile creation flow.
-// https://crbug.com/1178494
-const base::Feature kSignInProfileCreationEnterprise{
-    "SignInProfileCreationEnterprise", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703
 const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",

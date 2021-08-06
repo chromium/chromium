@@ -75,8 +75,6 @@ extern const base::Feature kSyncConfirmationUpdatedText;
 
 extern const base::Feature kSignInProfileCreation;
 
-extern const base::Feature kSignInProfileCreationEnterprise;
-
 extern const base::Feature kTabGroupsAutoCreate;
 
 extern const base::Feature kTabGroupsCollapseFreezing;

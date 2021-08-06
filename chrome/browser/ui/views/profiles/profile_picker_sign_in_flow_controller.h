@@ -86,8 +86,7 @@ class ProfilePickerSignInFlowController
   // Finishes the creation flow by marking `profile_being_created_` as fully
   // created, opening a browser window for this profile and calling
   // `callback`.
-  void FinishAndOpenBrowser(BrowserOpenedCallback callback,
-                            bool enterprise_sync_consent_needed);
+  void FinishAndOpenBrowser(BrowserOpenedCallback callback);
 
   // Finishes the sign-in process by moving to the sync confirmation screen.
   void SwitchToSyncConfirmation();

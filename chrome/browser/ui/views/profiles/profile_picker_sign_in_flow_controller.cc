@@ -220,8 +220,7 @@ void ProfilePickerSignInFlowController::Cancel() {
 }
 
 void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
-    BrowserOpenedCallback callback,
-    bool enterprise_sync_consent_needed) {
+    BrowserOpenedCallback callback) {
   DCHECK(IsInitialized());
   // Do nothing if the sign-in flow is aborted or if this has already been
   // called. Note that this can get called first time from a special case
@@ -235,11 +234,12 @@ void ProfilePickerSignInFlowController::FinishAndOpenBrowser(
     on_profile_name_available_ = base::BindOnce(
         &ProfilePickerSignInFlowController::FinishAndOpenBrowserImpl,
         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-        enterprise_sync_consent_needed);
+        /*enterprise_sync_consent_needed=*/false);
     return;
   }
 
-  FinishAndOpenBrowserImpl(std::move(callback), enterprise_sync_consent_needed);
+  FinishAndOpenBrowserImpl(std::move(callback),
+                           /*enterprise_sync_consent_needed=*/false);
 }
 
 void ProfilePickerSignInFlowController::SwitchToSyncConfirmation() {
@@ -338,8 +338,7 @@ void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
   base::OnceClosure sync_consent_completed_closure =
       base::BindOnce(&ProfilePickerSignInFlowController::FinishAndOpenBrowser,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&ShowCustomizationBubble, profile_color_),
-                     /*enterprise_sync_consent_needed=*/false);
+                     base::BindOnce(&ShowCustomizationBubble, profile_color_));
 
   // Stop with the sign-in navigation and show a spinner instead. The spinner
   // will be shown until DiceTurnSyncOnHelper (below) figures out whether it's a

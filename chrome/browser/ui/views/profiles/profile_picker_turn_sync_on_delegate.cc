@@ -17,18 +17,6 @@
 
 namespace {
 
-void MaybeRecordEnterpriseRejectionAndRunCallback(
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback,
-    DiceTurnSyncOnHelper::SigninChoice choice) {
-  if (choice == DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL) {
-    // If the user decides to not link the profile, the flow stops here.
-    ProfileMetrics::LogProfileAddSignInFlowOutcome(
-        ProfileMetrics::ProfileAddSignInFlowOutcome::
-            kEnterpriseSigninOnlyNotLinked);
-  }
-  std::move(callback).Run(choice);
-}
-
 absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
     bool enterprise_account,
     bool sync_disabled,
@@ -62,21 +50,6 @@ void OpenSettingsInBrowser(Browser* browser) {
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 
-void OpenSyncConfirmationDialogInBrowser(Browser* browser) {
-  // This is a very rare corner case (e.g. the user manages to close the only
-  // browser window in a very short span of time between enterprise
-  // confirmation and this callback), not worth handling fully. Instead, the
-  // flow is aborted.
-  if (!browser)
-    return;
-  browser->signin_view_controller()->ShowModalSyncConfirmationDialog();
-}
-
-bool IsEnterpriseFlowEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kSignInProfileCreationEnterprise);
-}
-
 }  // namespace
 
 ProfilePickerTurnSyncOnDelegate::ProfilePickerTurnSyncOnDelegate(
@@ -95,8 +68,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   // the user cannot sign in because the account already used by another
   // profile.
   if (error.type() ==
-          SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile &&
-      IsEnterpriseFlowEnabled()) {
+      SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
     if (controller_) {
       controller_->SwitchToProfileSwitch(error.another_profile_path());
     }
@@ -105,10 +77,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
 
   // Open the browser and when it's done, show the login error.
   if (controller_) {
-    controller_->FinishAndOpenBrowser(
-        base::BindOnce(
-            &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error),
-        /*enterprise_sync_consent_needed=*/false);
+    controller_->FinishAndOpenBrowser(base::BindOnce(
+        &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error));
   }
 }
 
@@ -124,25 +94,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   enterprise_account_ = true;
-  if (!IsEnterpriseFlowEnabled()) {
-    // If the user rejects the confirmation, record the outcome.
-    DiceTurnSyncOnHelper::SigninChoiceCallback wrapped_callback =
-        base::BindOnce(&MaybeRecordEnterpriseRejectionAndRunCallback,
-                       std::move(callback));
-    // Open the browser and when it's done, show the confirmation dialog.
-    // We have a guarantee that the profile is brand new, no need to prompt for
-    // another profile.
-    if (controller_) {
-      controller_->FinishAndOpenBrowser(
-          base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
-                             ShowEnterpriseAccountConfirmationForBrowser,
-                         account_info.email, /*prompt_for_new_profile=*/false,
-                         std::move(wrapped_callback)),
-          /*enterprise_sync_consent_needed=*/true);
-    }
-    return;
-  }
-
   // In this flow, the enterprise confirmation is replaced by an enterprise
   // welcome screen. Knowing if sync is enabled is needed for the screen. Thus,
   // it is delayed until either ShowSyncConfirmation() or
@@ -159,15 +110,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   sync_confirmation_callback_ = std::move(callback);
 
   if (enterprise_account_) {
-    if (!IsEnterpriseFlowEnabled()) {
-      DCHECK(!scoped_login_ui_service_observation_.IsObserving());
-      scoped_login_ui_service_observation_.Observe(
-          LoginUIServiceFactory::GetForProfile(profile_));
-      OpenSyncConfirmationDialogInBrowser(
-          chrome::FindLastActiveWithProfile(profile_));
-      return;
-    }
-
     // First show the enterprise welcome screen and only after that (if the user
     // proceeds with the flow) the sync consent.
     ShowEnterpriseWelcome(
@@ -185,29 +127,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
   sync_disabled_ = true;
-
-  if (!IsEnterpriseFlowEnabled()) {
-    DCHECK(!scoped_login_ui_service_observation_.IsObserving());
-    scoped_login_ui_service_observation_.Observe(
-        LoginUIServiceFactory::GetForProfile(profile_));
-
-    // Enterprise confirmation may or may not be shown before showing the
-    // disabled confirmation (in both cases it is disabled by an enterprise).
-    if (enterprise_account_) {
-      OpenSyncConfirmationDialogInBrowser(
-          chrome::FindLastActiveWithProfile(profile_));
-      return;
-    }
-
-    // Open the browser and when it's done, show the confirmation dialog.
-    if (controller_) {
-      controller_->FinishAndOpenBrowser(
-          base::BindOnce(&OpenSyncConfirmationDialogInBrowser),
-          /*enterprise_sync_consent_needed=*/false);
-    }
-    return;
-  }
-
   ShowEnterpriseWelcome(is_managed_account
                             ? EnterpriseProfileWelcomeUI::ScreenType::
                                   kEntepriseAccountSyncDisabled
@@ -216,18 +135,9 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
-  if (enterprise_account_ && !IsEnterpriseFlowEnabled()) {
-    Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-    if (!browser)
-      return;
-    OpenSettingsInBrowser(browser);
-    return;
-  }
-
   // Open the browser and when it's done, open settings in the browser.
   if (controller_) {
-    controller_->FinishAndOpenBrowser(base::BindOnce(&OpenSettingsInBrowser),
-                                      /*enterprise_sync_consent_needed=*/false);
+    controller_->FinishAndOpenBrowser(base::BindOnce(&OpenSettingsInBrowser));
   }
 }
 

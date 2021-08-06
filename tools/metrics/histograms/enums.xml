@@ -67460,7 +67460,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="An enterprise account is added and syncing"/>
   <int value="4" label="An enterprise account is added without sync"/>
   <int value="5"
-      label="An enterprise account is added with no link data consent"/>
+      label="An enterprise account is added with no link data consent
+             (deprecated)"/>
   <int value="6"
       label="An enterprise account is added with sync manually configured"/>
   <int value="7" label="An enterprise account is added but sync is disabled"/>

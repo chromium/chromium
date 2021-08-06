@@ -61,7 +61,7 @@ class ProfileMetrics {
     kConsumerSyncSettings = 2,
     kEnterpriseSync = 3,
     kEnterpriseSigninOnly = 4,
-    kEnterpriseSigninOnlyNotLinked = 5,
+    // DEPRECATED: kEnterpriseSigninOnlyNotLinked = 5,
     kEnterpriseSyncSettings = 6,
     kEnterpriseSyncDisabled = 7,
     // Includes the case that the account is already syncing in another profile.
