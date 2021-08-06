@@ -33,6 +33,15 @@ suite('InternetDetailPage', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
+    'cros': {
+      'signed': {
+        'data_roaming_enabled': {
+          key: 'data_roaming_enabled',
+          value: true,
+          controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+        },
+      },
+    },
     // Added use_shared_proxies because triggering a change in prefs_ without
     // it will fail a "Pref is missing" assertion in the network-proxy-section
     'settings': {
@@ -594,6 +603,9 @@ suite('InternetDetailPage', function() {
           getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
       cellularNetwork.typeProperties.cellular.iccid = test_iccid;
       cellularNetwork.connectable = false;
+      // Required for allowDataRoamingButton to be rendered.
+      cellularNetwork.typeProperties.cellular.allowRoaming =
+          OncMojo.createManagedBool(false);
       mojoApi_.setManagedPropertiesForTest(cellularNetwork);
 
       // Set SIM as active so that configurable sections are displayed.
@@ -682,6 +694,9 @@ suite('InternetDetailPage', function() {
           const cellularNetwork = getManagedProperties(
               mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
           cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+          // Required for allowDataRoamingButton to be rendered.
+          cellularNetwork.typeProperties.cellular.allowRoaming =
+              OncMojo.createManagedBool(false);
 
           mojoApi_.setManagedPropertiesForTest(cellularNetwork);
           internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
@@ -862,6 +877,9 @@ suite('InternetDetailPage', function() {
           mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
       // Required for connectDisconnectButton to be rendered.
       cellularNetwork.connectionState = mojom.ConnectionStateType.kConnected;
+      // Required for allowDataRoamingButton to be rendered.
+      cellularNetwork.typeProperties.cellular.allowRoaming =
+          OncMojo.createManagedBool(false);
       // Required for advancedFields to be rendered.
       cellularNetwork.typeProperties.cellular.networkTechnology = 'LTE';
       // Required for infoFields to be rendered.
