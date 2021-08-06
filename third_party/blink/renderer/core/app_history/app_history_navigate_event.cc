@@ -26,7 +26,7 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
       can_respond_(init->canRespond()),
       user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
-      signal_(MakeGarbageCollected<AbortSignal>(context)),
+      signal_(init->signal()),
       form_data_(init->formData()),
       info_(init->hasInfo()
                 ? init->info()

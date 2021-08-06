@@ -16,7 +16,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
-  // AbortSignal signal;
+  required AbortSignal signal;
   FormData? formData = null;
   any info;
 };

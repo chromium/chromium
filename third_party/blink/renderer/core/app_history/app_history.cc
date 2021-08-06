@@ -552,6 +552,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
                          : nullptr);
   if (navigation)
     init->setInfo(navigation->info);
+  init->setSignal(MakeGarbageCollected<AbortSignal>(GetSupplementable()));
   auto* navigate_event = AppHistoryNavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);
