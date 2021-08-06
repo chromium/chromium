@@ -9,12 +9,15 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
-constexpr char kUmaNamePossibleWakeupTrigger[] =
-    "Network.Radio.PossibleWakeupTrigger";
+constexpr char kUmaNamePossibleWakeupTriggerURLLoader[] =
+    "Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId";
+constexpr char kUmaNamePossibleWakeupTriggerResolveHost[] =
+    "Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose";
 
 // Checks radio states and records histograms when network activities may
 // trigger power-consuming radio state changes like wake-ups.
@@ -29,8 +32,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
 
   // Records a traffic annotation hash ID when a network request annotated with
   // `traffic_annotation` likely wake-ups radio.
-  void MaybeRecordRadioWakeupTrigger(
+  void MaybeRecordURLLoaderAnnotationId(
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  // Records a host resolve request when the request likely wake-ups radio.
+  void MaybeRecordResolveHost(
+      const mojom::ResolveHostParametersPtr& parameters);
 
   // These override radio states for testing.
   void OverrideRadioActivityForTesting(

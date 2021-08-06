@@ -640,7 +640,7 @@ URLLoader::URLLoader(
 
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger)) {
-    RadioMonitorAndroid::GetInstance().MaybeRecordRadioWakeupTrigger(
+    RadioMonitorAndroid::GetInstance().MaybeRecordURLLoaderAnnotationId(
         traffic_annotation);
   }
 #endif

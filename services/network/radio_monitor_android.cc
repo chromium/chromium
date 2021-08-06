@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 
 namespace network {
 
@@ -17,13 +18,27 @@ RadioMonitorAndroid& RadioMonitorAndroid::GetInstance() {
 
 RadioMonitorAndroid::RadioMonitorAndroid() = default;
 
-void RadioMonitorAndroid::MaybeRecordRadioWakeupTrigger(
+void RadioMonitorAndroid::MaybeRecordURLLoaderAnnotationId(
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
-  if (ShouldRecordRadioWakeupTrigger()) {
-    base::UmaHistogramSparse(kUmaNamePossibleWakeupTrigger,
-                             traffic_annotation.unique_id_hash_code);
-  }
+  if (!ShouldRecordRadioWakeupTrigger())
+    return;
+
+  base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoader,
+                           traffic_annotation.unique_id_hash_code);
+}
+
+void RadioMonitorAndroid::MaybeRecordResolveHost(
+    const mojom::ResolveHostParametersPtr& parameters) {
+  DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
+  if (!ShouldRecordRadioWakeupTrigger())
+    return;
+
+  mojom::ResolveHostParameters::Purpose purpose =
+      parameters ? parameters->purpose
+                 : mojom::ResolveHostParameters::Purpose::kUnspecified;
+  base::UmaHistogramEnumeration(kUmaNamePossibleWakeupTriggerResolveHost,
+                                purpose);
 }
 
 bool RadioMonitorAndroid::IsRadioUtilsSupported() {

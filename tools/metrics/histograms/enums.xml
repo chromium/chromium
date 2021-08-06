@@ -71284,6 +71284,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="ResolveHostPurpose">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="Preconnect"/>
+</enum>
+
 <enum name="ResourceHasClient">
   <int value="0" label="No client"/>
   <int value="1" label="Has client"/>

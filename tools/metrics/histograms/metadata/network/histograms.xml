@@ -791,7 +791,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Network.Radio.PossibleWakeupTrigger"
+<histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose"
+    units="ResolveHostPurpose" expires_after="2022-02-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records the purpose of a host resolve request. Recorded when
+    NetworkContext::ResolveHost() is called while the radio state is dormant.
+    Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId"
     units="TrafficAnnotationUniqueIdHash" expires_after="2022-02-01">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>

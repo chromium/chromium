@@ -6931,7 +6931,7 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_Record) {
 
   LoadAndCompareFile("simple_page.html");
 
-  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTrigger, 1);
+  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTriggerURLLoader, 1);
 }
 
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
@@ -6944,7 +6944,7 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
 
   LoadAndCompareFile("simple_page.html");
 
-  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTrigger, 0);
+  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTriggerURLLoader, 0);
 }
 
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
@@ -6957,7 +6957,7 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
 
   LoadAndCompareFile("simple_page.html");
 
-  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTrigger, 0);
+  histograms.ExpectTotalCount(kUmaNamePossibleWakeupTriggerURLLoader, 0);
 }
 
 #endif  // defined(OS_ANDROID)
