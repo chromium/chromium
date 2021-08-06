@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 
 namespace viz {
 
@@ -137,7 +138,8 @@ void ImageContextImpl::BeginAccessIfNecessary(
   GrBackendTexture backend_texture;
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
-      texture_base->service_id(), resource_format(), &backend_texture);
+      texture_base->service_id(), resource_format(),
+      context_state->gr_context()->threadSafeProxy(), &backend_texture);
   if (!backend_texture.isValid()) {
     DLOG(ERROR) << "Failed to fulfill the promise texture.";
     CreateFallbackImage(context_state);

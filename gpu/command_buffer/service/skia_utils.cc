@@ -7,12 +7,14 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/skia_limits.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
@@ -97,8 +99,10 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
   return options;
 }
 
-GLuint GetGrGLBackendTextureFormat(const gles2::FeatureInfo* feature_info,
-                                   viz::ResourceFormat resource_format) {
+GLuint GetGrGLBackendTextureFormat(
+    const gles2::FeatureInfo* feature_info,
+    viz::ResourceFormat resource_format,
+    sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
   const gl::GLVersionInfo* version_info = &feature_info->gl_version_info();
   GLuint internal_format = gl::GetInternalFormat(
       version_info, viz::TextureStorageFormat(resource_format));
@@ -123,6 +127,19 @@ GLuint GetGrGLBackendTextureFormat(const gles2::FeatureInfo* feature_info,
     }
   }
 
+  // Map ETC1 to ETC2 type depending on conversion by skia
+  if (resource_format == viz::ResourceFormat::ETC1) {
+    GrGLFormat gr_gl_format =
+        gr_context_thread_safe
+            ->compressedBackendFormat(SkImage::kETC1_CompressionType)
+            .asGLFormat();
+    if (gr_gl_format == GrGLFormat::kCOMPRESSED_ETC1_RGB8) {
+      internal_format = GL_ETC1_RGB8_OES;
+    } else if (gr_gl_format == GrGLFormat::kCOMPRESSED_RGB8_ETC2) {
+      internal_format = GL_COMPRESSED_RGB8_ETC2;
+    }
+  }
+
   // We tell Skia to use es2 which does not have GL_R8_EXT
   if (feature_info->gl_version_info().is_es3 && use_version_es2) {
     if (internal_format == GL_R8_EXT)
@@ -137,6 +154,7 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
                          const gfx::Size& size,
                          GLuint service_id,
                          viz::ResourceFormat resource_format,
+                         sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
                          GrBackendTexture* gr_texture) {
   if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_ARB &&
       target != GL_TEXTURE_EXTERNAL_OES) {
@@ -147,8 +165,8 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
   GrGLTextureInfo texture_info;
   texture_info.fID = service_id;
   texture_info.fTarget = target;
-  texture_info.fFormat =
-      GetGrGLBackendTextureFormat(feature_info, resource_format);
+  texture_info.fFormat = GetGrGLBackendTextureFormat(
+      feature_info, resource_format, gr_context_thread_safe);
   *gr_texture = GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo,
                                  texture_info);
   return true;

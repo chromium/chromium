@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -543,7 +544,9 @@ SharedImageBackingGLImage::ProduceSkia(
     } else {
       GrBackendTexture backend_texture;
       GetGrBackendTexture(context_state->feature_info(), GetGLTarget(), size(),
-                          GetGLServiceId(), format(), &backend_texture);
+                          GetGLServiceId(), format(),
+                          context_state->gr_context()->threadSafeProxy(),
+                          &backend_texture);
       cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);
     }
   }

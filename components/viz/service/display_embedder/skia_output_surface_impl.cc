@@ -1137,7 +1137,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     DCHECK(!ycbcr_info);
     // Convert internal format from GLES2 to platform GL.
     unsigned int texture_storage_format = gpu::GetGrGLBackendTextureFormat(
-        impl_on_gpu_->GetFeatureInfo(), resource_format);
+        impl_on_gpu_->GetFeatureInfo(), resource_format,
+        gr_context_thread_safe_);
 
     return GrBackendFormat::MakeGL(texture_storage_format, gl_texture_target);
   }
