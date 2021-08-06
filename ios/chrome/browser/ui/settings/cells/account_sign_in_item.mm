@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"

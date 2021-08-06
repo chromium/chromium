@@ -40,7 +40,7 @@
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
     _browserProviderObserver =
         std::make_unique<ChromeBrowserProviderObserverBridge>(self);
-    _avatarCache = [[ResizedAvatarCache alloc] init];
+    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultLarge];
   }
   return self;
 }

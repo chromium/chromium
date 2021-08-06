@@ -152,7 +152,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
             IdentityManagerFactory::GetForBrowserState(
                 _browser->GetBrowserState()),
             self);
-    _avatarCache = [[ResizedAvatarCache alloc] init];
+    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultTableView];
     _identityServiceObserver.reset(
         new ChromeIdentityServiceObserverBridge(self));
   }

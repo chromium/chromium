@@ -86,7 +86,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       [super initWithLayout:layout style:CollectionViewControllerStyleDefault];
   if (self) {
     _browserState = browserState;
-    _avatarCache = [[ResizedAvatarCache alloc] init];
+    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultLarge];
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
     _accountManagerServiceObserver.reset(

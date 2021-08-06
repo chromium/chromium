@@ -156,7 +156,8 @@ const CGFloat KErrorIconImageSize = 18;
     [_detailTextLabel.leadingAnchor
         constraintEqualToAnchor:_textLabel.leadingAnchor],
 
-    // Fix image widths.
+    // Fix image widths. The account images have been resized to fit this size.
+    // Update the resize if this changes.
     [_imageView.widthAnchor constraintEqualToConstant:kTableViewIconImageSize],
     [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
     _errorIconWidthConstraint,

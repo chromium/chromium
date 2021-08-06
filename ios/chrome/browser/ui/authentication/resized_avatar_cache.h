@@ -16,8 +16,15 @@
 // Initializes a new object with width and height of resized avatar.
 - (instancetype)initWithSize:(CGSize)size NS_DESIGNATED_INITIALIZER;
 
-// Initializes a new object with default size.
-- (instancetype)init;
+// Initializes a new object with the default-large size. This is used on the
+// identity chooser for example.
+- (instancetype)initWithDefaultLarge;
+
+// Initializes a new object with the default size for table views. This is used
+// on the cells in Settings for example.
+- (instancetype)initWithDefaultTableView;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Returns cached resized image, if it exists. If the identity avatar has not
 // yet been fetched, this method triggers a fetch and returns the default

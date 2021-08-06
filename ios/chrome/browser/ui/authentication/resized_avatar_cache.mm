@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
 
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -13,10 +15,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-const CGFloat kAccountProfilePhotoDimension = 40.0f;
-}  // namespace
 
 @interface ResizedAvatarCache ()
 // Size of resized avatar.
@@ -32,11 +30,6 @@ const CGFloat kAccountProfilePhotoDimension = 40.0f;
   NSMapTable<ChromeIdentity*, UIImage*>* _originalImages;
 }
 
-- (instancetype)init {
-  return [self initWithSize:CGSizeMake(kAccountProfilePhotoDimension,
-                                       kAccountProfilePhotoDimension)];
-}
-
 - (instancetype)initWithSize:(CGSize)size {
   self = [super init];
   if (self) {
@@ -45,6 +38,16 @@ const CGFloat kAccountProfilePhotoDimension = 40.0f;
     _originalImages = [NSMapTable strongToWeakObjectsMapTable];
   }
   return self;
+}
+
+- (instancetype)initWithDefaultLarge {
+  return [self initWithSize:CGSizeMake(kAccountProfilePhotoDimension,
+                                       kAccountProfilePhotoDimension)];
+}
+
+- (instancetype)initWithDefaultTableView {
+  return [self initWithSize:CGSizeMake(kTableViewIconImageSize,
+                                       kTableViewIconImageSize)];
 }
 
 - (UIImage*)resizedAvatarForIdentity:(ChromeIdentity*)identity {

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -243,7 +244,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
                    prefName:unified_consent::prefs::
                                 kUrlKeyedAnonymizedDataCollectionEnabled];
     _anonymizedDataCollectionPreference.observer = self;
-    _resizedAvatarCache = [[ResizedAvatarCache alloc] init];
+    _resizedAvatarCache = [[ResizedAvatarCache alloc] initWithDefaultTableView];
     _accountManagerService = accountManagerService;
   }
   return self;

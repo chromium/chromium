@@ -136,7 +136,7 @@ UIImage* ResizeImage(UIImage* image,
   // Resize photo. Use UIImage drawing methods because they respect
   // UIImageOrientation as opposed to CGContextDrawImage().
   UIGraphicsBeginImageContextWithOptions(revisedTargetSize, opaque,
-                                         image.scale);
+                                         /* scale = */ 0);
   [image drawInRect:projectTo];
   UIImage* resizedPhoto = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

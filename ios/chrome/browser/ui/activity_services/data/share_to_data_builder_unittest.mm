@@ -30,7 +30,7 @@
 #endif
 
 using ui::test::uiimage_utils::UIImagesAreEqual;
-using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
+using ui::test::uiimage_utils::UIImageWithSizeAndSolidColorAndScale;
 
 namespace {
 const char kExpectedUrl[] = "http://www.testurl.net/";
@@ -96,9 +96,10 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNpShareUrl) {
   EXPECT_FALSE(actual_data.isPagePrintable);
 
   const CGSize size = CGSizeMake(40, 40);
-  EXPECT_TRUE(UIImagesAreEqual(
-      [actual_data.thumbnailGenerator thumbnailWithSize:size],
-      UIImageWithSizeAndSolidColor(size, [UIColor blueColor])));
+  EXPECT_TRUE(
+      UIImagesAreEqual([actual_data.thumbnailGenerator thumbnailWithSize:size],
+                       UIImageWithSizeAndSolidColorAndScale(
+                           size, [UIColor blueColor], /* scale=*/0)));
 }
 
 // Verifies that ShareToData is constructed properly for a given Tab when the
@@ -115,9 +116,10 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
   EXPECT_FALSE(actual_data.isPagePrintable);
 
   const CGSize size = CGSizeMake(40, 40);
-  EXPECT_TRUE(UIImagesAreEqual(
-      [actual_data.thumbnailGenerator thumbnailWithSize:size],
-      UIImageWithSizeAndSolidColor(size, [UIColor blueColor])));
+  EXPECT_TRUE(
+      UIImagesAreEqual([actual_data.thumbnailGenerator thumbnailWithSize:size],
+                       UIImageWithSizeAndSolidColorAndScale(
+                           size, [UIColor blueColor], /* scale=*/0)));
 }
 
 // Verifies that |ShareToDataForWebState()| returns nil if the WebState passed

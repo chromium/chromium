@@ -50,9 +50,6 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeSigninDisabled,
 };
 
-// The radius of the profile photo in the sign-in cell.
-extern const CGFloat kAccountProfilePhotoDimension;
-
 // The accessibility identifier of the settings TableView.
 extern NSString* const kSettingsTableViewId;
 

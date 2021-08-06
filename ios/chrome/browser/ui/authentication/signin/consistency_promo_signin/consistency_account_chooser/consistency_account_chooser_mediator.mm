@@ -41,7 +41,7 @@
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
-    _avatarCache = [[ResizedAvatarCache alloc] init];
+    _avatarCache = [[ResizedAvatarCache alloc] initWithDefaultLarge];
     _selectedIdentity = selectedIdentity;
     [self loadIdentityItemConfigurators];
   }
