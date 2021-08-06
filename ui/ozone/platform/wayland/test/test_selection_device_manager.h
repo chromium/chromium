@@ -7,10 +7,18 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
+#include "base/callback_forward.h"
+#include "base/files/scoped_file.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/public/platform_clipboard.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace wl {
 
@@ -93,7 +101,9 @@ class TestSelectionOffer : public ServerObject {
 class TestSelectionSource : public ServerObject {
  public:
   struct Delegate {
-    virtual void HandleOffer(const std::string& mime_type) = 0;
+    virtual void SendSend(const std::string& mime_type,
+                          base::ScopedFD write_fd) = 0;
+    virtual void SendCancelled() = 0;
     virtual void OnDestroying() = 0;
 
    protected:
@@ -103,6 +113,13 @@ class TestSelectionSource : public ServerObject {
   TestSelectionSource(wl_resource* resource, Delegate* delegate);
   ~TestSelectionSource() override;
 
+  using ReadDataCallback = base::OnceCallback<void(std::vector<uint8_t>&&)>;
+  void ReadData(const std::string& mime_type, ReadDataCallback callback);
+
+  void OnCancelled();
+
+  const std::vector<std::string>& mime_types() const { return mime_types_; }
+
   // Protocol object requests:
   static void Offer(struct wl_client* client,
                     struct wl_resource* resource,
@@ -110,6 +127,9 @@ class TestSelectionSource : public ServerObject {
 
  private:
   Delegate* const delegate_;
+
+  std::vector<std::string> mime_types_;
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 class TestSelectionDevice : public ServerObject {

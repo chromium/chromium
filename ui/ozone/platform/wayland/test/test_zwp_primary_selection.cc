@@ -48,7 +48,12 @@ struct ZwpPrimarySelectionDevice : public TestSelectionDevice::Delegate {
 };
 
 struct ZwpPrimarySelectionSource : public TestSelectionSource::Delegate {
-  void HandleOffer(const std::string& mime_type) override { NOTIMPLEMENTED(); }
+  void SendSend(const std::string& mime_type,
+                base::ScopedFD write_fd) override {
+    NOTIMPLEMENTED();
+  }
+
+  void SendCancelled() override { NOTIMPLEMENTED(); }
 
   void OnDestroying() override { NOTIMPLEMENTED(); }
 };
