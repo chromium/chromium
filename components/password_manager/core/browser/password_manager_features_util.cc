@@ -244,8 +244,7 @@ bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
 
   // Show the opt-in if the user is eligible, but not yet opted in.
   return IsUserEligibleForAccountStorage(sync_service) &&
-         !IsOptedInForAccountStorage(pref_service, sync_service) &&
-         !sync_service->IsSyncFeatureEnabled();
+         !IsOptedInForAccountStorage(pref_service, sync_service);
 }
 
 void OptInToAccountStorage(PrefService* pref_service,
