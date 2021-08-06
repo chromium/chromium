@@ -213,6 +213,10 @@ reference other composition or matrix test suites. Configurations defined for
 a basic test suite in a matrix test suite are applied to each tests for the
 referenced basic test suite. "variants" is the only supported key via matrix
 compound suites at this time.
+Matrix compound test suites also supports no "variants". So if you want a
+compound test suites, which some of basic test suites have "variants", and
+other basic test suites don't have "variants", you will define a matrix compound
+test suites.
 
 ##### Variants
 

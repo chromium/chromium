@@ -3307,7 +3307,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'linux-lacros-version-skew-tests',
+          'gtest_tests': 'linux_lacros_version_skew_tests',
         },
       },
       'linux-perfetto-rel': {

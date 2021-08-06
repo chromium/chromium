@@ -1212,6 +1212,9 @@ class BBJSONGenerator(object):
                                          mtx_test_suite_config['variants'],
                                          mixins)
           full_suite.update(result)
+        else:
+          suite = basic_suites[test_suite]
+          full_suite.update(suite)
       matrix_compound_suites[test_name] = full_suite
 
   def link_waterfalls_to_test_suites(self):
