@@ -270,7 +270,7 @@ TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_ReportSingleChunk) {
                                       19, 1);
 }
 
-TEST_F(HTMLForceSynchronousParserMetricsTest, HistogramReportsTwoChunks) {
+TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
