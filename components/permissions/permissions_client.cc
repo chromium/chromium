@@ -109,6 +109,11 @@ absl::optional<GURL> PermissionsClient::OverrideCanonicalOrigin(
   return absl::nullopt;
 }
 
+bool PermissionsClient::DoOriginsMatchNewTabPage(const GURL& requesting_origin,
+                                                 const GURL& embedding_origin) {
+  return false;
+}
+
 #if defined(OS_ANDROID)
 bool PermissionsClient::IsPermissionControlledByDse(
     content::BrowserContext* browser_context,

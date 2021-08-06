@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -466,5 +467,62 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
   TestNotifications(opener_contents, popup_rfh);
   TestGeolocation(opener_contents, popup_rfh);
   TestCamera(opener_contents, popup_rfh);
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
+                       PermissionRequestOnNtpUseDseOrigin) {
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+          browser(), GURL(chrome::kChromeUINewTabURL), 1);
+
+  ASSERT_TRUE(main_rfh);
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+            embedder_contents->GetLastCommittedURL().GetOrigin());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
+            main_rfh->GetLastCommittedOrigin().GetURL());
+
+  constexpr char kCheckMic[] = R"((async () => {
+         const PermissionStatus =
+            await navigator.permissions.query({name: 'microphone'});
+         return PermissionStatus.state === 'granted';
+    })();)";
+
+  constexpr char kRequestMic[] = R"(
+    var constraints = { audio: true };
+    navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+        domAutomationController.send('granted');
+    })
+    .catch(function(err) {
+        domAutomationController.send('denied');
+    });
+    )";
+
+  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMic,
+                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
+                   .value.GetBool());
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(embedder_contents);
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_EQ("granted",
+            content::EvalJs(main_rfh, kRequestMic,
+                            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY, 1)
+                .ExtractString());
+
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckMic,
+                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
+                  .value.GetBool());
 }
 }  // anonymous namespace

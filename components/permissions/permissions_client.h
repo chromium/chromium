@@ -175,6 +175,11 @@ class PermissionsClient {
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
+  // Checks if `requesting_origin` and `embedding_origin` are the new tab page
+  // origins.
+  virtual bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
+                                        const GURL& embedding_origin);
+
 #if defined(OS_ANDROID)
   // Returns whether the permission is controlled by the default search
   // engine (DSE). For example, in Chrome, making a search engine default
