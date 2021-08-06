@@ -132,6 +132,7 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -3216,6 +3217,9 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
   std::vector<api::autotest_private::App> installed_apps;
   proxy->AppRegistryCache().ForEachApp([&installed_apps](
                                            const apps::AppUpdate& update) {
+    if (!apps_util::IsInstalled(update.Readiness()))
+      return;
+
     api::autotest_private::App app;
     app.app_id = update.AppId();
     app.name = update.Name();
