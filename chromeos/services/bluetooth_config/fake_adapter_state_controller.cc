@@ -4,6 +4,8 @@
 
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 
+#include "base/run_loop.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -18,6 +20,7 @@ void FakeAdapterStateController::SetSystemState(
 
   system_state_ = system_state;
   NotifyAdapterStateChanged();
+  base::RunLoop().RunUntilIdle();
 }
 
 mojom::BluetoothSystemState FakeAdapterStateController::GetAdapterState()
