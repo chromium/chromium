@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -85,6 +86,8 @@ public final class ShareButtonControllerTest {
     @MediumTest
     public void testShareButtonInToolbarIsDisabledOnStartNTP() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        ChromeTabUtils.waitForTabPageLoaded(
+                mActivityTestRule.getActivity().getActivityTab(), UrlConstants.NTP_URL);
 
         View experimentalButton = mActivityTestRule.getActivity()
                                           .getToolbarManager()
@@ -164,7 +167,10 @@ public final class ShareButtonControllerTest {
             {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void
     testShareButtonDisabledOnDataUrl() {
-        mActivityTestRule.loadUrl("data:,Hello%2C%20World!", /*secondsToWait=*/10);
+        final String dataUrl = "data:,Hello%2C%20World!";
+        mActivityTestRule.loadUrl(dataUrl, /*secondsToWait=*/10);
+        ChromeTabUtils.waitForTabPageLoaded(
+                mActivityTestRule.getActivity().getActivityTab(), dataUrl);
 
         ViewUtils.waitForView(allOf(withId(R.id.optional_toolbar_button),
                 anyOf(not(isDisplayed()), not(withContentDescription(R.string.share)))));
