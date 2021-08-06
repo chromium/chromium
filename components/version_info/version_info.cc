@@ -70,6 +70,8 @@ std::string GetOSType() {
   return "OpenBSD";
 #elif defined(OS_SOLARIS)
   return "Solaris";
+#elif defined(OS_FUCHSIA)
+  return "Fuchsia";
 #else
   return "Unknown";
 #endif
