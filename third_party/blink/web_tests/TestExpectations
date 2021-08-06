@@ -98,16 +98,28 @@ crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-csp.htm
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
 
 # Unknown media state problem (probably due to layout occuring earlier than expected)
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-audio-constructor.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-not-in-document.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source.html [ Failure Pass ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document.html [ Failure ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause-networkState.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-from-document-networkState.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src-not-in-document.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-selection-metadata.html [ Failure Pass ]
+crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
-# These tests fail on the baseline parser, pass on the foreground, but foreground versions cannot be rebaselined due to path length restrictions.
+
 crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Failure ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before.html [ Pass ]
 crbug.com/901056 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Failure Pass ]
-crbug.com/901056 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event.html [ Pass ]
 
 # Flaky - possible filter paint invalidation bug.
 crbug.com/1184773 virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
