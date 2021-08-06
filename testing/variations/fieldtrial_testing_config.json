@@ -7459,6 +7459,24 @@
             ]
         }
     ],
+    "SendTabToSelfV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SendTabToSelfV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceManagerForBackgroundPrefetch": [
         {
             "platforms": [
