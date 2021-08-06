@@ -106,6 +106,12 @@ Polymer({
         this.set('settings.enabled', true);
       }
       this.getViewManager_().switchView(Page.DISCOVERY);
+      // ChromeVox screen reader requires focus on #pageContainer to read
+      // dialog.
+      this.$$('nearby-discovery-page')
+          .$$('nearby-page-template')
+          .$$('#pageContainer')
+          .focus();
     } else {
       this.getViewManager_().switchView(Page.ONBOARDING);
     }

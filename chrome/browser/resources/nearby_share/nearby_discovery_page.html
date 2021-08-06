@@ -149,7 +149,7 @@
           $i18n{nearbyShareDiscoveryPagePlaceholder}
         </div>
         <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
-          <div class="device-list-container">
+          <div class="device-list-container" aria-live="polite">
             <array-selector id="selector" items="{{shareTargets_}}"
                 selected-item="{{selectedShareTarget}}">
             </array-selector>

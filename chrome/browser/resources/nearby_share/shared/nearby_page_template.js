@@ -30,6 +30,7 @@ Polymer({
      * */
     a11yAnnouncedSubTitle: {
       type: String,
+      value: null,
     },
 
     /**
