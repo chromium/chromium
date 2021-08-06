@@ -26,8 +26,6 @@ namespace drive {
 namespace internal {
 namespace {
 
-constexpr char kTrashDirectoryName[] = ".Trash";
-
 class DriveFsFileUtil : public storage::LocalFileUtil {
  public:
   DriveFsFileUtil() = default;
@@ -140,8 +138,8 @@ class CopyOperation {
   DISALLOW_COPY_AND_ASSIGN(CopyOperation);
 };
 
-// Recursively deletes a folder by moving it into the .Trash folder within the
-// DriveFS mount point.
+// Recursively deletes a folder locally. The folder will still be available in
+// Drive cloud Trash.
 class DeleteOperation {
  public:
   DeleteOperation(Profile* profile,
@@ -172,17 +170,13 @@ class DeleteOperation {
       return;
     }
 
-    path_in_trash_ = drive_integration_service->GetMountPointPath()
-                         .Append(kTrashDirectoryName)
-                         .Append(path_.BaseName());
-
     blocking_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&DeleteOperation::MoveToTrash, base::Unretained(this)));
+        base::BindOnce(&DeleteOperation::Delete, base::Unretained(this)));
   }
 
-  void MoveToTrash() {
-    base::File::Error error = base::Move(path_, path_in_trash_)
+  void Delete() {
+    base::File::Error error = base::DeletePathRecursively(path_)
                                   ? base::File::FILE_OK
                                   : base::File::FILE_ERROR_FAILED;
     origin_task_runner_->PostTask(FROM_HERE,

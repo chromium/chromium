@@ -264,12 +264,12 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
                  .AppendRelativePath(path, &drivefs_path) &&
              fuse_fs_root_path.AppendRelativePath(drivefs_mount_point_path,
                                                   &drivefs_mount_name)) {
-    // Allow subdirs of DriveFS (/media/fuse/drivefs-*) except .Trash.
+    // Allow subdirs of DriveFS (/media/fuse/drivefs-*) except .Trash-1000.
     request.set_drivefs_mount_name(drivefs_mount_name.value());
     base::FilePath root("root");
     base::FilePath team_drives("team_drives");
     base::FilePath computers("Computers");
-    base::FilePath trash(".Trash");  // Not to be shared!
+    base::FilePath trash(".Trash-1000");  // Not to be shared!
     if (AppendRelativePath(root, drivefs_path, &relative_path)) {
       // My Drive and subdirs.
       allowed_path = true;
@@ -294,9 +294,10 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
         allowed_path = false;
       }
     } else if (trash == drivefs_path || trash.IsParent(drivefs_path)) {
-      // Note: Do not expose .Trash which would allow linux apps to make
+      // Note: Do not expose .Trash-1000 which would allow linux apps to make
       // permanent deletes from Drive.  This branch is not especially required,
-      // but is included to make it explicit that .Trash should not be shared.
+      // but is included to make it explicit that .Trash-1000 should not be
+      // shared.
       allowed_path = false;
     }
   } else if (AppendRelativePath(android_files, path, &relative_path)) {
