@@ -37,6 +37,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -1269,6 +1270,8 @@ void RenderWidgetHostImpl::FlushForTesting() {
 }
 
 void RenderWidgetHostImpl::SetPageFocus(bool focused) {
+  OPTIONAL_TRACE_EVENT1("content", "RenderWidgetHostImpl::SetPageFocus",
+                        "is_focused", focused);
   is_focused_ = focused;
 
   // Portals should never get page focus.
@@ -1294,13 +1297,14 @@ void RenderWidgetHostImpl::SetPageFocus(bool focused) {
 
   // Also send page-level focus state to other SiteInstances involved in
   // rendering the current FrameTree, if this widget is for a main frame.
-  // TODO(crbug.com/689777): We should be telling the delegate which
+  // TODO(crbug.com/689777): We should be telling `frame_tree_` which
   // RenderWidgetHost was focused (if we send it to the focused one instead
   // of the main frame in order to order it correctly with other input events),
-  // so that the delegate can propagate it to all other WebViews based on
+  // so that `frame_tree_` can propagate it to all other WebViews based on
   // where this RenderWidgetHost lives.
-  if (owner_delegate_ && delegate_)
-    delegate_->ReplicatePageFocus(focused);
+  if (owner_delegate_ && frame_tree_) {
+    frame_tree_->ReplicatePageFocus(focused);
+  }
 }
 
 void RenderWidgetHostImpl::LostCapture() {

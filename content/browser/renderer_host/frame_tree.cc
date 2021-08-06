@@ -574,6 +574,11 @@ bool FrameTree::IsLoading() const {
 }
 
 void FrameTree::ReplicatePageFocus(bool is_focused) {
+  // Focus loss may occur while this FrameTree is being destroyed.  Don't
+  // send the message in this case, as the main frame's RenderFrameHost and
+  // other state has already been cleared.
+  if (is_being_destroyed_)
+    return;
   std::set<SiteInstance*> frame_tree_site_instances =
       CollectSiteInstances(this);
 
