@@ -229,14 +229,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // Quota-managed storage backends should call this method when storage is
   // accessed. Used to maintain LRU ordering.
+  // TODO(crbug.com/1199417): Remove when all usages have updated to use
+  // NotifyBucketAccessed.
   void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                              blink::mojom::StorageType type,
                              base::Time access_time);
 
   // Called by storage backends via proxy.
   //
+  // Quota-managed storage backends should call this method when a bucket is
+  // accessed. Used to maintain LRU ordering.
+  void NotifyBucketAccessed(BucketId bucket_id, base::Time access_time);
+
+  // Called by storage backends via proxy.
+  //
   // Quota-managed storage backends must call this method when they have made
   // any modifications that change the amount of data stored in their storage.
+  // TODO(crbug.com/1199417): Remove when all usages have updated to use
+  // NotifyBucketModified.
   void NotifyStorageModified(QuotaClientType client_id,
                              const blink::StorageKey& storage_key,
                              blink::mojom::StorageType type,
@@ -246,6 +256,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Called by storage backends via proxy.
   //
+  // Quota-managed storage backends must call this method when they have made
+  // any modifications that change the amount of data stored in a bucket.
+  void NotifyBucketModified(QuotaClientType client_id,
+                            BucketId bucket_id,
+                            int64_t delta,
+                            base::Time modification_time,
+                            base::OnceClosure callback);
+
   // Client storage must call this method whenever they run into disk
   // write errors. Used as a hint to determine if the storage partition is out
   // of space, and trigger actions if deemed appropriate.
@@ -600,6 +618,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Keeps track of storage keys that have been accessed during an eviction task
   // so they can be filtered out from eviction.
   std::set<blink::StorageKey> access_notified_storage_keys_;
+  // Buckets that have been notified of access during LRU task to exclude from
+  // eviction.
+  std::set<BucketId> access_notified_buckets_;
 
   std::map<blink::StorageKey, QuotaOverride> devtools_overrides_;
   int next_override_handle_id_ = 0;
@@ -639,9 +660,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       persistent_host_quota_callbacks_;
 
   // Map from storage key to count. This is only for the default bucket.
-  // TODO(crbug.com/1199417): Update to be `buckets_in_use_` when QuotaClient
-  // is migrated to operate on buckets and keep track for all buckets in use,
-  // not just default.
   std::map<blink::StorageKey, int> storage_keys_in_use_;
 
   // Map from bucket id to eviction error count.

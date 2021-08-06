@@ -173,6 +173,20 @@ void QuotaManagerProxy::NotifyStorageAccessed(const StorageKey& storage_key,
     quota_manager_impl_->NotifyStorageAccessed(storage_key, type, access_time);
 }
 
+void QuotaManagerProxy::NotifyBucketAccessed(const BucketId bucket_id,
+                                             base::Time access_time) {
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::NotifyBucketAccessed,
+                                  this, bucket_id, access_time));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+  if (quota_manager_impl_)
+    quota_manager_impl_->NotifyBucketAccessed(bucket_id, access_time);
+}
+
 void QuotaManagerProxy::NotifyStorageModified(
     QuotaClientType client_id,
     const StorageKey& storage_key,
@@ -209,6 +223,44 @@ void QuotaManagerProxy::NotifyStorageModified(
     quota_manager_impl_->NotifyStorageModified(client_id, storage_key, type,
                                                delta, modification_time,
                                                std::move(manager_callback));
+  }
+}
+
+void QuotaManagerProxy::NotifyBucketModified(
+    QuotaClientType client_id,
+    const BucketId bucket_id,
+    int64_t delta,
+    base::Time modification_time,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceClosure callback) {
+  DCHECK(!callback || callback_task_runner);
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&QuotaManagerProxy::NotifyBucketModified, this,
+                       client_id, bucket_id, delta, modification_time,
+                       std::move(callback_task_runner), std::move(callback)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+  if (quota_manager_impl_) {
+    base::OnceClosure manager_callback;
+    if (callback) {
+      manager_callback = base::BindOnce(
+          [](scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+             base::OnceClosure callback) {
+            if (callback_task_runner->RunsTasksInCurrentSequence()) {
+              std::move(callback).Run();
+              return;
+            }
+            callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+          },
+          std::move(callback_task_runner), std::move(callback));
+    }
+    quota_manager_impl_->NotifyBucketModified(client_id, bucket_id, delta,
+                                              modification_time,
+                                              std::move(manager_callback));
   }
 }
 

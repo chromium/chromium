@@ -356,6 +356,10 @@ class QuotaManagerImplTest : public testing::Test {
                                                IncrementMockTime());
   }
 
+  void NotifyBucketAccessed(const BucketId bucket_id) {
+    quota_manager_impl_->NotifyBucketAccessed(bucket_id, IncrementMockTime());
+  }
+
   void DeleteBucketFromDatabase(BucketId bucket_id) {
     quota_manager_impl_->DeleteBucketFromDatabase(bucket_id, false);
   }
@@ -2695,6 +2699,47 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ("http://c.com/",
             eviction_bucket()->storage_key.origin().GetURL().spec());
+}
+
+TEST_F(QuotaManagerImplTest, GetLRUBucket) {
+  StorageKey storage_key_a = ToStorageKey("http://a.com/");
+  StorageKey storage_key_b = ToStorageKey("http://b.com/");
+  StorageKey storage_key_c = ToStorageKey("http://c.com/");
+
+  CreateBucketForTesting(storage_key_a, kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo bucket_a = bucket_.value();
+
+  CreateBucketForTesting(storage_key_b, kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo bucket_b = bucket_.value();
+
+  // Persistent bucket.
+  CreateBucketForTesting(storage_key_c, kDefaultBucketName, kPerm);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo bucket_c = bucket_.value();
+
+  NotifyBucketAccessed(bucket_a.id);
+  NotifyBucketAccessed(bucket_b.id);
+  NotifyBucketAccessed(bucket_c.id);
+
+  GetEvictionBucket(kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(bucket_a, eviction_bucket());
+
+  // Notify that the `bucket_a` is accessed.
+  NotifyBucketAccessed(bucket_a.id);
+  GetEvictionBucket(kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(bucket_b, eviction_bucket());
+
+  // Notify that the `bucket_b` is accessed while GetEvictionBucket is running.
+  GetEvictionBucket(kTemp);
+  NotifyBucketAccessed(bucket_b.id);
+  task_environment_.RunUntilIdle();
+  // Post-filtering must have excluded the returned storage key, so we will
+  // see empty result here.
+  EXPECT_FALSE(eviction_bucket().has_value());
 }
 
 TEST_F(QuotaManagerImplTest, GetLRUBucketWithStorageKeyInUse) {
