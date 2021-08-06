@@ -1619,6 +1619,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDpubRoles) {
   RunAriaTest(FILE_PATH_LITERAL("dpub-roles.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityDpubRolesComputed) {
+  RunAriaTest(FILE_PATH_LITERAL("dpub-roles-computed.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityGraphicsRoles) {
   RunAriaTest(FILE_PATH_LITERAL("graphics-roles.html"));
 }

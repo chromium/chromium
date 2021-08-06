@@ -304,6 +304,7 @@ const RoleEntry kAriaRoles[] = {
     {"doc-afterword", ax::mojom::blink::Role::kDocAfterword},
     {"doc-appendix", ax::mojom::blink::Role::kDocAppendix},
     {"doc-backlink", ax::mojom::blink::Role::kDocBackLink},
+    // Deprecated in DPUB-ARIA 1.1. Use a listitem inside of a doc-bibliography.
     {"doc-biblioentry", ax::mojom::blink::Role::kDocBiblioEntry},
     {"doc-bibliography", ax::mojom::blink::Role::kDocBibliography},
     {"doc-biblioref", ax::mojom::blink::Role::kDocBiblioRef},
@@ -314,6 +315,7 @@ const RoleEntry kAriaRoles[] = {
     {"doc-credit", ax::mojom::blink::Role::kDocCredit},
     {"doc-credits", ax::mojom::blink::Role::kDocCredits},
     {"doc-dedication", ax::mojom::blink::Role::kDocDedication},
+    // Deprecated in DPUB-ARIA 1.1. Use a listitem inside of a doc-endnotes.
     {"doc-endnote", ax::mojom::blink::Role::kDocEndnote},
     {"doc-endnotes", ax::mojom::blink::Role::kDocEndnotes},
     {"doc-epigraph", ax::mojom::blink::Role::kDocEpigraph},
@@ -3673,6 +3675,30 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
   }
 
+  // DPUB ARIA 1.1 deprecated doc-biblioentry and doc-endnote, but it's still
+  // possible to create these internal roles / platform mappings with a listitem
+  // (native or ARIA) inside of a doc-bibliography or doc-endnotes section.
+  if (role == ax::mojom::blink::Role::kListItem ||
+      NativeRoleIgnoringAria() == ax::mojom::blink::Role::kListItem) {
+    AXObject* ancestor = ParentObjectUnignored();
+    if (ancestor && ancestor->RoleValue() == ax::mojom::blink::Role::kList) {
+      // Go up to the root, or next list, checking to see if the list item is
+      // inside an endnote or bibliography section. If it is, remap the role.
+      // The remapping does not occur for list items multiple levels deep.
+      while (true) {
+        ancestor = ancestor->ParentObjectUnignored();
+        if (!ancestor)
+          break;
+        ax::mojom::blink::Role ancestor_role = ancestor->RoleValue();
+        if (ancestor_role == ax::mojom::blink::Role::kList)
+          break;
+        if (ancestor_role == ax::mojom::blink::Role::kDocBibliography)
+          return ax::mojom::blink::Role::kDocBiblioEntry;
+        if (ancestor_role == ax::mojom::blink::Role::kDocEndnotes)
+          return ax::mojom::blink::Role::kDocEndnote;
+      }
+    }
+  }
   return role;
 }
 
