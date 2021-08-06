@@ -139,10 +139,6 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
-#if defined(OS_WIN)
-#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
-#endif
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
@@ -1715,11 +1711,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void BindMediaMetricsProviderReceiver(
       mojo::PendingReceiver<media::mojom::MediaMetricsProvider> receiver);
-
-#if defined(OS_WIN)
-  void BindDCOMPSurfaceRegistry(
-      mojo::PendingReceiver<media::mojom::DCOMPSurfaceRegistry> receiver);
-#endif
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   void BindMediaRemoterFactoryReceiver(

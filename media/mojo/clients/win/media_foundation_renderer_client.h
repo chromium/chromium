@@ -50,8 +50,6 @@ class MediaFoundationRendererClient
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
-      mojo::PendingRemote<mojom::DCOMPSurfaceRegistry>
-          pending_dcomp_surface_registry,
       media::VideoRendererSink* sink);
 
   ~MediaFoundationRendererClient() override;
@@ -98,14 +96,11 @@ class MediaFoundationRendererClient
   void OnVideoFrameCreated(scoped_refptr<media::VideoFrame> video_frame);
   void OnDCOMPTextureInitialized(bool success);
   void OnDCOMPSurfaceHandleCreated(bool success);
-  void OnReceivedRemoteDCOMPSurface(mojo::ScopedHandle surface_handle);
-  void OnDCOMPSurfaceRegisteredInGPUProcess(
-      const base::UnguessableToken& token);
+  void OnReceivedRemoteDCOMPSurface(
+      const absl::optional<base::UnguessableToken>& token);
   void OnCompositionParamsReceived(gfx::Rect output_rect);
 
   void InitializeDCOMPRendering();
-  void RegisterDCOMPSurfaceHandleInGPUProcess(
-      base::win::ScopedHandle surface_handle);
   void OnCdmAttached(bool success);
   void InitializeMojoCdmTelemetryPtrServer();
   void OnCDMTelemetryPtrConnectionError();
@@ -119,13 +114,6 @@ class MediaFoundationRendererClient
 
   std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
 
-  // This class is constructed on the main thread and used exclusively on the
-  // media thread. This member is used to safely pass the PendingRemote from the
-  // main thread to the media thread.
-  mojo::PendingRemote<mojom::DCOMPSurfaceRegistry>
-      pending_dcomp_surface_registry_;
-  mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
-
   RendererClient* client_ = nullptr;
 
   VideoRendererSink* sink_;
@@ -137,7 +125,6 @@ class MediaFoundationRendererClient
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   scoped_refptr<media::VideoFrame> dcomp_frame_;
-  bool dcomp_surface_handle_bound_ = false;
   bool has_video_ = false;
 
   PipelineStatusCallback init_cb_;
@@ -152,8 +139,6 @@ class MediaFoundationRendererClient
   // Used to call methods on the MediaFoundationRenderer in the MF_CMD LPAC
   // Utility process.
   mojo::Remote<RendererExtension> renderer_extension_remote_;
-
-  bool waiting_for_dcomp_surface_handle_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRendererClient> weak_factory_{this};

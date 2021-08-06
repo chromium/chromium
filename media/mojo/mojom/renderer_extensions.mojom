@@ -11,10 +11,9 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Extension of the mojo::RendererClient communication layer for HLS and Android
 // software rendering fallback paths.
-// This allows the Browser side to call
-// back into the Renderer side. Concretely, the MediaPlayerRenderer uses these
-// methods to propagate events it raises to the MediaPlayerRendererClient, which
-// lives in the Renderer process.
+// This allows the Browser side to call back into the Renderer side. Concretely,
+// the MediaPlayerRenderer uses these methods to propagate events it raises to
+// the MediaPlayerRendererClient, which lives in the Renderer process.
 interface MediaPlayerRendererClientExtension {
   // Called when the first time the metadata is updated, and whenever the
   // metadata changes.
@@ -22,7 +21,7 @@ interface MediaPlayerRendererClientExtension {
   OnDurationChange(mojo_base.mojom.TimeDelta duration);
 };
 
-// Extension of the mojo::RendererClient communication layer for HLS and Android
+// Extension of the mojo::Renderer communication layer for HLS and Android
 // software rendering fallback paths.
 // This allows the Renderer side to call into the Browser side.
 // Concretely, the MediaPlayerRendererClient uses these methods to send commands
@@ -49,26 +48,25 @@ interface FlingingRendererClientExtension {
 };
 
 [EnableIf=is_win]
-// Extension of the mojo::RendererClient communication layer for MF-based CDM
+// Extension of the mojo::Renderer communication layer for MediaFoundation-based
 // Renderer.
-// This allows the media::Renderer from Renderer process calling into the
-// MediaFoundationRenderer in the "mf_cdm" sandbox'ed Utility process.
-// Concretely, the MediaFoundationRendererClient uses these methods to send
-// commands to MediaFoundationRenderer, which lives in the mf_cdm LPAC-based
-// Utility process.
+// This allows the MediaFoundationRendererClient in the render process to call
+// into the MediaFoundationRenderer in the MediaFoundationService (utility/LPAC)
+// process.
 // Please refer to media/renderers/win/media_foundation_renderer_extension.h
 // for its C++ interface equivalence.
 interface MediaFoundationRendererExtension {
-  // Enable Direct Composition video rendering.
+  // Enables Direct Composition video rendering.
   [Sync]
   SetDCOMPMode(bool enabled) => (bool succeeded);
 
-  // Get a Direct Composition Surface handle.
-  GetDCOMPSurface() => (handle? dcomp_surface);
+  // Gets the token associated with the Direct Composition surface handle, which
+  // can be retrieved in the GPU process using the token.
+  GetDCOMPSurface() => (mojo_base.mojom.UnguessableToken? token);
 
-  // Notify renderer whether video is enabled.
+  // Notifies whether video is enabled.
   SetVideoStreamEnabled(bool enabled);
 
-  // Notify renderer of output composition parameters
+  // Notifies of output composition parameters.
   SetOutputParams(gfx.mojom.Rect rect);
 };

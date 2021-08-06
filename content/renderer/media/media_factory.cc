@@ -722,15 +722,11 @@ MediaFactory::CreateRendererFactorySelector(
                             render_thread->GetDCOMPTextureFactory(),
                             render_thread->GetMediaThreadTaskRunner());
 
-    auto dcomp_surface_registry_creation_cb = base::BindRepeating(
-        &MediaFactory::CreateDCOMPSurfaceRegistry, base::Unretained(this));
-
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             render_thread->compositor_task_runner(),
             std::move(dcomp_texture_creation_cb),
-            std::move(dcomp_surface_registry_creation_cb),
             CreateMojoRendererFactory()));
   }
 #endif  // defined(OS_WIN)
@@ -916,14 +912,5 @@ MediaFactory::CreateMojoRendererFactory() {
   return std::make_unique<media::MojoRendererFactory>(
       GetMediaInterfaceFactory());
 }
-
-#if defined(OS_WIN)
-mojo::PendingRemote<media::mojom::DCOMPSurfaceRegistry>
-MediaFactory::CreateDCOMPSurfaceRegistry() {
-  mojo::PendingRemote<media::mojom::DCOMPSurfaceRegistry> remote;
-  interface_broker_->GetInterface(remote.InitWithNewPipeAndPassReceiver());
-  return remote;
-}
-#endif
 
 }  // namespace content

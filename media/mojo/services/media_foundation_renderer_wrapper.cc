@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
@@ -99,10 +100,9 @@ void MediaFoundationRendererWrapper::SetDCOMPMode(
 
 void MediaFoundationRendererWrapper::GetDCOMPSurface(
     GetDCOMPSurfaceCallback callback) {
-  get_decomp_surface_cb_ = std::move(callback);
   renderer_->GetDCompSurface(
       base::BindOnce(&MediaFoundationRendererWrapper::OnReceiveDCOMPSurface,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MediaFoundationRendererWrapper::SetVideoStreamEnabled(bool enabled) {
@@ -124,15 +124,33 @@ void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
   renderer_->SetVolume(muted_ ? 0 : volume_);
 }
 
-void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(HANDLE handle) {
-  base::win::ScopedHandle local_surface_handle;
-  local_surface_handle.Set(handle);
-  if (get_decomp_surface_cb_) {
-    mojo::ScopedHandle surface_handle;
-    surface_handle = mojo::WrapPlatformHandle(
-        mojo::PlatformHandle(std::move(local_surface_handle)));
-    std::move(get_decomp_surface_cb_).Run(std::move(surface_handle));
+void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
+    GetDCOMPSurfaceCallback callback,
+    base::win::ScopedHandle handle) {
+  if (!handle.IsValid()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
   }
+
+  if (!dcomp_surface_registry_) {
+    frame_interfaces_->CreateDCOMPSurfaceRegistry(
+        dcomp_surface_registry_.BindNewPipeAndPassReceiver());
+  }
+
+  auto register_cb = base::BindOnce(
+      &MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered,
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
+  dcomp_surface_registry_->RegisterDCOMPSurfaceHandle(
+      mojo::PlatformHandle(std::move(handle)),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(register_cb),
+                                                  absl::nullopt));
+}
+
+void MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered(
+    GetDCOMPSurfaceCallback callback,
+    const absl::optional<base::UnguessableToken>& token) {
+  std::move(callback).Run(token);
 }
 
 }  // namespace media

@@ -11,7 +11,6 @@
 #include "media/base/renderer_factory.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
-#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 
 namespace media {
@@ -22,13 +21,10 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
  public:
   using GetDCOMPTextureWrapperCB =
       base::RepeatingCallback<std::unique_ptr<DCOMPTextureWrapper>()>;
-  using GetDCOMPSurfaceRegistryCB = base::RepeatingCallback<
-      mojo::PendingRemote<mojom::DCOMPSurfaceRegistry>()>;
 
   MediaFoundationRendererClientFactory(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
-      GetDCOMPSurfaceRegistryCB get_dcomp_surface_registry_cb,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
   ~MediaFoundationRendererClientFactory() override;
 
@@ -46,7 +42,6 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   GetDCOMPTextureWrapperCB get_dcomp_texture_cb_;
-  GetDCOMPSurfaceRegistryCB get_dcomp_surface_registry_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
 };
 

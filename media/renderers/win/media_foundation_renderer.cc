@@ -434,7 +434,7 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
     DLOG(ERROR) << "Duplicate surface_handle failed: " << ::GetLastError();
   }
 
-  std::move(callback).Run(std::move(duplicated_handle));
+  std::move(callback).Run(base::win::ScopedHandle(duplicated_handle));
 }
 
 // TODO(crbug.com/1070030): Investigate if we need to add

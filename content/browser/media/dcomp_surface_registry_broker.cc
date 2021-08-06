@@ -6,19 +6,18 @@
 
 #include "base/logging.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace content {
 
-DCOMPSurfaceRegistryBroker::DCOMPSurfaceRegistryBroker() = default;
+namespace {
 
-DCOMPSurfaceRegistryBroker::~DCOMPSurfaceRegistryBroker() = default;
-
-void DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandle(
+void RegisterDCOMPSurfaceHandleOnIOThread(
     mojo::PlatformHandle surface_handle,
-    RegisterDCOMPSurfaceHandleCallback callback) {
-  DVLOG(1) << __func__;
-
+    DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandleCallback callback) {
   auto* gpu_process_host =
       GpuProcessHost::Get(GpuProcessKind::GPU_PROCESS_KIND_SANDBOXED, false);
   if (!gpu_process_host) {
@@ -29,9 +28,25 @@ void DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandle(
 
   auto* gpu_service = gpu_process_host->gpu_host()->gpu_service();
   gpu_service->RegisterDCOMPSurfaceHandle(
-      std::move(surface_handle),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  base::UnguessableToken()));
+      std::move(surface_handle), mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                                     std::move(callback), absl::nullopt));
+}
+
+}  // namespace
+
+DCOMPSurfaceRegistryBroker::DCOMPSurfaceRegistryBroker() = default;
+
+DCOMPSurfaceRegistryBroker::~DCOMPSurfaceRegistryBroker() = default;
+
+void DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandle(
+    mojo::PlatformHandle surface_handle,
+    RegisterDCOMPSurfaceHandleCallback callback) {
+  DVLOG(1) << __func__;
+
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RegisterDCOMPSurfaceHandleOnIOThread,
+                                std::move(surface_handle),
+                                media::BindToCurrentLoop(std::move(callback))));
 }
 
 }  // namespace content

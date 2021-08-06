@@ -853,15 +853,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::BindMediaMetricsProviderReceiver,
       base::Unretained(host)));
 
-#if defined(OS_WIN)
-  // This class is lightweighted and must run on the IO task runner because
-  // GpuProcessHost only runs on the IO task runner.
-  map->Add<media::mojom::DCOMPSurfaceRegistry>(
-      base::BindRepeating(&RenderFrameHostImpl::BindDCOMPSurfaceRegistry,
-                          base::Unretained(host)),
-      GetIOThreadTaskRunner({}));
-#endif
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   map->Add<media::mojom::RemoterFactory>(
       base::BindRepeating(&RenderFrameHostImpl::BindMediaRemoterFactoryReceiver,

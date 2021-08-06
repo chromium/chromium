@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/win/scoped_handle.h"
 #include "media/base/media_export.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -27,7 +28,7 @@ class MEDIA_EXPORT MediaFoundationRendererExtension {
   virtual void SetDCompMode(bool enabled, SetDCompModeCB callback) = 0;
 
   // Get a Direct Composition Surface handle.
-  using GetDCompSurfaceCB = base::OnceCallback<void(HANDLE)>;
+  using GetDCompSurfaceCB = base::OnceCallback<void(base::win::ScopedHandle)>;
   virtual void GetDCompSurface(GetDCompSurfaceCB callback) = 0;
 
   // Notify renderer whether video is enabled.

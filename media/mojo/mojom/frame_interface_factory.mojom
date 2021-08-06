@@ -8,6 +8,8 @@ import "media/mojo/mojom/cdm_storage.mojom";
 import "media/mojo/mojom/provision_fetcher.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "url/mojom/origin.mojom";
+[EnableIf=is_win]
+import "media/mojo/mojom/dcomp_surface_registry.mojom";
 
 // Implemented by things like audio playback in the utility process to respond
 // to mute state changes (e.g. the user checks "Mute Site" or "Unmute Site" on a
@@ -33,7 +35,12 @@ interface FrameInterfaceFactory {
 
   // Registers `site_mute_observer` to get notified of site mute state changes.
   [EnableIf=is_win]
-  RegisterMuteStateObserver(pending_remote<MuteStateObserver> site_mute_observer);
+  RegisterMuteStateObserver(
+      pending_remote<MuteStateObserver> site_mute_observer);
+
+  // Binds a DCOMPSurfaceRegistry to register a surface handle in GPU process.
+  [EnableIf=is_win]
+  CreateDCOMPSurfaceRegistry(pending_receiver<DCOMPSurfaceRegistry> registry);
 
   // Gets the origin of the frame associated with the CDM.
   [Sync]

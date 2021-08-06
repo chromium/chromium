@@ -91,11 +91,12 @@ interface GpuService {
       pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea);
 
   // Registers a DirectComposition (DCOMP) surface handle and returns the
-  // corresponding token. See media/mojo/mojom/dcomp_surface_registry.mojom for
-  // details on why this is needed and how the returned token is used.
+  // corresponding token. Returns nullopt upon failure. See
+  // media/mojo/mojom/dcomp_surface_registry.mojom for details on why this is
+  // needed and how the returned token is used.
   [EnableIf=is_win]
   RegisterDCOMPSurfaceHandle(handle<platform> surface_handle)
-      => (mojo_base.mojom.UnguessableToken token);
+      => (mojo_base.mojom.UnguessableToken? token);
 
   // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
   CreateVideoEncodeAcceleratorProvider(

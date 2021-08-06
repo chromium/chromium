@@ -135,9 +135,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // A fake window handle passed to MF-based rendering pipeline for OPM.
   HWND virtual_video_window_ = nullptr;
 
-  base::UnguessableToken surface_request_token_;
-  base::win::ScopedHandle dcomp_surface_handle_;
-
   bool waiting_for_mf_cdm_ = false;
   CdmContext* cdm_context_ = nullptr;
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;

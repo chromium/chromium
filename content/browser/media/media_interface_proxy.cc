@@ -42,7 +42,6 @@
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "content/browser/media/cdm_storage_impl.h"
 #include "media/base/key_system_names.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -58,8 +57,8 @@
 #endif  // defined(OS_WIN) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_WIN)
-#include "base/threading/sequence_local_storage_slot.h"
-#include "base/time/time.h"
+#include "content/browser/media/dcomp_surface_registry_broker.h"
+#include "media/cdm/win/media_foundation_cdm.h"
 #endif  // defined(OS_WIN)
 
 #if defined(OS_ANDROID)
@@ -176,6 +175,18 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     // Initial notification on mute stage.
     site_mute_observers_.Get(remote_id)->OnMuteStateChange(
         WebContents::FromRenderFrameHost(render_frame_host_)->IsAudioMuted());
+  }
+
+  void CreateDCOMPSurfaceRegistry(
+      mojo::PendingReceiver<media::mojom::DCOMPSurfaceRegistry> receiver)
+      override {
+    if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
+        media::MediaFoundationCdm::IsAvailable()) {
+      // TODO(crbug.com/1233379): Pass IO task runner and remove the PostTask()
+      // in DCOMPSurfaceRegistryBroker after bug fixed.
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<DCOMPSurfaceRegistryBroker>(), std::move(receiver));
+    }
   }
 #endif  // defined(OS_WIN)
 

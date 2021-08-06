@@ -238,11 +238,6 @@
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
 
-#if defined(OS_WIN)
-#include "content/browser/media/dcomp_surface_registry_broker.h"
-#include "media/cdm/win/media_foundation_cdm.h"
-#endif  // defined(OS_WIN)
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/browser/plugin_service_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_renderer_connection.h"
@@ -8989,17 +8984,6 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
           base::Unretained(this)),
       std::move(receiver));
 }
-
-#if defined(OS_WIN)
-void RenderFrameHostImpl::BindDCOMPSurfaceRegistry(
-    mojo::PendingReceiver<media::mojom::DCOMPSurfaceRegistry> receiver) {
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
-      media::MediaFoundationCdm::IsAvailable()) {
-    mojo::MakeSelfOwnedReceiver(std::make_unique<DCOMPSurfaceRegistryBroker>(),
-                                std::move(receiver));
-  }
-}
-#endif
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 void RenderFrameHostImpl::BindMediaRemoterFactoryReceiver(

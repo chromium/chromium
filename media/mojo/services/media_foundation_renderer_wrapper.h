@@ -11,6 +11,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
+#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/renderers/win/media_foundation_renderer.h"
@@ -61,14 +62,17 @@ class MediaFoundationRendererWrapper final
   void OnMuteStateChange(bool muted) override;
 
  private:
-  void OnReceiveDCOMPSurface(HANDLE handle);
+  void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
+                             base::win::ScopedHandle handle);
+  void OnDCOMPSurfaceHandleRegistered(
+      GetDCOMPSurfaceCallback callback,
+      const absl::optional<base::UnguessableToken>& token);
 
   mojom::FrameInterfaceFactory* frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
-  GetDCOMPSurfaceCallback get_decomp_surface_cb_;
-
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
+  mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.
 

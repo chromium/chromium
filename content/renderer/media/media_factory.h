@@ -24,10 +24,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
 
-#if defined(OS_WIN)
-#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
-#endif  // defined(OS_WIN)
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 // Needed by remoting sender.
 #include "media/mojo/mojom/remoting.mojom.h"
@@ -158,11 +154,6 @@ class MediaFactory {
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
 
   std::unique_ptr<media::MojoRendererFactory> CreateMojoRendererFactory();
-
-#if defined(OS_WIN)
-  mojo::PendingRemote<media::mojom::DCOMPSurfaceRegistry>
-  CreateDCOMPSurfaceRegistry();
-#endif
 
   // The render frame we're helping. RenderFrameImpl owns this factory, so the
   // pointer will always be valid.
