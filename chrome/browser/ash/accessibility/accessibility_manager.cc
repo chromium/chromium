@@ -66,6 +66,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -195,6 +196,15 @@ std::string AccessibilityPrivateEnumForAction(SelectToSpeakPanelAction action) {
       NOTREACHED();
       return "";
   }
+}
+
+absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
+    Profile* profile,
+    const std::string& dictation_locale) {
+  const base::DictionaryValue* offline_nudges =
+      profile->GetPrefs()->GetDictionary(
+          prefs::kAccessibilityDictationLocaleOfflineNudge);
+  return offline_nudges->FindBoolPath(dictation_locale);
 }
 
 }  // namespace
@@ -860,42 +870,85 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
     return;
 
+  PrefService* pref_service = profile_->GetPrefs();
+
   const bool enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityDictationEnabled);
-  if (enabled && profile_->GetPrefs()
-                     ->GetString(prefs::kAccessibilityDictationLocale)
-                     .empty()) {
+      pref_service->GetBoolean(prefs::kAccessibilityDictationEnabled);
+  if (enabled &&
+      pref_service->GetString(prefs::kAccessibilityDictationLocale).empty()) {
     // Dictation was turned on but the language pref isn't set yet. Determine if
     // this is an upgrade (Dictation was enabled at start-up and the toggle was
     // not triggered by a user) or a new user (Dictation was just enabled in
     // settings) and pick the language accordingly.
     const std::string locale = Dictation::DetermineDefaultSupportedLocale(
         profile_, /*new_user=*/triggered_by_user);
-    profile_->GetPrefs()->SetString(prefs::kAccessibilityDictationLocale,
-                                    locale);
+    pref_service->SetString(prefs::kAccessibilityDictationLocale, locale);
+    pref_service->CommitPendingWrite();
   }
 
-  if (triggered_by_user && !enabled &&
-      features::IsDictationOfflineAvailableAndEnabled()) {
+  // If SODA isn't available on the device, no further action is needed.
+  if (!features::IsDictationOfflineAvailableAndEnabled())
+    return;
+
+  if (triggered_by_user && !enabled) {
     // Note: This should not be called at start-up or it will
     // push back SODA deletion each time start-up occurs with dictation
     // disabled.
     speech::SodaInstaller::GetInstance()->SetUninstallTimer(
-        profile_->GetPrefs(), g_browser_process->local_state());
+        pref_service, g_browser_process->local_state());
+  }
+
+  const std::string dictation_locale =
+      pref_service->GetString(prefs::kAccessibilityDictationLocale);
+  if (!triggered_by_user && enabled) {
+    const absl::optional<bool> offline_nudge =
+        GetDictationOfflineNudgePrefForLocale(profile_, dictation_locale);
+
+    // See if the Dictation locale can now work offline in the
+    // background (not because the user explicitly toggled Dictation), and a
+    // nudge hasn't yet been shown to the user.
+    if (!offline_nudge || !offline_nudge.value()) {
+      if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+              speech::GetLanguageCode(dictation_locale))) {
+        // The locale is already installed on device, show the nudge
+        // immediately.
+        ShowDictationLanguageUpgradedNudge(dictation_locale);
+      } else if (!offline_nudge &&
+                 base::Contains(speech::SodaInstaller::GetInstance()
+                                    ->GetAvailableLanguages(),
+                                dictation_locale)) {
+        // If the SODA language isn't installed yet, update the preference to
+        // ensure the nudge gets shown for this locale when installation
+        // completes.
+        DictionaryPrefUpdate update(
+            pref_service, prefs::kAccessibilityDictationLocaleOfflineNudge);
+        update.Get()->SetBoolKey(dictation_locale, false);
+      }
+    }
   }
 
   if (enabled) {
-    const std::string locale =
-        profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
-    if (triggered_by_user && ShouldShowNetworkDictationDialog(locale)) {
+    if (triggered_by_user &&
+        ShouldShowNetworkDictationDialog(dictation_locale)) {
       // Only show the Dictation dialog if Dictation was enabled by the user.
       ShowNetworkDictationDialog();
     }
 
     // TODO(crbug.com/1173135): Call MaybeInstallSoda when the dictation locale
     // pref changes.
-    MaybeInstallSoda(locale);
+    MaybeInstallSoda(dictation_locale);
   }
+}
+
+void AccessibilityManager::ShowDictationLanguageUpgradedNudge(
+    const std::string& dictation_locale) {
+  // Show the nudge, then set the pref to indicate that it has been shown
+  // for this particular locale.
+  AccessibilityController::Get()->ShowDictationLanguageUpgradedNudge(
+      dictation_locale, g_browser_process->GetApplicationLocale());
+  DictionaryPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kAccessibilityDictationLocaleOfflineNudge);
+  update.Get()->SetBoolKey(dictation_locale, true);
 }
 
 void AccessibilityManager::SetFocusHighlightEnabled(bool enabled) {
@@ -1905,18 +1958,24 @@ void AccessibilityManager::OnNetworkDictationDialogDismissed() {
 }
 
 void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
-  if (!features::IsDictationOfflineAvailableAndEnabled()) {
+  if (!features::IsDictationOfflineAvailableAndEnabled())
     return;
-  }
+
+  const speech::LanguageCode language_code = speech::GetLanguageCode(locale);
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer->IsSodaInstalled(speech::GetLanguageCode(locale)) ||
-      soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale)))
+  if (soda_installer->IsSodaInstalled(language_code) ||
+      soda_installer->IsSodaDownloading(language_code)) {
     return;
+  }
 
   if (!soda_observation_.IsObservingSource(soda_installer))
     soda_observation_.Observe(soda_installer);
   soda_installer->Init(profile_->GetPrefs(), g_browser_process->local_state());
+
+  // TODO(crbug.com/1173135): The SODA installer may have already been
+  // initialized. To support multiple locales, if download didn't start, try
+  // installing the locale directly.
 }
 
 void AccessibilityManager::OnSodaInstallUpdated() {
@@ -1924,12 +1983,26 @@ void AccessibilityManager::OnSodaInstallUpdated() {
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  const std::string locale =
+  const std::string dictation_locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
-  bool is_soda_downloading =
-      soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale));
+  bool is_soda_downloading = soda_installer->IsSodaDownloading(
+      speech::GetLanguageCode(dictation_locale));
   AccessibilityController::Get()->UpdateDictationButtonOnSodaChanged(
       is_soda_downloading);
+
+  if (is_soda_downloading)
+    return;
+
+  const absl::optional<bool> offline_nudge =
+      GetDictationOfflineNudgePrefForLocale(profile_, dictation_locale);
+  // Check if this locale was downloaded and a nudge for it should be
+  // shown to the user (the key is in kAccessibilityDictationLocale but the
+  // value is false).
+  if (offline_nudge && !offline_nudge.value() &&
+      soda_installer->IsSodaInstalled(
+          speech::GetLanguageCode(dictation_locale))) {
+    ShowDictationLanguageUpgradedNudge(dictation_locale);
+  }
 }
 
 // SodaInstaller::Observer:

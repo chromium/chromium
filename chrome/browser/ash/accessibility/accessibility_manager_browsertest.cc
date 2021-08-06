@@ -30,6 +30,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
@@ -273,6 +274,19 @@ void UninstallSodaForTesting() {
   speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
 }
 
+void ClearDictationOfflineNudgePref(const std::string& locale) {
+  DictionaryPrefUpdate update(GetActiveUserPrefs(),
+                              prefs::kAccessibilityDictationLocaleOfflineNudge);
+  update.Get()->RemovePath(locale);
+}
+
+absl::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
+  const base::DictionaryValue* offline_nudges =
+      GetActiveUserPrefs()->GetDictionary(
+          prefs::kAccessibilityDictationLocaleOfflineNudge);
+  return offline_nudges->FindBoolPath(locale);
+}
+
 }  // namespace
 
 // For user session accessibility manager tests.
@@ -300,6 +314,12 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
          ash::features::kOnDeviceSpeechRecognition},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetDictationEnabledNotTriggeredByUser(bool enabled) {
+    SetDictationEnabled(enabled);
+    AccessibilityManager::Get()->OnDictationChanged(
+        /*triggered_by_user=*/false);
   }
 
   int default_autoclick_delay() const { return default_autoclick_delay_; }
@@ -637,24 +657,100 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaDownload) {
   UninstallSodaForTesting();
+  ClearDictationOfflineNudgePref("en-US");
   EXPECT_FALSE(IsSodaDownloading());
   EXPECT_FALSE(ShouldShowNetworkDictationDialog("en-US"));
   SetDictationEnabled(true);
   EXPECT_TRUE(IsSodaDownloading());
+  // The nudge should not be requested to be shown because this was a
+  // user-initiated change.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   EXPECT_FALSE(IsSodaDownloading());
+  // The nudge was never shown.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
   UninstallSodaForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaError) {
   UninstallSodaForTesting();
+  ClearDictationOfflineNudgePref("en-US");
   EXPECT_FALSE(IsSodaDownloading());
   EXPECT_FALSE(ShouldShowNetworkDictationDialog("en-US"));
   SetDictationEnabled(true);
   EXPECT_TRUE(IsSodaDownloading());
+  // The nudge should not be requested to be shown.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
   EXPECT_FALSE(IsSodaDownloading());
+  // The nudge was never shown.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US"));
   UninstallSodaForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       SodaDownloadNotTriggeredByUserShowsNudge) {
+  UninstallSodaForTesting();
+  ClearDictationOfflineNudgePref("en-US");
+  EXPECT_FALSE(IsSodaDownloading());
+  SetDictationEnabledNotTriggeredByUser(true);
+  EXPECT_TRUE(IsSodaDownloading());
+  // The nudge should be shown when SODA download finishes.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
+  UninstallSodaForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       SodaErrorNotTriggeredByUserTriesToShowNudge) {
+  UninstallSodaForTesting();
+  ClearDictationOfflineNudgePref("en-US");
+  EXPECT_FALSE(IsSodaDownloading());
+  SetDictationEnabledNotTriggeredByUser(true);
+  EXPECT_TRUE(IsSodaDownloading());
+  // The nudge should be shown when SODA download finishes.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  // The nudge was never shown because of the error.
+  EXPECT_FALSE(GetDictationOfflineNudgePref("en-US").value());
+  UninstallSodaForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       OneNudgeForSodaMultipleDownload) {
+  UninstallSodaForTesting();
+  ClearDictationOfflineNudgePref("en-US");
+  SetDictationEnabledNotTriggeredByUser(true);
+  EXPECT_TRUE(IsSodaDownloading());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
+  UninstallSodaForTesting();
+  SetDictationEnabled(false);
+
+  // The second time the same language downloads, the nudge is not shown again.
+  SetDictationEnabledNotTriggeredByUser(true);
+  EXPECT_TRUE(IsSodaDownloading());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  // Unchanged.
+  EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       SodaInstalledBeforeDictationEnabled) {
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  ClearDictationOfflineNudgePref("en-US");
+  SetDictationEnabledNotTriggeredByUser(true);
+
+  // Already downloaded.
+  EXPECT_FALSE(IsSodaDownloading());
+
+  // Nudge is shown immediately.
+  EXPECT_TRUE(GetDictationOfflineNudgePref("en-US").value());
 }
 
 class AccessibilityManagerDictationDialogTest

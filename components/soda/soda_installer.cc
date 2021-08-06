@@ -93,6 +93,7 @@ void SodaInstaller::Init(PrefService* profile_prefs,
         global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
     if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
       UninstallSoda(global_prefs);
+      soda_installer_initialized_ = false;
     }
   }
 }
@@ -150,6 +151,7 @@ void SodaInstaller::NotifySodaErrorForTesting() {
 void SodaInstaller::UninstallSodaForTesting() {
   soda_binary_installed_ = false;
   is_soda_downloading_ = false;
+  soda_installer_initialized_ = false;
   installed_languages_.clear();
   language_pack_progress_.clear();
 }

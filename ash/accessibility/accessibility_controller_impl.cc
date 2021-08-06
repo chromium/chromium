@@ -164,6 +164,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityCursorColor,
     prefs::kAccessibilityDictationEnabled,
     prefs::kAccessibilityDictationLocale,
+    prefs::kAccessibilityDictationLocaleOfflineNudge,
     prefs::kAccessibilityFocusHighlightEnabled,
     prefs::kAccessibilityHighContrastEnabled,
     prefs::kAccessibilityLargeCursorEnabled,
@@ -645,6 +646,8 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   // speech recognition download.
   registry->RegisterStringPref(prefs::kAccessibilityDictationLocale,
                                std::string());
+  registry->RegisterDictionaryPref(
+      prefs::kAccessibilityDictationLocaleOfflineNudge);
 
   // A pref in this list is associated with accepting for the first time,
   // enabling of some pref above. Non-syncable like all of the above prefs.

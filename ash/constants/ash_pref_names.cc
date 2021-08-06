@@ -295,6 +295,15 @@ const char kAccessibilityDictationEnabled[] = "settings.a11y.dictation";
 // A string pref which determines the locale used for dictation speech
 // recognition. Should be BCP-47 format, e.g. "en-US" or "es-ES".
 const char kAccessibilityDictationLocale[] = "settings.a11y.dictation_locale";
+// A dictionary pref which keeps track of which locales the user has seen an
+// offline dictation upgrade nudge. A nudge will be shown once whenever a
+// new language becomes available offline in the background, without repeating
+// showing nudges where the language was already available. A locale code will
+// map to a value of true if the nudge has been shown, false if it needs to be
+// shown upon download completion, and will be absent from the map otherwise.
+// Locales match kAccessibilityDictationLocale and are in BCP-47 format.
+const char kAccessibilityDictationLocaleOfflineNudge[] =
+    "settings.a11y.dictation_locale_offline_nudge";
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";
