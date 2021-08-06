@@ -298,7 +298,7 @@ struct XRHandJointData {
   // Which joint this data is for denoted by the XRHandJoint enum.
   XRHandJoint joint;
   // The transform of pose of this joint in mojo space.
-  gfx.mojom.Transform mojo_from_joint;
+  gfx.mojom.Transform? mojo_from_joint;
   // The radius of the joint in meters.
   float radius;
 };

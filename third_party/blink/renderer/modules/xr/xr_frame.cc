@@ -81,9 +81,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
   }
 
   // Must use a reference space created from the same session.
-  if (reference_space->session() != session_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionMismatch);
+  if (!IsSameSession(reference_space->session(), exception_state)) {
     return nullptr;
   }
 
@@ -152,9 +150,7 @@ XRLightEstimate* XRFrame::getLightEstimate(
   }
 
   // Must use a light probe created from the same session.
-  if (light_probe->session() != session_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionMismatch);
+  if (!IsSameSession(light_probe->session(), exception_state)) {
     return nullptr;
   }
 
@@ -217,15 +213,8 @@ XRPose* XRFrame::getPose(XRSpace* space,
     return nullptr;
   }
 
-  if (space->session() != session_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionMismatch);
-    return nullptr;
-  }
-
-  if (basespace->session() != session_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionMismatch);
+  if (!IsSameSession(space->session(), exception_state) ||
+      !IsSameSession(basespace->session(), exception_state)) {
     return nullptr;
   }
 
@@ -418,6 +407,16 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
       exception_state);
 }
 
+bool XRFrame::IsSameSession(XRSession* space_session,
+                            ExceptionState& exception_state) const {
+  if (space_session != session_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionMismatch);
+    return false;
+  }
+  return true;
+}
+
 HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
     ExceptionState& exception_state) {
   return session_->ImageTrackingResults(exception_state);
@@ -425,16 +424,20 @@ HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
 
 XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
                                    XRSpace* baseSpace,
-                                   ExceptionState& exception_state) {
+                                   ExceptionState& exception_state) const {
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
     return nullptr;
   }
 
-  if (session_ != baseSpace->session() || session_ != joint->session()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionMismatch);
+  if (!IsSameSession(baseSpace->session(), exception_state) ||
+      !IsSameSession(joint->session(), exception_state)) {
+    return nullptr;
+  }
+
+  if (!session_->CanReportPoses()) {
+    exception_state.ThrowSecurityError(kCannotReportPoses);
     return nullptr;
   }
 
@@ -451,11 +454,17 @@ XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
 
 bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
                              NotShared<DOMFloat32Array> radii,
-                             ExceptionState& exception_state) {
+                             ExceptionState& exception_state) const {
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
     return false;
+  }
+
+  for (const auto& joint_space : jointSpaces) {
+    if (!IsSameSession(joint_space->session(), exception_state)) {
+      return false;
+    }
   }
 
   if (jointSpaces.size() != radii->length()) {
@@ -463,58 +472,62 @@ bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
     return false;
   }
 
-  for (unsigned offset = 0; offset < jointSpaces.size(); offset++) {
-    const XRJointSpace* jointSpace = jointSpaces[offset];
-    if (session_ != jointSpace->session()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        kSessionMismatch);
-      return false;
-    }
+  bool all_valid = true;
 
-    radii->Data()[offset] = jointSpace->radius();
+  for (unsigned offset = 0; offset < jointSpaces.size(); offset++) {
+    const XRJointSpace* joint_space = jointSpaces[offset];
+    if (joint_space->handHasMissingPoses()) {
+      radii->Data()[offset] = NAN;
+      all_valid = false;
+    } else {
+      radii->Data()[offset] = joint_space->radius();
+    }
   }
 
-  return true;
+  return all_valid;
 }
 
 bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
                         XRSpace* baseSpace,
                         NotShared<DOMFloat32Array> transforms,
-                        ExceptionState& exception_state) {
+                        ExceptionState& exception_state) const {
+  const unsigned floats_per_transform = 16;
+
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
     return false;
   }
 
-  const unsigned floats_per_transform = 16;
+  for (const auto& space : spaces) {
+    if (!IsSameSession(space->session(), exception_state)) {
+      return false;
+    }
+  }
+
+  if (!IsSameSession(baseSpace->session(), exception_state)) {
+    return false;
+  }
 
   if (spaces.size() * floats_per_transform > transforms->length()) {
     exception_state.ThrowTypeError(kSpacesSequenceTooLarge);
     return false;
   }
 
-  if (session_ != baseSpace->session()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionMismatch);
+  if (!session_->CanReportPoses()) {
+    exception_state.ThrowSecurityError(kCannotReportPoses);
     return false;
   }
 
   bool allValid = true;
   unsigned offset = 0;
   for (const auto& space : spaces) {
-    if (session_ != space->session()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        kSessionMismatch);
-      return false;
-    }
-
     const XRPose* pose = space->getPose(baseSpace);
     if (!pose) {
       for (unsigned i = 0; i < floats_per_transform; i++) {
         transforms->Data()[offset + i] = NAN;
-        allValid = false;
       }
+      allValid = false;
     } else {
       const float* const poseMatrix = pose->transform()->matrix()->Data();
       for (unsigned i = 0; i < floats_per_transform; i++) {
