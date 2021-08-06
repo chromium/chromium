@@ -168,8 +168,8 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     RunUntilIdle();
   }
 
-  // Creates and adds a saved password form.  If `is_leakd` is true it marks the
-  // credential as leaked.
+  // Creates and adds a saved password form.  If `is_leaked` is true it marks
+  // the credential as leaked.
   void AddSavedForm1(bool is_leaked = false) {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
