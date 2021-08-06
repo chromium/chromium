@@ -139,13 +139,13 @@ void It2MeNativeMessageHostAsh::HandleConnectResponse() {
 
 void It2MeNativeMessageHostAsh::HandleDisconnectResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  remote_->OnHostStateDisconnected();
+  remote_->OnHostStateDisconnected(ErrorCodeToString(protocol::ErrorCode::OK));
 }
 
 void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     base::Value message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string* new_state = message.FindStringKey(kState);
+  const std::string* new_state = message.FindStringKey(kState);
   if (!new_state) {
     LOG(ERROR) << "Missing |" << kState << "| value in message.";
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
@@ -155,11 +155,15 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
   if (*new_state == kHostStateStarting) {
     remote_->OnHostStateStarting();
   } else if (*new_state == kHostStateDisconnected) {
-    remote_->OnHostStateDisconnected();
+    const std::string* disconnect_reason =
+        message.FindStringKey(kDisconnectReason);
+    remote_->OnHostStateDisconnected(
+        disconnect_reason ? *disconnect_reason
+                          : ErrorCodeToString(protocol::ErrorCode::OK));
   } else if (*new_state == kHostStateRequestedAccessCode) {
     remote_->OnHostStateRequestedAccessCode();
   } else if (*new_state == kHostStateReceivedAccessCode) {
-    std::string* access_code = message.FindStringKey(kAccessCode);
+    const std::string* access_code = message.FindStringKey(kAccessCode);
     if (!access_code) {
       LOG(ERROR) << "Missing |" << kAccessCode << "| value in message.";
       CloseChannel(
@@ -180,7 +184,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
   } else if (*new_state == kHostStateConnecting) {
     remote_->OnHostStateConnecting();
   } else if (*new_state == kHostStateConnected) {
-    std::string* remote_username = message.FindStringKey(kClient);
+    const std::string* remote_username = message.FindStringKey(kClient);
     if (!remote_username) {
       LOG(ERROR) << "Missing |" << kClient << "| value in message.";
       CloseChannel(

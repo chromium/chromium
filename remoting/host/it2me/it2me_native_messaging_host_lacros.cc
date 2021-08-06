@@ -76,7 +76,8 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
                                      base::TimeDelta lifetime) override;
   void OnHostStateConnecting() override;
   void OnHostStateConnected(const std::string& remote_username) override;
-  void OnHostStateDisconnected() override;
+  void OnHostStateDisconnected(
+      const absl::optional<std::string>& disconnect_reason) override;
   void OnNatPolicyChanged(mojom::NatPolicyStatePtr policy_state) override;
   void OnHostStateError(int64_t error_code) override;
   void OnPolicyError() override;
@@ -94,16 +95,15 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
   void SendErrorAndExit(const protocol::ErrorCode error_code,
                         int message_id = kInvalidMessageId) const;
 
-  void HandleHostStateChange(It2MeHostState state);
+  void HandleHostStateChange(
+      It2MeHostState state,
+      base::Value message = base::Value(base::Value::Type::DICTIONARY));
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   Client* client_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::string access_code_;
-  base::TimeDelta access_code_lifetime_;
-  std::string remote_username_;
   int connect_response_id_ = kInvalidMessageId;
   int hello_response_id_ = kInvalidMessageId;
 
@@ -187,9 +187,11 @@ void It2MeNativeMessagingHostLacros::OnHostStateReceivedAccessCode(
     const std::string& access_code,
     base::TimeDelta lifetime) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  access_code_ = access_code;
-  access_code_lifetime_ = lifetime;
-  HandleHostStateChange(It2MeHostState::kReceivedAccessCode);
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey(kAccessCode, access_code);
+  message.SetIntKey(kAccessCodeLifetime, lifetime.InSeconds());
+  HandleHostStateChange(It2MeHostState::kReceivedAccessCode,
+                        std::move(message));
 }
 
 void It2MeNativeMessagingHostLacros::OnHostStateConnecting() {
@@ -200,13 +202,19 @@ void It2MeNativeMessagingHostLacros::OnHostStateConnecting() {
 void It2MeNativeMessagingHostLacros::OnHostStateConnected(
     const std::string& remote_username) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  remote_username_ = remote_username;
-  HandleHostStateChange(It2MeHostState::kConnected);
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey(kClient, remote_username);
+  HandleHostStateChange(It2MeHostState::kConnected, std::move(message));
 }
 
-void It2MeNativeMessagingHostLacros::OnHostStateDisconnected() {
+void It2MeNativeMessagingHostLacros::OnHostStateDisconnected(
+    const absl::optional<std::string>& disconnect_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleHostStateChange(It2MeHostState::kDisconnected);
+  base::Value message(base::Value::Type::DICTIONARY);
+  if (disconnect_reason.has_value()) {
+    message.SetStringKey(kDisconnectReason, disconnect_reason.value());
+  }
+  HandleHostStateChange(It2MeHostState::kDisconnected, std::move(message));
 }
 
 void It2MeNativeMessagingHostLacros::OnNatPolicyChanged(
@@ -243,8 +251,10 @@ void It2MeNativeMessagingHostLacros::OnInvalidDomainError() {
 }
 
 void It2MeNativeMessagingHostLacros::HandleHostStateChange(
-    It2MeHostState state) {
-  base::Value message(base::Value::Type::DICTIONARY);
+    It2MeHostState state,
+    base::Value message) {
+  DCHECK(message.is_dict());
+
   message.SetStringKey(kMessageType, kHostStateChangedMessage);
 
   switch (state) {
@@ -258,8 +268,6 @@ void It2MeNativeMessagingHostLacros::HandleHostStateChange(
 
     case It2MeHostState::kReceivedAccessCode:
       message.SetStringKey(kState, kHostStateReceivedAccessCode);
-      message.SetStringKey(kAccessCode, access_code_);
-      message.SetIntKey(kAccessCodeLifetime, access_code_lifetime_.InSeconds());
       break;
 
     case It2MeHostState::kConnecting:
@@ -268,12 +276,10 @@ void It2MeNativeMessagingHostLacros::HandleHostStateChange(
 
     case It2MeHostState::kConnected:
       message.SetStringKey(kState, kHostStateConnected);
-      message.SetStringKey(kClient, remote_username_);
       break;
 
     case It2MeHostState::kDisconnected:
       message.SetStringKey(kState, kHostStateDisconnected);
-      remote_username_.clear();
       break;
 
     case It2MeHostState::kInvalidDomainError:
@@ -361,14 +367,15 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
   mojom::SupportSessionParamsPtr session_params =
       mojom::SupportSessionParams::New();
 
-  std::string* user_name = message.FindStringKey(kUserName);
+  const std::string* user_name = message.FindStringKey(kUserName);
   if (!user_name) {
     SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
     return;
   }
   session_params->user_name = *user_name;
 
-  std::string* access_token = message.FindStringKey(kAuthServiceWithToken);
+  const std::string* access_token =
+      message.FindStringKey(kAuthServiceWithToken);
   if (!access_token) {
     SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
     return;
