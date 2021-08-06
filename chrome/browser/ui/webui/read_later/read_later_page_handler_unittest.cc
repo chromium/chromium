@@ -164,9 +164,12 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
-  // Expect ItemsChanged to be called twice from the two AddEntry calls in
-  // SetUp().
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called
+  // twice from the two AddEntry calls in SetUp().
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(2);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(2);
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
       /* unread_size= */ 2u, /* read_size= */ 0u,
@@ -185,10 +188,14 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
   handler()->OpenURL(GURL(kTabUrl3), true);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
-  // Expect ItemsChanged to be called 3 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(3);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -204,10 +211,14 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
   handler()->OpenURL(GURL(kTabUrl3), true);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
-  // Expect ItemsChanged to be called 3 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(3);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -220,10 +231,14 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
 TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
   handler()->UpdateReadStatus(GURL(kTabUrl3), true);
 
-  // Expect ItemsChanged to be called 3 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(3);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -236,10 +251,14 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
 TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
   handler()->RemoveEntry(GURL(kTabUrl3));
 
-  // Expect ItemsChanged to be called 3 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the RemoveEntry call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(3);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -255,11 +274,15 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
   handler()->RemoveEntry(GURL(kTabUrl3));
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
-  // Expect ItemsChanged to be called 4 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 4
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above.
   // Once for the RemoveEntry call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(4);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -277,10 +300,14 @@ TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
   token.reset();
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
-  // Expect ItemsChanged to be called 3 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the two updates above performed during a batch update.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(3);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(3);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
@@ -302,10 +329,13 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
   handler()->OpenURL(GURL(kTabUrl3), true);
   handler()->RemoveEntry(GURL(kTabUrl3));
 
-  // Expect ItemsChanged to be called twice from the two AddEntry calls in
-  // SetUp() and the two above calls to not trigger an ItemsChanged call because
-  // the WebContents is not visible.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called
+  // twice from the two AddEntry calls in SetUp() and the two above calls to
+  // not trigger an ItemsChanged call because the WebContents is not visible.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(2);
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(2);
 
   // Get Read later entries. Calling GetReadLaterEntries will trigger an update.
   GetAndVerifyReadLaterEntries(
@@ -323,15 +353,14 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
   model()->AddEntry(GURL(kTabUrl3), kTabName3,
                     reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
 
-  // Expect ItemsChanged to be called 4 times.
+  // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 4
+  // times.
   // Twice for the two AddEntry calls in SetUp().
   // Once for the OpenURL call above, and once for the AddEntry call above.
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
-  // Expect CurrentPageActionButtonStateChanged to be called once when the
-  // current page is added while on that page.
   EXPECT_CALL(page_,
               CurrentPageActionButtonStateChanged(testing::_, testing::_))
-      .Times(1);
+      .Times(4);
 
   // Get Read later entries.
   GetAndVerifyReadLaterEntries(
