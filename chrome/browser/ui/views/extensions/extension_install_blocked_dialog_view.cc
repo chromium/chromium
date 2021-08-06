@@ -38,6 +38,7 @@
 namespace chrome {
 
 void ShowExtensionInstallBlockedDialog(
+    const std::string& extension_id,
     const std::string& extension_name,
     const std::u16string& custom_error_message,
     const gfx::ImageSkia& icon,
@@ -45,7 +46,8 @@ void ShowExtensionInstallBlockedDialog(
     base::OnceClosure done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto dialog = std::make_unique<ExtensionInstallBlockedDialogView>(
-      extension_name, custom_error_message, icon, std::move(done_callback));
+      extension_id, extension_name, custom_error_message, icon,
+      std::move(done_callback));
   constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents)
       ->Show();
 }
@@ -53,6 +55,7 @@ void ShowExtensionInstallBlockedDialog(
 }  // namespace chrome
 
 ExtensionInstallBlockedDialogView::ExtensionInstallBlockedDialogView(
+    const std::string& extension_id,
     const std::string& extension_name,
     const std::u16string& custom_error_message,
     const gfx::ImageSkia& icon,
@@ -67,9 +70,9 @@ ExtensionInstallBlockedDialogView::ExtensionInstallBlockedDialogView(
       icon, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
       gfx::Size(extension_misc::EXTENSION_ICON_SMALL,
                 extension_misc::EXTENSION_ICON_SMALL)));
-  SetTitle(
-      l10n_util::GetStringFUTF16(IDS_EXTENSION_BLOCKED_BY_POLICY_PROMPT_TITLE,
-                                 base::UTF8ToUTF16(extension_name)));
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_EXTENSION_BLOCKED_BY_POLICY_PROMPT_TITLE,
+      base::UTF8ToUTF16(extension_name), base::UTF8ToUTF16(extension_id)));
 
   // Make sure user know the installation is blocked before taking further
   // action.

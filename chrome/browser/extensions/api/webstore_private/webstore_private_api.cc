@@ -894,8 +894,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
   }
 
   chrome::ShowExtensionInstallBlockedDialog(
-      extension->name(), blocked_by_policy_error_message_, image, contents,
-      std::move(done_callback));
+      extension->id(), extension->name(), blocked_by_policy_error_message_,
+      image, contents, std::move(done_callback));
 }
 
 WebstorePrivateCompleteInstallFunction::
