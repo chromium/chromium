@@ -259,7 +259,7 @@ bool CustomElementRegistry::NameIsDefined(const AtomicString& name) const {
 
 CustomElementDefinition* CustomElementRegistry::DefinitionForName(
     const AtomicString& name) const {
-  return DefinitionForId(name_id_map_.at(name));
+  return DefinitionForId(name_id_map_.DeprecatedAtOrEmptyValue(name));
 }
 
 CustomElementDefinition* CustomElementRegistry::DefinitionForId(

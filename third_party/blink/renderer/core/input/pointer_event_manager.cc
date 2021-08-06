@@ -1072,7 +1072,8 @@ void PointerEventManager::ReleaseMousePointerCapture() {
 
 bool PointerEventManager::HasPointerCapture(PointerId pointer_id,
                                             const Element* target) const {
-  return pending_pointer_capture_target_.at(pointer_id) == target;
+  return pending_pointer_capture_target_.DeprecatedAtOrEmptyValue(pointer_id) ==
+         target;
 }
 
 void PointerEventManager::ReleasePointerCapture(PointerId pointer_id) {

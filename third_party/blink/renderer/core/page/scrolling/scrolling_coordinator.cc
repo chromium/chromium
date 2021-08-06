@@ -179,7 +179,7 @@ cc::ScrollbarLayerBase* ScrollingCoordinator::GetScrollbarLayer(
   ScrollbarMap& scrollbars = orientation == kHorizontalScrollbar
                                  ? horizontal_scrollbars_
                                  : vertical_scrollbars_;
-  return scrollbars.at(scrollable_area);
+  return scrollbars.DeprecatedAtOrEmptyValue(scrollable_area);
 }
 
 void ScrollingCoordinator::ScrollableAreaScrollbarLayerDidChange(

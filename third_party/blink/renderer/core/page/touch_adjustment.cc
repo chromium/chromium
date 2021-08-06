@@ -254,7 +254,7 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
          visited_node = visited_node->ParentOrShadowHostNode()) {
       // Check if we already have a result for a common ancestor from another
       // candidate.
-      responding_node = responder_map.at(visited_node);
+      responding_node = responder_map.DeprecatedAtOrEmptyValue(visited_node);
       if (responding_node)
         break;
       visited_nodes.push_back(visited_node);

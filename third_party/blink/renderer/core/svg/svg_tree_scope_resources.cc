@@ -27,7 +27,7 @@ LocalSVGResource* SVGTreeScopeResources::ExistingResourceForId(
     const AtomicString& id) const {
   if (id.IsEmpty())
     return nullptr;
-  return resources_.at(id);
+  return resources_.DeprecatedAtOrEmptyValue(id);
 }
 
 void SVGTreeScopeResources::ProcessCustomWeakness(const LivenessBroker& info) {
