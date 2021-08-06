@@ -376,6 +376,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},
           {"ManagedConfiguration", blink::features::kManagedConfiguration},
+          {"NavigatorPluginsFixed", blink::features::kNavigatorPluginsFixed},
           // TODO(crbug.com/920069): Remove OffsetParentNewSpecBehavior after
           // the feature is in stable with no issues.
           {"OffsetParentNewSpecBehavior",

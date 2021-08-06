@@ -3282,6 +3282,7 @@ enum WebFeature {
   kExecCommandWithTrustedTypes = 3970,
   kCSSSelectorPseudoHasInSnapshotProfile = 3971,
   kCSSSelectorPseudoHasInLiveProfile = 3972,
+  kNavigatorPdfViewerEnabled = 3973,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

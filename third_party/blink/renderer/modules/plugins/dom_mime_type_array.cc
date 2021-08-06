@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
+#include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
+#include "third_party/blink/renderer/modules/plugins/navigator_plugins.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -58,7 +60,7 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
   return dom_mime_types_[index];
 }
 
-bool DOMMimeTypeArray::ShouldReturnEmptyPluginData(Frame* frame) {
+bool DOMMimeTypeArray::ShouldReturnFixedPluginData(Frame* frame) {
   // See https://crbug.com/1171373 for more context. P/Nacl plugins will
   // be supported on some platforms through at least June, 2022. Since
   // some apps need to use feature detection, we need to continue returning
@@ -67,17 +69,24 @@ bool DOMMimeTypeArray::ShouldReturnEmptyPluginData(Frame* frame) {
     return false;
   // Otherwise, depend on the feature flag, which can be disabled via
   // Finch killswitch.
-  return base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty);
+  return RuntimeEnabledFeatures::NavigatorPluginsFixedEnabled();
 }
 
-bool DOMMimeTypeArray::ShouldReturnEmptyPluginData() const {
-  return ShouldReturnEmptyPluginData(DomWindow() ? DomWindow()->GetFrame()
+bool DOMMimeTypeArray::ShouldReturnFixedPluginData() const {
+  return ShouldReturnFixedPluginData(DomWindow() ? DomWindow()->GetFrame()
                                                  : nullptr);
 }
 
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
-  if (ShouldReturnEmptyPluginData())
+  if (ShouldReturnFixedPluginData()) {
+    // I don't know why namedItem() and NamedPropertyEnumerator go directly to
+    // the plugin data, rather than using dom_mime_types_.
+    for (const auto& mimetype : dom_mime_types_) {
+      if (mimetype->type() == property_name)
+        return mimetype;
+    }
     return nullptr;
+  }
   PluginData* data = GetPluginData();
   if (!data)
     return nullptr;
@@ -93,8 +102,12 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
 void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                                ExceptionState&) const {
-  if (ShouldReturnEmptyPluginData())
+  if (ShouldReturnFixedPluginData()) {
+    property_names.ReserveInitialCapacity(dom_mime_types_.size());
+    for (const auto& mimetype : dom_mime_types_)
+      property_names.UncheckedAppend(mimetype->type());
     return;
+  }
   PluginData* data = GetPluginData();
   if (!data)
     return;
@@ -119,19 +132,20 @@ PluginData* DOMMimeTypeArray::GetPluginData() const {
 }
 
 void DOMMimeTypeArray::UpdatePluginData() {
-  if (ShouldReturnEmptyPluginData()) {
-    dom_mime_types_.clear();
+  dom_mime_types_.clear();
+  if (ShouldReturnFixedPluginData()) {
+    if (DomWindow()) {
+      dom_mime_types_ = NavigatorPlugins::plugins(*DomWindow()->navigator())
+                            ->GetFixedMimeTypeArray();
+    }
     return;
   }
   PluginData* data = GetPluginData();
-  if (!data) {
-    dom_mime_types_.clear();
+  if (!data)
     return;
-  }
 
   HeapVector<Member<DOMMimeType>> old_dom_mime_types(
       std::move(dom_mime_types_));
-  dom_mime_types_.clear();
   dom_mime_types_.resize(data->Mimes().size());
 
   for (Member<DOMMimeType>& mime : old_dom_mime_types) {

@@ -26,6 +26,7 @@ PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareCon
 PASS window.cached_navigator.language is window.navigator.language
 PASS window.cached_navigator.maxTouchPoints is 0
 PASS window.cached_navigator.onLine is window.navigator.onLine
+PASS window.cached_navigator.pdfViewerEnabled is false
 PASS window.cached_navigator.platform is window.navigator.platform
 PASS window.cached_navigator.product is window.navigator.product
 PASS window.cached_navigator.productSub is window.navigator.productSub

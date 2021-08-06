@@ -49,6 +49,12 @@ DOMMimeTypeArray* NavigatorPlugins::mimeTypes(Navigator& navigator) {
 }
 
 // static
+bool NavigatorPlugins::pdfViewerEnabled(Navigator& navigator) {
+  return NavigatorPlugins::From(navigator).pdfViewerEnabled(
+      navigator.DomWindow());
+}
+
+// static
 bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
   return false;
 }
@@ -122,6 +128,10 @@ DOMMimeTypeArray* NavigatorPlugins::mimeTypes(LocalDOMWindow* window) const {
     RecordMimeTypes(window, mime_types_.Get());
   }
   return mime_types_.Get();
+}
+
+bool NavigatorPlugins::pdfViewerEnabled(LocalDOMWindow* window) const {
+  return plugins(window)->IsPdfViewerAvailable();
 }
 
 void NavigatorPlugins::Trace(Visitor* visitor) const {

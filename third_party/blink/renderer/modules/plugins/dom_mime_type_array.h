@@ -51,7 +51,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   void NamedPropertyEnumerator(Vector<String>&, ExceptionState&) const;
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&) const;
 
-  static bool ShouldReturnEmptyPluginData(Frame*);
+  static bool ShouldReturnFixedPluginData(Frame*);
 
   // PluginsChangedObserver implementation.
   void PluginsChanged() override;
@@ -62,7 +62,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   PluginData* GetPluginData() const;
   void ContextDestroyed() override;
 
-  bool ShouldReturnEmptyPluginData() const;
+  bool ShouldReturnFixedPluginData() const;
 
   HeapVector<Member<DOMMimeType>> dom_mime_types_;
 };

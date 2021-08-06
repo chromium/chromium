@@ -39,8 +39,12 @@ void MimeClassInfo::Trace(Visitor* visitor) const {
 
 MimeClassInfo::MimeClassInfo(const String& type,
                              const String& description,
-                             PluginInfo& plugin)
-    : type_(type), description_(description), plugin_(&plugin) {}
+                             PluginInfo& plugin,
+                             const Vector<String> extensions)
+    : type_(type),
+      description_(description),
+      extensions_(std::move(extensions)),
+      plugin_(&plugin) {}
 
 void PluginInfo::Trace(Visitor* visitor) const {
   visitor->Trace(mimes_);
@@ -105,14 +109,14 @@ void PluginData::UpdatePluginList(const SecurityOrigin* main_frame_origin) {
   registry->GetPlugins(false, main_frame_origin_, &plugins);
   for (const auto& plugin : plugins) {
     auto* plugin_info = MakeGarbageCollected<PluginInfo>(
-        plugin->name, FilePathToWebString(plugin->filename),
-        plugin->description, plugin->background_color,
+        std::move(plugin->name), FilePathToWebString(plugin->filename),
+        std::move(plugin->description), plugin->background_color,
         plugin->may_use_external_handler);
     plugins_.push_back(plugin_info);
     for (const auto& mime : plugin->mime_types) {
       auto* mime_info = MakeGarbageCollected<MimeClassInfo>(
-          mime->mime_type, mime->description, *plugin_info);
-      mime_info->extensions_ = mime->file_extensions;
+          std::move(mime->mime_type), std::move(mime->description),
+          *plugin_info, std::move(mime->file_extensions));
       plugin_info->AddMimeType(mime_info);
       mimes_.push_back(mime_info);
     }
