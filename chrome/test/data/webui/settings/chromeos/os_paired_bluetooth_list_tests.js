@@ -8,7 +8,8 @@
 // #import 'chrome://os-settings/strings.m.js';
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue} from '../../../chai_assert.js';
+// #import {assertTrue, assertEquals} from '../../../chai_assert.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('OsPairedBluetoothListTest', function() {
@@ -22,8 +23,33 @@ suite('OsPairedBluetoothListTest', function() {
     Polymer.dom.flush();
   });
 
+  function flushAsync() {
+    Polymer.dom.flush();
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
   test('Base Test', function() {
     const list = pairedBluetoothList.shadowRoot.querySelector('iron-list');
     assertTrue(!!list);
+  });
+
+  test('Device list change renders items correctly', async function() {
+    // TODO(crbug.com/1010321): Use real Device objects.
+    pairedBluetoothList.devices = [{}, {}, {}];
+    await flushAsync();
+
+    const getListItems = () => {
+      return pairedBluetoothList.shadowRoot.querySelectorAll(
+          'os-settings-paired-bluetooth-list-item');
+    };
+    assertEquals(getListItems().length, 3);
+
+    const ironResizePromise =
+        test_util.eventToPromise('iron-resize', pairedBluetoothList);
+    pairedBluetoothList.devices = [{}, {}, {}, {}, {}];
+
+    await ironResizePromise;
+    Polymer.dom.flush();
+    assertEquals(getListItems().length, 5);
   });
 });
