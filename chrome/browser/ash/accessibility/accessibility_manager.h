@@ -413,8 +413,12 @@ class AccessibilityManager
   void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
   // |triggered_by_user| is false when Dictation pref is changed at startup,
   // and true if Dictation enabled changed because the user changed their
-  // setting in Chrome OS settings or using the tray quick settings menu.
+  // Dictation enabled setting in Chrome OS settings or in the tray quick
+  // settings menu.
   void OnDictationChanged(bool triggered_by_user);
+  // Called after Dictation is enabled by the user or the Dictation locale pref
+  // changes.
+  void MaybeShowNetworkDictationDialogOrInstallSoda();
 
   void CheckBrailleState();
   void ReceiveBrailleDisplayState(
@@ -531,6 +535,7 @@ class AccessibilityManager
 
   std::unique_ptr<Dictation> dictation_;
   bool dictation_active_ = false;
+  bool network_dictation_dialog_is_showing_ = false;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
