@@ -6,6 +6,10 @@
 
 #import "ios/chrome/browser/ui/first_run/default_browser/instruction_table_view.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/instruction_table_view_cell.h"
+#include "ios/chrome/common/string_util.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,6 +19,9 @@ namespace {
 
 // Reuse ID for registering cell class in table views.
 constexpr NSString* kReuseID = @"InstructionTableCell";
+
+NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
+NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 }  // namespace
 
@@ -32,15 +39,23 @@ constexpr NSString* kReuseID = @"InstructionTableCell";
 
 - (void)viewDidLoad {
   self.bannerImage = [UIImage imageNamed:@"default_browser_screen_banner"];
-  self.titleText = @"Use Chrome by default";
-  self.subtitleText = @"You can now use Chrome anytime you tap links in "
-                      @"messages, documents, and other apps.";
+  self.titleText =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
+  self.subtitleText =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE);
 
-  self.primaryActionString = @"Make Default in Settings...";
-  self.secondaryActionString = @"No, Thanks";
+  self.primaryActionString = l10n_util::GetNSString(
+      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);
 
-  self.defaultBrowserSteps =
-      @[ @"Open Settings", @"Tap Default Browser App", @"Select Chrome" ];
+  self.secondaryActionString = l10n_util::GetNSString(
+      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
+
+  self.defaultBrowserSteps = @[
+    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
+    l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
+    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
+  ];
 
   UITableView* tableView =
       [[InstructionTableView alloc] initWithFrame:CGRectZero
@@ -81,10 +96,43 @@ constexpr NSString* kReuseID = @"InstructionTableCell";
   InstructionTableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:kReuseID];
 
-  [cell configureCellText:[self.defaultBrowserSteps objectAtIndex:indexPath.row]
-           withStepNumber:indexPath.row + 1];
+  NSString* text = [self.defaultBrowserSteps objectAtIndex:indexPath.row];
+  NSAttributedString* attributedString = [self putBoldPartInString:text];
+
+  [cell configureCellText:attributedString withStepNumber:indexPath.row + 1];
 
   return cell;
+}
+
+#pragma mark - Private
+
+// Parses a string with an embedded bold part inside, delineated by
+// "BEGIN_BOLD" and "END_BOLD". Returns an attributed string with bold part.
+- (NSAttributedString*)putBoldPartInString:(NSString*)string {
+  StringWithTag parsedString =
+      ParseStringWithTag(string, kBeginBoldTag, kEndBoldTag);
+
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
+
+  UIFontDescriptor* defaultDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
+
+  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline]
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+
+  [attributedString addAttribute:NSFontAttributeName
+                           value:[UIFont fontWithDescriptor:defaultDescriptor
+                                                       size:0.0]
+                           range:NSMakeRange(0, parsedString.string.length)];
+
+  [attributedString addAttribute:NSFontAttributeName
+                           value:[UIFont fontWithDescriptor:boldDescriptor
+                                                       size:0.0]
+                           range:parsedString.range];
+
+  return attributedString;
 }
 
 @end

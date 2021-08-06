@@ -55,9 +55,9 @@ constexpr CGFloat kStepNumberLabelSize = 20;
 
 #pragma mark - InstructionTableViewCell
 
-- (void)configureCellText:(NSString*)instructionText
+- (void)configureCellText:(NSAttributedString*)instructionText
            withStepNumber:(NSInteger)instructionStepNumber {
-  self.textLabel.text = instructionText;
+  self.textLabel.attributedText = instructionText;
   self.stepNumberLabel.text =
       [NSString stringWithFormat:@"%ld", instructionStepNumber];
 }

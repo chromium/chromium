@@ -235,6 +235,15 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chromium uses Face ID to ensure authorized access to your passwords.
       </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility [iOS only]">
+        You can now use Chromium anytime you tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP" desc="Text of the row indicating the third step of setting the default browser [iOS only]">
+        Select <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Chromium<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE" desc="Title of the screen suggesting to the user to use Chrome by default [iOS only]">
+        Use Chromium by Default
+      </message>
       <message name="IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE" desc="The text of the launch screen presented to the user on First Run when the browser is managed [iOS only]">
         Your organization is setting up Chromium...
       </message>

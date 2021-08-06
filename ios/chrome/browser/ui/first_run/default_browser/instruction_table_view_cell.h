@@ -11,7 +11,7 @@
 @interface InstructionTableViewCell : UITableViewCell
 
 // Configures instruction text and step number.
-- (void)configureCellText:(NSString*)instructionText
+- (void)configureCellText:(NSAttributedString*)instructionText
            withStepNumber:(NSInteger)instructionStepNumber;
 
 @end

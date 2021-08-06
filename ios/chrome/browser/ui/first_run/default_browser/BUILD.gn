@@ -28,12 +28,15 @@ source_set("default_browser_ui") {
     "instruction_table_view_cell.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/browser/ui/first_run/resources:default_browser_screen_banner",
     "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
