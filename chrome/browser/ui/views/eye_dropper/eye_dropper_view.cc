@@ -65,10 +65,14 @@ class EyeDropperView::ScreenCapturer
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
   SkBitmap GetBitmap() const;
+  int original_offset_x() const;
+  int original_offset_y() const;
 
  private:
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   SkBitmap frame_;
+  int original_offset_x_;
+  int original_offset_y_;
 };
 
 EyeDropperView::ScreenCapturer::ScreenCapturer() {
@@ -89,10 +93,44 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   memcpy(frame_.getAddr32(0, 0), frame->data(),
          frame->size().height() * frame->stride());
   frame_.setImmutable();
+
+  // The captured frame is in full desktop coordinates. E.g. the top left
+  // monitor should start from (0, 0), so we need to compute the correct
+  // origins.
+  original_offset_x_ = 0;
+  original_offset_y_ = 0;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+#if defined(OS_WIN)
+    // The window parameter is intentionally passed as nullptr on Windows
+    // because a non-null window parameter causes errors when restoring windows
+    // to saved positions in variable-DPI situations. See
+    // https://crbug.com/1224715 for details.
+    gfx::Rect scaled_bounds =
+        display::Screen::GetScreen()->DIPToScreenRectInWindow(
+            /*window=*/nullptr, display.bounds());
+#else
+    gfx::Rect scaled_bounds = gfx::ScaleToEnclosingRect(
+        display.bounds(), display.device_scale_factor());
+#endif
+    if (scaled_bounds.origin().x() < original_offset_x_) {
+      original_offset_x_ = scaled_bounds.origin().x();
+    }
+    if (scaled_bounds.origin().y() < original_offset_y_) {
+      original_offset_y_ = scaled_bounds.origin().y();
+    }
+  }
 }
 
 SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
   return frame_;
+}
+
+int EyeDropperView::ScreenCapturer::original_offset_x() const {
+  return original_offset_x_;
+}
+
+int EyeDropperView::ScreenCapturer::original_offset_y() const {
+  return original_offset_y_;
 }
 
 EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
@@ -171,11 +209,13 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   const SkBitmap frame = screen_capturer_->GetBitmap();
   // The captured frame is not scaled so we need to use widget's bounds in
   // pixels to have the magnified region match cursor position.
-  const gfx::Point center_position =
+  gfx::Point center_position =
       display::Screen::GetScreen()
           ->DIPToScreenRectInWindow(GetWidget()->GetNativeWindow(),
                                     GetWidget()->GetWindowBoundsInScreen())
           .CenterPoint();
+  center_position.Offset(-screen_capturer_->original_offset_x(),
+                         -screen_capturer_->original_offset_y());
   view_canvas->DrawImageInt(gfx::ImageSkia::CreateFrom1xBitmap(frame),
                             center_position.x() - pixel_count / 2,
                             center_position.y() - pixel_count / 2, pixel_count,
