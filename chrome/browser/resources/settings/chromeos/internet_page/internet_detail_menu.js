@@ -52,14 +52,6 @@ Polymer({
     },
 
     /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
-
-    /** @private */
     isGuest_: {
       type: Boolean,
       value() {
@@ -129,7 +121,7 @@ Polymer({
   currentRouteChanged(route, oldRoute) {
     this.eSimNetworkState_ = null;
     this.guid_ = '';
-    if (route !== routes.NETWORK_DETAIL || !this.isUpdatedCellularUiEnabled_) {
+    if (route !== routes.NETWORK_DETAIL) {
       return;
     }
 
@@ -192,11 +184,6 @@ Polymer({
    * @private
    */
   shouldShowDotsMenuButton_() {
-    // Only shown if the flag is enabled.
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
-
     // Not shown in guest mode.
     if (this.isGuest_) {
       return false;
@@ -212,7 +199,7 @@ Polymer({
    * @private
    */
   isDotsMenuButtonDisabled_() {
-    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+    if (!this.deviceState) {
       return false;
     }
     return OncMojo.deviceIsInhibited(this.deviceState);
