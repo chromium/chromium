@@ -1567,6 +1567,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_DNS_NOT_CONFIGURED" desc="Message for when no DNS servers are configured for display in `IP Configuration` drawer.">
         Not configured
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DEFAULT_CONNECTION" desc="Label for `default connection` chip displayed above network card.">
+        Default connection
+      </message>
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">

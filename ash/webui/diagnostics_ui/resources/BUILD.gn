@@ -75,6 +75,7 @@ js_library("connectivity_card") {
     ":network_info",
     ":routine_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 

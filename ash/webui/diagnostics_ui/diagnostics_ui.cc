@@ -131,6 +131,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkAuthenticationLabel", IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION},
       {"networkBssidLabel", IDS_ONC_WIFI_BSSID},
       {"networkChannelLabel", IDS_NETWORK_DIAGNOSTICS_CHANNEL},
+      {"networkDefaultConnectionLabel",
+       IDS_NETWORK_DIAGNOSTICS_DEFAULT_CONNECTION},
       {"networkDnsNotConfigured", IDS_NETWORK_DIAGNOSTICS_DNS_NOT_CONFIGURED},
       {"networkIpAddressLabel", IDS_NETWORK_DIAGNOSTICS_IP_ADDRESS},
       {"networkLinkSpeedLabel", IDS_NETWORK_DIAGNOSTICS_LINK_SPEED},

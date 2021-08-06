@@ -9,6 +9,7 @@ import './ip_config_info_drawer.js';
 import './network_info.js';
 import './routine_section.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
@@ -24,6 +25,8 @@ Polymer({
   is: 'connectivity-card',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
 
   /**
    * @private {?NetworkHealthProviderInterface}

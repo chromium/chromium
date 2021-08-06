@@ -125,6 +125,14 @@ export function connectivityCardTestSuite() {
     });
   });
 
+  test('CardConnectionChipInitializedCorrectly', () => {
+    return initializeConnectivityCard('ethernetGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          connectivityCardElement.$$('#defaultConnectionChip'),
+          connectivityCardElement.i18n('networkDefaultConnectionLabel'));
+    });
+  });
+
   test(
       'ConnectivityCardPopulated', () => {
         return initializeConnectivityCard('ethernetGuid').then(() => {
