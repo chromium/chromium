@@ -1729,11 +1729,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "enable-desktop-pwas-run-on-os-login",
-    "owners": [ "mjackson@microsoft.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-desktop-pwas-sub-apps",
     "owners": [ "isandrk@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 99

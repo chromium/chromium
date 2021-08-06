@@ -819,11 +819,6 @@ const char kDesktopPWAsTabStripSettingsName[] =
 const char kDesktopPWAsTabStripSettingsDescription[] =
     "Experimental UI for selecting whether a PWA should open in tabbed mode.";
 
-const char kDesktopPWAsRunOnOsLoginName[] = "Desktop PWAs run on OS login";
-const char kDesktopPWAsRunOnOsLoginDescription[] =
-    "Enable installed PWAs to be configured to automatically start when the OS "
-    "user logs in.";
-
 const char kDesktopPWAsSubAppsName[] = "Desktop PWA Sub Apps";
 const char kDesktopPWAsSubAppsDescription[] =
     "Enable installed PWAs to create shortcuts by installing their sub apps. "
