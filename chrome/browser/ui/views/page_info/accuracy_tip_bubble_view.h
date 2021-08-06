@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
-#include "components/accuracy_tips/accuracy_tip_ui.h"
 
 namespace content {
 class WebContents;
@@ -28,7 +28,7 @@ class Widget;
 // PageInfoBubbleView, just less prominently.
 class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
  public:
-  using AccuracyTipUI = accuracy_tips::AccuracyTipUI;
+  using AccuracyTipInteraction = accuracy_tips::AccuracyTipInteraction;
 
   // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
@@ -41,7 +41,7 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
       gfx::NativeView parent_window,
       content::WebContents* web_contents,
       accuracy_tips::AccuracyTipStatus status,
-      base::OnceCallback<void(AccuracyTipUI::Interaction)> close_callback);
+      base::OnceCallback<void(AccuracyTipInteraction)> close_callback);
   ~AccuracyTipBubbleView() override;
 
   AccuracyTipBubbleView(const AccuracyTipBubbleView&) = delete;
@@ -58,9 +58,8 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
 
-  base::OnceCallback<void(AccuracyTipUI::Interaction)> close_callback_;
-  AccuracyTipUI::Interaction action_taken_ =
-      AccuracyTipUI::Interaction::kNoAction;
+  base::OnceCallback<void(AccuracyTipInteraction)> close_callback_;
+  AccuracyTipInteraction action_taken_ = AccuracyTipInteraction::kNoAction;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ACCURACY_TIP_BUBBLE_VIEW_H_

@@ -1115,7 +1115,6 @@ static_library("ui") {
       "omnibox/omnibox_theme.cc",
       "omnibox/omnibox_theme.h",
       "page_action/page_action_icon_type.h",
-      "page_info/chrome_accuracy_tip_ui.cc",
       "page_info/chrome_accuracy_tip_ui.h",
       "page_info/page_info_dialog.cc",
       "page_info/page_info_dialog.h",

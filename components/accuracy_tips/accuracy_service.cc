@@ -13,9 +13,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_safe_browsing_client.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
-#include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
 #include "components/accuracy_tips/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -27,17 +27,17 @@ namespace accuracy_tips {
 
 // Returns a suffix for accuracy tips histograms.
 // Needs to match AccuracyTipInteractions from histogram_suffixes_list.xml.
-const std::string GetHistogramSuffix(AccuracyTipUI::Interaction interaction) {
+const std::string GetHistogramSuffix(AccuracyTipInteraction interaction) {
   switch (interaction) {
-    case AccuracyTipUI::Interaction::kNoAction:
+    case AccuracyTipInteraction::kNoAction:
       return "NoAction";
-    case AccuracyTipUI::Interaction::kLearnMore:
+    case AccuracyTipInteraction::kLearnMore:
       return "LearnMore";
-    case AccuracyTipUI::Interaction::kOptOut:
+    case AccuracyTipInteraction::kOptOut:
       return "OptOut";
-    case AccuracyTipUI::Interaction::kClosed:
+    case AccuracyTipInteraction::kClosed:
       return "Closed";
-    case AccuracyTipUI::Interaction::kDisabledByExperiment:
+    case AccuracyTipInteraction::kDisabledByExperiment:
       NOTREACHED();  // We don't need specific histograms for this.
       return "";
   }
@@ -65,14 +65,12 @@ void AccuracyService::RegisterProfilePrefs(
 }
 
 AccuracyService::AccuracyService(
-    std::unique_ptr<AccuracyTipUI> ui,
     std::unique_ptr<Delegate> delegate,
     PrefService* pref_service,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : ui_(std::move(ui)),
-      delegate_(std::move(delegate)),
+    : delegate_(std::move(delegate)),
       pref_service_(pref_service),
       ui_task_runner_(ui_task_runner),
       sample_url_(GURL(features::kSampleUrl.Get())),
@@ -101,7 +99,7 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
   const base::Value* last_interactions =
       pref_service_->Get(GetPreviousInteractionsPrefName(disable_ui_));
   const base::Value opt_out_value(
-      static_cast<int>(AccuracyTipUI::Interaction::kOptOut));
+      static_cast<int>(AccuracyTipInteraction::kOptOut));
   if (base::Contains(last_interactions->GetList(), opt_out_value)) {
     return std::move(callback).Run(AccuracyTipStatus::kOptOut);
   }
@@ -142,19 +140,18 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
   pref_service_->SetTime(GetLastShownPrefName(disable_ui_), clock_->Now());
 
   if (disable_ui_) {
-    return OnAccuracyTipClosed(
-        base::TimeTicks(), AccuracyTipUI::Interaction::kDisabledByExperiment);
+    return OnAccuracyTipClosed(base::TimeTicks(),
+                               AccuracyTipInteraction::kDisabledByExperiment);
   }
 
-  ui_->ShowAccuracyTip(
+  delegate_->ShowAccuracyTip(
       web_contents, AccuracyTipStatus::kShowAccuracyTip,
       base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void AccuracyService::OnAccuracyTipClosed(
-    base::TimeTicks time_opened,
-    AccuracyTipUI::Interaction interaction) {
+void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
+                                          AccuracyTipInteraction interaction) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   ListPrefUpdate update(pref_service_,
                         GetPreviousInteractionsPrefName(disable_ui_));
@@ -167,7 +164,7 @@ void AccuracyService::OnAccuracyTipClosed(
   base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown",
                               interaction_list->GetList().size());
 
-  if (interaction != AccuracyTipUI::Interaction::kDisabledByExperiment) {
+  if (interaction != AccuracyTipInteraction::kDisabledByExperiment) {
     const base::TimeDelta time_open = base::TimeTicks::Now() - time_opened;
     base::UmaHistogramMediumTimes("Privacy.AccuracyTip.AccuracyTipTimeOpen",
                                   time_open);

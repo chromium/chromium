@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
-#include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -90,7 +90,7 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
     gfx::NativeView parent_window,
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus status,
-    base::OnceCallback<void(AccuracyTipUI::Interaction)> close_callback)
+    base::OnceCallback<void(AccuracyTipInteraction)> close_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
                              parent_window,
@@ -164,7 +164,7 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
   // There can either be an action already specified or a closed_reason.
-  DCHECK(!(action_taken_ != AccuracyTipUI::Interaction::kNoAction &&
+  DCHECK(!(action_taken_ != AccuracyTipInteraction::kNoAction &&
            widget->closed_reason() != ClosedReason::kUnspecified));
 
   switch (widget->closed_reason()) {
@@ -174,12 +174,12 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
       // action_taken_ may be set. Otherwise, keep default of kNoAction.
       break;
     case ClosedReason::kAcceptButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kLearnMore;
+      action_taken_ = AccuracyTipInteraction::kLearnMore;
       break;
     case ClosedReason::kEscKeyPressed:
     case ClosedReason::kCloseButtonClicked:
     case ClosedReason::kCancelButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kClosed;
+      action_taken_ = AccuracyTipInteraction::kClosed;
       break;
     case ClosedReason::kLostFocus:
       NOTREACHED();
@@ -190,7 +190,7 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
 
 void AccuracyTipBubbleView::OpenHelpCenter() {
   // TODO(crbug.com/1210891): Add link to the right info page.
-  action_taken_ = AccuracyTipUI::Interaction::kLearnMore;
+  action_taken_ = AccuracyTipInteraction::kLearnMore;
   web_contents()->OpenURL(content::OpenURLParams(
       GURL(accuracy_tips::features::kLearnMoreUrl.Get().empty()
                ? chrome::kSafetyTipHelpCenterURL
@@ -200,7 +200,7 @@ void AccuracyTipBubbleView::OpenHelpCenter() {
 }
 
 void AccuracyTipBubbleView::OnDontShowAgainClicked() {
-  action_taken_ = AccuracyTipUI::Interaction::kOptOut;
+  action_taken_ = AccuracyTipInteraction::kOptOut;
   GetWidget()->Close();
 }
 
@@ -219,11 +219,11 @@ void AccuracyTipBubbleView::DidChangeVisibleSecurityState() {
   // Do nothing. (Base class closes the bubble.)
 }
 
-// Implementation for c/b/ui/chrome_accuracy_tip_ui.h
+// Implementation for c/b/ui/chrome_accuracy_tip_interaction.h
 void ShowAccuracyTipDialog(
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus status,
-    base::OnceCallback<void(accuracy_tips::AccuracyTipUI::Interaction)>
+    base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
         close_callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)

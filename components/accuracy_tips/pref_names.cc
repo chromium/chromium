@@ -15,10 +15,10 @@ const char kLastAccuracyTipShown[] = "accuracy_tips.last_tip_shown";
 const char kLastAccuracyTipShownDisabledUi[] =
     "accuracy_tips.last_tip_shown_disabled";
 
-// List of |AccuracyTipUI::Interaction| events from previous dialog prompts.
+// List of |AccuracyTipInteraction| events from previous dialog prompts.
 const char kPreviousInteractions[] = "accuracy_tips.previous_interactions";
 
-// List of |AccuracyTipUI::Interaction| events from previous dialog prompts.
+// List of |AccuracyTipInteraction| events from previous dialog prompts.
 // Alternative pref to simulate behavior for dark launch.
 const char kPreviousInteractionsDisabledUi[] =
     "accuracy_tips.previous_interactions_disabled";
