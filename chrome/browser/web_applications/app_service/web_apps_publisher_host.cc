@@ -31,11 +31,13 @@ namespace web_app {
 
 WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
     : profile_(profile),
-      provider_(WebAppProvider::Get(profile)),
+      provider_(WebAppProvider::GetForWebApps(profile)),
       publisher_helper_(profile,
                         apps::mojom::AppType::kWeb,
                         this,
-                        /*observe_media_requests=*/true) {}
+                        /*observe_media_requests=*/true) {
+  DCHECK(provider_);
+}
 
 WebAppsPublisherHost::~WebAppsPublisherHost() = default;
 
