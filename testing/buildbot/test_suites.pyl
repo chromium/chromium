@@ -1494,12 +1494,6 @@
       'color_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
-      'components_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
-        ],
-      },
       'compositor_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
@@ -1658,6 +1652,12 @@
     'fuchsia_experimental_gtests': {
       'components_browsertests': {
         'mixins': ['fuchsia_runner_logs'],
+      },
+      'components_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
+        ],
       },
       'content_browsertests': {
         'mixins': ['fuchsia_runner_logs'],
