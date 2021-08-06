@@ -88,6 +88,7 @@ class ChromeAccountManagerService : public KeyedService,
   // ChromeBrowserProvider implementation.
   void OnChromeIdentityServiceDidChange(
       ios::ChromeIdentityService* new_service) override;
+  void OnChromeBrowserProviderWillBeDestroyed() override;
 
  private:
   // Updates PatternAccountRestriction with the current pref_service_. If

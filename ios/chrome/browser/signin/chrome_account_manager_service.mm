@@ -147,13 +147,13 @@ ChromeAccountManagerService::ChromeAccountManagerService(
         base::BindRepeating(&ChromeAccountManagerService::UpdateRestriction,
                             base::Unretained(this)));
 
-    browser_provider_observation_.Observe(&ios::GetChromeBrowserProvider());
-    identity_service_observation_.Observe(
-        ios::GetChromeBrowserProvider().GetChromeIdentityService());
-
     // Force initialisation of `restriction_`.
     UpdateRestriction();
   }
+
+  browser_provider_observation_.Observe(&ios::GetChromeBrowserProvider());
+  identity_service_observation_.Observe(
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 }
 
 ChromeAccountManagerService::~ChromeAccountManagerService() {}
@@ -259,4 +259,9 @@ void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
     ios::ChromeIdentityService* new_service) {
   identity_service_observation_.Observe(
       ios::GetChromeBrowserProvider().GetChromeIdentityService());
+}
+
+void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {
+  DCHECK(!identity_service_observation_.IsObserving());
+  browser_provider_observation_.Reset();
 }
