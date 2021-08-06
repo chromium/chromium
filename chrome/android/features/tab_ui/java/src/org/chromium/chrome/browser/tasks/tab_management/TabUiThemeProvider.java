@@ -507,6 +507,50 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Return the background color used for tab UI toolbar in selection edit mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The background color for the toolbar when tab switcher is in selection edit mode.
+     */
+    @ColorInt
+    public static int getTabSelectionToolbarBackground(Context context, boolean isIncognito) {
+        if (!themeRefactorEnabled()) {
+            return ApiCompatibilityUtils.getColor(context.getResources(),
+                    isIncognito ? R.color.default_control_color_active_dark
+                                : R.color.default_control_color_active);
+        } else {
+            if (isIncognito) {
+                return ApiCompatibilityUtils.getColor(context.getResources(),
+                        R.color.incognito_tab_selection_editor_toolbar_bg_color);
+            } else {
+                return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+            }
+        }
+    }
+
+    /**
+     * Returns the {@link ColorStateList} for icons on the tab UI toolbar in selection edit mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorStateList} for icons on the toolbar when tab switcher is in selection
+     *         edit mode.
+     */
+    public static ColorStateList getTabSelectionToolbarIconTintList(
+            Context context, boolean isIncognito) {
+        if (!themeRefactorEnabled()) {
+            return AppCompatResources.getColorStateList(context,
+                    isIncognito ? R.color.dark_text_color_list
+                                : R.color.default_text_color_inverse_list);
+        }
+
+        return AppCompatResources.getColorStateList(context,
+                isIncognito ? R.color.default_text_color_light_list
+                            : R.color.default_text_color_list);
+    }
+
+    /**
      * Returns the message card background resource id based on the incognito mode.
      *
      * @param isIncognito Whether the resource is used for incognito mode.

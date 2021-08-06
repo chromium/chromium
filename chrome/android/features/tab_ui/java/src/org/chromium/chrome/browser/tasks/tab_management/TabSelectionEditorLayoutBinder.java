@@ -36,12 +36,12 @@ public class TabSelectionEditorLayoutBinder {
         } else if (TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR == propertyKey) {
             view.getToolbar().setToolbarBackgroundColor(
                     model.get(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR));
+        } else if (TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT == propertyKey) {
+            view.getToolbar().setTextColorStateList(
+                    model.get(TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT));
         } else if (TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT == propertyKey) {
             view.getToolbar().setButtonTint(
                     model.get(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT));
-        } else if (TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE == propertyKey) {
-            view.getToolbar().setTextAppearance(
-                    model.get(TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE));
         } else if (TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT == propertyKey) {
             view.getToolbar().setActionButtonText(
                     model.get(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT));

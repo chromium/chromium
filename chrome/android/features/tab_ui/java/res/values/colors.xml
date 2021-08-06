@@ -74,4 +74,6 @@
 
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_color">@color/baseline_primary_200</color>
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_hovered_color">@color/modern_white</color>
+
+    <color name="incognito_tab_selection_editor_toolbar_bg_color">@color/toolbar_background_primary_dark</color>
 </resources>
