@@ -203,11 +203,6 @@ bool ResourceLoadScheduler::Release(
 
   auto running_request = running_requests_.find(id);
   if (running_request != running_requests_.end()) {
-    if (running_request->value >= PriorityImportanceThreshold()) {
-      in_flight_important_requests_--;
-      DCHECK_GE(in_flight_important_requests_, 0);
-    }
-
     running_requests_.erase(id);
     running_throttleable_requests_.erase(id);
 
@@ -320,16 +315,12 @@ bool ResourceLoadScheduler::GetNextPendingRequest(ClientId* id) {
   // corresponding |pending_queue_update_times_|.
   if (use_stoppable) {
     *id = stoppable_it->client_id;
-    if (ShouldDelay(pending_request_map_.find(*id)))
-      return false;
     stoppable_queue.erase(stoppable_it);
     pending_queue_update_times_[ThrottleOption::kStoppable] = clock_->Now();
     return true;
   }
 
   *id = throttleable_it->client_id;
-  if (ShouldDelay(pending_request_map_.find(*id)))
-    return false;
   throttleable_queue.erase(throttleable_it);
   pending_queue_update_times_[ThrottleOption::kThrottleable] = clock_->Now();
   return true;
@@ -355,44 +346,10 @@ void ResourceLoadScheduler::MaybeRun() {
   }
 }
 
-void ResourceLoadScheduler::MarkFirstPaint() {
-  if (!base::FeatureList::IsEnabled(
-          features::kDelayCompetingLowPriorityRequests) ||
-      delay_milestone_reached_) {
-    return;
-  }
-
-  if (ComputeDelayMilestone() ==
-      mojom::blink::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint) {
-    DCHECK(!delay_milestone_reached_);
-    delay_milestone_reached_ = true;
-    MaybeRun();
-  }
-}
-
-void ResourceLoadScheduler::MarkFirstContentfulPaint() {
-  if (!base::FeatureList::IsEnabled(
-          features::kDelayCompetingLowPriorityRequests) ||
-      delay_milestone_reached_) {
-    return;
-  }
-
-  if (ComputeDelayMilestone() ==
-      mojom::blink::DelayCompetingLowPriorityRequestsDelayType::
-          kFirstContentfulPaint) {
-    DCHECK(!delay_milestone_reached_);
-    delay_milestone_reached_ = true;
-    MaybeRun();
-  }
-}
-
 void ResourceLoadScheduler::Run(ResourceLoadScheduler::ClientId id,
                                 ResourceLoadSchedulerClient* client,
                                 bool throttleable,
                                 ResourceLoadPriority priority) {
-  if (priority >= PriorityImportanceThreshold()) {
-    in_flight_important_requests_++;
-  }
   running_requests_.insert(id, priority);
   if (throttleable)
     running_throttleable_requests_.insert(id);
@@ -453,137 +410,6 @@ void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
 
 void ResourceLoadScheduler::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
-}
-
-bool ResourceLoadScheduler::ShouldDelay(
-    PendingRequestMap::iterator found) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kDelayCompetingLowPriorityRequests)) {
-    return false;
-  }
-
-  // The milestone already passed. We no longer have to delay requests.
-  if (delay_milestone_reached_)
-    return false;
-
-  // There are no inflight important requests. We don't have to delay the
-  // pending request even if it has low priority.
-  if (in_flight_important_requests_ == 0)
-    return false;
-
-  // Hidden pages already have requests throttled/deprioritized, and delaying
-  // further can have undesirable effects on sites, and there's little benefit
-  // to try to optimize them using this feature.
-  if (frame_scheduler_lifecycle_state_ ==
-      scheduler::SchedulingLifecycleState::kHidden) {
-    return false;
-  }
-
-  // We didn't find the pending request for the id.
-  if (found == pending_request_map_.end())
-    return false;
-
-  // The pending request is not in low priority.
-  if (found->value->priority > ResourceLoadPriority::kLow)
-    return false;
-
-  if (features::kDelayCompetingLowPriorityRequestsDelayParam.Get() ==
-      features::DelayCompetingLowPriorityRequestsDelayType::
-          kUseOptimizationGuide) {
-    // The optimization guide is supposed to be used, but the hints are not
-    // available. Give up delaying requests.
-    if (!optimization_hints_)
-      return false;
-    // The optimization guide suggests the default behavior (no delay).
-    if (optimization_hints_->delay_type ==
-        mojom::blink::DelayCompetingLowPriorityRequestsDelayType::kUnknown) {
-      return false;
-    }
-  }
-
-  // We get a chance to delay competing low priority requests. Record the fact
-  // in UKM to measure the application ratio of the optimization.
-  if (loading_behavior_observer_) {
-    loading_behavior_observer_->DidObserveLoadingBehavior(
-        kLoadingBehaviorCompetingLowPriorityRequestsDelayed);
-  }
-
-  return true;
-}
-
-ResourceLoadPriority ResourceLoadScheduler::PriorityImportanceThreshold() {
-  // The default value defined by the field trial.
-  DCHECK_EQ(
-      features::DelayCompetingLowPriorityRequestsThreshold::kHigh,
-      features::kDelayCompetingLowPriorityRequestsThresholdParam.default_value);
-  const auto default_value = ResourceLoadPriority::kHigh;
-
-  using FeatureDelayType = features::DelayCompetingLowPriorityRequestsDelayType;
-  using FeaturePriorityThreshold =
-      features::DelayCompetingLowPriorityRequestsThreshold;
-  using MojomPriorityThreshold =
-      mojom::blink::DelayCompetingLowPriorityRequestsPriorityThreshold;
-
-  switch (features::kDelayCompetingLowPriorityRequestsDelayParam.Get()) {
-    // Use parameters provided by the field trial.
-    case FeatureDelayType::kFirstPaint:
-    case FeatureDelayType::kFirstContentfulPaint:
-    case FeatureDelayType::kAlways:
-      switch (
-          features::kDelayCompetingLowPriorityRequestsThresholdParam.Get()) {
-        case FeaturePriorityThreshold::kHigh:
-          return ResourceLoadPriority::kHigh;
-        case FeaturePriorityThreshold::kMedium:
-          return ResourceLoadPriority::kMedium;
-      }
-      NOTREACHED();
-    // Use hints provided by the optimization guide.
-    case FeatureDelayType::kUseOptimizationGuide:
-      if (!optimization_hints_) {
-        // The optimization guide service didn't provide the hints. Fallback to
-        // the default value.
-        return default_value;
-      }
-      switch (optimization_hints_->priority_threshold) {
-        case MojomPriorityThreshold::kHigh:
-          return ResourceLoadPriority::kHigh;
-        case MojomPriorityThreshold::kMedium:
-          return ResourceLoadPriority::kMedium;
-        case MojomPriorityThreshold::kUnknown:
-          // The optimization guide didn't decide the priority threshold.
-          // Fallback to the default value.
-          return default_value;
-      }
-      NOTREACHED();
-  }
-}
-
-mojom::blink::DelayCompetingLowPriorityRequestsDelayType
-ResourceLoadScheduler::ComputeDelayMilestone() {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kDelayCompetingLowPriorityRequests));
-
-  using FeatureDelayType = features::DelayCompetingLowPriorityRequestsDelayType;
-  using MojomDelayType =
-      mojom::blink::DelayCompetingLowPriorityRequestsDelayType;
-
-  switch (features::kDelayCompetingLowPriorityRequestsDelayParam.Get()) {
-    // Use parameters provided by the field trial.
-    case FeatureDelayType::kFirstPaint:
-      return MojomDelayType::kFirstPaint;
-    case FeatureDelayType::kFirstContentfulPaint:
-      return MojomDelayType::kFirstContentfulPaint;
-    case FeatureDelayType::kAlways:
-      return MojomDelayType::kUnknown;
-
-    // Use hints provided by the optimization guide.
-    case FeatureDelayType::kUseOptimizationGuide:
-      // Give up delaying requests when the optimization guide is enabled but
-      // the hints are not available. See ShouldDelay().
-      if (!optimization_hints_)
-        return MojomDelayType::kUnknown;
-      return optimization_hints_->delay_type;
-  }
 }
 
 }  // namespace blink

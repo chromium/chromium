@@ -19,15 +19,5 @@ bool ShouldUseOptimizationGuideForDelayAsyncScript() {
   return is_feature_enabled;
 }
 
-bool ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests() {
-  static const bool is_feature_enabled =
-      base::FeatureList::IsEnabled(
-          blink::features::kDelayCompetingLowPriorityRequests) &&
-      blink::features::kDelayCompetingLowPriorityRequestsDelayParam.Get() ==
-          blink::features::DelayCompetingLowPriorityRequestsDelayType::
-              kUseOptimizationGuide;
-  return is_feature_enabled;
-}
-
 }  // namespace features
 }  // namespace optimization_guide

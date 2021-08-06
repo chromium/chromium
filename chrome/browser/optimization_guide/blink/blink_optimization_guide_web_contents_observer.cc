@@ -91,11 +91,6 @@ BlinkOptimizationGuideWebContentsObserver::
   std::vector<proto::OptimizationType> opts;
   if (features::ShouldUseOptimizationGuideForDelayAsyncScript())
     opts.push_back(proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION);
-  if (features::
-          ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests()) {
-    opts.push_back(
-        proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS);
-  }
   if (!opts.empty())
     decider->RegisterOptimizationTypes(opts);
 }

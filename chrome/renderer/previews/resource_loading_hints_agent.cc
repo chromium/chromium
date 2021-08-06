@@ -52,15 +52,6 @@ void ResourceLoadingHintsAgent::DidCreateNewDocument() {
           blink_optimization_guide_hints_->delay_async_script_execution_hints
               ->delay_type;
     }
-    if (blink_optimization_guide_hints_
-            ->delay_competing_low_priority_requests_hints) {
-      hints.delay_competing_low_priority_requests_delay_type =
-          blink_optimization_guide_hints_
-              ->delay_competing_low_priority_requests_hints->delay_type;
-      hints.delay_competing_low_priority_requests_priority_threshold =
-          blink_optimization_guide_hints_
-              ->delay_competing_low_priority_requests_hints->priority_threshold;
-    }
     web_frame->SetOptimizationGuideHints(hints);
   }
   // Once the hints are sent to the local frame, clear the local copy to prevent

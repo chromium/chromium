@@ -12,7 +12,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/delay_async_script_execution_metadata.pb.h"
-#include "components/optimization_guide/proto/delay_competing_low_priority_requests_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
@@ -103,17 +102,6 @@ class BlinkOptimizationGuideBrowserTest
               blink::features::kDelayAsyncScriptExecution);
         }
         break;
-      case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-        if (IsFeatureFlagEnabled()) {
-          std::map<std::string, std::string> parameters;
-          parameters["until"] = "use_optimization_guide";
-          enabled_features.emplace_back(
-              blink::features::kDelayCompetingLowPriorityRequests, parameters);
-        } else {
-          disabled_features.push_back(
-              blink::features::kDelayCompetingLowPriorityRequests);
-        }
-        break;
       default:
         NOTREACHED();
         break;
@@ -131,15 +119,6 @@ class BlinkOptimizationGuideBrowserTest
         proto::DelayAsyncScriptExecutionMetadata metadata;
         metadata.set_delay_type(
             proto::PerfectHeuristicsDelayType::DELAY_TYPE_FINISHED_PARSING);
-        optimization_guide_metadata.SetAnyMetadataForTesting(metadata);
-        break;
-      }
-      case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS: {
-        proto::DelayCompetingLowPriorityRequestsMetadata metadata;
-        metadata.set_delay_type(
-            proto::PerfectHeuristicsDelayType::DELAY_TYPE_FIRST_PAINT);
-        metadata.set_priority_threshold(
-            proto::PriorityThreshold::PRIORITY_THRESHOLD_MEDIUM);
         optimization_guide_metadata.SetAnyMetadataForTesting(metadata);
         break;
       }
@@ -171,18 +150,6 @@ class BlinkOptimizationGuideBrowserTest
                     hints.delay_async_script_execution_hints->delay_type);
         }
         return !!hints.delay_async_script_execution_hints;
-      case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-        using blink::mojom::DelayCompetingLowPriorityRequestsDelayType;
-        using blink::mojom::DelayCompetingLowPriorityRequestsPriorityThreshold;
-        if (hints.delay_competing_low_priority_requests_hints) {
-          EXPECT_EQ(
-              DelayCompetingLowPriorityRequestsDelayType::kFirstPaint,
-              hints.delay_competing_low_priority_requests_hints->delay_type);
-          EXPECT_EQ(DelayCompetingLowPriorityRequestsPriorityThreshold::kMedium,
-                    hints.delay_competing_low_priority_requests_hints
-                        ->priority_threshold);
-        }
-        return !!hints.delay_competing_low_priority_requests_hints;
       default:
         NOTREACHED();
         return false;
@@ -194,9 +161,6 @@ class BlinkOptimizationGuideBrowserTest
       case proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION:
         return GetURLWithMockHost(
             "/optimization_guide/delay-async-script-execution.html");
-      case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-        return GetURLWithMockHost(
-            "/optimization_guide/delay-competing-low-priority-requests.html");
       default:
         NOTREACHED();
         return GURL();
@@ -214,14 +178,6 @@ class BlinkOptimizationGuideBrowserTest
               entries.front(),
               ukm::builders::PerfectHeuristics::
                   kdelay_async_script_execution_before_finished_parsingName,
-              1u);
-          break;
-        case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-          EXPECT_EQ(1u, entries.size());
-          test_ukm_recorder_->ExpectEntryMetric(
-              entries.front(),
-              ukm::builders::PerfectHeuristics::
-                  kDelayCompetingLowPriorityRequestsName,
               1u);
           break;
         default:
@@ -244,9 +200,7 @@ INSTANTIATE_TEST_SUITE_P(
     BlinkOptimizationGuideBrowserTest,
     testing::Combine(
         // The optimization type.
-        testing::Values(
-            proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION,
-            proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS),
+        testing::Values(proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION),
         // Whether the feature flag for the optimization type is enabled.
         testing::Bool()));
 
@@ -402,9 +356,7 @@ INSTANTIATE_TEST_SUITE_P(
     BlinkOptimizationGuidePrerenderBrowserTest,
     testing::Combine(
         // The optimization type.
-        testing::Values(
-            proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION,
-            proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS),
+        testing::Values(proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION),
         // Whether the feature flag for the optimization type is enabled.
         testing::Bool()));
 

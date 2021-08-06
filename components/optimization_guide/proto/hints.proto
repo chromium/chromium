@@ -101,6 +101,9 @@ message GetHintsResponse {
 
 
 enum OptimizationType {
+  // Values for obsolete optimizations.
+  reserved 12;
+
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
   NOSCRIPT = 1;
@@ -131,9 +134,6 @@ enum OptimizationType {
   // This optimization provides information about the effective delay for async
   // script execution.
   DELAY_ASYNC_SCRIPT_EXECUTION = 11;
-  // This optimization provides information about the effective delay and
-  // priority thresholds for delaying low priority requests.
-  DELAY_COMPETING_LOW_PRIORITY_REQUESTS = 12;
   // This optimization provides information about how to throttle meda requests
   // to reduce the bitrate of adaptively streamed media.
   LITE_VIDEO = 13;

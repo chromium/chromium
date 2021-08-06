@@ -667,14 +667,6 @@ void WebLocalFrameImpl::SetOptimizationGuideHints(
         mojom::blink::DelayAsyncScriptExecutionHints::New(
             *web_hints.delay_async_script_execution_delay_type);
   }
-  if (web_hints.delay_competing_low_priority_requests_delay_type &&
-      web_hints.delay_competing_low_priority_requests_priority_threshold) {
-    hints->delay_competing_low_priority_requests_hints =
-        mojom::blink::DelayCompetingLowPriorityRequestsHints::New(
-            *web_hints.delay_competing_low_priority_requests_delay_type,
-            *web_hints
-                 .delay_competing_low_priority_requests_priority_threshold);
-  }
   GetFrame()->SetOptimizationGuideHints(std::move(hints));
 }
 

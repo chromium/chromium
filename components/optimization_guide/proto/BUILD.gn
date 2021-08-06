@@ -13,7 +13,6 @@ proto_library("optimization_guide_proto") {
   sources = [
     "common_types.proto",
     "delay_async_script_execution_metadata.proto",
-    "delay_competing_low_priority_requests_metadata.proto",
     "hint_cache.proto",
     "hints.proto",
     "lite_video_metadata.proto",
@@ -32,7 +31,6 @@ if (is_android) {
     sources = [
       "common_types.proto",
       "delay_async_script_execution_metadata.proto",
-      "delay_competing_low_priority_requests_metadata.proto",
       "hints.proto",
       "lite_video_metadata.proto",
       "loading_predictor_metadata.proto",

@@ -8,7 +8,6 @@
 #include "chrome/browser/optimization_guide/blink/blink_optimization_guide_feature_flag_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/proto/delay_async_script_execution_metadata.pb.h"
-#include "components/optimization_guide/proto/delay_competing_low_priority_requests_metadata.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -42,11 +41,6 @@ void BlinkOptimizationGuideInquirer::InquireHints(
     supported_optimization_types.push_back(
         proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION);
   }
-  if (features::
-          ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests()) {
-    supported_optimization_types.push_back(
-        proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS);
-  }
 
   for (auto optimization_type : supported_optimization_types) {
     // CanApplyOptimizationAsync() synchronously runs the callback when the
@@ -76,9 +70,6 @@ void BlinkOptimizationGuideInquirer::DidInquireHints(
   switch (optimization_type) {
     case proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION:
       PopulateHintsForDelayAsyncScriptExecution(metadata);
-      break;
-    case proto::OptimizationType::DELAY_COMPETING_LOW_PRIORITY_REQUESTS:
-      PopulateHintsForDelayCompetingLowPriorityRequests(metadata);
       break;
     default:
       NOTREACHED();
@@ -120,58 +111,6 @@ void BlinkOptimizationGuideInquirer::PopulateHintsForDelayAsyncScriptExecution(
   }
   DCHECK(!optimization_guide_hints_->delay_async_script_execution_hints);
   optimization_guide_hints_->delay_async_script_execution_hints =
-      std::move(hints);
-}
-
-void BlinkOptimizationGuideInquirer::
-    PopulateHintsForDelayCompetingLowPriorityRequests(
-        const OptimizationMetadata& optimization_metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Give up providing the hints when the metadata is not available.
-  absl::optional<proto::DelayCompetingLowPriorityRequestsMetadata> metadata =
-      optimization_metadata
-          .ParsedMetadata<proto::DelayCompetingLowPriorityRequestsMetadata>();
-  if (!metadata || !metadata->delay_type() || !metadata->priority_threshold())
-    return;
-
-  // Populate the metadata into the hints.
-  using ProtoDelayType = proto::PerfectHeuristicsDelayType;
-  using MojomDelayType =
-      blink::mojom::DelayCompetingLowPriorityRequestsDelayType;
-  auto hints = blink::mojom::DelayCompetingLowPriorityRequestsHints::New();
-  switch (metadata->delay_type()) {
-    case ProtoDelayType::DELAY_TYPE_UNKNOWN:
-      hints->delay_type = MojomDelayType::kUnknown;
-      break;
-    case ProtoDelayType::DELAY_TYPE_FIRST_PAINT:
-      hints->delay_type = MojomDelayType::kFirstPaint;
-      break;
-    case ProtoDelayType::DELAY_TYPE_FIRST_CONTENTFUL_PAINT:
-      hints->delay_type = MojomDelayType::kFirstContentfulPaint;
-      break;
-    case ProtoDelayType::DELAY_TYPE_FINISHED_PARSING:
-    case ProtoDelayType::DELAY_TYPE_FIRST_PAINT_OR_FINISHED_PARSING:
-      // DelayCompetingLowPriorityRequests doesn't support these milestones.
-      NOTREACHED();
-      return;
-  }
-  using MojomPriorityThreshold =
-      blink::mojom::DelayCompetingLowPriorityRequestsPriorityThreshold;
-  switch (metadata->priority_threshold()) {
-    case proto::PriorityThreshold::PRIORITY_THRESHOLD_UNKNOWN:
-      hints->priority_threshold = MojomPriorityThreshold::kUnknown;
-      break;
-    case proto::PriorityThreshold::PRIORITY_THRESHOLD_MEDIUM:
-      hints->priority_threshold = MojomPriorityThreshold::kMedium;
-      break;
-    case proto::PriorityThreshold::PRIORITY_THRESHOLD_HIGH:
-      hints->priority_threshold = MojomPriorityThreshold::kHigh;
-      break;
-  }
-  DCHECK(
-      !optimization_guide_hints_->delay_competing_low_priority_requests_hints);
-  optimization_guide_hints_->delay_competing_low_priority_requests_hints =
       std::move(hints);
 }
 

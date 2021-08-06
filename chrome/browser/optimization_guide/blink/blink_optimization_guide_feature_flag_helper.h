@@ -10,8 +10,6 @@ namespace features {
 
 bool ShouldUseOptimizationGuideForDelayAsyncScript();
 
-bool ShouldUseOptimizationGuideForDelayCompetingLowPriorityRequests();
-
 }  // namespace features
 }  // namespace optimization_guide
 

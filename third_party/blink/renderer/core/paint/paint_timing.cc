@@ -238,8 +238,6 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
   if (frame && frame->GetDocument()) {
     Document* document = frame->GetDocument();
     document->MarkFirstPaint();
-    if (frame->IsMainFrame())
-      document->Fetcher()->MarkFirstPaint();
   }
 
   first_paint_ = stamp;
@@ -259,9 +257,6 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
   if (!frame || !frame->IsMainFrame())
     return;
   frame->View()->OnFirstContentfulPaint();
-
-  if (frame->GetDocument() && frame->GetDocument()->Fetcher())
-    frame->GetDocument()->Fetcher()->MarkFirstContentfulPaint();
 
   if (frame->GetFrameScheduler())
     frame->GetFrameScheduler()->OnFirstContentfulPaintInMainFrame();

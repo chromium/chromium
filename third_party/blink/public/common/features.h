@@ -212,25 +212,6 @@ enum class DelayAsyncScriptDelayType {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam;
 
-BLINK_COMMON_EXPORT extern const base::Feature
-    kDelayCompetingLowPriorityRequests;
-enum class DelayCompetingLowPriorityRequestsDelayType {
-  kFirstPaint,
-  kFirstContentfulPaint,
-  kAlways,
-  kUseOptimizationGuide,
-};
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    DelayCompetingLowPriorityRequestsDelayType>
-    kDelayCompetingLowPriorityRequestsDelayParam;
-enum class DelayCompetingLowPriorityRequestsThreshold {
-  kMedium,
-  kHigh,
-};
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    DelayCompetingLowPriorityRequestsThreshold>
-    kDelayCompetingLowPriorityRequestsThresholdParam;
-
 BLINK_COMMON_EXPORT extern const base::Feature kAppCache;
 BLINK_COMMON_EXPORT extern const base::Feature kAppCacheRequireOriginTrial;
 

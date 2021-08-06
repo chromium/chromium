@@ -13,11 +13,6 @@ namespace blink {
 struct WebOptimizationGuideHints {
   absl::optional<mojom::DelayAsyncScriptExecutionDelayType>
       delay_async_script_execution_delay_type;
-
-  absl::optional<mojom::DelayCompetingLowPriorityRequestsDelayType>
-      delay_competing_low_priority_requests_delay_type;
-  absl::optional<mojom::DelayCompetingLowPriorityRequestsPriorityThreshold>
-      delay_competing_low_priority_requests_priority_threshold;
 };
 
 }  // namespace blink

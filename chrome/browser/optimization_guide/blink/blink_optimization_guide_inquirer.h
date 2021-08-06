@@ -62,8 +62,6 @@ class BlinkOptimizationGuideInquirer {
 
   void PopulateHintsForDelayAsyncScriptExecution(
       const OptimizationMetadata& optimization_metadata);
-  void PopulateHintsForDelayCompetingLowPriorityRequests(
-      const OptimizationMetadata& optimization_metadata);
 
   // The hints currently available.
   blink::mojom::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
