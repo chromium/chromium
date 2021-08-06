@@ -169,20 +169,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are reserved for activation.
-  // TODO(https://crbug.com/1195751): Remove ReservationInfo by reverting
-  // https://crrev.com/c/2982683. This is no longer necessary as cancellation
-  // during activation never happens in the current implementation.
-  struct ReservationInfo {
-    ReservationInfo(std::unique_ptr<PrerenderHost> prerender_host,
-                    int activator_frame_tree_node_id);
-    ReservationInfo(ReservationInfo&& info);
-    ReservationInfo& operator=(ReservationInfo&& info) = default;
-    ~ReservationInfo();
-
-    std::unique_ptr<PrerenderHost> prerender_host;
-    int activator_frame_tree_node_id;
-  };
-  base::flat_map<int, ReservationInfo>
+  base::flat_map<int, std::unique_ptr<PrerenderHost>>
       reserved_prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are scheduled to be deleted asynchronously.

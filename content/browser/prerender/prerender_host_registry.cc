@@ -188,9 +188,8 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   DCHECK_EQ(host_id, host->frame_tree_node_id());
 
   // Reserve the host for activation.
-  auto result = reserved_prerender_host_by_frame_tree_node_id_.try_emplace(
-      host_id, std::move(host),
-      navigation_request.frame_tree_node()->frame_tree_node_id());
+  auto result = reserved_prerender_host_by_frame_tree_node_id_.emplace(
+      host_id, std::move(host));
   DCHECK(result.second);
 
   return host_id;
@@ -203,7 +202,7 @@ RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
   if (iter == reserved_prerender_host_by_frame_tree_node_id_.end()) {
     return nullptr;
   }
-  return iter->second.prerender_host->GetPrerenderedMainFrameHost();
+  return iter->second->GetPrerenderedMainFrameHost();
 }
 
 std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
@@ -212,8 +211,7 @@ std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
   auto iter =
       reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   CHECK(iter != reserved_prerender_host_by_frame_tree_node_id_.end());
-  std::unique_ptr<PrerenderHost> prerender_host =
-      std::move(iter->second.prerender_host);
+  std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
   reserved_prerender_host_by_frame_tree_node_id_.erase(iter);
   return prerender_host->Activate(navigation_request);
 }
@@ -267,7 +265,7 @@ PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
       reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   if (iter == reserved_prerender_host_by_frame_tree_node_id_.end())
     return nullptr;
-  return iter->second.prerender_host.get();
+  return iter->second.get();
 }
 
 std::vector<RenderFrameHostImpl*>
@@ -277,7 +275,7 @@ PrerenderHostRegistry::GetPrerenderedMainFrames() {
     result.push_back(i.second->GetPrerenderedMainFrameHost());
   }
   for (auto& i : reserved_prerender_host_by_frame_tree_node_id_) {
-    result.push_back(i.second.prerender_host->GetPrerenderedMainFrameHost());
+    result.push_back(i.second->GetPrerenderedMainFrameHost());
   }
   return result;
 }
@@ -381,17 +379,5 @@ void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
   for (Observer& obs : observers_)
     obs.OnTrigger(url);
 }
-
-PrerenderHostRegistry::ReservationInfo::ReservationInfo(
-    std::unique_ptr<PrerenderHost> prerender_host,
-    int activator_frame_tree_node_id)
-    : prerender_host(std::move(prerender_host)),
-      activator_frame_tree_node_id(activator_frame_tree_node_id) {}
-
-PrerenderHostRegistry::ReservationInfo::ReservationInfo(ReservationInfo&& info)
-    : ReservationInfo(std::move(info.prerender_host),
-                      info.activator_frame_tree_node_id) {}
-
-PrerenderHostRegistry::ReservationInfo::~ReservationInfo() = default;
 
 }  // namespace content
