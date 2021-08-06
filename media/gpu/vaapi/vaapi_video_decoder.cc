@@ -82,6 +82,9 @@ inline int RoundUpToEven(int x) {
 
 }  // namespace
 
+// static
+base::AtomicRefCount VaapiVideoDecoder::num_instances_(0);
+
 VaapiVideoDecoder::DecodeTask::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
                                           int32_t buffer_id,
                                           DecodeCB decode_done_cb)
@@ -98,6 +101,12 @@ std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
+  const bool can_create_decoder =
+      num_instances_.Increment() < kMaxNumOfInstances;
+  if (!can_create_decoder) {
+    num_instances_.Decrement();
+    return nullptr;
+  }
   return base::WrapUnique<VideoDecoderMixin>(new VaapiVideoDecoder(
       std::move(media_log), std::move(decoder_task_runner), std::move(client)));
 }
@@ -158,6 +167,8 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
   }
+
+  num_instances_.Decrement();
 }
 
 void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
