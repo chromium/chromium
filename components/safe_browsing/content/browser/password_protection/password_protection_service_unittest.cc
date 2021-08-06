@@ -1422,11 +1422,28 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
 
-  reused_password_account_type.set_account_type(
-      ReusedPasswordAccountType::GMAIL);
-  reused_password_account_type.set_is_account_syncing(true);
-// Currently password reuse warnings are only supported for saved passwords on
-// Android.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        safe_browsing::kPasswordProtectionForSignedInUsers);
+
+    reused_password_account_type.set_account_type(
+        ReusedPasswordAccountType::GMAIL);
+    reused_password_account_type.set_is_account_syncing(true);
+    // If kPasswordProtectionForSignedInUsers is enabled, then password reuse
+    // warnings are supported for both saved passwords and GMAIL passwords on
+    // both desktop and Android platforms.
+    EXPECT_TRUE(password_protection_service_->ShouldShowModalWarning(
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        reused_password_account_type, LoginReputationClientResponse::PHISHING));
+  }
+
+  {
+    reused_password_account_type.set_account_type(
+        ReusedPasswordAccountType::GMAIL);
+    reused_password_account_type.set_is_account_syncing(true);
+// If kPasswordProtectionForSignedInUsers is disabled, then GMAIL password
+// reuse warnings are only supported on desktop platforms.
 #if defined(OS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
@@ -1434,6 +1451,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
 #endif
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
+  }
 
   // For a GSUITE account, don't show warning if password protection is set to
   // off by enterprise policy.
