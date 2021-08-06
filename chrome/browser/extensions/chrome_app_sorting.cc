@@ -196,8 +196,10 @@ void ChromeAppSorting::MigrateAppIndex(
 void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   auto* profile = Profile::FromBrowserContext(browser_context_);
   DCHECK(profile);
-  auto* web_app_provider = web_app::WebAppProvider::Get(profile);
-  DCHECK(web_app_provider);
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!web_app_provider)
+    return;
+
   web_app_registrar_ = &web_app_provider->registrar();
   web_app_sync_bridge_ =
       web_app_provider->registry_controller().AsWebAppSyncBridge();
