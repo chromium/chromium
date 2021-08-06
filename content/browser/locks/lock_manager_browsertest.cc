@@ -7,7 +7,6 @@
 #include "base/macros.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/feature_observer.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/feature_observer_client.h"
@@ -17,6 +16,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -79,15 +79,9 @@ class LockManagerBrowserTest : public ContentBrowserTest {
   LockManagerBrowserTest(const LockManagerBrowserTest&) = delete;
   LockManagerBrowserTest& operator=(const LockManagerBrowserTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    // This is required to allow navigation to test https:// URLs. Web Locks are
-    // not exposed to http:// URLs.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
     original_client_ = SetBrowserClientForTesting(&test_browser_client_);
 
@@ -100,6 +94,21 @@ class LockManagerBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::TearDownOnMainThread();
     if (original_client_)
       SetBrowserClientForTesting(original_client_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   bool CheckShouldRunTestAndNavigate() const {
@@ -127,6 +136,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
   testing::StrictMock<MockObserverClient> mock_observer_client_;
 
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
   ContentBrowserClient* original_client_ = nullptr;
   TestBrowserClient test_browser_client_{&mock_observer_client_};
