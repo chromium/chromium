@@ -30,13 +30,11 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,8 +63,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
 @RunWith(BaseRobolectricTestRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @Features.EnableFeatures(ChromeFeatureList.CONTINUOUS_SEARCH)
 @LooperMode(Mode.PAUSED)
 public class TabPersistentStoreIntegrationTest {
@@ -74,8 +70,6 @@ public class TabPersistentStoreIntegrationTest {
     public JniMocker jniMocker = new JniMocker();
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
