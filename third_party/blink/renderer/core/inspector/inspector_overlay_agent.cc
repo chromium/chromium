@@ -1667,6 +1667,8 @@ InspectorOverlayAgent::ToContainerQueryContainerHighlightConfig(
           std::make_unique<InspectorContainerQueryContainerHighlightConfig>();
   highlight_config->container_border =
       InspectorOverlayAgent::ToLineStyle(config->getContainerBorder(nullptr));
+  highlight_config->descendant_border =
+      InspectorOverlayAgent::ToLineStyle(config->getDescendantBorder(nullptr));
 
   return highlight_config;
 }

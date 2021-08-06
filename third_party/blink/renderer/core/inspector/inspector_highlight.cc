@@ -531,6 +531,8 @@ BuildContainerQueryContainerHighlightConfigInfo(
 
   AppendLineStyleConfig(container_config.container_border,
                         container_config_info, "containerBorder");
+  AppendLineStyleConfig(container_config.descendant_border,
+                        container_config_info, "descendantBorder");
 
   return container_config_info;
 }
@@ -2234,6 +2236,21 @@ std::unique_ptr<protocol::DictionaryValue> InspectorScrollSnapHighlight(
   return scroll_snap_info;
 }
 
+Vector<FloatQuad> GetContainerQueryingDescendantQuads(Element* container) {
+  Vector<FloatQuad> descendant_quads;
+  for (Element* descendant :
+       InspectorDOMAgent::GetContainerQueryingDescendants(container)) {
+    LayoutBox* layout_box = descendant->GetLayoutBox();
+    if (!layout_box)
+      continue;
+    auto content_box = layout_box->PhysicalContentBoxRect();
+    FloatQuad content_quad = layout_box->LocalRectToAbsoluteQuad(content_box);
+    descendant_quads.push_back(content_quad);
+  }
+
+  return descendant_quads;
+}
+
 std::unique_ptr<protocol::DictionaryValue> BuildContainerQueryContainerInfo(
     Node* node,
     const InspectorContainerQueryContainerHighlightConfig&
@@ -2260,6 +2277,26 @@ std::unique_ptr<protocol::DictionaryValue> BuildContainerQueryContainerInfo(
   container_builder.AppendPath(QuadToPath(content_quad), scale);
   container_query_container_info->setValue("containerBorder",
                                            container_builder.Release());
+
+  auto* element = DynamicTo<Element>(node);
+  bool include_descendants =
+      container_query_container_highlight_config.descendant_border &&
+      !container_query_container_highlight_config.descendant_border
+           ->IsTransparent();
+  if (element && include_descendants) {
+    std::unique_ptr<protocol::ListValue> descendants_info =
+        protocol::ListValue::create();
+    for (auto& descendant_quad : GetContainerQueryingDescendantQuads(element)) {
+      std::unique_ptr<protocol::DictionaryValue> descendant_info =
+          protocol::DictionaryValue::create();
+      descendant_info->setValue(
+          "descendantBorder",
+          BuildPathFromQuad(containing_view, descendant_quad));
+      descendants_info->pushValue(std::move(descendant_info));
+    }
+    container_query_container_info->setArray("queryingDescendants",
+                                             std::move(descendants_info));
+  }
 
   container_query_container_info->setValue(
       "containerQueryContainerHighlightConfig",

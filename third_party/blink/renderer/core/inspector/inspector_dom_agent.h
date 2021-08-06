@@ -261,6 +261,8 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response getQueryingDescendantsForContainer(
       int node_id,
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
+  static const HeapVector<Member<Element>> GetContainerQueryingDescendants(
+      Element* container);
 
   bool Enabled() const;
   void ReleaseDanglingNodes();
@@ -376,7 +378,7 @@ class CORE_EXPORT InspectorDOMAgent final
   std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
   BuildDistributedNodesForSlot(HTMLSlotElement*);
 
-  bool ContainerQueriedByElement(Element* container, Element* element);
+  static bool ContainerQueriedByElement(Element* container, Element* element);
 
   Node* NodeForPath(const String& path);
 

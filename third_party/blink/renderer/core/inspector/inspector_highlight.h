@@ -122,6 +122,7 @@ struct CORE_EXPORT InspectorContainerQueryContainerHighlightConfig {
   InspectorContainerQueryContainerHighlightConfig() = default;
 
   absl::optional<LineStyle> container_border;
+  absl::optional<LineStyle> descendant_border;
 };
 
 struct CORE_EXPORT InspectorFlexItemHighlightConfig {

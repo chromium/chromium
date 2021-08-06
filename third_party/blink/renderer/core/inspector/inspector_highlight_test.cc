@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 #include "third_party/inspector_protocol/crdtp/span.h"
 
@@ -34,7 +35,11 @@ void AssertValueEqualsJSON(const std::unique_ptr<protocol::Value>& actual_value,
 
 }  // namespace
 
-class InspectorHighlightTest : public testing::Test {
+class InspectorHighlightTest : public testing::Test,
+                               private ScopedCSSContainerQueriesForTest {
+ public:
+  InspectorHighlightTest() : ScopedCSSContainerQueriesForTest(true) {}
+
  protected:
   void SetUp() override;
 
@@ -152,12 +157,13 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
 }
 
 TEST_F(InspectorHighlightTest,
-       BuildContainerQueryContainerInfoWithoutChildren) {
+       BuildContainerQueryContainerInfoWithoutDescendants) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container {
         width: 400px;
         height: 500px;
+        container-type: inline-size;
       }
     </style>
     <div id="container"></div>
@@ -173,6 +179,56 @@ TEST_F(InspectorHighlightTest,
     {
       "containerBorder":["M",8,8,"L",408,8,"L",408,508,"L",8,508,"Z"],
       "containerQueryContainerHighlightConfig": {}
+    }
+  )JSON";
+  AssertValueEqualsJSON(protocol::ValueConversions<protocol::Value>::fromValue(
+                            info.get(), &errors),
+                        expected_container);
+}
+
+TEST_F(InspectorHighlightTest,
+       BuildContainerQueryContainerInfoWithDescendants) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 400px;
+        height: 500px;
+        container-type: inline-size;
+      }
+      @container (min-width: 100px) {
+        .item {
+          width: 100px;
+          height: 100px;
+        }
+      }
+    </style>
+    <div id="container"><div class="item"></div></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetDocument().getElementById("container");
+
+  LineStyle line_style;
+  line_style.color = Color(1, 1, 1);
+  InspectorContainerQueryContainerHighlightConfig highlight_config;
+  highlight_config.descendant_border = line_style;
+  auto info =
+      BuildContainerQueryContainerInfo(container, highlight_config, 1.0f);
+  EXPECT_TRUE(info);
+
+  protocol::ErrorSupport errors;
+  std::string expected_container = R"JSON(
+    {
+      "containerBorder":["M",8,8,"L",408,8,"L",408,508,"L",8,508,"Z"],
+      "containerQueryContainerHighlightConfig": {
+        "descendantBorder": {
+          "color": "#010101",
+          "pattern": ""
+        }
+      },
+      "queryingDescendants": [ {
+          "descendantBorder": [ "M", 8, 8, "L", 108, 8, "L", 108, 108, "L", 8, 108, "Z" ]
+      } ]
     }
   )JSON";
   AssertValueEqualsJSON(protocol::ValueConversions<protocol::Value>::fromValue(

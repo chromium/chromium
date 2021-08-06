@@ -1568,22 +1568,33 @@ Response InspectorDOMAgent::getQueryingDescendantsForContainer(
   if (!response.IsSuccess())
     return response;
 
-  // This won't work for edge cases with display locking
-  // (https://crbug.com/1235306).
-  container->GetDocument().UpdateStyleAndLayoutTreeForSubtree(container);
-
   *node_ids = std::make_unique<protocol::Array<int>>();
   NodeToIdMap* nodes_map = document_node_to_id_map_.Get();
-  for (Element& element : ElementTraversal::DescendantsOf(*container)) {
-    if (ContainerQueriedByElement(container, &element)) {
-      int id = PushNodePathToFrontend(&element, nodes_map);
-      (*node_ids)->push_back(id);
-    }
+  for (Element* descendant : GetContainerQueryingDescendants(container)) {
+    int id = PushNodePathToFrontend(descendant, nodes_map);
+    (*node_ids)->push_back(id);
   }
 
   return Response::Success();
 }
 
+// static
+const HeapVector<Member<Element>>
+InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
+  // This won't work for edge cases with display locking
+  // (https://crbug.com/1235306).
+  container->GetDocument().UpdateStyleAndLayoutTreeForSubtree(container);
+
+  HeapVector<Member<Element>> querying_descendants;
+  for (Element& element : ElementTraversal::DescendantsOf(*container)) {
+    if (ContainerQueriedByElement(container, &element))
+      querying_descendants.push_back(element);
+  }
+
+  return querying_descendants;
+}
+
+// static
 bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
                                                   Element* element) {
   const ComputedStyle* style = element->GetComputedStyle();

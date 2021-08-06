@@ -708,7 +708,8 @@
               "wpt_internal/css/css-contain",
               "inspector-protocol/css/css-get-styles-for-node.js",
               "inspector-protocol/css/container-queries",
-              "inspector-protocol/dom/container-queries"],
+              "inspector-protocol/dom/container-queries",
+              "inspector-protocol/overlay/overlay-container-query.js"],
     "args": ["--enable-blink-features=CSSContainerQueries"]
   },
   {

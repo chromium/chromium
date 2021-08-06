@@ -6318,8 +6318,10 @@ experimental domain Overlay
 
   type ContainerQueryContainerHighlightConfig extends object
     properties
-      # The style of the container border
+      # The style of the container border.
       optional LineStyle containerBorder
+      # The style of the descendants' borders.
+      optional LineStyle descendantBorder
 
   type InspectMode extends string
     enum
