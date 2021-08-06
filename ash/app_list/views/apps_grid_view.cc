@@ -2712,7 +2712,7 @@ void AppsGridView::CalculateIdealBounds() {
   // |view_structure_| should only be updated at the end of drag. So make a
   // copy of it and only change the copy for calculating the ideal bounds of
   // each item view.
-  PagedViewStructure copied_view_structure(view_structure_);
+  PagedViewStructure copied_view_structure(this);
   // Allow empty pages in the copied view structure so an app list page does
   // not get removed when dragging the last item in the page.
   copied_view_structure.AllowEmptyPages();
@@ -2722,6 +2722,8 @@ void AppsGridView::CalculateIdealBounds() {
     // reorder placeholder was added to the view structure.
     std::unique_ptr<PagedViewStructure::ScopedSanitizeLock> sanitize_lock =
         copied_view_structure.GetSanitizeLock();
+    copied_view_structure.LoadFromOther(view_structure_);
+
     // Remove the item view being dragged.
     if (drag_view_)
       copied_view_structure.Remove(drag_view_);

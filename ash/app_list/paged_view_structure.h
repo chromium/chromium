@@ -38,7 +38,8 @@ class ASH_EXPORT PagedViewStructure {
   };
 
   explicit PagedViewStructure(AppsGridView* apps_grid_view);
-  PagedViewStructure(const PagedViewStructure& other);
+  PagedViewStructure(const PagedViewStructure& other) = delete;
+  PagedViewStructure& operator=(PagedViewStructure& other) = delete;
   ~PagedViewStructure();
 
   enum class Mode {
@@ -65,6 +66,12 @@ class ASH_EXPORT PagedViewStructure {
 
   // Permanently allows empty pages in this paged view structure.
   void AllowEmptyPages();
+
+  // Loads the view structure and mode from another `PagedViewStructure`.
+  // `other` view structure should be associated with the same apps grid.
+  // This will attempt to sanitize view structure - use `GetSanitizeLock()`
+  // beforehand to avoid sanitization.
+  void LoadFromOther(const PagedViewStructure& other);
 
   // Loads the view structure based on the position and page position in the
   // metadata of item views in the view model.

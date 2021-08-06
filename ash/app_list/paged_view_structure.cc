@@ -12,6 +12,7 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "ui/views/view_model.h"
 
@@ -31,9 +32,6 @@ PagedViewStructure::ScopedSanitizeLock::~ScopedSanitizeLock() {
 PagedViewStructure::PagedViewStructure(AppsGridView* apps_grid_view)
     : apps_grid_view_(apps_grid_view) {}
 
-PagedViewStructure::PagedViewStructure(const PagedViewStructure& other) =
-    default;
-
 PagedViewStructure::~PagedViewStructure() {
   DCHECK_EQ(0, sanitize_locks_);
 }
@@ -49,6 +47,15 @@ PagedViewStructure::GetSanitizeLock() {
 
 void PagedViewStructure::AllowEmptyPages() {
   empty_pages_allowed_ = true;
+}
+
+void PagedViewStructure::LoadFromOther(const PagedViewStructure& other) {
+  DCHECK_EQ(apps_grid_view_, other.apps_grid_view_);
+
+  mode_ = other.mode_;
+  pages_ = other.pages_;
+
+  Sanitize();
 }
 
 void PagedViewStructure::LoadFromMetadata() {
@@ -90,7 +97,7 @@ void PagedViewStructure::LoadFromMetadata() {
 
     // Create a new page if the current page is full.
     const size_t current_page_max_items = apps_grid_view_->TilesPerPage();
-    if (pages_.back().size() == current_page_max_items)
+    if (sanitize_locks_ == 0 && pages_.back().size() == current_page_max_items)
       pages_.emplace_back();
 
     pages_.back().emplace_back(
@@ -98,7 +105,7 @@ void PagedViewStructure::LoadFromMetadata() {
   }
 
   // Remove trailing empty page if exist.
-  if (pages_.back().empty())
+  if (!empty_pages_allowed_ && sanitize_locks_ == 0 && pages_.back().empty())
     pages_.pop_back();
 }
 
