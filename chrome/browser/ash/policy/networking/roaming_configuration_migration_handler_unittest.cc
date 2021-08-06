@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -37,6 +39,8 @@ constexpr char kEmail2[] = "test-user-2@example.com";
 class RoamingConfigurationMigrationHandlerTest : public testing::Test {
  protected:
   RoamingConfigurationMigrationHandlerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kCellularAllowPerNetworkRoaming);
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     fake_user_manager_ = fake_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -107,6 +111,7 @@ class RoamingConfigurationMigrationHandlerTest : public testing::Test {
   ash::FakeChromeUserManager* fake_user_manager_;
   ash::OwnerSettingsServiceAsh* owner_settings_service_ash_;
   ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<RoamingConfigurationMigrationHandler>
       roaming_configuration_migration_handler_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

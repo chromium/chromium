@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -69,6 +71,8 @@ class FakeNetworkRoamingStateMigrationHandlerObserver
 class NetworkRoamingStateMigrationHandlerTest : public testing::Test {
  protected:
   NetworkRoamingStateMigrationHandlerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kCellularAllowPerNetworkRoaming);
     network_handler_test_helper_ =
         std::make_unique<chromeos::NetworkHandlerTestHelper>();
     network_handler_test_helper()->AddDefaultProfiles();
@@ -116,6 +120,7 @@ class NetworkRoamingStateMigrationHandlerTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<chromeos::NetworkHandlerTestHelper>
       network_handler_test_helper_;
 };
