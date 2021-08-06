@@ -66,7 +66,7 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
   blink::EnabledClientHints hints;
   for (const WebClientHintsType hint :
        response_head.parsed_headers->accept_ch.value())
-    hints.SetIsEnabled(hint, true);
+    hints.SetIsEnabled(response_url, response_head.headers.get(), hint, true);
 
   std::vector<WebClientHintsType> critical_hints;
   for (const WebClientHintsType hint :
@@ -85,8 +85,8 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
   if (ShouldRestartWithHints(response_url, critical_hints, modified_headers)) {
     LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
     ParseAndPersistAcceptCHForNavigation(
-        response_url, response_head.parsed_headers, context_,
-        client_hint_delegate_,
+        response_url, response_head.parsed_headers, response_head.headers.get(),
+        context_, client_hint_delegate_,
         FrameTreeNode::GloballyFindByID(frame_tree_node_id_));
     delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
   }
