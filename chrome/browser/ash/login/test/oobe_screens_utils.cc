@@ -49,11 +49,7 @@ void WaitForWelcomeScreen() {
 }
 
 void TapWelcomeNext() {
-  if (features::IsNewOobeLayoutEnabled()) {
-    test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
-  } else {
-    test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
-  }
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
 }
 
 void WaitForNetworkSelectionScreen() {

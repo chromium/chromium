@@ -19,9 +19,7 @@ js_type_check("closure_compile") {
   uses_legacy_modules = true
   deps = [
     ":oobe_adaptive_dialog",
-    ":oobe_adaptive_dialog_old",
     ":oobe_content_dialog",
-    ":oobe_content_dialog_old",
     ":oobe_dialog",
     ":oobe_loading_dialog",
     ":oobe_modal_dialog",
@@ -43,16 +41,6 @@ js_library("oobe_adaptive_dialog") {
   externs_list = [ "$externs_path/pending.js" ]
 }
 
-js_library("oobe_adaptive_dialog_old") {
-  deps = [
-    ":oobe_dialog",
-    "../behaviors:oobe_focus_behavior",
-    "../behaviors:oobe_i18n_behavior",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
 js_library("oobe_content_dialog") {
   deps = [
     "../behaviors:oobe_focus_behavior",
@@ -61,19 +49,11 @@ js_library("oobe_content_dialog") {
   ]
 }
 
-js_library("oobe_content_dialog_old") {
-  deps = [
-    ":oobe_dialog",
-    "../behaviors:oobe_focus_behavior",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-  ]
-}
-
 js_library("oobe_dialog") {
   deps = [
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
     "../behaviors:oobe_i18n_behavior",
     "../behaviors:oobe_scrollable_behavior",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
   ]
   externs_list = [ "$externs_path/pending.js" ]
 }
@@ -89,10 +69,10 @@ js_library("oobe_loading_dialog") {
 
 js_library("oobe_modal_dialog") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
     "../behaviors:oobe_i18n_behavior",
     "../buttons:oobe_text_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/js:cr",
   ]
 }
 
@@ -109,10 +89,10 @@ js_library("oobe_adaptive_dialog.m") {
 js_library("oobe_content_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_content_dialog.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
     "../behaviors:oobe_focus_behavior.m",
     "../behaviors:oobe_scrollable_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":oobe_content_dialog_module" ]
 }
@@ -120,13 +100,13 @@ js_library("oobe_content_dialog.m") {
 js_library("oobe_loading_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_loading_dialog.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
-    "//ui/webui/resources/js:cr.m",
     ":oobe_adaptive_dialog.m",
     ":oobe_content_dialog.m",
     "../behaviors:oobe_dialog_host_behavior.m",
     "../behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":oobe_loading_dialog_module" ]
 }
@@ -134,11 +114,11 @@ js_library("oobe_loading_dialog.m") {
 js_library("oobe_modal_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/dialogs/oobe_modal_dialog.m.js" ]
   deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "../behaviors:oobe_i18n_behavior.m",
     "../buttons:oobe_text_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":oobe_modal_dialog_module" ]
 }

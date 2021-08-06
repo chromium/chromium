@@ -41,18 +41,11 @@ AppDownloadingScreenHandler::~AppDownloadingScreenHandler() {}
 
 void AppDownloadingScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  if (features::IsNewOobeLayoutEnabled()) {
-    builder->AddF("appDownloadingScreenDescription",
-                  IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION_NEW,
-                  ui::GetChromeOSDeviceName());
-    builder->Add("appDownloadingContinueSetup",
-                 IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT);
-  } else {
-    builder->Add("appDownloadingScreenDescription",
-                 IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION);
-    builder->Add("appDownloadingContinueSetup",
-                 IDS_LOGIN_APP_DOWNLOADING_CONTINUE_SETUP);
-  }
+  builder->AddF("appDownloadingScreenDescription",
+                IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION,
+                ui::GetChromeOSDeviceName());
+  builder->Add("appDownloadingContinueSetup",
+               IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT);
   builder->Add("appDownloadingScreenTitle",
                IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE);
   builder->Add("appDownloadingScreenTitleSingular",

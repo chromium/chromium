@@ -781,54 +781,34 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
   source->AddResourcePath(kOobeModalDialogJS,
                           IDR_OOBE_COMPONENTS_OOBE_MODAL_DIALOG_JS);
 
-  if (features::IsNewOobeLayoutEnabled()) {
-    if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
-      source->AddResourcePath(
-          kOobeCustomVarsCssHTML,
-          IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML);
-      source->AddResourcePath(
-          kOobeCustomVarsCssJsM,
-          IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS);
-    } else {
-      source->AddResourcePath(kOobeCustomVarsCssHTML,
-                              IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
-      source->AddResourcePath(kOobeCustomVarsCssJsM,
-                              IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS);
-    }
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+    source->AddResourcePath(
+        kOobeCustomVarsCssHTML,
+        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML);
+    source->AddResourcePath(
+        kOobeCustomVarsCssJsM,
+        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS);
   } else {
     source->AddResourcePath(kOobeCustomVarsCssHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML);
+                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
     source->AddResourcePath(kOobeCustomVarsCssJsM,
-                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_M_JS);
+                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS);
   }
 
-  if (features::IsNewOobeLayoutEnabled()) {
-    source->AddResourcePath(kOobeAdaptiveDialogHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
-    source->AddResourcePath(kOobeAdaptvieDialogJS,
-                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS);
-    source->AddResourcePath(kOobeContentDialogHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML);
-    source->AddResourcePath(kOobeContentDialogJS,
-                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS);
+  source->AddResourcePath(kOobeAdaptiveDialogHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
+  source->AddResourcePath(kOobeAdaptvieDialogJS,
+                          IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS);
+  source->AddResourcePath(kOobeContentDialogHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML);
+  source->AddResourcePath(kOobeContentDialogJS,
+                          IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS);
 
-    source->AddResourcePath("welcome_screen_animation.json",
-                            IDR_LOGIN_WELCOME_SCREEN_ANIMATION);
-    source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::WorkerSrc,
-        "worker-src blob: 'self';");
-
-  } else {
-    source->AddResourcePath(kOobeAdaptiveDialogHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML);
-    source->AddResourcePath(kOobeAdaptvieDialogJS,
-                            IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_JS);
-    source->AddResourcePath(kOobeContentDialogHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_HTML);
-    source->AddResourcePath(kOobeContentDialogJS,
-                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_JS);
-  }
+  source->AddResourcePath("welcome_screen_animation.json",
+                          IDR_LOGIN_WELCOME_SCREEN_ANIMATION);
+  source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 
   source->AddResourcePath(kOobeCarouselHTML,
                           IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML);

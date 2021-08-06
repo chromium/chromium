@@ -1169,22 +1169,10 @@
     No thanks
   </message>
 
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps which user has installed in other devices">
-    Install apps from your other devices
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
-    We found <ph name="NUMBER_OF_APPS">$1<ex>10</ex></ph> apps from your account that can be used on this device.
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SKIP" desc="The label on the button that skips installing any recommended apps">
-    Skip
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_INSTALL" desc="The label on the button that installs the user selected apps">
-    Install &#38; continue
-  </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE_NEW" desc="The title of the dialog that recommend apps to user">
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
     Find apps for work and play
   </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION_NEW" desc="The description of the 'Recommend Apps' section">
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
     Get creative, be productive, and stay entertained with apps on the Google Play Store
   </message>
   <message name="IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL" desc="The label on the button that selects all recommended apps">
@@ -1205,16 +1193,10 @@
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
     We'll install those <ph name="NUMBER_OF_APPS">$1<ex>10</ex></ph> apps for you
   </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION" desc="The description of the 'App Downloading' section">
-    You can find more apps for your device in the Play Store.
-  </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_CONTINUE_SETUP" desc="The label on the button that continues the setup flow.">
-    Continue setup
-  </message>
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
     Apps downloading
   </message>
-  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION_NEW" desc="The description of the 'App Downloading' section.">
+  <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_DESCRIPTION" desc="The description of the 'App Downloading' section.">
     We'll install those apps for you. You can find more apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> in the Play Store.
   </message>
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_NEXT" desc="The label on the button that continues the setup flow.">

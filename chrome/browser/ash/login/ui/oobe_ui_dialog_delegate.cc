@@ -198,7 +198,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
         display::Screen::GetScreen()->GetPrimaryDisplay().size();
     const bool is_horizontal = display_size.width() > display_size.height();
     CalculateOobeDialogBounds(GetContentsBounds(), shelf_height, is_horizontal,
-                              features::IsNewOobeLayoutEnabled(), &bounds,
+                              /*is_new_oobe_layout_enabled = */ true, &bounds,
                               &padding_);
 
     for (views::View* child : children()) {

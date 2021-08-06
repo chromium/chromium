@@ -759,10 +759,6 @@ const base::Feature kNearbyKeepAliveFix{"NearbyKeepAliveFix",
 const base::Feature kNewLockScreenReauthLayout{
     "NewLockScreenReauthLayout", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether new OOBE layout is shown or not.
-const base::Feature kNewOobeLayout{"NewOobeLayout",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the Night Light feature.
 const base::Feature kNightLight{"NightLight", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1442,10 +1438,6 @@ bool IsOAuthIppEnabled() {
 
 bool IsNewLockScreenReauthLayoutEnabled() {
   return base::FeatureList::IsEnabled(kNewLockScreenReauthLayout);
-}
-
-bool IsNewOobeLayoutEnabled() {
-  return base::FeatureList::IsEnabled(kNewOobeLayout);
 }
 
 bool IsNotificationExpansionAnimationEnabled() {

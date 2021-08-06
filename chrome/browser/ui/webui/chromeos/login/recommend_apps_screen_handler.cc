@@ -85,21 +85,12 @@ RecommendAppsScreenHandler::~RecommendAppsScreenHandler() {
 
 void RecommendAppsScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  if (features::IsNewOobeLayoutEnabled()) {
-    builder->Add("recommendAppsScreenTitle",
-                 IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE_NEW);
-    builder->Add("recommendAppsScreenDescription",
-                 IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION_NEW);
-    builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER);
-    builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_DONE);
-  } else {
-    builder->Add("recommendAppsScreenTitle",
-                 IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE);
-    builder->Add("recommendAppsScreenDescription",
-                 IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION);
-    builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_SKIP);
-    builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_INSTALL);
-  }
+  builder->Add("recommendAppsScreenTitle",
+               IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE);
+  builder->Add("recommendAppsScreenDescription",
+               IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION);
+  builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER);
+  builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_DONE);
   builder->Add("recommendAppsLoading", IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING);
   builder->Add("recommendAppsSelectAll", IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL);
 }
@@ -150,12 +141,8 @@ void RecommendAppsScreenHandler::LoadAppListInUI(const base::Value& app_list) {
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
-  std::string app_list_webview =
-      features::IsNewOobeLayoutEnabled()
-          ? resource_bundle.LoadDataResourceString(
-                IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_NEW_HTML)
-          : resource_bundle.LoadDataResourceString(
-                IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
+  std::string app_list_webview = resource_bundle.LoadDataResourceString(
+      IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
   CallJS("login.RecommendAppsScreen.setWebview", app_list_webview);
   CallJS("login.RecommendAppsScreen.loadAppList", app_list);
 }

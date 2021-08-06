@@ -50,14 +50,6 @@ namespace {
 AssistantOptInDialog* g_dialog = nullptr;
 
 constexpr int kCaptionBarHeight = 32;
-constexpr int kDialogMargin = 48;
-constexpr gfx::Size kDialogMaxSize = gfx::Size(768, 768);
-constexpr gfx::Size kDialogMinSize = gfx::Size(544, 464);
-constexpr gfx::Insets kDialogInsets =
-    gfx::Insets(kDialogMargin + kCaptionBarHeight,
-                kDialogMargin,
-                kDialogMargin,
-                kDialogMargin);
 
 constexpr char kFlowTypeParamKey[] = "flow-type";
 constexpr char kCaptionBarHeightParamKey[] = "caption-bar-height";
@@ -101,8 +93,8 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
                           IDR_ASSISTANT_VOICE_MATCH_ANIMATION);
   source->AddResourcePath("voice_match_already_setup_animation.json",
                           IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION);
-  source->AddBoolean("newLayoutEnabled",
-                     chromeos::features::IsNewOobeLayoutEnabled());
+  // TODO(crbug.com/1202135): Remove along with JS part.
+  source->AddBoolean("newLayoutEnabled", true);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
   source->DisableTrustedTypesCSP();
@@ -192,17 +184,10 @@ void AssistantOptInDialog::AdjustWidgetInitParams(
 void AssistantOptInDialog::GetDialogSize(gfx::Size* size) const {
   auto bounds = display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   gfx::Size dialog_size;
-  if (features::IsNewOobeLayoutEnabled()) {
-    const bool is_horizontal = bounds.width() > bounds.height();
-    dialog_size = CalculateOobeDialogSize(
-        display::Screen::GetScreen()->GetPrimaryDisplay().size(),
-        ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
-  } else {
-    bounds.Inset(kDialogInsets);
-    dialog_size = bounds.size();
-    dialog_size.SetToMin(kDialogMaxSize);
-    dialog_size.SetToMax(kDialogMinSize);
-  }
+  const bool is_horizontal = bounds.width() > bounds.height();
+  dialog_size = CalculateOobeDialogSize(
+      display::Screen::GetScreen()->GetPrimaryDisplay().size(),
+      ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
   size->SetSize(dialog_size.width(), dialog_size.height());
 }
 

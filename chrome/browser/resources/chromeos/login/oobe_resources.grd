@@ -41,21 +41,14 @@
       <!-- New layout (oobe_adaptive_dialog and oobe_content_dialog) corresponds OOBE redesign which has happened in November 2020 -->
       <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML" file="components/dialogs/oobe_adaptive_dialog.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS" file="components/dialogs/oobe_adaptive_dialog.js" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML" file="components/dialogs/oobe_adaptive_dialog_old.html" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_JS" file="components/dialogs/oobe_adaptive_dialog_old.js" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML" file="components/dialogs/oobe_content_dialog.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS" file="components/dialogs/oobe_content_dialog.js" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_HTML" file="components/dialogs/oobe_content_dialog_old.html" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_JS" file="components/dialogs/oobe_content_dialog_old.js" type="chrome_html" />
 
       <!-- OOBE CSS Vars -->
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_old_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML" file="components/oobe_vars/oobe_shared_vars_css.html" type="chrome_html" />
 
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_M_JS" use_base_dir="false" type="chrome_html"
-               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_old_css.m.js"/>
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS" use_base_dir="false" type="chrome_html"
                file="${root_gen_dir}/chrome/browser/resources/chromeos/login/components/oobe_vars/oobe_custom_vars_css.m.js" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_M_JS" use_base_dir="false" type="chrome_html"
