@@ -1,0 +1,70 @@
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const URL = 'http://localhost:8000/xmlhttprequest/resources/access-control-allow-lists.php';
+
+function shouldLoad(origin) {
+  async_test((t) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `${URL}?origin=${encodeURIComponent(origin)}`);
+    xhr.onerror = t.unreached_func('Should load successfully.');
+    xhr.onload = t.step_func_done(() => {});
+    xhr.send();
+  }, `shouldLoad: origin = "${origin}"`);
+}
+
+function shouldFail(origin) {
+  async_test((t) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `${URL}?origin=${encodeURIComponent(origin)}`);
+    xhr.onload = t.unreached_func('Should not load successfully.');
+    xhr.onerror = t.step_func_done(() => {});
+    xhr.send();
+  }, `shouldFail: origin = "${origin}"`);
+}
+
+shouldLoad('*');
+shouldLoad(' *  ');
+shouldLoad(self.origin);
+shouldLoad(` ${self.origin}`);
+shouldLoad(` ${self.origin}    `);
+shouldLoad(`  ${self.origin}`);
+shouldFail(`${location.protocol}//www2.${location.host}`);
+shouldFail(`//${location.host}`);
+shouldFail(`://${location.host}`);
+shouldFail(`ftp://${location.host}`);
+shouldFail(`http:/${location.host}`);
+shouldFail(`http:${location.host}`);
+shouldFail(location.host);
+shouldFail(`${self.origin}?`);
+shouldFail(`${self.origin}/`);
+shouldFail(`${self.origin} /`);
+shouldFail(`${self.origin}#`);
+shouldFail(`${self.origin}%23`);
+shouldFail(`${self.origin}:80`);
+shouldFail(`${self.origin}, *`);
+shouldFail(`${self.origin}\0`);
+shouldFail(`${self.origin}.toUpperCase()`);
+shouldFail(`${location.protocol.toUpperCase()}//${location.host}`);
+shouldFail('-');
+shouldFail('**');
+shouldFail('\0*');
+shouldFail('*\0');
+shouldFail("'*'");
+shouldFail('"*"');
+shouldFail('* *');
+shouldFail(`*${location.protocol}//*`);
+shouldFail(`*${self.origin}`);
+shouldFail(`* ${self.origin}`);
+shouldFail(`*, ${self.origin}`);
+shouldFail(`\0${self.origin}`);
+shouldFail(`null ${self.origin}`);
+shouldFail(`http://example.net`);
+shouldFail(`http://example.net ${self.origin}`);
+shouldFail(`http://example.net, ${self.origin}`);
+shouldFail('null');
+shouldFail('');
+shouldFail(location.href);
+shouldFail(location.href.replace(/\/[^\/]*$/, '/'));
+shouldFail(location.href.replace(location.hostname, 'localhost'));
+</script>
