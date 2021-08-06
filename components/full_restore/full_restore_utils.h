@@ -182,6 +182,14 @@ void OnTaskThemeColorUpdated(int32_t task_id,
 COMPONENT_EXPORT(FULL_RESTORE)
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 
+// Returns the full restore app id that's associated with |window|. Note this
+// might be different with the window's kAppIdKey property value. kAppIdKey
+// is only non-empty for Chrome apps and ARC apps, but empty for other apps (for
+// example, browsers, PWAs, SWAs). This function however guarantees to return a
+// valid app id value for a window that can be restored by full restore.
+COMPONENT_EXPORT(FULL_RESTORE)
+std::string GetAppId(aura::Window* window);
+
 }  // namespace full_restore
 
 #endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_UTILS_H_

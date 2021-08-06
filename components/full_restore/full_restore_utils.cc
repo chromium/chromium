@@ -168,4 +168,11 @@ void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
       profile_path);
 }
 
+std::string GetAppId(aura::Window* window) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return std::string();
+
+  return FullRestoreSaveHandler::GetInstance()->GetAppId(window);
+}
+
 }  // namespace full_restore
