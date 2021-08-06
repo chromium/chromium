@@ -4622,12 +4622,8 @@ static_library("browser") {
       "notifications/pwa_notifier_controller.h",
       "notifications/web_page_notifier_controller.cc",
       "notifications/web_page_notifier_controller.h",
-      "performance_manager/mechanisms/userspace_swap_chromeos.cc",
-      "performance_manager/mechanisms/userspace_swap_chromeos.h",
       "performance_manager/mechanisms/working_set_trimmer_chromeos.cc",
       "performance_manager/mechanisms/working_set_trimmer_chromeos.h",
-      "performance_manager/policies/userspace_swap_policy_chromeos.cc",
-      "performance_manager/policies/userspace_swap_policy_chromeos.h",
       "performance_manager/policies/working_set_trimmer_policy_arcvm.cc",
       "performance_manager/policies/working_set_trimmer_policy_arcvm.h",
       "performance_manager/policies/working_set_trimmer_policy_chromeos.cc",
@@ -4732,8 +4728,6 @@ static_library("browser") {
       "//chromeos/login/login_state",
       "//chromeos/login/session",
       "//chromeos/memory",
-      "//chromeos/memory/userspace_swap",
-      "//chromeos/memory/userspace_swap:mojom",
       "//chromeos/network",
       "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/bluetooth_config",
@@ -4778,6 +4772,20 @@ static_library("browser") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
     ]
+
+    if (target_cpu == "x64") {
+      sources += [
+        "performance_manager/mechanisms/userspace_swap_chromeos.cc",
+        "performance_manager/mechanisms/userspace_swap_chromeos.h",
+        "performance_manager/policies/userspace_swap_policy_chromeos.cc",
+        "performance_manager/policies/userspace_swap_policy_chromeos.h",
+      ]
+
+      deps += [
+        "//chromeos/memory/userspace_swap",
+        "//chromeos/memory/userspace_swap:mojom",
+      ]
+    }
 
     if (use_allocator == "tcmalloc") {
       deps += [ "//chrome/common/performance_manager/mojom" ]

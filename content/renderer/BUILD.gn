@@ -227,9 +227,7 @@ target(link_target_type, "renderer") {
     ]
   }
 
-  configs += [
-    "//content:content_implementation",
-  ]
+  configs += [ "//content:content_implementation" ]
   defines = []
 
   public_deps = [
@@ -548,9 +546,12 @@ target(link_target_type, "renderer") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos:chromeos_export",
-      "//chromeos/memory/userspace_swap",
       "//chromeos/system:system",
     ]
+
+    if (target_cpu == "x64") {
+      deps += [ "//chromeos/memory/userspace_swap" ]
+    }
   }
 
   if (use_ozone) {

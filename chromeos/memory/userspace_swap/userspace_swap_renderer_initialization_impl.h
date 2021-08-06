@@ -37,6 +37,10 @@ class CHROMEOS_EXPORT UserspaceSwapRendererInitializationImpl {
   int uffd_errno_ = 0;
   base::ScopedFD uffd_;
 
+  int mmap_errno_ = 0;
+  uint64_t swap_area_ = 0;
+  uint64_t swap_area_len_ = 0;
+
   DISALLOW_COPY_AND_ASSIGN(UserspaceSwapRendererInitializationImpl);
 };
 

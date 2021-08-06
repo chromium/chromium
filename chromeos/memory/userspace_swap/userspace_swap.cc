@@ -6,6 +6,10 @@
 
 #include <atomic>
 #include <cstdint>
+#include <functional>
+#include <map>
+#include <random>
+#include <set>
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
@@ -16,16 +20,22 @@
 #include "base/files/file_util.h"
 #include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chromeos/memory/aligned_memory.h"
+#include "chromeos/memory/pagemap.h"
 #include "chromeos/memory/userspace_swap/region.h"
 #include "chromeos/memory/userspace_swap/swap_storage.h"
 #include "chromeos/memory/userspace_swap/userfaultfd.h"
+#include "chromeos/memory/userspace_swap/userspace_swap.mojom-forward.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace memory {
@@ -41,11 +51,6 @@ const base::Feature kUserspaceSwap{"UserspaceSwapEnabled",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int> kUserspaceSwapPagesPerRegion = {
     &kUserspaceSwap, "UserspaceSwapPagesPerRegion", 16};
-const base::FeatureParam<int> kUserspaceSwapVMARegionMinSizeKB = {
-    &kUserspaceSwap, "UserspaceSwapVMARegionMinSizeKB", 1024};
-const base::FeatureParam<int> kUserspaceSwapVMARegionMaxSizeKB = {
-    &kUserspaceSwap, "UserspaceSwapVMARegionMaxSizeKB",
-    1024 * 256 /* 256 MB */};
 const base::FeatureParam<bool> kUserspaceSwapCompressedSwapFile = {
     &kUserspaceSwap, "UserspaceSwapCompressedSwapFile", true};
 const base::FeatureParam<int> kUserspaceSwapMinSwapDeviceSpaceAvailMB = {
@@ -82,17 +87,30 @@ std::atomic<uint64_t> g_global_disk_usage_bytes = ATOMIC_VAR_INIT(0);
 // value is safe to be fetched from any sequence.
 std::atomic<uint64_t> g_global_reclaimed_bytes = ATOMIC_VAR_INIT(0);
 
+// This is our global swap kill switch.
+std::atomic<bool> g_global_swap_allowed = ATOMIC_VAR_INIT(true);
+
 class RendererSwapDataImpl : public RendererSwapData {
  public:
   RendererSwapDataImpl(
       int render_process_host_id,
-      std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD>&& uffd,
-      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile>&& swap_file,
-      mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap>&& remote)
+      base::ProcessId pid,
+      std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
+      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+      const Region& swap_remap_area,
+      mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap>
+          pending_remote)
       : render_process_host_id_(render_process_host_id),
+        pid_(pid),
         uffd_(std::move(uffd)),
         swap_file_(std::move(swap_file)),
-        remote_(std::move(remote)) {}
+        remote_(std::move(pending_remote)) {
+    InitializeSwapRemapAreas(swap_remap_area);
+    swap_allowed_ = true;
+    VLOG(1) << "Created RendererSwapDataImpl for rphid: "
+            << render_process_host_id
+            << " Swap Remap Area: " << swap_remap_area;
+  }
 
   ~RendererSwapDataImpl() override;
 
@@ -109,22 +127,61 @@ class RendererSwapDataImpl : public RendererSwapData {
   void AccountSwapSpace(int64_t reclaimed, int64_t swap_size);
   void UnaccountSwapSpace(int64_t reclaimed, int64_t swap_size);
 
+  // Break up the large region which a renderer mmap'ed as PROT_NONE into
+  // discrete chunks which can be used for the destinations of an
+  // MREMAP_DONTUNMAP.
+  void InitializeSwapRemapAreas(const Region& swap_remap_area);
+
+  // AllocFromSwapRegion will find a region which can be used as a destination
+  // for a call to MovePTEs. This makes swapping easier, because now we just
+  // wait to observe the remap event as our indicator that we can read the
+  // memory from the process.
+  absl::optional<Region> AllocFromSwapRegion();
+  void DeallocFromSwapRegion(const Region& region);
+
+  // Swap at most |size_limit| bytes worth of memory on this renderer.
+  bool Swap(size_t size_limit);
+
  private:
+  void OnReceivedPASuperPages(
+      size_t size_limit_bytes,
+      std::vector<::userspace_swap::mojom::MemoryRegionPtr> regions);
+
+  // Convert a mojo MemoryRegionPtr into a vector of userspace swap
+  // |resident_regions| (which are of a configurable size) and which are fully
+  // resident.
+  void PASuperPagesToResidentRegions(
+      const Pagemap& pagemap,
+      const std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions,
+      std::vector<Region>& resident_regions);
+
+  static const size_t kPageSize;
+
   const int render_process_host_id_ = 0;
-  bool swap_allowed_ = true;
+  const base::ProcessId pid_ = 0;
+
+  bool swap_allowed_ = false;
 
   uint64_t on_disk_bytes_ = 0;
   uint64_t reclaimed_bytes_ = 0;
+
+  // Areas which can be used for moving PTEs.
+  std::stack<const Region> free_swap_dest_areas_;
 
   std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd_;
   std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file_;
 
   // The remote is our link to the renderer to perform the operations it needs
   // to allow for swapping a region.
-  mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote_;
+  mojo::Remote<::userspace_swap::mojom::UserspaceSwap> remote_;
+
+  base::WeakPtrFactory<RendererSwapDataImpl> weak_factory_{this};
 };
 
 RendererSwapDataImpl::~RendererSwapDataImpl() = default;
+
+// static
+const size_t RendererSwapDataImpl::kPageSize = base::GetPageSize();
 
 int RendererSwapDataImpl::render_process_host_id() const {
   return render_process_host_id_;
@@ -135,18 +192,34 @@ void RendererSwapDataImpl::DisallowSwap() {
 }
 
 bool RendererSwapDataImpl::SwapAllowed() const {
-  return swap_allowed_;
+  return swap_allowed_ && IsSwapAllowedGlobally();
 }
 
 uint64_t RendererSwapDataImpl::SwapDiskspaceWrittenBytes() const {
   return on_disk_bytes_;
 }
 
+void RendererSwapDataImpl::InitializeSwapRemapAreas(
+    const Region& swap_remap_area) {
+  // Break the remap area up into region sized chunks which will be used as
+  // the destination of MREMAP_DONTUNMAPs.
+  const uint64_t kPagesPerRegion =
+      UserspaceSwapConfig::Get().number_of_pages_per_region;
+  const size_t kRegionSizeBytes = kPageSize * kPagesPerRegion;
+
+  for (uint64_t base_addr = swap_remap_area.address;
+       (base_addr + kRegionSizeBytes) <=
+       (swap_remap_area.address + swap_remap_area.length);
+       base_addr += kRegionSizeBytes) {
+    free_swap_dest_areas_.push(Region(base_addr, kRegionSizeBytes));
+  }
+}
+
 uint64_t RendererSwapDataImpl::SwapDiskspaceUsedBytes() const {
   // Because punching a hole may not free the block if the region compressed
-  // down to a partial size, the block can only be freed when all of it has been
-  // punched. So we will take the larger of what we believe we've written to
-  // disk and what the swap file reports as being in use.
+  // down to a partial size, the block can only be freed when all of it has
+  // been punched. So we will take the larger of what we believe we've written
+  // to disk and what the swap file reports as being in use.
   uint64_t swap_file_reported_disk_size_bytes =
       swap_file_->GetUsageKB() << 10;  // Convert to bytes from KB.
   uint64_t swap_file_disk_space_used_bytes =
@@ -172,6 +245,101 @@ void RendererSwapDataImpl::UnaccountSwapSpace(int64_t reclaimed,
   AccountSwapSpace(-reclaimed, -swap_size);
 }
 
+absl::optional<Region> RendererSwapDataImpl::AllocFromSwapRegion() {
+  if (free_swap_dest_areas_.empty()) {
+    return absl::nullopt;
+  }
+
+  Region r = free_swap_dest_areas_.top();
+  free_swap_dest_areas_.pop();
+  return r;
+}
+
+void RendererSwapDataImpl::DeallocFromSwapRegion(const Region& region) {
+  free_swap_dest_areas_.push(region);
+}
+
+void RendererSwapDataImpl::OnReceivedPASuperPages(
+    size_t size_limit_bytes,
+    std::vector<::userspace_swap::mojom::MemoryRegionPtr> regions) {
+  if (regions.empty())
+    return;
+
+  // Now that a list of used superpages is available, break it up into region
+  // sized chunks which will be checked using the kernel pagemap.
+  // Use this processes pagemap to identify regions which are in core.
+  Pagemap pagemap(pid_);
+  if (!pagemap.IsValid()) {
+    // Dont log an error if the process is dead.
+    PLOG_IF(ERROR, errno != ENOENT) << "unable to open pagemap";
+
+    // Further swapping is not permitted.
+    DisallowSwap();
+    return;
+  }
+
+  std::vector<Region> resident_regions;
+
+  PASuperPagesToResidentRegions(pagemap, regions, resident_regions);
+  if (UserspaceSwapConfig::Get().shuffle_maps_on_swap) {
+    // The regions can be shuffled to avoid always swapping the same regions.
+    base::ranges::shuffle(resident_regions, std::default_random_engine());
+  }
+
+  if (VLOG_IS_ON(1)) {
+    uint64_t total_size = 0;
+    for (const auto& r : regions) {
+      total_size += r.get()->length;
+    }
+
+    VLOG(1) << "Pid: " << pid_ << " got " << regions.size()
+            << " memory areas totaling " << (total_size >> 20)
+            << " MB the round swappable size limit is: "
+            << (size_limit_bytes >> 20) << " MB which contained "
+            << resident_regions.size() << " resident regions";
+  }
+
+  // TODO: Actually do the swap on the regions that have been determined to be
+  // resident in the renderer.
+}
+
+void RendererSwapDataImpl::PASuperPagesToResidentRegions(
+    const Pagemap& pagemap,
+    const std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions,
+    std::vector<Region>& resident_regions) {
+  // The RegionSize is the size that is considered for swapping, this is
+  // independent of PA SuperPage size and is configurable as a multiple of the
+  // system page size.
+  size_t kRegionSize =
+      UserspaceSwapConfig::Get().number_of_pages_per_region * kPageSize;
+  for (const auto& area : regions) {
+    Region area_end(area->address + area->length);
+    for (Region r(area->address, kRegionSize); r < area_end;
+         r.address += kRegionSize) {
+      if (!pagemap.IsFullyPresent(r.address, r.length)) {
+        continue;
+      }
+
+      resident_regions.push_back(r);
+    }
+  }
+}
+
+bool RendererSwapDataImpl::Swap(size_t size_limit_bytes) {
+  if (!SwapAllowed()) {
+    return false;
+  }
+
+  // The first step is always to ask PA what it is using, after that we will
+  // check with the kernel to see which of those areas are actually resident.
+  remote_->GetPartitionAllocSuperPagesUsed(
+      /* max superpages=*/-1,
+      base::BindOnce(&RendererSwapDataImpl::OnReceivedPASuperPages,
+                     weak_factory_.GetWeakPtr(), size_limit_bytes));
+
+  return true;
+}
+
 }  // namespace
 
 UserspaceSwapConfig::UserspaceSwapConfig() = default;
@@ -186,10 +354,6 @@ CHROMEOS_EXPORT const UserspaceSwapConfig& UserspaceSwapConfig::Get() {
     // Populate the config object.
     config.enabled = base::FeatureList::IsEnabled(kUserspaceSwap);
     config.number_of_pages_per_region = kUserspaceSwapPagesPerRegion.Get();
-    config.vma_region_minimum_size_bytes =
-        kUserspaceSwapVMARegionMinSizeKB.Get() << 10;  // Convert KB to bytes.
-    config.vma_region_maximum_size_bytes =
-        kUserspaceSwapVMARegionMaxSizeKB.Get() << 10;  // Convert KB to bytes.
     config.use_compressed_swap_file = kUserspaceSwapCompressedSwapFile.Get();
     config.minimum_swap_disk_space_available =
         kUserspaceSwapMinSwapDeviceSpaceAvailMB.Get()
@@ -228,10 +392,6 @@ std::ostream& operator<<(std::ostream& out, const UserspaceSwapConfig& c) {
   out << "UserspaceSwapConfig enabled: " << c.enabled << "\n";
   if (c.enabled) {
     out << "number_of_pages_per_region: " << c.number_of_pages_per_region
-        << "\n";
-    out << "vma_region_minimum_size_bytes: " << c.vma_region_minimum_size_bytes
-        << "\n";
-    out << "vma_region_maximum_size_bytes: " << c.vma_region_maximum_size_bytes
         << "\n";
     out << "use_compressed_swap: " << c.use_compressed_swap_file << "\n";
     out << "minimum_swap_disk_space_available: "
@@ -301,12 +461,14 @@ RendererSwapData::~RendererSwapData() = default;
 // static
 CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
     int render_process_host_id,
+    base::ProcessId pid,
     std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
     std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+    const Region& swap_remap_area,
     mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote) {
   return std::make_unique<RendererSwapDataImpl>(
-      render_process_host_id, std::move(uffd), std::move(swap_file),
-      std::move(remote));
+      render_process_host_id, pid, std::move(uffd), std::move(swap_file),
+      swap_remap_area, std::move(remote));
 }
 
 CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled() {
@@ -315,12 +477,11 @@ CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled() {
   return supported && enabled;
 }
 
-CHROMEOS_EXPORT bool SwapRegions(RendererSwapData* data, int num_regions) {
-  // TODO(bgeffon): We need to now land all of the process specific swap code.
+CHROMEOS_EXPORT bool SwapRenderer(RendererSwapData* data,
+                                  size_t size_limit_bytes) {
   RendererSwapDataImpl* impl = reinterpret_cast<RendererSwapDataImpl*>(data);
-  VLOG(1) << "SwapRegions for rphid " << impl->render_process_host_id()
-          << " at most " << num_regions << " regions";
-  return true;
+  VLOG(1) << "SwapRenderer for rphid " << impl->render_process_host_id();
+  return impl->Swap(size_limit_bytes);
 }
 
 CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
@@ -371,66 +532,14 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
     if (current_area) {
       regions.emplace_back(base::in_place, current_area, current_area_length);
     }
+
+    if (!superpages_remaining)
+      break;
   }
 
   return true;
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
         // !defined(PA_HAS_64_BITS_POINTERS)
-}
-
-CHROMEOS_EXPORT bool IsVMASwapEligible(
-    const memory_instrumentation::mojom::VmRegionPtr& vma) {
-  // We only conisder VMAs which are Private Anonymous
-  // Readable/Writable that aren't locked and a certain size.
-  uint32_t target_perms =
-      VmRegion::kProtectionFlagsRead | VmRegion::kProtectionFlagsWrite;
-  if (vma->protection_flags != target_perms)
-    return false;
-
-  if (!vma->mapped_file.empty())
-    return false;
-
-  if (vma->byte_locked > 0)
-    return false;
-
-  // It must be within the VMA size bounds configured.
-  const auto& config = UserspaceSwapConfig::Get();
-  if (vma->size_in_bytes < config.vma_region_minimum_size_bytes ||
-      vma->size_in_bytes > config.vma_region_maximum_size_bytes)
-    return false;
-
-  return true;
-}
-
-CHROMEOS_EXPORT bool GetAllSwapEligibleVMAs(base::PlatformThreadId pid,
-                                            std::vector<Region>* regions) {
-  DCHECK(regions);
-  regions->clear();
-
-  const auto& config = UserspaceSwapConfig::Get();
-
-  std::vector<memory_instrumentation::mojom::VmRegionPtr> vmas =
-      memory_instrumentation::OSMetrics::GetProcessMemoryMaps(pid);
-
-  if (vmas.empty()) {
-    return false;
-  }
-
-  // Only consider VMAs which match our criteria.
-  for (const auto& v : vmas) {
-    if (IsVMASwapEligible(v)) {
-      regions->push_back(Region(static_cast<uintptr_t>(v->start_address),
-                                static_cast<uintptr_t>(v->size_in_bytes)));
-    }
-  }
-
-  // We can shuffle the VMA maps (if configured) so we don't always start from
-  // the same VMA on subsequent swaps.
-  if (config.shuffle_maps_on_swap) {
-    base::RandomShuffle(regions->begin(), regions->end());
-  }
-
-  return true;
 }
 
 CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed() {
@@ -439,6 +548,14 @@ CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed() {
 
 CHROMEOS_EXPORT uint64_t GetGlobalSwapDiskspaceUsed() {
   return g_global_disk_usage_bytes.load();
+}
+
+CHROMEOS_EXPORT void DisableSwapGlobally() {
+  g_global_swap_allowed = false;
+}
+
+CHROMEOS_EXPORT bool IsSwapAllowedGlobally() {
+  return g_global_swap_allowed;
 }
 
 }  // namespace userspace_swap

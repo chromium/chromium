@@ -14,6 +14,8 @@ namespace mechanism {
 
 class UserspaceSwapImpl : public userspace_swap::mojom::UserspaceSwap {
  public:
+  using MemoryRegionPtr = ::userspace_swap::mojom::MemoryRegionPtr;
+
   ~UserspaceSwapImpl() override;
   UserspaceSwapImpl();
   UserspaceSwapImpl(const UserspaceSwapImpl&) = delete;
@@ -26,10 +28,8 @@ class UserspaceSwapImpl : public userspace_swap::mojom::UserspaceSwap {
 
  protected:
   // UserspaceSwap impl:
-  void MovePTEsLeavingMapping(uint64_t address,
-                              uint64_t length,
-                              uint64_t dest) override;
-  void MapArea(uint64_t address, uint64_t length) override;
+  void MovePTEsLeavingMapping(MemoryRegionPtr src, uint64_t dest) override;
+  void MapArea(MemoryRegionPtr area) override;
   void GetPartitionAllocSuperPagesUsed(
       int32_t max_superpages,
       GetPartitionAllocSuperPagesUsedCallback callback) override;

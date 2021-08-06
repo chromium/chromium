@@ -4787,12 +4787,15 @@ test("unit_tests") {
       "../browser/notifications/notification_platform_bridge_chromeos_unittest.cc",
       "../browser/performance_manager/mechanisms/working_set_trimmer_chromeos_unittest.cc",
       "../browser/performance_manager/policies/dynamic_tcmalloc_policy_chromeos_unittest.cc",
-      "../browser/performance_manager/policies/userspace_swap_policy_chromeos_unittest.cc",
       "../browser/performance_manager/policies/working_set_trimmer_policy_arcvm_unittest.cc",
       "../browser/performance_manager/policies/working_set_trimmer_policy_chromeos_unittest.cc",
       "../browser/signin/signin_status_metrics_provider_chromeos_unittest.cc",
       "../browser/ui/views/crostini/crostini_app_restart_dialog_unittest.cc",
     ]
+
+    if (target_cpu == "x64") {
+      sources += [ "../browser/performance_manager/policies/userspace_swap_policy_chromeos_unittest.cc" ]
+    }
   }
 
   if (is_linux || is_chromeos) {
@@ -6307,7 +6310,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash && target_cpu == "x64") {
     deps += [
       "//chromeos/memory/userspace_swap",
       "//chromeos/memory/userspace_swap:mojom",

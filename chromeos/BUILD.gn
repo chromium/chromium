@@ -177,7 +177,6 @@ test("chromeos_unittests") {
       "//chromeos/login/login_state:unit_tests",
       "//chromeos/login/session:unit_tests",
       "//chromeos/memory:unit_tests",
-      "//chromeos/memory/userspace_swap:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",
       "//chromeos/process_proxy:unit_tests",
@@ -225,6 +224,10 @@ test("chromeos_unittests") {
       "printing/uri_unittest_consistency.cc",
       "printing/usb_printer_id_unittest.cc",
     ]
+
+    if (target_cpu == "x64") {
+      deps += [ "//chromeos/memory/userspace_swap:unit_tests" ]
+    }
   }
 
   data = [ "test/data/" ]

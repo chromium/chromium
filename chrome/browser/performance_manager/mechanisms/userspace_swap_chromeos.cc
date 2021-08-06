@@ -38,6 +38,7 @@ namespace userspace_swap {
 
 namespace {
 
+using chromeos::memory::userspace_swap::Region;
 using chromeos::memory::userspace_swap::RendererSwapData;
 using chromeos::memory::userspace_swap::SwapFile;
 using chromeos::memory::userspace_swap::UserfaultFD;
@@ -79,6 +80,7 @@ class UserspaceSwapMechanismData
 
 void InitializeProcessNodeOnGraph(int render_process_host_id,
                                   base::ScopedFD uffd,
+                                  Region swap_area,
                                   performance_manager::Graph* graph) {
   // Now look up the ProcessNode so we can complete initialization.
   DCHECK(graph);
@@ -140,9 +142,10 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
     return;
   }
 
-  data->swap_data =
-      RendererSwapData::Create(render_process_host_id, std::move(userfaultfd),
-                               std::move(swap_file), std::move(remote));
+  data->swap_data = RendererSwapData::Create(
+      render_process_host_id, process_node->GetProcessId(),
+      std::move(userfaultfd), std::move(swap_file), swap_area,
+      std::move(remote));
 }
 
 }  // namespace
@@ -246,8 +249,8 @@ void SwapProcessNode(const ProcessNode* process_node) {
 
   // Now we know how many regions this renderer can theoretically swap after
   // enforcing all configurable limits.
-  chromeos::memory::userspace_swap::SwapRegions(swap_data.get(),
-                                                total_regions_swapable);
+  chromeos::memory::userspace_swap::SwapRenderer(
+      swap_data.get(), total_regions_swapable * kRegionSize);
 }
 
 UserspaceSwapInitializationImpl::UserspaceSwapInitializationImpl(
@@ -274,19 +277,27 @@ void UserspaceSwapInitializationImpl::Create(
 }
 
 void UserspaceSwapInitializationImpl::TransferUserfaultFD(
-    uint64_t error,
+    uint64_t uffd_error,
     mojo::PlatformHandle uffd_handle,
+    uint64_t mmap_error,
+    MemoryRegionPtr swap_area,
     TransferUserfaultFDCallback cb) {
   base::ScopedClosureRunner scr(std::move(cb));
 
   if (received_transfer_cb_) {
     return;
   }
-  received_transfer_cb_ = true;
 
-  if (error != 0) {
+  received_transfer_cb_ = true;
+  if (uffd_error != 0) {
     LOG(ERROR) << "Unable to create userfaultfd for renderer: "
-               << base::safe_strerror(error);
+               << base::safe_strerror(uffd_error);
+    return;
+  }
+
+  if (mmap_error != 0) {
+    LOG(ERROR) << "Unable to create memory area for renderer: "
+               << base::safe_strerror(mmap_error);
     return;
   }
 
@@ -298,7 +309,8 @@ void UserspaceSwapInitializationImpl::TransferUserfaultFD(
   // Make sure we're on the graph and complete the initialization.
   PerformanceManager::CallOnGraph(
       FROM_HERE, base::BindOnce(&InitializeProcessNodeOnGraph,
-                                render_process_host_id_, uffd_handle.TakeFD()));
+                                render_process_host_id_, uffd_handle.TakeFD(),
+                                Region(swap_area->address, swap_area->length)));
 }
 
 }  // namespace userspace_swap

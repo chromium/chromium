@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
@@ -53,19 +54,6 @@ struct CHROMEOS_EXPORT UserspaceSwapConfig {
   // Number of pages per region represents the number of pages we will use for
   // each chunk we attempt to swap at a time.
   uint16_t number_of_pages_per_region;
-
-  // VMA region minimum size represents the minimum size that a VMA must be to
-  // be considered for userspace swap.
-  uint64_t vma_region_minimum_size_bytes;
-
-  // VMA region maximum size represents the maximum size a VMA can be to be
-  // considered for userspace swap. The reason we have a maximum is because it's
-  // very common to have LARGE sparse VMAs, which can be 1+GB and used primarily
-  // for the on demand page faulted nature of anonymous mappings on linux.
-  // Examples of this are how the JVM and others will allocate large several GB
-  // heaps in one go. It would be silly to walk the entire thing checking if
-  // pages are in core, a good value here is probably less than 256MB.
-  uint64_t vma_region_maximum_size_bytes;
 
   // If true the swap file will be compressed on disk.
   bool use_compressed_swap_file;
@@ -144,6 +132,13 @@ CHROMEOS_EXPORT uint64_t GetGlobalSwapDiskspaceUsed();
 // disk due to encryption and compression.
 CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed();
 
+// DisableSwapGlobally is the global swap kill switch, it prevents any further
+// swapping.
+CHROMEOS_EXPORT void DisableSwapGlobally();
+
+// Returns true if swap is allowed (globally).
+CHROMEOS_EXPORT bool IsSwapAllowedGlobally();
+
 // RendererSwapData is attached to a ProcessNode and owned by the ProcessNode on
 // the PerformanceManager graph.
 class CHROMEOS_EXPORT RendererSwapData {
@@ -152,8 +147,10 @@ class CHROMEOS_EXPORT RendererSwapData {
 
   static std::unique_ptr<RendererSwapData> Create(
       int render_process_host_id,
+      base::ProcessId pid,
       std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
       std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+      const Region& swap_remap_area,
       mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote);
 
   // Returns the Render Process Host ID associated with this RendererSwapData.
@@ -181,38 +178,17 @@ class CHROMEOS_EXPORT RendererSwapData {
   RendererSwapData();
 };
 
-// SwapRegions will swap at most |number_of_regions| on the renderer belonging
-// to the associated RendererSwapData.
-CHROMEOS_EXPORT bool SwapRegions(RendererSwapData* data, int number_of_regions);
+// SwapRenderer will initiate a swap on the renderer belonging to the
+// RendererSwapData |data|. |size_limit_bytes| is a limit imposed by the system
+// based on settings.
+CHROMEOS_EXPORT bool SwapRenderer(RendererSwapData* data,
+                                  size_t size_limit_bytes);
 
 // GetPartitionAllocSuperPagesInUse will return |max_superpages| worth of
 // regions that are currently allocated by partition alloc.
 CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
     int32_t max_superpages,
     std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions);
-
-// A swap eligible VMA is one that meets the required swapping criteria,
-// which are:
-//   - RW protections
-//   - Not file backed (Anonymous)
-//   - Not shared (Private)
-//   - Contains no locked memory
-//   - Meets the size constraints set by vma_region_min_size_bytes
-//     and vma_region_max_size_bytes
-//
-// This method is only exported for testing.
-CHROMEOS_EXPORT bool IsVMASwapEligible(
-    const memory_instrumentation::mojom::VmRegionPtr& vma);
-
-// GetAllSwapEligibleVMAs will return a vector of regions which are swap
-// eligible, these regions are NOT "swap region" sized they are the VMAs and
-// as such must then be split in the appropriate region size by the userspace
-// swap mechanism. On error it will return false and errno will be set
-// appropriately.
-//
-// This vector may be shuffled if shuffle_maps_on_swap has been set to true.
-CHROMEOS_EXPORT bool GetAllSwapEligibleVMAs(base::PlatformThreadId pid,
-                                            std::vector<Region>* regions);
 
 }  // namespace userspace_swap
 }  // namespace memory

@@ -48,6 +48,8 @@ uint64_t GetTotalReclaimedBytes();
 class UserspaceSwapInitializationImpl
     : public ::userspace_swap::mojom::UserspaceSwapInitialization {
  public:
+  using MemoryRegionPtr = ::userspace_swap::mojom::MemoryRegionPtr;
+
   explicit UserspaceSwapInitializationImpl(int render_process_host_id);
   ~UserspaceSwapInitializationImpl() override;
 
@@ -58,8 +60,10 @@ class UserspaceSwapInitializationImpl
           ::userspace_swap::mojom::UserspaceSwapInitialization> receiver);
 
   // UserspaceSwapInitialization impl:
-  void TransferUserfaultFD(uint64_t error,
+  void TransferUserfaultFD(uint64_t uffd_error,
                            mojo::PlatformHandle uffd_handle,
+                           uint64_t mmap_error,
+                           MemoryRegionPtr swap_area,
                            TransferUserfaultFDCallback cb) override;
 
  private:

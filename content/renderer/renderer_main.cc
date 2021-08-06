@@ -62,9 +62,11 @@
 #endif  // OS_MAC
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_64)
 #include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
+#endif  // defined(X86_64)
 #include "chromeos/system/core_scheduling.h"
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/renderer/pepper/pepper_plugin_registry.h"
@@ -136,6 +138,7 @@ int RendererMain(const MainFunctionParams& parameters) {
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
 
+#if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
       chromeos::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
   absl::optional<UserspaceSwapInit> swap_init;
@@ -145,7 +148,8 @@ int RendererMain(const MainFunctionParams& parameters) {
     PLOG_IF(ERROR, !swap_init->PreSandboxSetup())
         << "Unable to complete presandbox userspace swap initialization";
   }
-#endif
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // defined(IS_CHROMEOS_ASH)
 
   if (command_line.HasSwitch(switches::kTimeZoneForTesting)) {
     std::string time_zone =
@@ -209,7 +213,7 @@ int RendererMain(const MainFunctionParams& parameters) {
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_64)
     // Once the sandbox has been entered and initialization of render threads
     // complete we will transfer FDs to the browser, or close them on failure.
     // This should always be called because it will also transfer the errno that

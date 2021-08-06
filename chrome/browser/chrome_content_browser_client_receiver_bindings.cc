@@ -54,10 +54,12 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
 #include "components/performance_manager/public/performance_manager.h"
-#endif
+#if defined(ARCH_CPU_X86_64)
+#include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
@@ -255,6 +257,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_64)
   if (performance_manager::mechanism::userspace_swap::
           UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled()) {
     registry->AddInterface(
@@ -263,7 +266,8 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
                             render_process_host->GetID()),
         performance_manager::PerformanceManager::GetTaskRunner());
   }
-#endif
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   for (auto* ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,
