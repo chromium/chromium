@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -58,7 +58,17 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
         base::NullCallback());
   }
 
+ protected:
+  std::unique_ptr<net::EmbeddedTestServer> https_embedded_test_server_;
+
+  void set_sensor_provider_available(bool sensor_provider_available) {
+    sensor_provider_available_ = sensor_provider_available;
+  }
+
+ private:
   void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     // Serve both a.com and b.com (and any other domain).
@@ -71,9 +81,18 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   void BindSensorProviderReceiver(
@@ -89,14 +108,7 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
     fake_sensor_provider_->Bind(std::move(receiver));
   }
 
-  void set_sensor_provider_available(bool sensor_provider_available) {
-    sensor_provider_available_ = sensor_provider_available;
-  }
-
- protected:
-  std::unique_ptr<net::EmbeddedTestServer> https_embedded_test_server_;
-
- private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool sensor_provider_available_ = true;
   std::unique_ptr<FakeSensorProvider> fake_sensor_provider_;
