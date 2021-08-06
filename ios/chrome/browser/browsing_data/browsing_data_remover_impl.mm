@@ -30,7 +30,7 @@
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -416,8 +416,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_PASSWORDS)) {
     base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Passwords"));
-    password_manager::PasswordStore* password_store =
-        IOSChromePasswordStoreFactory::GetForBrowserState(
+    password_manager::PasswordStoreInterface* password_store =
+        IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
