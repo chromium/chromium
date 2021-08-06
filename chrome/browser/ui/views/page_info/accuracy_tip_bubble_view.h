@@ -35,12 +35,15 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
   //
   // |close_callback| will be called when the bubble is destroyed. The argument
   // indicates what action (if any) the user took to close the bubble.
+  // If |show_opt_out| is true, an opt-out button is shown. Otherwise an
+  // "ignore" button.
   AccuracyTipBubbleView(
       views::View* anchor_view,
       const gfx::Rect& anchor_rect,
       gfx::NativeView parent_window,
       content::WebContents* web_contents,
       accuracy_tips::AccuracyTipStatus status,
+      bool show_opt_out,
       base::OnceCallback<void(AccuracyTipInteraction)> close_callback);
   ~AccuracyTipBubbleView() override;
 
@@ -52,7 +55,7 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
 
  private:
   void OpenHelpCenter();
-  void OnDontShowAgainClicked();
+  void OnSecondaryButtonClicked(AccuracyTipInteraction action);
 
   // WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;

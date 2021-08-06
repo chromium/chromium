@@ -90,6 +90,7 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
     gfx::NativeView parent_window,
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus status,
+    bool show_opt_out,
     base::OnceCallback<void(AccuracyTipInteraction)> close_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
@@ -111,9 +112,13 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                                         base::Unretained(this)));
 
   SetExtraView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&AccuracyTipBubbleView::OnDontShowAgainClicked,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON)));
+      base::BindRepeating(&AccuracyTipBubbleView::OnSecondaryButtonClicked,
+                          base::Unretained(this),
+                          show_opt_out ? AccuracyTipInteraction::kOptOut
+                                       : AccuracyTipInteraction::kIgnore),
+      l10n_util::GetStringUTF16(
+          show_opt_out ? IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON
+                       : IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON)));
 
   // The extra view doesn't seem to work if CreateBubble is already called and
   // SetHeaderView can only be called afterwards...
@@ -199,8 +204,9 @@ void AccuracyTipBubbleView::OpenHelpCenter() {
       ui::PAGE_TRANSITION_LINK, false /*is_renderer_initiated*/));
 }
 
-void AccuracyTipBubbleView::OnDontShowAgainClicked() {
-  action_taken_ = AccuracyTipInteraction::kOptOut;
+void AccuracyTipBubbleView::OnSecondaryButtonClicked(
+    AccuracyTipInteraction action) {
+  action_taken_ = action;
   GetWidget()->Close();
 }
 
@@ -223,6 +229,7 @@ void AccuracyTipBubbleView::DidChangeVisibleSecurityState() {
 void ShowAccuracyTipDialog(
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus status,
+    bool show_opt_out,
     base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
         close_callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -241,7 +248,7 @@ void ShowAccuracyTipDialog(
 
   views::BubbleDialogDelegateView* bubble = new AccuracyTipBubbleView(
       configuration.anchor_view, anchor_rect, parent_view, web_contents, status,
-      std::move(close_callback));
+      show_opt_out, std::move(close_callback));
 
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);

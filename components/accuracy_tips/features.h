@@ -25,6 +25,10 @@ extern const base::FeatureParam<std::string> kLearnMoreUrl;
 // Amount of time that has to pass between two accuracy prompts.
 extern const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts;
 
+// Number of prompts that are shown with an "ignore" button instead of an
+// opt-out.
+extern const base::FeatureParam<int> kNumIgnorePrompts;
+
 }  // namespace features
 }  // namespace accuracy_tips
 

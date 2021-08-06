@@ -53,12 +53,12 @@ class AccuracyService : public KeyedService {
     virtual bool IsEngagementHigh(const GURL& url) = 0;
 
     // Shows AccuracyTip UI using the specified information if it is not already
-    // showing. |close_callback| will be called when
-    // the dialog is closed; the argument indicates the action that the user
-    // took (if any) to close the dialog.
+    // showing. |close_callback| will be called when the dialog is closed.
+    // The argument indicates the action that the user took to close the dialog.
     virtual void ShowAccuracyTip(
         content::WebContents* web_contents,
         AccuracyTipStatus type,
+        bool show_opt_out,
         base::OnceCallback<void(AccuracyTipInteraction)> close_callback) = 0;
 
     virtual ~Delegate() = default;

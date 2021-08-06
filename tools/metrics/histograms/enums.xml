@@ -1147,6 +1147,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="kOptOut"/>
   <int value="3" label="kClosed"/>
   <int value="4" label="kDisabledByExperiment"/>
+  <int value="5" label="kIgnore"/>
 </enum>
 
 <enum name="AccuracyTipStatus">

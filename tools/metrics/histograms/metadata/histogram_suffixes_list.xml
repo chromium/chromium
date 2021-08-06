@@ -79,6 +79,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="AccuracyTipInteraction" separator=".">
   <suffix name="Closed"
       label="The Accuracy Tip was closed by close button or pressing ESC"/>
+  <suffix name="Ignore" label="Ignore button within Accuracy Tip was clicked"/>
   <suffix name="LearnMore"
       label="Learn more button within Accuracy Tip was clicked"/>
   <suffix name="NoAction"

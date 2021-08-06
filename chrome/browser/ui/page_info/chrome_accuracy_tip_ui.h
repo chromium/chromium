@@ -17,6 +17,7 @@ class WebContents;
 void ShowAccuracyTipDialog(
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus type,
+    bool show_opt_out,
     base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
         close_callback);
 

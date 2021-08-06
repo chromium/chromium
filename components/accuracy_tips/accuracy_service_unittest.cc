@@ -39,9 +39,10 @@ class MockAccuracyServiceDelegate : public AccuracyService::Delegate {
 
   MOCK_METHOD1(IsEngagementHigh, bool(const GURL&));
 
-  MOCK_METHOD3(ShowAccuracyTip,
+  MOCK_METHOD4(ShowAccuracyTip,
                void(content::WebContents*,
                     AccuracyTipStatus,
+                    bool,
                     base::OnceCallback<void(AccuracyTipInteraction)>));
 };
 
@@ -76,6 +77,7 @@ bool IsLocalMatchButNotOnList(
 // Handler that simulates a click on the opt-out button.
 void OptOutClicked(content::WebContents*,
                    AccuracyTipStatus,
+                   bool,
                    base::OnceCallback<void(AccuracyTipInteraction)> callback) {
   std::move(callback).Run(AccuracyTipInteraction::kOptOut);
 }
@@ -84,8 +86,17 @@ void OptOutClicked(content::WebContents*,
 void LearnMoreClicked(
     content::WebContents*,
     AccuracyTipStatus,
+    bool,
     base::OnceCallback<void(AccuracyTipInteraction)> callback) {
   std::move(callback).Run(AccuracyTipInteraction::kLearnMore);
+}
+
+// Handler that simulates a click on the ignore button.
+void IgnoreClicked(content::WebContents*,
+                   AccuracyTipStatus,
+                   bool,
+                   base::OnceCallback<void(AccuracyTipInteraction)> callback) {
+  std::move(callback).Run(AccuracyTipInteraction::kIgnore);
 }
 
 class AccuracyServiceTest : public ::testing::Test {
@@ -174,8 +185,28 @@ TEST_F(AccuracyServiceTest, CheckAccuracyStatusForLocalMatch) {
 }
 
 TEST_F(AccuracyServiceTest, ShowUI) {
-  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _));
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _));
   service()->MaybeShowAccuracyTip(nullptr);
+}
+
+TEST_F(AccuracyServiceTest, IgnoreButton) {
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, false, _))
+      .WillOnce(Invoke(&IgnoreClicked));
+  ;
+  service()->MaybeShowAccuracyTip(nullptr);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, false, _))
+      .WillOnce(Invoke(&IgnoreClicked));
+  ;
+  service()->MaybeShowAccuracyTip(nullptr);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, true, _))
+      .WillOnce(Invoke(&LearnMoreClicked));
+  ;
+  service()->MaybeShowAccuracyTip(nullptr);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
 TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
@@ -185,7 +216,7 @@ TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
 
   // Show an accuracy tip.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
-  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _));
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _));
   service()->MaybeShowAccuracyTip(nullptr);
 
   // Future calls will return that the rate limit is active.
@@ -206,7 +237,7 @@ TEST_F(AccuracyServiceTest, OptOut) {
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 
   // Clicking the opt-out button will disable future accuracy tips.
-  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _))
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
       .WillOnce(Invoke(&OptOutClicked));
   service()->MaybeShowAccuracyTip(nullptr);
 
@@ -234,7 +265,7 @@ TEST_F(AccuracyServiceTest, HighEngagement) {
 TEST_F(AccuracyServiceTest, Histograms) {
   {
     base::HistogramTester t;
-    EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _))
+    EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
         .WillOnce(Invoke(&LearnMoreClicked));
     service()->MaybeShowAccuracyTip(nullptr);
     t.ExpectUniqueSample("Privacy.AccuracyTip.AccuracyTipInteraction",
@@ -247,7 +278,7 @@ TEST_F(AccuracyServiceTest, Histograms) {
 
   {
     base::HistogramTester t;
-    EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _))
+    EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _))
         .WillOnce(Invoke(&OptOutClicked));
     service()->MaybeShowAccuracyTip(nullptr);
     t.ExpectUniqueSample("Privacy.AccuracyTip.AccuracyTipInteraction",
@@ -269,7 +300,7 @@ class AccuracyServiceDisabledUiTest : public AccuracyServiceTest {
 };
 
 TEST_F(AccuracyServiceDisabledUiTest, ShowWithUiDisabled) {
-  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _)).Times(0);
+  EXPECT_CALL(*delegate(), ShowAccuracyTip(_, _, _, _)).Times(0);
   service()->MaybeShowAccuracyTip(nullptr);
 }
 

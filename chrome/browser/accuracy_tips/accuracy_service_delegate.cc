@@ -22,7 +22,9 @@ bool AccuracyServiceDelegate::IsEngagementHigh(const GURL& url) {
 void AccuracyServiceDelegate::ShowAccuracyTip(
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus type,
+    bool show_opt_out,
     base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
         close_callback) {
-  ShowAccuracyTipDialog(web_contents, type, std::move(close_callback));
+  ShowAccuracyTipDialog(web_contents, type, show_opt_out,
+                        std::move(close_callback));
 }

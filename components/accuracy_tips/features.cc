@@ -25,5 +25,8 @@ const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts{
     &safe_browsing::kAccuracyTipsFeature, "TimeBetweenPrompts",
     base::TimeDelta::FromDays(7)};
 
+extern const base::FeatureParam<int> kNumIgnorePrompts{
+    &safe_browsing::kAccuracyTipsFeature, "NumIgnorePrompts", 2};
+
 }  // namespace features
 }  // namespace accuracy_tips

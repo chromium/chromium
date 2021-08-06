@@ -11,7 +11,9 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,7 +60,8 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeatureWithParameters(
         safe_browsing::kAccuracyTipsFeature,
         {{accuracy_tips::features::kSampleUrl.name,
-          GetUrl("badurl.com").spec()}});
+          GetUrl("badurl.com").spec()},
+         {accuracy_tips::features::kNumIgnorePrompts.name, "1"}});
 
     // Disable "close on deactivation" since there seems to be an issue with
     // windows losing focus during tests.
@@ -69,6 +72,16 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void ClickExtraButton() {
+    auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+    views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
+    auto* button = static_cast<views::Button*>(view->GetExtraView());
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi(button).NotifyClick(event);
+    waiter.Wait();
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -143,21 +156,33 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
+  auto* service = AccuracyServiceFactory::GetForProfile(browser()->profile());
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  service->SetClockForTesting(&clock);
+
+  // The first time the dialog is shown, it has an "ignore" button.
   ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
   EXPECT_TRUE(IsUIShowing());
+  ClickExtraButton();
+  EXPECT_FALSE(IsUIShowing());
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipInteraction::kIgnore, 1);
 
-  auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
-
-  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
-  // Simulate click on opt out button.
-  auto* button = static_cast<views::Button*>(view->GetExtraView());
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi(button).NotifyClick(event);
-  waiter.Wait();
+  // The ui won't show again on an immediate navigation.
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
   EXPECT_FALSE(IsUIShowing());
 
-  histogram_tester()->ExpectUniqueSample(
+  // But a week later it shows up again with an opt-out button.
+  clock.Advance(base::TimeDelta::FromDays(7));
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  EXPECT_TRUE(IsUIShowing());
+  ClickExtraButton();
+  EXPECT_FALSE(IsUIShowing());
+  histogram_tester()->ExpectTotalCount(
+      "Privacy.AccuracyTip.AccuracyTipInteraction", 2);
+  histogram_tester()->ExpectBucketCount(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
       AccuracyTipInteraction::kOptOut, 1);
 }
@@ -202,13 +227,20 @@ class AccuracyTipBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    bool show_opt_out = name != "ignore_button";
+
     ShowAccuracyTipDialog(browser()->tab_strip_model()->GetActiveWebContents(),
                           accuracy_tips::AccuracyTipStatus::kShowAccuracyTip,
-                          base::DoNothing());
+                          show_opt_out, base::DoNothing());
   }
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewDialogBrowserTest,
                        InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewDialogBrowserTest,
+                       InvokeUi_ignore_button) {
   ShowAndVerifyUi();
 }

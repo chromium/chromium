@@ -23,8 +23,10 @@ enum class AccuracyTipInteraction {
   // Logged when the UI was not actually shown due to experiment
   // configuration.
   kDisabledByExperiment = 4,
+  // Pressed "ignore" button.
+  kIgnore = 5,
 
-  kMaxValue = kDisabledByExperiment,
+  kMaxValue = kIgnore,
 };
 
 }  // namespace accuracy_tips

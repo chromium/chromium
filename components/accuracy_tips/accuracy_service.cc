@@ -37,6 +37,8 @@ const std::string GetHistogramSuffix(AccuracyTipInteraction interaction) {
       return "OptOut";
     case AccuracyTipInteraction::kClosed:
       return "Closed";
+    case AccuracyTipInteraction::kIgnore:
+      return "Ignore";
     case AccuracyTipInteraction::kDisabledByExperiment:
       NOTREACHED();  // We don't need specific histograms for this.
       return "";
@@ -144,8 +146,13 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
                                AccuracyTipInteraction::kDisabledByExperiment);
   }
 
+  bool show_opt_out =
+      pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
+          ->GetSize() >= static_cast<size_t>(features::kNumIgnorePrompts.Get());
+
   delegate_->ShowAccuracyTip(
       web_contents, AccuracyTipStatus::kShowAccuracyTip,
+      /*show_opt_out=*/show_opt_out,
       base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
