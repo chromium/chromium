@@ -80,6 +80,8 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     mapping_ = nullptr;
   }
 
+  size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
+
   void* GetMemoryAddress(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     DCHECK(mapping_);
@@ -89,6 +91,10 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
   int GetStride(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     return base::checked_cast<int>(handle_.planes[plane].stride);
+  }
+
+  gfx::NativePixmapHandle CloneHandleForIPC() const override {
+    return gfx::CloneHandleForIPC(handle_);
   }
 
  private:

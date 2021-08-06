@@ -56,11 +56,9 @@ class GPU_EXPORT GpuMemoryBufferImplNativePixmap : public GpuMemoryBufferImpl {
       const gfx::Size& size,
       gfx::BufferFormat format,
       DestructionCallback callback,
-      std::unique_ptr<gfx::ClientNativePixmap> native_pixmap,
-      gfx::NativePixmapHandle handle);
+      std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
 
   const std::unique_ptr<gfx::ClientNativePixmap> pixmap_;
-  gfx::NativePixmapHandle handle_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplNativePixmap);
 };

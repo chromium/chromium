@@ -321,6 +321,9 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferFromNativePixmap(
   new_handle.id = id;
   new_handle.native_pixmap_handle = pixmap->ExportHandle();
 
+  if (new_handle.native_pixmap_handle.planes.empty())
+    return gfx::GpuMemoryBufferHandle();
+
   // TODO(reveman): Remove this once crbug.com/628334 has been fixed.
   {
     base::AutoLock lock(native_pixmaps_lock_);

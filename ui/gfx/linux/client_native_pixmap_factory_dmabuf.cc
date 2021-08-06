@@ -23,22 +23,35 @@ namespace {
 
 class ClientNativePixmapOpaque : public ClientNativePixmap {
  public:
-  ClientNativePixmapOpaque() {}
-  ~ClientNativePixmapOpaque() override {}
+  explicit ClientNativePixmapOpaque(NativePixmapHandle pixmap_handle)
+      : pixmap_handle_(std::move(pixmap_handle)) {}
+  ~ClientNativePixmapOpaque() override = default;
 
   bool Map() override {
     NOTREACHED();
     return false;
   }
   void Unmap() override { NOTREACHED(); }
+  size_t GetNumberOfPlanes() const override {
+    return pixmap_handle_.planes.size();
+  }
   void* GetMemoryAddress(size_t plane) const override {
     NOTREACHED();
     return nullptr;
   }
   int GetStride(size_t plane) const override {
-    NOTREACHED();
-    return 0;
+    CHECK_LT(plane, pixmap_handle_.planes.size());
+    // Even though a ClientNativePixmapOpaque should not be mapped, we may still
+    // need to query the stride of each plane. See
+    // VideoFrame::WrapExternalGpuMemoryBuffer() for such a use case.
+    return base::checked_cast<int>(pixmap_handle_.planes[plane].stride);
   }
+  NativePixmapHandle CloneHandleForIPC() const override {
+    return gfx::CloneHandleForIPC(pixmap_handle_);
+  }
+
+ private:
+  NativePixmapHandle pixmap_handle_;
 };
 
 }  // namespace
@@ -68,7 +81,8 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
       case gfx::BufferUsage::SCANOUT:
       case gfx::BufferUsage::SCANOUT_VDA_WRITE:
       case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
-        return base::WrapUnique(new ClientNativePixmapOpaque);
+        return base::WrapUnique(
+            new ClientNativePixmapOpaque(std::move(handle)));
     }
     NOTREACHED();
     return nullptr;
