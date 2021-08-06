@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -343,7 +344,15 @@ TEST_F(MediaStreamTrackProcessorTest, VideoCloseOnTrackEnd) {
   EXPECT_TRUE(readable->IsClosed());
 }
 
-TEST_F(MediaStreamTrackProcessorTest, VideoNoCloseOnTrackDisable) {
+#if defined(OS_FUCHSIA)
+// TODO(https://crbug.com/1234343): Test seems flaky on Fuchsia, enable once
+// flakiness has been investigated.
+#define MAYBE_VideoNoCloseOnTrackDisable DISABLED_VideoNoCloseOnTrackDisable
+#else
+#define MAYBE_VideoNoCloseOnTrackDisable VideoNoCloseOnTrackDisable
+#endif
+
+TEST_F(MediaStreamTrackProcessorTest, MAYBE_VideoNoCloseOnTrackDisable) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
