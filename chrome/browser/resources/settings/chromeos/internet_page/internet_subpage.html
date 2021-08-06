@@ -229,26 +229,5 @@
       </network-always-on-vpn>
     </div>
   </template>
-
-  <template is="dom-if"
-      if="[[tetherToggleIsVisible_(deviceState, tetherDeviceState)]]">
-    <div class="settings-box two-line" actionable
-        on-click="onTetherEnabledChange_">
-      <div class="start settings-box-text">
-        $i18n{internetToggleTetherLabel}
-        <div id="tetherSecondary" class="secondary">
-          $i18n{internetToggleTetherSubtext}
-        </div>
-      </div>
-      <cr-toggle id="tetherEnabledButton"
-          aria-label="$i18n{internetToggleTetherLabel}"
-          aria-describedby="tetherSecondary"
-          checked="[[deviceIsEnabled_(tetherDeviceState)]]"
-          disabled="[[!tetherToggleIsEnabled_(deviceState,
-                      tetherDeviceState)]]"
-          on-change="onTetherEnabledChange_">
-      </cr-toggle>
-    </div>
-  </template>
 </template>
 
