@@ -126,6 +126,14 @@ void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
 #endif
 }
 
+void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->type() == ui::ET_KEY_PRESSED &&
+      event->key_code() == ui::VKEY_ESCAPE) {
+    CompleteCapture(gfx::Rect());
+    event->StopPropagation();
+  }
+}
+
 void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
   if (!event->IsLocatedEvent())
     return;
