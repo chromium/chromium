@@ -25010,6 +25010,22 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Reused lock"/>
 </enum>
 
+<enum name="EnterpriseFileSystemDownloadsRoutingDestination">
+  <int value="0" label="Download not routed"/>
+  <int value="1" label="Download routed to Box"/>
+</enum>
+
+<enum name="EnterpriseFileSystemDownloadsRoutingStatus">
+  <int value="0" label="Download routing success"/>
+  <int value="1" label="Download routing canceled"/>
+  <int value="2" label="Download routing failed due to browser error"/>
+  <int value="3" label="Download routing failed due to file error"/>
+  <int value="4" label="Download routing failed due to network error"/>
+  <int value="5" label="Download routing failed due to Service Provider error"/>
+  <int value="6"
+      label="Download routing failed due to Service Provider outage"/>
+</enum>
+
 <enum name="EnterpriseFilesystemUploadAttemptCount">
   <int value="0" label="File not renamed"/>
   <int value="1" label="Appended with suffix (1)"/>

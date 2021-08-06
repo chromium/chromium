@@ -3662,6 +3662,8 @@ static_library("browser") {
       "enterprise/connectors/file_system/signin_dialog_delegate.h",
       "enterprise/connectors/file_system/signin_experience.cc",
       "enterprise/connectors/file_system/signin_experience.h",
+      "enterprise/connectors/file_system/uma_metrics_util.cc",
+      "enterprise/connectors/file_system/uma_metrics_util.h",
       "enterprise/connectors/reporting/reporting_service_settings.cc",
       "enterprise/connectors/reporting/reporting_service_settings.h",
       "enterprise/connectors/service_provider_config.cc",

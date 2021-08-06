@@ -28,6 +28,17 @@ class AccessTokenFetcher;
 class BoxUploader;
 class SigninExperienceTestObserver;
 
+using InterruptReason = download::DownloadInterruptReason;
+constexpr auto kSuccess = download::DOWNLOAD_INTERRUPT_REASON_NONE;
+constexpr auto kServiceProviderUnknownError =
+    download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED;
+constexpr auto kServiceProviderDown =
+    download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN;
+constexpr auto kBrowserFailure = download::DOWNLOAD_INTERRUPT_REASON_CRASH;
+constexpr auto kCredentialUpdateFailure = kBrowserFailure;
+constexpr auto kSignInCancellation =
+    download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
+
 // An implementation of download::DownloadItemRenameHandler that sends a
 // download item file to a cloud-based storage provider as specified in the
 // SendDownloadToCloudEnterpriseConnector policy.

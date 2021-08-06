@@ -1350,8 +1350,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.FileSystem.DownloadsRouting"
+    enum="EnterpriseFileSystemDownloadsRoutingDestination"
+    expires_after="2022-01-30">
+  <owner>alicego@google.com</owner>
+  <owner>rogerta@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <summary>
+    The intended routing destination of each downloaded item when the Enterprise
+    Filesystem connector is enabled. Each file is either not routed to any cloud
+    provider, or routed to Box. Gets recorded every time a file is downloaded
+    with the filesystem connector enabled, whether or not the file is eventually
+    uploaded to the cloud.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FileSystem.DownloadsRouting.Box"
+    enum="EnterpriseFileSystemDownloadsRoutingStatus"
+    expires_after="2022-01-30">
+  <owner>alicego@google.com</owner>
+  <owner>rogerta@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <summary>
+    The final result of a file routed to Box by the filesystem connector. The
+    file routing may a) succeed b) be canceled by the user c) fail due to a Box
+    error d) fail due to a browser error, e) fail due to a file error OR f) fail
+    due to a network error. Gets recorded every time a file is downloaded with
+    the filesystem connector enabled, whether or not the file is eventually
+    uploaded to the cloud.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.FileSystem.Uniquifier"
-    enum="EnterpriseFilesystemUploadAttemptCount" expires_after="2021-11-18">
+    enum="EnterpriseFilesystemUploadAttemptCount" expires_after="2022-01-30">
   <owner>alicego@google.com</owner>
   <owner>mad@google.com</owner>
   <owner>rogerta@google.com</owner>

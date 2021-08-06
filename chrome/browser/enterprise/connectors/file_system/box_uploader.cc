@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_upload_file_chunks_handler.h"
 #include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
+#include "chrome/browser/enterprise/connectors/file_system/uma_metrics_util.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/prefs/pref_service.h"
 #include "net/http/http_status_code.h"
@@ -42,17 +43,12 @@ using download::ConvertFileErrorToInterruptReason;
 using download::ConvertNetErrorToInterruptReason;
 using download::DownloadInterruptReasonToString;
 
-constexpr auto kSuccess = download::DOWNLOAD_INTERRUPT_REASON_NONE;
-constexpr auto kBoxUnknownError =
-    download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED;
 const char kBoxErrorMessageFormat[] = "%d %s";         // 404 "not_found"
 const char kBoxMoreMessageFormat[] = "Request ID %s";  // <request_id>
 
 }  // namespace
 
 namespace enterprise_connectors {
-
-const char kUniquifierUmaLabel[] = "Enterprise.FileSystem.Uniquifier";
 
 ////////////////////////////////////////////////////////////////////////////////
 // BoxUploader
@@ -91,7 +87,7 @@ BoxUploader::ConvertToInterruptReasonOrErrorMessage(BoxApiCallResponse response,
       kBoxErrorMessageFormat, code, response.box_error_code.c_str()));
   reroute_info.set_additional_message(base::StringPrintf(
       kBoxMoreMessageFormat, response.box_request_id.c_str()));
-  return kBoxUnknownError;
+  return kServiceProviderUnknownError;
 }
 
 BoxUploader::BoxUploader(download::DownloadItem* download_item)
@@ -227,18 +223,67 @@ void BoxUploader::OnApiCallFlowDone(InterruptReason reason,
   for (auto& observer : observers_)
     observer.OnUploadDone(reason == kSuccess);
 
-  if (reason != kSuccess) {
-    LOG(ERROR) << "Upload failed: " << DownloadInterruptReasonToString(reason);
-    // TODO(https://crbug.com/1165972): on upload failure, decide whether to
-    // queue up the file to retry later, or also delete as usual. At this stage,
-    // for trusted testers (TT), deleting as usual for now. Need to determine
-    // how to communicate the failure/error to user.
-  } else {
+  if (reason == kSuccess) {
     DCHECK(reroute_info().file_id().empty());
     DCHECK(!file_id.empty());
     reroute_info().set_file_id(file_id);
+  } else {
+    LOG(ERROR) << "Upload failed: " << DownloadInterruptReasonToString(reason);
   }
+
+  // UMA Logging.
+  switch (reason) {
+    case kSuccess:
+      UmaLogDownloadsRoutingStatus(
+          EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_SUCCEEDED);
+      break;
+    case kSignInCancellation:
+      UmaLogDownloadsRoutingStatus(
+          EnterpriseFileSystemDownloadsRoutingStatus::ROUTING_CANCELED);
+      break;
+    case kServiceProviderUnknownError:
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE:
+    case download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH:
+      UmaLogDownloadsRoutingStatus(EnterpriseFileSystemDownloadsRoutingStatus::
+                                       ROUTING_FAILED_SERVICE_PROVIDER_ERROR);
+      break;
+    case kServiceProviderDown:
+      UmaLogDownloadsRoutingStatus(EnterpriseFileSystemDownloadsRoutingStatus::
+                                       ROUTING_FAILED_SERVICE_PROVIDER_OUTAGE);
+      break;
+    case kBrowserFailure:  // Same as `kCredentialUpdateFailure`
+      UmaLogDownloadsRoutingStatus(EnterpriseFileSystemDownloadsRoutingStatus::
+                                       ROUTING_FAILED_BROWSER_ERROR);
+      break;
+    // File errors converted by `ConvertFileErrorToInterruptReason`
+    // Note that ConvertToInterruptReasonOrErrorMessage can also return some of
+    // these codes for network errors caused by underlying file errors.
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED:
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR:
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE:
+    case download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED:
+      UmaLogDownloadsRoutingStatus(EnterpriseFileSystemDownloadsRoutingStatus::
+                                       ROUTING_FAILED_FILE_ERROR);
+      break;
+    // Network errors converted by `ConvertToInterruptReasonOrErrorMessage`
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT:
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED:
+    case download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED:
+      UmaLogDownloadsRoutingStatus(EnterpriseFileSystemDownloadsRoutingStatus::
+                                       ROUTING_FAILED_NETWORK_ERROR);
+      break;
+    default:
+      // We have covered all possible interrupt reasons above, if we encounter
+      // any others the should be added to the appropriate fork.
+      NOTREACHED() << "Unexpected error: " << reason;
+  }
+
   SendProgressUpdate();
+
+  // TODO(https://crbug.com/1165972): on upload failure, decide whether to
+  // queue up the file to retry later, or also delete as usual. At this stage,
+  // for trusted testers (TT), deleting as usual for now. Need to determine
+  // how to communicate the failure/error to user.
   PostDeleteFileTask(reason);
 }
 
