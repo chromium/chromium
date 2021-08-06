@@ -95,7 +95,7 @@ def GetTestName(test):
 def FilterTestSuite(suite, gtest_filter):
   """Returns a new filtered tests suite based on the given gtest filter.
 
-  See https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md
+  See https://github.com/google/googletest/blob/master/docs/advanced.md
   for gtest_filter specification.
   """
   return unittest.TestSuite(FilterTests(GetTestsFromSuite(suite), gtest_filter))
@@ -104,7 +104,7 @@ def FilterTestSuite(suite, gtest_filter):
 def FilterTests(all_tests, gtest_filter):
   """Returns a filtered list of tests based on the given gtest filter.
 
-  See https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md
+  See https://github.com/google/googletest/blob/master/docs/advanced.md
   for gtest_filter specification.
   """
   pattern_groups = gtest_filter.split('-')
