@@ -176,6 +176,7 @@
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="duet_ntp_logo_top_margin">-16dp</dimen>
+    <dimen name="ntp_promo_bottom_margin">16dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="experimental_explore_sites_radius">8dp</dimen>
