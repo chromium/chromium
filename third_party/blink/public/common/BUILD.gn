@@ -198,6 +198,7 @@ source_set("headers") {
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",
     "scheduler/web_scheduler_tracked_feature.h",
+    "scheme_registry.h",
     "security/address_space_feature.h",
     "security/protocol_handler_security_level.h",
     "security/security_style.h",

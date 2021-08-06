@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/media/display_type.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
@@ -341,8 +342,8 @@ bool PictureInPictureControllerImpl::IsEnterAutoPictureInPictureAllowed()
         GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
     is_in_pwa_window = display_mode != mojom::blink::DisplayMode::kBrowser;
   }
-  if (!(SchemeRegistry::IsExtensionScheme(
-            GetSupplementable()->Url().Protocol()) ||
+  if (!(CommonSchemeRegistry::IsExtensionScheme(
+            GetSupplementable()->Url().Protocol().Ascii()) ||
         Fullscreen::FullscreenElementFrom(*GetSupplementable()) ||
         (is_in_pwa_window && GetSupplementable()->IsInWebAppScope()))) {
     return false;

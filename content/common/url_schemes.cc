@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -78,6 +79,9 @@ void RegisterContentSchemes() {
 
   for (auto& scheme : schemes.local_schemes)
     url::AddLocalScheme(scheme.c_str());
+
+  for (auto& scheme : schemes.extension_schemes)
+    blink::CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.c_str());
 
   schemes.no_access_schemes.push_back(kChromeErrorScheme);
   for (auto& scheme : schemes.no_access_schemes)

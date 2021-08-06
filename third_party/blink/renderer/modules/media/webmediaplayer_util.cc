@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -72,7 +73,7 @@ media::mojom::MediaURLScheme GetMediaURLScheme(const WebURL& url) {
   KURL kurl(url);
   if (SchemeRegistry::IsWebUIScheme(kurl.Protocol()))
     return media::mojom::MediaURLScheme::kChrome;
-  if (SchemeRegistry::IsExtensionScheme(kurl.Protocol()))
+  if (CommonSchemeRegistry::IsExtensionScheme(kurl.Protocol().Ascii()))
     return media::mojom::MediaURLScheme::kChromeExtension;
 
   return media::mojom::MediaURLScheme::kUnknown;

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -112,31 +113,31 @@ TEST_F(SchemeRegistryTest, WebUIScheme) {
 
 TEST_F(SchemeRegistryTest, ExtensionScheme) {
   const char* kExtensionScheme = "chrome-extension";
-  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
-  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+  EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
 #if DCHECK_IS_ON()
   WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
-  SchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
 
-  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
-  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+  EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_TRUE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
-  SchemeRegistry::RegisterURLSchemeAsExtension(kTestScheme);
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension(kTestScheme);
 
-  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kTestScheme));
-  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+  EXPECT_TRUE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_TRUE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
-  SchemeRegistry::RemoveURLSchemeAsExtension(kExtensionScheme);
+  CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest(kExtensionScheme);
 
-  EXPECT_TRUE(SchemeRegistry::IsExtensionScheme(kTestScheme));
-  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+  EXPECT_TRUE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
-  SchemeRegistry::RemoveURLSchemeAsExtension(kTestScheme);
+  CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest(kTestScheme);
 
-  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kTestScheme));
-  EXPECT_FALSE(SchemeRegistry::IsExtensionScheme(kExtensionScheme));
+  EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
+  EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 }
 
 TEST_F(SchemeRegistryTest, CodeCacheWithHashing) {

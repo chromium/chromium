@@ -10,10 +10,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/origin_util.h"
-#include "extensions/common/constants.h"
 #include "net/base/escape.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -74,7 +74,7 @@ bool ProtocolHandler::IsValid() const {
       url_.SchemeIsHTTPOrHTTPS() ||
       (security_level_ ==
            blink::ProtocolHandlerSecurityLevel::kExtensionFeatures &&
-       url_.SchemeIs(extensions::kExtensionScheme));
+       blink::CommonSchemeRegistry::IsExtensionScheme(url_.scheme()));
   if (!has_valid_scheme || !network::IsUrlPotentiallyTrustworthy(url_))
     return false;
 

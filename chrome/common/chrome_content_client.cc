@@ -281,6 +281,8 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
 
+  schemes->extension_schemes.push_back(extensions::kExtensionScheme);
+
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
   schemes->savable_schemes.push_back(chrome::kChromeSearchScheme);
   schemes->savable_schemes.push_back(dom_distiller::kDomDistillerScheme);

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -118,7 +119,7 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (SchemeRegistry::IsExtensionScheme(url.Protocol())) {
+  if (CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii())) {
     context_ = kExtensionContext;
   } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
