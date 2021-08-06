@@ -1,11 +1,6 @@
 <style include="trusted-style">
 </style>
-<paper-spinner-lite
-    active="[[isLoading_(imagesLoading_, collectionId)]]">
-</paper-spinner-lite>
-<!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
-<p hidden$="[[!hasError_]]" id="error">error</p>
-<iframe frameBorder="0" id="images-iframe" hidden$="[[!showImages_]]"
+<iframe frameBorder="0" id="images-iframe"
     src="chrome-untrusted://personalization/untrusted/images.html" role="main"
     aria-label="[[getMainAriaLabel_(collectionId, collections_)]]">
 </iframe>

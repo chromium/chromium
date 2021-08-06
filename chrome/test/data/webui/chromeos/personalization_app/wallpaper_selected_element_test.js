@@ -38,49 +38,53 @@ export function WallpaperSelectedTest() {
     await flushTasks();
   });
 
-  test('shows loading spinner when there are in-flight requests', async () => {
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
-      selected: 1,
-      setImage: 0,
-    };
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+  test(
+      'shows loading placeholder when there are in-flight requests',
+      async () => {
+        personalizationStore.data.loading = {
+          ...personalizationStore.data.loading,
+          selected: 1,
+          setImage: 0,
+        };
+        wallpaperSelectedElement = initElement(WallpaperSelected.is);
 
-    assertEquals(
-        null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
+        const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
+        assertTrue(img.hidden);
 
-    assertEquals(
-        null,
-        wallpaperSelectedElement.shadowRoot.getElementById('textContainer'));
+        assertEquals(
+            null,
+            wallpaperSelectedElement.shadowRoot.getElementById(
+                'textContainer'));
 
-    const spinner =
-        wallpaperSelectedElement.shadowRoot.querySelector('paper-spinner-lite');
+        const placeholder = wallpaperSelectedElement.shadowRoot.querySelector(
+            '.photo-loading-placeholder');
 
-    assertTrue(spinner.active);
+        assertTrue(!!placeholder);
+        assertFalse(placeholder.hidden);
 
-    // Loading spinner should be hidden.
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
-      selected: 0,
-      setImage: 0,
-    };
-    personalizationStore.notifyObservers();
-    waitAfterNextRender(wallpaperSelectedElement);
+        // Loading placeholder should be hidden.
+        personalizationStore.data.loading = {
+          ...personalizationStore.data.loading,
+          selected: 0,
+          setImage: 0,
+        };
+        personalizationStore.notifyObservers();
+        waitAfterNextRender(wallpaperSelectedElement);
 
-    assertFalse(spinner.active);
+        assertTrue(placeholder.hidden);
 
-    // Sent a request to update user wallpaper. Loading spinner should come
-    // back.
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
-      selected: 0,
-      setImage: 1,
-    };
-    personalizationStore.notifyObservers();
-    waitAfterNextRender(wallpaperSelectedElement);
+        // Sent a request to update user wallpaper. Loading placeholder should
+        // come back.
+        personalizationStore.data.loading = {
+          ...personalizationStore.data.loading,
+          selected: 0,
+          setImage: 1,
+        };
+        personalizationStore.notifyObservers();
+        waitAfterNextRender(wallpaperSelectedElement);
 
-    assertTrue(spinner.active);
-  });
+        assertFalse(placeholder.hidden);
+      });
 
   test('sets wallpaper image in store on first load', async () => {
     personalizationStore.expectAction(ActionName.SET_SELECTED_IMAGE);
@@ -189,19 +193,19 @@ export function WallpaperSelectedTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const spinner =
-        wallpaperSelectedElement.shadowRoot.querySelector('paper-spinner-lite');
-    assertTrue(spinner.active);
+    const placeholder = wallpaperSelectedElement.shadowRoot.querySelector(
+        '.photo-loading-placeholder');
+    assertTrue(!!placeholder);
+    assertFalse(placeholder.hidden);
 
     // Loading finished and still no current wallpaper.
     personalizationStore.data.loading.selected = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertFalse(spinner.active);
+    assertTrue(placeholder.hidden);
 
-    assertEquals(
-        null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
+    assertTrue(wallpaperSelectedElement.shadowRoot.querySelector('img').hidden);
 
     assertEquals(
         'There was an error',

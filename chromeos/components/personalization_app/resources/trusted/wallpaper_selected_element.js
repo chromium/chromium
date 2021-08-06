@@ -104,7 +104,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       isLoading_: {
         type: Boolean,
-        listener: 'onIsLoadingChanged_',
       },
 
       /** @private */
@@ -116,7 +115,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       showImage_: {
         type: Boolean,
-        computed: 'computeShowImage_(image_)',
+        computed: 'computeShowImage_(image_, isLoading_)',
       },
 
       /** @private */
@@ -210,11 +209,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {boolean} loading
    * @return {boolean}
    * @private
    */
-  computeShowImage_(image) {
-    return !!image;
+  computeShowImage_(image, loading) {
+    // Specifically check === false to avoid undefined case while component is
+    // initializing.
+    return loading === false && !!image;
   }
 
   /**
@@ -417,6 +419,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
     }
     return this.i18n('currentlySet') + ' ' +
         this.i18n('unknownImageAttribution');
+  }
+
+  /**
+   * Returns hidden state of loading placeholder.
+   * @param {boolean} loading
+   * @param {boolean} showImage
+   * @return {boolean}
+   * @private
+   */
+  isLoadingPlaceholderHidden_(loading, showImage) {
+    return showImage || !loading;
   }
 }
 

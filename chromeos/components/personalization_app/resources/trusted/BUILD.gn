@@ -155,7 +155,6 @@ js_library("wallpaper_images_element") {
     ":personalization_reducers",
     ":styles",
     "../common:constants",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -172,7 +171,6 @@ js_library("wallpaper_selected_element") {
     "../common:utils",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

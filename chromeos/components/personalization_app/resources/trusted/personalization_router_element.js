@@ -50,6 +50,13 @@ export class PersonalizationRouter extends PolymerElement {
     return document.querySelector(PersonalizationRouter.is);
   }
 
+  /**
+   * Reload the application at the collections page.
+   */
+  static reloadAtRoot() {
+    window.location.replace(Paths.Collections);
+  }
+
   get collectionId() {
     if (this.path_ !== Paths.CollectionImages) {
       return null;

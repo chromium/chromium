@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {promisifySendImagesForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
@@ -39,7 +40,10 @@ export function WallpaperImagesTest() {
         {assetId: BigInt(20), url: {url: 'https://id_1-1/'}},
       ],
     };
+    personalizationStore.data.backdrop.collections =
+        wallpaperProvider.collections;
     personalizationStore.data.loading.images = {'id_0': false, 'id_1': false};
+    personalizationStore.data.loading.collections = false;
 
     let sendImagesPromise = promisifySendImagesForTesting();
     wallpaperImagesElement =
@@ -70,32 +74,48 @@ export function WallpaperImagesTest() {
     assertDeepEquals(personalizationStore.data.backdrop.images['id_1'], data);
   });
 
-  test('displays error on loading failure', async () => {
+  test('navigates back to main page on loading failure', async () => {
+    const reloadPromise = new Promise((resolve) => {
+      PersonalizationRouter.reloadAtRoot = resolve;
+    });
+
+    personalizationStore.data.backdrop.collections =
+        wallpaperProvider.collections;
+    personalizationStore.data.backdrop.images = {'id_0': null};
+    personalizationStore.data.loading = {
+      collections: false,
+      images: {'id_0': true}
+    };
+
     wallpaperImagesElement =
         initElement(WallpaperImages.is, {collectionId: 'id_0'});
 
-    personalizationStore.data.backdrop.images = {'id_0': null};
-    personalizationStore.data.loading = {images: {'id_0': true}};
-    personalizationStore.notifyObservers();
-
-    const spinner =
-        wallpaperImagesElement.shadowRoot.querySelector('paper-spinner-lite');
-    assertTrue(spinner.active);
-
-    const error = wallpaperImagesElement.shadowRoot.querySelector('#error');
-    assertTrue(error.hidden);
-
-    // Simulate finish loading. Images still null
+    // Simulate finish loading. Images still null. Should bail and reload
+    // application.
     personalizationStore.data.loading = {images: {'id_0': false}};
     personalizationStore.notifyObservers();
 
-    await waitAfterNextRender(wallpaperImagesElement);
+    await reloadPromise;
+  });
 
-    // The iframe should be hidden.
-    const iframe = wallpaperImagesElement.shadowRoot.querySelector('iframe');
-    assertTrue(iframe.hidden);
+  test('navigates back to main page on unknown collection id', async () => {
+    const reloadPromise = new Promise((resolve) => {
+      PersonalizationRouter.reloadAtRoot = resolve;
+    });
 
-    assertFalse(spinner.active);
-    assertFalse(error.hidden);
+    personalizationStore.data.backdrop.collections =
+        wallpaperProvider.collections;
+    personalizationStore.data.backdrop.images = {
+      'id_0': wallpaperProvider.images
+    };
+    personalizationStore.data.loading = {
+      collections: false,
+      images: {'id_0': false},
+    };
+
+    wallpaperImagesElement =
+        initElement(WallpaperImages.is, {collectionId: 'unknown_id'});
+
+    await reloadPromise;
   });
 }

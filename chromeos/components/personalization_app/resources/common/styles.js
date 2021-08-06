@@ -78,7 +78,7 @@ styles.innerHTML = `
       }
     }
     .photo-loading-placeholder {
-      animation: 2210ms linear var(--animation-delay) infinite ripple;
+      animation: 2210ms linear var(--animation-delay, 1s) infinite ripple;
       background-color: var(--google-grey-300);
       box-sizing: border-box;
       border-radius: 12px;
