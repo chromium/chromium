@@ -614,8 +614,8 @@
   },
   {
     "name": "chrome-share-long-screenshot",
-    "owners": [ "tgupta", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 94
+    "owners": [ "skare", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 96
   },
   {
     "name": "chrome-share-screenshot",
