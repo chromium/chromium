@@ -210,7 +210,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         String subtitle =
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mParams.getUrl());
 
-        if (contentTypes.contains(ContentType.IMAGE)) {
+        if (contentTypes.contains(ContentType.IMAGE)
+                || contentTypes.contains(ContentType.IMAGE_AND_LINK)) {
             setImageForPreviewFromUri(mParams.getFileUris().get(0));
             if (TextUtils.isEmpty(subtitle)) {
                 subtitle = getFileType(fileContentType);
