@@ -2307,8 +2307,6 @@ static_library("ui") {
       "webui/chromeos/bluetooth_pairing_dialog.h",
       "webui/chromeos/bluetooth_shared_load_time_data_provider.cc",
       "webui/chromeos/bluetooth_shared_load_time_data_provider.h",
-      "webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.cc",
-      "webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h",
       "webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.cc",
       "webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h",
       "webui/chromeos/cellular_setup/mobile_setup_dialog.cc",

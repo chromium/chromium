@@ -16,8 +16,8 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/net/network_health/network_health_service.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -279,9 +279,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     const NetworkState* cellular_network =
         NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
             NetworkTypePattern::Cellular());
-    if (cellular_network)
-      cellular_setup::OpenCellularSetupDialog(cellular_network->guid());
-
+    if (cellular_network) {
+      SystemTrayClientImpl::Get()->ShowSettingsCellularSetup(
+          /*show_psim_flow=*/true);
+    }
     base::Value response(base::Value::Type::LIST);
     response.Append(base::Value(cellular_network != nullptr));
     Respond(callback_id, response);

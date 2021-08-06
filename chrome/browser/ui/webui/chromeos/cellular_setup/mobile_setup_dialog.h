@@ -30,7 +30,6 @@ class MobileSetupDialog : public SystemWebDialogDelegate {
                        bool* out_close_dialog) override;
 
  private:
-  friend void OpenCellularSetupDialog(const std::string& cellular_network_guid);
   friend void NetworkConnectDelegateChromeOS::ShowCarrierAccountDetail(
       const std::string& network_id);
   static void ShowByNetworkId(const std::string& network_id);
