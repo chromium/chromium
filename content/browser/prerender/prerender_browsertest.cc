@@ -2676,6 +2676,37 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NotificationConstructor) {
 }
 #endif  // defined(OS_ANDROID)
 
+// TODO(crbug.com/1215073): Make a WPT when we have a stable way to wait
+// cancellation runs.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadByScript) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  auto* prerender_host = GetPrerenderedMainFrameHost(host_id);
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  const std::string js_string = R"(
+      document.body.innerHTML =
+          "<a id='target' download='download-link' href='cache.txt'>here</a>";
+      document.getElementById('target').click();
+  )";
+  ExecuteScriptAsync(prerender_host, js_string);
+
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDownload, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DownloadInMainFrame) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
