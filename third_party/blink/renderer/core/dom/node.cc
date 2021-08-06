@@ -3335,8 +3335,17 @@ void Node::FlatTreeParentChanged() {
 
 void Node::AddCandidateDirectionalityForSlot() {
   ShadowRoot* root = ShadowRootOfParent();
-  if (!root || !root->HasSlotAssignment())
-    return;
+  if (!root || !root->HasSlotAssignment()) {
+    // We should add this node as a candidate that needs to recalculate its
+    // direcationality if the parent slot has the dir auto flag.
+    if (auto* parent_slot = DynamicTo<HTMLSlotElement>(parentElement())) {
+      if (parent_slot->SelfOrAncestorHasDirAutoAttribute())
+        root = ContainingShadowRoot();
+    }
+
+    if (!root)
+      return;
+  }
 
   root->GetSlotAssignment().GetCandidateDirectionality().insert(this);
 }

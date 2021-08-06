@@ -262,4 +262,23 @@ TEST_F(HTMLElementTest, DirAutoByChildChanged) {
   EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kLtr);
 }
 
+TEST_F(HTMLElementTest, SlotDirAutoBySingleSlottedNodeRemoved) {
+  ScopedCSSPseudoDirForTest scoped_feature(false);
+
+  SetBodyInnerHTML("<div id='host'>slotted text</div>");
+  auto* element = GetDocument().getElementById("host");
+  ShadowRoot& shadow_root =
+      element->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(
+      "<slot id='inner' dir='auto'><div>&#1571;</div></slot>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* slot = shadow_root.getElementById("inner");
+  EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kLtr);
+
+  element->RemoveChildren();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kRtl);
+}
+
 }  // namespace blink
