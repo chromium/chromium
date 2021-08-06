@@ -42,3 +42,5 @@ crbug.com/1086181 media/controls-layout-direction.html [ Failure ]
 # Needs Rebaseline
 crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
 crbug.com/993384 css3/filters/effect-reference-subregion.html [ Failure Pass ]
+crbug.com/1237093 compositing/masks/mask-with-removed-filters.html [ Failure Pass ]
+crbug.com/1237093 compositing/masks/mask-with-added-filters.html [ Failure Pass ]
