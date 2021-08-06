@@ -78,6 +78,36 @@ source_set("logging") {
   deps = [ "//base" ]
 }
 
+source_set("common_headers") {
+  visibility = [ ":base" ]
+  sources = [
+    "action_executor.h",
+    "audio_capturer.h",
+    "audio_silence_detector.h",
+    "audio_volume_filter.h",
+    "basic_desktop_environment.h",
+    "chromoting_messages.h",
+    "chromoting_param_traits.h",
+    "desktop_and_cursor_conditional_composer.h",
+    "desktop_environment.h",
+    "desktop_environment_options.h",
+    "evaluate_capability.h",
+    "input_injector.h",
+    "sas_injector.h",
+    "screen_controls.h",
+    "screen_resolution.h",
+    "worker_process_ipc_delegate.h",
+  ]
+  if (!is_chromeos_ash) {
+    sources += [ "me2me_desktop_environment.h" ]
+  }
+  deps = [
+    "//ipc",
+    "//remoting/base",
+    "//remoting/protocol",
+  ]
+}
+
 source_set("base") {
   sources = [
     "host_exit_codes.cc",
@@ -88,11 +118,15 @@ source_set("base") {
     "username.h",
   ]
   deps = [
+    ":common_headers",
     ":logging",
     "//base",
     "//remoting/base",
   ]
-  public_deps = [ ":logging" ]
+  public_deps = [
+    ":common_headers",
+    ":logging",
+  ]
 }
 
 # Split up from common to avoid circular dependency.
@@ -184,19 +218,14 @@ source_set("host_extension") {
 static_library("common") {
   sources = [
     "action_executor.cc",
-    "action_executor.h",
     "action_message_handler.cc",
     "action_message_handler.h",
     "audio_capturer.cc",
-    "audio_capturer.h",
     "audio_silence_detector.cc",
-    "audio_silence_detector.h",
     "audio_volume_filter.cc",
-    "audio_volume_filter.h",
     "backoff_timer.cc",
     "backoff_timer.h",
     "basic_desktop_environment.cc",
-    "basic_desktop_environment.h",
     "branding.cc",
     "branding.h",
     "chromoting_host.cc",
@@ -204,9 +233,7 @@ static_library("common") {
     "chromoting_host_context.cc",
     "chromoting_host_context.h",
     "chromoting_messages.cc",
-    "chromoting_messages.h",
     "chromoting_param_traits.cc",
-    "chromoting_param_traits.h",
     "chromoting_param_traits_impl.h",
     "client_session.cc",
     "client_session.h",
@@ -223,7 +250,6 @@ static_library("common") {
     "desktop_and_cursor_composer_notifier.cc",
     "desktop_and_cursor_composer_notifier.h",
     "desktop_and_cursor_conditional_composer.cc",
-    "desktop_and_cursor_conditional_composer.h",
     "desktop_capturer_checker.cc",
     "desktop_capturer_checker.h",
     "desktop_capturer_proxy.cc",
@@ -231,9 +257,7 @@ static_library("common") {
     "desktop_display_info.cc",
     "desktop_display_info.h",
     "desktop_display_info_loader.h",
-    "desktop_environment.h",
     "desktop_environment_options.cc",
-    "desktop_environment_options.h",
     "desktop_process.cc",
     "desktop_process.h",
     "desktop_resizer.h",
@@ -245,7 +269,6 @@ static_library("common") {
     "desktop_session_proxy.cc",
     "desktop_session_proxy.h",
     "evaluate_capability.cc",
-    "evaluate_capability.h",
     "forward_process_stats_agent.cc",
     "forward_process_stats_agent.h",
     "ftl_echo_message_listener.cc",
@@ -281,7 +304,6 @@ static_library("common") {
     "host_window.h",
     "host_window_proxy.cc",
     "host_window_proxy.h",
-    "input_injector.h",
     "ipc_action_executor.cc",
     "ipc_action_executor.h",
     "ipc_audio_capturer.cc",
@@ -333,10 +355,7 @@ static_library("common") {
     "resizing_host_observer.cc",
     "resizing_host_observer.h",
     "resources.h",
-    "sas_injector.h",
-    "screen_controls.h",
     "screen_resolution.cc",
-    "screen_resolution.h",
     "server_log_entry_host.cc",
     "server_log_entry_host.h",
     "shutdown_watchdog.cc",
@@ -516,10 +535,7 @@ static_library("common") {
       ]
     }
   } else {
-    sources += [
-      "me2me_desktop_environment.cc",
-      "me2me_desktop_environment.h",
-    ]
+    sources += [ "me2me_desktop_environment.cc" ]
   }
 
   if (is_mac) {
@@ -591,7 +607,6 @@ static_library("common") {
       "win/host_service.h",
       "win/unprivileged_process_delegate.h",
       "win/wts_session_process_delegate.h",
-      "worker_process_ipc_delegate.h",
     ]
     libs += [ "crypt32.lib" ]
     deps += [
@@ -629,6 +644,7 @@ static_library("test_support") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
+    ":base",
     ":client_session_control",
     "//remoting/codec:encoder",
     "//remoting/host/file_transfer:common",

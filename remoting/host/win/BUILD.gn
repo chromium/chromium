@@ -149,6 +149,7 @@ source_set("win") {
     "//crypto",
     "//ipc",
     "//remoting/base",
+    "//remoting/host:base",
     "//remoting/host/security_key",
     "//remoting/host/win:messages",
     "//remoting/host/win:remoting_lib_idl",
@@ -174,15 +175,15 @@ source_set("unit_tests") {
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
     "rdp_client_unittest.cc",
     "worker_process_launcher_unittest.cc",
   ]
 
   deps = [
     ":elevated_native_messaging_host",
+    "//base/test:test_support",
     "//ipc",
+    "//remoting/host:base",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
@@ -312,6 +313,7 @@ executable("remoting_me2me_host") {
     ":dpi_aware_exe_manifest",
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
   ]
 
   sources = [
@@ -334,9 +336,15 @@ source_set("elevated_native_messaging_host") {
   sources = [
     "elevated_native_messaging_host.cc",
     "elevated_native_messaging_host.h",
+    "launch_native_messaging_host_process.cc",
+    "launch_native_messaging_host_process.h",
   ]
   deps = [
+    ":security_descriptor",
     "//base",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//ipc",
+    "//remoting/host:base",
     "//remoting/host/native_messaging",
   ]
 }
@@ -391,7 +399,6 @@ shared_library("remoting_core") {
     "chromoting_module.cc",
     "chromoting_module.h",
     "core.cc",
-    "core.h",
     "etw_trace_consumer.cc",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
@@ -400,8 +407,6 @@ shared_library("remoting_core") {
     "host_event_file_logger.cc",
     "host_event_windows_event_logger.cc",
     "host_service.cc",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
     "set_up_url_forwarder_dialog.cc",
@@ -434,6 +439,7 @@ shared_library("remoting_core") {
     "//base:i18n",
     "//base/allocator",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//ipc",
     "//mojo/core/embedder:embedder",
@@ -441,7 +447,9 @@ shared_library("remoting_core") {
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/base:breakpad",
+    "//remoting/host:base",
     "//remoting/host:host",
     "//remoting/host:host_settings",
     "//remoting/host:logging",
@@ -452,6 +460,8 @@ shared_library("remoting_core") {
     "//remoting/host/setup",
     "//remoting/protocol",
     "//sandbox/win:sandbox",  # Should always use Windows version
+    "//services/network:network_service",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base",
@@ -490,6 +500,7 @@ executable("remoting_desktop") {
   deps = [
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
   ]
 
   if (is_official_build) {
