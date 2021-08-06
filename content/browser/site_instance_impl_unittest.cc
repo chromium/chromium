@@ -127,10 +127,8 @@ class SiteInstanceTest : public testing::Test {
 
   GURL GetSiteForURL(const IsolationContext& isolation_context,
                      const GURL& url) {
-    return SiteInfo::Create(
-               isolation_context,
-               UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-               WebExposedIsolationInfo::CreateNonIsolated())
+    return SiteInfo::Create(isolation_context, UrlInfo(UrlInfoInit(url)),
+                            WebExposedIsolationInfo::CreateNonIsolated())
         .site_url();
   }
 
@@ -200,11 +198,10 @@ class SiteInstanceTest : public testing::Test {
   static bool IsSameSite(BrowserContext* context,
                          const GURL& url1,
                          const GURL& url2) {
-    return SiteInstanceImpl::IsSameSite(
-        IsolationContext(context),
-        UrlInfo(url1, UrlInfo::OriginIsolationRequest::kNone),
-        UrlInfo(url2, UrlInfo::OriginIsolationRequest::kNone),
-        /*should_compare_effective_urls=*/true);
+    return SiteInstanceImpl::IsSameSite(IsolationContext(context),
+                                        UrlInfo(UrlInfoInit(url1)),
+                                        UrlInfo(UrlInfoInit(url2)),
+                                        /*should_compare_effective_urls=*/true);
   }
 
  private:
@@ -1972,9 +1969,9 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
   const auto non_default_partition_config =
       CreateStoragePartitionConfigForTesting(
           /*in_memory=*/false, /*partition_domain=*/"test_partition");
-  const UrlInfo partitioned_url_info(test_url,
-                                     UrlInfo::OriginIsolationRequest::kNone,
-                                     non_default_partition_config);
+  const UrlInfo partitioned_url_info(
+      UrlInfoInit(test_url).WithStoragePartitionConfig(
+          non_default_partition_config));
 
   // Create a SiteInstance for test_url in the special StoragePartition, and
   // verify that the StoragePartition is correct.

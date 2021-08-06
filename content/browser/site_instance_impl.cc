@@ -113,38 +113,52 @@ SiteInstanceId::Generator g_site_instance_id_generator;
 
 UrlInfo::UrlInfo(const UrlInfo& other) = default;
 UrlInfo::UrlInfo() : origin_isolation_request(OriginIsolationRequest::kNone) {}
-UrlInfo::UrlInfo(const GURL& url_in,
-                 OriginIsolationRequest origin_isolation_request_in)
-    : UrlInfo(url_in,
-              origin_isolation_request_in,
-              url::Origin::Create(url_in)) {}
-UrlInfo::UrlInfo(const GURL& url_in,
-                 OriginIsolationRequest origin_isolation_request_in,
-                 const url::Origin& origin_in)
-    : UrlInfo(url_in, origin_isolation_request_in, origin_in, absl::nullopt) {}
-UrlInfo::UrlInfo(const GURL& url_in,
-                 OriginIsolationRequest origin_isolation_request_in,
-                 const StoragePartitionConfig& storage_partition_config_in)
-    : UrlInfo(url_in,
-              origin_isolation_request_in,
-              url::Origin::Create(url_in),
-              storage_partition_config_in) {}
-UrlInfo::UrlInfo(
-    const GURL& url_in,
-    OriginIsolationRequest origin_isolation_request_in,
-    const url::Origin& origin_in,
-    absl::optional<StoragePartitionConfig> storage_partition_config_in)
-    : url(url_in),
-      origin_isolation_request(origin_isolation_request_in),
-      origin(origin_in),
-      storage_partition_config(storage_partition_config_in) {}
 UrlInfo::~UrlInfo() = default;
+
+// static
+UrlInfo UrlInfo::CreateForTesting(
+    const GURL& url_in,
+    absl::optional<StoragePartitionConfig> storage_partition_config) {
+  return UrlInfo(UrlInfoInit(url_in)
+                     .WithOrigin(url::Origin::Create(url_in))
+                     .WithStoragePartitionConfig(storage_partition_config));
+}
 
 UrlInfo UrlInfo::CreateCopyWithStoragePartitionConfig(
     absl::optional<StoragePartitionConfig> storage_partition_config_in) const {
   UrlInfo copy = *this;
   copy.storage_partition_config = storage_partition_config_in;
   return copy;
+}
+
+UrlInfo::UrlInfo(const UrlInfoInit& init)
+    : url(init.url_),
+      origin_isolation_request(init.origin_isolation_request_),
+      origin(init.origin_),
+      storage_partition_config(init.storage_partition_config_) {}
+
+UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
+
+UrlInfoInit::UrlInfoInit(const GURL& url)
+    : url_(url), origin_(url::Origin::Create(url)) {}
+
+UrlInfoInit::~UrlInfoInit() = default;
+
+UrlInfoInit& UrlInfoInit::WithOriginIsolationRequest(
+    UrlInfo::OriginIsolationRequest origin_isolation_request) {
+  origin_isolation_request_ = origin_isolation_request;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithOrigin(const url::Origin& origin) {
+  origin_ = origin;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithStoragePartitionConfig(
+    absl::optional<StoragePartitionConfig> storage_partition_config) {
+  storage_partition_config_ = storage_partition_config;
+  return *this;
 }
 
 // static
@@ -859,8 +873,7 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
       browser_context, WebExposedIsolationInfo::CreateNonIsolated()));
   auto site_instance = instance->GetSiteInstanceForURL(
-      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-      /* allow_default_instance */ false);
+      UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
       SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
   return site_instance;
@@ -1244,8 +1257,7 @@ bool SiteInstanceImpl::HasRelatedSiteInstance(const SiteInfo& site_info) {
 
 scoped_refptr<SiteInstance> SiteInstanceImpl::GetRelatedSiteInstance(
     const GURL& url) {
-  return GetRelatedSiteInstanceImpl(
-      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone));
+  return GetRelatedSiteInstanceImpl(UrlInfo(UrlInfoInit(url)));
 }
 
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
@@ -1393,7 +1405,7 @@ scoped_refptr<SiteInstance> SiteInstance::CreateForURL(
     const GURL& url) {
   DCHECK(browser_context);
   return SiteInstanceImpl::CreateForUrlInfo(
-      browser_context, UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
+      browser_context, UrlInfo(UrlInfoInit(url)),
       WebExposedIsolationInfo::CreateNonIsolated());
 }
 
@@ -1411,8 +1423,7 @@ bool SiteInstance::ShouldAssignSiteForURL(const GURL& url) {
 }
 
 bool SiteInstanceImpl::IsSameSiteWithURL(const GURL& url) {
-  return IsSameSiteWithURLInfo(
-      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone));
+  return IsSameSiteWithURLInfo(UrlInfo(UrlInfoInit(url)));
 }
 
 bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
@@ -1438,8 +1449,7 @@ bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
   }
 
   return SiteInstanceImpl::IsSameSite(
-      GetIsolationContext(),
-      UrlInfo(site_info_.site_url(), UrlInfo::OriginIsolationRequest::kNone),
+      GetIsolationContext(), UrlInfo(UrlInfoInit(site_info_.site_url())),
       url_info, true /* should_compare_effective_urls */);
 }
 
@@ -1491,10 +1501,8 @@ bool SiteInstanceImpl::IsOriginalUrlSameSite(
   // where the current isolation request (if any) is stored. Whether or not
   // this SiteInstance has origin isolation is a separate question, and not
   // what the UrlInfo for |original_url_| is supposed to reflect.
-  return IsSameSite(
-      GetIsolationContext(),
-      UrlInfo(original_url_, UrlInfo::OriginIsolationRequest::kNone),
-      dest_url_info, should_compare_effective_urls);
+  return IsSameSite(GetIsolationContext(), UrlInfo(UrlInfoInit(original_url_)),
+                    dest_url_info, should_compare_effective_urls);
 }
 
 bool SiteInstanceImpl::IsNavigationSameSite(
@@ -1536,10 +1544,9 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   // We convert |last_successful_url| to UrlInfo with
   // |origin_isolation_request| set to kNone since it isn't currently
   // navigating.
-  if (IsSameSite(
-          GetIsolationContext(),
-          UrlInfo(last_successful_url, UrlInfo::OriginIsolationRequest::kNone),
-          dest_url_info, should_compare_effective_urls)) {
+  if (IsSameSite(GetIsolationContext(),
+                 UrlInfo(UrlInfoInit(last_successful_url)), dest_url_info,
+                 should_compare_effective_urls)) {
     return true;
   }
 
@@ -1550,8 +1557,7 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   // |origin_isolation_request| set to kNone.
   if (!last_committed_origin.opaque() &&
       IsSameSite(GetIsolationContext(),
-                 UrlInfo(GURL(last_committed_origin.Serialize()),
-                         UrlInfo::OriginIsolationRequest::kNone),
+                 UrlInfo(UrlInfoInit(GURL(last_committed_origin.Serialize()))),
                  dest_url_info, should_compare_effective_urls)) {
     return true;
   }

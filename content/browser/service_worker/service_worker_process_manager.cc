@@ -130,9 +130,9 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
       !is_guest && cross_origin_embedder_policy.has_value() &&
       network::CompatibleWithCrossOriginIsolated(
           cross_origin_embedder_policy->value);
-  const UrlInfo url_info(service_worker_url,
-                         UrlInfo::OriginIsolationRequest::kNone,
-                         storage_partition_->GetConfig());
+  const UrlInfo url_info(
+      UrlInfoInit(service_worker_url)
+          .WithStoragePartitionConfig(storage_partition_->GetConfig()));
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context_, url_info,

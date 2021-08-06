@@ -6944,7 +6944,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // URL which is not allowed in a WebUI process. As we are at the commit stage,
   // set |origin_isolation_request| to kNone.
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          this, UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
+          this, UrlInfo(UrlInfoInit(url).WithOrigin(origin)),
           /* is_renderer_initiated_check */ true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
@@ -6993,8 +6993,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin,
-              GetSiteInstance()->GetSiteInfo().storage_partition_config()),
+      UrlInfo(UrlInfoInit(url).WithOrigin(origin).WithStoragePartitionConfig(
+          GetSiteInstance()->GetSiteInfo().storage_partition_config())),
       GetSiteInstance()->GetWebExposedIsolationInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
@@ -9495,11 +9495,11 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
   // be set to kNone.
   BrowserContext* browser_context = GetSiteInstance()->GetBrowserContext();
   SiteInfo site_info =
-      url.is_empty() ? SiteInfo(browser_context)
-                     : SiteInfo::Create(
-                           GetSiteInstance()->GetIsolationContext(),
-                           UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
-                           GetSiteInstance()->GetWebExposedIsolationInfo());
+      url.is_empty()
+          ? SiteInfo(browser_context)
+          : SiteInfo::Create(GetSiteInstance()->GetIsolationContext(),
+                             UrlInfo(UrlInfoInit(url)),
+                             GetSiteInstance()->GetWebExposedIsolationInfo());
 
   if (last_committed_site_info_ == site_info)
     return;

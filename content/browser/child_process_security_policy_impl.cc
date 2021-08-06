@@ -1694,9 +1694,10 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         //
         // At this point, any origin opt-in isolation requests should be
         // complete, so to avoid the possibility of opting something set
-        // |origin_isolation_request| to kNone below.  Note: We might need
-        // to revisit this if CanAccessDataForOrigin() needs to be called while
-        // a SiteInstance is being determined for a navigation, i.e. during
+        // |origin_isolation_request| to kNone below (this happens by default in
+        // UrlInfoInit's ctor).  Note: We might need to revisit this if
+        // CanAccessDataForOrigin() needs to be called while a SiteInstance is
+        // being determined for a navigation, i.e. during
         // GetSiteInstanceForNavigationRequest().  If this happens, we'd need
         // to plumb UrlInfo::origin_isolation_request value from the ongoing
         // NavigationRequest into here. Also, we would likely need to attach
@@ -1709,8 +1710,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // |actual_process_lock|.
         expected_process_lock = ProcessLock::Create(
             isolation_context,
-            UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone,
-                    actual_process_lock.storage_partition_config()),
+            UrlInfo(UrlInfoInit(url).WithStoragePartitionConfig(
+                actual_process_lock.storage_partition_config())),
             actual_process_lock.web_exposed_isolation_info());
 
         if (actual_process_lock.is_locked_to_site()) {
@@ -1794,8 +1795,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
           // See the ProcessLock::Create() call above regarding why we pass
           // kNone for |origin_isolation_request| below.
           SiteInfo site_info = SiteInfo::Create(
-              isolation_context,
-              UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
+              isolation_context, UrlInfo(UrlInfoInit(url)),
               actual_process_lock.web_exposed_isolation_info());
 
           // A process that's not locked to any site can only access data from

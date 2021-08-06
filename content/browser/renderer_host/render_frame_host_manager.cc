@@ -1652,8 +1652,9 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // possible (e.g., when there are no existing script references).
   if (ShouldSwapBrowsingInstancesForDynamicIsolation(
           render_frame_host_.get(),
-          UrlInfo(destination_effective_url,
-                  destination_url_info.origin_isolation_request),
+          UrlInfo(UrlInfoInit(destination_effective_url)
+                      .WithOriginIsolationRequest(
+                          destination_url_info.origin_isolation_request)),
           web_exposed_isolation_info)) {
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
   }
@@ -2160,8 +2161,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // error pages cannot request origin isolation.
     AppendReason(reason, "DetermineSiteInstanceForURL => error-instance");
     return SiteInstanceDescriptor(
-        UrlInfo(GURL(kUnreachableWebDataURL),
-                UrlInfo::OriginIsolationRequest::kNone),
+        UrlInfo(UrlInfoInit(GURL(kUnreachableWebDataURL))),
         force_browsing_instance_swap ? SiteInstanceRelation::UNRELATED
                                      : SiteInstanceRelation::RELATED,
         web_exposed_isolation_info);

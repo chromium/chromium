@@ -2714,12 +2714,14 @@ UrlInfo NavigationRequest::GetUrlInfo() {
 
   // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
   if (GetWebBundleURL().is_valid()) {
-    return UrlInfo(
-        GetURL(), isolation_request,
-        url::Origin::Resolve(GetURL(), url::Origin::Create(GetWebBundleURL())));
+    return UrlInfo(UrlInfoInit(GetURL())
+                       .WithOriginIsolationRequest(isolation_request)
+                       .WithOrigin(url::Origin::Resolve(
+                           GetURL(), url::Origin::Create(GetWebBundleURL()))));
   }
 
-  return UrlInfo(GetURL(), isolation_request);
+  return UrlInfo(
+      UrlInfoInit(GetURL()).WithOriginIsolationRequest(isolation_request));
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {

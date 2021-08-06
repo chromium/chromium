@@ -381,7 +381,7 @@ void Navigator::DidNavigate(
   // At this point we have already chosen a SiteInstance for this navigation, so
   // set |origin_isolation_request| to kNone in the conversion to UrlInfo
   // below.
-  const UrlInfo url_info(params.url, UrlInfo::OriginIsolationRequest::kNone);
+  const UrlInfo url_info(UrlInfoInit(params.url));
 
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive

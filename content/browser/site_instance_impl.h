@@ -54,6 +54,8 @@ class StoragePartitionImpl;
 // Origin-Agent-Cluster header), use SiteInfo::is_origin_keyed().
 //
 // Note: it is not expected that this struct will be exposed in content/public.
+class UrlInfoInit;
+
 struct CONTENT_EXPORT UrlInfo {
  public:
   // Bitmask representing one or more isolation requests.
@@ -70,28 +72,14 @@ struct CONTENT_EXPORT UrlInfo {
 
   UrlInfo();  // Needed for inclusion in SiteInstanceDescriptor.
   UrlInfo(const UrlInfo& other);
-  UrlInfo(const GURL& url_in,
-          OriginIsolationRequest origin_isolation_request_in);
-  UrlInfo(const GURL& url_in,
-          OriginIsolationRequest origin_isolation_request_in,
-          const url::Origin& origin_in);
-  UrlInfo(const GURL& url_in,
-          OriginIsolationRequest origin_isolation_request_in,
-          const StoragePartitionConfig& storage_partition_config_in);
-  UrlInfo(const GURL& url_in,
-          OriginIsolationRequest origin_isolation_request_in,
-          const url::Origin& origin_in,
-          absl::optional<StoragePartitionConfig> storage_partition_config_in);
+  explicit UrlInfo(const UrlInfoInit& init);
   ~UrlInfo();
+
   // Used to convert GURL to UrlInfo in tests where opt-in isolation is not
   // being tested.
-  static inline UrlInfo CreateForTesting(
-      const GURL& url_in,
-      absl::optional<StoragePartitionConfig> storage_partition_config =
-          absl::nullopt) {
-    return UrlInfo(url_in, OriginIsolationRequest::kNone,
-                   url::Origin::Create(url_in), storage_partition_config);
-  }
+  static UrlInfo CreateForTesting(const GURL& url_in,
+                                  absl::optional<StoragePartitionConfig>
+                                      storage_partition_config = absl::nullopt);
 
   // Returns whether this UrlInfo is requesting origin-keyed isolation for
   // `url`'s origin due to the OriginAgentCluster header.
@@ -136,7 +124,36 @@ struct CONTENT_EXPORT UrlInfo {
   // BrowsingInstance that the SiteInstance should belong to will lead to a
   // CHECK failure.
   absl::optional<StoragePartitionConfig> storage_partition_config;
+
+  // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
+  // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
+
+class CONTENT_EXPORT UrlInfoInit {
+ public:
+  UrlInfoInit() = delete;
+  explicit UrlInfoInit(const GURL& url);
+  ~UrlInfoInit();
+
+  UrlInfoInit& operator=(const UrlInfoInit&) = delete;
+
+  UrlInfoInit& WithOriginIsolationRequest(
+      UrlInfo::OriginIsolationRequest origin_isolation_request);
+  UrlInfoInit& WithOrigin(const url::Origin& origin);
+  UrlInfoInit& WithStoragePartitionConfig(
+      absl::optional<StoragePartitionConfig> storage_partition_config);
+
+ private:
+  UrlInfoInit(UrlInfoInit&);
+
+  friend UrlInfo;
+
+  GURL url_;
+  UrlInfo::OriginIsolationRequest origin_isolation_request_ =
+      UrlInfo::OriginIsolationRequest::kNone;
+  url::Origin origin_;
+  absl::optional<StoragePartitionConfig> storage_partition_config_;
+};  // class UrlInfoInit
 
 // SiteInfo represents the principal of a SiteInstance. All documents and
 // workers within a SiteInstance are considered part of this principal and will
