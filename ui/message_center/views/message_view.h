@@ -83,8 +83,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Updates this view with an additional grouped notification. If the view
   // wasn't previously grouped it also takes care of converting the view to
   // the grouped notification state.
-  virtual void AddGroupNotification(const Notification& notification,
-                                    bool newest_first) {}
+  virtual void AddGroupNotification(const Notification& notification) {}
   virtual void RemoveGroupNotification(const std::string& notification_id) {}
 
   // Updates this view with the new data contained in the notification.
@@ -164,9 +163,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   void SetSlideButtonWidth(int coutrol_button_width);
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
-  void set_notification_id(const std::string& notification_id) {
-    notification_id_ = notification_id;
-  }
   std::string notification_id() const { return notification_id_; }
   NotifierId notifier_id() const { return notifier_id_; }
 
