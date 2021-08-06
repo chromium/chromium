@@ -37,6 +37,13 @@ export {PrintPreviewAppElement} from './ui/app.js';
 export {PrintPreviewButtonStripElement} from './ui/button_strip.js';
 export {PrintPreviewColorSettingsElement} from './ui/color_settings.js';
 export {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement} from './ui/copies_settings.js';
+// <if expr="not chromeos and not lacros">
+export {PrintPreviewDestinationDialogElement} from './ui/destination_dialog.js';
+// </if>
+// <if expr="chromeos or lacros">
+export {PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
+export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropdown_cros.js';
+// </if>
 export {DestinationState, NUM_PERSISTED_DESTINATIONS} from './ui/destination_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';

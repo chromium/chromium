@@ -10,78 +10,115 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import './print_preview_vars_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
-Polymer({
-  is: 'print-preview-destination-dropdown-cros',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PrintPreviewDestinationDropdownCrosElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class PrintPreviewDestinationDropdownCrosElement extends
+    PrintPreviewDestinationDropdownCrosElementBase {
+  static get is() {
+    return 'print-preview-destination-dropdown-cros';
+  }
 
-  properties: {
-    /** @type {!Destination} */
-    value: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Array<!Destination>} */
-    itemList: {
-      type: Array,
-      observer: 'enqueueDropdownRefit_',
-    },
+  static get properties() {
+    return {
+      /** @type {!Destination} */
+      value: Object,
 
-    /** @type {boolean} */
-    disabled: {
-      type: Boolean,
-      value: false,
-      observer: 'updateTabIndex_',
-      reflectToAttribute: true,
-    },
+      /** @type {!Array<!Destination>} */
+      itemList: {
+        type: Array,
+        observer: 'enqueueDropdownRefit_',
+      },
 
-    driveDestinationKey: String,
+      /** @type {boolean} */
+      disabled: {
+        type: Boolean,
+        value: false,
+        observer: 'updateTabIndex_',
+        reflectToAttribute: true,
+      },
 
-    noDestinations: Boolean,
+      driveDestinationKey: String,
 
-    pdfPrinterDisabled: Boolean,
+      noDestinations: Boolean,
 
-    pdfDestinationKey: String,
+      pdfPrinterDisabled: Boolean,
 
-    destinationIcon: String,
+      pdfDestinationKey: String,
 
-    /**
-     * Index of the highlighted item in the dropdown.
-     * @private
-     */
-    highlightedIndex_: Number,
+      destinationIcon: String,
 
-    /** @private */
-    dropdownLength_: {
-      type: Number,
-      computed:
-          'computeDropdownLength_(itemList, pdfPrinterDisabled, driveDestinationKey, noDestinations, )',
-    },
+      /**
+       * Index of the highlighted item in the dropdown.
+       * @private
+       */
+      highlightedIndex_: Number,
 
-    destinationStatusText: String,
-  },
+      /** @private */
+      dropdownLength_: {
+        type: Number,
+        computed: 'computeDropdownLength_(itemList, pdfPrinterDisabled, ' +
+            'driveDestinationKey, noDestinations)',
+      },
 
-  listeners: {
-    'mousemove': 'onMouseMove_',
-  },
+      destinationStatusText: String,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {boolean} */
+    this.opened_ = false;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+
+    this.addEventListener('mousemove', e => this.onMouseMove_(e));
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
     this.updateTabIndex_();
-  },
+  }
+
+  /**
+   * @param {Element} element
+   * @private
+   */
+  fireDropdownValueSelected_(element) {
+    this.dispatchEvent(new CustomEvent(
+        'dropdown-value-selected',
+        {bubbles: true, composed: true, detail: element}));
+  }
 
   /**
    * Enqueues a task to refit the iron-dropdown if it is open.
    * @private
    */
   enqueueDropdownRefit_() {
-    const dropdown = this.$$('iron-dropdown');
+    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
     if (!this.dropdownRefitPending_ && dropdown.opened) {
       this.dropdownRefitPending_ = true;
       setTimeout(() => {
@@ -89,7 +126,7 @@ Polymer({
         this.dropdownRefitPending_ = false;
       }, 0);
     }
-  },
+  }
 
   /** @private */
   openDropdown_() {
@@ -99,16 +136,16 @@ Polymer({
 
     this.highlightedIndex_ = this.getButtonListFromDropdown_().findIndex(
         item => item.value === this.value.key);
-    this.$$('iron-dropdown').open();
+    this.shadowRoot.querySelector('iron-dropdown').open();
     this.opened_ = true;
-  },
+  }
 
   /** @private */
   closeDropdown_() {
-    this.$$('iron-dropdown').close();
+    this.shadowRoot.querySelector('iron-dropdown').close();
     this.opened_ = false;
     this.highlightedIndex_ = -1;
-  },
+  }
 
   /**
    * Highlight the item the mouse is hovering over. If the user uses the
@@ -125,12 +162,13 @@ Polymer({
       return;
     }
     this.highlightedIndex_ = this.getButtonListFromDropdown_().indexOf(item);
-  },
+  }
 
   /** @private */
   onClick_(event) {
     const dropdown =
-        /** @type {!IronDropdownElement} */ (this.$$('iron-dropdown'));
+        /** @type {!IronDropdownElement} */ (
+            this.shadowRoot.querySelector('iron-dropdown'));
     // Exit if path includes |dropdown| because event will be handled by
     // onSelect_.
     if (event.composedPath().includes(dropdown)) {
@@ -142,7 +180,7 @@ Polymer({
       return;
     }
     this.openDropdown_();
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -150,7 +188,7 @@ Polymer({
    */
   onSelect_(event) {
     this.dropdownValueSelected_(/** @type {!Element} */ (event.currentTarget));
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -158,7 +196,7 @@ Polymer({
    */
   onKeyDown_(event) {
     event.stopPropagation();
-    const dropdown = this.$$('iron-dropdown');
+    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
     switch (event.code) {
       case 'ArrowUp':
       case 'ArrowDown':
@@ -181,14 +219,14 @@ Polymer({
         break;
       }
     }
-  },
+  }
 
   /**
    * @param {string} eventCode
    * @private
    */
   onArrowKeyPress_(eventCode) {
-    const dropdown = this.$$('iron-dropdown');
+    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
     const items = this.getButtonListFromDropdown_();
     if (items.length === 0) {
       return;
@@ -214,8 +252,8 @@ Polymer({
     if (nextIndex === -1) {
       return;
     }
-    this.fire('dropdown-value-selected', items[nextIndex]);
-  },
+    this.fireDropdownValueSelected_(items[nextIndex]);
+  }
 
   /**
    * @param {string} eventCode
@@ -228,7 +266,7 @@ Polymer({
     const nextIndex =
         eventCode === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1;
     return nextIndex >= 0 && nextIndex < numItems ? nextIndex : -1;
-  },
+  }
 
   /**
    * @param {Element|undefined} dropdownItem
@@ -237,10 +275,10 @@ Polymer({
   dropdownValueSelected_(dropdownItem) {
     this.closeDropdown_();
     if (dropdownItem) {
-      this.fire('dropdown-value-selected', dropdownItem);
+      this.fireDropdownValueSelected_(dropdownItem);
     }
-    this.$$('#destination-dropdown').focus();
-  },
+    this.shadowRoot.querySelector('#destination-dropdown').focus();
+  }
 
   /**
    * Returns list of all the visible items in the dropdown.
@@ -248,10 +286,14 @@ Polymer({
    * @private
    */
   getButtonListFromDropdown_() {
-    const dropdown = this.$$('iron-dropdown');
+    if (!this.shadowRoot) {
+      return [];
+    }
+
+    const dropdown = this.shadowRoot.querySelector('iron-dropdown');
     return Array.from(dropdown.getElementsByClassName('list-item'))
         .filter(item => !item.hidden);
-  },
+  }
 
   /**
    * Sets tabindex to -1 when dropdown is disabled to prevent the dropdown from
@@ -259,9 +301,9 @@ Polymer({
    * @private
    */
   updateTabIndex_() {
-    this.$$('#destination-dropdown')
+    this.shadowRoot.querySelector('#destination-dropdown')
         .setAttribute('tabindex', this.disabled ? '-1' : '0');
-  },
+  }
 
   /**
    * Determines if an item in the dropdown should be highlighted based on the
@@ -276,7 +318,7 @@ Polymer({
     return itemToHighlight && itemValue === itemToHighlight.value ?
         'highlighted' :
         '';
-  },
+  }
 
   /**
    * Close the dropdown when focus is lost except when an item in the dropdown
@@ -289,7 +331,7 @@ Polymer({
             /** @type {!Element} */ (event.relatedTarget))) {
       this.closeDropdown_();
     }
-  },
+  }
 
   /**
    * @return {number}
@@ -313,17 +355,17 @@ Polymer({
       length++;
     }
     return length;
-  },
+  }
 
   /**
    * @param {!PrinterStatusReason} printerStatusReason
    * @return {string}
    * @private
    */
-  getPrinterStatusErrorString_: function(printerStatusReason) {
+  getPrinterStatusErrorString_(printerStatusReason) {
     const errorStringKey = ERROR_STRING_KEY_MAP.get(printerStatusReason);
     return errorStringKey ? this.i18n(errorStringKey) : '';
-  },
+  }
 
   /**
    * @param {!PrinterStatusReason} printerStatusReason
@@ -334,4 +376,8 @@ Polymer({
   getPrinterStatusIcon_(printerStatusReason, isEnterprisePrinter) {
     return getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter);
   }
-});
+}
+
+customElements.define(
+    PrintPreviewDestinationDropdownCrosElement.is,
+    PrintPreviewDestinationDropdownCrosElement);

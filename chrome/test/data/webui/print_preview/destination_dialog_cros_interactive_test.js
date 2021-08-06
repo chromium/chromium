@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceImpl, Destination, makeRecentDestination, NativeLayerImpl, State} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceImpl, Destination, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
@@ -85,7 +85,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
       assert(destination_dialog_cros_interactive_test.TestNames.FocusSearchBox),
       function() {
         const searchInput = /** @type {!PrintPreviewSearchBoxElement} */ (
-                                dialog.$$('#searchBox'))
+                                dialog.shadowRoot.querySelector('#searchBox'))
                                 .getSearchInput();
         assertTrue(!!searchInput);
         const whenFocusDone = eventToPromise('focus', searchInput);
@@ -101,7 +101,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
           destination_dialog_cros_interactive_test.TestNames.EscapeSearchBox),
       function() {
         const searchBox = /** @type {!PrintPreviewSearchBoxElement} */ (
-            dialog.$$('#searchBox'));
+            dialog.shadowRoot.querySelector('#searchBox'));
         const searchInput = searchBox.getSearchInput();
         assertTrue(!!searchInput);
         const whenFocusDone = eventToPromise('focus', searchInput);
@@ -109,7 +109,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
         dialog.show();
         return whenFocusDone
             .then(() => {
-              assertTrue(dialog.$$('#dialog').open);
+              assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
 
               // Put something in the search box.
               const whenSearchChanged =
@@ -127,7 +127,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
             })
             .then(() => {
               // Dialog should still be open.
-              assertTrue(dialog.$$('#dialog').open);
+              assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
 
               // Clear the search box.
               const whenSearchChanged =
@@ -145,7 +145,7 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
             })
             .then(() => {
               // Dialog is closed.
-              assertFalse(dialog.$$('#dialog').open);
+              assertFalse(dialog.shadowRoot.querySelector('#dialog').open);
             });
       });
 });

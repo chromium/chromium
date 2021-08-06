@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewDestinationDropdownCrosElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -45,35 +45,40 @@ suite(destination_dropdown_cros_test.suiteName, function() {
   }
 
   function clickDropdown() {
-    dropdown.$$('#destination-dropdown').click();
+    dropdown.shadowRoot.querySelector('#destination-dropdown').click();
   }
 
   function clickDropdownFocus() {
-    dropdown.$$('#destination-dropdown').click();
-    dropdown.$$('#destination-dropdown').focus();
+    dropdown.shadowRoot.querySelector('#destination-dropdown').click();
+    dropdown.shadowRoot.querySelector('#destination-dropdown').focus();
   }
 
   function clickOutsideDropdown() {
     document.body.click();
-    dropdown.$$('#destination-dropdown').blur();
+    dropdown.shadowRoot.querySelector('#destination-dropdown').blur();
   }
 
   function down() {
     keyDownOn(
-        dropdown.$$('#destination-dropdown'), 'ArrowDown', [], 'ArrowDown');
+        dropdown.shadowRoot.querySelector('#destination-dropdown'), 'ArrowDown',
+        [], 'ArrowDown');
   }
 
   function up() {
-    keyDownOn(dropdown.$$('#destination-dropdown'), 'ArrowUp', [], 'ArrowUp');
+    keyDownOn(
+        dropdown.shadowRoot.querySelector('#destination-dropdown'), 'ArrowUp',
+        [], 'ArrowUp');
   }
 
   function enter() {
-    keyDownOn(dropdown.$$('#destination-dropdown'), 'Enter', [], 'Enter');
+    keyDownOn(
+        dropdown.shadowRoot.querySelector('#destination-dropdown'), 'Enter', [],
+        'Enter');
   }
 
   /** @return {?Element} */
   function getHighlightedElement() {
-    return dropdown.$$('.highlighted');
+    return dropdown.shadowRoot.querySelector('.highlighted');
   }
 
   /** @return {string} */
@@ -126,7 +131,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         setItemList([destinationOne]);
         dropdown.value = destinationOne;
-        const ironDropdown = dropdown.$$('iron-dropdown');
+        const ironDropdown = dropdown.shadowRoot.querySelector('iron-dropdown');
 
         clickDropdownFocus();
         assertTrue(ironDropdown.opened);
@@ -210,11 +215,11 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         setItemList([destinationOne]);
         dropdown.value = destinationOne;
 
-        assertFalse(dropdown.$$('iron-dropdown').opened);
+        assertFalse(dropdown.shadowRoot.querySelector('iron-dropdown').opened);
         enter();
-        assertTrue(dropdown.$$('iron-dropdown').opened);
+        assertTrue(dropdown.shadowRoot.querySelector('iron-dropdown').opened);
         enter();
-        assertFalse(dropdown.$$('iron-dropdown').opened);
+        assertFalse(dropdown.shadowRoot.querySelector('iron-dropdown').opened);
       });
 
   test(
@@ -250,15 +255,19 @@ suite(destination_dropdown_cros_test.suiteName, function() {
     dropdown.disabled = true;
 
     clickDropdown();
-    assertFalse(dropdown.$$('iron-dropdown').opened);
+    assertFalse(dropdown.shadowRoot.querySelector('iron-dropdown').opened);
     assertEquals(
-        '-1', dropdown.$$('#destination-dropdown').getAttribute('tabindex'));
+        '-1',
+        dropdown.shadowRoot.querySelector('#destination-dropdown')
+            .getAttribute('tabindex'));
 
     dropdown.disabled = false;
     clickDropdown();
-    assertTrue(dropdown.$$('iron-dropdown').opened);
+    assertTrue(dropdown.shadowRoot.querySelector('iron-dropdown').opened);
     assertEquals(
-        '0', dropdown.$$('#destination-dropdown').getAttribute('tabindex'));
+        '0',
+        dropdown.shadowRoot.querySelector('#destination-dropdown')
+            .getAttribute('tabindex'));
   });
 
   test(

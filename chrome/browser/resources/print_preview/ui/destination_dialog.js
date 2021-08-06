@@ -22,75 +22,108 @@ import './throbber_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore} from '../data/destination_store.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
-Polymer({
-  is: 'print-preview-destination-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ */
+const PrintPreviewDestinationDialogElementBase =
+    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement);
 
-  behaviors: [ListPropertyUpdateBehavior],
+/** @polymer */
+export class PrintPreviewDestinationDialogElement extends
+    PrintPreviewDestinationDialogElementBase {
+  static get is() {
+    return 'print-preview-destination-dialog';
+  }
 
-  properties: {
-    /** @type {?DestinationStore} */
-    destinationStore: {
-      type: Object,
-      observer: 'onDestinationStoreSet_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    activeUser: {
-      type: String,
-      observer: 'onActiveUserChange_',
-    },
+  static get properties() {
+    return {
+      /** @type {?DestinationStore} */
+      destinationStore: {
+        type: Object,
+        observer: 'onDestinationStoreSet_',
+      },
 
-    currentDestinationAccount: String,
+      activeUser: {
+        type: String,
+        observer: 'onActiveUserChange_',
+      },
 
-    /** @type {!Array<string>} */
-    users: Array,
+      currentDestinationAccount: String,
 
-    /** @private {!Array<!Destination>} */
-    destinations_: {
-      type: Array,
-      value: [],
-    },
+      /** @type {!Array<string>} */
+      users: Array,
+
+      /** @private {!Array<!Destination>} */
+      destinations_: {
+        type: Array,
+        value: [],
+      },
+
+      /** @private {boolean} */
+      loadingDestinations_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {!MetricsContext} */
+      metrics_: Object,
+
+      /** @private {?RegExp} */
+      searchQuery_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!EventTracker} */
+    this.tracker_ = new EventTracker();
 
     /** @private {boolean} */
-    loadingDestinations_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {!MetricsContext} */
-    metrics_: Object,
-
-    /** @private {?RegExp} */
-    searchQuery_: {
-      type: Object,
-      value: null,
-    },
-  },
-
-  listeners: {
-    'keydown': 'onKeydown_',
-  },
-
-  /** @private {!EventTracker} */
-  tracker_: new EventTracker(),
-
-  /** @private {boolean} */
-  initialized_: false,
+    this.initialized_ = false;
+  }
 
   /** @override */
-  detached() {
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.tracker_.removeAll();
-  },
+  }
+
+  /**
+   * @param {string} account
+   * @private
+   */
+  fireAccountChange_(account) {
+    this.dispatchEvent(new CustomEvent(
+        'account-change', {bubbles: true, composed: true, detail: account}));
+  }
 
   /**
    * @param {!KeyboardEvent} e Event containing the key
@@ -104,7 +137,7 @@ Polymer({
       this.$.dialog.cancel();
       e.preventDefault();
     }
-  },
+  }
 
   /** @private */
   onDestinationStoreSet_() {
@@ -117,16 +150,16 @@ Polymer({
         destinationStore, DestinationStore.EventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
     this.initialized_ = true;
-  },
+  }
 
   /** @private */
   onActiveUserChange_() {
     if (this.activeUser) {
-      this.$$('select').value = this.activeUser;
+      this.shadowRoot.querySelector('select').value = this.activeUser;
     }
 
     this.updateDestinations_();
-  },
+  }
 
   /** @private */
   updateDestinations_() {
@@ -140,7 +173,7 @@ Polymer({
 
     this.loadingDestinations_ =
         this.destinationStore.isPrintDestinationSearchInProgress;
-  },
+  }
 
   /**
    * @return {!Array<!Destination>}
@@ -150,7 +183,7 @@ Polymer({
     const destinations = this.destinationStore.destinations(this.activeUser);
 
     return destinations;
-  },
+  }
 
   /** @private */
   onCloseOrCancel_() {
@@ -164,14 +197,14 @@ Polymer({
             Metrics.DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
     if (this.currentDestinationAccount &&
         this.currentDestinationAccount !== this.activeUser) {
-      this.fire('account-change', this.currentDestinationAccount);
+      this.fireAccountChange_(this.currentDestinationAccount);
     }
-  },
+  }
 
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /**
    * @param {!CustomEvent<!PrintPreviewDestinationListItemElement>} e Event
@@ -186,7 +219,7 @@ Polymer({
     // should be ready for selection.
     assert(destination.readyForSelection);
     this.selectDestination_(destination);
-  },
+  }
 
   /**
    * @param {!Destination} destination The destination to select.
@@ -195,7 +228,7 @@ Polymer({
   selectDestination_(destination) {
     this.destinationStore.selectDestination(destination);
     this.$.dialog.close();
-  },
+  }
 
   show() {
     if (!this.metrics_) {
@@ -206,24 +239,24 @@ Polymer({
         this.destinationStore.isPrintDestinationSearchInProgress;
     this.metrics_.record(Metrics.DestinationSearchBucket.DESTINATION_SHOWN);
     if (this.activeUser) {
-      beforeNextRender(assert(this.$$('select')), () => {
-        this.$$('select').value = this.activeUser;
+      beforeNextRender(assert(this.shadowRoot.querySelector('select')), () => {
+        this.shadowRoot.querySelector('select').value = this.activeUser;
       });
     }
-  },
+  }
 
   /** @return {boolean} Whether the dialog is open. */
   isOpen() {
     return this.$.dialog.hasAttribute('open');
-  },
+  }
 
   /** @private */
   onUserChange_() {
-    const select = this.$$('select');
+    const select = this.shadowRoot.querySelector('select');
     const account = select.value;
     if (account) {
       this.loadingDestinations_ = true;
-      this.fire('account-change', account);
+      this.fireAccountChange_(account);
       this.metrics_.record(Metrics.DestinationSearchBucket.ACCOUNT_CHANGED);
     } else {
       select.value = this.activeUser;
@@ -231,11 +264,15 @@ Polymer({
       this.metrics_.record(
           Metrics.DestinationSearchBucket.ADD_ACCOUNT_SELECTED);
     }
-  },
+  }
 
   /** @private */
   onManageButtonClick_() {
     this.metrics_.record(Metrics.DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewDestinationDialogElement.is,
+    PrintPreviewDestinationDialogElement);
