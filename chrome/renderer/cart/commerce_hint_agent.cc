@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -669,8 +670,17 @@ CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(
 
 CommerceHintAgent::JavaScriptRequest::~JavaScriptRequest() = default;
 
+void CommerceHintAgent::JavaScriptRequest::WillExecute() {
+  start_time_ = base::TimeTicks::Now();
+}
+
 void CommerceHintAgent::JavaScriptRequest::Completed(
     const blink::WebVector<v8::Local<v8::Value>>& result) {
+  // Only record when the start time is correctly captured.
+  if (!start_time_.is_null()) {
+    UMA_HISTOGRAM_TIMES("Commerce.Carts.ExtractionExecutionTime",
+                        base::TimeTicks::Now() - start_time_);
+  }
   if (!agent_)
     return;
   blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
