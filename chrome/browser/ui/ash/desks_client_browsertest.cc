@@ -9,9 +9,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/run_loop.h"
@@ -386,6 +388,17 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
 
   EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
   EXPECT_EQ(kDeskName, desks_helper->GetDeskName(1));
+
+  // Verify that user prefs are updated with the correct desk names. This
+  // ensures that template created desk names are preserved on restart.
+  PrefService* primary_user_prefs =
+      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(primary_user_prefs);
+  const base::ListValue* desks_names =
+      primary_user_prefs->GetList(ash::prefs::kDesksNamesList);
+  const auto& desks_names_list = desks_names->GetList();
+  EXPECT_EQ(2, desks_names->GetSize());
+  EXPECT_EQ(base::UTF16ToUTF8(kDeskName), desks_names_list[1].GetString());
 }
 
 // Tests that launching the same desk template multiple times creates desks with
