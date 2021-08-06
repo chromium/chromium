@@ -136,6 +136,8 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -538,6 +540,15 @@ void MetricsService::InitializeMetricsState() {
   // Mod the value with 1000 to limit the number of unique values reported.
   base::UmaHistogramSparse("Stability.Experimental.SessionId",
                            session_id_ % 1000);
+
+  // Log a random number to diagnose crbug.com/1176977.
+  base::UmaHistogramSparse("Stability.Experimental.RandInt",
+                           base::RandInt(0, 999));
+
+  // Log the process id to diagnose crbug.com/1176977.
+  // Mod the value with 1000 to limit the number of unique values reported.
+  base::UmaHistogramSparse("Stability.Experimental.ProcessId",
+                           base::GetCurrentProcId() % 1000);
 
   // Notify stability metrics providers about the launch.
   UMA_HISTOGRAM_BOOLEAN("UMA.MetricsService.Initialize", true);

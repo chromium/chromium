@@ -306,7 +306,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Experimental.BrowserCrash" enum="Boolean"
-    expires_after="2021-06-15">
+    expires_after="2021-10-31">
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -329,7 +329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Experimental.Counts2" enum="StabilityEventType"
-    expires_after="2021-06-15">
+    expires_after="2021-10-31">
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -351,8 +351,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Stability.Experimental.ProcessId" units="process id"
+    expires_after="2021-10-31">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logs the process id as a histogram, to help debug crbug.com/1176977. Logged
+    with MOD 1000 to limit the number of distinct values reported.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Experimental.RandInt" units="random number"
+    expires_after="2021-10-31">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logs a random number in the range 0 to 999 to help debug crbug.com/1176977.
+  </summary>
+</histogram>
+
 <histogram name="Stability.Experimental.SessionId" units="session id"
-    expires_after="2021-06-15">
+    expires_after="2021-10-31">
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
