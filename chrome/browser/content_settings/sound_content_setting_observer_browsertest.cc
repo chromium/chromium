@@ -132,6 +132,11 @@ class MultipleFramesObserver : public content::WebContentsObserver {
     }
   }
 
+  void RenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override {
+    frame_to_client_map_.erase(render_frame_host);
+  }
+
   // Waits for sub frame creations.
   void WaitForSubFrame() {
     if (frame_to_client_map_.size() == kMaxFrameSize)
