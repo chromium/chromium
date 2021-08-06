@@ -265,9 +265,7 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
     eventParams.targetID = privates(targetTree).impl.id;
   }
 
-  if (!privates(targetTree).impl.onAccessibilityEvent(eventParams)) {
-    return;
-  }
+  privates(targetTree).impl.onAccessibilityEvent(eventParams);
 
   // If we're not waiting on a callback to getTree(), we can early out here.
   if (!(id in idToCallback)) {

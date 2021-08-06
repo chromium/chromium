@@ -965,7 +965,9 @@ AutomationNodeImpl.prototype = {
   },
 
   hitTest: function(x, y, eventToFire) {
-    this.hitTestInternal(x, y, eventToFire);
+    // Set an empty callback to trigger onActionResult.
+    const callback = () => {};
+    this.hitTestInternal(x, y, eventToFire, callback);
   },
 
   hitTestWithReply: function(x, y, opt_callback) {
@@ -1875,21 +1877,21 @@ AutomationRootNodeImpl.prototype = {
   onAccessibilityEvent: function(eventParams) {
     const targetNode = this.get(eventParams.targetID);
     if (targetNode) {
+      if (eventParams.actionRequestID != -1 &&
+          this.onActionResult(eventParams.actionRequestID, targetNode)) {
+        return;
+      }
+
       const targetNodeImpl = privates(targetNode).impl;
       targetNodeImpl.dispatchEvent(
           eventParams.eventType, eventParams.eventFrom,
           eventParams.eventFromAction, eventParams.mouseX, eventParams.mouseY,
           eventParams.intents);
-
-      if (eventParams.actionRequestID != -1) {
-        this.onActionResult(eventParams.actionRequestID, targetNode);
-      }
     } else {
       logging.WARNING('Got ' + eventParams.eventType +
                       ' event on unknown node: ' + eventParams.targetID +
                       '; this: ' + this.id);
     }
-    return true;
   },
 
   addActionResultCallback: function(actionType, opt_args, callback) {
@@ -1966,12 +1968,13 @@ AutomationRootNodeImpl.prototype = {
           delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
           privates(appNode).impl.performAction_(
               data.actionType, data.opt_args, data.callback);
-          return;
+          return true;
         }
       }
 
       data.callback(result);
       delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+      return false;
     }
   },
 
