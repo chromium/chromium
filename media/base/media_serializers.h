@@ -14,6 +14,7 @@
 #include "media/base/buffering_state.h"
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
+#include "media/base/renderer_factory_selector.h"
 #include "media/base/status.h"
 #include "media/base/status_codes.h"
 #include "media/base/text_track_config.h"
@@ -132,6 +133,14 @@ template <>
 struct MediaSerializer<base::TimeDelta> {
   static inline base::Value Serialize(const base::TimeDelta value) {
     return MediaSerializer<double>::Serialize(value.InSecondsF());
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<RendererType> {
+  static inline base::Value Serialize(RendererType value) {
+    return base::Value(GetRendererName(value));
   }
 };
 

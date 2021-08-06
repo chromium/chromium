@@ -2763,6 +2763,7 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
     client_->DidUseAudioServiceChange(new_uses_audio_service);
 
   media_metrics_provider_->SetRendererType(renderer_type_);
+  media_log_->SetProperty<MediaLogProperty::kRendererName>(renderer_type_);
 
   return renderer_factory_selector_->GetCurrentFactory()->CreateRenderer(
       media_task_runner_, worker_task_runner_, audio_source_provider_.get(),

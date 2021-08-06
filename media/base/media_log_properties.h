@@ -11,6 +11,7 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log_type_enforcement.h"
+#include "media/base/renderer_factory_selector.h"
 #include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
@@ -57,6 +58,9 @@ enum class MediaLogProperty {
   // Can the url loading the data support the range http header, allowing chunks
   // to be sent rather than entire file.
   kIsRangeHeaderSupported,
+
+  // The name of media::Renderer currently being used to play the media stream.
+  kRendererName,
 
   // The name of the decoder implementation currently being used to play the
   // media stream. All audio/video decoders have id numbers defined in
@@ -105,6 +109,7 @@ MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsStreaming, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFrameUrl, std::string);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFrameTitle, std::string);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsSingleOrigin, bool);
+MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kRendererName, RendererType);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoDecoderName, VideoDecoderType);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsPlatformVideoDecoder, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsRangeHeaderSupported, bool);
