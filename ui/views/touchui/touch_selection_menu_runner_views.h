@@ -29,6 +29,9 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
     gfx::Rect GetAnchorRect() const;
     LabelButton* GetFirstButton();
     Widget* GetWidget();
+    void ShowMenu(TouchSelectionMenuViews* menu,
+                  const gfx::Rect& anchor_rect,
+                  const gfx::Size& handle_image_size);
 
    private:
     TouchSelectionMenuRunnerViews* menu_runner_;
