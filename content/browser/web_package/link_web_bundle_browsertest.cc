@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/test_support/web_bundle_builder.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -22,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
@@ -117,11 +117,12 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.RegisterRequestHandler(base::BindRepeating(
@@ -134,6 +135,16 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     ContentBrowserTest::TearDownOnMainThread();
     SetBrowserClientForTesting(original_client_);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   void CreateIframeAndWaitForOnload(const std::string& url) {
@@ -182,6 +193,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   ContentBrowserClient* original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::test::ScopedFeatureList feature_list_;
