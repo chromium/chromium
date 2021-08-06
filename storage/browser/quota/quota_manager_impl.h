@@ -445,13 +445,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // Initialize() must be called after all quota clients are added to the
   // manager by RegisterClient().
-  void LazyInitialize();
-  void FinishLazyInitialize(bool is_database_bootstraped);
+  void EnsureDatabaseOpened();
+  void DidOpenDatabase(bool is_database_bootstraped);
   void BootstrapDatabaseForEviction(GetBucketCallback did_get_bucket_callback,
                                     int64_t unused_usage,
                                     int64_t unused_unlimited_usage);
-  void DidBootstrapDatabase(GetBucketCallback did_get_bucket_callback,
-                            bool success);
+  void DidBootstrapDatabaseForEviction(
+      GetBucketCallback did_get_bucket_callback,
+      bool success);
 
   // Called by clients via proxy.
   // Registers a quota client to the manager.
@@ -596,7 +597,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
   mutable std::unique_ptr<QuotaDatabase> database_;
-  bool is_database_bootstrapped_ = false;
+  bool is_database_bootstrapped_for_eviction_ = false;
 
   GetQuotaSettingsFunc get_settings_function_;
   scoped_refptr<base::TaskRunner> get_settings_task_runner_;

@@ -173,11 +173,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::Time begin,
       base::Time end);
 
-  // Returns false if SetStorageKeyDatabaseBootstrapped has never
+  // Returns false if SetBootstrappedForEviction() has never
   // been called before, which means existing storage keys may not have been
   // registered.
-  bool IsStorageKeyDatabaseBootstrapped();
-  bool SetStorageKeyDatabaseBootstrapped(bool bootstrap_flag);
+  bool IsBootstrappedForEviction();
+  bool SetBootstrappedForEviction(bool bootstrap_flag);
 
  private:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {

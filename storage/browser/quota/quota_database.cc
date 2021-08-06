@@ -616,7 +616,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsModifiedBetween(
   return buckets;
 }
 
-bool QuotaDatabase::IsStorageKeyDatabaseBootstrapped() {
+bool QuotaDatabase::IsBootstrappedForEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;
@@ -625,7 +625,7 @@ bool QuotaDatabase::IsStorageKeyDatabaseBootstrapped() {
   return meta_table_->GetValue(kIsOriginTableBootstrapped, &flag) && flag;
 }
 
-bool QuotaDatabase::SetStorageKeyDatabaseBootstrapped(bool bootstrap_flag) {
+bool QuotaDatabase::SetBootstrappedForEviction(bool bootstrap_flag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (LazyOpen(LazyOpenMode::kCreateIfNotFound) != QuotaError::kNone)
     return false;

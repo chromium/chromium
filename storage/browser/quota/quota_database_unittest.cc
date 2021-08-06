@@ -700,14 +700,14 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
 }
 
 // Non-parameterized tests.
-TEST_F(QuotaDatabaseTest, BootstrapFlag) {
+TEST_F(QuotaDatabaseTest, BootstrapForEvictionFlag) {
   QuotaDatabase db(DbPath());
 
-  EXPECT_FALSE(db.IsStorageKeyDatabaseBootstrapped());
-  EXPECT_TRUE(db.SetStorageKeyDatabaseBootstrapped(true));
-  EXPECT_TRUE(db.IsStorageKeyDatabaseBootstrapped());
-  EXPECT_TRUE(db.SetStorageKeyDatabaseBootstrapped(false));
-  EXPECT_FALSE(db.IsStorageKeyDatabaseBootstrapped());
+  EXPECT_FALSE(db.IsBootstrappedForEviction());
+  EXPECT_TRUE(db.SetBootstrappedForEviction(true));
+  EXPECT_TRUE(db.IsBootstrappedForEviction());
+  EXPECT_TRUE(db.SetBootstrappedForEviction(false));
+  EXPECT_FALSE(db.IsBootstrappedForEviction());
 }
 
 TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
