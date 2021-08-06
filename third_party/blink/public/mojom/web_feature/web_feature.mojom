@@ -3239,7 +3239,6 @@ enum WebFeature {
   kFontFaceSizeAdjust = 3926,
   kHiddenBackfaceWith3D = 3927,
   kMainFrameNonSecurePrivateAddressSpace = 3928,
-  kCSSSelectorPseudoHas = 3929,
   kHTMLMediaElementControlsListNoPlaybackRate = 3930,
   kDocumentTransition = 3931,
   kSpeculationRules = 3932,
@@ -3281,6 +3280,8 @@ enum WebFeature {
   kClientHintsUAReduced = 3968,
   kSpeculationRulesPrerender = 3969,
   kExecCommandWithTrustedTypes = 3970,
+  kCSSSelectorPseudoHasInSnapshotProfile = 3971,
+  kCSSSelectorPseudoHasInLiveProfile = 3972,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

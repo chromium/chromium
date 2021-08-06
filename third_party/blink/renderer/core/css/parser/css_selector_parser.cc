@@ -868,8 +868,11 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       return selector;
     }
     case CSSSelector::kPseudoHas: {
-      if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
-        break;
+      if (!RuntimeEnabledFeatures::CSSPseudoHasInSnapshotProfileEnabled() ||
+          (context_->IsLiveProfile() &&
+           !RuntimeEnabledFeatures::CSSPseudoHasEnabled())) {
+        return nullptr;
+      }
 
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
@@ -1444,8 +1447,14 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           feature = WebFeature::kCSSSelectorPseudoDir;
           break;
         case CSSSelector::kPseudoHas:
-          DCHECK(RuntimeEnabledFeatures::CSSPseudoHasEnabled());
-          feature = WebFeature::kCSSSelectorPseudoHas;
+          if (context_->IsLiveProfile()) {
+            DCHECK(RuntimeEnabledFeatures::CSSPseudoHasEnabled());
+            feature = WebFeature::kCSSSelectorPseudoHasInLiveProfile;
+          } else {
+            DCHECK(
+                RuntimeEnabledFeatures::CSSPseudoHasInSnapshotProfileEnabled());
+            feature = WebFeature::kCSSSelectorPseudoHasInSnapshotProfile;
+          }
           break;
         default:
           break;

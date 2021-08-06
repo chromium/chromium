@@ -692,6 +692,11 @@
       status: "test",
     },
     {
+      name: "CSSPseudoHasInSnapshotProfile",
+      status: "experimental",
+      implied_by: ["CSSPseudoHas"],
+    },
+    {
       // When an audio, video, or similar resource is "playing"
       // or "paused".
       // https://www.w3.org/TR/selectors-4/#video-state

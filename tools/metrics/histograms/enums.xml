@@ -34027,7 +34027,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3926" label="FontFaceSizeAdjust"/>
   <int value="3927" label="HiddenBackfaceWith3D"/>
   <int value="3928" label="MainFrameNonSecurePrivateAddressSpace"/>
-  <int value="3929" label="CSSSelectorPseudoHas"/>
   <int value="3930" label="HTMLMediaElementControlsListNoPlaybackRate"/>
   <int value="3931" label="DocumentTransition"/>
   <int value="3932" label="SpeculationRules"/>
@@ -34072,6 +34071,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3968" label="ClientHintsUAReduced"/>
   <int value="3969" label="SpeculationRulesPrerender"/>
   <int value="3970" label="ExecCommandWithTrustedTypes"/>
+  <int value="3971" label="CSSSelectorPseudoHasInSnapshotProfile"/>
+  <int value="3972" label="CSSSelectorPseudoHasInLiveProfile"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
