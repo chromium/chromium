@@ -23,7 +23,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -38,6 +37,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -1673,16 +1673,6 @@ class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
   CrossSiteDocumentBlockingWebBundleTest& operator=(
       const CrossSiteDocumentBlockingWebBundleTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    ASSERT_TRUE(https_server_.InitializeAndListen());
-    command_line->AppendSwitchASCII(
-        network::switches::kHostResolverRules,
-        "MAP * " + https_server_.host_port_pair().ToString() +
-            ",EXCLUDE localhost");
-  }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  protected:
@@ -1709,7 +1699,34 @@ class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
         shell(), JsReplace(kScriptTemplate, bundle_url, subresource_url)));
   }
 
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP * " + https_server_.host_port_pair().ToString() +
+            ",EXCLUDE localhost");
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
