@@ -140,6 +140,7 @@ MakeUpdateClientCrxStateChangeCallback(
 std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     scoped_refptr<Configurator> config,
     scoped_refptr<PersistedData> persisted_data,
+    bool foreground,
     const std::vector<std::string>& ids) {
   std::vector<absl::optional<update_client::CrxComponent>> components;
   for (const auto& id : ids) {
@@ -167,6 +168,15 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
                                  id, nullptr, &rollback_allowed)
                          ? rollback_allowed
                          : false;
+            }(),
+            [&config, &id, &foreground]() {
+              int policy = kPolicyEnabled;
+              return config->GetPolicyService()
+                         ->GetEffectivePolicyForAppUpdates(id, nullptr,
+                                                           &policy) &&
+                     (policy == kPolicyDisabled ||
+                      (!foreground && policy == kPolicyManualUpdatesOnly) ||
+                      (foreground && policy == kPolicyAutomaticUpdatesOnly));
             }(),
             persisted_data)
             ->MakeCrxComponent());
@@ -256,7 +266,7 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   DCHECK(base::Contains(app_ids, kUpdaterAppId));
 
   update_client_->Update(
-      app_ids, base::BindOnce(&GetComponents, config_, persisted_data_),
+      app_ids, base::BindOnce(&GetComponents, config_, persisted_data_, false),
       MakeUpdateClientCrxStateChangeCallback(config_, state_update), false,
       MakeUpdateClientCallback(std::move(callback)));
 }
@@ -268,7 +278,9 @@ void UpdateServiceImpl::Update(const std::string& app_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   update_client_->Update(
-      {app_id}, base::BindOnce(&GetComponents, config_, persisted_data_),
+      {app_id},
+      base::BindOnce(&GetComponents, config_, persisted_data_,
+                     priority == Priority::kForeground),
       MakeUpdateClientCrxStateChangeCallback(config_, state_update),
       priority == Priority::kForeground,
       MakeUpdateClientCallback(std::move(callback)));

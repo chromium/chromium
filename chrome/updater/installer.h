@@ -41,6 +41,7 @@ class Installer final : public update_client::CrxInstaller {
             const std::string& target_channel,
             const std::string& target_version_prefix,
             bool rollback_allowed,
+            bool update_disabled,
             scoped_refptr<PersistedData> persisted_data);
   Installer(const Installer&) = delete;
   Installer& operator=(const Installer&) = delete;
@@ -108,6 +109,7 @@ class Installer final : public update_client::CrxInstaller {
   const bool rollback_allowed_;
   const std::string target_channel_;
   const std::string target_version_prefix_;
+  const bool update_disabled_;
   scoped_refptr<PersistedData> persisted_data_;
 
   // These members are not updated when the installer succeeds.
