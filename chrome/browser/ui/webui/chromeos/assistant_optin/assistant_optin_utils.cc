@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/proto/activity_control_settings_common.pb.h"
 #include "components/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
@@ -283,8 +284,13 @@ GetActivityControlConsentSettingType(const SettingZippyList& setting_zippy) {
   if (setting_zippy.size() > 1) {
     return AssistantActivityControlConsent::ALL;
   }
-  // TODO(https://crbug.com/1223797): differentiate between WAA and DA consents
-  // when identifier field is available.
+  auto setting_id = setting_zippy[0].setting_set_id();
+  if (setting_id == assistant::SettingSetId::DA) {
+    return AssistantActivityControlConsent::DEVICE_APPS;
+  }
+  if (setting_id == assistant::SettingSetId::WAA) {
+    return AssistantActivityControlConsent::WEB_AND_APP_ACTIVITY;
+  }
   return AssistantActivityControlConsent::SETTING_TYPE_UNSPECIFIED;
 }
 
