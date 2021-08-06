@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_DELEGATE_HOST_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_DELEGATE_HOST_IMPL_H_
 
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "net/base/io_buffer.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -21,23 +21,6 @@ namespace content {
 class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
     : public blink::mojom::FileSystemAccessFileDelegateHost {
  public:
-  // TODO(crbug.com/1234791): This has a few copies. Move to a common location.
-  // A net::IOBufferWithSize backed by a mojo_base::BigBuffer. Using BigBuffer
-  // as an IOBuffer allows us to avoid a copy.
-  class BigIOBuffer : public net::IOBufferWithSize {
-   public:
-    BigIOBuffer(const BigIOBuffer&) = delete;
-    BigIOBuffer& operator=(const BigIOBuffer&) = delete;
-    explicit BigIOBuffer(size_t size);
-    mojo_base::BigBuffer TakeBuffer() { return std::move(buffer_); }
-
-   protected:
-    ~BigIOBuffer() override;
-
-   private:
-    mojo_base::BigBuffer buffer_;
-  };
-
   FileSystemAccessFileDelegateHostImpl(
       FileSystemAccessManagerImpl* manager,
       const storage::FileSystemURL& url,
@@ -106,7 +89,7 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
   const storage::FileSystemURL& url() { return url_; }
 
   void DidRead(std::unique_ptr<storage::FileStreamReader> reader,
-               scoped_refptr<BigIOBuffer> buffer,
+               scoped_refptr<storage::BigIOBuffer> buffer,
                ReadCallback callback,
                int rv);
   void DidWrite(WriteState* state,

@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include "content/browser/code_cache/generated_code_cache.h"
+
 #include <iostream>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"
 #include "net/base/completion_once_callback.h"
@@ -17,6 +20,8 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+
+using storage::BigIOBuffer;
 
 namespace content {
 
@@ -158,36 +163,6 @@ void ReadCommonDataHeader(scoped_refptr<net::IOBufferWithSize> buffer,
 static_assert(mojo_base::BigBuffer::kMaxInlineBytes <=
                   std::numeric_limits<int>::max(),
               "Buffer size calculations may overflow int");
-
-// A net::IOBufferWithSize backed by a mojo_base::BigBuffer. Using BigBuffer
-// as an IOBuffer allows us to avoid a copy. For large code, this can be slow.
-class BigIOBuffer : public net::IOBufferWithSize {
- public:
-  explicit BigIOBuffer(mojo_base::BigBuffer buffer)
-      : net::IOBufferWithSize(nullptr, buffer.size()),
-        buffer_(std::move(buffer)) {
-    data_ = reinterpret_cast<char*>(buffer_.data());
-  }
-  explicit BigIOBuffer(size_t size) : net::IOBufferWithSize(nullptr, size) {
-    buffer_ = mojo_base::BigBuffer(size);
-    data_ = reinterpret_cast<char*>(buffer_.data());
-    DCHECK(data_);
-  }
-  mojo_base::BigBuffer TakeBuffer() { return std::move(buffer_); }
-
- protected:
-  ~BigIOBuffer() override {
-    // Storage is managed by BigBuffer. We must clear these before the base
-    // class destructor runs.
-    this->data_ = nullptr;
-    this->size_ = 0UL;
-  }
-
- private:
-  mojo_base::BigBuffer buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BigIOBuffer);
-};
 
 net::CacheType CodeCacheTypeToNetCacheType(
     GeneratedCodeCache::CodeCacheType type) {

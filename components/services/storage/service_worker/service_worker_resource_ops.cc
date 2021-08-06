@@ -6,6 +6,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/pickle.h"
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_response_info.h"
@@ -97,41 +98,6 @@ class WrappedPickleIOBuffer : public net::WrappedIOBuffer {
 };
 
 }  // namespace
-
-// BigBuffer backed IOBuffer.
-class BigIOBuffer : public net::IOBufferWithSize {
- public:
-  explicit BigIOBuffer(mojo_base::BigBuffer buffer);
-
-  BigIOBuffer(const BigIOBuffer&) = delete;
-  BigIOBuffer& operator=(const BigIOBuffer&) = delete;
-
-  mojo_base::BigBuffer TakeBuffer();
-
- protected:
-  ~BigIOBuffer() override;
-
- private:
-  mojo_base::BigBuffer buffer_;
-};
-
-BigIOBuffer::BigIOBuffer(mojo_base::BigBuffer buffer)
-    : net::IOBufferWithSize(nullptr, buffer.size()),
-      buffer_(std::move(buffer)) {
-  data_ = reinterpret_cast<char*>(buffer_.data());
-}
-
-BigIOBuffer::~BigIOBuffer() {
-  // Reset `data_` to avoid double-free. The base class (IOBuffer) tries to
-  // delete it.
-  data_ = nullptr;
-}
-
-mojo_base::BigBuffer BigIOBuffer::TakeBuffer() {
-  data_ = nullptr;
-  size_ = 0UL;
-  return std::move(buffer_);
-}
 
 DiskEntryCreator::DiskEntryCreator(
     int64_t resource_id,

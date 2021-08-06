@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -26,11 +27,10 @@ namespace content {
 
 namespace {
 
-void ReadOnIOThread(
-    storage::FileStreamReader* reader,
-    scoped_refptr<FileSystemAccessFileDelegateHostImpl::BigIOBuffer> buffer,
-    scoped_refptr<base::SequencedTaskRunner> reply_runner,
-    base::OnceCallback<void(int)> callback) {
+void ReadOnIOThread(storage::FileStreamReader* reader,
+                    scoped_refptr<storage::BigIOBuffer> buffer,
+                    scoped_refptr<base::SequencedTaskRunner> reply_runner,
+                    base::OnceCallback<void(int)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   auto wrapped_callback =
@@ -47,20 +47,6 @@ void ReadOnIOThread(
 }
 
 }  // namespace
-
-FileSystemAccessFileDelegateHostImpl::BigIOBuffer::BigIOBuffer(size_t size)
-    : net::IOBufferWithSize(nullptr, size) {
-  buffer_ = mojo_base::BigBuffer(size);
-  data_ = reinterpret_cast<char*>(buffer_.data());
-  DCHECK(data_);
-}
-
-FileSystemAccessFileDelegateHostImpl::BigIOBuffer::~BigIOBuffer() {
-  // Must clear `data_` so base class doesn't attempt to delete[] a pointer
-  // it doesn't own.
-  this->data_ = nullptr;
-  this->size_ = 0UL;
-}
 
 FileSystemAccessFileDelegateHostImpl::FileSystemAccessFileDelegateHostImpl(
     FileSystemAccessManagerImpl* manager,
@@ -95,7 +81,7 @@ void FileSystemAccessFileDelegateHostImpl::Read(uint64_t offset,
       std::min(base::saturated_cast<int>(bytes_to_read),
                base::saturated_cast<int>(base::MaxDirectMapped()));
 
-  auto buffer = base::MakeRefCounted<BigIOBuffer>(max_bytes_to_read);
+  auto buffer = base::MakeRefCounted<storage::BigIOBuffer>(max_bytes_to_read);
 
   std::unique_ptr<storage::FileStreamReader> reader =
       file_system_context()->CreateFileStreamReader(
@@ -114,7 +100,7 @@ void FileSystemAccessFileDelegateHostImpl::Read(uint64_t offset,
 
 void FileSystemAccessFileDelegateHostImpl::DidRead(
     std::unique_ptr<storage::FileStreamReader> reader,
-    scoped_refptr<BigIOBuffer> buffer,
+    scoped_refptr<storage::BigIOBuffer> buffer,
     ReadCallback callback,
     int rv) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
