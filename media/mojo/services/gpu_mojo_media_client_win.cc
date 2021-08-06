@@ -54,7 +54,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       GetD3D11DeviceCallback(), traits.get_cached_configs_cb.Run(), enable_hdr);
 }
 
-SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {

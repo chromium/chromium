@@ -112,7 +112,8 @@ std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
 }
 
 // static
-SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs() {
+absl::optional<SupportedVideoDecoderConfigs>
+VaapiVideoDecoder::GetSupportedConfigs() {
   return ConvertFromSupportedProfiles(
       VaapiWrapper::GetSupportedDecodeProfiles(),
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)

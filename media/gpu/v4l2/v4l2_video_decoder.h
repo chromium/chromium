@@ -30,6 +30,7 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -48,7 +49,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
-  static SupportedVideoDecoderConfigs GetSupportedConfigs();
+  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,

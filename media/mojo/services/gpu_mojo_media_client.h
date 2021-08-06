@@ -82,7 +82,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
 // supported profiles. Many platforms fall back to use the VDAVideoDecoder
 // so that implementation is shared, and its supported configs can be
 // queries using the |get_vda_configs| callback.
-SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs);

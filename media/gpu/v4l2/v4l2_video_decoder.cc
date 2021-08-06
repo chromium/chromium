@@ -71,15 +71,19 @@ std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
 }
 
 // static
-SupportedVideoDecoderConfigs V4L2VideoDecoder::GetSupportedConfigs() {
+absl::optional<SupportedVideoDecoderConfigs>
+V4L2VideoDecoder::GetSupportedConfigs() {
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (!device)
-    return SupportedVideoDecoderConfigs();
+    return absl::nullopt;
 
-  return ConvertFromSupportedProfiles(
-      device->GetSupportedDecodeProfiles(base::size(kSupportedInputFourccs),
-                                         kSupportedInputFourccs),
-      false);
+  auto configs = device->GetSupportedDecodeProfiles(
+      base::size(kSupportedInputFourccs), kSupportedInputFourccs);
+
+  if (configs.empty())
+    return absl::nullopt;
+
+  return ConvertFromSupportedProfiles(configs, false);
 }
 
 V4L2VideoDecoder::V4L2VideoDecoder(

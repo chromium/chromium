@@ -54,7 +54,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
-  static SupportedVideoDecoderConfigs GetSupportedConfigs();
+  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,

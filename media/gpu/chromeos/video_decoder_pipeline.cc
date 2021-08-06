@@ -99,30 +99,35 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 }
 
 // static
-SupportedVideoDecoderConfigs VideoDecoderPipeline::GetSupportedConfigs(
+absl::optional<SupportedVideoDecoderConfigs>
+VideoDecoderPipeline::GetSupportedConfigs(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
+  absl::optional<SupportedVideoDecoderConfigs> configs =
 #if BUILDFLAG(USE_VAAPI)
-  auto configs = VaapiVideoDecoder::GetSupportedConfigs();
+      VaapiVideoDecoder::GetSupportedConfigs();
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  auto configs = V4L2VideoDecoder::GetSupportedConfigs();
+      V4L2VideoDecoder::GetSupportedConfigs();
 #endif
 
+  if (!configs)
+    return absl::nullopt;
+
   if (workarounds.disable_accelerated_vp8_decode) {
-    base::EraseIf(configs, [](const auto& config) {
+    base::EraseIf(configs.value(), [](const auto& config) {
       return config.profile_min >= VP8PROFILE_MIN &&
              config.profile_max <= VP8PROFILE_MAX;
     });
   }
 
   if (workarounds.disable_accelerated_vp9_decode) {
-    base::EraseIf(configs, [](const auto& config) {
+    base::EraseIf(configs.value(), [](const auto& config) {
       return config.profile_min >= VP9PROFILE_PROFILE0 &&
              config.profile_max <= VP9PROFILE_PROFILE0;
     });
   }
 
   if (workarounds.disable_accelerated_vp9_profile2_decode) {
-    base::EraseIf(configs, [](const auto& config) {
+    base::EraseIf(configs.value(), [](const auto& config) {
       return config.profile_min >= VP9PROFILE_PROFILE2 &&
              config.profile_max <= VP9PROFILE_PROFILE2;
     });

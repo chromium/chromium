@@ -114,7 +114,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       std::unique_ptr<VideoFrameConverter> frame_converter,
       std::unique_ptr<MediaLog> media_log);
 
-  static SupportedVideoDecoderConfigs GetSupportedConfigs(
+  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs(
       const gpu::GpuDriverBugWorkarounds& workarounds);
 
   ~VideoDecoderPipeline() override;

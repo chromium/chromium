@@ -121,6 +121,10 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
         // the bound function.
         base::BindOnce(&GpuMojoMediaClient::GetVDAVideoDecoderConfigs,
                        base::Unretained(this)));
+
+  if (!supported_config_cache_)
+    return {};
+
   return *supported_config_cache_;
 }
 
