@@ -105,8 +105,10 @@ HEADER = headers.header(
                     text = "source",
                     branch_selector = branches.ALL_BRANCHES,
                     url = branches.value(
-                        for_main = "https://chromium.googlesource.com/chromium/src",
-                        for_branches = "https://chromium.googlesource.com/chromium/src/+/{}".format(settings.ref),
+                        {
+                            branches.MAIN: "https://chromium.googlesource.com/chromium/src",
+                        },
+                        default = "https://chromium.googlesource.com/chromium/src/+/{}".format(settings.ref),
                     ),
                     alt = "Chromium source code repository",
                 ),
@@ -350,5 +352,5 @@ HEADER = headers.header(
             ]],
         ),
     ],
-    tree_status_host = branches.value(for_main = "chromium-status.appspot.com"),
+    tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
 )
