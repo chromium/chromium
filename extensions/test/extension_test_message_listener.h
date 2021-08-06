@@ -10,9 +10,8 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observation.h"
-#include "extensions/browser/api/test/test_api_observer.h"
-#include "extensions/browser/api/test/test_api_observer_registry.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -100,7 +99,7 @@ class TestSendMessageFunction;
 // either make it a local variable inside your test body, or if it's a member
 // variable of a ExtensionBrowserTest subclass, override the
 // BrowserTestBase::TearDownOnMainThread() method and clean it up there.
-class ExtensionTestMessageListener : public extensions::TestApiObserver {
+class ExtensionTestMessageListener : public content::NotificationObserver {
  public:
   // We immediately start listening for |expected_message|.
   ExtensionTestMessageListener(const std::string& expected_message,
@@ -164,9 +163,12 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   bool had_user_gesture() const { return had_user_gesture_; }
 
  private:
-  // extensions::TestApiObserver:
-  bool OnTestMessage(extensions::TestSendMessageFunction* function,
-                     const std::string& message) override;
+  // Implements the content::NotificationObserver interface.
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
+  content::NotificationRegistrar registrar_;
 
   // The message we're expecting. If empty, we will wait for any message,
   // regardless of contents.
@@ -210,10 +212,6 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
 
   // The function we need to reply to.
   scoped_refptr<extensions::TestSendMessageFunction> function_;
-
-  base::ScopedObservation<extensions::TestApiObserverRegistry,
-                          extensions::TestApiObserver>
-      test_api_observation_{this};
 };
 
 #endif  // EXTENSIONS_TEST_EXTENSION_TEST_MESSAGE_LISTENER_H_

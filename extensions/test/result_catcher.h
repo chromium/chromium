@@ -10,9 +10,8 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/scoped_observation.h"
-#include "extensions/browser/api/test/test_api_observer.h"
-#include "extensions/browser/api/test/test_api_observer_registry.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 
 namespace content {
 class BrowserContext;
@@ -25,7 +24,7 @@ namespace extensions {
 // GetNextResult() and message() if GetNextResult() return false. If there
 // are no results, this method will pump the UI message loop until one is
 // received.
-class ResultCatcher : public TestApiObserver {
+class ResultCatcher : public content::NotificationObserver {
  public:
   ResultCatcher();
   ~ResultCatcher() override;
@@ -41,10 +40,12 @@ class ResultCatcher : public TestApiObserver {
   const std::string& message() { return message_; }
 
  private:
-  // TestApiObserver:
-  void OnTestPassed(content::BrowserContext* browser_context) override;
-  void OnTestFailed(content::BrowserContext* browser_context,
-                    const std::string& message) override;
+  // content::NotificationObserver:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
+  content::NotificationRegistrar registrar_;
 
   // A sequential list of pass/fail notifications from the test extension(s).
   base::circular_deque<bool> results_;
@@ -59,9 +60,6 @@ class ResultCatcher : public TestApiObserver {
   // Only set if we're in a nested run loop waiting for results from
   // the extension.
   base::OnceClosure quit_closure_;
-
-  base::ScopedObservation<TestApiObserverRegistry, TestApiObserver>
-      test_api_observation_{this};
 };
 
 }  // namespace extensions

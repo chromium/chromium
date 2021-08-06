@@ -8,10 +8,11 @@
 
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
-#include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/common/api/test.h"
 
 namespace {
@@ -49,7 +50,10 @@ bool TestExtensionFunction::PreRunValidation(std::string* error) {
 TestNotifyPassFunction::~TestNotifyPassFunction() {}
 
 ExtensionFunction::ResponseAction TestNotifyPassFunction::Run() {
-  TestApiObserverRegistry::GetInstance()->NotifyTestPassed(browser_context());
+  content::NotificationService::current()->Notify(
+      extensions::NOTIFICATION_EXTENSION_TEST_PASSED,
+      content::Source<content::BrowserContext>(dispatcher()->browser_context()),
+      content::NotificationService::NoDetails());
   return RespondNow(NoArguments());
 }
 
@@ -59,8 +63,10 @@ ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
   std::unique_ptr<NotifyFail::Params> params(
       NotifyFail::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  TestApiObserverRegistry::GetInstance()->NotifyTestFailed(
-      browser_context(), params->message);
+  content::NotificationService::current()->Notify(
+      extensions::NOTIFICATION_EXTENSION_TEST_FAILED,
+      content::Source<content::BrowserContext>(dispatcher()->browser_context()),
+      content::Details<std::string>(&params->message));
   return RespondNow(NoArguments());
 }
 
@@ -79,9 +85,13 @@ ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
   std::unique_ptr<PassMessage::Params> params(
       PassMessage::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  bool listener_will_respond =
-      TestApiObserverRegistry::GetInstance()->NotifyTestMessage(
-          this, params->message);
+  bool listener_will_respond = false;
+  std::pair<std::string, bool*> details(params->message,
+                                        &listener_will_respond);
+  content::NotificationService::current()->Notify(
+      extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
+      content::Source<TestSendMessageFunction>(this),
+      content::Details<std::pair<std::string, bool*>>(&details));
   // If none of the listeners intend to respond, or one has already responded,
   // finish the function. We always reply to the message, even if it's just an
   // empty string.
