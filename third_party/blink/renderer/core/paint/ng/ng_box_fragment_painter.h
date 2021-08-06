@@ -21,7 +21,6 @@ class BoxDecorationData;
 class FillLayer;
 class HitTestLocation;
 class HitTestResult;
-class LayoutNGTextCombine;
 class NGFragmentItems;
 class NGInlineCursor;
 class NGInlineBackwardCursor;
@@ -230,10 +229,6 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     // The result is set to this member, but its address does not change during
     // the traversal.
     HitTestResult* result;
-
-    // Non-null when processing a line box in |LayoutNGTextCombine| uses
-    // scaling. This field is populated in |NodeAtPoint()|.
-    const LayoutNGTextCombine* text_combine = nullptr;
   };
 
   // Hit tests the children of a container fragment, which is either
