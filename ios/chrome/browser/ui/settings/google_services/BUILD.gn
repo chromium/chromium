@@ -80,6 +80,7 @@ source_set("google_services") {
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/common:features",
     "//ui/base",
   ]

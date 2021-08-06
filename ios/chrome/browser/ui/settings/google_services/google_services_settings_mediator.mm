@@ -47,9 +47,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -422,11 +421,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED);
     signinDisabledItem.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
-    signinDisabledItem.image =
-        CircularImageFromImage(ios::GetChromeBrowserProvider()
-                                   .GetSigninResourcesProvider()
-                                   ->GetDefaultAvatar(),
-                               kAccountProfilePhotoDimension);
+    signinDisabledItem.image = CircularImageFromImage(
+        ios::provider::GetSigninDefaultAvatar(), kAccountProfilePhotoDimension);
     signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
     signinDisabledItem.tintColor = [UIColor colorNamed:kGrey300Color];
     [model addItem:signinDisabledItem

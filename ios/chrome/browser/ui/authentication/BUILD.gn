@@ -67,6 +67,7 @@ source_set("authentication") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
     "//ui/gfx",
   ]

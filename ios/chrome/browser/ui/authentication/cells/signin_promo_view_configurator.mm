@@ -11,8 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -103,11 +102,8 @@ using l10n_util::GetNSStringF;
 
   DCHECK_NE(self.signinPromoViewMode, SigninPromoViewModeNoAccounts);
   UIImage* image = self.userImage;
-  if (!image) {
-    image = ios::GetChromeBrowserProvider()
-                .GetSigninResourcesProvider()
-                ->GetDefaultAvatar();
-  }
+  if (!image)
+    image = ios::provider::GetSigninDefaultAvatar();
   [signinPromoView setProfileImage:image];
 }
 

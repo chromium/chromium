@@ -10,7 +10,7 @@
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,9 +55,8 @@
                        .GetChromeIdentityService()
                        ->GetCachedAvatarForIdentity(identity);
   if (!image) {
-    image = ios::GetChromeBrowserProvider()
-                .GetSigninResourcesProvider()
-                ->GetDefaultAvatar();
+    image = ios::provider::GetSigninDefaultAvatar();
+
     // No cached image, trigger a fetch, which will notify all observers.
     ios::GetChromeBrowserProvider()
         .GetChromeIdentityService()

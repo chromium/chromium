@@ -12,8 +12,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#include "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -45,9 +44,7 @@
   }
 
   cell.detailTextLabel.text = self.detailText;
-  cell.image = CircularImageFromImage(ios::GetChromeBrowserProvider()
-                                          .GetSigninResourcesProvider()
-                                          ->GetDefaultAvatar(),
+  cell.image = CircularImageFromImage(ios::provider::GetSigninDefaultAvatar(),
                                       kAccountProfilePhotoDimension);
 }
 

@@ -6,6 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import <objc/runtime.h>
+
+#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -13,7 +16,7 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
-#include "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#include "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,17 +29,30 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-UIImage* FakeGetCachedAvatarForIdentity(ChromeIdentity*) {
-  ios::SigninResourcesProvider* provider =
-      ios::GetChromeBrowserProvider().GetSigninResourcesProvider();
-  return provider ? provider->GetDefaultAvatar() : nil;
-}
-
 NSString* FakeGetHostedDomainForIdentity(ChromeIdentity* identity) {
   return base::SysUTF8ToNSString(gaia::ExtractDomainName(
       gaia::CanonicalizeEmail(base::SysNSStringToUTF8(identity.userEmail))));
 }
+
+// Key for the cached identity avatar. The tests validate that the avatar is
+// cached by comparing pointers. As ios::provider::GetSigninDefaultAvatar()
+// may return a new image each time it is called, it needs to be cached here
+// using objc_getAssociatedObject/objc_setAssociatedObject.
+const char kCachedAvatarAssociatedKey[] = "CachedAvatarAssociatedKey";
+
+// Get cached identity avatar. May return nil if no image is cached.
+UIImage* GetCachedAvatarForIdentity(ChromeIdentity* identity) {
+  return base::mac::ObjCCastStrict<UIImage>(
+      objc_getAssociatedObject(identity, &kCachedAvatarAssociatedKey));
 }
+
+// Set cached identity avatar.
+void SetCachedAvatarForIdentity(ChromeIdentity* identity, UIImage* avatar) {
+  objc_setAssociatedObject(identity, &kCachedAvatarAssociatedKey, avatar,
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+}  // anonymous namespace
 
 @interface FakeAccountDetailsViewController : UIViewController {
   __weak ChromeIdentity* _identity;
@@ -231,21 +247,24 @@ void FakeChromeIdentityService::GetAccessToken(
 
 UIImage* FakeChromeIdentityService::GetCachedAvatarForIdentity(
     ChromeIdentity* identity) {
-  return FakeGetCachedAvatarForIdentity(identity);
+  return ::GetCachedAvatarForIdentity(identity);
 }
 
 void FakeChromeIdentityService::GetAvatarForIdentity(
     ChromeIdentity* identity,
     GetAvatarCallback callback) {
-  if (!callback) {
-    return;
-  }
   // |GetAvatarForIdentity| is normally an asynchronous operation, this is
   // replicated here by dispatching it.
   ++_pendingCallback;
   dispatch_async(dispatch_get_main_queue(), ^{
     --_pendingCallback;
-    callback(FakeGetCachedAvatarForIdentity(identity));
+    UIImage* avatar = ::GetCachedAvatarForIdentity(identity);
+    if (!avatar) {
+      avatar = ios::provider::GetSigninDefaultAvatar();
+      ::SetCachedAvatarForIdentity(identity, avatar);
+    }
+    if (callback)
+      callback(avatar);
   });
 }
 
