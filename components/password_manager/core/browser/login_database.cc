@@ -1565,15 +1565,12 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
 
 bool LoginDatabase::GetLogins(
     const PasswordFormDigest& form,
+    bool should_PSL_matching_apply,
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetLogins");
   DCHECK(forms);
   forms->clear();
 
-  const GURL signon_realm(form.signon_realm);
-  std::string registered_domain = GetRegistryControlledDomain(signon_realm);
-  const bool should_PSL_matching_apply =
-      !registered_domain.empty() && form.scheme == PasswordForm::Scheme::kHtml;
   const bool should_federated_apply =
       form.scheme == PasswordForm::Scheme::kHtml;
   DCHECK(!get_statement_.empty());
@@ -1596,6 +1593,9 @@ bool LoginDatabase::GetLogins(
 
   // PSL matching only applies to HTML forms.
   if (should_PSL_matching_apply) {
+    const GURL signon_realm(form.signon_realm);
+    std::string registered_domain = GetRegistryControlledDomain(signon_realm);
+    DCHECK(!registered_domain.empty());
     // We are extending the original SQL query with one that includes more
     // possible matches based on public suffix domain matching. Using a regexp
     // here is just an optimization to not have to parse all the stored entries

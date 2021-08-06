@@ -172,11 +172,12 @@ void TestPasswordStore::GetAutofillableLoginsAsync(LoginsReply callback) {
 
 void TestPasswordStore::FillMatchingLoginsAsync(
     LoginsReply callback,
+    bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   background_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::FillMatchingLoginsBulk,
-                     base::Unretained(this), forms),
+                     base::Unretained(this), forms, include_psl),
       std::move(callback));
 }
 
@@ -283,7 +284,8 @@ LoginsResult TestPasswordStore::GetAutofillableLoginsInternal() {
 }
 
 LoginsResult TestPasswordStore::FillMatchingLogins(
-    const PasswordFormDigest& form) {
+    const PasswordFormDigest& form,
+    bool include_psl) {
   ++fill_matching_logins_calls_;
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {
@@ -292,7 +294,7 @@ LoginsResult TestPasswordStore::FillMatchingLogins(
     const bool realm_matches = elements.first == form.signon_realm;
     const bool realm_psl_matches =
         IsPublicSuffixDomainMatch(elements.first, form.signon_realm);
-    if (realm_matches || realm_psl_matches ||
+    if (realm_matches || (realm_psl_matches && include_psl) ||
         (form.scheme == PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(elements.first, form.url))) {
       const bool is_psl = !realm_matches && realm_psl_matches;
@@ -313,11 +315,12 @@ LoginsResult TestPasswordStore::FillMatchingLogins(
 }
 
 LoginsResult TestPasswordStore::FillMatchingLoginsBulk(
-    const std::vector<PasswordFormDigest>& forms) {
+    const std::vector<PasswordFormDigest>& forms,
+    bool include_psl) {
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (const auto& form : forms) {
     std::vector<std::unique_ptr<PasswordForm>> matched_forms =
-        FillMatchingLogins(form);
+        FillMatchingLogins(form, include_psl);
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));

@@ -91,6 +91,7 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
 
 void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
+    bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   // TODO(https://crbug.com/1229654): Implement.
 }

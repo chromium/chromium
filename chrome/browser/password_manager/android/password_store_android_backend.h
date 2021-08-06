@@ -84,6 +84,7 @@ class PasswordStoreAndroidBackend
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordStoreChangeListReply callback) override;

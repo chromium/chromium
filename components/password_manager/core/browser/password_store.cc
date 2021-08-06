@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -49,6 +50,11 @@
 namespace password_manager {
 
 namespace {
+
+bool FormSupportsPSL(const PasswordFormDigest& digest) {
+  return digest.scheme == PasswordForm::Scheme::kHtml &&
+         !GetRegistryControlledDomain(GURL(digest.signon_realm)).empty();
+}
 
 std::vector<PasswordFormDigest> ConvertToForms(
     const std::vector<std::string>& realms) {
@@ -241,7 +247,7 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
   backend_->FillMatchingLoginsAsync(
       base::BindOnce(&PasswordStore::UnblocklistInternal, this,
                      std::move(completion)),
-      {form_digest});
+      FormSupportsPSL(form_digest), {form_digest});
 }
 
 void PasswordStore::GetLogins(const PasswordFormDigest& form,
@@ -261,13 +267,14 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
         base::BindOnce(ConvertToForms)
             .Then(base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
                                  base::Unretained(backend_),
-                                 request_handler->AffiliatedLoginsClosure())));
+                                 request_handler->AffiliatedLoginsClosure(),
+                                 /*include_psl=*/false)));
   } else {
     request_handler->AffiliatedLoginsClosure().Run({});
   }
 
   backend_->FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(),
-                                    {form});
+                                    FormSupportsPSL(form), {form});
 }
 
 void PasswordStore::GetAutofillableLogins(PasswordStoreConsumer* consumer) {

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -151,7 +152,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   ASSERT_EQ(1u, changes.size());
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), &forms));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
 
   ASSERT_EQ(1U, forms.size());
   EXPECT_STREQ("secret", UTF16ToUTF8(forms[0]->password_value).c_str());
@@ -160,17 +161,17 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
 
 TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
   PasswordForm form;
-  form.signon_realm = "www.example.com";
-  form.action = GURL("www.example.com/action");
+  form.signon_realm = "http://www.example.com";
+  form.url = GURL("http://www.example.com/action");
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  ignore_result(login_db_->AddLogin(form));
+  ASSERT_THAT(login_db_->AddLogin(form), testing::SizeIs(1));
 
   ignore_result(login_db_->RemoveLogin(form, /*changes=*/nullptr));
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), &forms));
+  EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
 
   ASSERT_EQ(0U, forms.size());
   ASSERT_EQ(0U, GetKeychainSize());
@@ -207,7 +208,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
                              "http://www.example.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> logins;
-  EXPECT_TRUE(login_db_->GetLogins(form, &logins));
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &logins));
 
   ASSERT_EQ(2U, logins.size());
   ASSERT_EQ(2U, GetKeychainSize());

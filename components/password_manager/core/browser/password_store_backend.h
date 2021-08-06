@@ -64,12 +64,14 @@ class PasswordStoreBackend {
   // called on the main sequence.
   virtual void GetAutofillableLoginsAsync(LoginsReply callback) = 0;
 
-  // Returns all PasswordForms with the same or PSL-matched signon_realm as
-  // a form in |forms|. If multiple forms are given, those will be concatenated.
+  // Returns all PasswordForms with the same signon_realm as a form in |forms|.
+  // If |include_psl|==true, the PSL-matched forms are also included.
+  // If multiple forms are given, those will be concatenated.
   // Callback is called on the main sequence.
   // TODO(crbug.com/1217071): Check whether this needs OptionalLoginsReply, too.
   virtual void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) = 0;
 
   // For all methods below:

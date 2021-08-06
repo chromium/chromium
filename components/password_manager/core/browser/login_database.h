@@ -110,7 +110,10 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
   // Gets a list of credentials matching |form|, including blocklisted matches
   // and federated credentials.
+  // |should_PSL_matching_apply| controls if the PSL matches are included or
+  // only the exact matches.
   bool GetLogins(const PasswordFormDigest& form,
+                 bool should_PSL_matching_apply,
                  std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
 
@@ -298,10 +301,10 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
   // Overwrites |key_to_form_map| with credentials retrieved from |statement|.
   // If |matched_form| is not null, filters out all results but those
-  // PSL-matching
-  // |*matched_form| or federated credentials for it. If feature for recovering
-  // passwords is enabled, it removes all passwords that couldn't be decrypted
-  // when encryption was available from the database. On success returns true.
+  // PSL-matching |*matched_form| or federated credentials for it. If feature
+  // for recovering passwords is enabled, it removes all passwords that couldn't
+  // be decrypted when encryption was available from the database. On success
+  // returns true.
   // |key_to_form_map| must not be null and will be used to return the results.
   // The key of the map is the DB primary key.
   FormRetrievalResult StatementToForms(sql::Statement* statement,

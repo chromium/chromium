@@ -35,6 +35,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordStoreChangeListReply callback) override;
@@ -61,8 +62,10 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   CreateSyncControllerDelegateFactory() override;
 
   LoginsResult FillMatchingLoginsInternal(
-      const std::vector<PasswordFormDigest>& forms);
-  LoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form);
+      const std::vector<PasswordFormDigest>& forms,
+      bool include_psl);
+  LoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form,
+                                        bool include_psl);
   PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
 

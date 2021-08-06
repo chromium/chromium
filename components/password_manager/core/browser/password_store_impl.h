@@ -86,6 +86,7 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordStoreChangeListReply callback) override;
@@ -145,7 +146,8 @@ class PasswordStoreImpl : protected PasswordStoreSync,
 
   // Synchronous implementation of FillMatchingLoginsAsync.
   LoginsResult FillMatchingLoginsInternal(
-      const std::vector<PasswordFormDigest>& forms);
+      const std::vector<PasswordFormDigest>& forms,
+      bool include_psl);
 
   PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);

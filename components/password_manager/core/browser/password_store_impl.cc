@@ -295,6 +295,7 @@ void PasswordStoreImpl::GetAutofillableLoginsAsync(LoginsReply callback) {
 
 void PasswordStoreImpl::FillMatchingLoginsAsync(
     LoginsReply callback,
+    bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   if (forms.empty()) {
@@ -305,7 +306,7 @@ void PasswordStoreImpl::FillMatchingLoginsAsync(
   background_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PasswordStoreImpl::FillMatchingLoginsInternal, this,
-                     forms),
+                     forms, include_psl),
       std::move(callback));
 }
 
@@ -525,13 +526,14 @@ LoginsResult PasswordStoreImpl::GetAutofillableLoginsInternal() {
 }
 
 LoginsResult PasswordStoreImpl::FillMatchingLoginsInternal(
-    const std::vector<PasswordFormDigest>& forms) {
+    const std::vector<PasswordFormDigest>& forms,
+    bool include_psl) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (const auto& form : forms) {
     std::vector<std::unique_ptr<PasswordForm>> matched_forms;
-    if (login_db_ && !login_db_->GetLogins(form, &matched_forms))
+    if (login_db_ && !login_db_->GetLogins(form, include_psl, &matched_forms))
       continue;
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),

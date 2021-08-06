@@ -89,6 +89,7 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordStoreChangeListReply callback) override;
@@ -123,9 +124,11 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
  private:
   LoginsResult GetAllLoginsInternal();
   LoginsResult GetAutofillableLoginsInternal();
-  LoginsResult FillMatchingLogins(const PasswordFormDigest& form);
+  LoginsResult FillMatchingLogins(const PasswordFormDigest& form,
+                                  bool include_psl);
   LoginsResult FillMatchingLoginsBulk(
-      const std::vector<PasswordFormDigest>& forms);
+      const std::vector<PasswordFormDigest>& forms,
+      bool include_psl);
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginImpl(const PasswordForm& form);
   PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form);

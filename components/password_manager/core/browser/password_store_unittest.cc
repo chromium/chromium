@@ -51,6 +51,7 @@ using testing::DoAll;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
+using testing::Pointee;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
@@ -192,6 +193,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
   MOCK_METHOD(void,
               FillMatchingLoginsAsync,
               (LoginsReply callback,
+               bool include_psl,
                const std::vector<PasswordFormDigest>& forms),
               (override));
   MOCK_METHOD(void,
@@ -613,6 +615,108 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
   WaitForPasswordStore();
 
   store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+// Makes sure that the PSL forms are included in GetLogins.
+TEST_F(PasswordStoreTest, GetLoginsWithPSL) {
+  static constexpr const struct {
+    PasswordFormData form_data;
+    bool use_federated_login;
+  } kTestCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {
+          {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "",
+           u"", u"", u"", u"username_1", u"12345"},
+          false,
+      },
+      // Credential that is a PSL match.
+      {
+          {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+           kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_2",
+           u"123456"},
+          false,
+      },
+      // Credential that is a federated PSL.
+      {
+          {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
+           kTestPSLMatchingWebOrigin, "", u"", u"", u"", u"username_3",
+           u"password"},
+          true,
+      },
+      // Credential for unrelated origin.
+      {
+          {PasswordForm::Scheme::kHtml, kTestUnrelatedWebRealm2,
+           kTestUnrelatedWebOrigin2, "", u"", u"", u"", u"username_4",
+           u"password2"},
+          false,
+      }};
+
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(nullptr);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& i : kTestCredentials) {
+    all_credentials.push_back(
+        FillPasswordFormWithData(i.form_data, i.use_federated_login));
+    store->AddLogin(*all_credentials.back());
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      kTestWebRealm1, GURL(kTestWebOrigin1)};
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[0]));
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[1]));
+  expected_results.push_back(
+      std::make_unique<PasswordForm>(*all_credentials[2]));
+  expected_results[1]->is_public_suffix_match = true;
+  expected_results[2]->is_public_suffix_match = true;
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsConstRef(
+                  UnorderedPasswordFormElementsAre(&expected_results)));
+
+  store->GetLogins(observed_form, &mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
+// Makes sure that the PSL forms are not returned on Google domains.
+TEST_F(PasswordStoreTest, GetLoginsPSLDisabled) {
+  static constexpr PasswordFormData kTestCredentials[] = {
+      // Credential that is an exact match of the observed form.
+      {PasswordForm::Scheme::kHtml, "https://accounts.google.com/",
+       "https://accounts.google.com/login", "", u"", u"", u"", u"username_1",
+       u"12345"},
+      // Credential that looks like a PSL match.
+      {PasswordForm::Scheme::kHtml, "https://some.other.google.com/",
+       "https://some.other.google.com/path", "", u"", u"", u"", u"username_2",
+       u"123456"}};
+
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(nullptr);
+
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  for (const auto& i : kTestCredentials) {
+    all_credentials.push_back(PasswordFormFromData(i));
+    store->AddLogin(*all_credentials.back());
+    all_credentials.back()->in_store = PasswordForm::Store::kProfileStore;
+  }
+
+  PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
+                                      "https://accounts.google.com/",
+                                      GURL("https://accounts.google.com/")};
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(
+                                 ElementsAre(Pointee(*all_credentials[0]))));
+
+  store->GetLogins(observed_form, &mock_consumer);
+  WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
 

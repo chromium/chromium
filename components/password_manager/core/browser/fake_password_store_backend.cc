@@ -36,11 +36,12 @@ void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
 
 void FakePasswordStoreBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
+    bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::FillMatchingLoginsInternal,
-                     base::Unretained(this), forms),
+                     base::Unretained(this), forms, include_psl),
       std::move(callback));
 }
 
@@ -107,11 +108,12 @@ FakePasswordStoreBackend::CreateSyncControllerDelegateFactory() {
 }
 
 LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
-    const std::vector<PasswordFormDigest>& forms) {
+    const std::vector<PasswordFormDigest>& forms,
+    bool include_psl) {
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (const auto& form : forms) {
     std::vector<std::unique_ptr<PasswordForm>> matched_forms =
-        FillMatchingLoginsHelper(form);
+        FillMatchingLoginsHelper(form, include_psl);
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
@@ -120,7 +122,8 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsInternal(
 }
 
 LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
-    const PasswordFormDigest& form) {
+    const PasswordFormDigest& form,
+    bool include_psl) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {
     // The code below doesn't support PSL federated credential. It's doable but
@@ -128,7 +131,7 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     const bool realm_matches = elements.first == form.signon_realm;
     const bool realm_psl_matches =
         IsPublicSuffixDomainMatch(elements.first, form.signon_realm);
-    if (realm_matches || realm_psl_matches ||
+    if (realm_matches || (realm_psl_matches && include_psl) ||
         (form.scheme == PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(elements.first, form.url))) {
       const bool is_psl = !realm_matches && realm_psl_matches;

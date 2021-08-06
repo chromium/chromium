@@ -266,9 +266,9 @@ TEST_F(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&tester);
 
-  // Get all logins; autofillable logins; blocked logins.
+  // Get PSL matched logins; all logins; autofillable logins.
   EXPECT_CALL(tester, LoginsReceivedConstRef(IsEmpty()));
-  bad_backend->FillMatchingLoginsAsync(handle_logins,
+  bad_backend->FillMatchingLoginsAsync(handle_logins, true,
                                        {PasswordFormDigest(*form)});
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&tester);

@@ -44,10 +44,12 @@
 using autofill::GaiaIdHash;
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Ne;
+using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -99,8 +101,6 @@ PasswordForm GenerateExamplePasswordForm() {
       base::Time::Now() - base::TimeDelta::FromDays(1);
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
-  form.federation_origin =
-      url::Origin::Create(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
   form.in_store = PasswordForm::Store::kProfileStore;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
@@ -217,208 +217,87 @@ class LoginDatabaseTest : public testing::Test {
 
   LoginDatabase& db() { return *db_; }
 
-  void TestNonHTMLFormPSLMatching(const PasswordForm::Scheme& scheme) {
-    std::vector<std::unique_ptr<PasswordForm>> result;
-
-    base::Time now = base::Time::Now();
-
-    // Simple non-html auth form.
-    PasswordForm non_html_auth;
-    non_html_auth.url = GURL("http://example.com");
-    non_html_auth.username_value = u"test@gmail.com";
-    non_html_auth.password_value = u"test";
-    non_html_auth.signon_realm = "http://example.com/Realm";
-    non_html_auth.scheme = scheme;
-    non_html_auth.date_created = now;
-
-    // Simple password form.
-    PasswordForm html_form(non_html_auth);
-    html_form.action = GURL("http://example.com/login");
-    html_form.username_element = u"username";
-    html_form.username_value = u"test2@gmail.com";
-    html_form.password_element = u"password";
-    html_form.submit_element = u"";
-    html_form.signon_realm = "http://example.com/";
-    html_form.scheme = PasswordForm::Scheme::kHtml;
-    html_form.date_created = now;
-
-    // Add them and make sure they are there.
-    EXPECT_EQ(AddChangeForForm(non_html_auth), db().AddLogin(non_html_auth));
-    EXPECT_EQ(AddChangeForForm(html_form), db().AddLogin(html_form));
-    EXPECT_TRUE(db().GetAutofillableLogins(&result));
-    EXPECT_EQ(2U, result.size());
-    result.clear();
-
-    PasswordFormDigest second_non_html_auth = {
-        scheme, "http://second.example.com/Realm",
-        GURL("http://second.example.com")};
-
-    // This shouldn't match anything.
-    EXPECT_TRUE(db().GetLogins(second_non_html_auth, &result));
-    EXPECT_EQ(0U, result.size());
-
-    // non-html auth still matches against itself.
-    EXPECT_TRUE(db().GetLogins(PasswordFormDigest(non_html_auth), &result));
-    ASSERT_EQ(1U, result.size());
-    EXPECT_EQ(result[0]->signon_realm, "http://example.com/Realm");
-
-    // Clear state.
-    db().RemoveLoginsCreatedBetween(now, base::Time(), /*changes=*/nullptr);
-  }
-
-  // Checks that a form of a given |scheme|, once stored, can be successfully
-  // retrieved from the database.
-  void TestRetrievingIPAddress(const PasswordForm::Scheme& scheme) {
-    SCOPED_TRACE(testing::Message() << "scheme = " << scheme);
-    std::vector<std::unique_ptr<PasswordForm>> result;
-
-    base::Time now = base::Time::Now();
-    std::string origin("http://56.7.8.90");
-
-    PasswordForm ip_form;
-    ip_form.url = GURL(origin);
-    ip_form.username_value = u"test@gmail.com";
-    ip_form.password_value = u"test";
-    ip_form.signon_realm = origin;
-    ip_form.scheme = scheme;
-    ip_form.date_created = now;
-
-    EXPECT_EQ(AddChangeForForm(ip_form), db().AddLogin(ip_form));
-    EXPECT_TRUE(db().GetLogins(PasswordFormDigest(ip_form), &result));
-    ASSERT_EQ(1U, result.size());
-    EXPECT_EQ(result[0]->signon_realm, origin);
-
-    // Clear state.
-    db().RemoveLoginsCreatedBetween(now, base::Time(), /*changes=*/nullptr);
-  }
-
   base::ScopedTempDir temp_dir_;
   base::FilePath file_;
   std::unique_ptr<LoginDatabase> db_;
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(LoginDatabaseTest, Logins) {
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  PrimaryKeyToFormMap key_to_form_map;
-
-  // Verify the database is empty.
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(0U, result.size());
-  EXPECT_TRUE(db().IsEmpty());
-
-  EXPECT_EQ(db().GetAllLogins(&key_to_form_map), FormRetrievalResult::kSuccess);
-  EXPECT_EQ(0U, key_to_form_map.size());
-
+TEST_F(LoginDatabaseTest, GetAllLogins) {
   // Example password form.
   PasswordForm form = GenerateExamplePasswordForm();
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+  PasswordForm blocklisted;
+  blocklisted.signon_realm = "http://example3.com/";
+  blocklisted.url = GURL("http://example3.com/path");
+  blocklisted.blocked_by_user = true;
+  blocklisted.in_store = PasswordForm::Store::kProfileStore;
+  ASSERT_EQ(AddChangeForForm(blocklisted), db().AddLogin(blocklisted));
 
-  // Add it and make sure it is there and that all the fields were retrieved
-  // correctly.
-  PasswordStoreChangeList changes = db().AddLogin(form);
-  ASSERT_EQ(AddChangeForForm(form), changes);
-  EXPECT_EQ(1, changes[0].primary_key().value());
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  ASSERT_EQ(1U, result.size());
-  EXPECT_EQ(form, *result[0]);
-  EXPECT_FALSE(db().IsEmpty());
-  result.clear();
-
+  PrimaryKeyToFormMap key_to_form_map;
   EXPECT_EQ(db().GetAllLogins(&key_to_form_map), FormRetrievalResult::kSuccess);
-  EXPECT_EQ(1U, key_to_form_map.size());
-  EXPECT_EQ(form, *key_to_form_map[FormPrimaryKey(1)]);
-  key_to_form_map.clear();
+  EXPECT_THAT(key_to_form_map,
+              UnorderedElementsAre(Pair(_, Pointee(form)),
+                                   Pair(_, Pointee(blocklisted))));
+}
+
+TEST_F(LoginDatabaseTest, GetLogins_Self) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   // Match against an exact copy.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
-  ASSERT_EQ(1U, result.size());
-  EXPECT_EQ(form, *result[0]);
-  result.clear();
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/false, &result));
+  EXPECT_THAT(result, ElementsAre(Pointee(form)));
+}
 
-  // The example site changes...
-  PasswordForm form2(form);
-  form2.url = GURL("http://www.google.com/new/accounts/LoginAuth");
-  form2.submit_element = u"reallySignIn";
+TEST_F(LoginDatabaseTest, GetLogins_InexactCopy) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
+
+  PasswordFormDigest digest(
+      PasswordForm::Scheme::kHtml, "http://www.google.com/",
+      GURL("http://www.google.com/new/accounts/LoginAuth"));
 
   // Match against an inexact copy
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(
+      db().GetLogins(digest, /*should_PSL_matching_apply=*/true, &result));
+  EXPECT_THAT(result, ElementsAre(Pointee(form)));
+}
 
-  // Uh oh, the site changed origin & action URLs all at once!
-  PasswordForm form3(form2);
-  form3.action = GURL("http://www.google.com/new/accounts/Login");
+TEST_F(LoginDatabaseTest, GetLogins_ProtocolMismatch_HTTP) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  ASSERT_TRUE(base::StartsWith(form.signon_realm, "http://"));
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
-  // signon_realm is the same, should match.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form3), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
-
-  // Imagine the site moves to a secure server for login.
-  PasswordForm form4(form3);
-  form4.signon_realm = "https://www.google.com/";
+  PasswordFormDigest digest(
+      PasswordForm::Scheme::kHtml, "https://www.google.com/",
+      GURL("https://www.google.com/new/accounts/LoginAuth"));
 
   // We have only an http record, so no match for this.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form4), &result));
-  EXPECT_EQ(0U, result.size());
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(
+      db().GetLogins(digest, /*should_PSL_matching_apply=*/true, &result));
+  EXPECT_THAT(result, IsEmpty());
+}
 
-  // Let's imagine the user logs into the secure site.
-  changes = db().AddLogin(form4);
-  ASSERT_EQ(AddChangeForForm(form4), changes);
-  EXPECT_EQ(2, changes[0].primary_key().value());
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(2U, result.size());
-  result.clear();
+TEST_F(LoginDatabaseTest, GetLogins_ProtocolMismatch_HTTPS) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  form.url = GURL("https://accounts.google.com/LoginAuth");
+  form.signon_realm = "https://accounts.google.com/";
+  ASSERT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
-  // Now the match works
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form4), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
+  PasswordFormDigest digest(
+      PasswordForm::Scheme::kHtml, "http://accounts.google.com/",
+      GURL("http://accounts.google.com/new/accounts/LoginAuth"));
 
-  // The user chose to forget the original but not the new.
-  EXPECT_TRUE(db().RemoveLogin(form, &changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key().value());
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
-
-  // The old form wont match the new site (http vs https).
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
-  EXPECT_EQ(0U, result.size());
-
-  // User changes their password.
-  PasswordForm form5(form4);
-  form5.password_value = u"test6";
-  const base::Time kNow = base::Time::Now();
-  form5.date_last_used = kNow;
-  form5.date_password_modified = kNow;
-
-  // We update, and check to make sure it matches the
-  // old form, and there is only one record.
-  EXPECT_EQ(UpdateChangeForForm(form5, /*password_changed=*/true),
-            db().UpdateLogin(form5));
-  // matches
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form5), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
-  // Only one record.
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(1U, result.size());
-  // Password element was updated.
-  EXPECT_EQ(form5.password_value, result[0]->password_value);
-  // Date last used.
-  EXPECT_EQ(kNow, form5.date_last_used);
-  EXPECT_EQ(kNow, form5.date_password_modified);
-  result.clear();
-
-  // Make sure everything can disappear.
-  EXPECT_TRUE(db().RemoveLogin(form4, &changes));
-  ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(2, changes[0].primary_key().value());
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(0U, result.size());
-  EXPECT_TRUE(db().IsEmpty());
+  // We have only an https record, so no match for this.
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(
+      db().GetLogins(digest, /*should_PSL_matching_apply=*/true, &result));
+  EXPECT_THAT(result, IsEmpty());
 }
 
 TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
@@ -490,12 +369,6 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
 }
 
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
-  std::vector<std::unique_ptr<PasswordForm>> result;
-
-  // Verify the database is empty.
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(0U, result.size());
-
   // Example password form.
   PasswordForm form;
   form.url = GURL("https://foo.com/");
@@ -508,28 +381,26 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
-
-  // Match against an exact copy.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
 
   // We go to the mobile site.
-  PasswordForm form2(form);
-  form2.url = GURL("https://mobile.foo.com/");
-  form2.action = GURL("https://mobile.foo.com/login");
-  form2.signon_realm = "https://mobile.foo.com/";
+  PasswordFormDigest form2(PasswordForm::Scheme::kHtml,
+                           "https://mobile.foo.com/",
+                           GURL("https://mobile.foo.com/login"));
 
   // Match against the mobile site.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
-  EXPECT_EQ(1U, result.size());
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
+  ASSERT_EQ(1U, result.size());
   EXPECT_EQ("https://foo.com/", result[0]->signon_realm);
   EXPECT_TRUE(result[0]->is_public_suffix_match);
+
+  // Do an exact match by excluding psl matches.
+  result.clear();
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/false, &result));
+  EXPECT_THAT(result, IsEmpty());
 }
 
 TEST_F(LoginDatabaseTest, TestFederatedMatching) {
@@ -550,6 +421,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   form2.action = GURL("https://mobile.foo.com/login");
   form2.signon_realm = "federation://mobile.foo.com/accounts.google.com";
   form2.username_value = u"test1@gmail.com";
+  form2.password_value = u"";
   form2.type = PasswordForm::Type::kApi;
   form2.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -557,8 +429,6 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
   EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(2U, result.size());
 
   // When we retrieve the forms from the store, |in_store| should be set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -568,7 +438,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   PasswordFormDigest form_request = {PasswordForm::Scheme::kHtml,
                                      "https://foo.com/",
                                      GURL("https://foo.com/")};
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
+                             &result));
   // Both forms are matched, only form2 is a PSL match.
   form.is_public_suffix_match = false;
   form2.is_public_suffix_match = true;
@@ -577,7 +448,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   // Match against the mobile site.
   form_request.url = GURL("https://mobile.foo.com/");
   form_request.signon_realm = "https://mobile.foo.com/";
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
+                             &result));
   // Both forms are matched, only form is a PSL match.
   form.is_public_suffix_match = true;
   form2.is_public_suffix_match = false;
@@ -610,43 +482,90 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
                                   "http://localhost/",
                                   GURL("http://localhost/"));
   std::vector<std::unique_ptr<PasswordForm>> result;
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
+                             &result));
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form)));
 
   form_request.url = GURL("http://localhost:8080/");
   form_request.signon_realm = "http://localhost:8080/";
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
+                             &result));
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form_with_port)));
 }
 
-TEST_F(LoginDatabaseTest, TestPublicSuffixDisabledForNonHTMLForms) {
-  TestNonHTMLFormPSLMatching(PasswordForm::Scheme::kBasic);
-  TestNonHTMLFormPSLMatching(PasswordForm::Scheme::kDigest);
-  TestNonHTMLFormPSLMatching(PasswordForm::Scheme::kOther);
-}
+class LoginDatabaseSchemesTest
+    : public LoginDatabaseTest,
+      public testing::WithParamInterface<PasswordForm::Scheme> {};
 
-TEST_F(LoginDatabaseTest, TestIPAddressMatches_HTML) {
-  TestRetrievingIPAddress(PasswordForm::Scheme::kHtml);
-}
+TEST_P(LoginDatabaseSchemesTest, TestPublicSuffixDisabled) {
+  // The test is based on the different treatment for kHtml vs. non kHtml
+  // schemes.
+  if (GetParam() == PasswordForm::Scheme::kHtml)
+    return;
+  // Simple non-html auth form.
+  PasswordForm non_html_auth;
+  non_html_auth.in_store = PasswordForm::Store::kProfileStore;
+  non_html_auth.url = GURL("http://example.com");
+  non_html_auth.username_value = u"test@gmail.com";
+  non_html_auth.password_value = u"test";
+  non_html_auth.signon_realm = "http://example.com/Realm";
+  non_html_auth.scheme = GetParam();
 
-TEST_F(LoginDatabaseTest, TestIPAddressMatches_basic) {
-  TestRetrievingIPAddress(PasswordForm::Scheme::kBasic);
-}
+  // Simple password form.
+  PasswordForm html_form(non_html_auth);
+  html_form.in_store = PasswordForm::Store::kProfileStore;
+  html_form.username_value = u"test2@gmail.com";
+  html_form.password_element = u"password";
+  html_form.signon_realm = "http://example.com/";
+  html_form.scheme = PasswordForm::Scheme::kHtml;
 
-TEST_F(LoginDatabaseTest, TestIPAddressMatches_digest) {
-  TestRetrievingIPAddress(PasswordForm::Scheme::kDigest);
-}
+  EXPECT_EQ(AddChangeForForm(non_html_auth), db().AddLogin(non_html_auth));
+  EXPECT_EQ(AddChangeForForm(html_form), db().AddLogin(html_form));
 
-TEST_F(LoginDatabaseTest, TestIPAddressMatches_other) {
-  TestRetrievingIPAddress(PasswordForm::Scheme::kOther);
-}
+  PasswordFormDigest second_non_html_auth = {GetParam(),
+                                             "http://second.example.com/Realm",
+                                             GURL("http://second.example.com")};
 
-TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingShouldMatchingApply) {
+  // This shouldn't match anything.
   std::vector<std::unique_ptr<PasswordForm>> result;
-
-  // Verify the database is empty.
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
+  EXPECT_TRUE(db().GetLogins(second_non_html_auth,
+                             /*should_PSL_matching_apply=*/false, &result));
   EXPECT_EQ(0U, result.size());
+
+  // non-html auth still matches against itself.
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(non_html_auth),
+                             /*should_PSL_matching_apply=*/false, &result));
+  EXPECT_THAT(result, ElementsAre(Pointee(non_html_auth)));
+}
+
+TEST_P(LoginDatabaseSchemesTest, TestIPAddressMatches) {
+  std::string origin("http://56.7.8.90/");
+
+  PasswordForm ip_form;
+  ip_form.in_store = PasswordForm::Store::kProfileStore;
+  ip_form.url = GURL(origin);
+  ip_form.username_value = u"test@gmail.com";
+  ip_form.password_value = u"test";
+  ip_form.signon_realm = origin;
+  ip_form.scheme = GetParam();
+
+  EXPECT_EQ(AddChangeForForm(ip_form), db().AddLogin(ip_form));
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(ip_form),
+                             /*should_PSL_matching_apply=*/false, &result));
+  ASSERT_EQ(1U, result.size());
+  EXPECT_EQ(*result[0], ip_form);
+}
+
+INSTANTIATE_TEST_SUITE_P(Schemes,
+                         LoginDatabaseSchemesTest,
+                         testing::Values(PasswordForm::Scheme::kHtml,
+                                         PasswordForm::Scheme::kBasic,
+                                         PasswordForm::Scheme::kDigest,
+                                         PasswordForm::Scheme::kOther));
+
+TEST_F(LoginDatabaseTest, TestPublicSuffixDomainGoogle) {
+  std::vector<std::unique_ptr<PasswordForm>> result;
 
   // Saved password form on Google sign-in page.
   PasswordForm form;
@@ -656,24 +575,15 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingShouldMatchingApply) {
   form.signon_realm = "https://accounts.google.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
-
-  // Match against an exact copy.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
-  ASSERT_EQ(1U, result.size());
-  EXPECT_EQ(form.signon_realm, result[0]->signon_realm);
-  result.clear();
 
   // Google change password should match to the saved sign-in form.
   PasswordFormDigest form2 = {PasswordForm::Scheme::kHtml,
                               "https://myaccount.google.com/",
                               GURL("https://myaccount.google.com/")};
 
-  EXPECT_TRUE(db().GetLogins(form2, &result));
+  EXPECT_TRUE(
+      db().GetLogins(form2, /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form.signon_realm, result[0]->signon_realm);
   EXPECT_TRUE(result[0]->is_public_suffix_match);
@@ -683,8 +593,9 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingShouldMatchingApply) {
                               "https://some.other.google.com/",
                               GURL("https://some.other.google.com/")};
 
-  EXPECT_TRUE(db().GetLogins(form3, &result));
-  EXPECT_EQ(0U, result.size());
+  EXPECT_TRUE(
+      db().GetLogins(form3, /*should_PSL_matching_apply=*/true, &result));
+  EXPECT_THAT(result, IsEmpty());
 }
 
 TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
@@ -709,11 +620,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   form2.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
   EXPECT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(2U, result.size());
 
   // When we retrieve the forms from the store, |in_store| should be set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -722,13 +630,15 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   // Match against the first one.
   PasswordFormDigest form_request = {PasswordForm::Scheme::kHtml,
                                      form.signon_realm, form.url};
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
+                             &result));
   EXPECT_THAT(result, testing::ElementsAre(Pointee(form)));
 
   // Match against the second one.
   form_request.url = form2.url;
   form_request.signon_realm = form2.signon_realm;
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/false,
+                             &result));
   form.is_public_suffix_match = true;
   EXPECT_THAT(result, testing::ElementsAre(Pointee(form2)));
 }
@@ -754,7 +664,8 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
                                      "https://example.com/",
                                      GURL("https://example.com/login")};
   std::vector<std::unique_ptr<PasswordForm>> result;
-  EXPECT_TRUE(db().GetLogins(form_request, &result));
+  EXPECT_TRUE(db().GetLogins(form_request, /*should_PSL_matching_apply=*/true,
+                             &result));
   form.is_public_suffix_match = true;
   EXPECT_THAT(result, testing::ElementsAre(Pointee(form)));
 }
@@ -764,10 +675,6 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
 // http://crbug.com/248608.
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   std::vector<std::unique_ptr<PasswordForm>> result;
-
-  // Verify the database is empty.
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(0U, result.size());
 
   // Example password form.
   PasswordForm form;
@@ -781,16 +688,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
-
-  // Match against an exact copy.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
 
   // We go to the mobile site.
   PasswordFormDigest form2(form);
@@ -798,7 +696,8 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   form2.signon_realm = "https://mobile.foo.com/";
 
   // Match against the mobile site.
-  EXPECT_TRUE(db().GetLogins(form2, &result));
+  EXPECT_TRUE(
+      db().GetLogins(form2, /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   EXPECT_EQ("https://foo.com/", result[0]->signon_realm);
   EXPECT_TRUE(result[0]->is_public_suffix_match);
@@ -815,11 +714,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   form.signon_realm = "https://baz.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(2U, result.size());
-  result.clear();
 
   // We go to the mobile site of baz.com.
   PasswordFormDigest form3(form);
@@ -827,15 +722,15 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   form3.signon_realm = "https://m.baz.com/";
 
   // Match against the mobile site of baz.com.
-  EXPECT_TRUE(db().GetLogins(form3, &result));
+  EXPECT_TRUE(
+      db().GetLogins(form3, /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   EXPECT_EQ("https://baz.com/", result[0]->signon_realm);
   EXPECT_TRUE(result[0]->is_public_suffix_match);
-  result.clear();
 }
 
 PasswordForm GetFormWithNewSignonRealm(PasswordForm form,
-                                       std::string signon_realm) {
+                                       const std::string& signon_realm) {
   PasswordForm form2(form);
   form2.url = GURL(signon_realm);
   form2.action = GURL(signon_realm);
@@ -845,10 +740,6 @@ PasswordForm GetFormWithNewSignonRealm(PasswordForm form,
 
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingRegexp) {
   std::vector<std::unique_ptr<PasswordForm>> result;
-
-  // Verify the database is empty.
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(0U, result.size());
 
   // Example password form.
   PasswordForm form;
@@ -862,92 +753,91 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingRegexp) {
   form.signon_realm = "http://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
 
   // Example password form that has - in the domain name.
   PasswordForm form_dash =
       GetFormWithNewSignonRealm(form, "http://www.foo-bar.com/");
 
-  // Add it and make sure it is there.
   EXPECT_EQ(AddChangeForForm(form_dash), db().AddLogin(form_dash));
-  EXPECT_TRUE(db().GetAutofillableLogins(&result));
-  EXPECT_EQ(2U, result.size());
-  result.clear();
-
-  // Match against an exact copy.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
-  EXPECT_EQ(1U, result.size());
-  result.clear();
 
   // www.foo.com should match.
   PasswordForm form2 = GetFormWithNewSignonRealm(form, "http://www.foo.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // a.b.foo.com should match.
   form2 = GetFormWithNewSignonRealm(form, "http://a.b.foo.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // a-b.foo.com should match.
   form2 = GetFormWithNewSignonRealm(form, "http://a-b.foo.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // foo-bar.com should match.
   form2 = GetFormWithNewSignonRealm(form, "http://foo-bar.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // www.foo-bar.com should match.
   form2 = GetFormWithNewSignonRealm(form, "http://www.foo-bar.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // a.b.foo-bar.com should match.
   form2 = GetFormWithNewSignonRealm(form, "http://a.b.foo-bar.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // a-b.foo-bar.com should match.
   form2 = GetFormWithNewSignonRealm(form, "http://a-b.foo-bar.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(1U, result.size());
   result.clear();
 
   // foo.com with port 1337 should not match.
   form2 = GetFormWithNewSignonRealm(form, "http://foo.com:1337/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(0U, result.size());
 
   // http://foo.com should not match since the scheme is wrong.
   form2 = GetFormWithNewSignonRealm(form, "https://foo.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(0U, result.size());
 
   // notfoo.com should not match.
   form2 = GetFormWithNewSignonRealm(form, "http://notfoo.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(0U, result.size());
 
   // baz.com should not match.
   form2 = GetFormWithNewSignonRealm(form, "http://baz.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(0U, result.size());
 
   // foo-baz.com should not match.
   form2 = GetFormWithNewSignonRealm(form, "http://foo-baz.com/");
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form2),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_EQ(0U, result.size());
 }
 
@@ -1133,7 +1023,8 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
   form.in_store = PasswordForm::Store::kProfileStore;
 
   // GetLogins should give the blocklisted result.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
   result.clear();
@@ -1208,7 +1099,8 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   encountered_form.submit_element = u"signIn";
 
   // Get matches for encountered_form.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(encountered_form), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(encountered_form),
+                             /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(incomplete_form.url, result[0]->url);
   EXPECT_EQ(incomplete_form.signon_realm, result[0]->signon_realm);
@@ -1238,7 +1130,8 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   EXPECT_TRUE(db().RemoveLogin(incomplete_form, /*changes=*/nullptr));
 
   // Get matches for encountered_form again.
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(encountered_form), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(encountered_form),
+                             /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
 
   // This time we should have all the info available.
@@ -1392,7 +1285,8 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   form.in_store = PasswordForm::Store::kProfileStore;
 
   std::vector<std::unique_ptr<PasswordForm>> result;
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
 }
@@ -1428,7 +1322,8 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.in_store = PasswordForm::Store::kProfileStore;
 
   std::vector<std::unique_ptr<PasswordForm>> result;
-  ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
+  ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
 }
@@ -2230,7 +2125,8 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     EXPECT_EQ(list, db.AddLogin(form));
 
     result.clear();
-    EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form), &result));
+    EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
     ASSERT_EQ(1U, result.size());
     EXPECT_EQ(form, *result[0]);
     EXPECT_TRUE(db.RemoveLogin(form, /*changes=*/nullptr));
@@ -2517,7 +2413,8 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   ASSERT_FALSE(changes[0].form().encrypted_password.empty());
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &forms));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/false, &forms));
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_FALSE(forms[0]->encrypted_password.empty());
@@ -2544,7 +2441,8 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
   db().insecure_credentials_table().AddRow(credential2);
 
   std::vector<std::unique_ptr<PasswordForm>> result;
-  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /*should_PSL_matching_apply=*/true, &result));
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form)));
 }
 
