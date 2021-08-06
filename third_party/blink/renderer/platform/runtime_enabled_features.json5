@@ -2249,7 +2249,7 @@
     },
     {
       name: "VirtualKeyboard",
-      status: "test",
+      status: "stable",
     },
     {
       name: "VisibilityCollapseColumn",

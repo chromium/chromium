@@ -2669,6 +2669,7 @@ interface HTMLElement : Element
     getter tabIndex
     getter title
     getter translate
+    getter virtualKeyboardPolicy
     method attachInternals
     method blur
     method click
@@ -2785,6 +2786,7 @@ interface HTMLElement : Element
     setter tabIndex
     setter title
     setter translate
+    setter virtualKeyboardPolicy
 interface HTMLEmbedElement : HTMLElement
     attribute @@toStringTag
     getter align
@@ -4688,6 +4690,7 @@ interface Navigator
     getter userAgentData
     getter vendor
     getter vendorSub
+    getter virtualKeyboard
     getter wakeLock
     getter webdriver
     getter webkitPersistentStorage
@@ -7771,6 +7774,19 @@ interface VideoPlaybackQuality
     getter creationTime
     getter droppedVideoFrames
     getter totalVideoFrames
+    method constructor
+interface VirtualKeyboard : EventTarget
+    attribute @@toStringTag
+    getter boundingRect
+    getter ongeometrychange
+    getter overlaysContent
+    method constructor
+    method hide
+    method show
+    setter ongeometrychange
+    setter overlaysContent
+interface VirtualKeyboardGeometryChangeEvent : Event
+    attribute @@toStringTag
     method constructor
 interface VisualViewport : EventTarget
     attribute @@toStringTag

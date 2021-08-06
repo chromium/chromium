@@ -304,6 +304,7 @@ namespace http://www.w3.org/1999/xhtml
     property toString
     property toggleAttribute
     property translate
+    property virtualKeyboardPolicy
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
