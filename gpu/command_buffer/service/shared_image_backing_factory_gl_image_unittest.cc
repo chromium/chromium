@@ -743,8 +743,12 @@ TEST_P(SharedImageBackingFactoryGLImageWithGMBTest,
         scoped_read_access;
     skia_representation->BeginScopedReadAccess(&begin_semaphores,
                                                &end_semaphores);
+    EXPECT_TRUE(stub_image->bound());
   }
-  EXPECT_TRUE(stub_image->bound());
+  if (use_passthrough())
+    EXPECT_FALSE(stub_image->bound());
+  else
+    EXPECT_TRUE(stub_image->bound());
   EXPECT_GT(stub_image->update_counter(), update_counter);
 }
 

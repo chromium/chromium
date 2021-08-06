@@ -374,8 +374,16 @@ void SharedImageBackingGLImage::ReleaseGLTexture(bool have_context) {
   }
   if (IsPassthrough()) {
     if (passthrough_texture_) {
-      if (!have_context)
+      if (have_context) {
+        if (!passthrough_texture_->is_bind_pending()) {
+          const GLenum target = GetGLTarget();
+          gl::ScopedTextureBinder binder(target,
+                                         passthrough_texture_->service_id());
+          image_->ReleaseTexImage(target);
+        }
+      } else {
         passthrough_texture_->MarkContextLost();
+      }
       passthrough_texture_.reset();
     }
   } else {
@@ -671,6 +679,7 @@ void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess(
     if (!passthrough_texture_->is_bind_pending()) {
       image_->ReleaseTexImage(target);
       image_bind_or_copy_needed_ = true;
+      passthrough_texture_->set_is_bind_pending(true);
     }
   }
 #else
