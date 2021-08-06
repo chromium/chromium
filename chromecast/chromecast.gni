@@ -133,8 +133,8 @@ declare_args() {
   # True to link in alternate build targets for the Cast Media Runtime.
   enable_cast_media_runtime = false
 
-  # Indicating whether the device has display, touch screen, etc.
-  device_capabilities = ""
+  # device specific string to append to User string.
+  device_user_agent_suffix = ""
 }
 
 declare_args() {

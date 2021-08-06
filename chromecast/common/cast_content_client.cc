@@ -157,13 +157,12 @@ content::CdmInfo* GetBundledWidevine() {
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
 
 std::string GetControlKey() {
-  std::string control_key = base::StrCat({" CrKey/", kFrozenCrKeyValue});
-  std::string device_capabilities(DEVICE_CAPABILITIES);
-  if (!device_capabilities.empty()) {
-    device_capabilities = base::StrCat({" (", device_capabilities, ")"});
-    control_key = base::StrCat({control_key, device_capabilities});
-  }
+  std::string control_key = base::StrCat({"CrKey/", kFrozenCrKeyValue});
   return control_key;
+}
+
+std::string GetDeviceUserAgentSuffix() {
+  return std::string(DEVICE_USER_AGENT_SUFFIX);
 }
 
 }  // namespace
@@ -186,8 +185,9 @@ std::string GetUserAgent() {
           .c_str()
 #endif
       );
-  return content::BuildUserAgentFromOSAndProduct(os_info, product) +
-         GetControlKey();
+  return base::StrCat(
+      {content::BuildUserAgentFromOSAndProduct(os_info, product), " ",
+       GetControlKey(), " ", GetDeviceUserAgentSuffix()});
 }
 
 CastContentClient::~CastContentClient() {

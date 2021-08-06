@@ -138,5 +138,5 @@ cast_source_set("common") {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
 
-  defines = [ "DEVICE_CAPABILITIES=\"${device_capabilities}\"" ]
+  defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
 }
