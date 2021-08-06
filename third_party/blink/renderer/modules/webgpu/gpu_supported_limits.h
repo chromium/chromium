@@ -50,11 +50,11 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxVertexBufferArrayStride() const;
   unsigned maxInterStageShaderComponents() const;
   unsigned maxComputeWorkgroupStorageSize() const;
-  unsigned maxComputeWorkgroupInvocations() const;
+  unsigned maxComputeInvocationsPerWorkgroup() const;
   unsigned maxComputeWorkgroupSizeX() const;
   unsigned maxComputeWorkgroupSizeY() const;
   unsigned maxComputeWorkgroupSizeZ() const;
-  unsigned maxComputePerDimensionDispatchSize() const;
+  unsigned maxComputeWorkgroupsPerDimension() const;
 
  private:
   unsigned max_texture_dimension_1d_ = 8192;
@@ -78,11 +78,11 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned max_vertex_buffer_array_stride_ = 2048;
   unsigned max_inter_stage_shader_components_ = 60;
   unsigned max_compute_workgroup_storage_size_ = 16352;
-  unsigned max_compute_workgroup_invocations_ = 256;
+  unsigned max_compute_invocations_per_workgroup_ = 256;
   unsigned max_compute_workgroup_size_x_ = 256;
   unsigned max_compute_workgroup_size_y_ = 256;
   unsigned max_compute_workgroup_size_z_ = 64;
-  unsigned max_compute_per_dimension_dispatch_size_ = 65535;
+  unsigned max_compute_workgroups_per_dimension_ = 65535;
 };
 
 }  // namespace blink

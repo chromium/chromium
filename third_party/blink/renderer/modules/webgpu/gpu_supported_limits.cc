@@ -40,13 +40,13 @@
       max_inter_stage_shader_components_)                                      \
   MAX(unsigned, maxComputeWorkgroupStorageSize,                                \
       max_compute_workgroup_storage_size_)                                     \
-  MAX(unsigned, maxComputeWorkgroupInvocations,                                \
-      max_compute_workgroup_invocations_)                                      \
+  MAX(unsigned, maxComputeInvocationsPerWorkgroup,                             \
+      max_compute_invocations_per_workgroup_)                                  \
   MAX(unsigned, maxComputeWorkgroupSizeX, max_compute_workgroup_size_x_)       \
   MAX(unsigned, maxComputeWorkgroupSizeY, max_compute_workgroup_size_y_)       \
   MAX(unsigned, maxComputeWorkgroupSizeZ, max_compute_workgroup_size_z_)       \
-  MAX(unsigned, maxComputePerDimensionDispatchSize,                            \
-      max_compute_per_dimension_dispatch_size_)
+  MAX(unsigned, maxComputeWorkgroupsPerDimension,                              \
+      max_compute_workgroups_per_dimension_)
 
 namespace blink {
 
