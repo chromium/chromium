@@ -19,6 +19,9 @@ export class PrefsManager {
     /** @private {Set<string>} */
     this.validVoiceNames_ = new Set();
 
+    /** @private {Map<string, string>} */
+    this.extensionForVoice_ = new Map();
+
     /** @private {number} */
     this.speechRate_ = 1.0;
 
@@ -72,12 +75,13 @@ export class PrefsManager {
             !voice.eventTypes.includes(chrome.tts.EventType.CANCELLED)) {
           return;
         }
-        if (voice.extensionId === PrefsManager.ENHANCED_TTS_EXTENSION_ID) {
-          // Don't consider network voices when computing default.
-          return;
-        }
+
         if (voice.voiceName) {
-          this.validVoiceNames_.add(voice.voiceName);
+          this.extensionForVoice_.set(voice.voiceName, voice.extensionId || '');
+          if (voice.extensionId !== PrefsManager.ENHANCED_TTS_EXTENSION_ID) {
+            // Don't consider network voices when computing default.
+            this.validVoiceNames_.add(voice.voiceName);
+          }
         }
       });
 
@@ -349,6 +353,15 @@ export class PrefsManager {
   }
 
   /**
+   * Returns extension ID of the TTS engine for given voice name.
+   * @param {string} voiceName Voice name specified in TTS options
+   * @returns {string} extension ID of TTS engine
+   */
+  ttsExtensionForVoice(voiceName) {
+    return this.extensionForVoice_.get(voiceName) || '';
+  }
+
+  /**
    * Gets the user's word highlighting enabled preference.
    * @return {boolean} True if word highlighting is enabled.
    */
@@ -453,6 +466,18 @@ PrefsManager.DEFAULT_NETWORK_VOICE = 'default-wavenet';
  * @const {string}
  */
 PrefsManager.ENHANCED_TTS_EXTENSION_ID = 'jacnkoglebceckolkoapelihnglgaicd';
+
+/**
+ * Extension ID of the Google TTS voices extension.
+ * @const {string}
+ */
+PrefsManager.GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
+
+/**
+ * Extension ID of the eSpeak TTS voices extension.
+ * @const {string}
+ */
+PrefsManager.ESPEAK_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
 
 /**
  * Default speech rate for both Select-to-Speak and global prefs.

@@ -539,6 +539,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosSelectToSpeak.TtsEngineUsed"
+    enum="CrosSelectToSpeakTtsEngineUsed" expires_after="2022-06-30">
+  <owner>ajitnarayanan@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Which TTS engine was used for making TTS requests from Select-to-speak. This
+    is recorded every time a new speech request is made in Select-to-speak. Note
+    that this is only recorded on the start of speech, so it is not recorded,
+    for example, when the user resumes speech after pausing it.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE"
     enum="BooleanEnabled" expires_after="2021-07-27">
