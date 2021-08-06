@@ -41,7 +41,9 @@ function main() {
   let frame = new VideoFrame(canvas);
   let video = document.querySelector('video');
   video.requestVideoFrameCallback(_ => {
-    domAutomationController.send("SUCCESS");
+    chrome.gpuBenchmarking.addSwapCompletionEventListener(_ => {
+      domAutomationController.send("SUCCESS");
+    });
   });
 
   generator = new MediaStreamTrackGenerator({kind: 'video'});
