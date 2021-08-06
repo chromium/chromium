@@ -6,6 +6,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
 
@@ -41,8 +42,8 @@ export class BookmarksApiProxy {
     }));
   }
 
-  openBookmark(url: string, depth: number) {
-    this.handler.openBookmark({url}, depth);
+  openBookmark(url: string, depth: number, clickModifiers: ClickModifiers) {
+    this.handler.openBookmark({url}, depth, clickModifiers);
   }
 
   showContextMenu(id: string, x: number, y: number) {

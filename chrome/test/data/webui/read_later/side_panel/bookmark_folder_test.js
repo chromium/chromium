@@ -244,4 +244,36 @@ suite('SidePanelBookmarkFolderTest', () => {
         bookmarkFolder.shadowRoot.activeElement.shadowRoot.activeElement
             .folder);
   });
+
+  test('SendsClickModifiers', async () => {
+    const item = getChildElements()[1];
+    item.dispatchEvent(new MouseEvent('click'));
+    const [, , click] = await bookmarksApi.whenCalled('openBookmark');
+    assertFalse(
+        click.middleButton || click.altKey || click.ctrlKey || click.metaKey ||
+        click.shiftKey);
+    bookmarksApi.resetResolver('openBookmark');
+
+    // Middle mouse button click.
+    item.dispatchEvent(new MouseEvent('auxclick'));
+    const [, , auxClick] = await bookmarksApi.whenCalled('openBookmark');
+    assertTrue(auxClick.middleButton);
+    assertFalse(
+        auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
+        auxClick.shiftKey);
+    bookmarksApi.resetResolver('openBookmark');
+
+    // Modifier keys.
+    item.dispatchEvent(new MouseEvent('click', {
+      altKey: true,
+      ctrlKey: true,
+      metaKey: true,
+      shiftKey: true,
+    }));
+    const [, , modifiedClick] = await bookmarksApi.whenCalled('openBookmark');
+    assertFalse(modifiedClick.middleButton);
+    assertTrue(
+        modifiedClick.altKey && modifiedClick.ctrlKey &&
+        modifiedClick.metaKey && modifiedClick.shiftKey);
+  });
 });

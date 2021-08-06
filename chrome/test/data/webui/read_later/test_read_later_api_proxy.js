@@ -35,8 +35,8 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  openURL(url, mark_as_read) {
-    this.methodCalled('openURL', [url, mark_as_read]);
+  openURL(url, mark_as_read, click_info) {
+    this.methodCalled('openURL', [url, mark_as_read, click_info]);
   }
 
   /** @override */

@@ -13,7 +13,7 @@ import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 
 /** Event interface for dom-repeat. */
-interface RepeaterMouseEvent extends CustomEvent {
+interface RepeaterMouseEvent extends MouseEvent {
   clientX: number;
   clientY: number;
   model: {
@@ -75,7 +75,13 @@ export class BookmarkFolderElement extends PolymerElement {
 
   private onBookmarkClick_(event: RepeaterMouseEvent) {
     event.preventDefault();
-    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth);
+    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
+      middleButton: event.type === 'auxclick',
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
   }
 
   private onBookmarkContextMenu_(event: RepeaterMouseEvent) {

@@ -28,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -106,14 +107,19 @@ BookmarksPageHandler::BookmarksPageHandler(
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
-void BookmarksPageHandler::OpenBookmark(const GURL& url,
-                                        int32_t parent_folder_depth) {
+void BookmarksPageHandler::OpenBookmark(
+    const GURL& url,
+    int32_t parent_folder_depth,
+    ui::mojom::ClickModifiersPtr click_modifiers) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
 
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
+  WindowOpenDisposition open_location = ui::DispositionFromClick(
+      click_modifiers->middle_button, click_modifiers->alt_key,
+      click_modifiers->ctrl_key, click_modifiers->meta_key,
+      click_modifiers->shift_key);
+  content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
   base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));

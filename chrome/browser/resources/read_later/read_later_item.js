@@ -58,13 +58,23 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
   ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
+    this.addEventListener('auxclick', this.onClick_);
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
-  /** @private */
-  onClick_() {
-    this.apiProxy_.openURL(this.data.url, true);
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onClick_(e) {
+    this.apiProxy_.openURL(this.data.url, true, {
+      middleButton: e.type === 'auxclick',
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
   }
 
   /**
@@ -86,7 +96,7 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
     switch (e.key) {
       case ' ':
       case 'Enter':
-        this.onClick_();
+        this.onClick_(e);
         break;
       case 'ArrowRight':
         if (!this.shadowRoot.activeElement) {

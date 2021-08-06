@@ -110,6 +110,39 @@ suite('ReadLaterAppTest', () => {
     assertTrue(updateReadStatus);
   });
 
+  test('click on item passes event info', async () => {
+    const item = readLaterApp.shadowRoot.querySelector(
+        `[data-url="https://www.apple.com"]`);
+    item.dispatchEvent(new MouseEvent('click'));
+    const [, , click] = await testProxy.whenCalled('openURL');
+    assertFalse(
+        click.middleButton || click.altKey || click.ctrlKey || click.metaKey ||
+        click.shiftKey);
+    testProxy.resetResolver('openURL');
+
+    // Middle mouse button click.
+    item.dispatchEvent(new MouseEvent('auxclick'));
+    const [, , auxClick] = await testProxy.whenCalled('openURL');
+    assertTrue(auxClick.middleButton);
+    assertFalse(
+        auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
+        auxClick.shiftKey);
+    testProxy.resetResolver('openURL');
+
+    // Modifier keys.
+    item.dispatchEvent(new MouseEvent('click', {
+      altKey: true,
+      ctrlKey: true,
+      metaKey: true,
+      shiftKey: true,
+    }));
+    const [, , modifiedClick] = await testProxy.whenCalled('openURL');
+    assertFalse(modifiedClick.middleButton);
+    assertTrue(
+        modifiedClick.altKey && modifiedClick.ctrlKey &&
+        modifiedClick.metaKey && modifiedClick.shiftKey);
+  });
+
   test('Click on item mark as read button triggers actions', async () => {
     const expectedUrl = 'https://www.apple.com';
 

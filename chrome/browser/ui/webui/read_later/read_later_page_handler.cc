@@ -34,6 +34,8 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -175,7 +177,10 @@ void ReadLaterPageHandler::GetReadLaterEntries(
   std::move(callback).Run(CreateReadLaterEntriesByStatusData());
 }
 
-void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
+void ReadLaterPageHandler::OpenURL(
+    const GURL& url,
+    bool mark_as_read,
+    ui::mojom::ClickModifiersPtr click_modifiers) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
@@ -185,9 +190,14 @@ void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
 
   // Open in active tab if the user is on the NTP.
   WindowOpenDisposition open_location =
-      IsActiveTabNTP(browser) || side_panel_enabled
-          ? WindowOpenDisposition::CURRENT_TAB
-          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      IsActiveTabNTP(browser) ? WindowOpenDisposition::CURRENT_TAB
+                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  if (side_panel_enabled) {
+    open_location = ui::DispositionFromClick(
+        click_modifiers->middle_button, click_modifiers->alt_key,
+        click_modifiers->ctrl_key, click_modifiers->meta_key,
+        click_modifiers->shift_key);
+  }
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);

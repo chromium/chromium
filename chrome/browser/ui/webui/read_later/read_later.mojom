@@ -4,6 +4,7 @@
 
 module read_later.mojom;
 
+import "ui/base/mojom/window_open_disposition.mojom";
 import "url/mojom/url.mojom";
 
 // Read later entries grouped by read/unread status.
@@ -38,7 +39,8 @@ interface PageHandler {
   // Open a saved read later entry and mark as read if needed. Reading list
   // items are marked as read when opened, while Bookmark links do not need to
   // be mark as read when opened.
-  OpenURL(url.mojom.Url url, bool mark_as_read);
+  OpenURL(url.mojom.Url url, bool mark_as_read,
+          ui.mojom.ClickModifiers click_modifiers);
 
   // Updates a read later entry's read status.
   UpdateReadStatus(url.mojom.Url url, bool read);

@@ -55,9 +55,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
   /**
    * @param {string} url
    * @param {number} depth
+   * @param {!ui.mojom.ClickModifiers} click_modifiers
    */
-  openBookmark(url, depth) {
-    this.methodCalled('openBookmark', url, depth);
+  openBookmark(url, depth, click_modifiers) {
+    this.methodCalled('openBookmark', url, depth, click_modifiers);
   }
 
   /** @param {!Array<!chrome.bookmarks.BookmarkTreeNode>} folders */

@@ -185,7 +185,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
 
   // Check that OpenURL from the NTP does not open a new tab.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
-  handler()->OpenURL(GURL(kTabUrl3), true);
+  handler()->OpenURL(GURL(kTabUrl3), true, {});
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
   // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
@@ -208,7 +208,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLOnNTP) {
 TEST_F(TestReadLaterPageHandlerTest, OpenURLNotOnNTP) {
   // Check that OpenURL opens a new tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenURL(GURL(kTabUrl3), true);
+  handler()->OpenURL(GURL(kTabUrl3), true, {});
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
 
   // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called 3
@@ -270,7 +270,7 @@ TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
-  handler()->OpenURL(GURL(kTabUrl3), true);
+  handler()->OpenURL(GURL(kTabUrl3), true, {});
   handler()->RemoveEntry(GURL(kTabUrl3));
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
 
@@ -295,7 +295,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateAndRemoveEntry) {
 TEST_F(TestReadLaterPageHandlerTest, PostBatchUpdate) {
   auto token = model()->BeginBatchUpdates();
   EXPECT_TRUE(model()->IsPerformingBatchUpdates());
-  handler()->OpenURL(GURL(kTabUrl3), true);
+  handler()->OpenURL(GURL(kTabUrl3), true, {});
   handler()->RemoveEntry(GURL(kTabUrl3));
   token.reset();
   EXPECT_FALSE(model()->IsPerformingBatchUpdates());
@@ -326,7 +326,7 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
       content::WebContents::Create(params);
   handler()->set_web_contents_for_testing(web_contents.get());
 
-  handler()->OpenURL(GURL(kTabUrl3), true);
+  handler()->OpenURL(GURL(kTabUrl3), true, {});
   handler()->RemoveEntry(GURL(kTabUrl3));
 
   // Expect ItemsChanged and CurrentPageActionButtonStateChanged to be called
@@ -348,7 +348,7 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
 TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
   // Check that OpenURL opens a new tab when not on the NTP.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
-  handler()->OpenURL(GURL(kTabUrl3), true);
+  handler()->OpenURL(GURL(kTabUrl3), true, {});
   EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
   model()->AddEntry(GURL(kTabUrl3), kTabName3,
                     reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
