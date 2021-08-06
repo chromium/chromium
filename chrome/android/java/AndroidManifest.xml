@@ -463,11 +463,9 @@ by a child template that "extends" this file.
             android:hardwareAccelerated="false"
             {% endblock %}
         >
-            <!-- TODO: Uncomment this once the feature is ready to work.
             <meta-data
                 android:name="android.activity.launch_mode"
                 android:value="singleInstancePerTask"/>
-            -->
 
             <!--
               Daydream api categorizes an activity to three categories: Cardboard only, hybrid

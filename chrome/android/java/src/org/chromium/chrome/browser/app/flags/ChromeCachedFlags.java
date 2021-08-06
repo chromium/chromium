@@ -86,6 +86,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
                 add(ChromeFeatureList.INSTANT_START);
+                add(ChromeFeatureList.INSTANCE_SWITCHER);
                 add(ChromeFeatureList.INTEREST_FEED_V2);
                 add(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH);
                 add(ChromeFeatureList.NEW_WINDOW_APP_MENU);

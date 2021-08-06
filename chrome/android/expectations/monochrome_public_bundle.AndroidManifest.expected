@@ -164,6 +164,7 @@
         <category android:name="com.google.intent.category.CARDBOARD"/>
         <category android:name="com.google.intent.category.DAYDREAM"/>
       </intent-filter>  # DIFF-ANCHOR: dea53031
+      <meta-data android:name="android.activity.launch_mode" android:value="singleInstancePerTask"/>
     </activity>  # DIFF-ANCHOR: 61b2c776
     <activity  # DIFF-ANCHOR: 610e8ccf
         android:name="org.chromium.chrome.browser.ChromeTabbedActivity2"
