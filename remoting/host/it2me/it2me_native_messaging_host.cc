@@ -257,6 +257,9 @@ void It2MeNativeMessagingHost::ProcessConnect(
   bool terminate_upon_input = false;
   message->GetBoolean(kTerminateUponInput, &terminate_upon_input);
 
+  bool is_enterprise_admin_user = false;
+  message->GetBoolean(kIsEnterpriseAdminUser, &is_enterprise_admin_user);
+
   It2MeHost::CreateDeferredConnectContext create_connection_context;
   std::unique_ptr<RegisterSupportHostRequest> register_host_request;
   std::unique_ptr<LogToServer> log_to_server;
@@ -350,10 +353,13 @@ void It2MeNativeMessagingHost::ProcessConnect(
   it2me_host_->set_enable_notifications(!suppress_notifications);
   it2me_host_->set_terminate_upon_input(terminate_upon_input);
 #endif
-  it2me_host_->Connect(host_context_->Copy(), std::move(policies),
-                       std::make_unique<It2MeConfirmationDialogFactory>(),
-                       weak_ptr_, std::move(create_connection_context),
-                       username, ice_config);
+  it2me_host_->Connect(
+      host_context_->Copy(), std::move(policies),
+      std::make_unique<It2MeConfirmationDialogFactory>(
+          is_enterprise_admin_user
+              ? It2MeConfirmationDialog::DialogStyle::kEnterprise
+              : It2MeConfirmationDialog::DialogStyle::kConsumer),
+      weak_ptr_, std::move(create_connection_context), username, ice_config);
 
   SendMessageToClient(std::move(response));
 }

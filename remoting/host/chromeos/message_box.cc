@@ -19,7 +19,7 @@ namespace remoting {
 // MessageBox::Core creates the dialog using the views::DialogWidget.  The
 // DialogWidget is created by the caller but its lifetime is managed by the
 // NativeWidget.  The DialogWidget communicates with the caller using the
-//.DialogDelegateView interface, which must remain valid until DeleteDelegate()
+// DialogDelegateView interface, which must remain valid until DeleteDelegate()
 // is called, at which the DialogDelegateView deletes itself.
 //
 // The Core class is introduced to abstract this awkward ownership model.  The
@@ -95,8 +95,7 @@ void MessageBox::Core::Show() {
   // The widget is owned by the NativeWidget.  See  comments in widget.h.
   views::Widget* widget =
       CreateDialogWidget(this, /* delegate */
-                         nullptr /* parent window*/,
-                         nullptr /* parent view */);
+                         nullptr /* parent window*/, nullptr /* parent view */);
 
   if (widget) {
     widget->Show();
@@ -149,8 +148,19 @@ MessageBox::MessageBox(const std::u16string& title_label,
                      ok_label,
                      cancel_label,
                      std::move(result_callback),
-                     this)) {
+                     this)) {}
+
+void MessageBox::Show() {
   core_->Show();
+}
+
+void MessageBox::SetIcon(const gfx::ImageSkia& icon) {
+  core_->SetIcon(icon);
+  core_->SetShowIcon(true);
+}
+
+void MessageBox::SetDefaultButton(ui::DialogButton button) {
+  core_->SetDefaultButton(button);
 }
 
 MessageBox::~MessageBox() {

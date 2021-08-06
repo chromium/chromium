@@ -126,7 +126,9 @@ class FakeIt2MeDialogFactory : public It2MeConfirmationDialogFactory {
 };
 
 FakeIt2MeDialogFactory::FakeIt2MeDialogFactory()
-    : remote_user_email_(kTestUserName) {}
+    : It2MeConfirmationDialogFactory(
+          It2MeConfirmationDialog::DialogStyle::kConsumer),
+      remote_user_email_(kTestUserName) {}
 
 FakeIt2MeDialogFactory::~FakeIt2MeDialogFactory() = default;
 

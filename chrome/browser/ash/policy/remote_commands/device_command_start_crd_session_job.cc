@@ -458,6 +458,21 @@ bool DeviceCommandStartCRDSessionJob::ShouldShowConfirmationDialog() const {
   return false;
 }
 
+bool DeviceCommandStartCRDSessionJob::ShouldUseEnterpriseUserDialog() const {
+  switch (GetUserType()) {
+    case UserType::kAffiliatedUser:
+    case UserType::kManagedGuestSession:
+      return true;
+    case UserType::kAutoLaunchedKiosk:
+    case UserType::kNoUser:
+    case UserType::kNonAutoLaunchedKiosk:
+    case UserType::kOther:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
 DeviceOAuth2TokenService* DeviceCommandStartCRDSessionJob::oauth_service()
     const {
   return DeviceOAuth2TokenServiceFactory::Get();

@@ -100,6 +100,7 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
                               "oauth2:" + parameters.oauth_token);
   connect_params.SetBoolKey(remoting::kTerminateUponInput,
                             parameters.terminate_upon_input);
+  connect_params.SetBoolKey(remoting::kIsEnterpriseAdminUser, true);
   // Note both |kSuppressUserDialogs| and |kSuppressNotifications| are
   // controlled by |show_confirmation_dialog|.
   connect_params.SetBoolKey(remoting::kSuppressUserDialogs,

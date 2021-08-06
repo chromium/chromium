@@ -103,7 +103,10 @@ source_set("common") {
     ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//remoting/host/chromeos:chromeos" ]
+    deps += [
+      "//chromeos/ui/vector_icons",
+      "//remoting/host/chromeos",
+    ]
   }
   if (is_mac) {
     deps += [ "//ui/base:base" ]

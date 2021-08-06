@@ -836,6 +836,9 @@
       <message desc="Message displayed before sharing computer in 'It2Me' mode when the email of the remote user attempting to connect is known." name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME" >
         Would you like to allow <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> to see and control your computer?
       </message>
+      <message desc="Message displayed before sharing computer when admin initiated the connection remotely" name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED">
+        <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see and control your computer. Press ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE">{1}<ex>cancel</ex></ph>'' if you do not know this person or if you need to make any changes before sharing.  Otherwise select ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM">{2}<ex>share</ex></ph>'' to allow connection.
+      </message>
       <message desc="Label for the button to accept sharing the computer in 'It2Me' mode." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" >
         Share
       </message>

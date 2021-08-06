@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 
 namespace remoting {
@@ -18,14 +19,15 @@ namespace remoting {
 // called on the UI thread.
 class It2MeConfirmationDialog {
  public:
-  enum class Result {
-    OK,
-    CANCEL
+  enum class Result { OK, CANCEL };
+  enum class DialogStyle {
+    kEnterprise,
+    kConsumer,
   };
 
   typedef base::OnceCallback<void(Result)> ResultCallback;
 
-  virtual ~It2MeConfirmationDialog() {}
+  virtual ~It2MeConfirmationDialog() = default;
 
   // Shows the dialog. |callback| will be called with the user's selection.
   // |callback| will not be called if the dialog is destroyed.
@@ -35,12 +37,18 @@ class It2MeConfirmationDialog {
 
 class It2MeConfirmationDialogFactory {
  public:
-  It2MeConfirmationDialogFactory() {}
-  virtual ~It2MeConfirmationDialogFactory() {}
+  explicit It2MeConfirmationDialogFactory(
+      It2MeConfirmationDialog::DialogStyle dialog_style)
+      : dialog_style_(dialog_style) {}
+  virtual ~It2MeConfirmationDialogFactory() = default;
 
   virtual std::unique_ptr<It2MeConfirmationDialog> Create();
 
  private:
+  // This field is only used on ChromeOS.
+  ALLOW_UNUSED_TYPE It2MeConfirmationDialog::DialogStyle dialog_style_ =
+      It2MeConfirmationDialog::DialogStyle::kConsumer;
+
   DISALLOW_COPY_AND_ASSIGN(It2MeConfirmationDialogFactory);
 };
 

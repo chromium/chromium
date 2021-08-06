@@ -474,6 +474,16 @@ TEST_F(CRDHostDelegateTest,
   EXPECT_BOOL_KEY(response, remoting::kSuppressUserDialogs, true);
 }
 
+TEST_F(CRDHostDelegateTest, ShouldSetIsEnterpriseAdminUser) {
+  StartCRDHostAndGetCode();
+
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
+  EXPECT_BOOL_KEY(response, remoting::kIsEnterpriseAdminUser, true);
+}
+
 TEST_F(CRDHostDelegateTest, ShouldSendAccessCodeToCallback) {
   StartCRDHostAndGetCode();
   host().HandleHandshake();

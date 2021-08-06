@@ -10,6 +10,11 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "ui/base/ui_base_types.h"
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace remoting {
 
@@ -19,10 +24,7 @@ namespace remoting {
 // process. Destroy the instance to hide the message box.
 class MessageBox {
  public:
-  enum Result {
-    OK,
-    CANCEL
-  };
+  enum Result { OK, CANCEL };
 
   // ResultCallback will be invoked with Result::Cancel if the user closes the
   // MessageBox without clicking on any buttons.
@@ -34,6 +36,14 @@ class MessageBox {
              const std::u16string& cancel_label,
              ResultCallback result_callback);
   ~MessageBox();
+
+  void Show();
+
+  // Set and display the given icon.
+  void SetIcon(const gfx::ImageSkia& icon);
+
+  // Select which button is selected by default.
+  void SetDefaultButton(ui::DialogButton button);
 
  private:
   class Core;

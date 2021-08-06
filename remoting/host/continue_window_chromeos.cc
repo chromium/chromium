@@ -53,6 +53,7 @@ void ContinueWindowAura::ShowUi() {
       l10n_util::GetStringUTF16(IDS_STOP_SHARING_BUTTON),  // cancel label
       base::BindOnce(&ContinueWindowAura::OnMessageBoxResult,
                      base::Unretained(this)));
+  message_box_->Show();
 }
 
 void ContinueWindowAura::HideUi() {

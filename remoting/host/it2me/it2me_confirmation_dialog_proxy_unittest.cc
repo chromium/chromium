@@ -27,8 +27,7 @@ class StubIt2MeConfirmationDialog : public It2MeConfirmationDialog {
  public:
   explicit StubIt2MeConfirmationDialog(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {
-  }
+      : task_runner_(task_runner) {}
   ~StubIt2MeConfirmationDialog() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -60,8 +59,7 @@ class ResultCallbackTarget {
  public:
   explicit ResultCallbackTarget(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {
-  }
+      : task_runner_(task_runner) {}
 
   MOCK_METHOD1(OnDialogResult, void(It2MeConfirmationDialog::Result));
 
@@ -92,21 +90,13 @@ class It2MeConfirmationDialogProxyTest : public testing::Test {
     return dialog_thread_.task_runner();
   }
 
-  void Run() {
-    run_loop_.Run();
-  }
+  void Run() { run_loop_.Run(); }
 
-  void Quit() {
-    run_loop_.Quit();
-  }
+  void Quit() { run_loop_.Quit(); }
 
-  It2MeConfirmationDialogProxy* dialog_proxy() {
-    return dialog_proxy_.get();
-  }
+  It2MeConfirmationDialogProxy* dialog_proxy() { return dialog_proxy_.get(); }
 
-  StubIt2MeConfirmationDialog* dialog() {
-    return dialog_;
-  }
+  StubIt2MeConfirmationDialog* dialog() { return dialog_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
