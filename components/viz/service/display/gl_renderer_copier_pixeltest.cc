@@ -297,9 +297,9 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequest) {
     scoped_bitmap = result->ScopedAccessSkBitmap();
     actual = scoped_bitmap->bitmap();
   } else {
-    actual = ReadbackToSkBitmap(result->GetTextureResult()->mailbox,
-                                result->GetTextureResult()->sync_token,
-                                result->size());
+    actual = ReadbackToSkBitmap(
+        result->GetTextureResult()->planes[0].mailbox,
+        result->GetTextureResult()->planes[0].sync_token, result->size());
   }
   const auto png_file_path = GetTestFilePath(
       scale_by_half_ ? FILE_PATH_LITERAL("half_of_one_of_16_color_rects.png")

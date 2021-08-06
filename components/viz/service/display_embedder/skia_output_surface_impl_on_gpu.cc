@@ -1059,9 +1059,14 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     auto main_callback = base::BindOnce(&PostTaskFromMainToImplThread,
                                         base::ThreadTaskRunnerHandle::Get(),
                                         std::move(release_callback));
+
+    CopyOutputResult::ReleaseCallbacks release_callbacks;
+    release_callbacks.push_back(std::move(main_callback));
+
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
-        geometry.result_bounds, mailbox, gpu::SyncToken(), color_space,
-        std::move(main_callback)));
+        geometry.result_bounds,
+        CopyOutputResult::TextureResult(mailbox, gpu::SyncToken(), color_space),
+        std::move(release_callbacks)));
   } else {
     NOTREACHED();
   }

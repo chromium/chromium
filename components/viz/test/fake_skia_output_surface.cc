@@ -281,12 +281,14 @@ void FakeSkiaOutputSurface::CopyOutput(
     gpu::SyncToken sync_token;
     gl->GenSyncTokenCHROMIUM(sync_token.GetData());
 
-    auto release_callback =
-        texture_deleter_->GetReleaseCallback(context_provider_, mailbox);
+    CopyOutputResult::ReleaseCallbacks release_callbacks;
+    release_callbacks.push_back(
+        texture_deleter_->GetReleaseCallback(context_provider_, mailbox));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
-        geometry.result_bounds, mailbox, sync_token, color_space,
-        std::move(release_callback)));
+        geometry.result_bounds,
+        CopyOutputResult::TextureResult(mailbox, sync_token, color_space),
+        std::move(release_callbacks)));
     return;
   }
 

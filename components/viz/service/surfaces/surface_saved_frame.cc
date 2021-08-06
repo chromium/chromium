@@ -277,15 +277,22 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
 
   DCHECK(slot);
   DCHECK_EQ(output_copy->size(), data.size);
+  DCHECK_EQ(output_copy->format(), CopyOutputResult::Format::RGBA);
   if (output_copy->destination() ==
       CopyOutputResult::Destination::kSystemMemory) {
     slot->bitmap = output_copy->ScopedAccessSkBitmap().GetOutScopedBitmap();
     slot->is_software = true;
   } else {
     auto output_copy_texture = *output_copy->GetTextureResult();
-    slot->mailbox = output_copy_texture.mailbox;
-    slot->sync_token = output_copy_texture.sync_token;
-    slot->release_callback = output_copy->TakeTextureOwnership();
+    slot->mailbox = output_copy_texture.planes[0].mailbox;
+    slot->sync_token = output_copy_texture.planes[0].sync_token;
+
+    CopyOutputResult::ReleaseCallbacks release_callbacks =
+        output_copy->TakeTextureOwnership();
+    // CopyOutputResults carrying RGBA format contain a single texture, there
+    // should be only one release callback:
+    DCHECK_EQ(1u, release_callbacks.size());
+    slot->release_callback = std::move(release_callbacks[0]);
     slot->is_software = false;
   }
   slot->draw_data = data;

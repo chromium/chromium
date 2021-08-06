@@ -639,12 +639,14 @@ void GLRendererCopier::RenderAndSendTextureResult(
   // since only clients that are trying to re-invent video capture would see any
   // significant performance benefit. Instead, such clients should use the video
   // capture services provided by VIZ.
-  auto release_callback =
-      texture_deleter_->GetReleaseCallback(context_provider_, mailbox);
+  CopyOutputResult::ReleaseCallbacks release_callbacks;
+  release_callbacks.push_back(
+      texture_deleter_->GetReleaseCallback(context_provider_, mailbox));
 
   request->SendResult(std::make_unique<CopyOutputTextureResult>(
-      result_rect, mailbox, sync_token, dest_color_space,
-      std::move(release_callback)));
+      result_rect,
+      CopyOutputResult::TextureResult(mailbox, sync_token, dest_color_space),
+      std::move(release_callbacks)));
 }
 
 namespace {

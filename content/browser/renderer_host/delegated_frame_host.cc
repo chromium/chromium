@@ -389,10 +389,12 @@ void DelegatedFrameHost::DidCopyStaleContent(
   ContinueDelegatedFrameEviction();
 
   auto transfer_resource = viz::TransferableResource::MakeGL(
-      result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-      result->GetTextureResult()->sync_token, result->size(),
+      result->GetTextureResult()->planes[0].mailbox, GL_LINEAR, GL_TEXTURE_2D,
+      result->GetTextureResult()->planes[0].sync_token, result->size(),
       false /* is_overlay_candidate */);
-  viz::ReleaseCallback release_callback = result->TakeTextureOwnership();
+  viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
+      result->TakeTextureOwnership();
+  DCHECK_EQ(1u, release_callbacks.size());
 
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
@@ -401,7 +403,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));
   stale_content_layer_->SetTransferableResource(
-      transfer_resource, std::move(release_callback), surface_dip_size_);
+      transfer_resource, std::move(release_callbacks[0]), surface_dip_size_);
 }
 
 void DelegatedFrameHost::ContinueDelegatedFrameEviction() {

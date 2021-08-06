@@ -346,17 +346,23 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
   EXPECT_FALSE(output->has_area());
 
   base::RunLoop run_loop_for_release;
+
+  CopyOutputResult::ReleaseCallbacks release_callbacks;
+  release_callbacks.push_back(base::BindOnce(
+      [](base::OnceClosure quit_closure,
+         const gpu::SyncToken& expected_sync_token,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        EXPECT_EQ(expected_sync_token, sync_token);
+        EXPECT_FALSE(is_lost);
+        std::move(quit_closure).Run();
+      },
+      run_loop_for_release.QuitClosure(), sync_token));
+
   output->SendResult(std::make_unique<CopyOutputTextureResult>(
-      result_rect, mailbox, sync_token, gfx::ColorSpace::CreateSRGB(),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             const gpu::SyncToken& expected_sync_token,
-             const gpu::SyncToken& sync_token, bool is_lost) {
-            EXPECT_EQ(expected_sync_token, sync_token);
-            EXPECT_FALSE(is_lost);
-            std::move(quit_closure).Run();
-          },
-          run_loop_for_release.QuitClosure(), sync_token)));
+      result_rect,
+      CopyOutputResult::TextureResult(mailbox, sync_token,
+                                      gfx::ColorSpace::CreateSRGB()),
+      std::move(release_callbacks)));
 
   // Wait for the result to be delivered to the other side: The
   // CopyOutputRequest callback will be called, at which point
@@ -1283,7 +1289,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
                             71234838);
   sync_token.SetVerifyFlush();
   base::RunLoop run_loop;
-  auto callback = base::BindOnce(
+  CopyOutputResult::ReleaseCallbacks release_callbacks;
+  release_callbacks.push_back(base::BindOnce(
       [](base::OnceClosure quit_closure,
          const gpu::SyncToken& expected_sync_token,
          const gpu::SyncToken& sync_token, bool is_lost) {
@@ -1291,13 +1298,15 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
         EXPECT_TRUE(is_lost);
         std::move(quit_closure).Run();
       },
-      run_loop.QuitClosure(), sync_token);
+      run_loop.QuitClosure(), sync_token));
   gpu::Mailbox mailbox;
   mailbox.SetName(mailbox_name);
   std::unique_ptr<CopyOutputResult> input =
-      std::make_unique<CopyOutputTextureResult>(result_rect, mailbox,
-                                                sync_token, result_color_space,
-                                                std::move(callback));
+      std::make_unique<CopyOutputTextureResult>(
+          result_rect,
+          CopyOutputResult::TextureResult(mailbox, sync_token,
+                                          result_color_space),
+          std::move(release_callbacks));
 
   std::unique_ptr<CopyOutputResult> output;
   mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
@@ -1308,12 +1317,18 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
             CopyOutputResult::Destination::kNativeTextures);
   EXPECT_EQ(output->rect(), result_rect);
   ASSERT_NE(output->GetTextureResult(), nullptr);
-  EXPECT_EQ(output->GetTextureResult()->mailbox, mailbox);
-  EXPECT_EQ(output->GetTextureResult()->sync_token, sync_token);
+  EXPECT_EQ(output->GetTextureResult()->planes[0].mailbox, mailbox);
+  EXPECT_EQ(output->GetTextureResult()->planes[0].sync_token, sync_token);
   EXPECT_EQ(output->GetTextureResult()->color_space, result_color_space);
 
-  ReleaseCallback out_callback = output->TakeTextureOwnership();
-  std::move(out_callback).Run(sync_token, true /* is_lost */);
+  CopyOutputResult::ReleaseCallbacks out_callbacks =
+      output->TakeTextureOwnership();
+
+  EXPECT_EQ(1u, out_callbacks.size());
+  for (auto& cb : out_callbacks) {
+    std::move(cb).Run(sync_token, true /* is_lost */);
+  }
+
   // If the CopyOutputResult callback is called (which is the intended
   // behaviour), this will exit. Otherwise, this test will time out and fail.
   run_loop.Run();

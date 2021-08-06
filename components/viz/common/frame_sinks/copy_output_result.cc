@@ -8,11 +8,32 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/gfx/color_space.h"
 
 namespace viz {
+
+CopyOutputResult::TextureResult::TextureResult(
+    const CopyOutputResult::TextureResult& other) = default;
+CopyOutputResult::TextureResult& CopyOutputResult::TextureResult::operator=(
+    const CopyOutputResult::TextureResult& other) = default;
+
+CopyOutputResult::TextureResult::TextureResult(
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    const gfx::ColorSpace& color_space)
+    : color_space(color_space) {
+  planes[0].mailbox = mailbox;
+  planes[0].sync_token = sync_token;
+  planes[0].texture_target = GL_TEXTURE_2D;
+}
+
+CopyOutputResult::TextureResult::TextureResult(
+    const std::array<gpu::MailboxHolder, kMaxPlanes>& planes,
+    const gfx::ColorSpace& color_space)
+    : planes(planes), color_space(color_space) {}
 
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
@@ -30,22 +51,7 @@ CopyOutputResult::CopyOutputResult(Format format,
 CopyOutputResult::~CopyOutputResult() = default;
 
 bool CopyOutputResult::IsEmpty() const {
-  if (rect_.IsEmpty())
-    return true;
-
-  switch (destination_) {
-    case Destination::kNativeTextures:
-      if (const TextureResult* result = GetTextureResult()) {
-        return result->mailbox.IsZero();
-      } else {
-        return true;
-      }
-    case Destination::kSystemMemory:
-      return false;
-  }
-
-  NOTREACHED();
-  return true;
+  return rect_.IsEmpty();
 }
 
 bool CopyOutputResult::LockSkBitmap() const {
@@ -69,8 +75,8 @@ const CopyOutputResult::TextureResult* CopyOutputResult::GetTextureResult()
   return nullptr;
 }
 
-ReleaseCallback CopyOutputResult::TakeTextureOwnership() {
-  return ReleaseCallback();
+CopyOutputResult::ReleaseCallbacks CopyOutputResult::TakeTextureOwnership() {
+  return {};
 }
 
 bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
@@ -178,22 +184,30 @@ CopyOutputSkBitmapResult::~CopyOutputSkBitmapResult() = default;
 
 CopyOutputTextureResult::CopyOutputTextureResult(
     const gfx::Rect& rect,
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    const gfx::ColorSpace& color_space,
-    ReleaseCallback release_callback)
+    TextureResult texture_result,
+    ReleaseCallbacks release_callbacks)
     : CopyOutputResult(Format::RGBA, Destination::kNativeTextures, rect, false),
-      texture_result_(mailbox, sync_token, color_space),
-      release_callback_(std::move(release_callback)) {
-  DCHECK_EQ(rect.IsEmpty(), mailbox.IsZero());
-  DCHECK_EQ(!release_callback_, mailbox.IsZero());
-  DCHECK(texture_result_.mailbox.IsZero() ||
-         texture_result_.color_space.IsValid());
+      texture_result_(std::move(texture_result)),
+      release_callbacks_(std::move(release_callbacks)) {
+  // If we're constructing empty result, all mailboxes must be zero.
+  // Otherwise, the first mailbox must be non-zero.
+  DCHECK_EQ(rect.IsEmpty(), texture_result_.planes[0].mailbox.IsZero());
+  // If we're constructing empty result, the callbacks must be empty.
+  DCHECK_EQ(rect.IsEmpty(), release_callbacks_.empty());
+  // Callbacks must either be empty, or contain exactly one callback (we support
+  // only one plane for now).
+  DCHECK(release_callbacks_.empty() || release_callbacks_.size() == 1);
+  // Color space must be valid for non-empty results.
+  DCHECK(rect.IsEmpty() || texture_result_.color_space.IsValid());
 }
 
 CopyOutputTextureResult::~CopyOutputTextureResult() {
-  if (release_callback_)
-    std::move(release_callback_).Run(gpu::SyncToken(), false);
+  for (auto& release_callback : release_callbacks_) {
+    // No need to check if release_callback is valid, when texture ownership
+    // is taken away from us, we zero out release_callbacks_ and the loop would
+    // not be entered.
+    std::move(release_callback).Run(gpu::SyncToken(), false);
+  }
 }
 
 const CopyOutputResult::TextureResult*
@@ -201,11 +215,18 @@ CopyOutputTextureResult::GetTextureResult() const {
   return &texture_result_;
 }
 
-ReleaseCallback CopyOutputTextureResult::TakeTextureOwnership() {
-  texture_result_.mailbox = gpu::Mailbox();
-  texture_result_.sync_token = gpu::SyncToken();
-  texture_result_.color_space = gfx::ColorSpace();
-  return std::move(release_callback_);
+CopyOutputResult::ReleaseCallbacks
+CopyOutputTextureResult::TakeTextureOwnership() {
+  texture_result_.planes = {};
+  texture_result_.color_space = {};
+
+  CopyOutputResult::ReleaseCallbacks result;
+  // std::swap is needed since we cannot just move from release_callbacks_ - the
+  // vector would be left in unspecified state, and we need to be able to
+  // iterate over it in the dtor.
+  std::swap(result, release_callbacks_);
+
+  return result;
 }
 
 CopyOutputResult::ScopedSkBitmap::ScopedSkBitmap() = default;

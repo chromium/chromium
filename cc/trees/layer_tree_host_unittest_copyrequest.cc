@@ -1180,18 +1180,20 @@ class LayerTreeHostCopyRequestTestCreatesSharedImage
               viz::CopyOutputResult::Destination::kNativeTextures);
     ASSERT_NE(nullptr, result->GetTextureResult());
     release_ = result->TakeTextureOwnership();
-    EXPECT_TRUE(release_);
+    EXPECT_EQ(1u, release_.size());
   }
 
   void AfterTest() override {
-    std::move(release_).Run(gpu::SyncToken(), false);
+    for (auto& release : release_) {
+      std::move(release).Run(gpu::SyncToken(), false);
+    }
 
     // Except the copy to have made a new shared image.
     EXPECT_EQ(num_shared_images_without_readback_ + 1,
               num_shared_images_with_readback_);
   }
 
-  viz::ReleaseCallback release_;
+  viz::CopyOutputResult::ReleaseCallbacks release_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
