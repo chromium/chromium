@@ -58,7 +58,9 @@
   native <methods>;
 }
 
--assumenosideeffects class org.chromium.base.Log {
+# Use assumevalues block instead of assumenosideeffects block because Google3 proguard cannot parse
+# assumenosideeffects blocks which overwrite return value.
+-assumevalues class org.chromium.base.Log {
   static boolean isDebug() return false;
 }
 
