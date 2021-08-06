@@ -28,6 +28,7 @@ polymer_element_files = [
 
 generate_grd("build_grd") {
   input_files = [
+    "accelerator_lookup_manager.js",
     "app_icon_192.png",
     "fake_data.js",
     "fake_shortcut_provider.js",
@@ -48,6 +49,7 @@ js_type_check("closure_compile") {
   deps = [
     ":accelerator_edit_dialog",
     ":accelerator_edit_view",
+    ":accelerator_lookup_manager",
     ":accelerator_row",
     ":accelerator_view",
     ":fake_shortcut_provider",
@@ -77,6 +79,13 @@ js_library("accelerator_edit_view") {
     ":icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("accelerator_lookup_manager") {
+  deps = [
+    ":shortcut_types",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 

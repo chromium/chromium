@@ -42,6 +42,7 @@ ShortcutCustomizationAppBrowserTest.prototype = {
 // although technically is not necessary.
 const debug_suites_list = [
   'AcceleratorEditViewTest',
+  'AcceleratorLookupManagerTest',
   'AcceleratorViewTest',
   'AcceleratorRowTest',
   'AcceleratorEditDialogTest',
