@@ -513,7 +513,6 @@ bool QuotaDatabase::DeleteBucketInfo(const BucketId bucket_id) {
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetLRUBucket(
     StorageType type,
-    const std::set<StorageKey>& storage_key_exceptions,
     const std::set<BucketId>& bucket_exceptions,
     SpecialStoragePolicy* special_storage_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -538,12 +537,6 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetLRUBucket(
     if (!read_storage_key.has_value())
       continue;
 
-    std::string read_bucket_name = statement.ColumnString(2);
-    if (base::Contains(storage_key_exceptions, *read_storage_key) &&
-        read_bucket_name == kDefaultBucketName) {
-      continue;
-    }
-
     BucketId read_bucket_id = BucketId(statement.ColumnInt64(0));
     if (base::Contains(bucket_exceptions, read_bucket_id))
       continue;
@@ -557,7 +550,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetLRUBucket(
       continue;
     }
     return BucketInfo(read_bucket_id, std::move(read_storage_key).value(), type,
-                      read_bucket_name, statement.ColumnTime(3),
+                      statement.ColumnString(2), statement.ColumnTime(3),
                       statement.ColumnInt(4));
   }
   return QuotaError::kNotFound;

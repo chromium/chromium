@@ -1003,9 +1003,7 @@ size_t LegacyCacheStorageCache::EstimatedStructSize(
   return size;
 }
 
-LegacyCacheStorageCache::~LegacyCacheStorageCache() {
-  quota_manager_proxy_->NotifyStorageKeyNoLongerInUse(storage_key_);
-}
+LegacyCacheStorageCache::~LegacyCacheStorageCache() = default;
 
 void LegacyCacheStorageCache::SetSchedulerForTesting(
     std::unique_ptr<CacheStorageScheduler> scheduler) {
@@ -1050,8 +1048,6 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
     // The size of this cache has already been reported to the QuotaManager.
     last_reported_size_ = cache_size_ + cache_padding_;
   }
-
-  quota_manager_proxy_->NotifyStorageKeyInUse(storage_key_);
 }
 
 void LegacyCacheStorageCache::QueryCache(

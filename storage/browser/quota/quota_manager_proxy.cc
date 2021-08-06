@@ -264,34 +264,6 @@ void QuotaManagerProxy::NotifyBucketModified(
   }
 }
 
-void QuotaManagerProxy::NotifyStorageKeyInUse(const StorageKey& storage_key) {
-  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
-    quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&QuotaManagerProxy::NotifyStorageKeyInUse,
-                                  this, storage_key));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
-    quota_manager_impl_->NotifyStorageKeyInUse(storage_key);
-}
-
-void QuotaManagerProxy::NotifyStorageKeyNoLongerInUse(
-    const StorageKey& storage_key) {
-  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
-    quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::NotifyStorageKeyNoLongerInUse, this,
-                       storage_key));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
-    quota_manager_impl_->NotifyStorageKeyNoLongerInUse(storage_key);
-}
-
 void QuotaManagerProxy::NotifyWriteFailed(const StorageKey& storage_key) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(

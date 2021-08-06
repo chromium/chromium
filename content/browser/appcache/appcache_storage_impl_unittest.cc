@@ -211,9 +211,6 @@ class AppCacheStorageImplTest : public testing::Test {
         mojo::PendingRemote<storage::mojom::QuotaClient> client,
         storage::QuotaClientType quota_client_type,
         const std::vector<blink::mojom::StorageType>& storage_types) override {}
-    void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override {}
-    void NotifyStorageKeyNoLongerInUse(
-        const blink::StorageKey& storage_key) override {}
     void SetUsageCacheEnabled(storage::QuotaClientType client_id,
                               const blink::StorageKey& storage_key,
                               StorageType type,

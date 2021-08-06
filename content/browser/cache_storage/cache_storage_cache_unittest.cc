@@ -2778,14 +2778,6 @@ TEST_P(CacheStorageCacheTestP, PutFailWriteHeaders) {
                 ->second);
 }
 
-TEST_F(CacheStorageCacheTest, StorageKeyInUse) {
-  const blink::StorageKey storage_key =
-      blink::StorageKey(url::Origin::Create(kTestUrl));
-  EXPECT_TRUE(quota_manager_proxy_->StorageKeyInUse(storage_key));
-  cache_ = nullptr;
-  EXPECT_FALSE(quota_manager_proxy_->StorageKeyInUse(storage_key));
-}
-
 INSTANTIATE_TEST_SUITE_P(CacheStorageCacheTest,
                          CacheStorageCacheTestP,
                          ::testing::Values(false, true));

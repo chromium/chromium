@@ -74,7 +74,6 @@ PerOriginStorageInfo::PerOriginStorageInfo(const GURL& origin,
     : origin_(origin),
       type_(type),
       host_(origin.host()),
-      in_use_(-1),
       used_count_(-1) {}
 
 PerOriginStorageInfo::PerOriginStorageInfo(const PerOriginStorageInfo& other) =
@@ -89,8 +88,6 @@ std::unique_ptr<base::Value> PerOriginStorageInfo::NewValue() const {
   dict->SetString("origin", origin_.spec());
   dict->SetString("type", StorageTypeToString(type_));
   dict->SetString("host", host_);
-  if (in_use_ >= 0)
-    dict->SetBoolean("inUse", (in_use_ > 0));
   if (used_count_ >= 0)
     dict->SetInteger("usedCount", used_count_);
   if (!last_access_time_.is_null())

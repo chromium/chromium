@@ -412,9 +412,6 @@ class CONTENT_EXPORT AppCacheHost : public blink::mojom::AppCacheHost,
   // List of objects observing us.
   base::ObserverList<Observer>::Unchecked observers_;
 
-  // Used to inform the QuotaManager of what origins are currently in use.
-  url::Origin origin_in_use_;
-
   // The origin used when calling
   // ContentBrowserClient::WillCreateURLLoaderFactory().
   url::Origin origin_for_url_loader_factory_;

@@ -156,13 +156,11 @@ bool SetPersistentHostQuotaOnDBThread(const std::string& host,
 
 QuotaErrorOr<BucketInfo> GetLRUBucketOnDBThread(
     StorageType type,
-    const std::set<StorageKey>& storage_key_exceptions,
     const std::set<BucketId>& bucket_exceptions,
     SpecialStoragePolicy* policy,
     QuotaDatabase* database) {
   DCHECK(database);
-  return database->GetLRUBucket(type, storage_key_exceptions, bucket_exceptions,
-                                policy);
+  return database->GetLRUBucket(type, bucket_exceptions, policy);
 }
 
 bool DeleteStorageKeyInfoOnDBThread(const StorageKey& storage_key,
@@ -1228,22 +1226,6 @@ void QuotaManagerImpl::NotifyWriteFailed(const StorageKey& storage_key) {
                      weak_factory_.GetWeakPtr(), storage_key));
 }
 
-void QuotaManagerImpl::NotifyStorageKeyInUse(const StorageKey& storage_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(io_thread_->BelongsToCurrentThread());
-  storage_keys_in_use_[storage_key]++;
-}
-
-void QuotaManagerImpl::NotifyStorageKeyNoLongerInUse(
-    const StorageKey& storage_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(io_thread_->BelongsToCurrentThread());
-  DCHECK(IsStorageKeyInUse(storage_key));
-  int& count = storage_keys_in_use_[storage_key];
-  if (--count == 0)
-    storage_keys_in_use_.erase(storage_key);
-}
-
 void QuotaManagerImpl::SetUsageCacheEnabled(QuotaClientType client_id,
                                             const StorageKey& storage_key,
                                             StorageType type,
@@ -1945,16 +1927,6 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
   }
 }
 
-std::set<StorageKey> QuotaManagerImpl::GetEvictionStorageKeyExceptions() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::set<StorageKey> exceptions;
-  for (const auto& p : storage_keys_in_use_) {
-    DCHECK_GE(p.second, 0);
-    exceptions.insert(p.first);
-  }
-  return exceptions;
-}
-
 std::set<BucketId> QuotaManagerImpl::GetEvictionBucketExceptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::set<BucketId> exceptions;
@@ -1970,17 +1942,15 @@ void QuotaManagerImpl::DidGetEvictionBucket(
     GetBucketCallback callback,
     const absl::optional<BucketInfo>& bucket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Make sure the returned bucket's storage key is (still) not in the
-  // `storage_keys_in_use_` set if it is the default bucket and has not been
-  // accessed since we posted the task.
+  // Make sure the returned bucket has not been accessed since we posted the
+  // eviction task.
   DCHECK(!bucket.has_value() ||
          !bucket->storage_key.origin().GetURL().is_empty());
   // TODO(crbug.com/1208141): Remove this evaluation for storage key once
-  // QuotaClient is migrated to operate on buckets and NotifyStorageKeyInUse and
-  // NotifyStorageAccessed no longer used.
+  // QuotaClient is migrated to operate on buckets and NotifyStorageAccessed
+  // no longer used.
   if (bucket.has_value() && bucket->is_default() &&
-      (base::Contains(storage_keys_in_use_, bucket->storage_key) ||
-       base::Contains(access_notified_storage_keys_, bucket->storage_key))) {
+      base::Contains(access_notified_storage_keys_, bucket->storage_key)) {
     std::move(callback).Run(absl::nullopt);
   } else if (bucket.has_value() &&
              base::Contains(access_notified_buckets_, bucket->id)) {
@@ -2059,7 +2029,6 @@ void QuotaManagerImpl::GetLRUBucket(StorageType type,
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetLRUBucketOnDBThread, type,
-                     GetEvictionStorageKeyExceptions(),
                      GetEvictionBucketExceptions(),
                      base::RetainedRef(special_storage_policy_)),
       base::BindOnce(&QuotaManagerImpl::DidGetLRUBucket,

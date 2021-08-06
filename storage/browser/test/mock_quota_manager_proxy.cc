@@ -70,21 +70,6 @@ void MockQuotaManagerProxy::NotifyStorageModified(
     callback_task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
-void MockQuotaManagerProxy::NotifyStorageKeyInUse(
-    const blink::StorageKey& storage_key) {
-  storage_keys_in_use_.insert(storage_key);
-}
-
-void MockQuotaManagerProxy::NotifyStorageKeyNoLongerInUse(
-    const blink::StorageKey& storage_key) {
-  storage_keys_in_use_.erase(storage_key);
-}
-
-bool MockQuotaManagerProxy::StorageKeyInUse(
-    const blink::StorageKey& storage_key) const {
-  return storage_keys_in_use_.contains(storage_key);
-}
-
 MockQuotaManagerProxy::~MockQuotaManagerProxy() = default;
 
 }  // namespace storage

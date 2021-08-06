@@ -193,7 +193,6 @@ void QuotaInternalsProxy::RequestPerOriginInfo(StorageType type) {
 
   for (const blink::StorageKey& storage_key : storage_keys) {
     PerOriginStorageInfo info(storage_key.origin().GetURL(), type);
-    info.set_in_use(quota_manager_->IsStorageKeyInUse(storage_key));
     origin_info.push_back(info);
 
     const std::string& host = storage_key.origin().host();

@@ -337,10 +337,9 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
 
-  std::set<StorageKey> storage_key_exceptions;
   std::set<BucketId> bucket_exceptions;
-  QuotaErrorOr<BucketInfo> result = db.GetLRUBucket(
-      kTemp, storage_key_exceptions, bucket_exceptions, nullptr);
+  QuotaErrorOr<BucketInfo> result =
+      db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
@@ -374,8 +373,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(db.SetBucketLastAccessTime(bucket4.bucket_id,
                                          base::Time::FromJavaTime(40)));
 
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket1.bucket_id, result.value().id);
 
@@ -384,42 +382,29 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   scoped_refptr<MockSpecialStoragePolicy> policy(new MockSpecialStoragePolicy);
   policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
   policy->AddProtected(bucket2.storage_key.origin().GetURL());
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           policy.get());
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   // Test that durable origins are excluded from eviction.
   policy->AddDurable(bucket2.storage_key.origin().GetURL());
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           policy.get());
-  EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket3.bucket_id, result.value().id);
-
-  // Test storage key exceptions exclude storage key default buckets.
-  storage_key_exceptions.insert(bucket1.storage_key);
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
-  EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket2.bucket_id, result.value().id);
-
-  storage_key_exceptions.insert(bucket2.storage_key);
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
-  EXPECT_TRUE(result.ok());
-  EXPECT_EQ(bucket3.bucket_id, result.value().id);
-
-  // Storage key exceptions does not exclude non-default buckets.
-  storage_key_exceptions.insert(bucket3.storage_key);
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
   // Bucket exceptions exclude specified buckets.
+  bucket_exceptions.insert(bucket1.bucket_id);
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket2.bucket_id, result.value().id);
+
+  bucket_exceptions.insert(bucket2.bucket_id);
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket3.bucket_id, result.value().id);
+
   bucket_exceptions.insert(bucket3.bucket_id);
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
@@ -429,16 +414,14 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(db.DeleteBucketInfo(bucket3.bucket_id));
 
   // Querying again to see if the deletion has worked.
-  storage_key_exceptions.clear();
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
+  bucket_exceptions.clear();
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
-  storage_key_exceptions.insert(bucket1.storage_key);
-  storage_key_exceptions.insert(bucket2.storage_key);
-  result = db.GetLRUBucket(kTemp, storage_key_exceptions, bucket_exceptions,
-                           nullptr);
+  bucket_exceptions.insert(bucket1.bucket_id);
+  bucket_exceptions.insert(bucket2.bucket_id);
+  result = db.GetLRUBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }

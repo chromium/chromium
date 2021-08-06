@@ -41,9 +41,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       const std::vector<blink::mojom::StorageType>& storage_types) override;
 
   // We don't mock them.
-  void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override;
-  void NotifyStorageKeyNoLongerInUse(
-      const blink::StorageKey& storage_key) override;
   void SetUsageCacheEnabled(storage::QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
@@ -84,7 +81,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
     return last_notified_type_;
   }
   int64_t last_notified_delta() const { return last_notified_delta_; }
-  bool StorageKeyInUse(const blink::StorageKey& storage_key) const;
 
  protected:
   ~MockQuotaManagerProxy() override;
@@ -97,7 +93,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   blink::StorageKey last_notified_storage_key_;
   blink::mojom::StorageType last_notified_type_;
   int64_t last_notified_delta_;
-  base::flat_set<blink::StorageKey> storage_keys_in_use_;
 
   mojo::Remote<mojom::QuotaClient> registered_client_;
 

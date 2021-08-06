@@ -155,14 +155,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool DeleteBucketInfo(BucketId bucket_id);
 
   // Returns the BucketInfo for the least recently used bucket. Will exclude
-  // default buckets included in `storage_key_exceptions`, buckets with ids
-  // in `bucket_exceptions` and origins that have the special unlimited storage
-  // policy. Returns a QuotaError if the operation has failed.
-  // TODO(crbug.com/1199417): `storage_key_exceptions` should be removed once
-  // QuotaClient is migrated to operate per bucket.
+  // buckets with ids in `bucket_exceptions` and origins that have the special
+  // unlimited storage policy. Returns a QuotaError if the operation has failed.
   QuotaErrorOr<BucketInfo> GetLRUBucket(
       blink::mojom::StorageType type,
-      const std::set<blink::StorageKey>& storage_key_exceptions,
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);
 

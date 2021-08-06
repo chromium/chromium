@@ -122,9 +122,6 @@ AppCacheHost::~AppCacheHost() {
   if (group_being_updated_.get())
     group_being_updated_->RemoveUpdateObserver(this);
   storage()->CancelDelegateCallbacks(this);
-  if (service()->quota_manager_proxy() && !origin_in_use_.opaque())
-    service()->quota_manager_proxy()->NotifyStorageKeyNoLongerInUse(
-        blink::StorageKey(origin_in_use_));
 
   // Run pending callbacks in case we get destroyed with pending callbacks while
   // the mojo connection is still open.
@@ -190,11 +187,6 @@ void AppCacheHost::SelectCache(const GURL& document_url,
     FinishCacheSelection(nullptr, nullptr, mojo::ReportBadMessageCallback());
     return;
   }
-
-  origin_in_use_ = url::Origin::Create(document_url);
-  if (service()->quota_manager_proxy() && !origin_in_use_.opaque())
-    service()->quota_manager_proxy()->NotifyStorageKeyInUse(
-        blink::StorageKey(origin_in_use_));
 
   if (main_resource_blocked_)
     OnContentBlocked(blocked_manifest_url_);

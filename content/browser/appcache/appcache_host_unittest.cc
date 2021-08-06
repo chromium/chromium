@@ -146,25 +146,6 @@ class AppCacheHostTest : public testing::Test {
         scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
         UsageAndQuotaCallback callback) override {}
 
-    void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override {
-      inuse_[storage_key] += 1;
-    }
-
-    void NotifyStorageKeyNoLongerInUse(
-        const blink::StorageKey& storage_key) override {
-      inuse_[storage_key] -= 1;
-    }
-
-    int GetInUseCount(const blink::StorageKey& storage_key) {
-      return inuse_[storage_key];
-    }
-
-    bool is_empty() const { return inuse_.empty(); }
-    void reset() { inuse_.clear(); }
-
-    // Map from storage key to count of inuse notifications.
-    std::map<blink::StorageKey, int> inuse_;
-
    protected:
     ~MockQuotaManagerProxy() override = default;
   };
@@ -277,13 +258,6 @@ TEST_F(AppCacheHostTest, SelectNoCache) {
         EXPECT_FALSE(bad_message_observer.got_bad_message());
       }
 
-      if (kStorageKey.origin().opaque()) {
-        EXPECT_TRUE(mock_quota_proxy->is_empty());
-      } else {
-        EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kStorageKey))
-            << " document_url " << document_url;
-      }
-
       // We should have received an OnCacheSelected msg
       EXPECT_EQ(blink::mojom::kAppCacheNoCacheId,
                 mock_frontend_.last_cache_id_);
@@ -297,7 +271,6 @@ TEST_F(AppCacheHostTest, SelectNoCache) {
       EXPECT_FALSE(host.is_selection_pending());
       EXPECT_TRUE(host.preferred_manifest_url().is_empty());
     }
-    EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kStorageKey));
     service_.set_quota_manager_proxy(nullptr);
   }
 }
@@ -559,7 +532,6 @@ TEST_F(AppCacheHostTest, SelectCacheAllowed) {
         net::SiteForCookies::FromUrl(kDocAndStorageKeyUrl));
     host.SelectCache(kDocAndStorageKeyUrl, blink::mojom::kAppCacheNoCacheId,
                      kManifestUrl);
-    EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kStorageKey));
 
     // MockAppCacheService::LoadOrCreateGroup is asynchronous, so we shouldn't
     // have received an OnCacheSelected msg yet.
@@ -577,7 +549,6 @@ TEST_F(AppCacheHostTest, SelectCacheAllowed) {
     EXPECT_FALSE(mock_frontend_.content_blocked_);
     EXPECT_TRUE(mock_frontend_.appcache_accessed_);
   }
-  EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kStorageKey));
   service_.set_quota_manager_proxy(nullptr);
 }
 
@@ -613,7 +584,6 @@ TEST_F(AppCacheHostTest, SelectCacheBlocked) {
         net::SiteForCookies::FromUrl(kDocAndStorageKeyUrl));
     host.SelectCache(kDocAndStorageKeyUrl, blink::mojom::kAppCacheNoCacheId,
                      kManifestUrl);
-    EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kStorageKey));
 
     // We should have received an OnCacheSelected msg
     EXPECT_EQ(blink::mojom::kAppCacheNoCacheId, mock_frontend_.last_cache_id_);
@@ -635,7 +605,6 @@ TEST_F(AppCacheHostTest, SelectCacheBlocked) {
     EXPECT_TRUE(mock_frontend_.content_blocked_);
     EXPECT_TRUE(mock_frontend_.appcache_accessed_);
   }
-  EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kStorageKey));
   service_.set_quota_manager_proxy(nullptr);
 }
 

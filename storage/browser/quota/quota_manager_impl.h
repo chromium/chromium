@@ -282,16 +282,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // This method is declared as virtual to allow test code to override it.
   virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
 
-  // Used to avoid evicting storage keys with open pages.
-  // A call to NotifyStorageKeyInUse must be balanced by a later call
-  // to NotifyStorageKeyNoLongerInUse.
-  void NotifyStorageKeyInUse(const blink::StorageKey& storage_key);
-  void NotifyStorageKeyNoLongerInUse(const blink::StorageKey& storage_key);
-  bool IsStorageKeyInUse(const blink::StorageKey& storage_key) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return base::Contains(storage_keys_in_use_, storage_key);
-  }
-
   void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
@@ -514,9 +504,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                                int64_t unlimited_usage);
   void DidDumpBucketTableForHistogram(const BucketTableEntries& entries);
 
-  // Returns the list of storage keys that are currently in use and should be
-  // excluded from eviction.
-  std::set<blink::StorageKey> GetEvictionStorageKeyExceptions();
   // Returns the list of bucket ids that should be excluded from eviction due to
   // consistent errors after multiple attempts.
   std::set<BucketId> GetEvictionBucketExceptions();
@@ -669,9 +656,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                    blink::mojom::QuotaStatusCode,
                    int64_t>
       persistent_host_quota_callbacks_;
-
-  // Map from storage key to count. This is only for the default bucket.
-  std::map<blink::StorageKey, int> storage_keys_in_use_;
 
   // Map from bucket id to eviction error count.
   std::map<BucketId, int> buckets_in_error_;
