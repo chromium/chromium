@@ -180,7 +180,10 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
       entity_builder_factory.NewBookmarkEntityBuilder(
           title, std::move(originator_client_item_id));
   gSyncFakeServer->InjectEntity(
-      bookmark_builder.BuildBookmark(GURL(url), /*is_legacy=*/true));
+      bookmark_builder
+          .SetGeneration(fake_server::BookmarkEntityBuilder::
+                             BookmarkGeneration::kWithoutTitleInSpecifics)
+          .BuildBookmark(GURL(url)));
 }
 
 bool IsSyncInitialized() {
