@@ -317,6 +317,11 @@ uint64_t FileSystemSyncAccessHandle::read(
   size_t read_size = buffer->byteLength();
   uint8_t* read_data = static_cast<uint8_t*>(buffer->BaseAddressMaybeShared());
   uint64_t file_offset = options->at();
+  if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Cannot read at given offset");
+    return 0;
+  }
 
   FileErrorOr<int> result =
       file_delegate()->Read(file_offset, {read_data, read_size});
@@ -341,10 +346,16 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
-  uint64_t file_offset = options->at();
   if (!file_delegate()->IsValid() || is_closed_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The access handle was already closed");
+    return 0;
+  }
+
+  uint64_t file_offset = options->at();
+  if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Cannot write at given offset");
     return 0;
   }
 

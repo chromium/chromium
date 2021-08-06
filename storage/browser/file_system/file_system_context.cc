@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -149,11 +150,20 @@ scoped_refptr<FileSystemContext> FileSystemContext::Create(
     const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
     const base::FilePath& partition_path,
     const FileSystemOptions& options) {
+  bool force_override_incognito = base::FeatureList::IsEnabled(
+      features::kIncognitoFileSystemContextForTesting);
+  FileSystemOptions maybe_overridden_options =
+      force_override_incognito
+          ? FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
+                              /*force_in_memory=*/true,
+                              options.additional_allowed_schemes())
+          : options;
+
   auto context = base::MakeRefCounted<FileSystemContext>(
       std::move(io_task_runner), std::move(file_task_runner),
       std::move(external_mount_points), std::move(special_storage_policy),
       std::move(quota_manager_proxy), std::move(additional_backends),
-      auto_mount_handlers, partition_path, options,
+      auto_mount_handlers, partition_path, maybe_overridden_options,
       base::PassKey<FileSystemContext>());
   context->Initialize();
   return context;

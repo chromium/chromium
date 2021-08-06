@@ -654,6 +654,11 @@
     "args": ["--enable-features=FileSystemAccessAccessHandle"]
   },
   {
+    "prefix": "file-system-access-access-handle-incognito",
+    "bases": ["external/wpt/file-system-access"],
+    "args": ["--enable-features=FileSystemAccessAccessHandle,IncognitoFileSystemContextForTesting"]
+  },
+  {
     "prefix": "file-handling",
     "bases": [],
     "args": ["--enable-features=NativeFileSystemAPI,FileHandlingAPI"]

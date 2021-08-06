@@ -82,6 +82,10 @@ template <typename Interface>
 class PendingAssociatedRemote;
 template <typename Interface>
 class PendingAssociatedReceiver;
+template <typename Interface>
+class ScopedHandleBase;
+class DataPipeProducerHandle;
+typedef ScopedHandleBase<DataPipeProducerHandle> ScopedDataPipeProducerHandle;
 }  // namespace mojo
 
 namespace WTF {
@@ -310,6 +314,13 @@ template <typename Interface>
 struct CrossThreadCopier<mojo::PendingAssociatedReceiver<Interface>>
     : public CrossThreadCopierByValuePassThrough<
           mojo::PendingAssociatedReceiver<Interface>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<mojo::ScopedDataPipeProducerHandle>
+    : public CrossThreadCopierByValuePassThrough<
+          mojo::ScopedDataPipeProducerHandle> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

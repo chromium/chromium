@@ -15,6 +15,9 @@ namespace features {
 COMPONENT_EXPORT(STORAGE_BROWSER)
 extern const base::Feature kEnablePersistentFilesystemInIncognito;
 
+COMPONENT_EXPORT(STORAGE_BROWSER)
+extern const base::Feature kIncognitoFileSystemContextForTesting;
+
 }  // namespace features
 
 }  // namespace storage

@@ -6,6 +6,9 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_DELEGATE_HOST_IMPL_H_
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "net/base/io_buffer.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
 
@@ -18,6 +21,23 @@ namespace content {
 class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
     : public blink::mojom::FileSystemAccessFileDelegateHost {
  public:
+  // TODO(crbug.com/1234791): This has a few copies. Move to a common location.
+  // A net::IOBufferWithSize backed by a mojo_base::BigBuffer. Using BigBuffer
+  // as an IOBuffer allows us to avoid a copy.
+  class BigIOBuffer : public net::IOBufferWithSize {
+   public:
+    BigIOBuffer(const BigIOBuffer&) = delete;
+    BigIOBuffer& operator=(const BigIOBuffer&) = delete;
+    explicit BigIOBuffer(size_t size);
+    mojo_base::BigBuffer TakeBuffer() { return std::move(buffer_); }
+
+   protected:
+    ~BigIOBuffer() override;
+
+   private:
+    mojo_base::BigBuffer buffer_;
+  };
+
   FileSystemAccessFileDelegateHostImpl(
       FileSystemAccessManagerImpl* manager,
       const storage::FileSystemURL& url,
@@ -26,11 +46,73 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
           receiver);
   ~FileSystemAccessFileDelegateHostImpl() override;
 
+  // blink::mojom::FileSystemAccessFileDelegateHost:
+  void Read(uint64_t offset,
+            uint64_t bytes_to_read,
+            ReadCallback callback) override;
+  void Write(uint64_t offset,
+             mojo::ScopedDataPipeConsumerHandle data,
+             WriteCallback callback) override;
+
  private:
+  // State that is kept for the duration of a write operation, to keep track of
+  // progress until the write completes.
+  struct WriteState;
+
+  // BindRepeating DoFileSystemOperation copied from FileSystemAccessHandleBase.
+  template <typename... MethodArgs,
+            typename... ArgsMinusCallback,
+            typename... CallbackArgs>
+  void DoFileSystemOperation(
+      const base::Location& from_here,
+      storage::FileSystemOperationRunner::OperationID (
+          storage::FileSystemOperationRunner::*method)(MethodArgs...),
+      base::RepeatingCallback<void(CallbackArgs...)> callback,
+      ArgsMinusCallback&&... args) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Wrap the passed in callback in one that posts a task back to the current
+    // sequence.
+    auto wrapped_callback = base::BindRepeating(
+        [](scoped_refptr<base::SequencedTaskRunner> runner,
+           const base::RepeatingCallback<void(CallbackArgs...)>& callback,
+           CallbackArgs... args) {
+          runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(callback, std::forward<CallbackArgs>(args)...));
+        },
+        base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+
+    // And then post a task to the sequence bound operation runner to run the
+    // provided method with the provided arguments (and the wrapped callback).
+    //
+    // FileSystemOperationRunner assumes file_system_context() is kept alive, to
+    // make sure this happens it is bound to a DoNothing callback.
+    manager()
+        ->operation_runner()
+        .AsyncCall(base::IgnoreResult(method))
+        .WithArgs(std::forward<ArgsMinusCallback>(args)...,
+                  std::move(wrapped_callback))
+        .Then(base::BindOnce(
+            base::DoNothing::Once<scoped_refptr<storage::FileSystemContext>>(),
+            base::WrapRefCounted(file_system_context())));
+  }
+
   void OnDisconnect();
 
   FileSystemAccessManagerImpl* manager() { return manager_; }
+  storage::FileSystemContext* file_system_context() {
+    return manager()->context();
+  }
   const storage::FileSystemURL& url() { return url_; }
+
+  void DidRead(std::unique_ptr<storage::FileStreamReader> reader,
+               scoped_refptr<BigIOBuffer> buffer,
+               ReadCallback callback,
+               int rv);
+  void DidWrite(WriteState* state,
+                base::File::Error result,
+                int64_t bytes,
+                bool complete);
 
   // This is safe, since the manager owns the
   // FileSystemAccessAccessHandleHostImpl which owns this class.
