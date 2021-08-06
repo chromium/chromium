@@ -67,12 +67,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@Features.EnableFeatures(ChromeFeatureList.CONTINUOUS_SEARCH)
 @LooperMode(Mode.PAUSED)
 public class TabPersistentStoreIntegrationTest {
     @Rule
     public JniMocker jniMocker = new JniMocker();
     @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
