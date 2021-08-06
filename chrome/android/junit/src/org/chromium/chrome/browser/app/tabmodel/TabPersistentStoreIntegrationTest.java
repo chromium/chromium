@@ -74,6 +74,8 @@ public class TabPersistentStoreIntegrationTest {
     public JniMocker jniMocker = new JniMocker();
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
