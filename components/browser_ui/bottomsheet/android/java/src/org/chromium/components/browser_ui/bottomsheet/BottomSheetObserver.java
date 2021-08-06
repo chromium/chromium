@@ -39,8 +39,9 @@ public interface BottomSheetObserver {
     /**
      * An event for when the sheet changes state.
      * @param newState The new sheet state. See {@link SheetState}.
+     * @param reason The {@link StateChangeReason} that the sheet's state changed.
      */
-    void onSheetStateChanged(@SheetState int newState);
+    void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason);
 
     /**
      * An event for when the sheet reaches its full peeking height. This is called when the sheet

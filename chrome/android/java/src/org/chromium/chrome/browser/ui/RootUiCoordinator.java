@@ -1109,7 +1109,7 @@ public class RootUiCoordinator
             private boolean mOpened;
 
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 switch (newState) {
                     case SheetState.PEEK:
                     case SheetState.HALF:

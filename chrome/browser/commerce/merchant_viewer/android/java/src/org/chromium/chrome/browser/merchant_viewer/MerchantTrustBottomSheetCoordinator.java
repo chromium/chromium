@@ -110,7 +110,7 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
             }
 
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 if (mSheetContent == null) return;
                 switch (newState) {
                     case SheetState.PEEK:

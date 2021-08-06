@@ -41,8 +41,8 @@ public class AccountPickerBottomSheetCoordinator {
         }
 
         @Override
-        public void onSheetStateChanged(int newState) {
-            super.onSheetStateChanged(newState);
+        public void onSheetStateChanged(int newState, int reason) {
+            super.onSheetStateChanged(newState, reason);
             if (newState == BottomSheetController.SheetState.HIDDEN) {
                 AccountPickerBottomSheetCoordinator.this.destroy();
             }

@@ -258,7 +258,7 @@ import org.chromium.ui.modelutil.PropertyModel;
     }
 
     @Override
-    public void onSheetStateChanged(@SheetState int newState) {
+    public void onSheetStateChanged(@SheetState int newState, int reason) {
         switch (newState) {
             case BottomSheetController.SheetState.HIDDEN:
                 mHider.run();
@@ -301,6 +301,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     /* package */ void dismissForTest() {
-        onSheetStateChanged(BottomSheetController.SheetState.HIDDEN);
+        onSheetStateChanged(BottomSheetController.SheetState.HIDDEN, StateChangeReason.NONE);
     }
 }

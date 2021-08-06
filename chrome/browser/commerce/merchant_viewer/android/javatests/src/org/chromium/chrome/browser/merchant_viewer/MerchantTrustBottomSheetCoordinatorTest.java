@@ -163,11 +163,14 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     @Test
     @SmallTest
     public void testBottomSheetObserverOnSheetStateChanged() {
-        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.PEEK);
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(
+                SheetState.PEEK, StateChangeReason.NONE);
         verify(mMockMetrics, times(1)).recordMetricsForBottomSheetPeeked();
-        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.HALF);
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(
+                SheetState.HALF, StateChangeReason.NONE);
         verify(mMockMetrics, times(1)).recordMetricsForBottomSheetHalfOpened();
-        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.FULL);
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(
+                SheetState.FULL, StateChangeReason.NONE);
         verify(mMockMetrics, times(1)).recordMetricsForBottomSheetFullyOpened();
     }
 }

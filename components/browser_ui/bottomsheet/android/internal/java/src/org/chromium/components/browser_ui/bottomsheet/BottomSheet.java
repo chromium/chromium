@@ -1023,7 +1023,7 @@ class BottomSheet extends FrameLayout
         }
 
         for (BottomSheetObserver o : mObservers) {
-            o.onSheetStateChanged(mCurrentState);
+            o.onSheetStateChanged(mCurrentState, reason);
         }
     }
 

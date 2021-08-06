@@ -101,7 +101,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(int newState) {
+            public void onSheetStateChanged(int newState, int reason) {
                 if (mOverlayCoordinator == null) {
                     return;
                 }

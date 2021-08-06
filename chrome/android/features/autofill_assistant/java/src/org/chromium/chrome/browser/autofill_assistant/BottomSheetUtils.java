@@ -69,7 +69,7 @@ public class BottomSheetUtils {
         } else {
             controller.addObserver(new EmptyBottomSheetObserver() {
                 @Override
-                public void onSheetStateChanged(int newState) {
+                public void onSheetStateChanged(int newState, int reason) {
                     controller.removeObserver(this);
                     if (newState != targetState) {
                         setStateInternal(controller, content, targetState);
