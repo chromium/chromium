@@ -58,6 +58,7 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
         layout.planes()[0].size, src_video_frame->timestamp());
   }
   if (!video_frame) {
+    MunmapBuffers(chunks, /*video_frame=*/nullptr);
     return nullptr;
   }
 
@@ -141,7 +142,16 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
 
     // Map the current buffer.
     const auto& last_plane = planes[next_buf - 1];
-    const size_t mapped_size = last_plane.offset + last_plane.size;
+
+    size_t mapped_size = 0;
+    if (!base::CheckAdd<size_t>(last_plane.offset, last_plane.size)
+             .AssignIfValid(&mapped_size)) {
+      VLOGF(1) << "Overflow happens with offset=" << last_plane.offset
+               << " + size=" << last_plane.size;
+      MunmapBuffers(chunks, /*video_frame=*/nullptr);
+      return nullptr;
+    }
+
     uint8_t* mapped_addr = Mmap(mapped_size, dmabuf_fds[i].get());
     chunks.emplace_back(mapped_addr, mapped_size);
     for (size_t j = i; j < next_buf; ++j)
