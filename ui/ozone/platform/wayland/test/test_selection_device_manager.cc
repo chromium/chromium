@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -44,12 +45,22 @@ std::vector<uint8_t> ReadDataOnWorkerThread(base::ScopedFD fd) {
   return bytes;
 }
 
+void WriteDataOnWorkerThread(base::ScopedFD fd,
+                             ui::PlatformClipboard::Data data) {
+  if (!base::WriteFileDescriptor(fd.get(), data->data())) {
+    LOG(ERROR) << "Failed to write selection data to clipboard.";
+  }
+}
+
 }  //  namespace
 
 // TestSelectionOffer implementation.
 TestSelectionOffer::TestSelectionOffer(wl_resource* resource,
                                        Delegate* delegate)
-    : ServerObject(resource), delegate_(delegate) {}
+    : ServerObject(resource),
+      delegate_(delegate),
+      task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
 TestSelectionOffer::~TestSelectionOffer() {
   delegate_->OnDestroying();
@@ -57,7 +68,19 @@ TestSelectionOffer::~TestSelectionOffer() {
 
 void TestSelectionOffer::OnOffer(const std::string& mime_type,
                                  ui::PlatformClipboard::Data data) {
-  delegate_->SendOffer(mime_type, data);
+  data_to_offer_[mime_type] = data;
+  delegate_->SendOffer(mime_type);
+}
+
+void TestSelectionOffer::Receive(wl_client* client,
+                                 wl_resource* resource,
+                                 const char* mime_type,
+                                 int fd) {
+  CHECK(GetUserDataAs<TestSelectionOffer>(resource));
+  auto* self = GetUserDataAs<TestSelectionOffer>(resource);
+  self->task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WriteDataOnWorkerThread, base::ScopedFD(fd),
+                                self->data_to_offer_[mime_type]));
 }
 
 // TestSelectionSource implementation.

@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/thread.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/public/platform_clipboard.h"
@@ -78,8 +79,7 @@ class TestSelectionDeviceManager : public GlobalObject {
 class TestSelectionOffer : public ServerObject {
  public:
   struct Delegate {
-    virtual void SendOffer(const std::string& mime_type,
-                           ui::PlatformClipboard::Data data) = 0;
+    virtual void SendOffer(const std::string& mime_type) = 0;
     virtual void OnDestroying() = 0;
 
    protected:
@@ -94,8 +94,17 @@ class TestSelectionOffer : public ServerObject {
 
   void OnOffer(const std::string& mime_type, ui::PlatformClipboard::Data data);
 
+  // Protocol object requests:
+  static void Receive(wl_client* client,
+                      wl_resource* resource,
+                      const char* mime_type,
+                      int fd);
+
  private:
   Delegate* const delegate_;
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  ui::PlatformClipboard::DataMap data_to_offer_;
 };
 
 class TestSelectionSource : public ServerObject {

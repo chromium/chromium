@@ -23,10 +23,7 @@ void Destroy(wl_client* client, wl_resource* resource) {
 }
 
 struct ZwpPrimarySelectionOffer : public TestSelectionOffer::Delegate {
-  void SendOffer(const std::string& mime_type,
-                 ui::PlatformClipboard::Data data) override {
-    NOTIMPLEMENTED();
-  }
+  void SendOffer(const std::string& mime_type) override { NOTIMPLEMENTED(); }
 
   void OnDestroying() override { NOTIMPLEMENTED(); }
 };
