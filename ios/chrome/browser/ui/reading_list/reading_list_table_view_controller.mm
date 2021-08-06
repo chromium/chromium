@@ -396,7 +396,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)loadModel {
   [super loadModel];
   self.dataSourceModifiedWhileEditing = NO;
-
+  // Add Reading List Messages toggle here so that it shows even if there are no
+  // entries.
+  if (IsReadingListMessagesEnabled()) {
+    [self addPromptToggleItemAndSection];
+  }
   if (self.dataSource.hasElements) {
     [self loadItems];
     [self.audience readingListHasItems:YES];
@@ -668,9 +672,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 // Uses self.dataSource to load the TableViewItems into self.tableViewModel.
 - (void)loadItems {
-  if (IsReadingListMessagesEnabled()) {
-    [self addPromptToggleItemAndSection];
-  }
   NSMutableArray<id<ReadingListListItem>>* readArray = [NSMutableArray array];
   NSMutableArray<id<ReadingListListItem>>* unreadArray = [NSMutableArray array];
   [self.dataSource fillReadItems:readArray unreadItems:unreadArray];
