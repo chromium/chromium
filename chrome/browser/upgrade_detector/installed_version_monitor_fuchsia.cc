@@ -4,11 +4,21 @@
 
 #include "chrome/browser/upgrade_detector/installed_version_monitor.h"
 
+#include "base/callback.h"
 #include "base/notreached.h"
+
+namespace {
+class FuchsiaInstalledVersionMonitor : public InstalledVersionMonitor {
+  void Start(Callback callback) override {
+    // TODO(crbug.com/1235293)
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
+};
+}  // namespace
 
 // static
 std::unique_ptr<InstalledVersionMonitor> InstalledVersionMonitor::Create() {
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return std::make_unique<FuchsiaInstalledVersionMonitor>();
 }
