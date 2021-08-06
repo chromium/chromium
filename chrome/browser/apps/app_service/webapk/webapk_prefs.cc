@@ -35,8 +35,11 @@ constexpr char kUpdateNeededKey[] = "update_needed";
 namespace apps {
 namespace webapk_prefs {
 
+const char kGeneratedWebApksEnabled[] = "generated_webapks_enabled";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGeneratedWebApksPref);
+  registry->RegisterBooleanPref(kGeneratedWebApksEnabled, true);
 }
 
 void AddWebApk(Profile* profile,

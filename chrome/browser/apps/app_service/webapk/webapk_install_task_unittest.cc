@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
@@ -28,9 +29,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,33 +40,6 @@ constexpr char kTestAppIcon[] = "https://www.example.com/icon.png";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
 constexpr char kTestShareTextParam[] = "share_text";
 const std::u16string kTestAppTitle = u"Test App";
-
-constexpr char kServerPath[] = "/webapk";
-
-constexpr char kToken[] = "opaque token";
-
-std::unique_ptr<net::test_server::HttpResponse> BuildValidWebApkResponse(
-    std::string package_name) {
-  auto webapk_response = std::make_unique<webapk::WebApkResponse>();
-  webapk_response->set_package_name(std::move(package_name));
-  webapk_response->set_version("1");
-  webapk_response->set_token(kToken);
-
-  std::string response_content;
-  webapk_response->SerializeToString(&response_content);
-
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_OK);
-  response->set_content(response_content);
-
-  return response;
-}
-
-std::unique_ptr<net::test_server::HttpResponse> BuildFailedResponse() {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_BAD_REQUEST);
-  return response;
-}
 
 std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   auto app_info = std::make_unique<WebApplicationInfo>();
@@ -156,14 +127,9 @@ class WebApkInstallTaskTest : public testing::Test {
 
     app_service_test_.FlushMojoCalls();
 
-    test_server_.RegisterRequestHandler(base::BindRepeating(
-        &WebApkInstallTaskTest::HandleWebApkRequest, base::Unretained(this)));
     net::test_server::RegisterDefaultHandlers(&test_server_);
-    ASSERT_TRUE(test_server_.Start());
-
-    GURL server_url = test_server_.GetURL(kServerPath);
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kWebApkServerUrl, server_url.spec());
+    webapk_test_server_ = std::make_unique<apps::WebApkTestServer>();
+    ASSERT_TRUE(webapk_test_server_->SetUpAndStartServer(&test_server_));
 
     arc_features_getter_ =
         base::BindRepeating(&GetArcFeaturesWithAbiList, "x86_64");
@@ -172,10 +138,6 @@ class WebApkInstallTaskTest : public testing::Test {
   }
 
   void TearDown() override { arc_test_.TearDown(); }
-
-  void SetWebApkResponse(WebApkResponseBuilder builder) {
-    webapk_response_builder_ = builder;
-  }
 
   bool InstallWebApk(std::string app_id) {
     bool install_success;
@@ -196,17 +158,6 @@ class WebApkInstallTaskTest : public testing::Test {
     return InstallWebApk(app_id);
   }
 
-  std::unique_ptr<net::test_server::HttpResponse> HandleWebApkRequest(
-      const net::test_server::HttpRequest& request) {
-    if (request.relative_url == kServerPath) {
-      last_webapk_request_ = std::make_unique<webapk::WebApk>();
-      last_webapk_request_->ParseFromString(request.content);
-      return webapk_response_builder_.Run();
-    }
-
-    return nullptr;
-  }
-
   TestingProfile* profile() { return &profile_; }
 
   apps::AppServiceTest* app_service_test() { return &app_service_test_; }
@@ -215,7 +166,13 @@ class WebApkInstallTaskTest : public testing::Test {
     return fake_webapk_instance_.get();
   }
 
-  webapk::WebApk* last_webapk_request() { return last_webapk_request_.get(); }
+  webapk::WebApk* last_webapk_request() {
+    return webapk_test_server_->last_webapk_request();
+  }
+
+  apps::WebApkTestServer* webapk_test_server() {
+    return webapk_test_server_.get();
+  }
 
   net::EmbeddedTestServer* test_server() { return &test_server_; }
 
@@ -229,8 +186,7 @@ class WebApkInstallTaskTest : public testing::Test {
   net::EmbeddedTestServer test_server_;
 
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
-  WebApkResponseBuilder webapk_response_builder_;
-  std::unique_ptr<webapk::WebApk> last_webapk_request_;
+  std::unique_ptr<apps::WebApkTestServer> webapk_test_server_;
   base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
       arc_features_getter_;
 };
@@ -243,8 +199,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
   base::HistogramTester histograms;
 
   EXPECT_TRUE(InstallWebApk(app_id));
@@ -292,8 +247,7 @@ TEST_F(WebApkInstallTaskTest, ShareTarget) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -327,7 +281,7 @@ TEST_F(WebApkInstallTaskTest, FailedServerCall) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
-  SetWebApkResponse(base::BindRepeating(&BuildFailedResponse));
+  webapk_test_server()->RespondWithError();
   base::HistogramTester histograms;
 
   ASSERT_FALSE(InstallWebApk(app_id));
@@ -342,8 +296,7 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
 
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
   fake_webapk_instance()->set_install_result(
       arc::mojom::WebApkInstallResult::kErrorResolveNetworkError);
   base::HistogramTester histograms;
@@ -386,8 +339,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -397,8 +349,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
 
   // Install the same app with |short_name| changed. This should trigger an
   // update.
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->title = u"Testy test App";
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -423,8 +373,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -434,8 +383,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
 
   // Install the same app with |scope| changed. This should trigger an
   // update.
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->scope = GURL("https://www.differentexample.com/");
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -459,8 +406,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -468,8 +414,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
   fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
       "org.chromium.webapk.some_package", "fakeiconhash123456789"));
 
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   EXPECT_TRUE(UpdateWebApk(app_id));
@@ -488,8 +432,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
   fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
@@ -498,8 +441,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
 
   // Install the same app with |share_target| changed. This should trigger an
   // update.
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->share_target->action =
       GURL("https://www.differentexample.com/");
@@ -523,8 +464,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -532,8 +472,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
       "org.chromium.webapk.some_package",
       last_webapk_request()->manifest().icons(0).hash()));
 
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
   auto web_app_info = BuildDefaultWebAppInfo();
   web_app_info->title = u"Testy test App";
   web_app_info->share_target->action =
@@ -566,16 +504,13 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
 TEST_F(WebApkInstallTaskTest, AbandonedUpdateNoChanges) {
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
   EXPECT_TRUE(InstallWebApk(app_id));
   fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
       "org.chromium.webapk.some_package",
       last_webapk_request()->manifest().icons(0).hash()));
 
   // Install the same app with no changes. This should fail.
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
   base::HistogramTester histograms;
   EXPECT_FALSE(UpdateWebApk(app_id));
   histograms.ExpectBucketCount(
@@ -590,8 +525,7 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateWebApkInfoInvalid) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -607,8 +541,7 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateNetworkError) {
   // Install an initial app.
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
-                                        "org.chromium.webapk.some_package"));
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
 
   EXPECT_TRUE(InstallWebApk(app_id));
 
@@ -623,7 +556,7 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateNetworkError) {
   web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
   base::HistogramTester histograms;
-  SetWebApkResponse(base::BindRepeating(&BuildFailedResponse));
+  webapk_test_server()->RespondWithError();
 
   ASSERT_FALSE(UpdateWebApk(app_id));
 

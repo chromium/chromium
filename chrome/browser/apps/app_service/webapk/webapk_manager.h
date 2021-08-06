@@ -16,6 +16,7 @@
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
+class PrefChangeRegistrar;
 class Profile;
 
 namespace ash {
@@ -74,6 +75,7 @@ class WebApkManager : public AppRegistryCache::Observer,
   std::unique_ptr<WebApkInstallQueue> install_queue_;
   std::vector<std::string> uninstall_queue_;
 
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
 };

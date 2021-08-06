@@ -25930,16 +25930,17 @@ Called by update_document_policy_enum.py.-->
   <int value="875" label="ReportDeviceNetworkConfiguration"/>
   <int value="876" label="ReportDeviceNetworkStatus"/>
   <int value="877" label="DataLeakPreventionClipboardCheckSizeLimit"/>
-  <int value="878" label="CrossOriginWebAssemblyModuleSharingAllowed"/>
+  <int value="878" label="CrossOriginWebAssemblyModuleSharingEnabled"/>
   <int value="879"
       label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
-  <int value="880" label="DisplayCapturePermissionsPolicy"/>
+  <int value="880" label="DisplayCapturePermissionsPolicyEnabled"/>
   <int value="881" label="ScreenCaptureAllowedByOrigins"/>
   <int value="882" label="WindowCaptureAllowedByOrigins"/>
   <int value="883" label="TabCaptureAllowedByOrigins"/>
   <int value="884" label="SameOriginTabCaptureAllowedByOrigins"/>
   <int value="885" label="AssistantVoiceMatchEnabledDuringOobe"/>
   <int value="886" label="LensRegionSearchEnabled"/>
+  <int value="887" label="ArcAppToWebAppSharingEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

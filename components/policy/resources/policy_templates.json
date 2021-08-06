@@ -1155,6 +1155,7 @@
         'ArcLocationServiceEnabled',
         'AppRecommendationZeroStateEnabled',
         'DeviceArcDataSnapshotHours',
+        'ArcAppToWebAppSharingEnabled',
       ]
     },
     {
@@ -26902,6 +26903,35 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       Setting the policy specifies a list of extension IDs that are exempt from the restricted managed guest session clean-up procedure (see <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME">RestrictedManagedGuestSessionEnabled</ph>).
       Leaving the policy unset means no extensions are exempt from the reset procedure.''',
     },
+    {
+      'name': 'ArcAppToWebAppSharingEnabled',
+      'owners': ['tsergeant@chromium.org', 'chromeos-apps-foundation-team@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Android to Web App sharing.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Android to Web App sharing.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 887,
+      'caption': '''Enable sharing from Android apps to Web apps''',
+      'tags': ['google-sharing'],
+      'desc': '''Setting the policy to True enables sharing text/files from Android apps to supported Web Apps, using the built-in Android sharing system.
+      When enabled, this will send metadata for installed Web Apps to Google to generate and install a shim Android app.
+      Setting the policy to False disables this functionality.'''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27855,6 +27885,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 886,
+  'highest_id_currently_used': 887,
   'highest_atomic_group_id_currently_used': 41
 }

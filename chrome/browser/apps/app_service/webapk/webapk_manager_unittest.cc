@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/test/fake_app_instance.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -274,6 +275,18 @@ TEST_F(WebApkManagerTest, IgnoresInstallsWhilePlayStoreDisabled) {
   StartWebApkManager();
 
   arc::SetArcPlayStoreEnabledForProfile(profile(), /*enabled=*/false);
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  app_service_test()->FlushMojoCalls();
+
+  AssertNoPendingInstalls();
+}
+
+TEST_F(WebApkManagerTest, IgnoresInstallsWhilePolicyDisabled) {
+  StartWebApkManager();
+  profile()->GetPrefs()->SetBoolean(
+      apps::webapk_prefs::kGeneratedWebApksEnabled, false);
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());

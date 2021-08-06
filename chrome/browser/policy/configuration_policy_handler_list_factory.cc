@@ -125,6 +125,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -1236,6 +1237,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
     base::Value::Type::LIST },
+  { key::kArcAppToWebAppSharingEnabled,
+    apps::webapk_prefs::kGeneratedWebApksEnabled,
+    base::Value::Type::BOOLEAN},
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)

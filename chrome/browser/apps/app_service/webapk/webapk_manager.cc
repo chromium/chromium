@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/connection_holder.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,20 +33,27 @@ namespace apps {
 
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
-      web_app_registrar_(web_app::WebAppProvider::Get(profile)->registrar()),
-      initialized_(false) {
-  proxy_ = AppServiceProxyFactory::GetForProfile(profile);
+      web_app_registrar_(web_app::WebAppProvider::Get(profile_)->registrar()),
+      initialized_(false),
+      install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
+  proxy_ = AppServiceProxyFactory::GetForProfile(profile_);
   apk_service_ = ash::ApkWebAppService::Get(profile_);
   DCHECK(apk_service_);
   app_list_prefs_ = ArcAppListPrefs::Get(profile_);
   DCHECK(app_list_prefs_);
-  install_queue_ = std::make_unique<WebApkInstallQueue>(profile);
 
   // Always observe AppListPrefs, even when the rest of WebAPKs is not enabled,
   // so that we can detect WebAPK uninstalls that happen when the feature is
   // disabled.
   arc_app_list_prefs_observer_.Observe(app_list_prefs_);
   arc::ArcSessionManager::Get()->AddObserver(this);
+  pref_change_registrar_->Init(profile_->GetPrefs());
+  pref_change_registrar_->Add(
+      webapk_prefs::kGeneratedWebApksEnabled,
+      base::BindRepeating(&WebApkManager::StartOrStopObserving,
+                          base::Unretained(this)));
+
   StartOrStopObserving();
 }
 
@@ -60,8 +70,10 @@ void WebApkManager::StartOrStopObserving() {
   // We additionally check whether Play Store is enabled through Settings before
   // enabling anything.
   bool arc_enabled = arc::IsArcPlayStoreEnabledForProfile(profile_);
+  bool policy_enabled =
+      profile_->GetPrefs()->GetBoolean(webapk_prefs::kGeneratedWebApksEnabled);
 
-  if (arc_enabled) {
+  if (arc_enabled && policy_enabled) {
     Observe(&proxy_->AppRegistryCache());
   } else {
     Observe(nullptr);

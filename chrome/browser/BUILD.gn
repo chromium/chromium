@@ -7205,6 +7205,8 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
+      "apps/app_service/webapk/webapk_test_server.cc",
+      "apps/app_service/webapk/webapk_test_server.h",
       "ash/app_mode/fake_cws.cc",
       "ash/app_mode/fake_cws.h",
       "ash/arc/extensions/fake_arc_support.cc",
@@ -7261,6 +7263,7 @@ static_library("test_support") {
       "//chromeos/disks",
       "//chromeos/login/auth",
       "//components/session_manager/core",
+      "//components/webapk:proto",
       "//extensions/browser/api/messaging",
       "//ui/base:test_support",
       "//ui/base/ime/chromeos",

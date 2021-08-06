@@ -86,7 +86,11 @@ constexpr net::NetworkTrafficAnnotationTag kWebApksTrafficAnnotation =
           cookies_allowed: NO
           cookies_store: "N/A"
           setting: "No setting apart from disabling ARC"
-          policy_exception_justification: "Not implemented"
+          chrome_policy: {
+            ArcAppToWebAppSharingEnabled: {
+              ArcAppToWebAppSharingEnabled: true
+            }
+          }
         }
       )");
 
