@@ -7015,13 +7015,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacyAdvisorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyAdvisor)},
 
-#if defined(TOOLKIT_VIEWS)
-    {"desktop-in-product-help-snooze",
-     flag_descriptions::kDesktopInProductHelpSnoozeName,
-     flag_descriptions::kDesktopInProductHelpSnoozeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(feature_engagement::kIPHDesktopSnoozeFeature)},
-#endif  // defined(TOOLKIT_VIEWS)
-
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},

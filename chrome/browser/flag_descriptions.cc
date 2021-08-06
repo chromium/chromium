@@ -5345,12 +5345,6 @@ const char kZeroCopyVideoCaptureDescription[] =
 
 #if defined(TOOLKIT_VIEWS)
 
-const char kDesktopInProductHelpSnoozeName[] =
-    "Allow snooze on supported in-product help promos";
-const char kDesktopInProductHelpSnoozeDescription[] =
-    "Snoozing an in-product help promo closes it and schedules it to be shown "
-    "later. When enabled, this functionality is allowed on supported promos.";
-
 const char kDownloadShelfWebUI[] = "Download Shelf WebUI";
 const char kDownloadShelfWebUIDescription[] =
     "Replaces the Views download shelf with a WebUI download shelf.";

@@ -47544,7 +47544,6 @@ from previous Chrome versions.
   <int value="-1370532920" label="AppServiceAsh:enabled"/>
   <int value="-1369613781" label="FileHandlingIcons:disabled"/>
   <int value="-1368913664" label="TabSearch:disabled"/>
-  <int value="-1368734981" label="IPH_DesktopSnoozeFeature:enabled"/>
   <int value="-1368499577" label="OnTheFlyMhtmlHashComputation:enabled"/>
   <int value="-1367447724"
       label="IncognitoClearBrowsingDataDialogForDesktop:disabled"/>
@@ -47626,7 +47625,6 @@ from previous Chrome versions.
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
   <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
   <int value="-1308184869" label="MediaFeedsBackgroundFetching:enabled"/>
-  <int value="-1308102778" label="IPH_DesktopSnoozeFeature:disabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>

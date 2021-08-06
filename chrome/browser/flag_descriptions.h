@@ -3099,10 +3099,6 @@ extern const char kZeroCopyVideoCaptureDescription[];
 // All views-based platforms --------------------------------------------------
 
 #if defined(TOOLKIT_VIEWS)
-
-extern const char kDesktopInProductHelpSnoozeName[];
-extern const char kDesktopInProductHelpSnoozeDescription[];
-
 extern const char kDownloadShelfWebUI[];
 extern const char kDownloadShelfWebUIDescription[];
 
