@@ -48285,6 +48285,7 @@ from previous Chrome versions.
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
+  <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
@@ -51853,6 +51854,7 @@ from previous Chrome versions.
   <int value="2104788328" label="use-winrt-midi-api"/>
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
+  <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2113804526" label="EnableAppShortcutSearch:enabled"/>
   <int value="2114221139" label="EnableHostnameSetting:disabled"/>
   <int value="2114843059" label="ContextualSuggestionsOptOut:enabled"/>

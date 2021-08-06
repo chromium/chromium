@@ -4219,6 +4219,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-pedals-translation-console",
+    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "omnibox-preserve-longer-shortcuts-text",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 96

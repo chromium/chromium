@@ -3875,6 +3875,12 @@ const char kOmniboxPedalsDefaultIconColoredDescription[] =
     "Enable a color version of the default icon shown on the button for most "
     "omnibox Pedals (aka Chrome Actions).";
 
+const char kOmniboxPedalsTranslationConsoleName[] =
+    "Omnibox Pedals Translation Console";
+const char kOmniboxPedalsTranslationConsoleDescription[] =
+    "Use translation strings sourced from Translation Console "
+    "for triggering some omnibox Pedals (aka Chrome Actions).";
+
 const char kOmniboxKeywordSearchButtonName[] = "Omnibox keyword search button";
 const char kOmniboxKeywordSearchButtonDescription[] =
     "Enable the omnibox keyword search button which offers a way to search "
