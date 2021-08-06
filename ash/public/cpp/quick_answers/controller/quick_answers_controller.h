@@ -14,6 +14,7 @@ namespace chromeos {
 namespace quick_answers {
 class QuickAnswersClient;
 class QuickAnswersDelegate;
+enum class QuickAnswersExitPoint;
 struct Context;
 }  // namespace quick_answers
 }  // namespace chromeos
@@ -56,11 +57,10 @@ class ASH_PUBLIC_EXPORT QuickAnswersController {
       const chromeos::quick_answers::Context& context) = 0;
 
   // Dismiss the quick-answers view (and/or any associated views like
-  // user-consent view) currently shown. |is_active| is true if the quick-answer
-  // result considered fulfilling a user's intent. For quick-answer rendered
-  // along with browser context menu, if user didn't click on other context menu
-  // items, it is considered as active impression.
-  virtual void DismissQuickAnswers(bool is_active) = 0;
+  // user-consent view) currently shown. |exit_point| indicates the exit point
+  // of the quick-answers view.
+  virtual void DismissQuickAnswers(
+      chromeos::quick_answers::QuickAnswersExitPoint exit_point) = 0;
 
   // Update the bounds of the anchor view.
   virtual void UpdateQuickAnswersAnchorBounds(

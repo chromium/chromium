@@ -47,7 +47,8 @@ class ASH_EXPORT QuickAnswersControllerImpl
       const std::string& title,
       const chromeos::quick_answers::Context& context) override;
 
-  void DismissQuickAnswers(bool is_active) override;
+  void DismissQuickAnswers(
+      chromeos::quick_answers::QuickAnswersExitPoint exit_point) override;
 
   // Update the bounds of the anchor view.
   void UpdateQuickAnswersAnchorBounds(const gfx::Rect& anchor_bounds) override;

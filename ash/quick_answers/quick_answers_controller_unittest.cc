@@ -102,7 +102,8 @@ class QuickAnswersControllerTest : public AshTestBase {
   }
 
   void DismissQuickAnswers() {
-    controller()->DismissQuickAnswers(/*is_active=*/true);
+    controller()->DismissQuickAnswers(
+        chromeos::quick_answers::QuickAnswersExitPoint::kUnspecified);
   }
 
   QuickAnswersUiController* ui_controller() {
@@ -199,7 +200,7 @@ TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
   ShowQuickAnswersView();
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
 
-  controller()->DismissQuickAnswers(true);
+  DismissQuickAnswers();
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
   EXPECT_EQ(controller()->GetVisibilityForTesting(),
             QuickAnswersVisibility::kClosed);

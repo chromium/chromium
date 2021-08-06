@@ -25,6 +25,8 @@
 #include "ui/views/widget/widget.h"
 
 using chromeos::quick_answers::QuickAnswer;
+using chromeos::quick_answers::QuickAnswersExitPoint;
+
 namespace ash {
 
 namespace {
@@ -66,7 +68,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
 
 void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
-  controller_->DismissQuickAnswers(/*is_active=*/true);
+  controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
   if (chromeos::features::IsQuickAnswersV2Enabled()) {
     NewWindowDelegate::GetInstance()->NewTabWithUrl(
@@ -179,19 +181,23 @@ void QuickAnswersUiController::OnManageSettingsButtonPressed() {
 
 void QuickAnswersUiController::OnDogfoodButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
-  controller_->DismissQuickAnswers(/*is_active=*/true);
+  // TODO(b/186904386): cleanup obsolete code after V2 launch.
+  controller_->DismissQuickAnswers(QuickAnswersExitPoint::kUnspecified);
 
   controller_->OpenQuickAnswersDogfoodLink();
 }
 
 void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
-  controller_->DismissQuickAnswers(/*is_active=*/true);
+  controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
   controller_->OpenQuickAnswersSettings();
 }
 
 void QuickAnswersUiController::OnReportQueryButtonPressed() {
+  controller_->DismissQuickAnswers(
+      QuickAnswersExitPoint::kReportQueryButtonClick);
+
   NewWindowDelegate::GetInstance()->OpenFeedbackPage(
       NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
       base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str()));

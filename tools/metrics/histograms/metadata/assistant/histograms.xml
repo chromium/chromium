@@ -413,6 +413,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="QuickAnswers.ExitPoint" enum="QuickAnswersExitPoint"
+    expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Record the Quick Answers exit point point when the Quick Answers UI is
+    dismissed. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="QuickAnswers.Intent" enum="QuickAnswersIntentType"
     expires_after="2022-01-02">
   <owner>llin@google.com</owner>

@@ -39,6 +39,7 @@ namespace {
 
 using chromeos::quick_answers::Context;
 using chromeos::quick_answers::QuickAnswersClient;
+using chromeos::quick_answers::QuickAnswersExitPoint;
 
 constexpr int kMaxSurroundingTextLength = 300;
 
@@ -143,7 +144,9 @@ void QuickAnswersMenuObserver::OnMenuClosed() {
   if (!quick_answers_controller_)
     return;
 
-  quick_answers_controller_->DismissQuickAnswers(!is_other_command_executed_);
+  quick_answers_controller_->DismissQuickAnswers(
+      is_other_command_executed_ ? QuickAnswersExitPoint::kContextMenuClick
+                                 : QuickAnswersExitPoint::KContextMenuDismiss);
 }
 
 void QuickAnswersMenuObserver::CommandWillBeExecuted(int command_id) {

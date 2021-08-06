@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/quick_answers_notice.h"
 #include "components/prefs/pref_service.h"
@@ -22,6 +23,7 @@ using chromeos::quick_answers::Context;
 using chromeos::quick_answers::IntentType;
 using chromeos::quick_answers::QuickAnswer;
 using chromeos::quick_answers::QuickAnswersClient;
+using chromeos::quick_answers::QuickAnswersExitPoint;
 using chromeos::quick_answers::QuickAnswersRequest;
 using chromeos::quick_answers::ResultType;
 
@@ -31,6 +33,8 @@ constexpr char kQuickAnswersSettingsUrl[] =
     "chrome://os-settings/osSearch/search";
 constexpr char kDogfoodUrl[] =
     "https://goto.google.com/quick-answers-dogfood-bugs";
+
+constexpr char kQuickAnswersExitPoint[] = "QuickAnswers.ExitPoint";
 
 std::u16string IntentTypeToString(IntentType intent_type) {
   switch (intent_type) {
@@ -127,7 +131,8 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
   }
 }
 
-void QuickAnswersControllerImpl::DismissQuickAnswers(bool is_active) {
+void QuickAnswersControllerImpl::DismissQuickAnswers(
+    QuickAnswersExitPoint exit_point) {
   visibility_ = QuickAnswersVisibility::kClosed;
   MaybeDismissQuickAnswersNotice();
   MaybeDismissQuickAnswersConsent();
@@ -135,8 +140,19 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(bool is_active) {
   // |quick_answer_| could be null before we receive the result from the server.
   // Do not send the signal since the quick answer is dismissed before ready.
   if (quick_answer_) {
+    // For quick-answer rendered along with browser context menu, if user didn't
+    // click on other context menu items, it is considered as active impression.
+    bool is_active = exit_point != QuickAnswersExitPoint::kContextMenuClick;
     quick_answers_client_->OnQuickAnswersDismissed(quick_answer_->result_type,
                                                    is_active && closed);
+
+    // Record Quick Answers exit point.
+    // Make sure |closed| is true so that only the direct exit point is recorded
+    // when multiple dissmiss requests are received (For example, dissmiss
+    // request from context menu will also fire when the settings button is
+    // pressed).
+    if (closed)
+      base::UmaHistogramEnumeration(kQuickAnswersExitPoint, exit_point);
   }
 }
 
