@@ -5598,6 +5598,7 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
     }
     OnThemeColorChanged(page);
     OnBackgroundColorChanged(page);
+    AXTreeIDForMainFrameHasChanged();
   }
 }
 
