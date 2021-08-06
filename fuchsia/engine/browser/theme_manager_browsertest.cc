@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, LightAndDarkRequested) {
 }
 
 IN_PROC_BROWSER_TEST_F(ThemeManagerTest, UseDisplayService) {
-  frame_->SetPreferredTheme(fuchsia::settings::ThemeType::AUTO);
+  frame_->SetPreferredTheme(fuchsia::settings::ThemeType::DEFAULT);
   base::RunLoop().RunUntilIdle();
 
   ReportSystemTheme(fuchsia::settings::ThemeType::DARK);
@@ -158,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, UseDisplayService) {
 // required but missing.
 // TODO(crbug.com/1148454): Re-enable this test once the service availability
 // validation is back in place.
-IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_AutoWithMissingService) {
-  frame_->SetPreferredTheme(fuchsia::settings::ThemeType::AUTO);
+IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_DefaultWithMissingService) {
+  frame_->SetPreferredTheme(fuchsia::settings::ThemeType::DEFAULT);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(display_binding_->has_clients());
@@ -171,13 +171,13 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_AutoWithMissingService) {
   ASSERT_FALSE(frame_);
 }
 
-// Verify that invalid values from the Display service, such as AUTO,
+// Verify that invalid values from the Display service, such as DEFAULT,
 // are discarded in lieu of the fallback light theme.
 IN_PROC_BROWSER_TEST_F(ThemeManagerTest, HandleBadInputFromDisplayService) {
-  frame_->SetPreferredTheme(fuchsia::settings::ThemeType::AUTO);
-  ReportSystemTheme(fuchsia::settings::ThemeType::AUTO);
+  frame_->SetPreferredTheme(fuchsia::settings::ThemeType::DEFAULT);
+  ReportSystemTheme(fuchsia::settings::ThemeType::DEFAULT);
 
-  EXPECT_TRUE(SetTheme(fuchsia::settings::ThemeType::AUTO));
+  EXPECT_TRUE(SetTheme(fuchsia::settings::ThemeType::DEFAULT));
   EXPECT_EQ(QueryThemeFromCssFeature(), kCssLight);
 
   ReportSystemTheme(fuchsia::settings::ThemeType::DEFAULT);

@@ -24,8 +24,7 @@ PreferredColorScheme ThemeTypeToBlinkScheme(ThemeType type) {
       return PreferredColorScheme::kLight;
     case ThemeType::DARK:
       return PreferredColorScheme::kDark;
-    case ThemeType::DEFAULT:
-    case ThemeType::AUTO:
+    default:
       NOTREACHED();
       return kFallbackColorScheme;
   }
@@ -49,19 +48,12 @@ void ThemeManager::SetTheme(
   requested_theme_ = theme;
 
   on_set_complete_ = std::move(on_set_complete);
-  switch (*requested_theme_) {
-    case ThemeType::AUTO:
-      if (!EnsureDisplayService()) {
-        OnDisplayServiceMissing();
-        return;
-      }
-      break;
-    case ThemeType::DEFAULT:
-      std::move(on_set_complete_).Run(false);
+
+  if (theme == ThemeType::DEFAULT) {
+    if (!EnsureDisplayService()) {
+      OnDisplayServiceMissing();
       return;
-    case ThemeType::LIGHT:
-    case ThemeType::DARK:
-      break;
+    }
   }
 
   ApplyTheme();
@@ -91,7 +83,7 @@ bool ThemeManager::EnsureDisplayService() {
     // Otherwise, if a failure was detected for a Display that was previously
     // functioning, it should be treated as a transient issue and the last known
     // system theme should be used.
-    if (requested_theme_ && (*requested_theme_ == ThemeType::AUTO) &&
+    if (requested_theme_ && (*requested_theme_ == ThemeType::DEFAULT) &&
         !did_receive_first_watch_result_) {
       OnDisplayServiceMissing();
     }
@@ -102,7 +94,7 @@ bool ThemeManager::EnsureDisplayService() {
 }
 
 void ThemeManager::OnDisplayServiceMissing() {
-  LOG(ERROR) << "AUTO theme requires access to the "
+  LOG(ERROR) << "DEFAULT theme requires access to the "
                 "`fuchsia.settings.Display` service to work.";
 
   if (on_set_complete_)
@@ -115,7 +107,7 @@ void ThemeManager::ApplyTheme() {
   blink::web_pref::WebPreferences web_preferences =
       web_contents_->GetOrCreateWebPreferences();
 
-  if (requested_theme_ == ThemeType::AUTO) {
+  if (requested_theme_ == ThemeType::DEFAULT) {
     if (!system_theme_) {
       // Defer theme application until we receive a system theme.
       return;

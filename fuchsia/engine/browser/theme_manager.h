@@ -25,7 +25,7 @@ class WEB_ENGINE_EXPORT ThemeManager {
   ThemeManager& operator=(const ThemeManager&) = delete;
 
   // Sets the |theme| requested by the FIDL caller.
-  // If the |theme| is AUTO, then the theme provided by |display_service_|
+  // If the |theme| is DEFAULT, then the theme provided by |display_service_|
   // will be used.
   // |on_set_complete| is run with |true| if the theme was set correctly,
   // or |false| either if |theme| is invalid, or if |display_service_| is

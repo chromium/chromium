@@ -184,7 +184,7 @@ void CastComponent::StartComponent() {
                      fuchsia::sys::TerminationReason::INTERNAL_ERROR));
 
   // Get the theme from the system service.
-  frame()->SetPreferredTheme(fuchsia::settings::ThemeType::AUTO);
+  frame()->SetPreferredTheme(fuchsia::settings::ThemeType::DEFAULT);
 
   // Media loading has to be unblocked by the agent via the
   // ApplicationController.
