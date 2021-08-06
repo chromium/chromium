@@ -585,6 +585,7 @@ enum IntentTextBoundaryType {
   pageStartOrEnd,
   paragraphEnd,
   paragraphStart,
+  paragraphStartSkippingEmptyParagraphs,
   paragraphStartOrEnd,
   sentenceEnd,
   sentenceStart,

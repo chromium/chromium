@@ -53,6 +53,9 @@ AXTextSelection AXTextSelection::FromDirectionAndGranularity(
     case ax::mojom::TextBoundary::kParagraphStart:
       granularity = AXTextSelectionGranularity::kParagraph;
       break;
+    case ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs:
+      granularity = AXTextSelectionGranularity::kParagraph;
+      break;
     case ax::mojom::TextBoundary::kParagraphStartOrEnd:
       has_stayed_within_same_text_unit = true;
       granularity = AXTextSelectionGranularity::kParagraph;

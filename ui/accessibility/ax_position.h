@@ -1801,6 +1801,24 @@ class AXPosition {
         }
         break;
 
+      // TODO(nektar): Implement this paragraph boundary via a new paragraph
+      // predicate.
+      case ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs:
+        switch (direction) {
+          case ax::mojom::MoveDirection::kNone:
+            NOTREACHED();
+            break;
+          case ax::mojom::MoveDirection::kBackward:
+            resulting_position =
+                CreatePreviousParagraphStartPosition(boundary_behavior);
+            break;
+          case ax::mojom::MoveDirection::kForward:
+            resulting_position =
+                CreateNextParagraphStartPosition(boundary_behavior);
+            break;
+        }
+        break;
+
       case ax::mojom::TextBoundary::kParagraphStartOrEnd:
         switch (direction) {
           case ax::mojom::MoveDirection::kNone:

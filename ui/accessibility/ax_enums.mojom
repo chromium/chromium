@@ -990,7 +990,8 @@ enum InputEventType {
 // e.g. at the start or end of a text field.
 //
 // TODO(nektar): Split TextBoundary into TextUnit and TextBoundary.
-// Next value: 20
+// Next version: 2
+// Next value: 21
 [Extensible, Stable, Uuid="8e6e10f0-5c0f-4c1e-a67e-9407ee10bd85"]
 enum TextBoundary {
   [Default]kNone = 0,
@@ -1005,6 +1006,13 @@ enum TextBoundary {
   kPageStartOrEnd = 9,
   kParagraphEnd = 10,
   kParagraphStart = 11,
+
+  // For UI Automation, empty lines after a paragraph should be merged into the
+  // preceding paragraph.
+  //
+  // See https://docs.microsoft.com/en-us/windows/desktop/api/UIAutomationCore/ne-uiautomationcore-textunit
+  [MinVersion=1] kParagraphStartSkippingEmptyParagraphs = 20,
+
   kParagraphStartOrEnd = 12,
   kSentenceEnd = 13,
   kSentenceStart = 14,

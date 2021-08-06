@@ -587,6 +587,8 @@ chrome.automation.IntentTextBoundaryType = {
   PAGE_START_OR_END: 'pageStartOrEnd',
   PARAGRAPH_END: 'paragraphEnd',
   PARAGRAPH_START: 'paragraphStart',
+  PARAGRAPH_START_SKIPPING_EMPTY_PARAGRAPHS:
+      'paragraphStartSkippingEmptyParagraphs',
   PARAGRAPH_START_OR_END: 'paragraphStartOrEnd',
   SENTENCE_END: 'sentenceEnd',
   SENTENCE_START: 'sentenceStart',

@@ -79,7 +79,12 @@ ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit) {
     case TextUnit_Line:
       return ax::mojom::TextBoundary::kLineStart;
     case TextUnit_Paragraph:
-      return ax::mojom::TextBoundary::kParagraphStart;
+      // According to MSDN, a paragraph in UI Automation should include any
+      // trailing whitespace after the paragraph. In essence this means that
+      // when finding the next or previous paragraph start position, we should
+      // skip any empty paragraphs, i.e. paragraphs with only whitespace in
+      // them.
+      return ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs;
     case TextUnit_Page:
       // UI Automation's TextUnit_Page cannot be reliably supported in a Web
       // document. We return kWebPage which is the next best thing.

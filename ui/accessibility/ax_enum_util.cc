@@ -1261,6 +1261,8 @@ const char* ToString(ax::mojom::TextBoundary text_boundary) {
       return "paragraphEnd";
     case ax::mojom::TextBoundary::kParagraphStart:
       return "paragraphStart";
+    case ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs:
+      return "paragraphStartSkippingEmptyParagraphs";
     case ax::mojom::TextBoundary::kParagraphStartOrEnd:
       return "paragraphStartOrEnd";
     case ax::mojom::TextBoundary::kSentenceEnd:
