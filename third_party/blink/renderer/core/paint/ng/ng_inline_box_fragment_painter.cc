@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -50,6 +51,10 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
                                        const PhysicalOffset& paint_offset) {
   ScopedDisplayItemFragment display_item_fragment(
       paint_info.context, inline_box_item_.FragmentId());
+  const LayoutObject& layout_object = *inline_box_fragment_.GetLayoutObject();
+  absl::optional<ScopedSVGPaintState> svg_paint_state;
+  if (layout_object.IsSVGInline())
+    svg_paint_state.emplace(layout_object, paint_info);
 
   const PhysicalOffset adjusted_paint_offset =
       paint_offset + inline_box_item_.OffsetInContainerFragment();

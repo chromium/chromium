@@ -78,10 +78,15 @@ void LayoutSVGInline::ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
                                                  FloatRect& bounds) {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() == NGFragmentItem::kSvgText)
+    if (item.Type() == NGFragmentItem::kSvgText) {
       bounds.Unite(item.ObjectBoundingBox());
-    else if (NGInlineCursor descendants = cursor.CursorForDescendants())
-      ObjectBoundingBoxForCursor(descendants, bounds);
+    } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
+      for (; descendants; descendants.MoveToNext()) {
+        const NGFragmentItem& descendant_item = *descendants.CurrentItem();
+        if (descendant_item.Type() == NGFragmentItem::kSvgText)
+          bounds.Unite(descendant_item.ObjectBoundingBox());
+      }
+    }
   }
 }
 

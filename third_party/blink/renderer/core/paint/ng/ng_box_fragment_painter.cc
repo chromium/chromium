@@ -1661,14 +1661,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
     return;
   }
 
-  const LayoutObject* layout_object = child_fragment.GetLayoutObject();
   if (child_fragment.IsInlineBox()) {
-    if (layout_object->IsSVGInline()) {
-      ScopedSVGPaintState paint_state(*layout_object, paint_info);
-      NGInlineBoxFragmentPainter(cursor, item, child_fragment)
-          .Paint(paint_info, paint_offset);
-      return;
-    }
     NGInlineBoxFragmentPainter(cursor, item, child_fragment)
         .Paint(paint_info, paint_offset);
     return;
@@ -1676,7 +1669,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
 
   // Block-in-inline
   DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
-  DCHECK(!layout_object->IsInline());
+  DCHECK(!child_fragment.GetLayoutObject()->IsInline());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   paint_info_for_descendants.SetIsInFragmentTraversal();
   PaintBlockChild({&child_fragment, item.OffsetInContainerFragment()},

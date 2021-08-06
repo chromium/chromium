@@ -385,6 +385,15 @@ void LayoutInline::UpdateAlwaysCreateLineBoxes(bool full_layout) {
 bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
     const ComputedStyle& style) const {
   NOT_DESTROYED();
+
+  // We'd like to use ScopedSVGPaintState in
+  // NGInlineBoxFragmentPainter::Paint().
+  // TODO(layout-dev): Improve the below condition so that we a create box
+  // fragment only if this requires ScopedSVGPaintState, instead of
+  // creating box fragments for all LayoutSVGInlines.
+  if (IsSVGInline())
+    return true;
+
   if (style.HasBoxDecorationBackground() || style.MayHavePadding() ||
       style.MayHaveMargin())
     return true;

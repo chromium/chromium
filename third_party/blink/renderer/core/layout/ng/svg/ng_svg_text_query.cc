@@ -56,8 +56,12 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
     items = &cursor.Items();
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSvgText)
+      if (item.Type() == NGFragmentItem::kSvgText) {
         item_list.push_back(&item);
+      } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
+        if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText)
+          item_list.push_back(descendants.CurrentItem());
+      }
     }
   }
   return std::tie(item_list, items);
