@@ -369,6 +369,7 @@ source_set("web_applications_test_support_minimal") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common:buildflags",

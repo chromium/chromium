@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/chromeos_buildflags.h"
 
 class Profile;
 

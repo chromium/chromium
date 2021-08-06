@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

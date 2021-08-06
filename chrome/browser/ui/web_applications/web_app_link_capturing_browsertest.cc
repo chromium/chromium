@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"

@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

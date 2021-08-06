@@ -6,6 +6,7 @@
 
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/common/chrome_features.h"

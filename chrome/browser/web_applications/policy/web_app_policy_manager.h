@@ -10,11 +10,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
