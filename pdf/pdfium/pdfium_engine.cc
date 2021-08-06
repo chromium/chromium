@@ -586,8 +586,14 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
   CancelPaints();
 
   plugin_size_ = size;
-  CalculateVisiblePages();
-  OnSelectionPositionChanged();
+
+  if (document_pending_) {
+    document_pending_ = false;
+    FinishLoadingDocument();
+  } else {
+    CalculateVisiblePages();
+    OnSelectionPositionChanged();
+  }
 }
 
 void PDFiumEngine::ScrolledToXPosition(int position) {
@@ -834,6 +840,13 @@ void PDFiumEngine::FinishLoadingDocument() {
   // Note that doc_loader_->IsDocumentComplete() may not be true here if
   // called via `OnDocumentCanceled()`.
   DCHECK(doc());
+
+  DCHECK(!document_pending_);
+  if (!plugin_size_.has_value()) {
+    // Don't finish loading until `plugin_size_` is initialized.
+    document_pending_ = true;
+    return;
+  }
 
   LoadBody();
 
@@ -2944,6 +2957,9 @@ bool PDFiumEngine::IsLinearized() {
 }
 
 void PDFiumEngine::CalculateVisiblePages() {
+  if (!plugin_size_.has_value())
+    return;
+
   // Early return if the PDF isn't being loaded or if we don't have the document
   // info yet. The latter is important because otherwise as the PDF is being
   // initialized by the renderer there could be races that call this method

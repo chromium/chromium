@@ -4,6 +4,8 @@
 
 #include "pdf/pdf_view_plugin_base.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -312,31 +314,12 @@ std::unique_ptr<UrlLoader> PdfViewPluginBase::CreateUrlLoader() {
 }
 
 void PdfViewPluginBase::DocumentLoadComplete() {
-  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
-  document_load_state_ = DocumentLoadState::kComplete;
-
-  UserMetricsRecordAction("PDF.LoadSuccess");
-  RecordDocumentMetrics();
-
-  // Clear the focus state for on-screen keyboards.
-  FormTextFieldFocusChange(false);
-
-  if (IsPrintPreview())
-    OnPrintPreviewLoaded();
-
-  SendAttachments();
-  SendBookmarks();
-  SendMetadata();
-  SendLoadingProgress(/*percentage=*/100);
-
-  if (accessibility_state_ == AccessibilityState::kPending)
-    LoadAccessibility();
-
-  if (!full_frame_)
-    return;
-
-  DidStopLoading();
-  SetContentRestrictions(GetContentRestrictions());
+  // This method may be called in a `blink::ScriptForbiddenScope` context, which
+  // prevents posting messages, so complete the work asynchronously.
+  ScheduleTaskOnMainThread(
+      FROM_HERE,
+      base::BindOnce(&PdfViewPluginBase::DoDocumentLoadComplete, GetWeakPtr()),
+      /*result=*/0, base::TimeDelta());
 }
 
 void PdfViewPluginBase::DocumentLoadFailed() {
@@ -1370,6 +1353,35 @@ void PdfViewPluginBase::ClearDeferredInvalidates(
   deferred_invalidates_.clear();
 }
 
+void PdfViewPluginBase::DoDocumentLoadComplete(
+    int32_t /*unused_but_required*/) {
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
+  document_load_state_ = DocumentLoadState::kComplete;
+
+  UserMetricsRecordAction("PDF.LoadSuccess");
+  RecordDocumentMetrics();
+
+  // Clear the focus state for on-screen keyboards.
+  FormTextFieldFocusChange(false);
+
+  if (IsPrintPreview())
+    OnPrintPreviewLoaded();
+
+  SendAttachments();
+  SendBookmarks();
+  SendMetadata();
+  SendLoadingProgress(/*percentage=*/100);
+
+  if (accessibility_state_ == AccessibilityState::kPending)
+    LoadAccessibility();
+
+  if (!full_frame_)
+    return;
+
+  DidStopLoading();
+  SetContentRestrictions(GetContentRestrictions());
+}
+
 void PdfViewPluginBase::SendAttachments() {
   const std::vector<DocumentAttachmentInfo>& attachment_infos =
       engine()->GetDocumentAttachmentInfoList();
@@ -1556,6 +1568,7 @@ void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   preview_client_ = std::make_unique<PreviewModeClient>(this);
   preview_engine_ = std::make_unique<PDFiumEngine>(
       preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  preview_engine_->PluginSizeUpdated({});
   preview_engine_->HandleDocumentLoad(std::move(loader), GetURL());
 }
 

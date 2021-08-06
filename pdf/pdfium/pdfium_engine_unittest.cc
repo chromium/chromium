@@ -95,6 +95,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
     if (engine.GetNumberOfPages() == 0) {
       // This is not necessarily a test failure; it just indicates incremental
       // loading is not occurring.
+      engine.PluginSizeUpdated({});
       loaded_incrementally = false;
     } else {
       // Note: Plugin size chosen so all pages of the document are visible. The
@@ -427,6 +428,49 @@ TEST_F(PDFiumEngineTest, GetBadPdfVersion) {
 
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
   EXPECT_EQ(PdfVersion::kUnknown, doc_metadata.version);
+}
+
+TEST_F(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  engine.PluginSizeUpdated({});
+  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
+    continue;
+
+  EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
+}
+
+TEST_F(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  EXPECT_TRUE(initialize_result.document_loader->SimulateLoadData(1024));
+  engine.PluginSizeUpdated({});
+  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
+    continue;
+
+  EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
+}
+
+TEST_F(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  while (initialize_result.document_loader->SimulateLoadData(UINT32_MAX))
+    continue;
+  engine.PluginSizeUpdated({});
+
+  EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }
 
 TEST_F(PDFiumEngineTest, IncrementalLoadingFeatureDefault) {

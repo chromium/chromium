@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -244,7 +245,9 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (const base::Location&, ResultCallback, int32_t, base::TimeDelta),
               (override));
 
-  MOCK_METHOD(base::WeakPtr<PdfViewPluginBase>, GetWeakPtr, (), (override));
+  base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
 
   MOCK_METHOD(std::unique_ptr<UrlLoader>,
               CreateUrlLoaderInternal,
@@ -306,6 +309,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
  private:
   std::vector<base::Value> sent_messages_;
+
+  base::WeakPtrFactory<FakePdfViewPluginBase> weak_factory_{this};
 };
 
 base::Value CreateExpectedFormTextFieldFocusChangeResponse() {
@@ -425,7 +430,18 @@ base::Value CreateExpectedSaveToFileResponse(const std::string& token) {
 
 class PdfViewPluginBaseTest : public testing::Test {
  protected:
-  FakePdfViewPluginBase fake_plugin_;
+  void SimulateDocumentLoadComplete() {
+    ResultCallback callback;
+    EXPECT_CALL(fake_plugin_, ScheduleTaskOnMainThread)
+        .WillOnce(MoveArg<1>(&callback));
+
+    fake_plugin_.DocumentLoadComplete();
+
+    ASSERT_TRUE(callback);
+    std::move(callback).Run(0);
+  }
+
+  testing::NiceMock<FakePdfViewPluginBase> fake_plugin_;
 };
 
 class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
@@ -512,7 +528,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
   EXPECT_CALL(fake_plugin_,
               SetAccessibilityDocInfo(fake_plugin_.GetAccessibilityDocInfo()));
 
-  fake_plugin_.DocumentLoadComplete();
+  SimulateDocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
             fake_plugin_.document_load_state());
   EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kLoaded,
@@ -554,7 +570,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
               SetAccessibilityDocInfo(fake_plugin_.GetAccessibilityDocInfo()))
       .Times(0);
 
-  fake_plugin_.DocumentLoadComplete();
+  SimulateDocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
             fake_plugin_.document_load_state());
   EXPECT_EQ(PdfViewPluginBase::AccessibilityState::kOff,
@@ -590,7 +606,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()))
       .Times(0);
 
-  fake_plugin_.DocumentLoadComplete();
+  SimulateDocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
             fake_plugin_.document_load_state());
 
@@ -617,7 +633,7 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
   EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
 
-  fake_plugin_.DocumentLoadComplete();
+  SimulateDocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
             fake_plugin_.document_load_state());
 

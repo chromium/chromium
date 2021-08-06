@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -260,7 +261,7 @@ class PDFiumEngine : public PDFEngine,
   friend class SelectionChangeInvalidator;
 
   gfx::Size plugin_size() const {
-    // TODO(crbug.com/1237119): Enforce DCHECK(plugin_size_.has_value()).
+    DCHECK(plugin_size_.has_value());
     return plugin_size_.value_or(gfx::Size());
   }
 
@@ -683,6 +684,7 @@ class PDFiumEngine : public PDFEngine,
   PDFiumFormFiller form_filler_;
 
   std::unique_ptr<PDFiumDocument> document_;
+  bool document_pending_ = false;
   bool document_loaded_ = false;
 
   // The page(s) of the document.

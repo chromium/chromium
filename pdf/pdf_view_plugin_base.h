@@ -444,6 +444,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates(int32_t /*unused_but_required*/);
 
+  // Asynchronously complete `DocumentLoadComplete()`.
+  void DoDocumentLoadComplete(int32_t /*unused_but_required*/);
+
   // Sends the attachments data.
   void SendAttachments();
 
