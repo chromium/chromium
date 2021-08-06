@@ -3962,6 +3962,7 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     NavigationRequest* committing_navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params) {
   DCHECK(committing_navigation_request->IsPageActivation());
+  DCHECK(is_main_frame());
 
   auto request = navigation_requests_.find(committing_navigation_request);
   CHECK(request != navigation_requests_.end());
@@ -3977,8 +3978,20 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
                               /*same_document_params=*/nullptr);
 
-  // The page is already loaded since it came from the cache, so fire the stop
-  // loading event.
+  // If DidFinishLoad occurred pre-activation and was deferred to be dispatched
+  // after activation, dispatch it now.
+  if (is_prerender_page_activation) {
+    ForEachRenderFrameHost(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+      rfh->MaybeDispatchDidFinishLoadOnPrerenderActivation();
+    }));
+  }
+
+  // Try to dispatch DidStopLoading event (note that
+  // RenderFrameHostImpl::DidStopLoading implementation won't dispatch the event
+  // if the page is still loading). We dispatch it here as it hasn't been
+  // dispatched pre-activation because the back-forward cache page is already
+  // loaded, whereas, for initial prerendering navigation, prerendered page
+  // might still be loading.
   DidStopLoading();
 
   if (is_prerender_page_activation) {
@@ -4211,6 +4224,21 @@ void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
   }
 
   SetLifecycleStateToReadyToBeDeleted();
+}
+
+void RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation() {
+  auto* document_data = document_associated_data_.get();
+
+  // Don't dispatch notification if DidFinishLoad has not yet been invoked for
+  // `rfh` i.e., when the url is nullopt.
+  if (!document_data->pending_did_finish_load_url_for_prerendering)
+    return;
+
+  delegate_->OnDidFinishLoad(
+      this, *document_data->pending_did_finish_load_url_for_prerendering);
+
+  // Set to nullopt to avoid calling DidFinishLoad twice.
+  document_data->pending_did_finish_load_url_for_prerendering.reset();
 }
 
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
@@ -5336,6 +5364,15 @@ void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {
 }
 
 void RenderFrameHostImpl::DidFinishLoad(const GURL& validated_url) {
+  // In case of prerendering, we dispatch DidFinishLoad on activation. This is
+  // done to avoid notifying observers about a load event triggered from a
+  // inactive RenderFrameHost.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+    document_associated_data_->pending_did_finish_load_url_for_prerendering =
+        validated_url;
+    return;
+  }
+
   delegate_->OnDidFinishLoad(this, validated_url);
 }
 
