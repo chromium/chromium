@@ -73,14 +73,21 @@ def _matches(branch_selector):
                 .format(_BRANCH_SELECTORS, b))
     return False
 
-def _value(*, for_main = None, for_branches = None):
-    """Provide a value that varies between main/master/trunk and branches.
+def _value(values, *, default = None):
+    """Provide a value that varies depending on the project settings.
 
-    If the current project settings indicate that this is main/master/trunk,
-    then `for_main` will be returned. Otherwise, `for_branches` will be
-    returned.
+    Args:
+      values - A mapping from branch selectors to the value to be used for the
+        matching branches. The keys can be either a single selector or a tuple
+        of selectors. The selectors will be matched in the order declared in the
+        mapping.
+      default - The value to be returned if the project settings don't match any
+        of the branch selectors in the keys of `values`.
     """
-    return for_main if settings.is_main else for_branches
+    for selector, value in values.items():
+        if _matches(selector):
+            return value
+    return default
 
 def _exec(module, *, branch_selector = MAIN):
     """Execute `module` if `branch_selector` matches the project settings."""
@@ -103,12 +110,12 @@ branches = struct(
     LTS_BRANCHES = LTS_BRANCHES,
 
     # Branch selectors for tracking milestones through release channels
-    STANDARD_MILESTONE = [MAIN, STANDARD_BRANCHES],
-    LTS_MILESTONE = [MAIN, STANDARD_BRANCHES, LTS_BRANCHES],
+    STANDARD_MILESTONE = (MAIN, STANDARD_BRANCHES),
+    LTS_MILESTONE = (MAIN, STANDARD_BRANCHES, LTS_BRANCHES),
 
     # Branch selectors to apply widely to branches
     ALL_BRANCHES = _BRANCH_SELECTORS,
-    NOT_MAIN = [b for b in _BRANCH_SELECTORS if b != MAIN],
+    NOT_MAIN = tuple([b for b in _BRANCH_SELECTORS if b != MAIN]),
 
     # Branch functions
     matches = _matches,
