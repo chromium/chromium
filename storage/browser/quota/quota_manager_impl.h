@@ -440,12 +440,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     StatusCallback evict_bucket_data_callback;
   };
 
-  // Lazily called on the IO thread when the first quota manager API is called.
+  // Ensures that the database will be open when other methods access it.
   //
-  // Initialize() must be called after all quota clients are added to the
-  // manager by RegisterClient().
-  void LazyInitialize();
-  void FinishLazyInitialize(bool is_database_bootstraped);
+  // This method must be called after RegisterClient() is called for all
+  // QuotaClients that will be connected to the QuotaManager. This means that
+  // methods that use the database must only be called after all the
+  // RegisterClient() calls.
+  // TODO(crbug.com/1182630): Remove this restriction.
+  void EnsureDatabaseOpened();
+
+  // Called right after the database is opened.
+  void DidOpenDatabase(bool is_database_bootstraped);
+
   void BootstrapDatabaseForEviction(GetBucketCallback did_get_bucket_callback,
                                     int64_t unused_usage,
                                     int64_t unused_unlimited_usage);
@@ -598,7 +604,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
   mutable std::unique_ptr<QuotaDatabase> database_;
-  bool is_database_bootstrapped_ = false;
+  bool is_database_bootstrapped_for_eviction_ = false;
 
   GetQuotaSettingsFunc get_settings_function_;
   scoped_refptr<base::TaskRunner> get_settings_task_runner_;
