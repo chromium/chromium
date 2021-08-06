@@ -164,15 +164,16 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 // Tests that encryption is not accessible when Sync settings have not been
 // confirmed.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
-  // "Turn off Sync" item only available in
-  // |signin::kMobileIdentityConsistency|.
-  ASSERT_FALSE([mediator_.consumer.tableViewModel
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
                                          SignOutSectionIdentifier]);
 
@@ -190,6 +191,9 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
 // Tests that encryption is not accessible when Sync is disabled by the
 // administrator.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
   FirstSetupSyncOff();
   ON_CALL(*sync_service_mock_, GetDisableReasons())
       .WillByDefault(
@@ -197,9 +201,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
-  // "Turn off Sync" item only available in
-  // |signin::kMobileIdentityConsistency|.
-  ASSERT_FALSE([mediator_.consumer.tableViewModel
+  ASSERT_TRUE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
                                          SignOutSectionIdentifier]);
 

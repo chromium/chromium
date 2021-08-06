@@ -107,6 +107,9 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 // Tests PrivacyTableViewController is set up with all appropriate items
 // and sections.
 TEST_F(PrivacyTableViewControllerTest, TestModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
   CreateController();
   CheckController();
   EXPECT_EQ(2, NumberOfSections());
@@ -127,7 +130,7 @@ TEST_F(PrivacyTableViewControllerTest, TestModel) {
       handoffSubtitle, 1, 0);
 
   CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER),
+      l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
       /* section= */ 0);
 }
 
