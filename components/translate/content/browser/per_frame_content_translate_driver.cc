@@ -19,6 +19,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
+#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "components/translate/content/browser/content_record_page_language.h"
 #include "components/translate/content/browser/content_translate_util.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"

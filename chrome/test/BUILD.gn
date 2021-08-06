@@ -1189,6 +1189,7 @@ if (!is_android) {
       "//components/services/app_service/public/cpp:app_url_handling",
       "//components/services/app_service/public/cpp:protocol_handling",
       "//components/services/language_detection/public/cpp",
+      "//components/services/language_detection/public/mojom",
       "//components/services/patch/content",
       "//components/services/patch/public/cpp",
       "//components/services/patch/public/mojom",

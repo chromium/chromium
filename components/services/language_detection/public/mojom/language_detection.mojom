@@ -5,8 +5,10 @@
 module language_detection.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Interface for a service to detect the language of provided text.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface LanguageDetectionService {
   // Analyzes the provided |text| to determine its likely language.
   // Returns the resulting language of the analysis and whether that
