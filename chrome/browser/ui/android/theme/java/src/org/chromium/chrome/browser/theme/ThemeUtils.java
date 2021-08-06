@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.theme;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -27,6 +31,7 @@ import org.chromium.ui.util.ColorUtils;
  * Utility methods for theme colors.
  */
 public class ThemeUtils {
+    private static final String TAG = "ThemeUtils";
     private static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
 
     // This param is used to split the dynamic colors launch into a minimal launch that is primarily
@@ -137,5 +142,27 @@ public class ThemeUtils {
     public static boolean isUsingDefaultToolbarColor(
             Context context, boolean isIncognito, int color) {
         return color == ChromeColors.getDefaultThemeColor(context, isIncognito);
+    }
+
+    /**
+     * Returns the opaque toolbar hairline color based on the given parameters.
+     * @param context The {@link Context} to access the theme and resources.
+     * @param toolbarColor The toolbar color to base the calculation on.
+     * @param isIncognito Whether the color is for incognito mode.
+     * @return The color that will be used to tint the hairline.
+     */
+    public static @ColorInt int getToolbarHairlineColor(
+            Context context, @ColorInt int toolbarColor, boolean isIncognito) {
+        final Resources res = context.getResources();
+        if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
+            return isIncognito
+                    ? res.getColor(R.color.divider_line_bg_color_light)
+                    : MaterialColors.getColor(context, R.attr.divider_line_bg_color, TAG);
+        }
+
+        final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);
+        final int hairlineColorOpaque =
+                res.getColor(R.color.toolbar_hairline_overlay_opaque) & 0xFF000000;
+        return ColorUtils.getColorWithOverlay(toolbarColor, hairlineColorOpaque, alpha);
     }
 }
