@@ -88,6 +88,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   String method() const;
   void setMethod(const AtomicString&);
+  FormSubmission::SubmitMethod Method() const { return attributes_.Method(); }
 
   // Find the 'default button.'
   // https://html.spec.whatwg.org/C/#default-button

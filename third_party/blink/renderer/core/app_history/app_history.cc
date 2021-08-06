@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/history_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -548,8 +549,9 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
                       EqualIgnoringFragmentIdentifier(url, current_url));
 
   init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
-  init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)
-                         : nullptr);
+  if (form && form->Method() == FormSubmission::kPostMethod) {
+    init->setFormData(FormData::Create(form, ASSERT_NO_EXCEPTION));
+  }
   if (navigation)
     init->setInfo(navigation->info);
   init->setSignal(MakeGarbageCollected<AbortSignal>(GetSupplementable()));
