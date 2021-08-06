@@ -121,7 +121,7 @@ bool CodecImage::CopyTexImage(unsigned target) {
   // glGetIntegerv() parameter. In this case the value of |texture_id| will be
   // zero and we assume that it is properly bound to TextureOwner's texture id.
   output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(
-      BindingsMode::kEnsureTexImageBound,
+      BindingsMode::kBindImage,
       output_buffer_renderer_->texture_owner()->GetTextureId());
   return true;
 }
@@ -203,8 +203,7 @@ bool CodecImage::IsUsingGpuMemory() const {
 
 void CodecImage::UpdateAndBindTexImage(GLuint service_id) {
   AssertAcquiredDrDcLock();
-  RenderToTextureOwnerFrontBuffer(BindingsMode::kEnsureTexImageBound,
-                                  service_id);
+  RenderToTextureOwnerFrontBuffer(BindingsMode::kBindImage, service_id);
 }
 
 bool CodecImage::HasTextureOwner() const {
@@ -272,10 +271,10 @@ CodecImage::GetAHardwareBuffer() {
   if (!output_buffer_renderer_)
     return nullptr;
 
-  // Using BindingsMode::kDontRestoreIfBound here since we do not want to bind
+  // Using BindingsMode::kDontBindImage here since we do not want to bind
   // the image. We just want to get the AHardwareBuffer from the latest image.
   // Hence pass service_id as 0.
-  RenderToTextureOwnerFrontBuffer(BindingsMode::kDontRestoreIfBound,
+  RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage,
                                   0 /* service_id */);
   return output_buffer_renderer_->texture_owner()->GetAHardwareBuffer();
 }

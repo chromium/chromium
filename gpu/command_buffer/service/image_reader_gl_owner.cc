@@ -590,6 +590,11 @@ void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound(GLuint service_id) {
   if (!InsertEglFenceAndWait(GetReadyFence()))
     return;
 
+  // CreateAndBindEglImage will bind texture with service_id to current unit. We
+  // never should alter gl binding without updating state tracking, which we
+  // can't do here, so restore previous after we done.
+  ScopedRestoreTextureBinding scoped_restore_texture;
+
   // Create EGL image from the AImage and bind it to the texture.
   if (!CreateAndBindEglImage(image_, service_id, &texture_owner_->loader_))
     return;

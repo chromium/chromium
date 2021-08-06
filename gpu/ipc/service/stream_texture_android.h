@@ -96,17 +96,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   bool RenderToOverlay() override;
   bool TextureOwnerBindsTextureOnUpdate() override;
 
-  // Update the TextureOwner to get the latest image. Also bind the latest image
-  // to the provided |service_id| if TextureOwner does not binds texture on
-  // update. If |bindings_mode| is other than kEnsureTexImageBound, then
-  // |service_id| is not required.
-  void UpdateTexImage(BindingsMode bindings_mode, GLuint service_id);
-
-  // Ensure that the latest image is bound to the texture |service_id| if
-  // TextureOwner does not binds texture on update. If TextureOwner binds
-  // texture on update, then it will always be bound to the TextureOwners
-  // texture and |service_id| will be ignored.
-  void EnsureBoundIfNeeded(BindingsMode mode, GLuint service_id);
   gpu::Mailbox CreateSharedImage(const gfx::Size& coded_size);
 
   // Called when a new frame is available for the SurfaceOwner.

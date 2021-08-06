@@ -281,9 +281,6 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresTextureBindings) {
 }
 
 TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
-  codec_buffer_wait_coordinator_->texture_owner()->expect_update_tex_image =
-      false;
-
   GLuint pre_bound_texture = 0;
   glGenTextures(1, &pre_bound_texture);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, pre_bound_texture);
@@ -307,11 +304,9 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   ASSERT_TRUE(context->MakeCurrent(surface.get()));
 
   auto i = NewImage(kTextureOwner);
-  // Our context should not be current when UpdateTexImage() is called.
+  // UpdateTexImage sets it's own context.
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage())
-      .WillOnce(
-          Invoke([&]() { ASSERT_FALSE(context->IsCurrent(surface.get())); }));
+              UpdateTexImage());
   i->RenderToFrontBuffer();
   // Our context should have been restored.
   ASSERT_TRUE(context->IsCurrent(surface.get()));
@@ -367,7 +362,7 @@ TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
   i->NotifyUnused();
   EXPECT_FALSE(i->RenderToTextureOwnerBackBuffer());
   EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer(
-      CodecImage::BindingsMode::kEnsureTexImageBound,
+      CodecImage::BindingsMode::kBindImage,
       codec_buffer_wait_coordinator_->texture_owner()->GetTextureId()));
 }
 

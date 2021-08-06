@@ -132,6 +132,20 @@ class GPU_GLES2_EXPORT TextureOwner
   friend class base::RefCountedDeleteOnSequence<TextureOwner>;
   friend class base::DeleteHelper<TextureOwner>;
 
+  // Used to restore texture binding to GL_TEXTURE_EXTERNAL_OES target.
+  class ScopedRestoreTextureBinding {
+   public:
+    ScopedRestoreTextureBinding() {
+      glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id_);
+    }
+    ~ScopedRestoreTextureBinding() {
+      glBindTexture(GL_TEXTURE_EXTERNAL_OES, bound_service_id_);
+    }
+
+   private:
+    GLint bound_service_id_;
+  };
+
   // |texture| is the texture that we'll own.
   TextureOwner(bool binds_texture_on_update,
                std::unique_ptr<gles2::AbstractTexture> texture,
