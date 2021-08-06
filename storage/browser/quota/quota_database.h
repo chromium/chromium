@@ -189,6 +189,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
     int64_t quota = 0;
   };
+  friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator==(
+      const QuotaTableEntry& lhs,
+      const QuotaTableEntry& rhs);
   friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
       const QuotaTableEntry& lhs,
       const QuotaTableEntry& rhs);

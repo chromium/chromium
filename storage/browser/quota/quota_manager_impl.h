@@ -97,6 +97,17 @@ struct UsageInfo {
   const std::string host;
   const blink::mojom::StorageType type;
   const int64_t usage;
+
+  bool operator==(const UsageInfo& that) const {
+    return std::tie(host, usage, type) ==
+           std::tie(that.host, that.usage, that.type);
+  }
+
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const UsageInfo& usage_info) {
+    return os << "{\"" << usage_info.host << "\", " << usage_info.type << ", "
+              << usage_info.usage << "}";
+  }
 };
 
 // Entry point into the Quota System

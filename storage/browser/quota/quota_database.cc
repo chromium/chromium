@@ -941,6 +941,12 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
                     base::Time::Max(), 0);
 }
 
+bool operator==(const QuotaDatabase::QuotaTableEntry& lhs,
+                const QuotaDatabase::QuotaTableEntry& rhs) {
+  return std::tie(lhs.host, lhs.type, lhs.quota) ==
+         std::tie(rhs.host, rhs.type, rhs.quota);
+}
+
 bool operator<(const QuotaDatabase::QuotaTableEntry& lhs,
                const QuotaDatabase::QuotaTableEntry& rhs) {
   return std::tie(lhs.host, lhs.type, lhs.quota) <
