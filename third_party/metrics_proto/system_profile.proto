@@ -92,6 +92,7 @@ message SystemProfileProto {
     // since the epoch. For privacy, this is rounded to the nearest hour.
     optional int64 last_timestamp = 1;
 
+    // The client_id that this client is cloned from. This field is tied to the
     // cloned install detector only; any other way of resetting client_id
     // doesn't touch this field. This field is only reported in the
     // resetting session.
