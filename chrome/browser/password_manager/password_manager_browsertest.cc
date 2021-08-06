@@ -4031,8 +4031,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   rfh_deleted_observer.WaitUntilDeleted();
 }
 
+// CredentialsAPIOnlyCalledOnRestoredPage is flaky. http://crbug.com/1220336
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       CredentialsAPIOnlyCalledOnRestoredPage) {
+                       DISABLED_CredentialsAPIOnlyCalledOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
   content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
