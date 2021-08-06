@@ -41,6 +41,12 @@ class MockAccuracyTipUI : public AccuracyTipUI {
                     base::OnceCallback<void(Interaction)>));
 };
 
+class MockAccuracyServiceDelegate : public AccuracyService::Delegate {
+ public:
+  MockAccuracyServiceDelegate() = default;
+  MOCK_METHOD1(IsEngagementHigh, bool(const GURL&));
+};
+
 class MockSafeBrowsingDatabaseManager
     : public safe_browsing::TestSafeBrowsingDatabaseManager {
  public:
@@ -95,11 +101,15 @@ class AccuracyServiceTest : public ::testing::Test {
     AccuracyService::RegisterProfilePrefs(prefs_.registry());
     auto ui = std::make_unique<testing::StrictMock<MockAccuracyTipUI>>();
     ui_ = ui.get();
+    auto delegate = std::make_unique<MockAccuracyServiceDelegate>();
+    delegate_ = delegate.get();
+    EXPECT_CALL(*delegate, IsEngagementHigh(_)).WillRepeatedly(Return(false));
+
     sb_database_ = base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
-    service_ =
-        std::make_unique<AccuracyService>(std::move(ui), &prefs_, sb_database_,
-                                          base::ThreadTaskRunnerHandle::Get(),
-                                          base::ThreadTaskRunnerHandle::Get());
+    service_ = std::make_unique<AccuracyService>(
+        std::move(ui), std::move(delegate), &prefs_, sb_database_,
+        base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadTaskRunnerHandle::Get());
     clock_.SetNow(base::Time::Now());
     service_->SetClockForTesting(&clock_);
   }
@@ -118,6 +128,7 @@ class AccuracyServiceTest : public ::testing::Test {
 
   AccuracyService* service() { return service_.get(); }
   MockAccuracyTipUI* ui() { return ui_; }
+  MockAccuracyServiceDelegate* delegate() { return delegate_; }
   base::SimpleTestClock* clock() { return &clock_; }
   MockSafeBrowsingDatabaseManager* sb_database() { return sb_database_.get(); }
 
@@ -133,9 +144,10 @@ class AccuracyServiceTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::SimpleTestClock clock_;
 
-  std::unique_ptr<AccuracyService> service_;
   MockAccuracyTipUI* ui_;
+  MockAccuracyServiceDelegate* delegate_;
   scoped_refptr<MockSafeBrowsingDatabaseManager> sb_database_;
+  std::unique_ptr<AccuracyService> service_;
 };
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForRandomSite) {
@@ -209,6 +221,19 @@ TEST_F(AccuracyServiceTest, OptOut) {
   // Forwarding |kTimeBetweenPrompts| days will also not show the prompt again.
   clock()->Advance(features::kTimeBetweenPrompts.Get());
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kOptOut);
+}
+
+TEST_F(AccuracyServiceTest, HighEngagement) {
+  auto url = GURL("https://example.com");
+  EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
+      .WillRepeatedly(Invoke(&IsOnList));
+
+  // Usually an accuracy tip is shown.
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
+
+  // But not if the site has high engagement.
+  EXPECT_CALL(*delegate(), IsEngagementHigh(url)).WillRepeatedly(Return(true));
+  EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kHighEnagagement);
 }
 
 TEST_F(AccuracyServiceTest, Histograms) {

@@ -66,14 +66,15 @@ void AccuracyService::RegisterProfilePrefs(
 
 AccuracyService::AccuracyService(
     std::unique_ptr<AccuracyTipUI> ui,
+    std::unique_ptr<Delegate> delegate,
     PrefService* pref_service,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : ui_(std::move(ui)),
+      delegate_(std::move(delegate)),
       pref_service_(pref_service),
       ui_task_runner_(ui_task_runner),
-      io_task_runner_(io_task_runner),
       sample_url_(GURL(features::kSampleUrl.Get())),
       time_between_prompts_(features::kTimeBetweenPrompts.Get()),
       disable_ui_(features::kDisableUi.Get()) {
@@ -88,10 +89,8 @@ AccuracyService::~AccuracyService() = default;
 
 void AccuracyService::Shutdown() {
   if (sb_client_) {
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AccuracyTipSafeBrowsingClient::ShutdownOnIOThread,
-                       std::move(sb_client_)));
+    sb_client_->Shutdown();
+    sb_client_ = nullptr;
   }
 }
 
@@ -114,18 +113,28 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
   }
 
   if (sample_url_.is_valid() && url == sample_url_) {
-    return std::move(callback).Run(AccuracyTipStatus::kShowAccuracyTip);
+    return OnAccuracyStatusReceived(url, std::move(callback),
+                                    AccuracyTipStatus::kShowAccuracyTip);
   }
 
   if (!sb_client_) {
     return std::move(callback).Run(AccuracyTipStatus::kNone);
   }
 
-  io_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &AccuracyTipSafeBrowsingClient::CheckAccuracyStatusOnIOThread,
-          sb_client_, url, std::move(callback)));
+  sb_client_->CheckAccuracyStatus(
+      url,
+      base::BindOnce(&AccuracyService::OnAccuracyStatusReceived,
+                     weak_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void AccuracyService::OnAccuracyStatusReceived(const GURL& url,
+                                               AccuracyCheckCallback callback,
+                                               AccuracyTipStatus status) {
+  if (status == AccuracyTipStatus::kShowAccuracyTip &&
+      delegate_->IsEngagementHigh(url)) {
+    return std::move(callback).Run(AccuracyTipStatus::kHighEnagagement);
+  }
+  return std::move(callback).Run(status);
 }
 
 void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {

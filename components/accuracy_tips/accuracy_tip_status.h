@@ -20,8 +20,11 @@ enum class AccuracyTipStatus {
   kRateLimited = 2,
   // The user disabled accuracy tips. Accuracy tip elegibility was not checked.
   kOptOut = 3,
+  // The site is eligible for showing an accuracy tip but the tip wasn't shown
+  // as the site previously had high engagement from the user.
+  kHighEnagagement = 4,
 
-  kMaxValue = kOptOut,
+  kMaxValue = kHighEnagagement,
 };
 
 }  // namespace accuracy_tips

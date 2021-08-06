@@ -13,6 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -24,6 +26,8 @@
 #include "components/accuracy_tips/accuracy_tip_ui.h"
 #include "components/accuracy_tips/features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/base_event_utils.h"
@@ -88,6 +92,22 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnBadUrl) {
 
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.PageStatus", AccuracyTipStatus::kShowAccuracyTip, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
+                       DontShowOnBadUrlWithEngagement) {
+  auto* engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(
+          browser()->profile());
+  engagement_service->AddPointsForTesting(
+      GetUrl("badurl.com"),
+      site_engagement::SiteEngagementScore::GetMediumEngagementBoundary());
+
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.PageStatus", AccuracyTipStatus::kHighEnagagement, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {

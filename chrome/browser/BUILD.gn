@@ -3442,6 +3442,8 @@ static_library("browser") {
       "accessibility/live_caption_controller_factory.h",
       "accessibility/live_caption_speech_recognition_host.cc",
       "accessibility/live_caption_speech_recognition_host.h",
+      "accuracy_tips/accuracy_service_delegate.cc",
+      "accuracy_tips/accuracy_service_delegate.h",
       "accuracy_tips/accuracy_service_factory.cc",
       "accuracy_tips/accuracy_service_factory.h",
       "apps/app_service/app_icon_factory.cc",

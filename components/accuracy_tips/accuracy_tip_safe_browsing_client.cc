@@ -24,6 +24,17 @@ AccuracyTipSafeBrowsingClient::AccuracyTipSafeBrowsingClient(
 
 AccuracyTipSafeBrowsingClient::~AccuracyTipSafeBrowsingClient() = default;
 
+void AccuracyTipSafeBrowsingClient::CheckAccuracyStatus(
+    const GURL& url,
+    AccuracyCheckCallback callback) {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AccuracyTipSafeBrowsingClient::CheckAccuracyStatusOnIOThread, this,
+          url, std::move(callback)));
+}
+
 void AccuracyTipSafeBrowsingClient::CheckAccuracyStatusOnIOThread(
     const GURL& url,
     AccuracyCheckCallback callback) {
@@ -54,6 +65,12 @@ void AccuracyTipSafeBrowsingClient::ReplyOnUIThread(
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   ui_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(std::move(callback), status));
+}
+
+void AccuracyTipSafeBrowsingClient::Shutdown() {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AccuracyTipSafeBrowsingClient::ShutdownOnIOThread, this));
 }
 
 void AccuracyTipSafeBrowsingClient::ShutdownOnIOThread() {

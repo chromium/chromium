@@ -1152,9 +1152,9 @@ Unknown properties are collapsed to zero. -->
 <enum name="AccuracyTipStatus">
   <int value="0" label="kNone"/>
   <int value="1" label="kShowAccuracyTip"/>
-  <int value="2" label="kEligibleForTipButUiDisabled"/>
-  <int value="3" label="kRateLimited"/>
-  <int value="4" label="kOptOut"/>
+  <int value="2" label="kRateLimited"/>
+  <int value="3" label="kOptOut"/>
+  <int value="4" label="kHighEngagement"/>
 </enum>
 
 <enum name="ActionAfterDoubleTap">
