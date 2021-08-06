@@ -39,7 +39,10 @@ CustomProperty::CustomProperty(const AtomicString& name,
                                const PropertyRegistration* registration)
     : Variable(InheritedFlag(registration)),
       name_(name),
-      registration_(registration) {}
+      registration_(registration) {
+  DCHECK_EQ(IsShorthand(), CSSProperty::IsShorthand(GetCSSPropertyName()));
+  DCHECK_EQ(IsRepeated(), CSSProperty::IsRepeated(GetCSSPropertyName()));
+}
 
 const AtomicString& CustomProperty::GetPropertyNameAtomicString() const {
   return name_;

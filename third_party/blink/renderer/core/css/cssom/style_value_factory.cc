@@ -307,7 +307,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
 CSSStyleValue* StyleValueFactory::CssValueToStyleValue(
     const CSSPropertyName& name,
     const CSSValue& css_value) {
-  DCHECK(!CSSProperty::Get(name.Id()).IsRepeated());
+  DCHECK(!CSSProperty::IsRepeated(name));
   CSSStyleValue* style_value =
       CreateStyleValueWithProperty(name.Id(), css_value);
   if (!style_value)
@@ -369,8 +369,8 @@ CSSStyleValueVector StyleValueFactory::CssValueToStyleValueVector(
       // TODO(andruud): Custom properties claim to not be repeated, even though
       // they may be. Therefore we must ignore "IsRepeated" for custom
       // properties.
-      (!CSSProperty::Get(property_id).IsRepeated() &&
-       property_id != CSSPropertyID::kVariable) ||
+      (property_id != CSSPropertyID::kVariable &&
+       !CSSProperty::Get(property_id).IsRepeated()) ||
       // Note: CSSTransformComponent is parsed as CSSFunctionValue, which is a
       // CSSValueList. We do not yet support such CSSFunctionValues, however.
       // TODO(andruud): Make CSSTransformComponent a subclass of CSSStyleValue,

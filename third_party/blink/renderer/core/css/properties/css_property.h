@@ -29,6 +29,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
 
   static const CSSProperty& Get(CSSPropertyID);
 
+  static bool IsShorthand(const CSSPropertyName&);
+  static bool IsRepeated(const CSSPropertyName&);
+
   // For backwards compatibility when passing around CSSUnresolvedProperty
   // references. In case we need to call a function that hasn't been converted
   // to using property classes yet.

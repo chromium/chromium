@@ -50,7 +50,7 @@ class CORE_EXPORT StylePropertyMapReadOnlyMainThread
  private:
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
-  CSSStyleValue* GetShorthandProperty(const CSSProperty&) const;
+  CSSStyleValue* GetShorthandProperty(const CSSPropertyName&) const;
 };
 
 }  // namespace blink
