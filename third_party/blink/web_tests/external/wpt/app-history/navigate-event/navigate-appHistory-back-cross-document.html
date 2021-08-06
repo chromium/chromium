@@ -24,7 +24,7 @@ async_test(t => {
         assert_equals(e.info, "hi");
       });
       assert_true(i.contentWindow.appHistory.canGoBack);
-      i.contentWindow.appHistory.back({ navigateInfo: "hi" });
+      i.contentWindow.appHistory.back({ info: "hi" });
     })
   });
 }, "navigate event for appHistory.back() - cross-document");

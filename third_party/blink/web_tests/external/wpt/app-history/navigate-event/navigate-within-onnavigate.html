@@ -6,11 +6,11 @@
 promise_test(async t => {
   appHistory.onnavigate = t.step_func(e => {
     if (e.info == 1) {
-      appHistory.navigate("#2", { navigateInfo: 2 });
+      appHistory.navigate("#2", { info: 2 });
       assert_true(e.defaultPrevented);
     }
   });
-  await promise_rejects_dom(t, 'AbortError', appHistory.navigate("#1", { navigateInfo: 1 }));
+  await promise_rejects_dom(t, 'AbortError', appHistory.navigate("#1", { info: 1 }));
   assert_equals(location.hash, "#2");
 }, "if navigate() is called inside onnavigate, the previous navigation and navigate event are cancelled");
 </script>

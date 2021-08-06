@@ -34,7 +34,7 @@ class AppHistoryApiNavigation final
   AppHistoryApiNavigation(ScriptState* script_state,
                           AppHistoryNavigationOptions* options,
                           const String& key = String())
-      : info(options->getNavigateInfoOr(
+      : info(options->getInfoOr(
             ScriptValue(script_state->GetIsolate(),
                         v8::Undefined(script_state->GetIsolate())))),
         returned_promise(
@@ -361,9 +361,9 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
 ScriptPromise AppHistory::navigate(ScriptState* script_state,
                                    AppHistoryNavigateOptions* options,
                                    ExceptionState& exception_state) {
-  if (!options->hasState() && !options->hasNavigateInfo()) {
+  if (!options->hasState() && !options->hasInfo()) {
     exception_state.ThrowTypeError(
-        "Must pass at least one of url, state, or navigateInfo to navigate()");
+        "Must pass at least one of url, state, or info to navigate()");
     return ScriptPromise();
   }
   return navigate(script_state, GetSupplementable()->Url(), options,

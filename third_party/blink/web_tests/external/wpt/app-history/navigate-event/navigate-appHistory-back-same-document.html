@@ -24,7 +24,7 @@ async_test(t => {
         assert_equals(e.info, "hi");
       });
       assert_true(appHistory.canGoBack);
-      appHistory.back({ navigateInfo: "hi" });
+      appHistory.back({ info: "hi" });
     });
   }, 0);
 }, "navigate event for appHistory.back() - same-document");
