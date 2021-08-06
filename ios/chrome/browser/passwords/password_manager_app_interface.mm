@@ -9,8 +9,8 @@
 #include "base/test/ios/wait_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -26,7 +26,7 @@
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::PasswordStoreConsumer;
 
 class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
@@ -58,8 +58,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
                                password:(NSString*)password
                                     URL:(NSURL*)URL {
   // Obtain a PasswordStore.
-  scoped_refptr<password_manager::PasswordStore> passwordStore =
-      IOSChromePasswordStoreFactory::GetForBrowserState(
+  scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
+      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
@@ -90,8 +90,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 }
 
 + (void)clearCredentials {
-  scoped_refptr<password_manager::PasswordStore> passwordStore =
-      IOSChromePasswordStoreFactory::GetForBrowserState(
+  scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
+      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
@@ -102,8 +102,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 
 + (int)storedCredentialsCount {
   // Obtain a PasswordStore.
-  scoped_refptr<PasswordStore> passwordStore =
-      IOSChromePasswordStoreFactory::GetForBrowserState(
+  scoped_refptr<PasswordStoreInterface> passwordStore =
+      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
           chrome_test_util::GetOriginalBrowserState(),
           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
