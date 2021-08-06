@@ -315,10 +315,18 @@ Google-specific instructions for setting up remote development on chromebooks
 without using Crostini.
 
 #### Windows & SSH
-This currently is difficult on Windows because VSCode remote tools assumes
-'sshd' is installed, which isn't the case on Windows. If someone figures out
-how to get vscode remote working on windows with ssh please update this
-document :)
+
+VSCode remote tools requires 'sshd' which isn't installed on Windows by default.
+
+For Googlers, sshd should already be installed on your workstation, and VSCode
+should work remotely if you followed the setup instructions at
+[go/building-chrome-win](http://go/building-chrome-win). If you are still having
+problems, please refer to
+[go/vscode-remote#windows](http://go/vscode-remote#windows).
+
+Non-Googlers may follow may follow Microsoft's instructions for
+[installing the OpenSSH server](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse).
+VSCode should work remotely after following this step.
 
 ### Snippets
 There are some useful snippets provided in
