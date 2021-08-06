@@ -135,9 +135,9 @@ void MockContentSettingsAgentImpl::BindContentSettingsManager(
       manager->BindNewPipeAndPassReceiver());
 }
 
-// Evaluates a boolean |predicate| every time a provisional load is committed in
-// the given |frame| while the instance of this class is in scope, and verifies
-// that the result matches the |expectation|.
+// Evaluates a boolean `predicate` every time a provisional load is committed in
+// the given `frame` while the instance of this class is in scope, and verifies
+// that the result matches the `expectation`.
 class CommitTimeConditionChecker : public content::RenderFrameObserver {
  public:
   using Predicate = base::RepeatingCallback<bool()>;

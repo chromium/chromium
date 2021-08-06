@@ -141,7 +141,7 @@ bool WorkerContentSettingsClient::ShouldAutoupgradeMixedContent() {
 }
 
 void WorkerContentSettingsClient::EnsureContentSettingsManager() const {
-  // Lazily bind |content_settings_manager_| so it is bound on the right thread.
+  // Lazily bind `content_settings_manager_` so it is bound on the right thread.
   if (content_settings_manager_)
     return;
   DCHECK(pending_content_settings_manager_);

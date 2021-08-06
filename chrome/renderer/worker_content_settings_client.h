@@ -54,7 +54,7 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
 
   // Because instances of this class are created on the parent's thread (i.e,
   // on the renderer main thread or on the thread of the parent worker), it is
-  // necessary to lazily bind the |content_settings_manager_| remote. The
+  // necessary to lazily bind the `content_settings_manager_` remote. The
   // pending remote is initialized on the parent thread and then the remote is
   // bound when needed on the worker's thread.
   mutable mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
