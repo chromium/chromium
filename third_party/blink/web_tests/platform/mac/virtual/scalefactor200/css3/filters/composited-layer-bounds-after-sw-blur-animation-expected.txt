@@ -2,13 +2,13 @@
   "layers": [
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [1600, 1200],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer' class='final-drop-shadow'",
-      "bounds": [200, 200],
+      "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
@@ -21,7 +21,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [200, 200, 0, 1]
+        [100, 100, 0, 1]
       ]
     }
   ]

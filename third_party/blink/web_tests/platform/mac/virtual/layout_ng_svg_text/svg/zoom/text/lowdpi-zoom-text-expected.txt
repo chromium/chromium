@@ -1,0 +1,8 @@
+Test for crbug.com/405468: zoom should not affect getComputedTextLength().
+
+PASS
+PASS
+PASS
+FAIL, 63.756248474121094 should be greater than 119.51249694824219
+PASS
+FAIL, 47.818748474121094 should be greater than 89.6312484741211
