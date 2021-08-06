@@ -14,7 +14,7 @@
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
-<translation id="1264369926465113395">Lihat majalah digital baru Chromebook untuk para seniman</translation>
+<translation id="1264369926465113395">Lihat majalah digital baru Chromebook untuk para pembuat seni dan desain</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -124,7 +124,6 @@
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
-<translation id="3708186454126126312">Terhubung sebelumnya</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Pindai ulang halaman}=1{Pindai ulang halaman {PAGE_NUMBER}}other{Pindai ulang halaman {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Tersambung</translation>
@@ -416,7 +415,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
-<translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>

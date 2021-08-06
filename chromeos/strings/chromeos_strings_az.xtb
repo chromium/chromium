@@ -124,7 +124,6 @@
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
-<translation id="3708186454126126312">Öncə qoşulmuş cihazlar</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Səhifəni yenidən skanlayın}=1{{PAGE_NUMBER} saylı səhifəni yenidən skanlayın}other{{PAGE_NUMBER} saylı səhifəni yenidən skanlayın}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
@@ -415,7 +414,6 @@
 <translation id="8798441408945964110">Provayder adı</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Divar kağızı</translation>
-<translation id="8834539327799336565">Hazırda qoşulub</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test uğurlu oldu</translation>

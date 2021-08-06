@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Барлық cookie файлын бөгеу (ұсынылмайды)</translation>
 <translation id="2704606927547763573">Көшірілген</translation>
 <translation id="2717722538473713889">электрондық пошта мекенжайлары</translation>
-<translation id="2785051990912111074"><ph name="WEBSITE" /> веб-сайтының cookie файлдары жойылады.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> үшін барлық сайт рұқсаттары шынымен бастапқы күйіне қайтарылсын ба?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Алдыңғы аудиотрек</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Cоңғы кіру: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Ешқандай контакт табылмады.</translation>
 <translation id="4996978546172906250">Бөлісу</translation>
-<translation id="5014906230196386306">Cookie файлдары өшірілсін бе?</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5048398596102334565">Сайттардың қозғалыс датчиктеріне кіруіне рұқсат ету (ұсынылады)</translation>
 <translation id="5050380848339752099">Бұл сайт инкогнито режимінен тыс қолданбамен ақпаратты бөліскелі тұр.</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Сайттарда сақталған <ph name="DATASIZE" /> деректер мен cookie файлдары өшіріледі.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(Тағы 1)}other{(Тағы #)}}</translation>
 <translation id="5403592356182871684">Атаулары</translation>
-<translation id="5438097262470833822"><ph name="WEBSITE" /> веб-сайтына арналған рұқсаттар бастапқы күйіне қайтарылады.</translation>
 <translation id="5489227211564503167">Өткен уақыт: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Мазалайтын не жалған ақпаратты жарнамалар берілетін сайттарда жарнамаларды бөгеу</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> үшін рұқсат етілген, <ph name="PERMISSION_2" /> үшін тыйым салынған.</translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Профиль фотосуреттері</translation>
 <translation id="6697925417670533197">Жүктеп алынып жатқандар</translation>
 <translation id="6746124502594467657">Төмен қарай жылжыту</translation>
-<translation id="6749077623962119521">Рұқсаттар бастапқы күйіне қайтарылсын ба?</translation>
 <translation id="6766622839693428701">Жабу үшін төмен сырғытыңыз.</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6818926723028410516">Элементтерді таңдаңыз</translation>

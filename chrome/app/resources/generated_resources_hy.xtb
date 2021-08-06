@@ -2772,7 +2772,6 @@
 <translation id="3905761538810670789">Հավելվածի վերանորոգում</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> փլագինը հնացած է</translation>
 <translation id="3908501907586732282">Միացնել ընդլայնումը</translation>
-<translation id="3909701002594999354">Ցուցադրել &amp;կառավարման բոլոր տարրերը</translation>
 <translation id="3909791450649380159">Կտ&amp;րել</translation>
 <translation id="39103738135459590">Ակտիվացման կոդ</translation>
 <translation id="3911824782900911339">Նոր ներդիրի էջ</translation>
@@ -3511,7 +3510,6 @@
 <translation id="4733793249294335256">Ներբեռնման տեղադրություն</translation>
 <translation id="473546211690256853">Այս հաշիվը կառավարում է <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="4735803855089279419">Չհաջողվեց ճանաչել սարքի նույնացուցիչները:</translation>
-<translation id="473581466100273252">Ցուցադրել/թաքցնել վերջերս փակված գրառումները</translation>
 <translation id="4736292055110123391">Համաժամացրեք ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="473936925429402449">Ընտրված է լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />-ը՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
@@ -4129,7 +4127,6 @@
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
-<translation id="5433791271511851494">Թույլտվությունների տրամադրման կարգավորումները կառավարվում են ձեր կազմակերպության կողմից։</translation>
 <translation id="5434065355175441495">PKCS #1 RSA գաղտնագրում</translation>
 <translation id="5435779377906857208">Թույլատրել <ph name="HOST" /> կայքին օգտագործել ձեր տեղադրության մասին տվյալները</translation>
 <translation id="5436492226391861498">Պրոքսիի ուղու ստեղծման սպասում…</translation>
@@ -5168,7 +5165,6 @@
 <translation id="657402800789773160">&amp;Վերաբեռնել այս էջը</translation>
 <translation id="6577284282025554716">Ներբեռնումը չեղարկվել է՝ <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Ցանցի կարգավիճակի ճեպապատկեր</translation>
-<translation id="6579369886355986318">Ցուցադրել &amp;կառավարման բոլոր տարրերը</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Էկրանի բովանդակությունը հրապարակվում է</translation>
 <translation id="6580203076670148210">Սկանավորման արագությունը</translation>
 <translation id="6582080224869403177">Անվտանգության համակարգը թարմացնելու համար վերակայեք ձեր <ph name="DEVICE_TYPE" /> սարքը:</translation>
@@ -5610,7 +5606,6 @@
 <translation id="7044124535091449260">Իմանալ ավելին կայքերի հասանելիության մասին</translation>
 <translation id="7044606776288350625">Տվյալների համաժամացում</translation>
 <translation id="7047059339731138197">Ընտրեք ֆոնը</translation>
-<translation id="7048457618657122233">Կիսվել հղումով՝ <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Պահե՞լ ֆայլը:</translation>
 <translation id="7052237160939977163">Ուղարկել կատարողականության հետագծման տվյալները</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>

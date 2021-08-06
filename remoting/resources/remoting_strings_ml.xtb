@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">അപ്രതീക്ഷിതമായ ഒരു പിശക് സംഭവിച്ചു. ഈ പ്രശ്‌നം ഡവലപ്പർമാർക്ക് റിപ്പോർട്ട് ചെയ്യുക.</translation>
 <translation id="1697532407822776718">എല്ലാം സജ്ജമായിക്കഴിഞ്ഞു!</translation>
 <translation id="1742469581923031760">കണക്റ്റുചെയ്യുന്നു...</translation>
-<translation id="177040763384871009">വിദൂര ഉപകരണത്തിൽ ക്ലിക്ക് ചെയ്ത ലിങ്കുകൾ ക്ലയന്റ് ബ്രൗസറിൽ തുറക്കാൻ അനുവദിക്കുന്നതിന് സിസ്റ്റത്തിന്റെ വെബ് ബ്രൗസർ "<ph name="URL_FORWARDER_NAME" />" ആയി മാറ്റേണ്ടതുണ്ട്.</translation>
 <translation id="177096447311351977">ക്ലയന്റിനായുള്ള ചാനൽ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ഇല്ലാതാക്കുക</translation>
 <translation id="2009755455353575666">കണക്ഷൻ പരാജയപ്പെട്ടു</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">ഓഫ്‌ലൈൻ.</translation>
 <translation id="3695446226812920698">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="3776024066357219166">നിങ്ങളുടെ Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് സെഷന്‍ അവസാനിച്ചു.</translation>
-<translation id="3858860766373142691">പേര്</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3905196214175737742">ഹോസ്റ്റ് ഉടമ ഡൊമെയ്‌ൻ അസാധുവാണ്.</translation>
 <translation id="3931191050278863510">ഹോസ്റ്റ് നിർത്തി.</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">ഇനിപ്പറയുന്ന ക്ലയന്റിന് ആക്‌സസ് നിരസിച്ചു: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ക്ലയന്റ് കണക്റ്റ് ചെയ്‌തു: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">അക്കൗണ്ട് മാറ്റുക</translation>
-<translation id="7535110896613603182">ഡിഫോൾട്ട് ആപ്പ് ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7628469622942688817">ഈ ഉപകരണത്തിൽ എന്റെ പിൻ ഓർക്കുക.</translation>
 <translation id="7649070708921625228">സഹായം</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>

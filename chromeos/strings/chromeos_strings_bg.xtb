@@ -124,7 +124,6 @@
 <translation id="3595596368722241419">Батерията е заредена</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
-<translation id="3708186454126126312">Свързвани преди</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Повторно сканиране на страницата}=1{Повторно сканиране на страница {PAGE_NUMBER}}other{Повторно сканиране на страница {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> отзива)</translation>
 <translation id="3748026146096797577">Няма връзка</translation>
@@ -416,7 +415,6 @@
 <translation id="8798441408945964110">Име на доставчика</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
-<translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>

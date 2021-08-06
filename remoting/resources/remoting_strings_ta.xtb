@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">எதிர்பாராத பிழை. இந்தச் சிக்கலை டெவலப்பர்களுக்குத் தெரிவிக்கவும்.</translation>
 <translation id="1697532407822776718">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்!</translation>
 <translation id="1742469581923031760">இணைக்கிறது...</translation>
-<translation id="177040763384871009">ரிமோட் சாதனத்தில் கிளிக் செய்த இணைப்புகளை கிளையண்ட் உலாவியில் திறப்பதற்கு அனுமதிக்க, கம்ப்யூட்டரின் இணைய உலாவியை "<ph name="URL_FORWARDER_NAME" />" ஆக மாற்ற வேண்டும்.</translation>
 <translation id="177096447311351977">க்ளையன்ட்டிற்கான சேனல் IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">நீக்கு</translation>
 <translation id="2009755455353575666">இணைப்புத் தோல்வி</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">ஆஃப்லைன்.</translation>
 <translation id="3695446226812920698">எப்படி என அறிக</translation>
 <translation id="3776024066357219166">உங்கள் Chrome தொலைநிலை டெஸ்க்டாப் அமர்வு முடிந்தது.</translation>
-<translation id="3858860766373142691">பெயர்</translation>
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3905196214175737742">தவறான ஹோஸ்ட் உரிமையாளர் டொமைன்.</translation>
 <translation id="3931191050278863510">ஹோஸ்ட் நிறுத்தப்பட்டது.</translation>
@@ -144,7 +142,6 @@
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> கிளையன்ட்டிற்கு அணுகல் மறுக்கப்பட்டது.</translation>
 <translation id="7444276978508498879">க்ளையன்ட் இணைக்கப்பட்டது: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">கணக்கை மாற்று</translation>
-<translation id="7535110896613603182">இயல்பான ஆப்ஸ் அமைப்புகளைத் திற</translation>
 <translation id="7628469622942688817">இந்தச் சாதனத்தில் எனது பின்னை நினைவில்கொள்.</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>

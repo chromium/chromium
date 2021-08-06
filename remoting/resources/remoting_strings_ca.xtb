@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">S'ha produït un error inesperat. Informeu d'aquest problema als desenvolupadors.</translation>
 <translation id="1697532407822776718">Ja estàs a punt!</translation>
 <translation id="1742469581923031760">S'està connectant...</translation>
-<translation id="177040763384871009">Per permetre que els enllaços en què es faci clic al dispositiu remot s'obrin al navegador client, has de canviar el navegador web del sistema per "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP del canal del client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Suprimeix</translation>
 <translation id="2009755455353575666">S'ha produït un error en la connexió</translation>
@@ -57,7 +56,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="369442766917958684">Sense connexió</translation>
 <translation id="3695446226812920698">Informació</translation>
 <translation id="3776024066357219166">La sessió de l'escriptori remot de Chrome ha finalitzat.</translation>
-<translation id="3858860766373142691">Nom</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3905196214175737742">El domini del propietari de l'amfitrió no és vàlid.</translation>
 <translation id="3931191050278863510">S'ha aturat l'amfitrió.</translation>
@@ -143,7 +141,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="7434397035092923453">S'ha rebutjat l'accés del client: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client connectat: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Canvia de compte</translation>
-<translation id="7535110896613603182">Obre la configuració d'aplicacions predeterminades</translation>
 <translation id="7628469622942688817">Recorda el meu PIN en aquest dispositiu.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancel·la</translation>

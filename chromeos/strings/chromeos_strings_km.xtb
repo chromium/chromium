@@ -124,7 +124,6 @@
 <translation id="3595596368722241419">ថ្មពេញ</translation>
 <translation id="360565022852130722">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP 802.1x ប្រូតូកូលខ្សោយ</translation>
 <translation id="3689839747745352263">តេស្ត <ph name="TEST_NAME" /></translation>
-<translation id="3708186454126126312">បាន​ភ្ជាប់​ពីមុន​</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{ស្កេនទំព័រឡើងវិញ}=1{ស្កេនទំព័រទី {PAGE_NUMBER} ឡើងវិញ}other{ស្កេនទំព័រទី {PAGE_NUMBER} ឡើងវិញ}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
@@ -415,7 +414,6 @@
 <translation id="8798441408945964110">ឈ្មោះក្រុមហ៊ុនផ្តល់សេវា</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ផ្ទាំងរូបភាព</translation>
-<translation id="8834539327799336565">កំពុងភ្ជាប់​បច្ចុប្បន្ននេះ</translation>
 <translation id="8845001906332463065">ទទួលជំនួយ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ការធ្វើតេស្តបានជោគជ័យ</translation>

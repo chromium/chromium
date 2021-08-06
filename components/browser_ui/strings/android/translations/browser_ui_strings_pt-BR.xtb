@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado)</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2717722538473713889">Endereços de e-mail</translation>
-<translation id="2785051990912111074">Essa ação apagará os cookies de <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nenhum contato encontrado</translation>
 <translation id="4996978546172906250">Compartilhar via</translation>
-<translation id="5014906230196386306">Limpar cookies?</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir o acesso de sites aos seus sensores de movimento (recomendado)</translation>
 <translation id="5050380848339752099">Este site compartilhará informações com um app fora do modo de navegação anônima.</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
-<translation id="5438097262470833822">Essa ação redefinirá as permissões de <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquear anúncios em sites com publicidade invasiva ou enganosa</translation>
 <translation id="5502860503640766021">Permissão autorizada: <ph name="PERMISSION_1" />. Permissão bloqueada: <ph name="PERMISSION_2" /></translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>
-<translation id="6749077623962119521">Redefinir permissões?</translation>
 <translation id="6766622839693428701">Deslize para baixo para fechar.</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>

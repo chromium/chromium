@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
-<translation id="2785051990912111074">Pilihan ini akan mengosongkan kuki untuk <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Terakhir dilawati <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Tiada kenalan ditemui</translation>
 <translation id="4996978546172906250">Kongsi melalui</translation>
-<translation id="5014906230196386306">Padamkan kuki?</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5048398596102334565">Benarkan tapak mengakses penderia gerakan (disyorkan)</translation>
 <translation id="5050380848339752099">Laman ini akan berkongsi maklumat dengan apl di luar mod Inkognito.</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Tindakan ini akan mengosongkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh tapak.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lagi)}other{(+ # lagi)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
-<translation id="5438097262470833822">Pilihan ini akan menetapkan semula kebenaran untuk <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> masa berlalu daripada <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Sekat iklan di tapak yang menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> dibenarkan, <ph name="PERMISSION_2" /> disekat</translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Muat turun aktif</translation>
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
-<translation id="6749077623962119521">Tetapkan semula kebenaran?</translation>
 <translation id="6766622839693428701">Leret ke bawah untuk tutup.</translation>
 <translation id="6790428901817661496">Mainkan</translation>
 <translation id="6818926723028410516">Pilih item</translation>

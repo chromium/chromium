@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
-<translation id="2785051990912111074">Dette valget sletter informasjonskapsler for <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Fant ingen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
-<translation id="5014906230196386306">Vil du slette informasjonskapsler?</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5048398596102334565">Gi nettsteder tilgang til bevegelsessensorer (anbefalt)</translation>
 <translation id="5050380848339752099">Dette nettstedet er i ferd med å dele informasjon med en app utenfor Inkognitomodus.</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Dette sletter <ph name="DATASIZE" /> med data og informasjonskapsler som er lagret av nettsteder.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
 <translation id="5403592356182871684">Navn</translation>
-<translation id="5438097262470833822">Dette valget tilbakestiller tillatelser for <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Medgått tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokkér annonser på nettsteder som ofte viser forstyrrende eller villedende annonser</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> er tillatt – <ph name="PERMISSION_2" /> er blokkert</translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Profilbilder</translation>
 <translation id="6697925417670533197">Aktive nedlastinger</translation>
 <translation id="6746124502594467657">Flytt ned</translation>
-<translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
 <translation id="6766622839693428701">Sveip ned for å lukke.</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6818926723028410516">Velg elementer</translation>

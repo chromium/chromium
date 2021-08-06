@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
 <translation id="2704606927547763573">Պատճենվեց</translation>
 <translation id="2717722538473713889">Էլ․ հասցեներ</translation>
-<translation id="2785051990912111074">Այս կայքի (<ph name="WEBSITE" />) քուքիները կջնջվեն</translation>
 <translation id="2822354292072154809">Վերակայե՞լ բոլոր կայքերի թույլտվությունները <ph name="CHOSEN_OBJECT_NAME" />-ի համար:</translation>
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2874939134665556319">Նախորդը</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Վերջին այցելությունը՝ <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Ոչ մի կոնտակտ չի գտնվել</translation>
 <translation id="4996978546172906250">Համօգտագործման միջոցը`</translation>
-<translation id="5014906230196386306">Մաքրե՞լ քուքիները</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5048398596102334565">Թույլ տալ կայքերին օգտագործել ձեր տվիչները (խորհուրդ է տրվում)</translation>
 <translation id="5050380848339752099">Այս կայքը պատրաստվում է ուղարկել տվյալները մի հավելվածի, որն ինկոգնիտո ռեժիմից դուրս է գտնվում։</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Կայքերի պահած <ph name="DATASIZE" /> ծավալով տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ու ևս 1)}one{(ու ևս #)}other{(ու ևս #)}}</translation>
 <translation id="5403592356182871684">Անուններ</translation>
-<translation id="5438097262470833822">Այս կայքի (<ph name="WEBSITE" />) թույլտվությունները կզրոյացվեն</translation>
 <translation id="5489227211564503167">Անցած ժամանակը՝ <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />։</translation>
 <translation id="5494752089476963479">Արգելափակել գովազդը կայքերում, որոնք հոգնեցնող կամ մոլորեցնող գովազդ են ցուցադրում</translation>
 <translation id="5502860503640766021">Թույլատրված է՝ «<ph name="PERMISSION_1" />», արգելափակված է՝ «<ph name="PERMISSION_2" />»</translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Պրոֆիլի լուսանկարներ</translation>
 <translation id="6697925417670533197">Ընթացիկ ներբեռնումներ</translation>
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
-<translation id="6749077623962119521">Զրոյացնե՞լ թույլտվությունները</translation>
 <translation id="6766622839693428701">Փակելու համար մատը սահեցրեք ներքև։</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6818926723028410516">Ընտրեք տարրեր</translation>

@@ -124,7 +124,6 @@
 <translation id="3595596368722241419">Bateria carregada.</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
-<translation id="3708186454126126312">Connectats anteriorment</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Torna a escanejar la pàgina}=1{Torna a escanejar la pàgina {PAGE_NUMBER}}other{Torna a escanejar les pàgines {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
 <translation id="3748026146096797577">Desconnectat</translation>
@@ -416,7 +415,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8798441408945964110">Nom del proveïdor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>
-<translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>

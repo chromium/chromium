@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
 <translation id="2717722538473713889">Helbide elektronikoak</translation>
-<translation id="2785051990912111074"><ph name="WEBSITE" /> webgunearen cookieak ezabatuko dira</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Azken bisita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Ez da aurkitu kontakturik</translation>
 <translation id="4996978546172906250">Partekatu honen bidez:</translation>
-<translation id="5014906230196386306">Cookieak garbitu nahi dituzu?</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5048398596102334565">Eman mugimendu-sentsoreak atzitzeko baimena webguneei (gomendatua)</translation>
 <translation id="5050380848339752099">Webgunea informazioa partekatzera doa aplikazio batekin ezkutuko modutik kanpo.</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Webguneek gordetako datu eta cookieen <ph name="DATASIZE" /> garbituko dira.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
-<translation id="5438097262470833822"><ph name="WEBSITE" /> webgunearen baimenak berrezarriko dira</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
 <translation id="5494752089476963479">Blokeatu iragarki oztopatzaileak edo iruzurrezkoak erakusten dituzten webguneetako iragarkiak</translation>
 <translation id="5502860503640766021">Baimena eman zaio honi: <ph name="PERMISSION_1" />; <ph name="PERMISSION_2" /> blokeatu egin da</translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Profileko argazkiak</translation>
 <translation id="6697925417670533197">Deskarga aktiboak</translation>
 <translation id="6746124502594467657">Eraman behera</translation>
-<translation id="6749077623962119521">Baimenak berrezarri nahi dituzu?</translation>
 <translation id="6766622839693428701">Pasatu hatza behera ixteko.</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6818926723028410516">Hautatu elementuak</translation>

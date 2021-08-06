@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">မမျှော်လင့်ထားသည့် မှားယွင်းမှု ဖြစ်ခဲ့သည်။ ကျေးဇူးပြု၍ ဤပြဿနာများကို ဖွံ့ဖြိုးစေသူများအား အစီရင်ခံပါ။</translation>
 <translation id="1697532407822776718">သင်သည် အားလုံးကို သတ်မှတ်ပြီးသွားပြီ!</translation>
 <translation id="1742469581923031760">ချိတ်ဆက်နေ…</translation>
-<translation id="177040763384871009">ကလိုင်းယင့် ဘရောင်ဇာတွင် ဖွင့်မည့်၊ အဝေးထိန်းစက်ပစ္စည်း၌ ကလစ်နှိပ်ထားသော လင့်ခ်များကို ခွင့်ပြုရန် စနစ်၏ ဝဘ်ဘရောင်ဇာကို "<ph name="URL_FORWARDER_NAME" />" သို့ ပြောင်းရမည်။</translation>
 <translation id="177096447311351977">ဖောက်သည်အတွက် လိုင်း IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' လိုင်း='<ph name="CHANNEL_TYPE" />' ချိတ်ဆက်မှု='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ဖျက်ရန်</translation>
 <translation id="2009755455353575666">ချိတ်ဆက်မှု မအောင်မြင်ပါ</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">အော့ဖ်လိုင်း</translation>
 <translation id="3695446226812920698">လုပ်ပုံကို လေ့လာပါ။</translation>
 <translation id="3776024066357219166">သင့် Chrome အဝေးထိန်း ကွန်ပြူတာ အချိန်ပိုင်း ပြီးဆုံးသွားပါပြီ။</translation>
-<translation id="3858860766373142691">အမည်</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
 <translation id="3905196214175737742">ကွန်ယက်ပေါ်ရှိ စက်၏ မှားယွင်းသော ဒိုမိန်း</translation>
 <translation id="3931191050278863510">Host ရပ်တန့်၏။</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">အသုံးပြုသူ <ph name="CLIENT_USERNAME" /> အား ၐင်ခွင့်မပြု။</translation>
 <translation id="7444276978508498879">သုံးသူ ချိတ်ဆက်ထားပြီ: <ph name="CLIENT_USERNAME" />။</translation>
 <translation id="7526139040829362392">အကောင့် ပြောင်းရန်</translation>
-<translation id="7535110896613603182">မူလအက်ပ်ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="7628469622942688817">ကျွန်ုပ်၏ ပင်နံပါတ်ကို ဤစက်ပစ္စည်းတွင် မှတ်ထားပါ။</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>

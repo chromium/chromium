@@ -162,6 +162,7 @@
 <translation id="2067805253194386918">உரை</translation>
 <translation id="2068748236079642969">அடுத்த வீடியோவைக் காட்டு</translation>
 <translation id="2074143993849053708">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் UI மூடப்பட்டது</translation>
+<translation id="2075835334924942448">கட்டுரைகள் இங்கே காட்டப்படும்</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
 <translation id="2096012225669085171">பல சாதனங்களுக்கிடையில் ஒத்திசைக்கலாம், தனிப்பயனாக்கலாம்</translation>
 <translation id="2100273922101894616">தானாக உள்நுழையவும்</translation>
@@ -570,6 +571,7 @@
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பம்}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பங்கள்}}</translation>
 <translation id="4696983787092045100">எனது சாதனங்களுக்கு உரைச் செய்தியை அனுப்பு</translation>
+<translation id="4697543623252708062">விரைவில், புதிய தாவலைத் திறக்கும்போது <ph name="SITE_NAME" /> தளத்தில் உள்ள கதைகள் காட்டப்படும். ‘பின்தொடர்பவற்றை நிர்வகியுங்கள்’ என்பதில் நீங்கள் பின்தொடரும் தளங்களைக் கட்டுப்படுத்தலாம்.</translation>
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் கோப்புகள்</translation>
 <translation id="4714588616299687897">தரவில் 60% வரை சேமியுங்கள்</translation>
 <translation id="4719927025381752090">மொழிபெயர்ப்பதற்கான சலுகை</translation>
@@ -648,6 +650,7 @@
 <translation id="5152843274749979095">ஆதரிக்கப்படும் ஆப்ஸ் நிறுவப்படவில்லை</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் தோல்வியடைந்தது.}other{# பதிவிறக்கங்கள் தோல்வியடைந்தன.}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> தளத்தைப் பின்தொடர்கிறீர்கள்</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
 <translation id="5171045022955879922">தேடுக அல்லது URLலை உள்ளிடுக</translation>
 <translation id="5184329579814168207">Chrome இல் திற</translation>
@@ -1279,6 +1282,7 @@
 <translation id="8993760627012879038">புதிய தாவலை மறைநிலையில் திறக்கும்</translation>
 <translation id="8996847606757455498">மற்றொரு வழங்குநரைத் தேர்வுசெய்க</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> நிர்வகிக்கும் கணக்கில் உள்நுழைந்து, உங்கள் Chrome தரவு மீதான கட்டுப்பாட்டை அதன் நிர்வாகிக்கு வழங்குகிறீர்கள். இந்தக் கணக்குடன் தரவு நிரந்தரமாக இணைக்கப்படும். Chromeமிலிருந்து வெளியேறினால், இந்தச் சாதனத்திலிருந்து தரவு நீக்கப்படும், எனினும் உங்கள் Google கணக்கில் தரவு தொடர்ந்து இருக்கும்.</translation>
+<translation id="9000233047676755924">புதிய தாவலைத் திறக்கும்போது <ph name="SITE_NAME" /> தளத்தில் உள்ள கதைகள் இனி காட்டப்படும். ‘பின்தொடர்பவற்றை நிர்வகியுங்கள்’ என்பதில் நீங்கள் பின்தொடரும் தளங்களைக் கட்டுப்படுத்தலாம்.</translation>
 <translation id="9022774213089566801">அடிக்கடி பார்வையிட்டவை</translation>
 <translation id="9028914725102941583">பல சாதனங்களுக்கிடையில் பகிர ஒத்திசைவை ஆன் செய்யவும்</translation>
 <translation id="9040142327097499898">அறிவிப்புகள் அனுமதிக்கப்படுகின்றன. இந்தச் சாதனத்திற்கான இருப்பிடம் முடக்கப்பட்டுள்ளது.</translation>

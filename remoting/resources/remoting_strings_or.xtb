@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">ଏକ ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି ଘଟିଲା। ଦୟାକରି, ଏହି ସମସ୍ୟା ବିଷୟରେ ଡେଭଲପର୍‌ଙ୍କୁ ରିପୋର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1697532407822776718">ଆପଣ ପୂରା ପ୍ରସ୍ତୁତ ଅଛନ୍ତି!</translation>
 <translation id="1742469581923031760">ସଂଯୋଗ କରୁଛି…</translation>
-<translation id="177040763384871009">ରିମୋଟ୍ ଡିଭାଇସରେ କ୍ଲିକ୍ କରାଯାଇଥିବା ଲିଙ୍କଗୁଡ଼ିକୁ କ୍ଲାଏଣ୍ଟ ବ୍ରାଉଜରରେ ଖୋଲିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ, ଆପଣଙ୍କୁ ସିଷ୍ଟମର ୱେବ୍ ବ୍ରାଉଜରକୁ "<ph name="URL_FORWARDER_NAME" />"ରେ ପରିବର୍ତ୍ତନ କରିବାକୁ ହେବ।</translation>
 <translation id="177096447311351977">କ୍ଲାଏଣ୍ଟଙ୍କ ପାଇଁ ଚ୍ୟାନେଲ୍‌ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'।</translation>
 <translation id="1897488610212723051">ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2009755455353575666">ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ</translation>
@@ -56,7 +55,6 @@
 <translation id="369442766917958684">ଅଫ୍‍ଲାଇନ୍ ଅଛି।</translation>
 <translation id="3695446226812920698">କିପରି ହେବ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="3776024066357219166">ଆପଣଙ୍କର Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍‌ର ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଛି।</translation>
-<translation id="3858860766373142691">ନାମ</translation>
 <translation id="3897092660631435901">ମେନୁ</translation>
 <translation id="3905196214175737742">ଅବୈଧ ହୋଷ୍ଟ ମାଲିକ ଡୋମେନ୍।</translation>
 <translation id="3931191050278863510">ହୋଷ୍ଟ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
@@ -142,7 +140,6 @@
 <translation id="7434397035092923453">କ୍ଲାଏଣ୍ଟଙ୍କ ପାଇଁ ଆକ୍ସେସ୍ ଅଗ୍ରାହ୍ୟ ହୋଇଛି: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7444276978508498879">କ୍ଲାଏଣ୍ଟ ସଂଯୁକ୍ତ କରାଗଲା: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7526139040829362392">ଆକାଉଣ୍ଟ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
-<translation id="7535110896613603182">ଡିଫଲ୍ଟ ଆପ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="7628469622942688817">ଏହି ଡିଭାଇସ୍‌ରେ ମୋ ପିନ୍‌ ମନେରଖନ୍ତୁ</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>

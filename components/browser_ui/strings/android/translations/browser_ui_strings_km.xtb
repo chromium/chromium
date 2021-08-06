@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">ទប់ស្កាត់ខូគីទាំងអស់ (មិនណែនាំ)</translation>
 <translation id="2704606927547763573">បានថតចម្លង</translation>
 <translation id="2717722538473713889">អាសយដ្ឋានអ៊ីមែល</translation>
-<translation id="2785051990912111074">ជម្រើសនេះនឹងសម្អាតខូគីសម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">តើ​អ្នកប្រាកដថា​ចង់​កំណត់​ការអនុញ្ញាត​គេហទំព័រ​ទាំងអស់​ឡើងវិញ​សម្រាប់ <ph name="CHOSEN_OBJECT_NAME" /> ដែរទេ?</translation>
 <translation id="2870560284913253234">គេហទំព័រ</translation>
 <translation id="2874939134665556319">បទ​មុន</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">បានចូល​មើល​លើកចុង​ក្រោយនៅថ្ងៃទី <ph name="DATE" /></translation>
 <translation id="4994033804516042629">រកមិនឃើញ​ទំនាក់ទំនង​ទេ</translation>
 <translation id="4996978546172906250">ចែករំលែកតាមរយៈ</translation>
-<translation id="5014906230196386306">សម្អាត​ខូគីឬ?</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5048398596102334565">អនុញ្ញាតឱ្យ​គេហទំព័រ​ចូលប្រើ​ឧបករណ៍​ចាប់ចលនា (បាន​ណែនាំ)</translation>
 <translation id="5050380848339752099">គេហទំព័រនេះនឹង​ចែករំលែក​ព័ត៌មានជាមួយ​កម្មវិធី​នៅក្រៅ​មុខងារ​ឯកជន​បន្តិចទៀតនេះ។</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">សកម្មភាពនេះ​នឹងសម្អាតទិន្នន័យ និងខូគីទំហំ <ph name="DATASIZE" /> ដែលគេហទំព័រនានាបានរក្សាទុក។</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ទៀត)}other{(+ # ទៀត)}}</translation>
 <translation id="5403592356182871684">ឈ្មោះ</translation>
-<translation id="5438097262470833822">ជម្រើសនេះនឹងកំណត់ការ​អនុញ្ញាតឡើងវិញសម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">រយៈពេល​ដែលកន្លងផុត <ph name="ELAPSED_TIME" /> នៃ <ph name="TOTAL_TIME" />។</translation>
 <translation id="5494752089476963479">ទប់ស្កាត់​ការផ្សាយពាណិជ្ជកម្ម​នៅលើគេហទំព័រ​ដែលបង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​នាំឱ្យយល់ច្រឡំ ឬរំខាន</translation>
 <translation id="5502860503640766021">បានអនុញ្ញាត <ph name="PERMISSION_1" />, បានទប់ស្កាត់ <ph name="PERMISSION_2" /></translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">រូបថត​កម្រង​ព័ត៌មាន</translation>
 <translation id="6697925417670533197">ការទាញយក​ដែលកំពុង​ដំណើរការ</translation>
 <translation id="6746124502594467657">រំកិលចុះ</translation>
-<translation id="6749077623962119521">កំណត់ការអនុញ្ញាតឡើងវិញឬ?</translation>
 <translation id="6766622839693428701">អូស​ចុះ​ក្រោម​ដើម្បី​បិទ។</translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6818926723028410516">ជ្រើសរើសធាតុ</translation>

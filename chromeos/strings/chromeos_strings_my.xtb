@@ -124,7 +124,6 @@
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
-<translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{စာမျက်နှာကို စကင်ပြန်ဖတ်ရန်}=1{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်ရန်}other{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်ရန်}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
@@ -415,7 +414,6 @@
 <translation id="8798441408945964110">ပံ့ပိုးသူ အမည်</translation>
 <translation id="8814190375133053267">ကြိုးမဲ့</translation>
 <translation id="8818152010000655963">နောက်ခံပုံ</translation>
-<translation id="8834539327799336565">လက်ရှိ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>

@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">एक अनपेक्षित त्रुटि भयो। कृपया यस समस्यालाई विकासकर्तालाई प्रतिवेदन गर्नुहोस्।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
 <translation id="1742469581923031760">जडान हुँदै...</translation>
-<translation id="177040763384871009">रिमोट डिभाइसमा क्लिक गरिएका लिंकहरू क्लाइन्ट ब्राउजरमा खोल्ने अनुमति दिन तपाईंले "<ph name="URL_FORWARDER_NAME" />" लाई सिस्टमको वेब ब्राउजर बनाउनु पर्ने हुन्छ।</translation>
 <translation id="177096447311351977">ग्राहकको लागि च्यानल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip= ' <ph name="CLIENT_IP_ADDRESS_AND_PORT" /> 'host_ip =' <ph name="HOST_IP_ADDRESS_AND_PORT" /> 'च्यानल =' <ph name="CHANNEL_TYPE" /> 'जडान =' <ph name="CONNECTION_TYPE" /> '।</translation>
 <translation id="1897488610212723051">मेट्नुहोस्</translation>
 <translation id="2009755455353575666">जडान असफल भयो</translation>
@@ -57,7 +56,6 @@
 <translation id="369442766917958684">अफलाइन।</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
 <translation id="3776024066357219166">तपाईंको Chrome रिमोट डेस्कटप सत्र समाप्त भएको छ ।</translation>
-<translation id="3858860766373142691">नाम</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3905196214175737742">अमान्य होस्ट मालिक डोमेन।</translation>
 <translation id="3931191050278863510">होस्ट रोकियो।</translation>
@@ -143,7 +141,6 @@
 <translation id="7434397035092923453">ग्राहको लागि पहूँच अस्वीकार गरियो: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">जडित ग्राहक: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7526139040829362392">खाता परिवर्तन गर्नुहोस्</translation>
-<translation id="7535110896613603182">डिफल्ट एपसम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="7628469622942688817">यो डिभाइसमा मेरो PIN सम्झनुहोस्।</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>

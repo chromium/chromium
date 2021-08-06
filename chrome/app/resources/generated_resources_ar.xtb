@@ -2777,7 +2777,6 @@
 <translation id="3905761538810670789">إصلاح التطبيق</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> قديم</translation>
 <translation id="3908501907586732282">تفعيل الإضافة</translation>
-<translation id="3909701002594999354">عرض جميع &amp;عناصر التحكُّم</translation>
 <translation id="3909791450649380159">&amp;قص</translation>
 <translation id="39103738135459590">رمز التفعيل</translation>
 <translation id="3911824782900911339">صفحة "علامة تبويب جديدة"</translation>
@@ -3513,7 +3512,6 @@
 <translation id="4733793249294335256">الموقع</translation>
 <translation id="473546211690256853">تتم إدارة هذا الحساب من خلال <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">تعذَّر على النظام تحديد معرِّفات هذا الجهاز.</translation>
-<translation id="473581466100273252">تبديل الإدخالات المُغلَقة مؤخرًا</translation>
 <translation id="4736292055110123391">مزامنة الإشارات المرجعية وكلمات المرور والسجلّ وغيرها على جميع أجهزتك</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="473936925429402449">تم الاختيار، المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" />.</translation>
@@ -4128,7 +4126,6 @@
 <translation id="5430931332414098647">التوصيل الفوري</translation>
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
-<translation id="5433791271511851494">تتولّى مؤسستك إدارة خيارات المشاركة.</translation>
 <translation id="5434065355175441495">‏ترميز PKCS #1 RSA</translation>
 <translation id="5435779377906857208">السماح دائمًا للنطاق <ph name="HOST" /> بالوصول إلى موقعك الجغرافي</translation>
 <translation id="5436492226391861498">في انتظار قناة الخادم...</translation>
@@ -5167,7 +5164,6 @@
 <translation id="657402800789773160">إ&amp;عادة تحميل هذه الصفحة</translation>
 <translation id="6577284282025554716">تم إلغاء التنزيل: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">‏نبذة عن Network Health</translation>
-<translation id="6579369886355986318">عرض جميع &amp;عناصر التحكُّم</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - تمت مشاركة محتوى سطح المكتب</translation>
 <translation id="6580203076670148210">سرعة الفحص</translation>
 <translation id="6582080224869403177">إعادة ضبط <ph name="DEVICE_TYPE" /> لترقية الأمان</translation>
@@ -5609,7 +5605,6 @@
 <translation id="7044124535091449260">مزيد من المعلومات عن إمكانية الوصول إلى الموقع الإلكتروني</translation>
 <translation id="7044606776288350625">مزامنة البيانات</translation>
 <translation id="7047059339731138197">اختيار خلفية</translation>
-<translation id="7048457618657122233">مشاركة الرابط الذي يؤدي إلى <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">هل تريد الاحتفاظ بالملف؟</translation>
 <translation id="7052237160939977163">إرسال بيانات تتبع مستوى الأداء</translation>
 <translation id="7053983685419859001">حظر</translation>

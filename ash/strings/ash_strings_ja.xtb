@@ -177,7 +177,6 @@
 <translation id="2322173485024759474">1 字戻る</translation>
 <translation id="2339073806695260576">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、レーザー ポインタや虫メガネを使用したりすることができます。</translation>
 <translation id="2341729377289034582">縦に固定</translation>
-<translation id="2350794187831162545"><ph name="LANGUAGE" /> の音声はローカルで処理され、オフラインで使用できます。音声入力の言語は [設定] &gt; [ユーザー補助] で変更できます。</translation>
 <translation id="2352467521400612932">タッチペンの設定</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> を有効にしています</translation>
 <translation id="2359808026110333948">続行</translation>
@@ -438,7 +437,6 @@
 <translation id="4379531060876907730">タッチペン ツール</translation>
 <translation id="4389184120735010762">ドッキング拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
 <translation id="439598569299422042">一時停止中、<ph name="SIZE_INFO" /></translation>
-<translation id="4405151984121254935">接続されている周辺機器のタイプはサポートされていません</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
 <translation id="4421231901400348175">リモート サポート経由で <ph name="HELPER_NAME" /> と画面の制御を共有しています。</translation>
 <translation id="4424159417645388645">デスク 5</translation>

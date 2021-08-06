@@ -1224,7 +1224,6 @@
 <translation id="2278668501808246459">କଣ୍ଟେନର୍ ମ୍ୟାନେଜର୍ ଆରମ୍ଭ ହେଉଛି</translation>
 <translation id="2280486287150724112">ଡାହାଣପଟ ମାର୍ଜିନ୍</translation>
 <translation id="2282146716419988068">GPU ପ୍ରକ୍ରିୟା</translation>
-<translation id="2285109769884538519">{COUNT,plural, =0{ସମସ୍ତ URLକୁ &amp;ନୂଆ ଟାବ୍ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ଟାବ୍ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ ({COUNT})ଟି URLକୁ &amp;ନୂଆ ଟାବ୍ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="2285942871162473373">ଆପଣଙ୍କର ଟିପଚିହ୍ନ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2287944065963043964">ଲଗଇନ୍ ସ୍କ୍ରିନ୍</translation>
 <translation id="2288181517385084064">ଭିଡ଼ିଓ ରେକର୍ଡର୍‌କୁ ସ୍ୱିଚ୍‌ କରନ୍ତୁ</translation>
@@ -3001,7 +3000,6 @@
 <translation id="4158364720893025815">ପାସ୍</translation>
 <translation id="4159681666905192102">ଏହା <ph name="CUSTODIAN_EMAIL" /> ଏବଂ <ph name="SECOND_CUSTODIAN_EMAIL" />.ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଥିବା ଶିଶୁଙ୍କ ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ଏକ ଆକାଉଣ୍ଟ ଅଟେ।</translation>
 <translation id="4163560723127662357">ଅଜଣା କୀବୋର୍ଡ</translation>
-<translation id="4165942112764990069"><ph name="USER_EMAIL" /> ଏକ ବୈଧ ସଂସ୍ଥାର ନୁହଁନ୍ତି। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ। ଯଦି ଆପଣ ଜଣେ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଅଟନ୍ତି, ତେବେ ଆପଣ ଏଠାକୁ ଭିଜିଟ୍ କରି ଆପଣଙ୍କ ସଂସ୍ଥାକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଭିଡିଓ ଗେମ୍ କିମ୍ବା ୱେବ୍ ଫର୍ମଗୁଡ଼ିକ ପରି, ଇଣ୍ଟରାକ୍ଟିଭ୍ ଫିଚରଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ JavaScript ବ୍ୟବହାର କରିଥାଏ</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ସହିତ ସମ୍ବନ୍ଧିତ କିଛି ସେଟିଂସ୍‌କୁ ଆପଣଙ୍କ ସହିତ ସେୟାର୍ କରାଯାଉଛି। ଯେତେବେଳେ ଏକାଧିକ ସାଇନ୍ ଇନ୍ ବ୍ୟବହାର କରାଯାଏ, ସେତେବେଳେ ହିଁ କେବଳ ଏହି ସେଟିଂସ୍ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ଉପରେ ପ୍ରଭାବ ପକାଇବ।</translation>
 <translation id="4169535189173047238">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
@@ -4028,7 +4026,6 @@
 <translation id="5315738755890845852">ଅତିରିକ୍ତ କୁଟିଳ ବନ୍ଧନୀ: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5319359161174645648">Google Chromeକୁ ସୁପାରିଶ କରୁଛି</translation>
-<translation id="5319712128756744240">ନୂଆ ଡିଭାଇସକୁ ପେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5320135788267874712">ନୂଆ ଡିଭାଇସର ନାମ</translation>
 <translation id="532247166573571973">ସର୍ଭର୍ ହୁଏତ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5324300749339591280">ଆପଗୁଡ଼ିକର ତାଲିକା</translation>
@@ -4816,7 +4813,6 @@
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" />ରେ ସେଭ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="6209838773933913227">କମ୍ପୋନେଟ୍ ଅପଡେଟ୍ ହେଉଛି</translation>
 <translation id="6209908325007204267">ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ Chrome ଏଣ୍ଟରପ୍ରାଇଜ୍ ଅପଗ୍ରେଡ୍ ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି, କିନ୍ତୁ ଆପଣଙ୍କ ଉପଯୋଗକର୍ତ୍ତାନାମ କୌଣସି ଏଣ୍ଟରପ୍ରାଇଜ୍ ଆକାଉଣ୍ଟ ସହ ସମ୍ବନ୍ଧିତ ନୁହେଁ। ଏକ ଦ୍ୱିତୀୟ ଡିଭାଇସରେ g.co/ChromeEnterpriseAccountରେ ଯାଇ, ଦୟାକରି ଏକ ଏଣ୍ଟରପ୍ରାଇଜ୍ ଆକାଉଣ୍ଟ ତିଆରି କରନ୍ତୁ।</translation>
-<translation id="621172521139737651">{COUNT,plural, =0{ସମସ୍ତ URLକୁ &amp;ନୂଆ ଟାବ୍ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ଟାବ୍ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ ({COUNT})ଟି URLକୁ &amp;ନୂଆ ଟାବ୍ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="6212039847102026977">ଅତ୍ୟାଧୁନିକ ନେଟ୍‍ୱର୍କ ଗୁଣାବଳୀ ଦେଖାନ୍ତୁ</translation>
 <translation id="6212168817037875041">ଡିସ୍‌ପ୍ଲେ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6212752530110374741">ଇମେଲ୍‍ ଲିଙ୍କ୍‌</translation>

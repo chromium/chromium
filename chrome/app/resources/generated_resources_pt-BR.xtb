@@ -2788,7 +2788,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3905761538810670789">Reparar app</translation>
 <translation id="3908393983276948098">O plug-in <ph name="PLUGIN_NAME" /> está desatualizado</translation>
 <translation id="3908501907586732282">Ativar extensão</translation>
-<translation id="3909701002594999354">Mostrar todos os &amp;controles</translation>
 <translation id="3909791450649380159">&amp;Recortar</translation>
 <translation id="39103738135459590">Código de ativação</translation>
 <translation id="3911824782900911339">Página Nova guia</translation>
@@ -3528,7 +3527,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4733793249294335256">Local</translation>
 <translation id="473546211690256853">Esta conta é gerenciada por <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Falha do sistema ao determinar os identificadores do dispositivo.</translation>
-<translation id="473581466100273252">Alternar entradas fechadas recentemente</translation>
 <translation id="4736292055110123391">Sincronize favoritos, senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="473936925429402449">Selecionado, conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4143,7 +4141,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5430931332414098647">Tethering instantâneo</translation>
 <translation id="5431318178759467895">Colorido</translation>
 <translation id="543338862236136125">Editar senha</translation>
-<translation id="5433791271511851494">As opções de compartilhamento são gerenciadas pela sua organização.</translation>
 <translation id="5434065355175441495">PKCS #1 Criptografia RSA</translation>
 <translation id="5435779377906857208">Sempre permitir que <ph name="HOST" /> acesse sua localização</translation>
 <translation id="5436492226391861498">Esperando pelo túnel de proxy...</translation>
@@ -5183,7 +5180,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="657402800789773160">&amp;Recarregar esta página</translation>
 <translation id="6577284282025554716">Download cancelado: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Resumo da integridade da rede</translation>
-<translation id="6579369886355986318">Mostrar todos os &amp;controles</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Conteúdo da área de trabalho compartilhado</translation>
 <translation id="6580203076670148210">Velocidade da verificação</translation>
 <translation id="6582080224869403177">Redefina seu <ph name="DEVICE_TYPE" /> para aumentar a segurança.</translation>
@@ -5625,7 +5621,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7044124535091449260">Saiba mais sobre o acesso aos sites</translation>
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7047059339731138197">Escolher um plano de fundo</translation>
-<translation id="7048457618657122233">Compartilhar link por <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Manter arquivo?</translation>
 <translation id="7052237160939977163">Enviar dados de rastreamento de desempenho</translation>
 <translation id="7053983685419859001">Bloquear</translation>

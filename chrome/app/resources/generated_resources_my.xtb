@@ -2784,7 +2784,6 @@
 <translation id="3905761538810670789">အက်ပ်ပြင်ဆင်ရန်</translation>
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> မှာ ဟောင်းနေပါပြီ</translation>
 <translation id="3908501907586732282">တိုးချဲ့မှုကို ဖွင့်ပေးရန်</translation>
-<translation id="3909701002594999354">&amp;ထိန်းချုပ်မှုအားလုံးကို ပြရန်</translation>
 <translation id="3909791450649380159">ဖြ&amp;တ်ရန်</translation>
 <translation id="39103738135459590">စသုံးရန် ကုဒ်</translation>
 <translation id="3911824782900911339">တဘ် စာမျက်နှာ အသစ်</translation>
@@ -3523,7 +3522,6 @@
 <translation id="4733793249294335256">တည်နေရာ</translation>
 <translation id="473546211690256853">ဒီအကောင့်ကို <ph name="DOMAIN" />မှ စီမံကွပ်ကဲသည်</translation>
 <translation id="4735803855089279419">စနစ်သည် ဤစက်ပစ္စည်းအတွက် စက်ပစ္စည်းသတ်မှတ်မှုစနစ်ကို ရယူ၍မရပါ။</translation>
-<translation id="473581466100273252">လတ်တလော ပိတ်ထားသည့် ထည့်သွင်းမှုများကို ပိတ်ဖွင့်လုပ်နိုင်သည်</translation>
 <translation id="4736292055110123391">သင့်စက်ပစ္စည်းများအားလုံးတွင် သင်၏ ဝဘ်လိပ်စာ၊ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများစွာတို့ကို စင့်ခ်လုပ်ပါ</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="473936925429402449">ရွေးထားသည်၊ <ph name="TOTAL_ELEMENTS" /> ခုအနက် အကြောင်းအရာအပို <ph name="CURRENT_ELEMENT" /></translation>
@@ -4138,7 +4136,6 @@
 <translation id="5430931332414098647">အမြန်ချိတ်ဆက်မျှဝေခြင်း</translation>
 <translation id="5431318178759467895">အရောင်</translation>
 <translation id="543338862236136125">စကားဝှက်ကို တည်းဖြတ်ခြင်း</translation>
-<translation id="5433791271511851494">မျှဝေရန်နည်းလမ်းများကို သင်၏အဖွဲ့အစည်းက စီမံခန့်ခွဲထားသည်။</translation>
 <translation id="5434065355175441495">PKCS #1 RSA လျှို့ဝှက်ကုဒ်သွင်းမှု</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> ကို သင့်တည်နေရာ အမြဲသုံးခွင့်ပြုရန်</translation>
 <translation id="5436492226391861498">မရောက်စီလိုင်း အားစောင့်နေ...</translation>
@@ -5175,7 +5172,6 @@
 <translation id="657402800789773160">&amp;ဒီစာမျက်နှာကို ပြန်တင်ရန်</translation>
 <translation id="6577284282025554716">ဒေါင်းလုဒ်လုပ်ခြင်းကို ပယ်ဖျက်ထားသည်− <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">ကွန်ရက်အခြေအနေ လျှပ်တစ်ပြက်</translation>
-<translation id="6579369886355986318">&amp;ထိန်းချုပ်မှုအားလုံးကို ပြရန်</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ဒက်စ်တော့အကြောင်းအရာကို မျှဝေထားသည်</translation>
 <translation id="6580203076670148210">စကင်ဖတ်သည့် မြန်နှုန်း</translation>
 <translation id="6582080224869403177">သင့်လုံခြုံရေးကို အဆင့်မြှင့်ရန် <ph name="DEVICE_TYPE" /> ကို ပြင်ဆင်သတ်မှတ်ပါ။</translation>
@@ -5617,7 +5613,6 @@
 <translation id="7044124535091449260">ဝဘ်ဆိုက်အသုံးပြုခွင့်အကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="7044606776288350625">ဒေတာစင့်ခ်လုပ်ခြင်း</translation>
 <translation id="7047059339731138197">နောက်ခံပုံ ရွေးမည်</translation>
-<translation id="7048457618657122233"><ph name="SHARE_TARGET" />အား လင့်ခ်မျှဝေရန်</translation>
 <translation id="7049293980323620022">ဖိုင်ကို သိမ်းလိုသလား။</translation>
 <translation id="7052237160939977163">စွမ်းဆောင်ရည် လမ်းကြောင်းလိုက်ခြင်း အချက်လက် ပို့</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>

@@ -1743,15 +1743,6 @@
 <translation id="3110248563985502478">此政策已在 M88 中弃用，而且 Chrome 已不再支持 Flash。如果此政策已启用，过期插件可作为正常插件使用。如果此政策已停用，系统将不会使用过期插件。
 
       如果您未设置此政策，系统会请求用户授权其运行过期插件。</translation>
-<translation id="3110373701407677290">通过设置此政策，您可创建一个网址格式列表，从而指定哪些网站能够截取与其同源的标签页。
-
-      如果您未设置此政策，系统将不会考虑在这种截取级别覆盖网站。
-
-      请注意，系统仍然会允许截取与相应网站同源的窗口化 Chrome 应用。
-
-      如果相应网站与此政策中的网址格式匹配，系统将不会考虑以下政策：<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="3117676313396757089">警告：从 57 版开始（2017 年 3 月左右），<ph name="PRODUCT_NAME" /> 中将彻底移除 DHE。届时，此政策将不再发挥作用。
 
        如果此政策未设置或设为 false，系统将不会在 TLS 中启用 DHE 加密套件。您也可以将此政策设为 true，以便启用 DHE 加密套件，并与过时的服务器保持兼容。但这只是一种权宜之计，对服务器进行重新配置才是正确的做法。
@@ -1869,7 +1860,6 @@
 <translation id="3251500716404598358">配置政策以在浏览器之间切换。
 
       配置的网站将自动在其他浏览器（而非 <ph name="PRODUCT_NAME" />）中打开。</translation>
-<translation id="3252724033247471310">允许这些来源使用同源标签页截取功能</translation>
 <translation id="3255624750680556186">如果此政策已启用或未设置，系统会允许设备触发 Powerwash。
 
       如果此政策已停用，系统将不允许设备触发 Powerwash。但例外情况是：如果为 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 设定的值允许 TPM 固件更新，但 TPM 固件尚未更新，系统将仍然允许设备触发 Powerwash。</translation>
@@ -2386,7 +2376,6 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果您未设置此政策，虚拟键盘在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
-<translation id="3913680877415932969">配置政策以控制网站能在哪种屏幕共享 API（例如 getDisplayMedia() 或 Desktop Capture Extension API）级别（例如标签页、窗口或桌面）进行截取。</translation>
 <translation id="3915395663995367577">代理 .pac 文件的网址</translation>
 <translation id="3915587396318773837">如果您设置了此政策，远程访问主机会在建立连接前要求身份验证客户端从该网址获取身份验证令牌。
 
@@ -2403,7 +2392,6 @@
           如果您设置了此政策，用户便无法更改或覆盖它。
 
           如果您未设置此政策，粘滞键在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
-<translation id="3927291637826333102">允许这些来源使用桌面、窗口和标签页截取功能</translation>
 <translation id="3932553013632130433">
       用于指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 Chrome 91 (2021-05-25) 开始，Chrome 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。
       如果此政策设为 True，网站将能够随意使用 SharedArrayBuffer，不受任何限制。
@@ -3347,15 +3335,6 @@
 <translation id="5307432759655324440">无痕模式的可用性</translation>
 <translation id="5311275381462687162">默认旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
 <translation id="5312253627576569499">在屏幕变暗后或在屏幕关闭不久后察觉到用户活动时，系统会对屏幕变暗延迟时间采取的调整幅度（百分比）</translation>
-<translation id="5317852436044398288">通过设置此政策，您可创建一个网址格式列表，从而指定哪些网站能够使用窗口和标签页截取功能。
-
-      如果您未设置此政策，系统将不会考虑在这种截取级别覆盖网站。
-
-      在以下情况下，系统将不会考虑此政策：相应网站与 <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 或 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 政策中的网址格式匹配。
-
-      如果相应网站与此政策中的网址格式匹配，系统将不会考虑以下政策：<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="5318185076587284965">允许远程访问主机使用中继服务器</translation>
 <translation id="5323128137188992869">允许使用 <ph name="PRODUCT_NAME" /> 向设备投射内容。
 
@@ -3767,7 +3746,6 @@
       如果您设置了此政策，用户便无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，系统会允许执行凭据泄露检查，但用户可关闭该功能。
 
       如果“安全浏览”功能已（无论是被政策还是被用户）停用，此行为便不会触发。若要强制开启“安全浏览”功能，请使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策或 <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> 政策。</translation>
-<translation id="5835312413892670446">屏幕截取设置</translation>
 <translation id="5836064773277134605">限制远程访问主机使用的UDP端口范围</translation>
 <translation id="5837898601525273156">如果您设置了 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，并且 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 已启用，高级电池充电模式电源管理政策会保持开启状态（如果相应设备支持的话）。在此模式下，系统可以在非工作时间使用标准充电算法和其他技术来最大限度地延长电池寿命。在工作时间，系统会使用快速充电，以加快充电速度。您应通过开始时间和持续时间指定每天系统使用量最大的时段。
 
@@ -4290,15 +4268,6 @@
 <translation id="6561396069801924653">在系统任务栏菜单中显示无障碍选项</translation>
 <translation id="6562889469672829421">系统应在设备闲置多久（以毫秒为单位）后调暗屏幕</translation>
 <translation id="6563458316362153786">启用 802.11r 快速切换</translation>
-<translation id="6563462845077594854">通过设置此政策，您可创建一个网址格式列表，从而指定哪些网站能够使用桌面、窗口和标签页截取功能。
-
-      如果您未设置此政策，系统将不会考虑在这种截取级别覆盖网站。
-
-      在以下情况下，系统将不会考虑此政策：相应网站与 <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 或 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 政策中的网址格式匹配。
-
-      如果相应网站与此政策中的网址格式匹配，系统将不会考虑 <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="6568977718979857253">此政策已被弃用。请使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控制 Flash 插件的可用性，并使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 控制是否应使用集成式 PDF 查看器打开 PDF 文件。
 
       指定一系列要在 <ph name="PRODUCT_NAME" /> 中停用的插件，并禁止用户更改此设置。
@@ -4316,7 +4285,6 @@
       如果您不设置此政策或此政策是空列表，则不存在设备本地帐号。</translation>
 <translation id="6584541828182430328">停用“显示全屏提醒”功能</translation>
 <translation id="6598235178374410284">用户头像图片</translation>
-<translation id="6600377630856879433">允许这些来源使用窗口和标签页截取功能</translation>
 <translation id="6603004149426829878">解析时区时一律将任何可用的位置信号发送给服务器</translation>
 <translation id="6604049565198492174">通过设置此政策，您可以允许向各部 <ph name="PRODUCT_NAME" /> 设备推送要用于各个用户的网络配置。网络配置是 JSON 格式的字符串，如 Open Network Configuration 格式所定义。</translation>
 <translation id="660567106648774919">此政策已被弃用，请改用 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 政策。
@@ -5319,17 +5287,6 @@
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
-<translation id="7767066506143083523">通过设置此政策，您可创建一个网址格式列表，从而指定哪些网站能够使用标签页截取功能。
-
-      如果您未设置此政策，系统将不会考虑在这种截取级别覆盖网站。
-
-      请注意，系统仍然会允许截取窗口化 Chrome 应用。
-
-      在以下情况下，系统将不会考虑此政策：相应网站与 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 政策中的网址格式匹配。
-
-      如果相应网站与此政策中的网址格式匹配，系统将不会考虑以下政策：<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="7771298620150437359">配置首选语言的内容和顺序</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
@@ -5727,10 +5684,6 @@
 <translation id="8300992833374611099">控制可在哪些情况下使用开发者工具</translation>
 <translation id="8301065459352777588">受管理访客会话用户可以存储设备级显示设置</translation>
 <translation id="8306117673860983372">登录设置</translation>
-<translation id="830819203330820450">如果此政策已启用或未配置（默认），网页可以使用屏幕共享 API（例如 getDisplayMedia() 或 Desktop Capture Extension API）提示用户选择要截取的标签页、窗口或桌面。
-
-      如果此政策已停用，对屏幕共享 API 的所有调用都会失败并会返回错误；但在以下情况下，系统将不会考虑此政策（相应网站将能够使用屏幕共享 API）：该网站与 <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 或 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 政策中的来源格式匹配。
-      </translation>
 <translation id="8312129124898414409">可让您设置是否允许网站使用密钥生成功能。您可以允许或禁止所有网站使用密钥生成功能。
 
           如果此政策未设置，系统将使用“BlockKeygen”，并且用户可以更改此设置。</translation>
@@ -5740,7 +5693,6 @@
 <translation id="8314214821702356835">允许用户在设备锁定时播放媒体</translation>
 <translation id="8319678975002906774">为特定来源的网站设定受管理配置值</translation>
 <translation id="8320149248919453401">电池充电模式</translation>
-<translation id="8327651196906278510">允许这些来源使用标签页截取功能</translation>
 <translation id="8329434144708110">触发身份验证流程，以便与 SSO 提供商同步密码</translation>
 <translation id="8329984337216493753">此政策仅在零售模式下有效。
 

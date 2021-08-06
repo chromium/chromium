@@ -177,7 +177,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2322173485024759474">Enrere per lletra</translation>
 <translation id="2339073806695260576">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla o bé utilitzar-lo com a punter làser o lupa.</translation>
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
-<translation id="2350794187831162545">La parla en <ph name="LANGUAGE" /> ara es processa localment i funciona sense connexió. Pots canviar l'idioma de dictat a Configuració &gt; Accessibilitat.</translation>
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -438,7 +437,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4379531060876907730">Aquestes són les eines del llapis òptic</translation>
 <translation id="4389184120735010762">Has premut la tecla de drecera de la lupa acoblada. Vols activar-la?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
-<translation id="4405151984121254935">El tipus de perifèric connectat no és compatible</translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
 <translation id="4421231901400348175">Es comparteix el control de la pantalla amb <ph name="HELPER_NAME" /> mitjançant l'Assistència remota.</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>
@@ -935,7 +933,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> i el teu telèfon es connectaran automàticament</translation>
 <translation id="8380784334203145311">Bona nit,</translation>
 <translation id="8388750414311082622">L'últim escriptori no es pot suprimir.</translation>
-<translation id="8394567579869570560">El teu pare o mare han bloquejat aquest dispositiu</translation>
+<translation id="8394567579869570560">El teu pare o la teva mare han bloquejat aquest dispositiu</translation>
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
 <translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8425213833346101688">Canvia</translation>
@@ -1056,7 +1054,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="9211490828691860325">Tots els escriptoris</translation>
 <translation id="9211681782751733685">Temps restant perquè es carregui totalment la bateria: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Estableix el fons de pantalla</translation>
-<translation id="921989828232331238">El teu pare o mare han bloquejat el dispositiu per a tot el dia</translation>
+<translation id="921989828232331238">El teu pare o la teva mare han bloquejat el dispositiu per a tot el dia</translation>
 <translation id="9220525904950070496">Suprimir el compte</translation>
 <translation id="923686485342484400">Premeu Control+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="925832987464884575">Amaga les previsualitzacions</translation>

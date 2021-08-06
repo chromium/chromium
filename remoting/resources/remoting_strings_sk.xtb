@@ -11,7 +11,6 @@
 <translation id="1546934824884762070">Vyskytla sa neočakávaná chyba. Nahláste tento problém vývojárom.</translation>
 <translation id="1697532407822776718">Všetko je nastavené!</translation>
 <translation id="1742469581923031760">Prebieha pripájanie...</translation>
-<translation id="177040763384871009">Ak chcete povoliť odkazy, ktoré sa majú otvoriť v prehliadači klienta, keď na ne používateľ klikne vo vzdialenom zariadení, musíte zmeniť webový prehliadač systému na <ph name="URL_FORWARDER_NAME" />.</translation>
 <translation id="177096447311351977">Adresa IP kanála pre klient: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Odstrániť</translation>
 <translation id="2009755455353575666">Pripojenie zlyhalo</translation>
@@ -57,7 +56,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Ako na to</translation>
 <translation id="3776024066357219166">Vaša relácia Vzdialenej plochy Chrome bola ukončená.</translation>
-<translation id="3858860766373142691">Názov</translation>
 <translation id="3897092660631435901">Ponuka</translation>
 <translation id="3905196214175737742">Neplatná doména vlastníka hostiteľa</translation>
 <translation id="3931191050278863510">Hostenie bolo zastavené.</translation>
@@ -143,7 +141,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="7434397035092923453">Prístup bol odmietnutý klientskemu programu: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klient je pripojený: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Zmeniť účet</translation>
-<translation id="7535110896613603182">Otvoriť nastavenia predvolených aplikácií</translation>
 <translation id="7628469622942688817">Zapamätať si môj kód PIN v tomto zariadení</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>

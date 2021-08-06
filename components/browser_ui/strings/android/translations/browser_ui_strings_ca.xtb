@@ -69,7 +69,6 @@
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
-<translation id="2785051990912111074">Amb aquesta opció, s'esborraran les galetes per a <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Confirmes que vols restablir tots els permisos del lloc web concedits a <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -139,7 +138,6 @@
 <translation id="4976702386844183910">Darrera visita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">No s'ha trobat cap contacte</translation>
 <translation id="4996978546172906250">Comparteix mitjançant</translation>
-<translation id="5014906230196386306">Vols esborrar les galetes?</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5048398596102334565">Permet que els llocs web accedeixin als sensors de moviment (opció recomanada)</translation>
 <translation id="5050380848339752099">Aquest lloc web està a punt de compartir informació amb una aplicació fora del mode d'incògnit.</translation>
@@ -159,7 +157,6 @@
 <translation id="5354152178998424783">Amb aquesta acció s'esborraran dades i galetes (<ph name="DATASIZE" />) emmagatzemades per llocs web.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
-<translation id="5438097262470833822">Amb aquesta opció, es restabliran els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Temps transcorregut: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloqueja els anuncis als llocs web que mostren publicitat intrusiva o enganyosa</translation>
 <translation id="5502860503640766021">S'ha permès <ph name="PERMISSION_1" />. S'ha bloquejat <ph name="PERMISSION_2" />.</translation>
@@ -216,7 +213,6 @@
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Baixades actives</translation>
 <translation id="6746124502594467657">Mou avall</translation>
-<translation id="6749077623962119521">Vols restablir els permisos?</translation>
 <translation id="6766622839693428701">Llisca cap avall per tancar el full.</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6818926723028410516">Selecciona elements</translation>
