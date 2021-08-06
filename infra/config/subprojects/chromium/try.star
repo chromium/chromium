@@ -2274,6 +2274,11 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
     builder = "mac-chrome",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
@@ -2281,6 +2286,11 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "mac-chrome-stable",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "mac-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
@@ -2294,6 +2304,11 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "win32-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
     builder = "win64-chrome",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
@@ -2301,4 +2316,9 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "win64-chrome-stable",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "win64-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
 )
