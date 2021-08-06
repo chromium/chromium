@@ -467,14 +467,7 @@ void PagedAppsGridView::Layout() {
   CalculateIdealBoundsForFolder();
   for (int i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
-    if (view != drag_view_) {
-      view->SetBoundsRect(view_model()->ideal_bounds(i));
-    } else {
-      // If the drag view size changes, make sure it has the same center.
-      gfx::Rect bounds = view->bounds();
-      bounds.ClampToCenteredSize(GetTileViewSize());
-      view->SetBoundsRect(bounds);
-    }
+    view->SetBoundsRect(view_model()->ideal_bounds(i));
   }
   if (cardified_state_) {
     DCHECK(!background_cards_.empty());
@@ -642,10 +635,8 @@ void PagedAppsGridView::SelectedPageChanged(int old_selected,
       const int page_height = grid_size.height() + GetPaddingBetweenPages();
       update.set_y(page_height * (new_selected - old_selected));
     }
-    drag_view_start_ += update;
-    drag_view_->SetPosition(drag_view_->origin() + update);
-    UpdateDropTargetRegion();
     Layout();
+    UpdateDropTargetRegion();
     MaybeStartPageFlipTimer(last_drag_point());
   } else {
     // If the selected view is no longer on the page, select the first item in
@@ -707,14 +698,6 @@ void PagedAppsGridView::TransitionChanged() {
   gfx::Transform transform;
   transform.Translate(translate);
   items_container()->layer()->SetTransform(transform);
-
-  // |drag_view_| should stay in the same location in the screen, so makes
-  // the opposite effect of the transform.
-  if (drag_view_) {
-    gfx::Transform drag_view_transform;
-    drag_view_transform.Translate(-translate);
-    drag_view_->layer()->SetTransform(drag_view_transform);
-  }
 
   if (presentation_time_recorder_)
     presentation_time_recorder_->RequestNext();
@@ -979,14 +962,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
   // change it.
   gfx::Point start_position = items_container()->origin();
   RecenterItemsContainer();
-  gfx::Vector2d translate_offset(
-      0, start_position.y() - items_container()->origin().y());
-  if (cardified_state_) {
-    // The drag view is translated when the items container is recentered.
-    // Reposition the drag view to compensate for the translation offset.
-    drag_view_start_ += translate_offset;
-    drag_view_->SetPosition(drag_view_start_);
-  }
+
   // Drag view can be nullptr or moved from the model by EndDrag.
   const bool model_contains_drag_view =
       drag_view_ && (view_model()->GetIndexOfView(drag_view_) != -1);
@@ -1002,6 +978,8 @@ void PagedAppsGridView::AnimateCardifiedState() {
     bounds_animation_for_cardified_state_in_progress_++;
   }
 
+  gfx::Vector2d translate_offset(
+      0, start_position.y() - items_container()->origin().y());
   for (int i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* entry_view = view_model()->view_at(i);
     // We don't animate bounds for the dragged view.

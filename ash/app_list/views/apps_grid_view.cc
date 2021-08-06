@@ -470,7 +470,6 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   drag_view_init_index_ = GetIndexOfView(drag_view_);
   reorder_placeholder_ = drag_view_init_index_;
   ExtractDragLocation(root_location, &drag_start_grid_view_);
-  drag_view_start_ = gfx::Point(drag_view_->x(), drag_view_->y());
   return true;
 }
 
@@ -537,8 +536,6 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
 
   if (drag_pointer_ != pointer)
     return;
-
-  drag_view_->SetPosition(drag_view_start_ + drag_vector);
 
   last_drag_point_ = point;
   const GridIndex last_drop_target = drop_target_;
@@ -742,9 +739,7 @@ AppListItemView* AppsGridView::GetItemViewAt(int index) const {
 
 void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
     AppListItemView* original_drag_view,
-    const gfx::Rect& drag_view_rect,
-    const gfx::Point& drag_point,
-    bool has_native_drag) {
+    const gfx::Point& drag_point) {
   DCHECK(original_drag_view && !drag_view_);
   DCHECK(!dragging_for_reparent_item_);
 
@@ -765,23 +760,13 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   // Dragged view should have focus. This also fixed the issue
   // https://crbug.com/834682.
   drag_view_->RequestFocus();
-  gfx::Point converted_origin = drag_view_rect.origin();
-  ConvertPointToTarget(this, items_container_, &converted_origin);
-  drag_view_->SetBoundsRect(gfx::Rect(converted_origin, drag_view_rect.size()));
-
-  // Hide the drag_view_ for drag icon proxy when a native drag is responsible
-  // for showing the icon.
-  if (has_native_drag)
-    drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
+  drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
 
   // Add drag_view_ to the end of the view_model_.
   view_model_.Add(drag_view_, view_model_.view_size());
   view_structure_.Add(drag_view_, view_structure_.GetLastTargetIndex());
 
   drag_start_grid_view_ = drag_point;
-
-  drag_view_start_ = drag_view_->origin();
-
   // Set the flag in root level grid view.
   dragging_for_reparent_item_ = true;
 
@@ -821,6 +806,9 @@ void AppsGridView::ClearDragState() {
   if (host_drag_start_timer_.IsRunning())
     host_drag_start_timer_.AbandonAndStop();
 
+  if (folder_item_reparent_timer_.IsRunning())
+    folder_item_reparent_timer_.Stop();
+
   if (drag_view_) {
     if (IsDraggingForReparentInRootLevelGridView()) {
       const int drag_view_index = view_model_.GetIndexOfView(drag_view_);
@@ -829,6 +817,8 @@ void AppsGridView::ClearDragState() {
     }
   }
   drag_view_ = nullptr;
+
+  drag_out_of_folder_container_ = false;
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
 
@@ -1237,17 +1227,14 @@ void AppsGridView::ExtractDragLocation(const gfx::Point& root_location,
       GetWidget()->GetNativeWindow()->GetRootWindow(),
       GetWidget()->GetNativeWindow(), drag_point);
   views::View::ConvertPointFromWidget(this, drag_point);
-  // Ensure that |drag_point| is correct if RTL.
-  drag_point->set_x(GetMirroredXInView(drag_point->x()));
 }
 
 void AppsGridView::UpdateDropTargetRegion() {
   DCHECK(drag_view_);
 
-  gfx::Point point = drag_view_->GetIconBounds().CenterPoint();
-  views::View::ConvertPointToTarget(drag_view_, this, &point);
-  // Ensure that the drop target location is correct if RTL.
+  gfx::Point point = last_drag_point_;
   point.set_x(GetMirroredXInView(point.x()));
+
   if (IsPointWithinDragBuffer(point)) {
     if (DragPointIsOverItem(point)) {
       drop_target_region_ = ON_ITEM;
@@ -1469,9 +1456,7 @@ void AppsGridView::OnReorderTimer() {
 void AppsGridView::OnFolderItemReparentTimer() {
   DCHECK(folder_delegate_);
   if (drag_out_of_folder_container_ && drag_view_) {
-    bool has_native_drag = drag_and_drop_host_ != nullptr;
-    folder_delegate_->ReparentItem(drag_view_, last_drag_point_,
-                                   has_native_drag);
+    folder_delegate_->ReparentItem(drag_view_, last_drag_point_);
 
     // Set the flag in the folder's grid view.
     dragging_for_reparent_item_ = true;
@@ -1503,7 +1488,7 @@ void AppsGridView::UpdateDragStateInsideFolder(Pointer pointer,
   // Calculate if the drag_view_ is dragged out of the folder's container
   // ink bubble.
   bool is_item_dragged_out_of_folder =
-      folder_delegate_->IsViewOutsideOfFolder(drag_view_);
+      folder_delegate_->IsDragPointOutsideOfFolder(drag_point);
   if (is_item_dragged_out_of_folder) {
     if (!drag_out_of_folder_container_) {
       folder_item_reparent_timer_.Start(
@@ -1880,6 +1865,7 @@ bool AppsGridView::IsAnimationRunningForTest() {
 
 void AppsGridView::CancelAnimationsForTest() {
   bounds_animator_->Cancel();
+  drag_icon_proxy_.reset();
 
   const int total_views = view_model_.view_size();
   for (int i = 0; i < total_views; ++i) {
@@ -1912,7 +1898,7 @@ bool AppsGridView::FireDragToShelfTimerForTest() {
 void AppsGridView::StartDragAndDropHostDrag() {
   // When a drag and drop host is given, the item can be dragged out of the app
   // list window. In that case a proxy widget needs to be used.
-  if (!drag_view_ || !drag_and_drop_host_)
+  if (!drag_view_)
     return;
 
   // We have to hide the original item since the drag and drop host will do
@@ -1921,14 +1907,13 @@ void AppsGridView::StartDragAndDropHostDrag() {
   DCHECK(!IsDraggingForReparentInRootLevelGridView());
 
   gfx::Point location_in_screen = drag_start_grid_view_;
-  location_in_screen.set_x(GetMirroredXInView(location_in_screen.x()));
   views::View::ConvertPointToScreen(this, &location_in_screen);
 
   const gfx::Point icon_location_in_screen =
       drag_view_->GetIconBoundsInScreen().CenterPoint();
+
   drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
-
       drag_view_->GetIconImage(), location_in_screen,
       location_in_screen - icon_location_in_screen,
       drag_view_->item()->is_folder() ? kDragAndDropProxyScale : 1.0f,
@@ -2929,8 +2914,6 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
 
 void AppsGridView::OnHostDragStartTimerFired() {
   gfx::Point last_drag_point_in_screen = last_drag_point_;
-  last_drag_point_in_screen.set_x(
-      GetMirroredXInView(last_drag_point_in_screen.x()));
   views::View::ConvertPointToScreen(this, &last_drag_point_in_screen);
   if (drag_and_drop_host_->StartDrag(drag_view_->item()->id(),
                                      last_drag_point_in_screen,

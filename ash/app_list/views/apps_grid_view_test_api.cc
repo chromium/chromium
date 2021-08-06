@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/app_list/paged_view_structure.h"
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "base/run_loop.h"
@@ -15,6 +16,7 @@
 #include "ui/events/event.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace test {
@@ -77,8 +79,11 @@ void AppsGridViewTestApi::LayoutToIdealBounds() {
 gfx::Rect AppsGridViewTestApi::GetItemTileRectOnCurrentPageAt(int row,
                                                               int col) const {
   int slot = row * (view_->cols()) + col;
-  return view_->GetExpectedTileBounds(
+  gfx::Rect bounds_in_ltr = view_->GetExpectedTileBounds(
       GridIndex(view_->pagination_model()->selected_page(), slot));
+  // `GetExpectedTileBounds()` returns expected bounds for item at provided grid
+  // index in LTR UI. Make sure this method returns mirrored bounds in RTL UI.
+  return view_->GetMirroredRect(bounds_in_ltr);
 }
 
 void AppsGridViewTestApi::PressItemAt(int index) {
@@ -111,12 +116,27 @@ AppListItemView* AppsGridViewTestApi::GetViewAtVisualIndex(int page,
 
 gfx::Rect AppsGridViewTestApi::GetItemTileRectAtVisualIndex(int page,
                                                             int slot) const {
-  return view_->GetExpectedTileBounds(GridIndex(page, slot));
+  // `GetExpectedTileBounds()` returns expected bounds for item at provided grid
+  // index in LTR UI. Make sure this method returns mirrored bounds in RTL UI.
+  return view_->GetMirroredRect(
+      view_->GetExpectedTileBounds(GridIndex(page, slot)));
 }
 
 void AppsGridViewTestApi::WaitForItemMoveAnimationDone() {
   BoundsAnimatorWaiter waiter(view_->bounds_animator_.get());
   waiter.Wait();
+}
+
+gfx::Rect AppsGridViewTestApi::GetDragIconBoundsInAppsGridView() {
+  if (!view_->drag_icon_proxy_)
+    return gfx::Rect();
+  gfx::Rect icon_bounds_in_screen =
+      view_->drag_icon_proxy_->GetBoundsInScreen();
+  if (icon_bounds_in_screen.IsEmpty())
+    return gfx::Rect();
+  gfx::Point icon_origin = icon_bounds_in_screen.origin();
+  views::View::ConvertPointFromScreen(view_, &icon_origin);
+  return gfx::Rect(icon_origin, icon_bounds_in_screen.size());
 }
 
 }  // namespace test

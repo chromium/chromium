@@ -299,9 +299,13 @@ TEST_P(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
   AppListItemView* dragged = StartDragForReparent(0);
 
   // Drop it to the slot on the right of first slot.
-  gfx::Rect drop_target_tile(first_slot_tile);
-  drop_target_tile.Offset(first_slot_tile.width() * 2, 0);
-  gfx::Point point = drop_target_tile.CenterPoint();
+  AppsGridViewTestApi root_grid_view_test_api(GetRootGridView());
+  gfx::Point point =
+      root_grid_view_test_api.GetItemTileRectAtVisualIndex(0, 1).CenterPoint();
+  // Convert `point` to the folder's grid coordinates.
+  views::View::ConvertPointToTarget(GetRootGridView(), GetFolderGridView(),
+                                    &point);
+
   SimulateUpdateDrag(GetFolderGridView(), AppsGridView::MOUSE, dragged, point);
 
   // Drop it.
@@ -314,7 +318,6 @@ TEST_P(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
                 ->GetClassName());
 
   // The item view should be in slot 1 instead of slot 2 where it is dropped.
-  AppsGridViewTestApi root_grid_view_test_api(GetRootGridView());
   root_grid_view_test_api.LayoutToIdealBounds();
   EXPECT_EQ(first_slot_tile, GetRootViewModel()->view_at(0)->bounds());
 
@@ -338,9 +341,6 @@ TEST_P(AppListMainViewTest, DragLastItemFromFolderAndDropAtLastSlot) {
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
 TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
-  // TODO(anasalazar): Fix for cardified state
-  if (IsPaginationPreviewActive())
-    return;
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 

@@ -201,13 +201,10 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Called to initiate drag for reparenting a folder item in root level grid
   // view.
-  // Both |drag_view_rect| and |drag_pint| is in the coordinates of root level
-  // grid view.
+  // |drag_pint| is in the coordinates of root level grid view.
   void InitiateDragFromReparentItemInRootLevelGridView(
       AppListItemView* original_drag_view,
-      const gfx::Rect& drag_view_rect,
-      const gfx::Point& drag_point,
-      bool has_native_drag);
+      const gfx::Point& drag_point);
 
   // Updates drag in the root level grid view when receiving the drag event
   // dispatched from the hidden grid view for reparenting a folder item.
@@ -456,9 +453,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // If app item drag is in progress, the icon proxy created for the app list
   // item.
   std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
-
-  // The location of |drag_view_| when the drag started.
-  gfx::Point drag_view_start_;
 
   // If true, Layout() does nothing. See where set for details.
   bool ignore_layout_ = false;

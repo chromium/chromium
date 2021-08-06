@@ -1158,11 +1158,14 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   // explicitly called here.
   app_list_view_->OnParentWindowBoundsChanged();
 
+  gfx::Point target =
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center();
+  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&target);
+
   // End drag at the in between items 1 and 2 - note that these have been
   // translated one slot left to fill in space left by the dragged view, so the
   // expected drop slot is actually slot 1.
-  event_generator->MoveTouch(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center());
+  event_generator->MoveTouch(target);
   event_generator->ReleaseTouch();
 
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(0)->item()->id());
@@ -1269,9 +1272,6 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
 // dragged outside the folder bounds, and dropped within the apps grid) can
 // continue normally after screen rotation.
 TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
-  // TODO(anasalazar): Fix for cardified state.
-  if (GetParam())
-    return;
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
@@ -1312,9 +1312,11 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   // explicitly called here.
   app_list_view_->OnParentWindowBoundsChanged();
 
+  gfx::Point target =
+      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().right_center();
+  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&target);
   // End drag at the in between items 1 and 2.
-  event_generator->MoveTouch(
-      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().right_center());
+  event_generator->MoveTouch(target);
   event_generator->ReleaseTouch();
 
   // Verify the new item location within the apps grid.
@@ -1522,8 +1524,11 @@ TEST_P(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   apps_grid_view_->pagination_model()->FinishAnimation();
   EXPECT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
 
-  // Release the dragged app. The dragged app should be still in the folder. The
-  // newly blank page should be discarded and there should be no crash.
+  // Drop the item outside of the drag buffer, which should cancel the drag. The
+  // dragged app should be still in the folder, and the  newly blank page should
+  // be discarded without crashing.
+  event_generator->MoveTouch(apps_grid_bounds.bottom_left() +
+                             gfx::Vector2d(-100, 0));
   event_generator->ReleaseTouch();
   EXPECT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
   EXPECT_EQ(dragged_view, folder_view()->items_grid_view()->GetItemViewAt(0));

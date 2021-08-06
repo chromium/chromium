@@ -688,10 +688,12 @@ void AppListFolderView::OnTabletModeChanged(bool started) {
   page_switcher_->set_is_tablet_mode(started);
 }
 
-bool AppListFolderView::IsViewOutsideOfFolder(AppListItemView* view) {
-  gfx::Point point = view->GetLocalBounds().CenterPoint();
-  ConvertPointToTarget(view, this, &point);
-  return !GetLocalBounds().Contains(point);
+bool AppListFolderView::IsDragPointOutsideOfFolder(
+    const gfx::Point& drag_point) {
+  gfx::Point drag_point_in_folder = drag_point;
+  views::View::ConvertPointToTarget(items_grid_view_, this,
+                                    &drag_point_in_folder);
+  return !GetLocalBounds().Contains(drag_point_in_folder);
 }
 
 // When user drags a folder item out of the folder boundary ink bubble, the
@@ -707,8 +709,7 @@ bool AppListFolderView::IsViewOutsideOfFolder(AppListItemView* view) {
 // the top level grid view, until the drag ends.
 void AppListFolderView::ReparentItem(
     AppListItemView* original_drag_view,
-    const gfx::Point& drag_point_in_folder_grid,
-    bool has_native_drag) {
+    const gfx::Point& drag_point_in_folder_grid) {
   // Convert the drag point relative to the root level AppsGridView.
   gfx::Point to_root_level_grid = drag_point_in_folder_grid;
   ConvertPointToTarget(items_grid_view_, container_view_->apps_grid_view(),
@@ -716,8 +717,9 @@ void AppListFolderView::ReparentItem(
   // Ensures the icon updates to reflect that the icon has been removed during
   // the drag
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
-  StartSetupDragInRootLevelAppsGridView(original_drag_view, to_root_level_grid,
-                                        has_native_drag);
+  container_view_->apps_grid_view()
+      ->InitiateDragFromReparentItemInRootLevelGridView(original_drag_view,
+                                                        to_root_level_grid);
   container_view_->ReparentFolderItemTransit(folder_item_);
 }
 
@@ -725,10 +727,8 @@ void AppListFolderView::DispatchDragEventForReparent(
     AppsGridView::Pointer pointer,
     const gfx::Point& drag_point_in_folder_grid) {
   AppsGridView* root_grid = container_view_->apps_grid_view();
-  gfx::Point drag_point_in_root_grid(
-      GetMirroredXInView(drag_point_in_folder_grid.x()),
-      drag_point_in_folder_grid.y());
 
+  gfx::Point drag_point_in_root_grid = drag_point_in_folder_grid;
   // Temporarily reset the transform of the contents container so that the point
   // can be correctly converted to the root grid's coordinates.
   gfx::Transform original_transform = contents_container_->GetTransform();
@@ -736,8 +736,6 @@ void AppListFolderView::DispatchDragEventForReparent(
   ConvertPointToTarget(items_grid_view_, root_grid, &drag_point_in_root_grid);
   contents_container_->SetTransform(original_transform);
 
-  drag_point_in_root_grid.set_x(
-      root_grid->GetMirroredXInView(drag_point_in_root_grid.x()));
   root_grid->UpdateDragFromReparentItem(pointer, drag_point_in_root_grid);
 }
 
@@ -860,23 +858,6 @@ void AppListFolderView::CalculateIdealBounds() {
       (page_switcher_size.height() - header_frame.height()) / 2);
   page_switcher_frame.set_size(page_switcher_size);
   view_model_->set_ideal_bounds(kIndexPageSwitcher, page_switcher_frame);
-}
-
-void AppListFolderView::StartSetupDragInRootLevelAppsGridView(
-    AppListItemView* original_drag_view,
-    const gfx::Point& drag_point_in_root_grid,
-    bool has_native_drag) {
-  // Converts the original_drag_view's bounds to the coordinate system of
-  // root level grid view.
-  gfx::RectF rect_f(original_drag_view->GetLocalBounds());
-  views::View::ConvertRectToTarget(original_drag_view,
-                                   container_view_->apps_grid_view(), &rect_f);
-  gfx::Rect rect_in_root_grid_view = gfx::ToEnclosingRect(rect_f);
-
-  container_view_->apps_grid_view()
-      ->InitiateDragFromReparentItemInRootLevelGridView(
-          original_drag_view, rect_in_root_grid_view, drag_point_in_root_grid,
-          has_native_drag);
 }
 
 ui::Compositor* AppListFolderView::GetCompositor() {

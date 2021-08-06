@@ -27,8 +27,7 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
   // |drag_point_in_folder_grid| is the last drag point in coordinate of the
   // AppsGridView inside the folder.
   virtual void ReparentItem(AppListItemView* original_drag_view,
-                            const gfx::Point& drag_point_in_folder_grid,
-                            bool has_native_drag) = 0;
+                            const gfx::Point& drag_point_in_folder_grid) = 0;
 
   // Dispatches drag event from the hidden grid view to the root level grid view
   // for re-parenting a folder item.
@@ -48,9 +47,9 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
       bool cancel_drag,
       std::unique_ptr<AppDragIconProxy> drag_icon_proxy) = 0;
 
-  // Returns whether the |view| is within the folder view's bounds.
-  // The |view| is expected to be in the folder's apps grid view hierarchy.
-  virtual bool IsViewOutsideOfFolder(AppListItemView* view) = 0;
+  // Returns whether |drag_point| in the folder apps grid bounds is within the
+  // folder view's bounds.
+  virtual bool IsDragPointOutsideOfFolder(const gfx::Point& drag_point) = 0;
 
   // Returns true if the associated folder item is an OEM folder.
   virtual bool IsOEMFolder() const = 0;
