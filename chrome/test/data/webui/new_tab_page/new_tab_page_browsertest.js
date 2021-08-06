@@ -298,6 +298,18 @@ TEST_F('NewTabPageModulesTaskModuleTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var NewTabPageModulesRecipesV2ModuleTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/recipes_v2/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesRecipesV2ModuleTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var NewTabPageModulesChromeCartModuleTest =
     class extends NewTabPageBrowserTest {
   /** @override */

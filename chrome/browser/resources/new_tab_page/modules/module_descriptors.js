@@ -18,6 +18,7 @@ import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 // <if expr="not is_official_build">
 import {photosDescriptor} from './photos/module.js';
+import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
 // </if>
 import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
 
@@ -29,7 +30,11 @@ if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
 }
 
 if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
-  descriptors.push(recipeTasksDescriptor);
+  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+    descriptors.push(recipeTasksV2Descriptor);
+  } else {
+    descriptors.push(recipeTasksDescriptor);
+  }
 }
 
 if (loadTimeData.getBoolean('chromeCartModuleEnabled')) {
