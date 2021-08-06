@@ -70,11 +70,19 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
     private void updateDisplay() {
         if (mLanguageItem == null) {
             return;
-        } else if (mUseLanguageItemForTitle) {
-            setTitle(mLanguageItem.getDisplayName());
-            setSummary(mLanguageItem.getNativeDisplayName());
+        }
+        String displayName = mLanguageItem.getDisplayName();
+        if (mUseLanguageItemForTitle) {
+            setTitle(displayName);
+            String nativeName = mLanguageItem.getNativeDisplayName();
+            if (TextUtils.equals(displayName, nativeName)) {
+                // Clear summary if native name is the same as display name.
+                setSummary("");
+            } else {
+                setSummary(nativeName);
+            }
         } else {
-            setSummary(mLanguageItem.getDisplayName());
+            setSummary(displayName);
         }
     }
 }
