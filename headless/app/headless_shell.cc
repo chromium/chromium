@@ -416,6 +416,11 @@ void HeadlessShell::FetchTimeout() {
   LOG(INFO) << "Timeout.";
   devtools_client_->GetPage()->GetExperimental()->StopLoading(
       page::StopLoadingParams::Builder().Build());
+  // After calling page.stopLoading() the page will not fire any
+  // life cycle events, so we have to proceed on our own.
+  browser_->BrowserMainThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HeadlessShell::OnPageReady, weak_factory_.GetWeakPtr()));
 }
 
 void HeadlessShell::OnTargetCrashed(
