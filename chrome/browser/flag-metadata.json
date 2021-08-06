@@ -944,11 +944,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "decouple-sync-from-android-auto-sync",
-    "owners": [ "victorvianna@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "default-browser-fullscreen-promo-cta-experiment",
     "owners": [ "javierrobles", "bling-flags@google.com" ],
     "expiry_milestone": 93
@@ -5069,7 +5064,7 @@
   {
     "name": "send-tab-to-self-when-signed-in",
     "owners": ["victorvianna@google.com", "mastiz@chromium.org"],
-    "expiry_milestone": 92
+    "expiry_milestone": 98
   },
   {
     "name": "send-uma-cellular",

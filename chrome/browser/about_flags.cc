@@ -7028,13 +7028,6 @@ const FeatureEntry kFeatureEntries[] = {
          "OmniboxRichEntitiesInLauncher")},
 #endif
 
-#if defined(OS_ANDROID)
-    {"decouple-sync-from-android-auto-sync",
-     flag_descriptions::kDecoupleSyncFromAndroidAutoSyncName,
-     flag_descriptions::kDecoupleSyncFromAndroidAutoSyncDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kDecoupleSyncFromAndroidMasterSync)},
-#endif  // defined(OS_ANDROID)
-
     {"enable-browsing-data-lifetime-manager",
      flag_descriptions::kEnableBrowsingDataLifetimeManagerName,
      flag_descriptions::kEnableBrowsingDataLifetimeManagerDescription,

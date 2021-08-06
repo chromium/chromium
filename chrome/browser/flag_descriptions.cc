@@ -3204,13 +3204,6 @@ const char kCpuAffinityRestrictToLittleCoresDescription[] =
     "Restricts Chrome threads to LITTLE cores on devices with big.LITTLE or "
     "similar CPU architectures.";
 
-const char kDecoupleSyncFromAndroidAutoSyncName[] =
-    "Enable Chrome Sync decoupling from Android auto-sync";
-const char kDecoupleSyncFromAndroidAutoSyncDescription[] =
-    "Causes Chrome to disappear from the list of auto-sync apps in Android "
-    "settings. Sync will no longer be disabled when master sync is disabled, "
-    "provided that Chrome is run at least once with master sync enabled.";
-
 const char kDirectActionsName[] = "Direct actions";
 const char kDirectActionsDescription[] =
     "Enables direct actions (Android Q and more).";
