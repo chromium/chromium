@@ -32,14 +32,12 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
   UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
   VoiceSearchProvider* GetVoiceSearchProvider() const override;
-  AppDistributionProvider* GetAppDistributionProvider() const override;
   OmahaServiceProvider* GetOmahaServiceProvider() const override;
   UserFeedbackProvider* GetUserFeedbackProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
 
  private:
-  std::unique_ptr<AppDistributionProvider> app_distribution_provider_;
   std::unique_ptr<ChromeIdentityService> chrome_identity_service_;
   std::unique_ptr<ChromeTrustedVaultService> chrome_trusted_vault_service_;
   std::unique_ptr<OmahaServiceProvider> omaha_service_provider_;

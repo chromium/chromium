@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
 #include "ios/chrome/browser/providers/signin/chromium_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #include "ios/public/provider/chrome/browser/overrides_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
@@ -21,8 +20,7 @@
 #endif
 
 ChromiumBrowserProvider::ChromiumBrowserProvider()
-    : app_distribution_provider_(std::make_unique<AppDistributionProvider>()),
-      signin_error_provider_(std::make_unique<ios::SigninErrorProvider>()),
+    : signin_error_provider_(std::make_unique<ios::SigninErrorProvider>()),
       signin_resources_provider_(
           std::make_unique<ChromiumSigninResourcesProvider>()),
       user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
@@ -70,11 +68,6 @@ id<LogoVendor> ChromiumBrowserProvider::CreateLogoVendor(
 
 UserFeedbackProvider* ChromiumBrowserProvider::GetUserFeedbackProvider() const {
   return user_feedback_provider_.get();
-}
-
-AppDistributionProvider* ChromiumBrowserProvider::GetAppDistributionProvider()
-    const {
-  return app_distribution_provider_.get();
 }
 
 OverridesProvider* ChromiumBrowserProvider::GetOverridesProvider() const {

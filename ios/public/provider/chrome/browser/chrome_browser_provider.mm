@@ -80,11 +80,6 @@ VoiceSearchProvider* ChromeBrowserProvider::GetVoiceSearchProvider() const {
   return nullptr;
 }
 
-AppDistributionProvider* ChromeBrowserProvider::GetAppDistributionProvider()
-    const {
-  return nullptr;
-}
-
 id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
     Browser* browser,
     web::WebState* web_state) const {

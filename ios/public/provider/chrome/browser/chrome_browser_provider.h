@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 
-class AppDistributionProvider;
 class BrowserURLRewriterProvider;
 class DiscoverFeedProvider;
 class MailtoHandlerProvider;
@@ -112,9 +111,6 @@ class ChromeBrowserProvider {
 
   // Returns an instance of the voice search provider, if one exists.
   virtual VoiceSearchProvider* GetVoiceSearchProvider() const;
-
-  // Returns an instance of the app distribution provider.
-  virtual AppDistributionProvider* GetAppDistributionProvider() const;
 
   virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
                                           web::WebState* web_state) const

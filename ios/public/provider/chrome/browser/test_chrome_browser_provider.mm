@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/test_mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/omaha/test_omaha_service_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -26,8 +25,7 @@
 namespace ios {
 
 TestChromeBrowserProvider::TestChromeBrowserProvider()
-    : app_distribution_provider_(std::make_unique<AppDistributionProvider>()),
-      omaha_service_provider_(std::make_unique<TestOmahaServiceProvider>()),
+    : omaha_service_provider_(std::make_unique<TestOmahaServiceProvider>()),
       signin_error_provider_(std::make_unique<SigninErrorProvider>()),
       signin_resources_provider_(
           std::make_unique<TestSigninResourcesProvider>()),
@@ -80,11 +78,6 @@ UITextField* TestChromeBrowserProvider::CreateStyledTextField() const {
 
 VoiceSearchProvider* TestChromeBrowserProvider::GetVoiceSearchProvider() const {
   return voice_search_provider_.get();
-}
-
-AppDistributionProvider* TestChromeBrowserProvider::GetAppDistributionProvider()
-    const {
-  return app_distribution_provider_.get();
 }
 
 OmahaServiceProvider* TestChromeBrowserProvider::GetOmahaServiceProvider()

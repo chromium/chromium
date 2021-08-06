@@ -65,7 +65,6 @@ source_set("test_support") {
     ":browser",
     "//base",
     "//ios/public/provider/chrome/browser/discover_feed",
-    "//ios/public/provider/chrome/browser/distribution",
     "//ios/public/provider/chrome/browser/mailto:test_support",
     "//ios/public/provider/chrome/browser/omaha:test_support",
     "//ios/public/provider/chrome/browser/signin",
