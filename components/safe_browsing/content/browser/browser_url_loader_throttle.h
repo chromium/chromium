@@ -115,9 +115,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
-  // Whether the interstitial page has been shown and therefore user action has
-  // been involved.
-  bool user_action_involved_ = false;
 
   GURL original_url_;
 
