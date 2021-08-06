@@ -44,7 +44,7 @@ import java.util.Map;
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class AdaptiveToolbarStatePredictorTest {
     // TODO(crbug.com/1199025): Remove this shadow.
     @Implements(ChromeFeatureList.class)
@@ -94,7 +94,7 @@ public class AdaptiveToolbarStatePredictorTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void testDisableFeature() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
@@ -109,7 +109,7 @@ public class AdaptiveToolbarStatePredictorTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
             ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     public void
     testWorksWithDataCollectionFeatureFlag() {
         ShadowChromeFeatureList.sParamValues.put("mode", "always-voice");

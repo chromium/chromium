@@ -14,7 +14,7 @@ namespace android {
 
 // Alphabetical:
 extern const base::Feature kAdaptiveButtonInTopToolbar;
-extern const base::Feature kAdaptiveButtonInTopToolbarCustomization;
+extern const base::Feature kAdaptiveButtonInTopToolbarCustomizationV2;
 extern const base::Feature kAddToHomescreenIPH;
 extern const base::Feature kAllowNewIncognitoTabIntents;
 extern const base::Feature kAllowRemoteContextForNotifications;

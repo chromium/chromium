@@ -263,6 +263,7 @@ java_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonControllerTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStatePredictorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonCoordinatorTest.java",
