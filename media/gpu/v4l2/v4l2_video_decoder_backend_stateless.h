@@ -7,6 +7,7 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/containers/queue.h"
+#include "base/containers/small_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -171,6 +172,9 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
 
   // Reference to request queue to get free requests.
   V4L2RequestsQueue* requests_queue_;
+
+  // Map of enqueuing timestamps to wall clock, for histogramming purposes.
+  base::small_map<std::map<int64_t, base::TimeTicks>> encoding_timestamps_;
 
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{

@@ -12,6 +12,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
@@ -415,6 +417,9 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
       case AcceleratedVideoDecoder::kRanOutOfStreamData:
         // Current decode request is finished processing.
         if (current_decode_request_) {
+          encoding_timestamps_[current_decode_request_->buffer->timestamp()
+                                   .InMilliseconds()] = base::TimeTicks::Now();
+
           DCHECK(current_decode_request_->decode_cb);
           std::move(current_decode_request_->decode_cb).Run(DecodeStatus::OK);
           current_decode_request_ = absl::nullopt;
@@ -508,6 +513,16 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
         DCHECK(surface->video_frame());
         client_->OutputFrame(surface->video_frame(), surface->visible_rect(),
                              request.timestamp);
+
+        {
+          const int64_t flat_timestamp = request.timestamp.InMilliseconds();
+          DCHECK(base::Contains(encoding_timestamps_, flat_timestamp));
+          UMA_HISTOGRAM_TIMES(
+              "Media.PlatformVideoDecoding.Decode",
+              base::TimeTicks::Now() - encoding_timestamps_[flat_timestamp]);
+          encoding_timestamps_.erase(flat_timestamp);
+        }
+
         break;
     }
   }
