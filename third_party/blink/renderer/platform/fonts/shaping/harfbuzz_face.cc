@@ -452,9 +452,9 @@ static_assert(
     "Skia and HarfBuzz Variation parameter types must match in structure and "
     "size.");
 
-hb_font_t* HarfBuzzFace::GetScaledFont(
-    scoped_refptr<UnicodeRangeSet> range_set,
-    VerticalLayoutCallbacks vertical_layout) const {
+hb_font_t* HarfBuzzFace::GetScaledFont(scoped_refptr<UnicodeRangeSet> range_set,
+                                       VerticalLayoutCallbacks vertical_layout,
+                                       float specified_size) const {
   harfbuzz_font_data_->range_set_ = std::move(range_set);
   harfbuzz_font_data_->UpdateFallbackMetricsAndScale(*platform_data_,
                                                      vertical_layout);
@@ -467,7 +467,8 @@ hb_font_t* HarfBuzzFace::GetScaledFont(
   // points. After discussion on the pull request and with Apple developers, the
   // meaning of HarfBuzz' hb_font_set_ptem API was changed to expect the
   // equivalent of CSS pixels here.
-  hb_font_set_ptem(unscaled_font_, platform_data_->size());
+  hb_font_set_ptem(unscaled_font_, specified_size > 0 ? specified_size
+                                                      : platform_data_->size());
 
   return unscaled_font_;
 }

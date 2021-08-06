@@ -77,6 +77,8 @@ FontCustomPlatformData::FontCustomPlatformData(sk_sp<SkTypeface> typeface,
 
 FontCustomPlatformData::~FontCustomPlatformData() = default;
 
+// TODO(crbug.com/1205794): Optical sizing should use specified size, instead of
+// zoomed size.
 FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     float size,
     bool bold,

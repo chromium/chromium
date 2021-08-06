@@ -6043,7 +6043,6 @@ crbug.com/1120330 virtual/threaded/external/wpt/permissions-policy/experimental-
 crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Failure Pass ]
 
 # Mac11.0 rebaseline
-crbug.com/1122490 [ Mac11.0 ] virtual/text-antialias/mac-system-ui-trak.html [ Failure ]
 crbug.com/1123002 [ Mac11.0 ] external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html [ Failure ]
 
 # Sheriff 2020-09-09

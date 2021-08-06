@@ -221,7 +221,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       ![substitute_font.familyName isEqual:@"Apple Color Emoji"];
 
   std::unique_ptr<FontPlatformData> alternate_font = FontPlatformDataFromNSFont(
-      substitute_font, platform_data.size(), synthetic_bold,
+      substitute_font, platform_data.size(), font_description.SpecifiedSize(),
+      synthetic_bold,
       (traits & NSFontItalicTrait) &&
           !(substitute_font_traits & NSFontItalicTrait),
       platform_data.Orientation(), font_description.FontOpticalSizing(),
@@ -300,8 +301,9 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
   std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromNSFont(
-      platform_font, size, synthetic_bold, synthetic_italic,
-      font_description.Orientation(), font_description.FontOpticalSizing(),
+      platform_font, size, font_description.SpecifiedSize(), synthetic_bold,
+      synthetic_italic, font_description.Orientation(),
+      font_description.FontOpticalSizing(),
       font_description.VariationSettings());
   if (!platform_data || !platform_data->Typeface()) {
     return nullptr;
