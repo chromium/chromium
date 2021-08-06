@@ -37,12 +37,52 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
         int expectedHeight = (int) (measuredWidth * 1.0 / mAspectRatio);
         if ((TabUiFeatureUtilities.isLaunchPolishEnabled()
                     || ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled())
-                && (getDrawable() == null
-                        || (measureHeight != expectedHeight
-                                && getDrawable() instanceof ColorDrawable))) {
+                && isPlaceHolder()) {
             measureHeight = expectedHeight;
         }
 
         setMeasuredDimension(measuredWidth, measureHeight);
+    }
+
+    /** Return whether the image drawable is null or a {@link ColorDrawable}. */
+    boolean isPlaceHolder() {
+        return getDrawable() == null || (getDrawable() instanceof ColorDrawable);
+    }
+
+    /**
+     * Set the thumbnail placeholder base on whether it is used for an incognito / selected tab.
+     * @param isIncognito Whether the thumbnail is on an incognito tab.
+     * @param isSelected Whether the thumbnail is on a selected tab.
+     */
+    void setColorThumbnailPlaceHolder(boolean isIncognito, boolean isSelected) {
+        if (!TabUiThemeProvider.themeRefactorEnabled()) {
+            setImageResource(TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
+            return;
+        }
+
+        ColorDrawable placeHolder =
+                new ColorDrawable(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
+                        getContext(), isIncognito, isSelected));
+        setImageDrawable(placeHolder);
+    }
+
+    /**
+     * Adjust the thumbnail height according to tab ui features.
+     */
+    void maybeAdjustThumbnailHeight() {
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            return;
+        }
+
+        if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
+            float expectedThumbnailAspectRatio =
+                    (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
+            expectedThumbnailAspectRatio =
+                    MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
+            int height = (int) (getWidth() * 1.0 / expectedThumbnailAspectRatio);
+            setMinimumHeight(Math.min(getHeight(), height));
+        } else {
+            setMinimumHeight(getWidth());
+        }
     }
 }

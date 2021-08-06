@@ -20,6 +20,7 @@ import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
@@ -429,8 +430,11 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
     public void testThumbnail() {
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
-        Assert.assertNull(thumbnail.getDrawable());
+        assertThat("Thumbnail should be set to place holder drawable.", thumbnail.getDrawable(),
+                instanceOf(ColorDrawable.class));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
+        Assert.assertNull("Thumbnail should be release when thumbnail fetcher is set to null.",
+                thumbnail.getDrawable());
 
         mShouldReturnBitmap = true;
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
@@ -515,7 +519,8 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
 
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
         Assert.assertTrue(canBeGarbageCollected(ref));
-        Assert.assertNull(thumbnail.getDrawable());
+        Assert.assertNull("Thumbnail should be release when thumbnail fetcher is set to null.",
+                thumbnail.getDrawable());
         Assert.assertEquals(1, mThumbnailFetchedCount.get());
     }
 
@@ -530,7 +535,8 @@ public class TabListViewHolderTest extends DummyUiChromeActivityTestCase {
         Assert.assertEquals(1, mThumbnailFetchedCount.get());
 
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
-        Assert.assertNull(thumbnail.getDrawable());
+        Assert.assertNull("Thumbnail should be release when thumbnail fetcher is set to null.",
+                thumbnail.getDrawable());
         Assert.assertEquals(1, mThumbnailFetchedCount.get());
 
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);

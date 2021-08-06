@@ -29,7 +29,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -337,15 +336,19 @@ class TabGridViewBinder {
 
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
         TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
-        ImageView thumbnail = (ImageView) view.fastFindViewById(R.id.tab_thumbnail);
+        TabGridThumbnailView thumbnail =
+                (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
+        thumbnail.maybeAdjustThumbnailHeight();
         if (fetcher == null) {
-            releaseThumbnail(thumbnail);
+            thumbnail.setImageDrawable(null);
             return;
         }
+
+        // Use placeholder drawable before the real thumbnail is available.
+        thumbnail.setColorThumbnailPlaceHolder(
+                model.get(TabProperties.IS_INCOGNITO), model.get(TabProperties.IS_SELECTED));
         Callback<Bitmap> callback = result -> {
-            if (result == null) {
-                releaseThumbnail(thumbnail);
-            } else {
+            if (result != null) {
                 thumbnail.setImageBitmap(result);
             }
         };
@@ -356,25 +359,6 @@ class TabGridViewBinder {
         }
     }
 
-    private static void releaseThumbnail(ImageView thumbnail) {
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            thumbnail.setImageDrawable(null);
-            return;
-        }
-
-        if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-            float expectedThumbnailAspectRatio =
-                    (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-            expectedThumbnailAspectRatio =
-                    MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
-            int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
-            thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
-            thumbnail.setImageDrawable(null);
-        } else {
-            thumbnail.setImageDrawable(null);
-            thumbnail.setMinimumHeight(thumbnail.getWidth());
-        }
-    }
 
     /**
      * Update the favicon drawable to use from {@link TabListFaviconProvider.TabFavicon}, and the
@@ -403,7 +387,8 @@ class TabGridViewBinder {
         View cardView = rootView.fastFindViewById(R.id.card_view);
         View dividerView = rootView.fastFindViewById(R.id.divider_view);
         TextView titleView = (TextView) rootView.fastFindViewById(R.id.tab_title);
-        ImageView thumbnail = (ImageView) rootView.fastFindViewById(R.id.tab_thumbnail);
+        TabGridThumbnailView thumbnail =
+                (TabGridThumbnailView) rootView.fastFindViewById(R.id.tab_thumbnail);
         ChromeImageView backgroundView =
                 (ChromeImageView) rootView.fastFindViewById(R.id.background_view);
 
@@ -425,14 +410,8 @@ class TabGridViewBinder {
         titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));
 
-        if (thumbnail.getDrawable() == null) {
-            thumbnail.setImageResource(
-                    TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
-            if (TabUiThemeProvider.themeRefactorEnabled()) {
-                thumbnail.setImageTintList(
-                        ColorStateList.valueOf(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
-                                backgroundView.getContext(), isIncognito, isSelected)));
-            }
+        if (thumbnail.isPlaceHolder()) {
+            thumbnail.setColorThumbnailPlaceHolder(isIncognito, isSelected);
         }
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
