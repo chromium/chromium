@@ -15,10 +15,10 @@
 
 // Listens to debug events and enables test code to block until a desired
 // number of DevTools ports are open.
-class TestDebugListener : public fuchsia::web::DevToolsListener {
+class TestDebugListener final : public fuchsia::web::DevToolsListener {
  public:
   TestDebugListener();
-  ~TestDebugListener() final;
+  ~TestDebugListener() override;
 
   // Spins a RunLoop until there are exactly |size| DevTools ports open.
   void RunUntilNumberOfPortsIs(size_t size);
@@ -26,18 +26,18 @@ class TestDebugListener : public fuchsia::web::DevToolsListener {
   base::flat_set<uint16_t>& debug_ports() { return debug_ports_; }
 
  private:
-  class TestPerContextListener
+  class TestPerContextListener final
       : public fuchsia::web::DevToolsPerContextListener {
    public:
     TestPerContextListener(
         TestDebugListener* test_debug_listener,
         fidl::InterfaceRequest<fuchsia::web::DevToolsPerContextListener>
             listener);
-    ~TestPerContextListener() final;
+    ~TestPerContextListener() override;
 
    private:
     // fuchsia::web::DevToolsPerContextListener implementation.
-    void OnHttpPortOpen(uint16_t port) final;
+    void OnHttpPortOpen(uint16_t port) override;
 
     uint16_t port_ = 0;
     TestDebugListener* test_debug_listener_;
@@ -49,7 +49,7 @@ class TestDebugListener : public fuchsia::web::DevToolsListener {
   // fuchsia::web::DevToolsListener implementation.
   void OnContextDevToolsAvailable(
       fidl::InterfaceRequest<fuchsia::web::DevToolsPerContextListener> listener)
-      final;
+      override;
 
   void DestroyListener(TestPerContextListener* listener);
   void AddPort(uint16_t port);

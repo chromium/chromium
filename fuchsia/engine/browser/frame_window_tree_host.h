@@ -15,12 +15,12 @@ class WebContents;
 
 // aura::WindowTreeHost implementation used to present web content inside
 // web.Frame.
-class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
+class FrameWindowTreeHost final : public aura::WindowTreeHostPlatform {
  public:
   FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
                       scenic::ViewRefPair view_ref_pair,
                       content::WebContents* web_contents);
-  ~FrameWindowTreeHost() final;
+  ~FrameWindowTreeHost() override;
 
   FrameWindowTreeHost(const FrameWindowTreeHost&) = delete;
   FrameWindowTreeHost& operator=(const FrameWindowTreeHost&) = delete;
@@ -32,9 +32,9 @@ class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
   class WindowParentingClientImpl;
 
   // aura::WindowTreeHostPlatform overrides.
-  void OnActivationChanged(bool active) final;
+  void OnActivationChanged(bool active) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
-                            ui::PlatformWindowState new_state) final;
+                            ui::PlatformWindowState new_state) override;
   void OnWindowBoundsChanged(const BoundsChange& bounds);
 
   const fuchsia::ui::views::ViewRef view_ref_;

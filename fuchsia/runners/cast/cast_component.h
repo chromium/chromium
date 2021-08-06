@@ -32,8 +32,8 @@ class AgentManager;
 FORWARD_DECLARE_TEST(HeadlessCastRunnerIntegrationTest, Headless);
 
 // A specialization of WebComponent which adds Cast-specific services.
-class CastComponent : public WebComponent,
-                      public base::MessagePumpFuchsia::ZxHandleWatcher {
+class CastComponent final : public WebComponent,
+                            public base::MessagePumpFuchsia::ZxHandleWatcher {
  public:
   struct Params {
     Params();
@@ -73,7 +73,7 @@ class CastComponent : public WebComponent,
                 WebContentRunner* runner,
                 Params params,
                 bool is_headless);
-  ~CastComponent() final;
+  ~CastComponent() override;
 
   void SetOnDestroyedCallback(base::OnceClosure on_destroyed);
 
@@ -90,9 +90,9 @@ class CastComponent : public WebComponent,
   }
 
   // WebComponent overrides.
-  void StartComponent() final;
+  void StartComponent() override;
   void DestroyComponent(int64_t termination_exit_code,
-                        fuchsia::sys::TerminationReason reason) final;
+                        fuchsia::sys::TerminationReason reason) override;
 
  private:
   void OnRewriteRulesReceived(
@@ -102,21 +102,21 @@ class CastComponent : public WebComponent,
   // Triggers the injection of API channels into the page content.
   void OnNavigationStateChanged(
       fuchsia::web::NavigationState change,
-      OnNavigationStateChangedCallback callback) final;
+      OnNavigationStateChangedCallback callback) override;
 
   // fuchsia::ui::app::ViewProvider implementation.
   void CreateView(
       zx::eventpair view_token,
       fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
       fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services)
-      final;
+      override;
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
-                             fuchsia::ui::views::ViewRef view_ref) final;
+                             fuchsia::ui::views::ViewRef view_ref) override;
 
   // base::MessagePumpFuchsia::ZxHandleWatcher implementation.
   // Called when the headless "view" token is disconnected.
-  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) final;
+  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
 
   const bool is_headless_;
   base::OnceClosure on_destroyed_;

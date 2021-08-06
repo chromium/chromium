@@ -38,7 +38,7 @@ class WebContents;
 // caller-supplied ViewRef.
 // If |semantic_tree_| gets disconnected, it will cause the FrameImpl that owns
 // |this| to close, which will also destroy |this|.
-class WEB_ENGINE_EXPORT AccessibilityBridge
+class WEB_ENGINE_EXPORT AccessibilityBridge final
     : public content::WebContentsObserver,
       public fuchsia::accessibility::semantics::SemanticListener,
       public ui::AXTreeObserver {
@@ -53,7 +53,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
       content::WebContents* web_contents,
       base::OnceCallback<void(zx_status_t)> on_error_callback,
       inspect::Node inspect_node);
-  ~AccessibilityBridge() final;
+  ~AccessibilityBridge() override;
 
   AccessibilityBridge(const AccessibilityBridge&) = delete;
   AccessibilityBridge& operator=(const AccessibilityBridge&) = delete;
@@ -186,11 +186,11 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   void OnAccessibilityActionRequested(
       uint32_t node_id,
       fuchsia::accessibility::semantics::Action action,
-      OnAccessibilityActionRequestedCallback callback) final;
+      OnAccessibilityActionRequestedCallback callback) override;
   void HitTest(fuchsia::math::PointF local_point,
-               HitTestCallback callback) final;
+               HitTestCallback callback) override;
   void OnSemanticsModeChanged(bool updates_enabled,
-                              OnSemanticsModeChangedCallback callback) final;
+                              OnSemanticsModeChangedCallback callback) override;
 
   // ui::AXTreeObserver implementation.
   void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override;

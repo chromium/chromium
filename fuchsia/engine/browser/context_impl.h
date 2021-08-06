@@ -33,7 +33,7 @@ class WebEngineDevToolsController;
 // Implementation of Context from fuchsia.web.
 // Owns a BrowserContext instance and uses it to create new WebContents/Frames.
 // All created Frames are owned by this object.
-class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
+class WEB_ENGINE_EXPORT ContextImpl final : public fuchsia::web::Context {
  public:
   // |devtools_controller| must outlive ContextImpl.
   // Diagnostics about the context will be placed in |inspect_node|.
@@ -42,7 +42,7 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
               WebEngineDevToolsController* devtools_controller);
 
   // Tears down the Context, destroying any active Frames in the process.
-  ~ContextImpl() final;
+  ~ContextImpl() override;
 
   ContextImpl(const ContextImpl&) = delete;
   ContextImpl& operator=(const ContextImpl&) = delete;
@@ -72,13 +72,13 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
   bool has_cast_streaming_enabled() const { return cast_streaming_enabled_; }
 
   // fuchsia::web::Context implementation.
-  void CreateFrame(fidl::InterfaceRequest<fuchsia::web::Frame> frame) final;
+  void CreateFrame(fidl::InterfaceRequest<fuchsia::web::Frame> frame) override;
   void CreateFrameWithParams(
       fuchsia::web::CreateFrameParams params,
-      fidl::InterfaceRequest<fuchsia::web::Frame> frame) final;
+      fidl::InterfaceRequest<fuchsia::web::Frame> frame) override;
   void GetCookieManager(
-      fidl::InterfaceRequest<fuchsia::web::CookieManager> manager) final;
-  void GetRemoteDebuggingPort(GetRemoteDebuggingPortCallback callback) final;
+      fidl::InterfaceRequest<fuchsia::web::CookieManager> manager) override;
+  void GetRemoteDebuggingPort(GetRemoteDebuggingPortCallback callback) override;
 
   // Gets the underlying FrameImpl service object associated with a connected
   // |frame_ptr| client.

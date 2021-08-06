@@ -178,7 +178,7 @@ void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 
 // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
 // used to route fuchsia.web.FrameHost capabilities cleanly.
-class FrameHostComponent : public fuchsia::sys::ComponentController {
+class FrameHostComponent final : public fuchsia::sys::ComponentController {
  public:
   // Creates a FrameHostComponent with lifetime managed by |controller_request|.
   // Returns the incoming service directory, in case the CastRunner needs to use
@@ -211,11 +211,11 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
     binding_.Bind(std::move(controller_request));
     binding_.set_error_handler([this](zx_status_t) { Kill(); });
   }
-  ~FrameHostComponent() final = default;
+  ~FrameHostComponent() override = default;
 
   // fuchsia::sys::ComponentController interface.
-  void Kill() final { delete this; }
-  void Detach() final {
+  void Kill() override { delete this; }
+  void Detach() override {
     binding_.Close(ZX_ERR_NOT_SUPPORTED);
     delete this;
   }
@@ -230,8 +230,8 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
 
 // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
 // used to route chromium.cast.DataReset capabilities cleanly.
-class DataResetComponent : public fuchsia::sys::ComponentController,
-                           public chromium::cast::DataReset {
+class DataResetComponent final : public fuchsia::sys::ComponentController,
+                                 public chromium::cast::DataReset {
  public:
   // Creates a DataResetComponent with lifetime managed by |controller_request|.
   static void Start(base::OnceCallback<bool()> delete_persistent_data,
@@ -256,17 +256,17 @@ class DataResetComponent : public fuchsia::sys::ComponentController,
     binding_.Bind(std::move(controller_request));
     binding_.set_error_handler([this](zx_status_t) { Kill(); });
   }
-  ~DataResetComponent() final = default;
+  ~DataResetComponent() override = default;
 
   // fuchsia::sys::ComponentController interface.
-  void Kill() final { delete this; }
-  void Detach() final {
+  void Kill() override { delete this; }
+  void Detach() override {
     binding_.Close(ZX_ERR_NOT_SUPPORTED);
     delete this;
   }
 
   // chromium::cast::DataReset interface.
-  void DeletePersistentData(DeletePersistentDataCallback callback) final {
+  void DeletePersistentData(DeletePersistentDataCallback callback) override {
     if (!delete_persistent_data_) {
       // Repeated requests to DeletePersistentData are not supported.
       binding_.Close(ZX_ERR_NOT_SUPPORTED);

@@ -19,7 +19,8 @@ class NetworkContext;
 }  // namespace mojom
 }  // namespace network
 
-class WEB_ENGINE_EXPORT CookieManagerImpl : public fuchsia::web::CookieManager {
+class WEB_ENGINE_EXPORT CookieManagerImpl final
+    : public fuchsia::web::CookieManager {
  public:
   // Used to request the BrowserContext's CookieManager. Since the
   // NetworkContext may change, e.g. if the NetworkService crashes, the returned
@@ -30,17 +31,17 @@ class WEB_ENGINE_EXPORT CookieManagerImpl : public fuchsia::web::CookieManager {
   // |get_network_context| will be called to (re)connect to CookieManager,
   // on-demand, in response to query/observation requests.
   explicit CookieManagerImpl(GetNetworkContextCallback get_network_context);
-  ~CookieManagerImpl() final;
+  ~CookieManagerImpl() override;
 
   // fuchsia::web::CookieManager implementation:
   void ObserveCookieChanges(
       fidl::StringPtr url,
       fidl::StringPtr name,
-      fidl::InterfaceRequest<fuchsia::web::CookiesIterator> changes) final;
+      fidl::InterfaceRequest<fuchsia::web::CookiesIterator> changes) override;
   void GetCookieList(
       fidl::StringPtr url,
       fidl::StringPtr name,
-      fidl::InterfaceRequest<fuchsia::web::CookiesIterator> cookies) final;
+      fidl::InterfaceRequest<fuchsia::web::CookiesIterator> cookies) override;
 
   // Used by tests to monitor for the Mojo CookieManager disconnecting
   void set_on_mojo_disconnected_for_test(base::OnceClosure on_disconnected) {

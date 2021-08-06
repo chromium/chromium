@@ -26,7 +26,7 @@
 
 namespace {
 
-class MediaResourceProviderImpl
+class MediaResourceProviderImpl final
     : public content::DocumentServiceBase<
           media::mojom::FuchsiaMediaResourceProvider> {
  public:
@@ -35,7 +35,7 @@ class MediaResourceProviderImpl
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
           receiver);
-  ~MediaResourceProviderImpl() final;
+  ~MediaResourceProviderImpl() override;
 
   MediaResourceProviderImpl(const MediaResourceProviderImpl&) = delete;
   MediaResourceProviderImpl& operator=(const MediaResourceProviderImpl&) =
@@ -45,11 +45,11 @@ class MediaResourceProviderImpl
   void CreateCdm(
       const std::string& key_system,
       fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
-          request) final;
+          request) override;
   void CreateAudioConsumer(
-      fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) final;
+      fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) override;
   void CreateAudioCapturer(
-      fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) final;
+      fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) override;
 
  private:
   media::FuchsiaCdmManager* const cdm_manager_;

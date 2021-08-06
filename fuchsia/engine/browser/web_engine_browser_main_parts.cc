@@ -71,14 +71,14 @@ void FetchHistogramsFromChildProcesses(
 
 // Implements the fuchsia.web.FrameHost protocol using a ContextImpl with
 // incognito browser context.
-class FrameHostImpl : public fuchsia::web::FrameHost {
+class FrameHostImpl final : public fuchsia::web::FrameHost {
  public:
   explicit FrameHostImpl(inspect::Node inspect_node,
                          WebEngineDevToolsController* devtools_controller)
       : context_(WebEngineBrowserContext::CreateIncognito(),
                  std::move(inspect_node),
                  devtools_controller) {}
-  ~FrameHostImpl() final = default;
+  ~FrameHostImpl() override = default;
 
   FrameHostImpl(const FrameHostImpl&) = delete;
   FrameHostImpl& operator=(const FrameHostImpl&) = delete;
@@ -86,7 +86,7 @@ class FrameHostImpl : public fuchsia::web::FrameHost {
   // fuchsia.web.FrameHost implementation.
   void CreateFrameWithParams(
       fuchsia::web::CreateFrameParams params,
-      fidl::InterfaceRequest<fuchsia::web::Frame> request) final {
+      fidl::InterfaceRequest<fuchsia::web::Frame> request) override {
     context_.CreateFrameWithParams(std::move(params), std::move(request));
   }
 

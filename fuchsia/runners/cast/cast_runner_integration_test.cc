@@ -66,11 +66,11 @@ constexpr char kDummyAgentUrl[] =
 
 constexpr char kEnableFrameHostComponent[] = "enable-frame-host-component";
 
-class FakeCorsExemptHeaderProvider
+class FakeCorsExemptHeaderProvider final
     : public chromium::cast::CorsExemptHeaderProvider {
  public:
   FakeCorsExemptHeaderProvider() = default;
-  ~FakeCorsExemptHeaderProvider() final = default;
+  ~FakeCorsExemptHeaderProvider() override = default;
 
   FakeCorsExemptHeaderProvider(const FakeCorsExemptHeaderProvider&) = delete;
   FakeCorsExemptHeaderProvider& operator=(const FakeCorsExemptHeaderProvider&) =
@@ -78,16 +78,16 @@ class FakeCorsExemptHeaderProvider
 
  private:
   void GetCorsExemptHeaderNames(
-      GetCorsExemptHeaderNamesCallback callback) final {
+      GetCorsExemptHeaderNamesCallback callback) override {
     callback({cr_fuchsia::StringToBytes("Test")});
   }
 };
 
-class FakeUrlRequestRewriteRulesProvider
+class FakeUrlRequestRewriteRulesProvider final
     : public chromium::cast::UrlRequestRewriteRulesProvider {
  public:
   FakeUrlRequestRewriteRulesProvider() = default;
-  ~FakeUrlRequestRewriteRulesProvider() final = default;
+  ~FakeUrlRequestRewriteRulesProvider() override = default;
 
   FakeUrlRequestRewriteRulesProvider(
       const FakeUrlRequestRewriteRulesProvider&) = delete;
@@ -96,7 +96,7 @@ class FakeUrlRequestRewriteRulesProvider
 
  private:
   void GetUrlRequestRewriteRules(
-      GetUrlRequestRewriteRulesCallback callback) final {
+      GetUrlRequestRewriteRulesCallback callback) override {
     // Only send the rules once. They do not expire
     if (rules_sent_)
       return;
@@ -115,10 +115,10 @@ class FakeUrlRequestRewriteRulesProvider
   bool rules_sent_ = false;
 };
 
-class FakeApplicationContext : public chromium::cast::ApplicationContext {
+class FakeApplicationContext final : public chromium::cast::ApplicationContext {
  public:
   FakeApplicationContext() = default;
-  ~FakeApplicationContext() final = default;
+  ~FakeApplicationContext() override = default;
 
   FakeApplicationContext(const FakeApplicationContext&) = delete;
   FakeApplicationContext& operator=(const FakeApplicationContext&) = delete;
@@ -139,15 +139,15 @@ class FakeApplicationContext : public chromium::cast::ApplicationContext {
 
  private:
   // chromium::cast::ApplicationContext implementation.
-  void GetMediaSessionId(GetMediaSessionIdCallback callback) final {
+  void GetMediaSessionId(GetMediaSessionIdCallback callback) override {
     callback(0);
   }
   void SetApplicationController(
       fidl::InterfaceHandle<chromium::cast::ApplicationController> controller)
-      final {
+      override {
     controller_ = controller.Bind();
   }
-  void OnApplicationExit(int64_t exit_code) final {
+  void OnApplicationExit(int64_t exit_code) override {
     application_exit_code_ = exit_code;
     if (on_application_terminated_)
       std::move(on_application_terminated_).Run();

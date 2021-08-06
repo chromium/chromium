@@ -42,8 +42,8 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
   return cookie;
 }
 
-class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
-                            public network::mojom::CookieChangeListener {
+class CookiesIteratorImpl final : public fuchsia::web::CookiesIterator,
+                                  public network::mojom::CookieChangeListener {
  public:
   // |this| will delete itself when |mojo_request| or |changes| disconnect.
   CookiesIteratorImpl(
@@ -78,10 +78,10 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
                                  net::CookieChangeCause::INSERTED);
     }
   }
-  ~CookiesIteratorImpl() final = default;
+  ~CookiesIteratorImpl() override = default;
 
   // fuchsia::web::CookiesIterator implementation:
-  void GetNext(GetNextCallback callback) final {
+  void GetNext(GetNextCallback callback) override {
     DCHECK(!get_next_callback_);
     get_next_callback_ = std::move(callback);
     MaybeSendQueuedCookies();
@@ -133,7 +133,7 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
   }
 
   // network::mojom::CookieChangeListener implementation:
-  void OnCookieChange(const net::CookieChangeInfo& change) final {
+  void OnCookieChange(const net::CookieChangeInfo& change) override {
     queued_cookies_[change.cookie.UniqueKey()] =
         ConvertCanonicalCookie(change.cookie, change.cause);
     MaybeSendQueuedCookies();

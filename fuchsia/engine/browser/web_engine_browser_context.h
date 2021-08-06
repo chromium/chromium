@@ -14,7 +14,7 @@
 
 class WebEngineNetLogObserver;
 
-class WebEngineBrowserContext : public content::BrowserContext {
+class WebEngineBrowserContext final : public content::BrowserContext {
  public:
   // Creates a browser context that persists cookies, LocalStorage, etc, in
   // the specified |data_directory|.
@@ -24,32 +24,33 @@ class WebEngineBrowserContext : public content::BrowserContext {
   // Creates a browser context with no support for persistent data.
   static std::unique_ptr<WebEngineBrowserContext> CreateIncognito();
 
-  ~WebEngineBrowserContext() final;
+  ~WebEngineBrowserContext() override;
 
   WebEngineBrowserContext(const WebEngineBrowserContext&) = delete;
   WebEngineBrowserContext& operator=(const WebEngineBrowserContext&) = delete;
 
   // BrowserContext implementation.
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
-      const base::FilePath& partition_path) final;
-  base::FilePath GetPath() final;
-  bool IsOffTheRecord() final;
-  content::ResourceContext* GetResourceContext() final;
-  content::DownloadManagerDelegate* GetDownloadManagerDelegate() final;
-  content::BrowserPluginGuestManager* GetGuestManager() final;
-  storage::SpecialStoragePolicy* GetSpecialStoragePolicy() final;
-  content::PushMessagingService* GetPushMessagingService() final;
-  content::StorageNotificationService* GetStorageNotificationService() final;
-  content::SSLHostStateDelegate* GetSSLHostStateDelegate() final;
+      const base::FilePath& partition_path) override;
+  base::FilePath GetPath() override;
+  bool IsOffTheRecord() override;
+  content::ResourceContext* GetResourceContext() override;
+  content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
+  content::BrowserPluginGuestManager* GetGuestManager() override;
+  storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PushMessagingService* GetPushMessagingService() override;
+  content::StorageNotificationService* GetStorageNotificationService() override;
+  content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
   content::PermissionControllerDelegate* GetPermissionControllerDelegate()
-      final;
+      override;
   content::ClientHintsControllerDelegate* GetClientHintsControllerDelegate()
-      final;
-  content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() final;
-  content::BackgroundSyncController* GetBackgroundSyncController() final;
-  content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() final;
+      override;
+  content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
+  content::BackgroundSyncController* GetBackgroundSyncController() override;
+  content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
+      override;
   std::unique_ptr<media::VideoDecodePerfHistory> CreateVideoDecodePerfHistory()
-      final;
+      override;
 
  private:
   // Contains URLRequestContextGetter required for resource loading.

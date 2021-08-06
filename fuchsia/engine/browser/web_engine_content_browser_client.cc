@@ -42,26 +42,26 @@
 
 namespace {
 
-class DevToolsManagerDelegate : public content::DevToolsManagerDelegate {
+class DevToolsManagerDelegate final : public content::DevToolsManagerDelegate {
  public:
   explicit DevToolsManagerDelegate(WebEngineBrowserMainParts* main_parts)
       : main_parts_(main_parts) {
     DCHECK(main_parts_);
   }
-  ~DevToolsManagerDelegate() final = default;
+  ~DevToolsManagerDelegate() override = default;
 
   DevToolsManagerDelegate(const DevToolsManagerDelegate&) = delete;
   DevToolsManagerDelegate& operator=(const DevToolsManagerDelegate&) = delete;
 
   // content::DevToolsManagerDelegate implementation.
-  std::vector<content::BrowserContext*> GetBrowserContexts() final {
+  std::vector<content::BrowserContext*> GetBrowserContexts() override {
     return main_parts_->browser_contexts();
   }
-  content::BrowserContext* GetDefaultBrowserContext() final {
+  content::BrowserContext* GetDefaultBrowserContext() override {
     std::vector<content::BrowserContext*> contexts = GetBrowserContexts();
     return contexts.empty() ? nullptr : contexts.front();
   }
-  content::DevToolsAgentHost::List RemoteDebuggingTargets() final {
+  content::DevToolsAgentHost::List RemoteDebuggingTargets() override {
     return main_parts_->devtools_controller()->RemoteDebuggingTargets();
   }
 

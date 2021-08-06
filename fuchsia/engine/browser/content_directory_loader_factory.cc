@@ -111,10 +111,10 @@ bool GetRangeForRequest(const net::HttpRequestHeaders& headers,
 }
 
 // Copies data from a fuchsia.io.Node file into a URL response stream.
-class ContentDirectoryURLLoader : public network::mojom::URLLoader {
+class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
  public:
   ContentDirectoryURLLoader() = default;
-  ~ContentDirectoryURLLoader() final = default;
+  ~ContentDirectoryURLLoader() override = default;
 
   ContentDirectoryURLLoader(const ContentDirectoryURLLoader&) = delete;
   ContentDirectoryURLLoader& operator=(const ContentDirectoryURLLoader&) =
