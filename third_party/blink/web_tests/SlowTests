@@ -257,6 +257,7 @@ crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-gradient.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-gradient.html [ Slow ]
+crbug.com/866850 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-image.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-pattern.html [ Slow ]
