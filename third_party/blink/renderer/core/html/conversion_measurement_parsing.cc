@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/conversion_measurement_parsing.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -78,8 +79,12 @@ WebImpressionOrError GetImpression(
     return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
 
-  if (!execution_context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
+  const bool feature_policy_enabled = execution_context->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
+  UMA_HISTOGRAM_BOOLEAN("Conversions.ImpressionIgnoredByFeaturePolicy",
+                        !feature_policy_enabled);
+
+  if (!feature_policy_enabled) {
     AuditsIssue::ReportAttributionIssue(
         frame->DomWindow(),
         AttributionReportingIssueType::kPermissionPolicyDisabled,

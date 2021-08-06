@@ -827,8 +827,12 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     return false;
   }
 
-  if (!document_->domWindow()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
+  const bool feature_policy_enabled = document_->domWindow()->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
+  UMA_HISTOGRAM_BOOLEAN("Conversions.ConversionIgnoredByFeaturePolicy",
+                        !feature_policy_enabled);
+
+  if (!feature_policy_enabled) {
     AuditsIssue::ReportAttributionIssue(
         document_->domWindow(),
         AttributionReportingIssueType::kPermissionPolicyDisabled,

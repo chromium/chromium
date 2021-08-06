@@ -3666,6 +3666,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.ConversionIgnoredByFeaturePolicy"
+    enum="BooleanIgnored" expires_after="M95">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often conversions are ignored due to the feature policy being
+    disabled. Recorded when an attribution trigger redirect is received. Not
+    recorded if the frame is deatched, the runtime feature is disabled, or the
+    redirect is not same-origin with previous URL.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ExtraReportDelay" units="ms"
     expires_after="2021-12-19">
   <obsolete>
@@ -3691,6 +3704,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     particular conversion report. This is primarily due to a report's scheduled
     report time taking place while the browser is closed. Recorded when a
     conversion report is sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ImpressionIgnoredByFeaturePolicy"
+    enum="BooleanIgnored" expires_after="M95">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often impressions are ignored due to the feature policy being
+    disabled. Recorded when an attribution source is parsed. Not recorded if the
+    runtime feature is disabled or no frame is present.
   </summary>
 </histogram>
 

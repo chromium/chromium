@@ -1334,7 +1334,7 @@ TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
 }
 
 TEST_F(FrameFetchContextTest,
-       SendConversionRequestInsteadOfRedirecting_RecordsMetric) {
+       SendConversionRequestInsteadOfRedirecting_RecordsDetachedMetric) {
   const bool kDetach = true;
   const bool kNoDetach = false;
 
@@ -1346,7 +1346,7 @@ TEST_F(FrameFetchContextTest,
   struct {
     KURL url;
     bool detach;
-    int want;
+    int expected_bucket;
   } test_cases[] = {
       {KURL(kNoTriggerURL), kNoDetach, 0},
       {KURL(kTriggerURL), kNoDetach, 1},
@@ -1361,12 +1361,55 @@ TEST_F(FrameFetchContextTest,
     HistogramTester histograms;
     GetFetchContext()->SendConversionRequestInsteadOfRedirecting(
         test_case.url, /*redirect_info=*/absl::nullopt,
-        ReportingDisposition::kReport, /*devtools_request_id=*/"abc");
+        ReportingDisposition::kReport, /*devtools_request_id=*/"");
     histograms.ExpectUniqueSample(
         "Conversions.RedirectInterceptedFrameDetached", test_case.detach,
-        test_case.want);
+        test_case.expected_bucket);
 
     RecreateFetchContext();
+  }
+}
+
+TEST_F(FrameFetchContextTest,
+       SendConversionRequestInsteadOfRedirecting_RecordsFeaturePolicyMetric) {
+  const bool kEnabled = true;
+  const bool kDisabled = false;
+
+  const char kTriggerURL[] =
+      "https://www.example.com/.well-known/attribution-reporting/"
+      "trigger-attribution";
+  const char kNoTriggerURL[] = "https://www.example.com/";
+
+  // The feature policy is only checked if the URL is same-origin with the
+  // previous URL.
+  const ResourceRequest::RedirectInfo redirect_info(
+      /*original_url=*/KURL(),
+      /*previous_url=*/KURL("https://www.example.com/"));
+
+  struct {
+    KURL url;
+    bool enabled;
+    int expected_bucket;
+  } test_cases[] = {
+      {KURL(kNoTriggerURL), kDisabled, 0},
+      {KURL(kTriggerURL), kDisabled, 1},
+      {KURL(kNoTriggerURL), kEnabled, 0},
+      {KURL(kTriggerURL), kEnabled, 1},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RecreateFetchContext(redirect_info.previous_url,
+                         /*permissions_policy_header=*/test_case.enabled
+                             ? ""
+                             : "attribution-reporting 'none'");
+
+    HistogramTester histograms;
+    GetFetchContext()->SendConversionRequestInsteadOfRedirecting(
+        test_case.url, redirect_info, ReportingDisposition::kReport,
+        /*devtools_request_id=*/"");
+    histograms.ExpectUniqueSample(
+        "Conversions.ConversionIgnoredByFeaturePolicy", !test_case.enabled,
+        test_case.expected_bucket);
   }
 }
 
