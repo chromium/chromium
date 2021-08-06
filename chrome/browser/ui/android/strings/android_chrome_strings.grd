@@ -2595,11 +2595,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_HISTORY_MANAGER_SEARCH" desc="Placeholder text for the input field that allows users to search browsing history.">
         Search your history
       </message>
-      <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_TITLE" desc="Title that states history is not saved in Incognito mode.">
-        History isn’t saved in Incognito
+      <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_TITLE" desc="Title that states sites the users visit are not saved in Incognito mode.">
+        Sites you visit aren’t saved in Incognito
       </message>
-      <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_DESCRIPTION" desc="Description that states history is not saved in Incognito mode.">
-        Chrome doesn’t save your browsing history when you choose to browse privately. You can still use bookmarks to access your favorite sites.
+      <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_DESCRIPTION" desc="Description that states to clear Incognito browsing history from the device, users need to close all incognito tabs.">
+        To clear Incognito browsing history from your device, close all Incognito tabs.
       </message>
 
       <!-- Close Incognito tabs notification messages -->
