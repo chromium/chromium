@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -60,6 +61,7 @@ public class ImeInputModeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/1237514")
     public void testShowAndHideInputMode() throws Exception {
         mRule.focusElement("contenteditable_none", false);
 
@@ -139,6 +141,7 @@ public class ImeInputModeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/1237514")
     public void testShowAndHideInputModeWithPhysicalKeyboard() throws Throwable {
         // First show should hide the keyboard.
         mRule.focusElement("contenteditable_none", false);
