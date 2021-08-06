@@ -623,16 +623,8 @@ class CONTENT_EXPORT NavigationRequest
     return web_bundle_navigation_info_.get();
   }
 
-  // The NavigatorDelegate to notify/query for various navigation events.
-  // Normally this is the WebContents, except if this NavigationHandle was
-  // created during a navigation to an interstitial page. In this case it will
-  // be the InterstitialPage itself.
-  //
-  // Note: due to the interstitial navigation case, all calls that can possibly
-  // expose the NavigationHandle to code outside of content/ MUST go though the
-  // NavigatorDelegate. In particular, the ContentBrowserClient should not be
-  // called directly from the NavigationHandle code. Thus, these calls will not
-  // expose the NavigationHandle when navigating to an InterstitialPage.
+  // The NavigatorDelegate to notify/query for various navigation events. This
+  // is always the WebContents.
   NavigatorDelegate* GetDelegate() const;
 
   blink::mojom::RequestContextType request_context_type() const {

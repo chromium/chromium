@@ -153,6 +153,8 @@ void BrowserPluginGuest::SendTextInputTypeChangedToView(
     // content::InterstitialPageImpl::DontProceed().
     //
     // TODO(lazyboy): Write a WebUI test once http://crbug.com/463674 is fixed.
+    // TODO(falken): Check whether this code is dead, since InterstitialPageImpl
+    // does not exist.
     return;
   }
 

@@ -8663,15 +8663,18 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
 bool RenderFrameHostImpl::CanExecuteJavaScript() {
   if (g_allow_injecting_javascript)
     return true;
+
+  // TODO(https://crbug.com/1237360): This is just here to prove that previous
+  // code that checked for null is not needed. Remove GetAsWebContents().
+  DCHECK(delegate_->GetAsWebContents() != nullptr);
+
   return !frame_tree_node_->current_url().is_valid() ||
          frame_tree_node_->current_url().SchemeIs(kChromeDevToolsScheme) ||
          ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
              GetProcess()->GetID()) ||
          // It's possible to load about:blank in a Web UI renderer.
          // See http://crbug.com/42547
-         (frame_tree_node_->current_url().spec() == url::kAboutBlankURL) ||
-         // InterstitialPageImpl should be the only case matching this.
-         (delegate_->GetAsWebContents() == nullptr);
+         (frame_tree_node_->current_url().spec() == url::kAboutBlankURL);
 }
 
 // static
