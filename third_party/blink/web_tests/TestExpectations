@@ -7251,3 +7251,6 @@ crbug.com/1106746 http/tests/devtools/security/origin-view-ct-compliance.js [ Sk
 crbug.com/1106746 http/tests/devtools/security/origin-view-noncryptographic-secure-origin.js [ Skip ]
 crbug.com/1106746 http/tests/devtools/security/origin-view-then-interstitial.js [ Skip ]
 crbug.com/1106746 http/tests/devtools/security/security-details-updated-with-security-state.js [ Skip ]
+
+# Sheriff 2021-08-06
+crbug.com/1237540 fast/dom/Window/mozilla-focus-blur.html [ Pass Failure ]
