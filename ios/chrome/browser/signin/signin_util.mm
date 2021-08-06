@@ -6,9 +6,8 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,10 +22,6 @@ NSArray* GetScopeArray(const std::set<std::string>& scopes) {
 }
 
 bool ShouldHandleSigninError(NSError* error) {
-  ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
-  return ![provider->GetSigninErrorDomain() isEqualToString:error.domain] ||
-         (error.code != provider->GetCode(ios::SigninError::CANCELED) &&
-          error.code !=
-              provider->GetCode(ios::SigninError::HANDLED_INTERNALLY));
+  return ios::provider::GetSigninErrorCategory(error) !=
+         ios::provider::SigninErrorCategory::kUserCancellationError;
 }

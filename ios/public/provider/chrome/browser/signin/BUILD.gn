@@ -64,6 +64,7 @@ source_set("test_support") {
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ui/base:test_support",
   ]
   public_deps = [ "//testing/gmock" ]

@@ -87,6 +87,7 @@ source_set("signin") {
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/web/common",
     "//ios/web/common:web_view_creation_util",
     "//net",

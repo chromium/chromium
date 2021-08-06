@@ -4,11 +4,10 @@
 
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
 
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager_constants.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -130,7 +129,8 @@ static ChromeIdentity* _identity = nil;
 
 - (void)cancelAddAccountAnimated:(BOOL)animated
                       completion:(void (^)(void))completion {
-  [self dismissAndRunCompletionCallbackWithError:[self canceledError]
+  NSError* error = ios::provider::CreateUserCancelledSigninError();
+  [self dismissAndRunCompletionCallbackWithError:error
                                         animated:animated
                                       completion:completion];
 }
@@ -144,13 +144,15 @@ static ChromeIdentity* _identity = nil;
 }
 
 - (void)addAccountViewControllerDidTapCancel {
-  [self dismissAndRunCompletionCallbackWithError:[self canceledError]
+  NSError* error = ios::provider::CreateUserCancelledSigninError();
+  [self dismissAndRunCompletionCallbackWithError:error
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)addAccountViewControllerDidThrowUnhandledError {
-  [self dismissAndRunCompletionCallbackWithError:[self unhandledError]
+  NSError* error = [NSError errorWithDomain:@"Unhandled" code:-1 userInfo:nil];
+  [self dismissAndRunCompletionCallbackWithError:error
                                         animated:YES
                                       completion:nil];
 }
@@ -199,18 +201,6 @@ static ChromeIdentity* _identity = nil;
     completion();
   }
   self.viewControllerPresented = NO;
-}
-
-- (NSError*)canceledError {
-  ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
-  return [NSError errorWithDomain:provider->GetSigninErrorDomain()
-                             code:provider->GetCode(ios::SigninError::CANCELED)
-                         userInfo:nil];
-}
-
-- (NSError*)unhandledError {
-  return [NSError errorWithDomain:@"" code:-1 userInfo:nil];
 }
 
 @end

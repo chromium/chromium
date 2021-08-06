@@ -16,9 +16,8 @@
 #include "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -45,15 +44,6 @@ enum AuthenticationState {
   CLEANUP_BEFORE_DONE,
   DONE
 };
-
-NSError* IdentityMissingError() {
-  ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
-  return [NSError
-      errorWithDomain:provider->GetSigninErrorDomain()
-                 code:provider->GetCode(ios::SigninError::MISSING_IDENTITY)
-             userInfo:nil];
-}
 
 }  // namespace
 
@@ -358,7 +348,8 @@ NSError* IdentityMissingError() {
     [self continueSignin];
   } else {
     // Handle the case where the identity is no longer valid.
-    [self handleAuthenticationError:IdentityMissingError()];
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
   }
 }
 
