@@ -10,7 +10,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/video_codecs.h"
@@ -163,6 +165,10 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
         .tv_usec = timespec.tv_nsec / 1000,
     };
     current_input_buffer_->SetTimeStamp(timestamp);
+
+    const int64_t flat_timespec =
+        base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
+    encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
   }
 
   // From here on we have both a decode request and input buffer, so we can
@@ -384,7 +390,14 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         .tv_sec = timeval.tv_sec,
         .tv_nsec = timeval.tv_usec * 1000,
     };
-    const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
+
+    const int64_t flat_timespec =
+        base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
+    DCHECK(base::Contains(encoding_timestamps_, flat_timespec));
+    UMA_HISTOGRAM_TIMES(
+        "Media.PlatformVideoDecoding.Decode",
+        base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);
+    encoding_timestamps_.erase(flat_timespec);
 
     scoped_refptr<VideoFrame> frame;
 
@@ -410,6 +423,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         NOTREACHED();
     }
 
+    const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
     client_->OutputFrame(std::move(frame), *visible_rect_, timestamp);
   }
 
