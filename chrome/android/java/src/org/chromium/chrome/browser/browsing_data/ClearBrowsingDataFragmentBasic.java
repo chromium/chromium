@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -100,8 +101,9 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         super.onCreatePreferences(savedInstanceState, rootKey);
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        Preference googleDataTextPref =
-                findPreference(ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
+        ClickableSpansTextMessagePreference googleDataTextPref =
+                (ClickableSpansTextMessagePreference) findPreference(
+                        ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
         Preference nonGoogleSearchHistoryTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT);
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
