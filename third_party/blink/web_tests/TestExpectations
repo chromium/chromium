@@ -2071,6 +2071,12 @@ crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-same-document-traversal-hashchange.html [ Timeout ]
 crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-same-document-traversal-pushstate.html [ Timeout ]
 
+# These two are like the above but some bots seem to give timeouts that count as failures according to the -expected.txt,
+# while other bots give actual timeouts.
+crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/cross-document-traversal-same-document-nav.html [ Timeout Failure ]
+crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-same-document-nav.html [ Timeout Failure ]
+
+
 crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Failure ]
 
 crbug.com/713587 external/wpt/css/css-ui/caret-color-006.html [ Skip ]
