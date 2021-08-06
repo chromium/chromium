@@ -8,9 +8,11 @@ import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType} fro
  * @param {number} modifier
  * @param {number} keycode
  * @param {string} key_display
+ * @param {?boolean} locked
  * @return {!AcceleratorInfo}
  */
-export function CreateDefaultAccelerator(modifier, keycode, key_display) {
+export function CreateDefaultAccelerator(
+    modifier, keycode, key_display, locked = false) {
   return /** @type {!AcceleratorInfo} */ ({
     accelerator: /** @type {!AcceleratorKeys} */ ({
       modifiers: modifier,
@@ -19,5 +21,6 @@ export function CreateDefaultAccelerator(modifier, keycode, key_display) {
     }),
     type: AcceleratorType.kDefault,
     state: AcceleratorState.kEnabled,
+    locked: locked,
   });
 }

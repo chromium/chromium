@@ -27,15 +27,11 @@ export function acceleratorViewTest() {
 
   test('LoadsBasicAccelerator', async () => {
     /** @type {!AcceleratorInfo} */
-    const acceleratorInfo = {
-      accelerator: /** @type {!AcceleratorKeys} */ ({
-        modifiers: Modifier.CONTROL | Modifier.SHIFT,
-        key: 71,
-        key_display: 'g',
-      }),
-      type: AcceleratorType.kDefault,
-      state: AcceleratorState.kEnabled,
-    };
+    const acceleratorInfo = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g');
+
 
     viewElement.acceleratorInfo = acceleratorInfo;
     await flush();

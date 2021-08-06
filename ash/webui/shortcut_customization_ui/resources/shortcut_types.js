@@ -72,6 +72,7 @@ export let AcceleratorKeys;
  *   accelerator: !AcceleratorKeys,
  *   type: !AcceleratorType,
  *   state: !AcceleratorState,
+ *   locked: boolean,
  * }}
  */
 export let AcceleratorInfo;
