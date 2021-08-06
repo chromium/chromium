@@ -382,9 +382,6 @@ extern const char kDebugPackedAppDescription[];
 extern const char kDebugShortcutsName[];
 extern const char kDebugShortcutsDescription[];
 
-extern const char kDeviceDiscoveryNotificationsName[];
-extern const char kDeviceDiscoveryNotificationsDescription[];
-
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 

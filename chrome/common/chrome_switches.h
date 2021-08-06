@@ -95,7 +95,6 @@ extern const char kEnableAudioDebugRecordingsFromExtension[];
 extern const char kEnableBookmarkUndo[];
 extern const char kEnableCloudPrintProxy[];
 extern const char kEnableCriticalPersistedTabData[];
-extern const char kEnableDeviceDiscoveryNotifications[];
 extern const char kEnableDomainReliability[];
 extern const char kEnableExtensionActivityLogging[];
 extern const char kEnableExtensionActivityLogTesting[];

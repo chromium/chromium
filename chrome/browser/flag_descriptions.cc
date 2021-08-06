@@ -630,11 +630,6 @@ const char kDetectTargetEmbeddingLookalikesDescription[] =
     "Shows a lookalike interstitial when navigating to target embedding domains"
     "(e.g. google.com.example.com).";
 
-const char kDeviceDiscoveryNotificationsName[] =
-    "Device Discovery Notifications";
-const char kDeviceDiscoveryNotificationsDescription[] =
-    "Device discovery notifications on local network.";
-
 const char kDisableProcessReuse[] = "Disable subframe process reuse";
 const char kDisableProcessReuseDescription[] =
     "Prevents out-of-process iframes from reusing compatible processes from "

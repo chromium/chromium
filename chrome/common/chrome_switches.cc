@@ -275,10 +275,6 @@ const char kEnableCloudPrintProxy[]         = "enable-cloud-print-proxy";
 const char kEnableCriticalPersistedTabData[] =
     "enable-critical-persisted-tab-data";
 
-// Enable device discovery notifications.
-const char kEnableDeviceDiscoveryNotifications[] =
-    "enable-device-discovery-notifications";
-
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 

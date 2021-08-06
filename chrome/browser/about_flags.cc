@@ -3389,12 +3389,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardDisabledDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(keyboard::switches::kDisableVirtualKeyboard)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-    {"device-discovery-notifications",
-     flag_descriptions::kDeviceDiscoveryNotificationsName,
-     flag_descriptions::kDeviceDiscoveryNotificationsDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(switches::kEnableDeviceDiscoveryNotifications)},
-#endif  // BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
     {"enable-webgl-developer-extensions",
      flag_descriptions::kWebglDeveloperExtensionsName,
      flag_descriptions::kWebglDeveloperExtensionsDescription, kOsAll,
