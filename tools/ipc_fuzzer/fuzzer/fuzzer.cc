@@ -485,150 +485,83 @@ struct FuzzTraits<base::TimeTicks> {
 };
 
 template <>
-struct FuzzTraits<base::ListValue> {
-  static bool Fuzz(base::ListValue* p, Fuzzer* fuzzer) {
+struct FuzzTraits<base::Value> {
+  static bool Fuzz(base::Value* p, Fuzzer* fuzzer) {
+    DCHECK(p->type() == base::Value::Type::LIST ||
+           p->type() == base::Value::Type::DICTIONARY);
+
     // TODO(mbarbella): Support mutation.
     if (!fuzzer->ShouldGenerate())
       return true;
 
-    ++g_depth;
-    size_t list_length = p->GetSize();
-    if (fuzzer->ShouldGenerate())
-      list_length = g_depth > 3 ? 0 : RandInRange(8);
-    for (size_t index = 0; index < list_length; ++index) {
-      switch (static_cast<base::Value::Type>(RandInRange(8))) {
+    if (g_depth > 2)
+      return true;
+
+    g_depth++;
+
+    const size_t kMaxSize = 8;
+    size_t random_size = RandInRange(kMaxSize);
+    for (size_t i = 0; i < random_size; i++) {
+      base::Value random_value;
+      const size_t kNumValueTypes = 8;
+      switch (static_cast<base::Value::Type>(RandInRange(kNumValueTypes))) {
         case base::Value::Type::BOOLEAN: {
           bool tmp;
-          p->GetBoolean(index, &tmp);
           fuzzer->FuzzBool(&tmp);
-          p->Set(index, std::make_unique<base::Value>(tmp));
+          random_value = base::Value(tmp);
           break;
         }
         case base::Value::Type::INTEGER: {
           int tmp;
-          if (index < p->GetList().size() && p->GetList()[index].is_int())
-            tmp = p->GetList()[index].GetInt();
           fuzzer->FuzzInt(&tmp);
-          p->Set(index, std::make_unique<base::Value>(tmp));
+          random_value = base::Value(tmp);
           break;
         }
         case base::Value::Type::DOUBLE: {
           double tmp;
-          p->GetDouble(index, &tmp);
           fuzzer->FuzzDouble(&tmp);
-          p->Set(index, std::make_unique<base::Value>(tmp));
-          break;
-        }
-        case base::Value::Type::STRING: {
-          std::string tmp;
-          p->GetString(index, &tmp);
-          fuzzer->FuzzString(&tmp);
-          p->Set(index, std::make_unique<base::Value>(tmp));
+          random_value = base::Value(tmp);
           break;
         }
         case base::Value::Type::BINARY: {
           char tmp[200];
           size_t bin_length = RandInRange(sizeof(tmp));
           fuzzer->FuzzData(tmp, bin_length);
-          p->Set(index, base::Value::ToUniquePtrValue(base::Value(
-                            base::as_bytes(base::make_span(tmp, bin_length)))));
-          break;
-        }
-        case base::Value::Type::DICTIONARY: {
-          base::DictionaryValue* dict_weak = nullptr;
-          if (p->GetDictionary(index, &dict_weak)) {
-            FuzzParam(dict_weak, fuzzer);
-          } else {
-            auto dict = std::make_unique<base::DictionaryValue>();
-            FuzzParam(dict.get(), fuzzer);
-            p->Set(index, std::move(dict));
-          }
-          break;
-        }
-        case base::Value::Type::LIST: {
-          base::ListValue* list_weak = nullptr;
-          if (p->GetList()[index].GetAsList(&list_weak)) {
-            FuzzParam(list_weak, fuzzer);
-          } else {
-            auto list = std::make_unique<base::ListValue>();
-            FuzzParam(list.get(), fuzzer);
-            p->Set(index, std::move(list));
-          }
-          break;
-        }
-        case base::Value::Type::NONE:
-        default:
-          break;
-      }
-    }
-    --g_depth;
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<base::DictionaryValue> {
-  static bool Fuzz(base::DictionaryValue* p, Fuzzer* fuzzer) {
-    // TODO(mbarbella): Support mutation.
-    if (!fuzzer->ShouldGenerate())
-      return true;
-
-    ++g_depth;
-    size_t dict_length = g_depth > 3 ? 0 : RandInRange(8);
-    for (size_t index = 0; index < dict_length; ++index) {
-      std::string property;
-      fuzzer->FuzzString(&property);
-      switch (static_cast<base::Value::Type>(RandInRange(8))) {
-        case base::Value::Type::BOOLEAN: {
-          bool tmp;
-          fuzzer->FuzzBool(&tmp);
-          p->SetKey(property, base::Value(tmp));
-          break;
-        }
-        case base::Value::Type::INTEGER: {
-          int tmp;
-          fuzzer->FuzzInt(&tmp);
-          p->SetKey(property, base::Value(tmp));
-          break;
-        }
-        case base::Value::Type::DOUBLE: {
-          double tmp;
-          fuzzer->FuzzDouble(&tmp);
-          p->SetKey(property, base::Value(tmp));
+          random_value =
+              base::Value(base::as_bytes(base::make_span(tmp, bin_length)));
           break;
         }
         case base::Value::Type::STRING: {
-          std::string tmp;
-          fuzzer->FuzzString(&tmp);
-          p->SetKey(property, base::Value(tmp));
-          break;
-        }
-        case base::Value::Type::BINARY: {
-          char tmp[200];
-          size_t bin_length = RandInRange(sizeof(tmp));
-          fuzzer->FuzzData(tmp, bin_length);
-          p->SetWithoutPathExpansion(
-              property, base::Value::ToUniquePtrValue(base::Value(
-                            base::as_bytes(base::make_span(tmp, bin_length)))));
+          random_value = base::Value(base::Value::Type::STRING);
+          fuzzer->FuzzString(&random_value.GetString());
           break;
         }
         case base::Value::Type::DICTIONARY: {
-          auto tmp = std::make_unique<base::DictionaryValue>();
-          FuzzParam(tmp.get(), fuzzer);
-          p->SetWithoutPathExpansion(property, std::move(tmp));
+          random_value = base::Value(base::Value::Type::DICTIONARY);
+          FuzzParam(&random_value, fuzzer);
           break;
         }
         case base::Value::Type::LIST: {
-          auto tmp = std::make_unique<base::ListValue>();
-          FuzzParam(tmp.get(), fuzzer);
-          p->SetWithoutPathExpansion(property, std::move(tmp));
+          random_value = base::Value(base::Value::Type::LIST);
+          FuzzParam(&random_value, fuzzer);
           break;
         }
         case base::Value::Type::NONE:
-        default:
+          // |random_value| already has type NONE, nothing to do.
           break;
       }
+
+      // Add |random_value| to the container.
+      if (p->type() == base::Value::Type::LIST) {
+        p->Append(std::move(random_value));
+      } else {
+        // |p| is a dictionary, a fuzzed key is also required.
+        std::string key;
+        fuzzer->FuzzString(&key);
+        p->SetKey(key, std::move(random_value));
+      }
     }
+
     --g_depth;
     return true;
   }

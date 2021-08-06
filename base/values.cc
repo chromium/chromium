@@ -1442,19 +1442,6 @@ bool ListValue::GetBoolean(size_t index, bool* bool_value) const {
   return value->GetAsBoolean(bool_value);
 }
 
-bool ListValue::GetDouble(size_t index, double* out_value) const {
-  const Value* value;
-  if (!Get(index, &value))
-    return false;
-
-  const bool is_convertible_to_double = value->is_double() || value->is_int();
-  if (out_value && is_convertible_to_double) {
-    *out_value = value->GetDouble();
-  }
-
-  return is_convertible_to_double;
-}
-
 bool ListValue::GetString(size_t index, std::string* out_value) const {
   const Value* value;
   if (!Get(index, &value))

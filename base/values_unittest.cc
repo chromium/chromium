@@ -1382,47 +1382,32 @@ TEST(ValuesTest, Basic) {
 }
 
 TEST(ValuesTest, List) {
-  std::unique_ptr<ListValue> mixed_list(new ListValue());
-  mixed_list->Set(0, std::make_unique<Value>(true));
-  mixed_list->Set(1, std::make_unique<Value>(42));
-  mixed_list->Set(2, std::make_unique<Value>(88.8));
-  mixed_list->Set(3, std::make_unique<Value>("foo"));
-  ASSERT_EQ(4u, mixed_list->GetSize());
+  Value mixed_list(Value::Type::LIST);
+  mixed_list.Append(true);
+  mixed_list.Append(42);
+  mixed_list.Append(88.8);
+  mixed_list.Append("foo");
 
-  Value* value = nullptr;
-  bool bool_value = false;
-  double double_value = 0.0;
-  std::string string_value;
+  Value::ConstListView list_view = mixed_list.GetList();
+  ASSERT_EQ(4u, list_view.size());
 
-  ASSERT_FALSE(mixed_list->Get(4, &value));
+  ASSERT_FALSE(list_view[0].is_int());
+  ASSERT_FALSE(list_view[1].is_bool());
+  ASSERT_FALSE(list_view[2].is_string());
+  ASSERT_FALSE(list_view[2].is_int());
+  ASSERT_FALSE(list_view[2].is_bool());
 
-  ASSERT_FALSE(mixed_list->GetList()[0].is_int());
-  ASSERT_FALSE(mixed_list->GetBoolean(1, &bool_value));
-  ASSERT_FALSE(bool_value);
-  ASSERT_FALSE(mixed_list->GetString(2, &string_value));
-  ASSERT_EQ("", string_value);
-  ASSERT_FALSE(mixed_list->GetList()[2].is_int());
-  ASSERT_FALSE(mixed_list->GetBoolean(3, &bool_value));
-  ASSERT_FALSE(bool_value);
-
-  ASSERT_TRUE(mixed_list->GetBoolean(0, &bool_value));
-  ASSERT_TRUE(bool_value);
-  ASSERT_TRUE(mixed_list->GetList()[1].is_int());
-  ASSERT_EQ(42, mixed_list->GetList()[1].GetInt());
-  // implicit conversion from Integer to Double should be possible.
-  ASSERT_TRUE(mixed_list->GetDouble(1, &double_value));
-  ASSERT_EQ(42, double_value);
-  ASSERT_TRUE(mixed_list->GetDouble(2, &double_value));
-  ASSERT_EQ(88.8, double_value);
-  ASSERT_TRUE(mixed_list->GetString(3, &string_value));
-  ASSERT_EQ("foo", string_value);
+  ASSERT_TRUE(list_view[0].is_bool());
+  ASSERT_TRUE(list_view[1].is_int());
+  ASSERT_EQ(42, list_view[1].GetInt());
+  // Implicit conversion from Integer to Double should be possible.
+  ASSERT_EQ(42, list_view[1].GetDouble());
+  ASSERT_EQ(88.8, list_view[2].GetDouble());
+  ASSERT_EQ("foo", list_view[3].GetString());
 
   // Try searching in the mixed list.
-  base::Value sought_value(42);
-  base::Value not_found_value(false);
-
-  ASSERT_TRUE(Contains(mixed_list->GetList(), sought_value));
-  ASSERT_FALSE(Contains(mixed_list->GetList(), not_found_value));
+  ASSERT_TRUE(Contains(list_view, base::Value(42)));
+  ASSERT_FALSE(Contains(list_view, base::Value(false)));
 }
 
 TEST(ValuesTest, BinaryValue) {
@@ -2335,15 +2320,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_list.GetBoolean(5, nullptr));
   EXPECT_FALSE(main_list.GetBoolean(6, nullptr));
   EXPECT_FALSE(main_list.GetBoolean(7, nullptr));
-
-  EXPECT_FALSE(main_list.GetDouble(0, nullptr));
-  EXPECT_TRUE(main_list.GetDouble(1, nullptr));
-  EXPECT_TRUE(main_list.GetDouble(2, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(3, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(4, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(5, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(6, nullptr));
-  EXPECT_FALSE(main_list.GetDouble(7, nullptr));
 
   EXPECT_FALSE(main_list.GetString(0, static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_list.GetString(1, static_cast<std::string*>(nullptr)));

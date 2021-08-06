@@ -822,10 +822,6 @@ class BASE_EXPORT ListValue : public Value {
   // `out_value` is optional and will only be set if non-NULL.
   // DEPRECATED, use `GetList()::operator[]::GetBool()` instead.
   bool GetBoolean(size_t index, bool* out_value) const;
-  // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
-  // doubles.
-  // DEPRECATED, use `GetList()::operator[]::GetDouble()` instead.
-  bool GetDouble(size_t index, double* out_value) const;
   // DEPRECATED, use `GetList()::operator[]::GetString()` instead.
   bool GetString(size_t index, std::string* out_value) const;
   bool GetString(size_t index, std::u16string* out_value) const;
