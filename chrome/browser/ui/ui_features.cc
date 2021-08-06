@@ -101,10 +101,6 @@ const base::Feature kSettingsLandingPageRedesign{
 const base::Feature kSyncConfirmationUpdatedText{
     "SyncConfirmationUpdatedText", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Sign-in functionality in the profile creation flow. https://crbug.com/1126913
-const base::Feature kSignInProfileCreation{"SignInProfileCreation",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703
 const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",

@@ -16,15 +16,6 @@ var LocalProfileCustomizationFocusTest =
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/local_profile_customization_focus_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kSignInProfileCreation',
-      ]
-    };
-  }
 };
 
 TEST_F('LocalProfileCustomizationFocusTest', 'All', function() {

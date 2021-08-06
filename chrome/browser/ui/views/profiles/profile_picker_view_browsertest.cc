@@ -236,12 +236,8 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 
 class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
-  ProfilePickerCreationFlowBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSignInProfileCreation,
-         feature_engagement::kIPHProfileSwitchFeature},
-        /*disabled_features=*/{});
-  }
+  ProfilePickerCreationFlowBrowserTest()
+      : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();

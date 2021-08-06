@@ -82,15 +82,6 @@ var ProfileTypeChoiceTest = class extends SigninBrowserTest {
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/profile_type_choice_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kSignInProfileCreation',
-      ]
-    };
-  }
 };
 
 TEST_F('ProfileTypeChoiceTest', 'Buttons', function() {
@@ -126,15 +117,6 @@ var ProfilePickerAppTest = class extends SigninBrowserTest {
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/profile_picker_app_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kSignInProfileCreation',
-      ]
-    };
-  }
 };
 
 TEST_F('ProfilePickerAppTest', 'All', function() {
@@ -151,15 +133,6 @@ var ProfilePickerMainViewTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/profile_picker_main_view_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kSignInProfileCreation',
-      ]
-    };
   }
 };
 

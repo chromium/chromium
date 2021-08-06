@@ -5363,14 +5363,6 @@ const FeatureEntry kFeatureEntries[] = {
          features::kHappinessTrackingSurveysForDesktopSettingsPrivacy)},
 #endif  // !defined(OS_ANDROID)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"enable-sign-in-profile-creation",
-     flag_descriptions::kSignInProfileCreationName,
-     flag_descriptions::kSignInProfileCreationDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kSignInProfileCreation)},
-#endif
-
     {"destroy-profile-on-browser-close",
      flag_descriptions::kDestroyProfileOnBrowserCloseName,
      flag_descriptions::kDestroyProfileOnBrowserCloseDescription,

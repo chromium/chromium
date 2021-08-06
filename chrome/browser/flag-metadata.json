@@ -2488,11 +2488,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "enable-sign-in-profile-creation",
-    "owners": [ "jkrcal", "my-chrome-everywhere@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-site-isolation-for-password-sites",
     "owners": [ "site-isolation-dev", "alexmos", "lukasza" ],
     // Note: while password-triggered site isolation launched in M77, it only

@@ -1656,10 +1656,6 @@ const char kNewCanvas2DAPIDescription[] =
     "Enables in-progress features for the canvas 2D API. See "
     "https://github.com/fserb/canvas2d.";
 
-const char kSignInProfileCreationName[] = "Profile creation flow with sign-in";
-const char kSignInProfileCreationDescription[] =
-    "Enables a new sign-in flow in profile creation";
-
 const char kSyncingCompromisedCredentialsName[] = "Syncing of Security Issues";
 const char kSyncingCompromisedCredentialsDescription[] =
     "Enables syncing of Security issues which includes compromised and phished "

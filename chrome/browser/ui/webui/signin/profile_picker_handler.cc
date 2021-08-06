@@ -576,10 +576,8 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
       shortcut_manager->CreateProfileShortcut(profile->GetPath());
   }
 
-  if (base::FeatureList::IsEnabled(features::kSignInProfileCreation)) {
-    // Skip the FRE for this profile if sign-in was offered as part of the flow.
-    profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
-  }
+  // Skip the FRE for this profile as sign-in was offered as part of the flow.
+  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
   RecordNewProfileSpec(profile_color, create_shortcut);
   // Launch profile and close the picker.

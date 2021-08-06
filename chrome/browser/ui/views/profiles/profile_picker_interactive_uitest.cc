@@ -57,9 +57,7 @@ class WidgetBoundsChangeWaiter : public views::WidgetObserver {
 
 class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
  public:
-  ProfilePickerInteractiveUiTest()
-      : feature_list_(features::kSignInProfileCreation) {}
-
+  ProfilePickerInteractiveUiTest() = default;
   ~ProfilePickerInteractiveUiTest() override = default;
 
   void ShowAndFocusPicker(ProfilePicker::EntryPoint entry_point) {
@@ -117,8 +115,6 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         widget()->GetNativeWindow(), key, control, shift, alt, command));
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that the main picker view can be closed with keyboard shortcut.
