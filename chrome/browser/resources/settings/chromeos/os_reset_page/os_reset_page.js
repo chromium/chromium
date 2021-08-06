@@ -48,14 +48,6 @@ Polymer({
       type: Object,
       value: () => new Set([chromeos.settings.mojom.Setting.kPowerwash]),
     },
-
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
   },
 
   /** @private */
@@ -65,12 +57,6 @@ Polymer({
    */
   onShowPowerwashDialog_(e) {
     e.preventDefault();
-
-    if (!this.isUpdatedCellularUiEnabled_) {
-      this.installedESimProfiles_ = [];
-      this.showPowerwashDialog_ = true;
-      return;
-    }
 
     getEuicc().then(euicc => {
       if (!euicc) {

@@ -48,6 +48,9 @@ cr.define('settings_reset_page', function() {
       cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
 
       PolymerTest.clearBody();
+      resetPage = document.createElement('os-settings-reset-page');
+      document.body.appendChild(resetPage);
+      Polymer.dom.flush();
     });
 
     teardown(function() {
@@ -62,30 +65,16 @@ cr.define('settings_reset_page', function() {
     }
 
     /**
-     * @param {boolean} updatedCellularActivationUi
-     */
-    function init(updatedCellularActivationUi) {
-      loadTimeData.overrideValues({
-        updatedCellularActivationUi: updatedCellularActivationUi,
-      });
-      resetPage = document.createElement('os-settings-reset-page');
-      document.body.appendChild(resetPage);
-      Polymer.dom.flush();
-    }
-
-    /**
      * @param {function(SettingsPowerwashDialogElement):!Element}
      *     closeButtonFn A function that returns the button to be used for
      *     closing the dialog.
      * @return {!Promise}
      */
-    function testOpenClosePowerwashDialog(closeButtonFn) {
-      init(/*updatedCellularActivationUi=*/ false);
-
+    async function testOpenClosePowerwashDialog(closeButtonFn) {
       // Open powerwash dialog.
       assertTrue(!!resetPage);
       resetPage.$$('#powerwash').click();
-      Polymer.dom.flush();
+      await flushAsync();
       const dialog = resetPage.$$('os-settings-powerwash-dialog');
       assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
       const onDialogClosed = new Promise(function(resolve, reject) {
@@ -103,7 +92,6 @@ cr.define('settings_reset_page', function() {
     }
 
     async function openDialogWithESimWarning() {
-      init(/*updatedCellularActivationUi=*/ true);
       eSimManagerRemote.addEuiccForTest(2);
 
       // Set the first profile's state to kActive.
@@ -161,8 +149,8 @@ cr.define('settings_reset_page', function() {
       return deepLinkElement === getDeepActiveElement();
     }
 
-    // Tests that the powerwash dialog opens and closes correctly, and
-    // that chrome.send calls are propagated as expected.
+    // Tests that the powerwash dialog with no EUICC opens and closes correctly,
+    // and that chrome.send calls are propagated as expected.
     test(TestNames.PowerwashDialogOpenClose, function() {
       // Test case where the 'cancel' button is clicked.
       return testOpenClosePowerwashDialog(function(dialog) {
@@ -173,11 +161,9 @@ cr.define('settings_reset_page', function() {
     // Tests that when powerwash is requested chrome.send calls are
     // propagated as expected.
     test(TestNames.PowerwashDialogAction, async () => {
-      init(/*updatedCellularActivationUi=*/ false);
-
       // Open powerwash dialog.
       resetPage.$$('#powerwash').click();
-      Polymer.dom.flush();
+      await flushAsync();
       const dialog = resetPage.$$('os-settings-powerwash-dialog');
       assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
       dialog.$$('#powerwash').click();
@@ -189,8 +175,6 @@ cr.define('settings_reset_page', function() {
     // Tests that when the route changes to one containing a deep link to
     // powerwash, powerwash is focused.
     test(TestNames.PowerwashFocusDeepLink, async () => {
-      init(/*updatedCellularActivationUi=*/ false);
-
       loadTimeData.overrideValues({isDeepLinkingEnabled: true});
       assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
       assertTrue(
@@ -202,8 +186,6 @@ cr.define('settings_reset_page', function() {
     // Tests that when the deep linking flag is disabled, no focusing of deep
     // links occurs.
     test(TestNames.PowerwashFocusDeepLinkNoFlag, async () => {
-      init(/*updatedCellularActivationUi=*/ false);
-
       loadTimeData.overrideValues({isDeepLinkingEnabled: false});
       assertFalse(loadTimeData.getBoolean('isDeepLinkingEnabled'));
       assertFalse(
@@ -215,8 +197,6 @@ cr.define('settings_reset_page', function() {
     // Tests that when the route changes to one containing a deep link not equal
     // to powerwash, no focusing of powerwash occurs.
     test(TestNames.PowerwashFocusDeepLinkWrongId, async () => {
-      init(/*updatedCellularActivationUi=*/ false);
-
       loadTimeData.overrideValues({isDeepLinkingEnabled: true});
       assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
       assertFalse(
@@ -225,17 +205,9 @@ cr.define('settings_reset_page', function() {
           'Powerwash should not be focused for settingId=1234.');
     });
 
-    test('Cellular flag on, no euicc shows powerwash dialog', async () => {
-      init(/*updatedCellularActivationUi=*/ true);
-      return testOpenClosePowerwashDialog(function(dialog) {
-        return dialog.$.cancel;
-      });
-    });
-
     test(
-        'Cellular flag on, no non-pending profiles shows powerwash dialog',
+        'EUICC with no non-pending profiles shows powerwash dialog',
         async () => {
-          init(/*updatedCellularActivationUi=*/ true);
           eSimManagerRemote.addEuiccForTest(2);
 
           return testOpenClosePowerwashDialog(function(dialog) {
@@ -243,23 +215,21 @@ cr.define('settings_reset_page', function() {
           });
         });
 
-    test(
-        'Cellular flag on, with non-pending profile shows eSIM warning dialog',
-        async () => {
-          await openDialogWithESimWarning();
+    test('Non-pending profile shows eSIM warning dialog', async () => {
+      await openDialogWithESimWarning();
 
-          // Clicking the checkbox should enable the 'Continue' button.
-          const dialog = resetPage.$$('os-settings-powerwash-dialog');
-          const continueButton = dialog.$$('#continue');
-          dialog.$$('cr-checkbox').click();
-          assertFalse(continueButton.disabled);
+      // Clicking the checkbox should enable the 'Continue' button.
+      const dialog = resetPage.$$('os-settings-powerwash-dialog');
+      const continueButton = dialog.$$('#continue');
+      dialog.$$('cr-checkbox').click();
+      assertFalse(continueButton.disabled);
 
-          // Click the 'Continue' button.
-          continueButton.click();
-          await flushAsync();
-          // The powerwash UI should now be showing.
-          assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
-        });
+      // Click the 'Continue' button.
+      continueButton.click();
+      await flushAsync();
+      // The powerwash UI should now be showing.
+      assertOpenDialogUIState(/*shouldBeShowingESimWarning=*/ false);
+    });
 
     test(
         'eSIM warning dialog link click goes to mobile data subpage',
