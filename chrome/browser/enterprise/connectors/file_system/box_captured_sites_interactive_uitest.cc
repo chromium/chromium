@@ -774,10 +774,8 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
   }
 
   bool IsFSCEnabled() {
-    auto* service =
-        ConnectorsServiceFactory::GetForBrowserContext(browser()->profile());
-    return service->IsConnectorEnabled(
-        FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
+    auto settings = GetFileSystemSettings(browser()->profile());
+    return settings.has_value();
   }
 
   void StartWprUsingFSCCaptureDir(const char* replay_file_relative_path) {
