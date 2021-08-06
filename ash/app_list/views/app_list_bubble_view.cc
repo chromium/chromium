@@ -42,7 +42,10 @@ namespace ash {
 namespace {
 
 constexpr int kDefaultHeight = 688;
-constexpr int kDefaultWidth = 544;
+
+// As of August 2021 the assistant cards require a minimum width of 640. If the
+// cards become narrower then this could be reduced.
+constexpr int kDefaultWidth = 640;
 
 // Space between the AppListBubbleView and the top of the screen should be at
 // least this value plus the shelf height.

@@ -326,7 +326,7 @@ TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
   views::View* client_view = presenter->bubble_view_for_test()->parent();
 
   // Check that the AppListBubble has the initial default bounds.
-  EXPECT_EQ(544, client_view->bounds().width());
+  EXPECT_EQ(640, client_view->bounds().width());
   EXPECT_EQ(688, client_view->bounds().height());
 
   // Check that the space between the top of the AppListBubble and the top of
