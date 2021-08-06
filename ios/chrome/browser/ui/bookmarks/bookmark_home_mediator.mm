@@ -26,12 +26,12 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
+#import "ios/chrome/browser/ui/signin/signin_presenter.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/signin/signin_presenter.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

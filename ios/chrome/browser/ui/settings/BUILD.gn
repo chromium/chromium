@@ -176,6 +176,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/signin:signin_presenter",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view:utils",

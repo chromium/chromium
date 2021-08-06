@@ -14,7 +14,6 @@ source_set("signin") {
     "chrome_identity_service.mm",
     "chrome_trusted_vault_service.h",
     "chrome_trusted_vault_service.mm",
-    "signin_presenter.h",
     "signin_resources_provider.h",
     "signin_resources_provider.mm",
   ]

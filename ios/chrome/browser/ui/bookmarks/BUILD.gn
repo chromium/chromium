@@ -76,6 +76,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/signin:signin_presenter",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/table_view:presentation",
@@ -89,7 +90,6 @@ source_set("bookmarks") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
