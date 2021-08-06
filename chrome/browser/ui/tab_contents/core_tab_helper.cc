@@ -88,11 +88,13 @@ void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
 
 void CoreTabHelper::SearchWithLensInNewTab(
     content::RenderFrameHost* render_frame_host,
-    const GURL& src_url) {
+    const GURL& src_url,
+    lens::EntryPoint entry_point) {
   SearchByImageInNewTabImpl(render_frame_host, src_url,
                             kImageSearchThumbnailMinSize,
                             lens::features::GetMaxPixelsForImageSearch(),
-                            lens::features::GetMaxPixelsForImageSearch());
+                            lens::features::GetMaxPixelsForImageSearch(),
+                            lens::GetQueryParameterFromEntryPoint(entry_point));
 }
 
 void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
@@ -133,9 +135,10 @@ void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
 void CoreTabHelper::SearchByImageInNewTab(
     content::RenderFrameHost* render_frame_host,
     const GURL& src_url) {
-  SearchByImageInNewTabImpl(
-      render_frame_host, src_url, kImageSearchThumbnailMinSize,
-      kImageSearchThumbnailMaxWidth, kImageSearchThumbnailMaxHeight);
+  SearchByImageInNewTabImpl(render_frame_host, src_url,
+                            kImageSearchThumbnailMinSize,
+                            kImageSearchThumbnailMaxWidth,
+                            kImageSearchThumbnailMaxHeight, std::string());
 }
 
 void CoreTabHelper::SearchByImageInNewTabImpl(
@@ -143,7 +146,8 @@ void CoreTabHelper::SearchByImageInNewTabImpl(
     const GURL& src_url,
     int thumbnail_min_size,
     int thumbnail_max_width,
-    int thumbnail_max_height) {
+    int thumbnail_max_height,
+    std::string additional_query_params) {
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
@@ -155,7 +159,7 @@ void CoreTabHelper::SearchByImageInNewTabImpl(
       chrome::mojom::ImageFormat::JPEG,
       base::BindOnce(&CoreTabHelper::DoSearchByImageInNewTab,
                      weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
-                     src_url));
+                     src_url, additional_query_params));
 }
 
 std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
@@ -327,6 +331,7 @@ void CoreTabHelper::DoSearchByImageInNewTab(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
     const GURL& src_url,
+    const std::string& additional_query_params,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
     const std::string& image_extension) {
@@ -351,6 +356,7 @@ void CoreTabHelper::DoSearchByImageInNewTab(
                                              thumbnail_data.end());
   search_args.image_url = src_url;
   search_args.image_original_size = original_size;
+  search_args.additional_query_params = additional_query_params;
   TemplateURLRef::PostContent post_content;
   GURL result(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));

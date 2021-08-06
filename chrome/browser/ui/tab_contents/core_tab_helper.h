@@ -37,7 +37,8 @@ class CoreTabHelper : public content::WebContentsObserver,
   // Open the Lens standalone experience for the image that triggered the
   // context menu.
   void SearchWithLensInNewTab(content::RenderFrameHost* render_frame_host,
-                              const GURL& src_url);
+                              const GURL& src_url,
+                              lens::EntryPoint entry_point);
 
   // Open the Lens experience for an image. Used for sending the bitmap selected
   // via Lens Region Search.
@@ -79,6 +80,7 @@ class CoreTabHelper : public content::WebContentsObserver,
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
       const GURL& src_url,
+      const std::string& additional_query_params,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size,
       const std::string& image_extension);
@@ -88,12 +90,15 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Create a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
-  // not used directly to fetch the image resources.
+  // not used directly to fetch the image resources. The
+  // |additional_query_params| are also passed to the search request as part of
+  // search args.
   void SearchByImageInNewTabImpl(content::RenderFrameHost* render_frame_host,
                                  const GURL& src_url,
                                  int thumbnail_min_size,
                                  int thumbnail_max_width,
-                                 int thumbnail_max_height);
+                                 int thumbnail_max_height,
+                                 std::string additional_query_params);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.

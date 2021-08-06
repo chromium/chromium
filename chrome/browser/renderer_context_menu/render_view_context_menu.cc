@@ -3244,7 +3244,9 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
   if (!render_frame_host)
     return;
 
-  core_tab_helper->SearchWithLensInNewTab(render_frame_host, params().src_url);
+  core_tab_helper->SearchWithLensInNewTab(
+      render_frame_host, params().src_url,
+      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM);
 }
 
 void RenderViewContextMenu::ExecLensRegionSearch() {
