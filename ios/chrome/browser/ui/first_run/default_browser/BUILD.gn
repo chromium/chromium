@@ -22,10 +22,18 @@ source_set("default_browser_ui") {
   sources = [
     "default_browser_screen_view_controller.h",
     "default_browser_screen_view_controller.mm",
+    "instruction_table_view.h",
+    "instruction_table_view.mm",
+    "instruction_table_view_cell.h",
+    "instruction_table_view_cell.mm",
   ]
   deps = [
     "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/browser/ui/first_run/resources:default_browser_screen_banner",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_ui",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
   ]
   frameworks = [ "UIKit.framework" ]
 }
