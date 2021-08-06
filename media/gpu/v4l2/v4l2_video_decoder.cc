@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/video_types.h"
@@ -674,6 +675,10 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
               << input_queue_->QueuedBuffersCount()
               << ", Number of queued output buffers: "
               << output_queue_->QueuedBuffersCount();
+    TRACE_COUNTER_ID2(
+        "media,gpu", "V4L2 queue sizes", this, "input (OUTPUT_queue)",
+        input_queue_->QueuedBuffersCount(), "output (CAPTURE_queue)",
+        output_queue_->QueuedBuffersCount());
   }
 
   if (backend_)

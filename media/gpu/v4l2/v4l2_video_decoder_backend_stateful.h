@@ -139,7 +139,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   absl::optional<gfx::Rect> visible_rect_;
 
-  // Map of enqueuing timestamps to wall clock, for histogramming purposes.
+  // Map of enqueuing timecodes to system timestamp, for histogramming purposes.
   std::map<int64_t, base::TimeTicks> encoding_timestamps_;
 
   // Callback of the buffer that triggered a flush, to be called when the

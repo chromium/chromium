@@ -100,7 +100,7 @@ int64_t V4L2BufferTimestampInMilliseconds(
 void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   constexpr char kTracingCategory[] = "media,gpu";
   constexpr char kQueueBuffer[] = "V4L2 Queue Buffer";
-  constexpr char kDeueueBuffer[] = "V4L2 Dequeue Buffer";
+  constexpr char kDequeueBuffer[] = "V4L2 Dequeue Buffer";
   constexpr char kVideoProcessing[] = "V4L2 Video Processing";
 
   bool tracing_enabled = false;
@@ -108,7 +108,7 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   if (!tracing_enabled)
     return;
 
-  const char* name = start ? kQueueBuffer : kDeueueBuffer;
+  const char* name = start ? kQueueBuffer : kDequeueBuffer;
   TRACE_EVENT_INSTANT1(kTracingCategory, name, TRACE_EVENT_SCOPE_THREAD, "type",
                        v4l2_buffer->type);
 
@@ -1097,7 +1097,7 @@ absl::optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
 size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!free_buffers_);
-  DCHECK_EQ(queued_buffers_.size(), 0u);
+  DCHECK(queued_buffers_.empty());
 
   if (IsStreaming()) {
     VQLOGF(1) << "Cannot allocate buffers while streaming.";
@@ -1160,7 +1160,7 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
 
   DCHECK(free_buffers_);
   DCHECK_EQ(free_buffers_->size(), buffers_.size());
-  DCHECK_EQ(queued_buffers_.size(), 0u);
+  DCHECK(queued_buffers_.empty());
 
   return buffers_.size();
 }
@@ -1195,7 +1195,7 @@ bool V4L2Queue::DeallocateBuffers() {
   }
 
   DCHECK(!free_buffers_);
-  DCHECK_EQ(queued_buffers_.size(), 0u);
+  DCHECK(queued_buffers_.empty());
 
   return true;
 }
@@ -1289,9 +1289,9 @@ bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
     return false;
   }
 
-  auto inserted =
+  const auto inserted =
       queued_buffers_.emplace(v4l2_buffer->index, std::move(video_frame));
-  DCHECK_EQ(inserted.second, true);
+  DCHECK(inserted.second);
 
   device_->SchedulePoll();
 

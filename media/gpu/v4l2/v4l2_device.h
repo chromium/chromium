@@ -18,6 +18,7 @@
 #include <linux/videodev2.h>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/small_map.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -457,10 +458,10 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // Buffers that are available for client to get and submit.
   // Buffers in this list are not referenced by anyone else than ourselves.
   scoped_refptr<V4L2BuffersList> free_buffers_;
-  // Buffers that have been queued by the client, and not dequeued yet. The
-  // value will be set to the VideoFrame that has been passed when we queued
-  // the buffer, if any.
-  std::map<size_t, scoped_refptr<VideoFrame>> queued_buffers_;
+  // Buffers that have been queued by the client, and not dequeued yet, indexed
+  // by the v4l2_buffer queue ID. The value will be set to the VideoFrame that
+  // has been passed when we queued the buffer, if any.
+  base::small_map<std::map<size_t, scoped_refptr<VideoFrame>>> queued_buffers_;
   // Keep track of which buffer was assigned to which frame by
   // |GetFreeBufferForFrame()| so we reuse the same buffer in subsequent calls.
   BufferAffinityTracker affinity_tracker_;
