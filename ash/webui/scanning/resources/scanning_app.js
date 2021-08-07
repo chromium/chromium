@@ -427,7 +427,7 @@ Polymer({
 
     // The Scan app increments |this.pageNumber_| itself during a multi-page
     // scan.
-    if (!this.isMultiPageScan_()) {
+    if (!this.multiPageScanChecked) {
       this.pageNumber_ = pageNumber;
     }
     this.progressPercent_ = progressPercent;
@@ -444,7 +444,7 @@ Polymer({
         this.appState_ === AppState.CANCELING);
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
     this.push('objectUrls_', URL.createObjectURL(blob));
-    if (this.isMultiPageScan_()) {
+    if (this.multiPageScanChecked) {
       this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
     }
   },
@@ -580,7 +580,7 @@ Polymer({
     }
 
     const settings = this.getScanSettings_();
-    if (this.isMultiPageScan_()) {
+    if (this.multiPageScanChecked) {
       this.scanService_
           .startMultiPageScan(
               this.getSelectedScannerToken_(), settings,
@@ -1127,6 +1127,7 @@ Polymer({
 
   /** @private */
   onMultiPageScanCheckedChange_() {
+    assert(!this.multiPageScanChecked || this.scanAppMultiPageScanEnabled_);
     const nextPageNum = this.multiPageScanChecked ? 1 : 0;
     this.browserProxy_.getPluralString('scanButtonText', nextPageNum)
         .then(
@@ -1152,14 +1153,6 @@ Polymer({
       pageSize: pageSize,
       resolutionDpi: resolution,
     };
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isMultiPageScan_() {
-    return this.scanAppMultiPageScanEnabled_ && this.multiPageScanChecked;
   },
 
   /**
