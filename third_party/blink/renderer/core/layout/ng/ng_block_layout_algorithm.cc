@@ -1888,11 +1888,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   NGFragment fragment(ConstraintSpace().GetWritingDirection(),
                       physical_fragment);
 
-  LogicalOffset logical_offset = CalculateLogicalOffset(
-      fragment, layout_result->BfcLineOffset(), child_bfc_block_offset);
-  if (UNLIKELY(child.IsSliderThumb()))
-    logical_offset = AdjustSliderThumbInlineOffset(fragment, logical_offset);
-
   if (ConstraintSpace().HasBlockFragmentation() &&
       container_builder_.BfcBlockOffset() && child_bfc_block_offset) {
     // Floats only cause container separation for the outermost block child that
@@ -1917,6 +1912,11 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       inline_child_layout_context->ClearPropagatedBreakTokens();
     }
   }
+
+  LogicalOffset logical_offset = CalculateLogicalOffset(
+      fragment, layout_result->BfcLineOffset(), child_bfc_block_offset);
+  if (UNLIKELY(child.IsSliderThumb()))
+    logical_offset = AdjustSliderThumbInlineOffset(fragment, logical_offset);
 
   if (!PositionOrPropagateListMarker(*layout_result, &logical_offset,
                                      previous_inflow_position))
