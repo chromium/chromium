@@ -4945,6 +4945,28 @@ crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/breakpoints-i
 crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/restore-locations-for-breakpoint-with-broken-source-map.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-patterns.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/tracing/timeline-js/timeline-js-ignore-list.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot-containment-expansion-preserved-when-sorting.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot-containment-show-all.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot-containment-show-next.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot-containment-shown-node-count-preserved-when-sorting.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot-containment-sorting.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/profiler/live-line-level-heap-profile.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/device-mode/device-mode-switching-devices.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-after-reload-with-oopif.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-eval-content-script.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-eval-execution-context.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-eval.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-events.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-headers.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-iframe-eval.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-ignore-cache.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-network-redirect.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-network.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-reload.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/extensions-useragent.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/extensions/multiple-extensions.js [ Failure Pass ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
@@ -6412,7 +6434,6 @@ crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/ht
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
 # Sheriff 2021-02-25
-crbug.com/1182673 [ Win7 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Timeout ]
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
