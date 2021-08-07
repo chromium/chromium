@@ -1062,12 +1062,14 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
 
   // layout_object may be null in certain cases, e.g. if it's a kBidiControl.
   if (layout_object && layout_object->IsBR()) {
-    NGBfcOffset bfc_offset = {ContainerBfcOffset().line_offset,
-                              ContainerBfcOffset().block_offset + content_size};
+    const LayoutUnit line_box_bfc_block_offset =
+        ContainerBfcOffset().block_offset;
+    NGBfcOffset bfc_offset = {LayoutUnit(),
+                              line_box_bfc_block_offset + content_size};
     AdjustToClearance(
         exclusion_space.ClearanceOffset(item.Style()->Clear(Style())),
         &bfc_offset);
-    content_size = bfc_offset.block_offset - ContainerBfcOffset().block_offset;
+    content_size = bfc_offset.block_offset - line_box_bfc_block_offset;
   }
 
   return content_size;
