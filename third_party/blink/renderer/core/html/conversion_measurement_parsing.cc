@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_attribution_source_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -17,7 +16,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -89,15 +87,6 @@ WebImpressionOrError GetImpression(
         frame->DomWindow(),
         AttributionReportingIssueType::kPermissionPolicyDisabled,
         frame->GetDevToolsFrameToken(), element);
-
-    // TODO(crbug.com/1178400): Remove console message once the issue reported
-    //     above is actually shown in DevTools.
-    String message =
-        "The 'attribution-reporting' permissions policy must be enabled to "
-        "declare an attribution source.";
-    execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kError, message));
     return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
 
