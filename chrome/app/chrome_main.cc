@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
@@ -141,13 +142,16 @@ int ChromeMain(int argc, const char** argv) {
   MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
   // Chrome-specific process modes.
+  if (headless::IsChromeNativeHeadless()) {
+    headless::SetUpCommandLine(command_line);
+  } else {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
-  if (command_line->HasSwitch(switches::kHeadless)) {
-    return headless::HeadlessShellMain(params);
-  }
+    if (command_line->HasSwitch(switches::kHeadless))
+      return headless::HeadlessShellMain(params);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
+  }
 
 #if defined(OS_LINUX)
   // TODO(https://crbug.com/1176772): Remove when Chrome Linux is fully migrated

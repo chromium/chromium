@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
@@ -114,6 +115,8 @@ void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
   if (!display::Screen::GetScreen())
     screen_ = views::CreateDesktopScreen();
 #endif
+  if (headless::IsChromeNativeHeadless())
+    headless::SetHeadlessDisplayBounds();
 }
 
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
