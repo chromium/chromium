@@ -31,7 +31,7 @@ const GURL& DummyUrl() {
 }  // namespace
 
 // According to the interface for EXPECT_FATAL_FAILURE
-// (https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#catching-failures)
+// (https://github.com/google/googletest/blob/master/docs/advanced.md#catching-failures)
 // the statement must be statically available. Therefore, we make a static
 // global s_test_ which should point to |this| for the duration of the test run
 // and be cleared afterward.
