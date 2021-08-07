@@ -15,6 +15,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/win/wincrypt_shim.h"
+#include "crypto/scoped_capi_types.h"
 #elif defined(OS_APPLE)
 #include <CoreFoundation/CFArray.h>
 #include <Security/SecTrust.h>
@@ -70,9 +71,8 @@ class NET_EXPORT TestRootCerts {
 
   // Returns an HCERTCHAINENGINE suitable to be used for certificate
   // validation routines, or NULL to indicate that the default system chain
-  // engine is appropriate. The caller is responsible for freeing the
-  // returned HCERTCHAINENGINE.
-  HCERTCHAINENGINE GetChainEngine() const;
+  // engine is appropriate.
+  crypto::ScopedHCERTCHAINENGINE GetChainEngine() const;
 #endif
 
   TrustStore* test_trust_store() { return &test_trust_store_; }

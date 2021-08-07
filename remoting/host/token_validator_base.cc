@@ -105,10 +105,10 @@ bool WorseThan(const std::string& issuer,
 }
 
 #if defined(OS_WIN)
-HCERTSTORE OpenLocalMachineCertStore() {
-  return ::CertOpenStore(
+crypto::ScopedHCERTSTORE OpenLocalMachineCertStore() {
+  return crypto::ScopedHCERTSTORE(::CertOpenStore(
       CERT_STORE_PROV_SYSTEM, 0, NULL,
-      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY");
+      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY"));
 }
 #endif
 

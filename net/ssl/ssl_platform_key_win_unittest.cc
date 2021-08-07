@@ -289,7 +289,8 @@ TEST(SSLPlatformKeyCAPITest, KeyMatches) {
   // Import the key into CAPI. Use CRYPT_VERIFYCONTEXT for an ephemeral key.
   crypto::ScopedHCRYPTPROV prov;
   ASSERT_NE(FALSE,
-            CryptAcquireContext(prov.receive(), nullptr, nullptr, PROV_RSA_AES,
+            CryptAcquireContext(crypto::ScopedHCRYPTPROV::Receiver(prov).get(),
+                                nullptr, nullptr, PROV_RSA_AES,
                                 CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
       << GetLastError();
 
@@ -297,15 +298,16 @@ TEST(SSLPlatformKeyCAPITest, KeyMatches) {
   ASSERT_TRUE(PKCS8ToBLOBForCAPI(pkcs8, &blob));
 
   crypto::ScopedHCRYPTKEY hcryptkey;
-  ASSERT_NE(FALSE, CryptImportKey(prov.get(), blob.data(), blob.size(),
-                                  0 /* hPubKey */, 0 /* dwFlags */,
-                                  hcryptkey.receive()))
+  ASSERT_NE(FALSE,
+            CryptImportKey(prov.get(), blob.data(), blob.size(),
+                           0 /* hPubKey */, 0 /* dwFlags */,
+                           crypto::ScopedHCRYPTKEY::Receiver(hcryptkey).get()))
       << GetLastError();
   // Release |hcryptkey| so it does not outlive |prov|.
   hcryptkey.reset();
 
   scoped_refptr<SSLPrivateKey> key =
-      WrapCAPIPrivateKey(cert.get(), prov.release(), AT_SIGNATURE);
+      WrapCAPIPrivateKey(cert.get(), std::move(prov), AT_SIGNATURE);
   ASSERT_TRUE(key);
 
   std::vector<uint16_t> expected = {

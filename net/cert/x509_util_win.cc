@@ -15,14 +15,6 @@ namespace net {
 
 namespace x509_util {
 
-namespace {
-
-using ScopedHCERTSTORE = crypto::ScopedCAPIHandle<
-    HCERTSTORE,
-    crypto::CAPIDestroyerWithFlags<HCERTSTORE, CertCloseStore, 0>>;
-
-}  // namespace
-
 scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
     PCCERT_CONTEXT os_cert,
     const std::vector<PCCERT_CONTEXT>& os_chain) {
@@ -68,10 +60,10 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
   // Create an in-memory certificate store to hold the certificate and its
   // intermediate certificates. The store will be referenced in the returned
   // PCCERT_CONTEXT, and will not be freed until the PCCERT_CONTEXT is freed.
-  ScopedHCERTSTORE store(
+  crypto::ScopedHCERTSTORE store(
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL,
                     CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, nullptr));
-  if (!store.get())
+  if (!store.is_valid())
     return nullptr;
 
   PCCERT_CONTEXT primary_cert = nullptr;

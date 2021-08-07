@@ -42,22 +42,12 @@ namespace net {
 
 namespace {
 
-struct FreeChainEngineFunctor {
-  void operator()(HCERTCHAINENGINE engine) const {
-    if (engine)
-      CertFreeCertificateChainEngine(engine);
-  }
-};
-
 struct FreeCertChainContextFunctor {
   void operator()(PCCERT_CHAIN_CONTEXT chain_context) const {
     if (chain_context)
       CertFreeCertificateChain(chain_context);
   }
 };
-
-typedef crypto::ScopedCAPIHandle<HCERTCHAINENGINE, FreeChainEngineFunctor>
-    ScopedHCERTCHAINENGINE;
 
 typedef std::unique_ptr<const CERT_CHAIN_CONTEXT, FreeCertChainContextFunctor>
     ScopedPCCERT_CHAIN_CONTEXT;
@@ -956,9 +946,9 @@ int CertVerifyProcWin::VerifyInternal(
   // Root store used by TestRootCerts as changed, via CertControlStore with the
   // CERT_STORE_CTRL_NOTIFY_CHANGE / CERT_STORE_CTRL_RESYNC, but that's more
   // complexity for what is test-only code.
-  ScopedHCERTCHAINENGINE chain_engine(NULL);
+  crypto::ScopedHCERTCHAINENGINE chain_engine;
   if (TestRootCerts::HasInstance())
-    chain_engine.reset(TestRootCerts::GetInstance()->GetChainEngine());
+    chain_engine = TestRootCerts::GetInstance()->GetChainEngine();
 
   // Add stapled OCSP response data, which will be preferred over online checks
   // and used when in cache-only mode.
@@ -1009,7 +999,7 @@ int CertVerifyProcWin::VerifyInternal(
   // chain is rejected, then clear it from |chain_para| so that all subsequent
   // calls will use the fallback path.
   BOOL chain_result =
-      CertGetCertificateChain(chain_engine, cert_list.get(),
+      CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                               nullptr,  // current system time
                               cert_list->hCertStore, &chain_para, chain_flags,
                               nullptr,  // reserved
@@ -1026,7 +1016,7 @@ int CertVerifyProcWin::VerifyInternal(
     chain_para.pStrongSignPara = nullptr;
     chain_para.dwStrongSignFlags = 0;
     chain_result =
-        CertGetCertificateChain(chain_engine, cert_list.get(),
+        CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                 nullptr,  // current system time
                                 cert_list->hCertStore, &chain_para, chain_flags,
                                 nullptr,  // reserved
@@ -1056,7 +1046,7 @@ int CertVerifyProcWin::VerifyInternal(
     verify_result->cert_status |= CERT_STATUS_REV_CHECKING_ENABLED;
 
     CertFreeCertificateChain(chain_context);
-    if (!CertGetCertificateChain(chain_engine, cert_list.get(),
+    if (!CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                  nullptr,  // current system time
                                  cert_list->hCertStore, &chain_para,
                                  chain_flags,
@@ -1075,7 +1065,7 @@ int CertVerifyProcWin::VerifyInternal(
     chain_para.RequestedIssuancePolicy.Usage.cUsageIdentifier = 0;
     chain_para.RequestedIssuancePolicy.Usage.rgpszUsageIdentifier = nullptr;
     CertFreeCertificateChain(chain_context);
-    if (!CertGetCertificateChain(chain_engine, cert_list.get(),
+    if (!CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                  nullptr,  // current system time
                                  cert_list->hCertStore, &chain_para,
                                  chain_flags,
@@ -1097,7 +1087,7 @@ int CertVerifyProcWin::VerifyInternal(
     chain_flags &= ~CERT_CHAIN_REVOCATION_CHECK_CACHE_ONLY;
 
     CertFreeCertificateChain(chain_context);
-    if (!CertGetCertificateChain(chain_engine, cert_list.get(),
+    if (!CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                  nullptr,  // current system time
                                  cert_list->hCertStore, &chain_para,
                                  chain_flags,

@@ -50,12 +50,12 @@ std::string GetCAPIProviderName(HCRYPTPROV provider) {
 class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
  public:
   // Takes ownership of |provider|.
-  SSLPlatformKeyCAPI(HCRYPTPROV provider, DWORD key_spec)
-      : provider_name_(GetCAPIProviderName(provider)),
-        provider_(provider),
+  SSLPlatformKeyCAPI(crypto::ScopedHCRYPTPROV provider, DWORD key_spec)
+      : provider_name_(GetCAPIProviderName(provider.get())),
+        provider_(std::move(provider)),
         key_spec_(key_spec) {}
 
-  ~SSLPlatformKeyCAPI() override {}
+  ~SSLPlatformKeyCAPI() override = default;
 
   std::string GetProviderName() override { return "CAPI: " + provider_name_; }
 
@@ -106,7 +106,9 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
     }
 
     crypto::ScopedHCRYPTHASH hash_handle;
-    if (!CryptCreateHash(provider_, hash_alg, 0, 0, hash_handle.receive())) {
+    if (!CryptCreateHash(
+            provider_.get(), hash_alg, 0, 0,
+            crypto::ScopedHCRYPTHASH::Receiver(hash_handle).get())) {
       PLOG(ERROR) << "CreateCreateHash failed";
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
@@ -381,10 +383,10 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
 
 scoped_refptr<SSLPrivateKey> WrapCAPIPrivateKey(
     const X509Certificate* certificate,
-    HCRYPTPROV prov,
+    crypto::ScopedHCRYPTPROV prov,
     DWORD key_spec) {
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeyCAPI>(prov, key_spec),
+      std::make_unique<SSLPlatformKeyCAPI>(std::move(prov), key_spec),
       GetSSLPlatformKeyTaskRunner());
 }
 
@@ -427,7 +429,8 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
   if (key_spec == CERT_NCRYPT_KEY_SPEC) {
     return WrapCNGPrivateKey(certificate, prov_or_key);
   } else {
-    return WrapCAPIPrivateKey(certificate, prov_or_key, key_spec);
+    return WrapCAPIPrivateKey(certificate,
+                              crypto::ScopedHCRYPTPROV(prov_or_key), key_spec);
   }
 }
 
