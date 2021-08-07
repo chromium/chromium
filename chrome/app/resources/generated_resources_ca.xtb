@@ -2483,7 +2483,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3658871634334445293">Acceleració TrackPoint</translation>
 <translation id="3659830472545192450">Voice Match ajuda l'Assistent de Google a identificar la teva veu al teu Chromebook i a distingir-te d'altres persones.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tingues en compte:<ph name="END_BOLD" /> és possible que una veu o una gravació similars també tinguin accés als teus resultats personals. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
+    <ph name="BEGIN_BOLD" />Tingues en compte:<ph name="END_BOLD" /> és possible que una veu similar o una gravació també tinguin accés als teus resultats personals. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
 <translation id="3660234220361471169">No és de confiança</translation>
 <translation id="3664511988987167893">Icona de l'extensió</translation>
 <translation id="3665589677786828986">Chrome ha detectat que un altre programa ha malmès alguns dels paràmetres de configuració i els ha restablert als valors predeterminats originals.</translation>
@@ -4236,7 +4236,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5612734644261457353">Encara no s'ha pogut verificar la contrasenya. Nota: Si l'has canviat fa poc, la contrasenya nova s'aplicarà un cop hagis tancat la sessió. Fes servir la contrasenya anterior aquí.</translation>
 <translation id="561308544008485315">Voice Match ajuda l'Assistent de Google a identificar la teva veu al teu Chromebook i a distingir-te d'altres persones. Per estalviar bateria, la funció "Hey Google" només estarà activada quan el dispositiu estigui connectat a una font d'alimentació. Per fer canvis, ves a Configuració.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tingues en compte:<ph name="END_BOLD" /> és possible que una veu o una gravació similars també tinguin accés als teus resultats personals. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
+    <ph name="BEGIN_BOLD" />Tingues en compte:<ph name="END_BOLD" /> és possible que una veu similar o una gravació puguin accedir als teus resultats personals. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
 <translation id="5616726534702877126">Reserva la mida</translation>
