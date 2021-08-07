@@ -398,13 +398,6 @@ void QuickAnswersView::InitLayout() {
 
   AddContentView();
 
-  if (chromeos::features::IsQuickAnswersV2Enabled() && is_internal_) {
-    base_view_->AddChildView(
-        std::make_unique<ReportQueryView>(base::BindRepeating(
-            &QuickAnswersUiController::OnReportQueryButtonPressed,
-            base::Unretained(controller_))));
-  }
-
   if (chromeos::features::IsQuickAnswersV2Enabled()) {
     AddSettingsButton();
   } else if (chromeos::features::IsQuickAnswersDogfood()) {
@@ -592,6 +585,11 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   bool pane_already_had_focus = Contains(GetFocusManager()->GetFocusedView());
   ResetContentView();
 
+  if (report_query_view_) {
+    base_view_->RemoveChildViewT(report_query_view_);
+    report_query_view_ = nullptr;
+  }
+
   // Add title.
   View* title_view = AddHorizontalUiElements(quick_answer.title, content_view_);
 
@@ -642,6 +640,14 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     // Announce that a Quick Answer is available.
     GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
         IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
+  }
+
+  if (chromeos::features::IsQuickAnswersV2Enabled() &&
+      quick_answer.result_type == ResultType::kNoResult && is_internal_) {
+    report_query_view_ = base_view_->AddChildView(
+        std::make_unique<ReportQueryView>(base::BindRepeating(
+            &QuickAnswersUiController::OnReportQueryButtonPressed,
+            base::Unretained(controller_))));
   }
 }
 

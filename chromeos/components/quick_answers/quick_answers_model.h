@@ -124,7 +124,7 @@ struct QuickAnswer {
   QuickAnswer();
   ~QuickAnswer();
 
-  ResultType result_type;
+  ResultType result_type = ResultType::kNoResult;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> title;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> first_answer_row;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;

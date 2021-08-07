@@ -93,6 +93,7 @@ class ASH_EXPORT QuickAnswersView : public views::View {
   views::View* base_view_ = nullptr;
   views::View* main_view_ = nullptr;
   views::View* content_view_ = nullptr;
+  views::View* report_query_view_ = nullptr;
   views::Label* first_answer_label_ = nullptr;
   views::LabelButton* retry_label_ = nullptr;
   views::ImageButton* dogfood_button_ = nullptr;
