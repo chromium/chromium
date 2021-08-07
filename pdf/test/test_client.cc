@@ -49,7 +49,7 @@ std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(
   return std::vector<SearchStringResult>();
 }
 
-bool TestClient::IsPrintPreview() {
+bool TestClient::IsPrintPreview() const {
   return false;
 }
 

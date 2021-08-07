@@ -65,7 +65,7 @@ class PreviewModeClient : public PDFEngine::Client {
   void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void FormTextFieldFocusChange(bool in_focus) override;
-  bool IsPrintPreview() override;
+  bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;

@@ -224,7 +224,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (const char16_t*, const char16_t*, bool),
               (override));
 
-  MOCK_METHOD(bool, IsPrintPreview, (), (override));
+  MOCK_METHOD(bool, IsPrintPreview, (), (const override));
 
   MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
 

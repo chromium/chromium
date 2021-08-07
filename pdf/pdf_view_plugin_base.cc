@@ -403,7 +403,7 @@ void PdfViewPluginBase::FormTextFieldFocusChange(bool in_focus) {
   SetFormFieldInFocus(in_focus);
 }
 
-bool PdfViewPluginBase::IsPrintPreview() {
+bool PdfViewPluginBase::IsPrintPreview() const {
   return is_print_preview_;
 }
 

@@ -258,7 +258,7 @@ class PDFEngine {
     virtual void FormTextFieldFocusChange(bool in_focus) {}
 
     // Returns true if the plugin has been opened within print preview.
-    virtual bool IsPrintPreview() = 0;
+    virtual bool IsPrintPreview() const = 0;
 
     // Get the background color of the PDF.
     virtual SkColor GetBackgroundColor() = 0;

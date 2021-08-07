@@ -150,7 +150,7 @@ void PreviewModeClient::FormTextFieldFocusChange(bool in_focus) {
   NOTREACHED();
 }
 
-bool PreviewModeClient::IsPrintPreview() {
+bool PreviewModeClient::IsPrintPreview() const {
   return true;
 }
 
