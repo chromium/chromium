@@ -122,7 +122,7 @@ public class DownloadUtils {
         }
 
         // Use tab's profile if a valid tab exists.
-        if (tab != null) {
+        if (otrProfileID == null && tab != null) {
             Profile profile = Profile.fromWebContents(tab.getWebContents());
             otrProfileID = profile != null ? profile.getOTRProfileID() : otrProfileID;
         }

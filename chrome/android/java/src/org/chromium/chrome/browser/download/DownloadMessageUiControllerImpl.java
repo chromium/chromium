@@ -19,6 +19,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
@@ -26,11 +28,13 @@ import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactor
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -60,8 +64,6 @@ import java.util.Set;
  * Message UI specific implementation of {@link DownloadMessageUiController}.
  */
 public class DownloadMessageUiControllerImpl implements DownloadMessageUiController {
-    private static final String SPEEDING_UP_MESSAGE_ENABLED = "speeding_up_message_enabled";
-    private static final long DURATION_ACCELERATED_INFOBAR_IN_MS = 3000;
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
     private static final long DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS = 12000;
 
@@ -95,16 +97,13 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * enums.xml. Values should be number from 0 and can't have gaps.
      */
     @VisibleForTesting
-    @IntDef({DownloadInfoBarState.INITIAL, DownloadInfoBarState.DOWNLOADING,
-            DownloadInfoBarState.SHOW_RESULT, DownloadInfoBarState.CANCELLED})
+    @IntDef({UiState.INITIAL, UiState.DOWNLOADING, UiState.SHOW_RESULT, UiState.CANCELLED})
     @Retention(RetentionPolicy.SOURCE)
-    protected @interface DownloadInfoBarState {
+    protected @interface UiState {
         // Default initial state. It is also the final state after all the downloads are paused or
         // removed. No UI is shown in this state.
         int INITIAL = 0;
-        // UI is showing a message indicating the downloads in progress. In case of a single
-        // accelerated download, the message would show the speeding-up download message for {@code
-        // DURATION_ACCELERATED_INFOBAR_IN_MS} before transitioning to downloading file(s) message.
+        // UI is showing a message indicating the downloads in progress.
         // If download completes,fails or goes to pending state, the transition happens immediately
         // to SHOW_RESULT state.
         int DOWNLOADING = 1;
@@ -252,7 +251,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private final boolean mUseNewDownloadPath;
-    private final OTRProfileID mOtrProfileID;
     private final Handler mHandler = new Handler();
 
     // Keeps track of a running list of items, which gets updated regularly with every update from
@@ -272,12 +270,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private final Map<ContentId, Integer> mNotificationIds = new HashMap<>();
 
     // The current state of the message UI.
-    private @DownloadInfoBarState int mState = DownloadInfoBarState.INITIAL;
+    private @UiState int mState = UiState.INITIAL;
 
     // This is used when the message UI is currently in a state awaiting timer completion, e.g.
-    // showing the speeding-up message or showing the result of a download. This is used to schedule
-    // a task to determine the next state. If the message UI moves out of the current state, the
-    // scheduled task should be cancelled.
+    // showing the result of a download. This is used to schedule a task to determine the next
+    // state. If the message UI moves out of the current state, the scheduled task should be
+    // cancelled.
     private Runnable mEndTimerRunnable;
 
     // Represents the currently displayed UI data.
@@ -295,22 +293,35 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     // Dialog manager used for creating download later dialogs.
     private final ModalDialogManager mModalDialogManager;
 
+    // Provides information about currently focused tab.
+    private final ActivityTabProvider mActivityTabProvider;
+
+    // Used to get information about whenever current tab is switched.
+    private final ActivityTabTabObserver mActivityTabObserver;
+
     // The model used to update the UI properties.
     private PropertyModel mPropertyModel;
 
     private Runnable mDismissRunnable;
 
     /** Constructor. */
-    public DownloadMessageUiControllerImpl(OTRProfileID otrProfileID, Context context,
-            MessageDispatcher messageDispatcher, ModalDialogManager modalDialogManager) {
+    public DownloadMessageUiControllerImpl(Context context, MessageDispatcher messageDispatcher,
+            ModalDialogManager modalDialogManager, ActivityTabProvider activityTabProvider) {
         mUseNewDownloadPath =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-        mOtrProfileID = otrProfileID;
         mMessageDispatcher = messageDispatcher;
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mActivityTabProvider = activityTabProvider;
 
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
+
+        mActivityTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
+            @Override
+            protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                closePreviousMessage();
+            }
+        };
     }
 
     /**
@@ -415,11 +426,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private boolean isVisibleToUser(OfflineItem offlineItem) {
-        // Need to use serialized OTRProfileID for comparison, since calling
-        // |OTRProfileID#deserialize| method causes crash if the OTR profile is destroyed.
-        String stringOTRProfileID = OTRProfileID.serialize(mOtrProfileID);
         if (offlineItem.isTransient
-                || !OTRProfileID.areEqual(stringOTRProfileID, offlineItem.otrProfileId)
                 || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
@@ -477,66 +484,57 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                                            + downloadCount.pending + downloadCount.scheduled)
                 > 0;
 
-        boolean shouldShowAccelerating =
-                mEndTimerRunnable != null && mState == DownloadInfoBarState.DOWNLOADING;
-
-        @DownloadInfoBarState
+        @UiState
         int nextState = mState;
         switch (mState) {
-            case DownloadInfoBarState.INITIAL: // Intentional fallthrough.
-            case DownloadInfoBarState.CANCELLED:
+            case UiState.INITIAL: // Intentional fallthrough.
+            case UiState.CANCELLED:
                 if (isNewDownload) {
-                    nextState = DownloadInfoBarState.DOWNLOADING;
-                    shouldShowAccelerating =
-                            isAccelerated(updatedItem) && downloadCount.inProgress == 1;
+                    nextState = UiState.DOWNLOADING;
                 } else if (shouldShowResult) {
-                    nextState = DownloadInfoBarState.SHOW_RESULT;
+                    nextState = UiState.SHOW_RESULT;
                 }
                 break;
-            case DownloadInfoBarState.DOWNLOADING:
-                if (isNewDownload) shouldShowAccelerating = false;
-
+            case UiState.DOWNLOADING:
                 if (shouldShowResult) {
-                    nextState = DownloadInfoBarState.SHOW_RESULT;
+                    nextState = UiState.SHOW_RESULT;
                 } else if (itemWasPaused || itemWasRemoved) {
-                    nextState = downloadCount.inProgress == 0 ? DownloadInfoBarState.INITIAL
-                                                              : DownloadInfoBarState.DOWNLOADING;
+                    nextState =
+                            downloadCount.inProgress == 0 ? UiState.INITIAL : UiState.DOWNLOADING;
                 }
                 break;
-            case DownloadInfoBarState.SHOW_RESULT:
+            case UiState.SHOW_RESULT:
                 if (isNewDownload) {
-                    nextState = DownloadInfoBarState.DOWNLOADING;
-                    shouldShowAccelerating =
-                            isAccelerated(updatedItem) && downloadCount.inProgress == 1;
+                    nextState = UiState.DOWNLOADING;
                 } else if (!shouldShowResult) {
                     if (mEndTimerRunnable == null && downloadCount.inProgress > 0) {
-                        nextState = DownloadInfoBarState.DOWNLOADING;
+                        nextState = UiState.DOWNLOADING;
                     }
 
                     boolean currentlyShowingPending =
                             mCurrentInfo != null && mCurrentInfo.resultState == ResultState.PENDING;
                     if (currentlyShowingPending && itemResumedFromPending) {
-                        nextState = DownloadInfoBarState.DOWNLOADING;
+                        nextState = UiState.DOWNLOADING;
                     }
                     if ((itemWasPaused || itemWasRemoved) && mTrackedItems.size() == 0) {
-                        nextState = DownloadInfoBarState.INITIAL;
+                        nextState = UiState.INITIAL;
                     }
                 }
                 break;
         }
 
-        if (userCancel) nextState = DownloadInfoBarState.CANCELLED;
+        if (userCancel) nextState = UiState.CANCELLED;
 
-        moveToState(nextState, shouldShowAccelerating);
+        moveToState(nextState);
     }
 
-    private void moveToState(@DownloadInfoBarState int nextState, boolean showAccelerating) {
-        boolean closePreviousMessage = nextState == DownloadInfoBarState.INITIAL
-                || nextState == DownloadInfoBarState.CANCELLED;
+    private void moveToState(@UiState int nextState) {
+        boolean closePreviousMessage =
+                nextState == UiState.INITIAL || nextState == UiState.CANCELLED;
         if (closePreviousMessage) {
             mCurrentInfo = null;
             closePreviousMessage();
-            if (nextState == DownloadInfoBarState.INITIAL) {
+            if (nextState == UiState.INITIAL) {
                 mTrackedItems.clear();
             } else {
                 clearFinishedItems(ResultState.COMPLETE, ResultState.FAILED, ResultState.PENDING,
@@ -545,15 +543,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             clearEndTimerRunnable();
         }
 
-        if (nextState == DownloadInfoBarState.DOWNLOADING
-                || nextState == DownloadInfoBarState.SHOW_RESULT) {
-            int resultState = findOfflineItemStateForInfoBarState(nextState);
+        if (nextState == UiState.DOWNLOADING || nextState == UiState.SHOW_RESULT) {
+            int resultState = findOfflineItemStateForUiState(nextState);
             if (resultState == ResultState.INVALID) {
                 // This is expected in the terminal SHOW_RESULT state when we have cleared the
-                // tracked items but still want to show the infobar indefinitely.
+                // tracked items but still want to show the message indefinitely.
+                // TODO(shaktisahu): Does this state still happen?
                 return;
             }
-            createMessageForState(nextState, resultState, showAccelerating);
+            createMessageForState(nextState, resultState);
         }
 
         mState = nextState;
@@ -569,11 +567,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * message and reset the timer to another full duration. Updates for pending and failed would be
      * shown in the order received.
      */
-    private @ResultState int findOfflineItemStateForInfoBarState(
-            @DownloadInfoBarState int infoBarState) {
-        if (infoBarState == DownloadInfoBarState.DOWNLOADING) return OfflineItemState.IN_PROGRESS;
+    private @ResultState int findOfflineItemStateForUiState(@UiState int uiState) {
+        if (uiState == UiState.DOWNLOADING) return OfflineItemState.IN_PROGRESS;
 
-        assert infoBarState == DownloadInfoBarState.SHOW_RESULT;
+        assert uiState == UiState.SHOW_RESULT;
 
         DownloadCount downloadCount = getDownloadCount();
 
@@ -581,7 +578,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (downloadCount.completed > 0) return ResultState.COMPLETE;
         if (downloadCount.scheduled > 0) return ResultState.SCHEDULED;
 
-        // If the infobar is already showing this state, just add this item to the same state.
+        // If the message is already showing this state, just add this item to the same state.
         int previousResultState =
                 mCurrentInfo != null ? mCurrentInfo.resultState : ResultState.INVALID;
         if (previousResultState != ResultState.INVALID
@@ -604,13 +601,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * @param uiState The UI state to be shown.
      * @param resultState The state of the corresponding offline items to be shown.
      */
-    private void createMessageForState(@DownloadInfoBarState int uiState,
-            @ResultState int resultState, boolean showAccelerating) {
+    private void createMessageForState(@UiState int uiState, @ResultState int resultState) {
         DownloadProgressMessageUiData info = new DownloadProgressMessageUiData();
 
         @PluralsRes
         int stringRes = -1;
-        if (uiState == DownloadInfoBarState.DOWNLOADING) {
+        if (uiState == UiState.DOWNLOADING) {
             stringRes = R.plurals.download_message_multiple_download_in_progress;
             info.icon = R.drawable.infobar_downloading;
         } else if (resultState == ResultState.COMPLETE) {
@@ -627,7 +623,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             stringRes = R.plurals.download_message_multiple_download_scheduled;
             info.icon = R.drawable.ic_file_download_scheduled_24dp;
         } else {
-            assert false : "Unexpected resultState " + resultState + " and infoBarState " + uiState;
+            assert false : "Unexpected resultState " + resultState + " and uiState " + uiState;
         }
 
         OfflineItem itemToShow = null;
@@ -637,7 +633,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
 
         DownloadCount downloadCount = getDownloadCount();
-        if (uiState == DownloadInfoBarState.DOWNLOADING) {
+        if (uiState == UiState.DOWNLOADING) {
             int inProgressDownloadCount =
                     downloadCount.inProgress == 0 ? 1 : downloadCount.inProgress;
             info.message = getContext().getResources().getQuantityString(
@@ -645,8 +641,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             info.description = getContext().getString(
                     R.string.download_message_download_in_progress_description);
 
-            info.link = showAccelerating ? null : getContext().getString(R.string.details_link);
-        } else if (uiState == DownloadInfoBarState.SHOW_RESULT) {
+            info.link = getContext().getString(R.string.details_link);
+        } else if (uiState == UiState.SHOW_RESULT) {
             int itemCount = getDownloadCount().getCountForResultState(resultState);
             boolean singleDownloadCompleted = itemCount == 1 && resultState == ResultState.COMPLETE;
             boolean singleDownloadScheduled =
@@ -683,16 +679,16 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         if (info.equals(mCurrentInfo)) return;
 
-        boolean startTimer = showAccelerating || uiState == DownloadInfoBarState.SHOW_RESULT;
+        boolean startTimer = uiState == UiState.SHOW_RESULT;
 
         clearEndTimerRunnable();
 
         if (startTimer) {
-            long delay = getDelayToNextStep(showAccelerating, resultState);
+            long delay = getDelayToNextStep(resultState);
             mEndTimerRunnable = () -> {
                 mEndTimerRunnable = null;
                 if (mCurrentInfo != null) mCurrentInfo.resultState = ResultState.INVALID;
-                if (uiState == DownloadInfoBarState.SHOW_RESULT) {
+                if (uiState == UiState.SHOW_RESULT) {
                     clearFinishedItems(resultState);
                 }
                 computeNextStepForUpdate(null, false, false, false);
@@ -701,6 +697,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
 
         setForceShow(info);
+        mCurrentInfo = info;
         showMessage(uiState, info);
     }
 
@@ -738,22 +735,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     @VisibleForTesting
-    protected long getDelayToNextStep(boolean showAccelerating, @ResultState int resultState) {
-        if (showAccelerating) return DURATION_ACCELERATED_INFOBAR_IN_MS;
-
+    protected long getDelayToNextStep(@ResultState int resultState) {
         // Scheduled download uses a longer delay to reset tracking downloads states.
         return resultState == ResultState.SCHEDULED ? DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS
                                                     : DURATION_SHOW_RESULT_IN_MS;
-    }
-
-    @VisibleForTesting
-    protected boolean isSpeedingUpMessageEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR, SPEEDING_UP_MESSAGE_ENABLED, false);
-    }
-
-    private boolean isAccelerated(OfflineItem offlineItem) {
-        return isSpeedingUpMessageEnabled() && offlineItem != null && offlineItem.isAccelerated;
     }
 
     /**
@@ -764,14 +749,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * @param info Contains the information to be displayed in the UI.
      */
     @VisibleForTesting
-    protected void showMessage(
-            @DownloadInfoBarState int state, DownloadProgressMessageUiData info) {
+    protected void showMessage(@UiState int state, DownloadProgressMessageUiData info) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE);
-        recordInfoBarState(state, info);
 
-        boolean shouldShowMessage = info.forceShow || (mPropertyModel != null);
+        Tab currentTab = mActivityTabProvider.get();
+        boolean shouldShowMessage =
+                currentTab != null && (info.forceShow || mPropertyModel != null);
         if (!shouldShowMessage) return;
 
+        recordMessageState(state, info);
         Drawable drawable = info.hasVectorDrawable
                 ? VectorDrawableCompat.create(
                         getContext().getResources(), info.icon, getContext().getTheme())
@@ -792,13 +778,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed);
         mPropertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION,
                 () -> onPrimaryAction(info.id, info.schedule));
+        if (getMessageDismissDurationMs() > 0) {
+            mPropertyModel.set(
+                    MessageBannerProperties.DISMISSAL_DURATION, getMessageDismissDurationMs());
+        }
+
         mDismissRunnable = () -> {
             mMessageDispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
         };
 
         if (updateOnly) return;
-        mMessageDispatcher.enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/false);
-        recordInfoBarCreated();
+        mMessageDispatcher.enqueueMessage(mPropertyModel, currentTab.getWebContents(),
+                MessageScopeType.WEB_CONTENTS, /*highPriority=*/false);
+        recordMessageCreated();
     }
 
     @VisibleForTesting
@@ -898,19 +890,32 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private void onPrimaryAction(ContentId itemId, final OfflineItemSchedule schedule) {
-        mTrackedItems.remove(itemId);
+        OfflineItem offlineItem = mTrackedItems.remove(itemId);
         removeNotification(itemId);
         if (itemId != null && schedule != null) {
             onChangeScheduleClicked(itemId, schedule);
         } else if (itemId != null) {
-            DownloadUtils.openItem(itemId, mOtrProfileID,
+            DownloadUtils.openItem(itemId,
+                    OTRProfileID.deserializeWithoutVerify(
+                            offlineItem == null ? null : offlineItem.otrProfileId),
                     DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE, getContext());
             recordLinkClicked(true /*openItem*/);
         } else {
-            DownloadManagerService.openDownloadsPage(
-                    getContext(), mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
+            // TODO(shaktisahu): Make a best guess for which profile, maybe from the last updated
+            // item.
+            DownloadManagerService.openDownloadsPage(getContext(), getOTRProfileIDForTrackedItems(),
+                    DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
             recordLinkClicked(false /*openItem*/);
         }
+    }
+
+    private OTRProfileID getOTRProfileIDForTrackedItems() {
+        String otrProfileId = null;
+        for (OfflineItem offlineItem : mTrackedItems.values()) {
+            if (TextUtils.isEmpty(offlineItem.otrProfileId)) continue;
+            otrProfileId = offlineItem.otrProfileId;
+        }
+        return OTRProfileID.deserializeWithoutVerify(otrProfileId);
     }
 
     private void onMessageDismissed(Integer dismissReason) {
@@ -937,22 +942,29 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     if (mUseNewDownloadPath) {
                         OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
                     } else {
-                        DownloadManagerService.getDownloadManagerService().changeSchedule(
-                                id, newSchedule, mOtrProfileID);
+                        OfflineItem offlineItem = mTrackedItems.get(id);
+                        DownloadManagerService.getDownloadManagerService().changeSchedule(id,
+                                newSchedule,
+                                OTRProfileID.deserializeWithoutVerify(
+                                        offlineItem == null ? null : offlineItem.otrProfileId));
                     }
                 });
     }
 
-    private void recordInfoBarState(
-            @DownloadInfoBarState int state, DownloadProgressMessageUiData info) {
+    private long getMessageDismissDurationMs() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                       ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE,
+                       "message_dismiss_duration_seconds", -1)
+                * 1000;
+    }
+
+    private static void recordMessageState(@UiState int state, DownloadProgressMessageUiData info) {
         int shownState = -1;
         int multipleDownloadState = -1;
-        if (state == DownloadInfoBarState.DOWNLOADING) {
-            shownState = mEndTimerRunnable != null
-                    ? UmaInfobarShown.ACCELERATED
-                    : (info.downloadCount.inProgress == 1 ? UmaInfobarShown.DOWNLOADING
-                                                          : UmaInfobarShown.MULTIPLE_DOWNLOADING);
-        } else if (state == DownloadInfoBarState.SHOW_RESULT) {
+        if (state == UiState.DOWNLOADING) {
+            shownState = info.downloadCount.inProgress == 1 ? UmaInfobarShown.DOWNLOADING
+                                                            : UmaInfobarShown.MULTIPLE_DOWNLOADING;
+        } else if (state == UiState.SHOW_RESULT) {
             switch (info.resultState) {
                 case ResultState.COMPLETE:
                     shownState = info.downloadCount.completed == 1
@@ -990,17 +1002,17 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
     }
 
-    private void recordInfoBarCreated() {
+    private static void recordMessageCreated() {
         RecordUserAction.record("Android.Download.InfoBar.Shown");
     }
 
     private void recordCloseButtonClicked() {
         RecordUserAction.record("Android.Download.InfoBar.CloseButtonClicked");
-        RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.CloseButtonClicked",
-                mState, DownloadInfoBarState.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Download.InfoBar.CloseButtonClicked", mState, UiState.NUM_ENTRIES);
     }
 
-    private void recordLinkClicked(boolean openItem) {
+    private static void recordLinkClicked(boolean openItem) {
         if (openItem) {
             RecordUserAction.record("Android.Download.InfoBar.LinkClicked.OpenDownload");
         } else {

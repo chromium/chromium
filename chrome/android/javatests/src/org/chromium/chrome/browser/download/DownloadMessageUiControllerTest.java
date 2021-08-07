@@ -19,6 +19,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -32,7 +33,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.UUID;
 
 /**
- * Test class to validate that the {@link DownloadMessageUiController} correctly represents the
+ * Test class to validate that the {@link DownloadMessageUiControllerImpl} correctly represents the
  * state of the downloads in the current chrome session.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -75,13 +76,13 @@ public class DownloadMessageUiControllerTest {
         private DownloadProgressMessageUiData mInfo;
 
         public TestDownloadMessageUiController() {
-            super(/*otrProfileID=*/null, InstrumentationRegistry.getTargetContext(),
-                    /*messageDispatcher=*/null, null);
+            super(InstrumentationRegistry.getTargetContext(),
+                    /*messageDispatcher=*/null, /*modalDialogManager=*/null,
+                    new ActivityTabProvider());
         }
 
         @Override
-        protected void showMessage(
-                @DownloadInfoBarState int state, DownloadProgressMessageUiData info) {
+        protected void showMessage(@UiState int state, DownloadProgressMessageUiData info) {
             mInfo = info;
         }
 
@@ -91,13 +92,8 @@ public class DownloadMessageUiControllerTest {
         }
 
         @Override
-        protected long getDelayToNextStep(boolean showAccelerating, int resultState) {
+        protected long getDelayToNextStep(int resultState) {
             return TEST_TO_NEXT_STEP_DELAY;
-        }
-
-        @Override
-        protected boolean isSpeedingUpMessageEnabled() {
-            return true;
         }
 
         public void onItemUpdated(OfflineItem item) {
@@ -110,7 +106,7 @@ public class DownloadMessageUiControllerTest {
             Assert.assertEquals(description, mInfo.description);
         }
 
-        void verifyInfoBarClosed() {
+        void verifyMessageGone() {
             Assert.assertNull(mInfo);
         }
     }
@@ -291,15 +287,15 @@ public class DownloadMessageUiControllerTest {
 
         item.state = OfflineItemState.PAUSED;
         mTestController.onItemUpdated(item);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
 
         item.state = OfflineItemState.IN_PROGRESS;
         mTestController.onItemUpdated(item);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
 
         markItemComplete(item);
         mTestController.onItemUpdated(item);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
     }
 
     @Test
@@ -316,20 +312,20 @@ public class DownloadMessageUiControllerTest {
         mTestController.verify(MESSAGE_DOWNLOADING_FILE, DESCRIPTION_DOWNLOADING);
 
         mTestController.onItemRemoved(item2.id);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
     }
 
     @Test
     @SmallTest
     @Feature({"Download"})
-    public void testCancelledItemWillCloseInfoBar() {
+    public void testCancelledItemWillCloseMessageUi() {
         OfflineItem item = createOfflineItem(OfflineItemState.PENDING);
         mTestController.onItemUpdated(item);
         mTestController.verify(MESSAGE_DOWNLOAD_PENDING, null);
 
         item.state = OfflineItemState.CANCELLED;
         mTestController.onItemUpdated(item);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
     }
 
     @Test
@@ -421,26 +417,25 @@ public class DownloadMessageUiControllerTest {
         mTestController.onItemUpdated(item2);
         mTestController.verify(MESSAGE_DOWNLOAD_PENDING, null);
 
-        // TODO(shaktisahu): Uncomment the below after fixing.
-        // item1.state = OfflineItemState.IN_PROGRESS;
-        // mTestController.onItemUpdated(item1);
-        // mTestController.verify(MESSAGE_DOWNLOADING_TWO_FILES, DESCRIPTION_DOWNLOADING);
+        item1.state = OfflineItemState.IN_PROGRESS;
+        mTestController.onItemUpdated(item1);
+        mTestController.verify(MESSAGE_DOWNLOADING_TWO_FILES, DESCRIPTION_DOWNLOADING);
     }
 
     @Test
     @SmallTest
     @Feature({"Download"})
-    public void testPausedAfterPendingWillCloseInfoBar() {
+    public void testPausedAfterPendingWillCloseMessageUi() {
         OfflineItem item = createOfflineItem(OfflineItemState.PENDING);
         mTestController.onItemUpdated(item);
         mTestController.verify(MESSAGE_DOWNLOAD_PENDING, null);
 
         item.state = OfflineItemState.PAUSED;
         mTestController.onItemUpdated(item);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
 
         item.state = OfflineItemState.IN_PROGRESS;
         mTestController.onItemUpdated(item);
-        mTestController.verifyInfoBarClosed();
+        mTestController.verifyMessageGone();
     }
 }

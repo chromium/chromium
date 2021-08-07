@@ -619,8 +619,8 @@ public class RootUiCoordinator
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }
-        DownloadManagerService.getDownloadManagerService().onActivityLaunched(
-                mActivity, mMessageDispatcher, mModalDialogManagerSupplier.get());
+        DownloadManagerService.getDownloadManagerService().onActivityLaunched(mActivity,
+                mMessageDispatcher, mModalDialogManagerSupplier.get(), mActivityTabProvider);
     }
 
     /**

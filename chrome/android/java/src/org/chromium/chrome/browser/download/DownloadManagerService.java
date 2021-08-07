@@ -35,6 +35,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueRequest;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadEnqueueResponse;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
@@ -146,8 +147,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     private HashMap<OTRProfileID, DownloadInfoBarController> mIncognitoInfoBarControllerMap =
             new HashMap<>();
     private DownloadMessageUiController mMessageUiController;
-    private HashMap<OTRProfileID, DownloadMessageUiController> mIncognitoMessageUiControllerMap =
-            new HashMap<>();
     private long mNativeDownloadManagerService;
     private NetworkChangeNotifierAutoDetect mNetworkChangeNotifier;
     // Flag to track if we need to post a task to update download notifications.
@@ -298,7 +297,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
 
         // TODO(shaktisahu, sideyilmaz): If we have multiple OTR profiles, will this be ever null?
-        return showMessageUi ? mIncognitoMessageUiControllerMap.get(otrProfileID)
+        return showMessageUi ? mMessageUiController
                              : mIncognitoInfoBarControllerMap.get(otrProfileID);
     }
 
@@ -408,7 +407,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * will not be called.
      */
     public void onActivityLaunched(Activity activity, MessageDispatcher messageDispatcher,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager, ActivityTabProvider activityTabProvider) {
         if (!mActivityLaunched) {
             OTRProfileID primaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
 
@@ -416,10 +415,7 @@ public class DownloadManagerService implements DownloadController.Observer,
             // activity is launched.
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
                 mMessageUiController = new DownloadMessageUiControllerImpl(
-                        /*otrProfileID=*/null, activity, messageDispatcher, modalDialogManager);
-                mIncognitoMessageUiControllerMap.put(primaryOTRProfileID,
-                        new DownloadMessageUiControllerImpl(primaryOTRProfileID, activity,
-                                messageDispatcher, modalDialogManager));
+                        activity, messageDispatcher, modalDialogManager, activityTabProvider);
             } else {
                 mInfoBarController = new DownloadInfoBarController(/*otrProfileID=*/null);
                 mIncognitoInfoBarControllerMap.put(
