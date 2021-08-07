@@ -630,7 +630,7 @@ void FrameImpl::CreateViewWithViewRef(
   accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
       semantics_manager_for_test_ ? semantics_manager_for_test_
                                   : semantics_manager.get(),
-      window_tree_host_->CreateViewRef(), web_contents_.get(),
+      window_tree_host_.get(), web_contents_.get(),
       base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)),
       inspect_node_.CreateChild(kAccessibilityInspectNodeName));
 }
@@ -848,7 +848,7 @@ void FrameImpl::EnableHeadlessRendering() {
   gfx::Rect bounds(kHeadlessWindowSize);
   if (semantics_manager_for_test_) {
     accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-        semantics_manager_for_test_, window_tree_host_->CreateViewRef(),
+        semantics_manager_for_test_, window_tree_host_.get(),
         web_contents_.get(),
         base::BindOnce(&FrameImpl::OnAccessibilityError,
                        base::Unretained(this)),

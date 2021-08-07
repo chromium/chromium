@@ -68,6 +68,7 @@ AXNodeDataToSemanticNode(const ui::AXNodeData& node,
                          const ui::AXNodeData& container_node,
                          const ui::AXTreeID& tree_id,
                          bool is_root,
+                         float scale_factor,
                          NodeIDMapper* id_mapper);
 
 // Converts Fuchsia action of type |fuchsia_action| to an ax::mojom::Action of

@@ -31,6 +31,7 @@
 
 namespace ui {
 
+class ScenicWindowDelegate;
 class ScenicWindowManager;
 
 class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
@@ -113,6 +114,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
 
   ScenicWindowManager* const manager_;
   PlatformWindowDelegate* const delegate_;
+  ScenicWindowDelegate* const scenic_window_delegate_;
   gfx::AcceleratedWidget const window_id_;
 
   // Dispatches Scenic input events as Chrome ui::Events.

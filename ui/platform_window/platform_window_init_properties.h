@@ -48,6 +48,10 @@ enum class PlatformWindowShadowType {
 
 class WorkspaceExtensionDelegate;
 
+#if defined(OS_FUCHSIA)
+class ScenicWindowDelegate;
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 class X11ExtensionDelegate;
 #endif
@@ -87,6 +91,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   // Specifies whether system virtual keyboard support is enabled.
   bool enable_virtual_keyboard = false;
+
+  ScenicWindowDelegate* scenic_window_delegate = nullptr;
 #endif
 
   bool activatable = true;
