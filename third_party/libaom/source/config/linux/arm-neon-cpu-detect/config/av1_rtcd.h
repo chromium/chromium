@@ -13,13 +13,13 @@
  */
 
 #include "aom/aom_integer.h"
+#include "aom_dsp/odintrin.h"
 #include "aom_dsp/txfm_common.h"
 #include "av1/common/av1_txfm.h"
 #include "av1/common/common.h"
 #include "av1/common/convolve.h"
 #include "av1/common/enums.h"
 #include "av1/common/filter.h"
-#include "av1/common/odintrin.h"
 #include "av1/common/quant_common.h"
 #include "av1/common/restoration.h"
 
@@ -1495,6 +1495,9 @@ RTCD_EXTERN void (*av1_lowbd_fwd_txfm)(const int16_t* src_diff,
                                        tran_low_t* coeff,
                                        int diff_stride,
                                        TxfmParam* txfm_param);
+
+void av1_nn_fast_softmax_16_c(const float* input_nodes, float* output);
+#define av1_nn_fast_softmax_16 av1_nn_fast_softmax_16_c
 
 void av1_nn_predict_c(const float* input_nodes,
                       const NN_CONFIG* const nn_config,

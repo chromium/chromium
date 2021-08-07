@@ -21,8 +21,6 @@ aom_av1_common_intrin_neon = [
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon.h",
   "//third_party/libaom/source/libaom/av1/common/arm/jnt_convolve_neon.c",
-  "//third_party/libaom/source/libaom/av1/common/arm/mem_neon.h",
-  "//third_party/libaom/source/libaom/av1/common/arm/transpose_neon.h",
   "//third_party/libaom/source/libaom/av1/common/arm/blend_a64_hmask_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/blend_a64_vmask_neon.c",
   "//third_party/libaom/source/libaom/av1/common/arm/reconinter_neon.c",
@@ -117,8 +115,6 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/mvref_common.h",
   "//third_party/libaom/source/libaom/av1/common/obu_util.c",
   "//third_party/libaom/source/libaom/av1/common/obu_util.h",
-  "//third_party/libaom/source/libaom/av1/common/odintrin.c",
-  "//third_party/libaom/source/libaom/av1/common/odintrin.h",
   "//third_party/libaom/source/libaom/av1/common/pred_common.c",
   "//third_party/libaom/source/libaom/av1/common/pred_common.h",
   "//third_party/libaom/source/libaom/av1/common/quant_common.c",
@@ -235,6 +231,8 @@ aom_av1_encoder_intrin_sse4_2 =
 
 aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/av1_cx_iface.c",
+  "//third_party/libaom/source/libaom/av1/encoder/allintra_vis.c",
+  "//third_party/libaom/source/libaom/av1/encoder/allintra_vis.h",
   "//third_party/libaom/source/libaom/av1/encoder/aq_complexity.c",
   "//third_party/libaom/source/libaom/av1/encoder/aq_complexity.h",
   "//third_party/libaom/source/libaom/av1/encoder/aq_cyclicrefresh.c",
@@ -342,6 +340,7 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/reconinter_enc.h",
   "//third_party/libaom/source/libaom/av1/encoder/segmentation.c",
   "//third_party/libaom/source/libaom/av1/encoder/segmentation.h",
+  "//third_party/libaom/source/libaom/av1/encoder/sorting_network.h",
   "//third_party/libaom/source/libaom/av1/encoder/speed_features.c",
   "//third_party/libaom/source/libaom/av1/encoder/speed_features.h",
   "//third_party/libaom/source/libaom/av1/encoder/superres_scale.c",
@@ -483,6 +482,8 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/intrapred.c",
   "//third_party/libaom/source/libaom/aom_dsp/intrapred_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/loopfilter.c",
+  "//third_party/libaom/source/libaom/aom_dsp/odintrin.c",
+  "//third_party/libaom/source/libaom/aom_dsp/odintrin.h",
   "//third_party/libaom/source/libaom/aom_dsp/prob.h",
   "//third_party/libaom/source/libaom/aom_dsp/recenter.h",
   "//third_party/libaom/source/libaom/aom_dsp/simd/v128_intrinsics.h",
@@ -631,7 +632,7 @@ aom_mem_sources = [
   "//third_party/libaom/source/libaom/aom_mem/include/aom_mem_intrnl.h",
 ]
 
-aom_ports_asm_x86 = [ "//third_party/libaom/source/libaom/aom_ports/emms.asm" ]
+aom_ports_asm_x86 = [ "//third_party/libaom/source/libaom/aom_ports/float.asm" ]
 
 aom_rtcd_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/aom_dsp_rtcd.c",

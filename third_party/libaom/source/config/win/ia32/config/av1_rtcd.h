@@ -13,13 +13,13 @@
  */
 
 #include "aom/aom_integer.h"
+#include "aom_dsp/odintrin.h"
 #include "aom_dsp/txfm_common.h"
 #include "av1/common/av1_txfm.h"
 #include "av1/common/common.h"
 #include "av1/common/convolve.h"
 #include "av1/common/enums.h"
 #include "av1/common/filter.h"
-#include "av1/common/odintrin.h"
 #include "av1/common/quant_common.h"
 #include "av1/common/restoration.h"
 
@@ -1345,7 +1345,14 @@ void av1_highbd_iwht4x4_16_add_c(const tran_low_t* input,
                                  uint8_t* dest,
                                  int dest_stride,
                                  int bd);
-#define av1_highbd_iwht4x4_16_add av1_highbd_iwht4x4_16_add_c
+void av1_highbd_iwht4x4_16_add_sse4_1(const tran_low_t* input,
+                                      uint8_t* dest,
+                                      int dest_stride,
+                                      int bd);
+RTCD_EXTERN void (*av1_highbd_iwht4x4_16_add)(const tran_low_t* input,
+                                              uint8_t* dest,
+                                              int dest_stride,
+                                              int bd);
 
 void av1_highbd_iwht4x4_1_add_c(const tran_low_t* input,
                                 uint8_t* dest,
@@ -1541,6 +1548,11 @@ RTCD_EXTERN void (*av1_lowbd_fwd_txfm)(const int16_t* src_diff,
                                        tran_low_t* coeff,
                                        int diff_stride,
                                        TxfmParam* txfm_param);
+
+void av1_nn_fast_softmax_16_c(const float* input_nodes, float* output);
+void av1_nn_fast_softmax_16_sse3(const float* input_nodes, float* output);
+RTCD_EXTERN void (*av1_nn_fast_softmax_16)(const float* input_nodes,
+                                           float* output);
 
 void av1_nn_predict_c(const float* input_nodes,
                       const NN_CONFIG* const nn_config,
@@ -2244,6 +2256,9 @@ static void setup_rtcd_internal(void) {
   av1_highbd_inv_txfm_add_8x8 = av1_highbd_inv_txfm_add_8x8_c;
   if (flags & HAS_SSE4_1)
     av1_highbd_inv_txfm_add_8x8 = av1_highbd_inv_txfm_add_8x8_sse4_1;
+  av1_highbd_iwht4x4_16_add = av1_highbd_iwht4x4_16_add_c;
+  if (flags & HAS_SSE4_1)
+    av1_highbd_iwht4x4_16_add = av1_highbd_iwht4x4_16_add_sse4_1;
   av1_inv_txfm2d_add_4x4 = av1_inv_txfm2d_add_4x4_c;
   if (flags & HAS_SSE4_1)
     av1_inv_txfm2d_add_4x4 = av1_inv_txfm2d_add_4x4_sse4_1;
@@ -2260,6 +2275,9 @@ static void setup_rtcd_internal(void) {
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_sse4_1;
   if (flags & HAS_AVX2)
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_avx2;
+  av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_c;
+  if (flags & HAS_SSE3)
+    av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_sse3;
   av1_nn_predict = av1_nn_predict_c;
   if (flags & HAS_SSE3)
     av1_nn_predict = av1_nn_predict_sse3;

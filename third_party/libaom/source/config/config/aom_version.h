@@ -11,9 +11,9 @@
 
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 1
-#define VERSION_PATCH 1
-#define VERSION_EXTRA "453-gd80b8ceca"
+#define VERSION_PATCH 2
+#define VERSION_EXTRA "607-gda0b537ee"
 #define VERSION_PACKED \
   ((VERSION_MAJOR << 16) | (VERSION_MINOR << 8) | (VERSION_PATCH))
-#define VERSION_STRING_NOSP "3.1.1-453-gd80b8ceca"
-#define VERSION_STRING " 3.1.1-453-gd80b8ceca"
+#define VERSION_STRING_NOSP "3.1.2-607-gda0b537ee"
+#define VERSION_STRING " 3.1.2-607-gda0b537ee"
