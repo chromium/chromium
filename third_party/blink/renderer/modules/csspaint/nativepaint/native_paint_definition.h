@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVE_PAINT_DEFINITION_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVE_PAINT_DEFINITION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_NATIVE_PAINT_DEFINITION_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_NATIVE_PAINT_DEFINITION_H_
 
 #include "third_party/blink/renderer/modules/csspaint/paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,4 +21,4 @@ class MODULES_EXPORT NativePaintDefinition : public PaintDefinition {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVE_PAINT_DEFINITION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_NATIVE_PAINT_DEFINITION_H_

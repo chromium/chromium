@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/csspaint/background_color_paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_definition.h"
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"

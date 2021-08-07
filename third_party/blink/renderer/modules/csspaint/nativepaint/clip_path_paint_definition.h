@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_CLIP_PATH_PAINT_DEFINITION_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_CLIP_PATH_PAINT_DEFINITION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
-#include "third_party/blink/renderer/modules/csspaint/native_paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/native_paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -60,4 +60,4 @@ class MODULES_EXPORT ClipPathPaintDefinition final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_CLIP_PATH_PAINT_DEFINITION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_

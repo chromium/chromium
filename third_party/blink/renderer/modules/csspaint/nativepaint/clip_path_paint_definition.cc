@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/csspaint/clip_path_paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_definition.h"
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
