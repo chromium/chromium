@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">電池已充滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
+<translation id="3708186454126126312">先前連線的裝置</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{重新掃描頁面}=1{重新掃描第 {PAGE_NUMBER} 頁}other{重新掃描第 {PAGE_NUMBER} 頁}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 則評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
@@ -296,6 +297,7 @@
 <translation id="65587193855025101">平台式</translation>
 <translation id="6564646048574748301">失敗 - 無法連上印表機</translation>
 <translation id="6574762126505704998">填滿</translation>
+<translation id="6575134580692778371">未設定</translation>
 <translation id="6579235177984085399">探索新的繪圖和設計工具</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6603230386432466813">連線時遇到問題嗎？</translation>
@@ -415,6 +417,7 @@
 <translation id="8798441408945964110">提供者名稱</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>
+<translation id="8834539327799336565">目前已連線的裝置</translation>
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">已通過測試</translation>

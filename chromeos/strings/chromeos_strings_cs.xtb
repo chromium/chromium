@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">Dříve připojeno</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku}=1{Znovu naskenovat stránku {PAGE_NUMBER}}few{Znovu naskenovat stránku {PAGE_NUMBER}}many{Znovu naskenovat stránku {PAGE_NUMBER}}other{Znovu naskenovat stránku {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
@@ -296,6 +297,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
 <translation id="6564646048574748301">Tisk selhal – tiskárna není dostupná</translation>
 <translation id="6574762126505704998">Vyplnit</translation>
+<translation id="6575134580692778371">Není konfigurováno</translation>
 <translation id="6579235177984085399">Objevte nové nástroje pro kreslení a projektování</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6603230386432466813">Máte problémy s připojením?</translation>
@@ -415,6 +417,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8798441408945964110">Název poskytovatele</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
+<translation id="8834539327799336565">Momentálně připojeno</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>

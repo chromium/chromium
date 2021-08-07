@@ -177,6 +177,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2322173485024759474">Voltar por letra</translation>
 <translation id="2339073806695260576">Toque no botão da stylus na estante para criar uma nota, fazer uma captura de tela e usar o apontador laser ou a lupa.</translation>
 <translation id="2341729377289034582">Bloqueado na vertical</translation>
+<translation id="2350794187831162545">Falas em <ph name="LANGUAGE" /> agora são processadas localmente e funcionam off-line. Você pode mudar o idioma do Ditado em "Configurações &gt; Acessibilidade".</translation>
 <translation id="2352467521400612932">Configurações da stylus</translation>
 <translation id="2354174487190027830">Ativando <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -207,7 +208,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Fazer captura de tela da janela</translation>
 <translation id="2607678425161541573">É necessário fazer login on-line</translation>
-<translation id="2617342710774726426">O chip está bloqueado</translation>
 <translation id="2621713457727696555">Protegida</translation>
 <translation id="2653019840645008922">Captura de janela</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -437,6 +437,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4379531060876907730">Estas são suas ferramentas da stylus</translation>
 <translation id="4389184120735010762">Você pressionou o atalho de teclado para a lupa em área fixa. Gostaria de ativá-la?</translation>
 <translation id="439598569299422042">Pausado, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">O tipo do periférico conectado não é compatível</translation>
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
 <translation id="4421231901400348175">Compartilhando o controle da sua tela com <ph name="HELPER_NAME" /> via Assistência remota.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
@@ -741,7 +742,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6850010208275816200">O app atual está no modo tela cheia. Se o app pedir sua senha, saia da tela cheia antes de digitá-la.</translation>
 <translation id="6852052252232534364">Clique para ativar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
-<translation id="6857811139397017780">Ativar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
 <translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou mais.</translation>
@@ -942,7 +942,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8433977262951327081">O atalho para mostrar o balão de menu de opções de entrada na estante foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
-<translation id="8452135315243592079">Chip ausente</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
 <translation id="847056008324733326">Exibir configurações de escala</translation>

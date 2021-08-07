@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
+<translation id="3708186454126126312">Συνδέθηκαν στο παρελθόν</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER}}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3748026146096797577">Εκτός σύνδεσης</translation>
@@ -296,6 +297,7 @@
 <translation id="65587193855025101">Επίπεδος</translation>
 <translation id="6564646048574748301">Σφάλμα - Δεν είναι δυνατή η πρόσβαση στον εκτυπωτή</translation>
 <translation id="6574762126505704998">Πλήρωση</translation>
+<translation id="6575134580692778371">Δεν διαμορφώθηκε</translation>
 <translation id="6579235177984085399">Ανακαλύψτε νέα εργαλεία σχεδίασης</translation>
 <translation id="6596816719288285829">Διεύθυνση IP</translation>
 <translation id="6603230386432466813">Αντιμετωπίζετε προβλήματα κατά τη σύνδεση;</translation>
@@ -415,6 +417,7 @@
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ταπετσαρία</translation>
+<translation id="8834539327799336565">Συνδεδεμένες αυτήν τη στιγμή</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>

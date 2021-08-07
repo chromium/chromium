@@ -412,7 +412,6 @@
 <translation id="1434696352799406980">Будуць скінуты налады пачатковай старонкі, старонкі новай укладкі і пошукавай сістэмы, а таксама адмацаваны ўсе ўкладкі. Акрамя, таго, будуць выключаны ўсе пашырэнні і выдалены часовыя даныя, такія як файлы cookie. Вашы закладкі, гісторыя і захаваныя паролі не будуць выдалены.</translation>
 <translation id="1434886155212424586">Галоўнай старонкай з'яўляецца старонка новай укладкі</translation>
 <translation id="1436390408194692385">Дзейнічае яшчэ <ph name="TICKET_TIME_LEFT" /></translation>
-<translation id="1436671784520050284">Працягнуць наладку</translation>
 <translation id="1436784010935106834">Выдалены</translation>
 <translation id="1437986450143295708">Апішыце праблему падрабязна</translation>
 <translation id="144283815522798837">Выбрана: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
@@ -1349,7 +1348,6 @@
 <translation id="2392369802118427583">Уключыць</translation>
 <translation id="2393136602862631930">Усталюйце <ph name="APP_NAME" /> на свой Chromebook</translation>
 <translation id="2395616325548404795">Ваша прылада <ph name="DEVICE_TYPE" /> паспяхова зарэгістравана для карпаратыўнага кіравання, але не адправіла інфармацыю аб аб'екце ўласнасці і месцазнаходжанні. Увядзіце гэту інфармацыю пра прыладу ўручную на кансолі адміністратара.</translation>
-<translation id="2396387085693598316">Адміністратар заблакіраваў пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="2396783860772170191">Увядзіце 4-значны PIN-код (0000–9999)</translation>
 <translation id="2398546389094871088">Пры выкарыстанні функцыі Powerwash для скіду налад профілі eSIM-карты не выдаляюцца. Іх можна выдаліць уручную ў <ph name="LINK_BEGIN" />наладах мабільнай прылады<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Апавяшчэнні ўключаны</translation>
@@ -1474,7 +1472,6 @@
 <translation id="252219247728877310">Кампанент не абноўлены</translation>
 <translation id="2523184218357549926">Адпраўка URL-адрасоў наведаных вамі старонак у Google</translation>
 <translation id="252502352004572774">Chrome правярае ваш камп'ютар на наяўнасць шкоднага праграмнага забеспячэння...</translation>
-<translation id="2526277209479171883">Усталяваць і працягнуць</translation>
 <translation id="2526590354069164005">Працоўны стол</translation>
 <translation id="2526619973349913024">Праверыць на наяўнасць абнаўленняў</translation>
 <translation id="2527167509808613699">Падключэнне любога тыпу</translation>
@@ -2568,7 +2565,6 @@
 <translation id="3711931198657368127">У&amp;ставіць і перайсці на адрас <ph name="URL" /></translation>
 <translation id="3711945201266135623">Знойдзена прынтараў на серверы друку: <ph name="NUM_PRINTERS" /></translation>
 <translation id="3712050472459130149">Патрабуецца абнаўленне ўліковага запісу</translation>
-<translation id="3712217561553024354">Дазволіць гэтай прыладзе знаходзіць іншыя прылады з вашым Уліковым запісам Google, якія маюць падключэнне мабільнай перадачы даных</translation>
 <translation id="3712897371525859903">Захаваць старонку &amp;як...</translation>
 <translation id="371300529209814631">Назад/Наперад</translation>
 <translation id="3713047097299026954">На гэтым ключы бяспекі няма даных для ўваходу</translation>
@@ -2625,7 +2621,6 @@
 <translation id="377050016711188788">Марожанае</translation>
 <translation id="3771290962915251154">Гэта налада выключана, бо ўключаны бацькоўскі кантроль</translation>
 <translation id="3771294271822695279">Відэафайлы</translation>
-<translation id="3772609330847318323">Абнавіць пароль для сайта <ph name="ORIGIN" /></translation>
 <translation id="3775432569830822555">Сертыфікат сервера SSL</translation>
 <translation id="3775705724665058594">Адпраўка на вашы прылады</translation>
 <translation id="3776508619697147021">Сайты могуць запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў</translation>
@@ -2773,6 +2768,7 @@
 <translation id="3905761538810670789">Выправіць праграму</translation>
 <translation id="3908393983276948098">Убудова <ph name="PLUGIN_NAME" /> састарэла</translation>
 <translation id="3908501907586732282">Уключыць пашырэнне</translation>
+<translation id="3909701002594999354">Паказаць усе элементы кіравання</translation>
 <translation id="3909791450649380159">Вы&amp;разаць</translation>
 <translation id="39103738135459590">Код актывацыі</translation>
 <translation id="3911824782900911339">Старонка новай укладкі</translation>
@@ -3231,7 +3227,6 @@
 <translation id="443454694385851356">Ранейшая версія (небяспечная)</translation>
 <translation id="443475966875174318">Абнавіць або выдаліць несумяшчальныя праграмы</translation>
 <translation id="4438043733494739848">Празрыста</translation>
-<translation id="4438639467177774583">Пароль <ph name="MASKED_PASSWORD" /> карыстальніка <ph name="USERNAME" /> будзе захаваны для Уліковага запісу Google <ph name="ACCOUNT" /></translation>
 <translation id="4440097423000553826">Сайт <ph name="WEBSITE" /> адправіў апавяшчэнне на ваш тэлефон. Каб пацвердзіць сваю асобу, націсніце на апавяшчэнне "<ph name="NOTIFICATIONTITLE" />" і выканайце атрыманыя інструкцыі.</translation>
 <translation id="4441124369922430666">Ці запускаць аўтаматычна гэту праграму пры ўключэнні прылады?</translation>
 <translation id="4441147046941420429">Каб працягнуць, дастаньце ключ бяспекі з прылады, затым зноў устаўце і дакраніцеся да яго</translation>
@@ -3511,6 +3506,7 @@
 <translation id="4733793249294335256">Месцазнаходжанне</translation>
 <translation id="473546211690256853">Гэты ўліковы запіс належыць дамену <ph name="DOMAIN" />.</translation>
 <translation id="4735803855089279419">Сістэма не змагла вызначыць ідэнтыфікатары прылад для гэтай прылады.</translation>
+<translation id="473581466100273252">Паказаць або схаваць нядаўна закрытыя элементы</translation>
 <translation id="4736292055110123391">Сінхранізацыя закладак, пароляў, гісторыі і іншага на ўсіх вашых прыладах</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="473936925429402449">Выбрана, дадатковае змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4123,6 +4119,7 @@
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
+<translation id="5433791271511851494">Параметрамі абагульвання кіруе ваша арганізацыя.</translation>
 <translation id="5434065355175441495">Шыфраванне PKCS #1 RSA</translation>
 <translation id="5435779377906857208">Заўсёды даваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="5436492226391861498">Чакаецца проксі-тунэль...</translation>
@@ -5161,6 +5158,7 @@
 <translation id="657402800789773160">&amp;Перазагрузіць старонку</translation>
 <translation id="6577284282025554716">Спампоўванне скасавана: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Зводка па стане сеткі</translation>
+<translation id="6579369886355986318">Паказаць усе элементы кіравання</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – абагульваецца змесціва працоўнага стала</translation>
 <translation id="6580203076670148210">Хуткасць праверкі</translation>
 <translation id="6582080224869403177">Каб палепшыць сістэму бяспекі, скіньце налады прылады <ph name="DEVICE_TYPE" />.</translation>
@@ -5434,7 +5432,6 @@
 <translation id="6865708901122695652">Журналы падзей WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Ціха</translation>
 <translation id="686664946474413495">Тэмпература колеру</translation>
-<translation id="6867117968986026015">Прагляд налад файлаў cookie</translation>
 <translation id="6867400383614725881">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="6868934826811377550">Больш падрабязна</translation>
 <translation id="6871644448911473373">Адказчык OCSP: <ph name="LOCATION" /></translation>
@@ -5475,7 +5472,6 @@
 <translation id="6921104647315081813">Выдаліць дзеянні</translation>
 <translation id="692114467174262153">Не ўдалося адкрыць <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="6922128026973287222">Эканомце трафік і праглядайце старонкі хутчэй з дапамогай пашырэння "Эканомія трафіка Google". Націсніце, каб даведацца больш.</translation>
-<translation id="6922570474772078053">Выключаецца</translation>
 <translation id="6922745772873733498">Каб надрукаваць, увядзіце PIN-код</translation>
 <translation id="6922763095098248079">Прылада знаходзіцца пад кіраваннем вашай арганізацыі. Адміністратары маюць доступ да даных ва ўсіх профілях на гэтай прыладзе.</translation>
 <translation id="6923132443355966645">Прагартаць або націснуць</translation>
@@ -5602,6 +5598,7 @@
 <translation id="7044124535091449260">Даведацца больш пра доступ да сайта</translation>
 <translation id="7044606776288350625">Сінхранізацыя даных</translation>
 <translation id="7047059339731138197">Выбар фону</translation>
+<translation id="7048457618657122233">Абагуліць спасылку на: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Захаваць файл?</translation>
 <translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
@@ -5699,7 +5696,6 @@
 <translation id="7170236477717446850">Фота профілю</translation>
 <translation id="7171000599584840888">Дадаць профіль...</translation>
 <translation id="7171259390164035663">Не рэгістраваць</translation>
-<translation id="7171559745792467651">Усталюйце праграмы з іншых прылад</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Дадаць укладку ў новую групу}one{Дадаць укладкі ў новую групу}few{Дадаць укладкі ў новую групу}many{Дадаць укладкі ў новую групу}other{Дадаць укладкі ў новую групу}}</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7174199383876220879">Навінка! Кіруйце музыкай, відэа і шмат чым іншым.</translation>
@@ -5720,7 +5716,6 @@
 <translation id="7196020411877309443">Чаму я бачу гэта?</translation>
 <translation id="7196913789568937443">Рэзервовае капіраванне на Дыск Google. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. Стварайце рэзервовыя копіі даных праграм. Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад вашага Уліковага запісу Google. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Карыстайцеся Google Пошукам і разумнымі сэрвісамі Google адразу ў браўзеры</translation>
-<translation id="7197632491113152433">Мы знайшлі ў вашым уліковым запісе праграмы (<ph name="NUMBER_OF_APPS" /> шт.), якія можна выкарыстоўваць на гэтай прыладзе.</translation>
 <translation id="7198503619164954386">У вас павінна быць прылада, зарэгістраваная карпарацыяй</translation>
 <translation id="7199158086730159431">Атрымаць д&amp;аведку</translation>
 <translation id="7200083590239651963">Выберыце канфігурацыю</translation>
@@ -5881,7 +5876,6 @@
 <translation id="7377451353532943397">Працягваць блакіраваць доступ да датчыкаў</translation>
 <translation id="7378611153938412599">Ненадзейныя паролі лёгка адгадаць. Выкарыстоўвайце толькі надзейныя паролі. <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
-<translation id="7378812711085314936">Атрымаць падключэнне для перадачы даных</translation>
 <translation id="7380622428988553498">Назва прылады змяшчае недапушчальныя сімвалы</translation>
 <translation id="7380768571499464492">Прынтар "<ph name="PRINTER_NAME" />" абноўлены</translation>
 <translation id="73843634555824551">Спосабы ўводу і раскладкі клавіятуры</translation>
@@ -6325,7 +6319,6 @@
 <translation id="782590969421016895">Выкарыстоўваць бягучыя старонкі</translation>
 <translation id="7826249772873145665">Адладка ADB выключана</translation>
 <translation id="7826254698725248775">Канфлікт ідэнтыфікатараў прылад.</translation>
-<translation id="7826346148677309647">Вы можаце знайсці больш праграм для сваёй прылады ў Краме Play.</translation>
 <translation id="7826790948326204519"><ph name="BEGIN_H3" />Функцыі адладкі<ph name="END_H3" />
     <ph name="BR" />
     Каб усталяваць і пратэсціраваць уласны код на прыладзе Chrome OS, можна ўключыць на ёй функцыі адладкі.  Гэта дазволіць:<ph name="BR" />

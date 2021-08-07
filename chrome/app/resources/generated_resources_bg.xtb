@@ -411,7 +411,6 @@
 <translation id="1434696352799406980">Така ще се нулират началната страница, новият раздел в браузъра, търсещата машина и фиксираните раздели. Освен това ще се деактивират всички разширения и ще се изчистят временните данни, като например „бисквитките“. Отметките, историята и запазените ви пароли няма да бъдат премахнати.</translation>
 <translation id="1434886155212424586">Началната страница е новият раздел</translation>
 <translation id="1436390408194692385">Срок на валидност: <ph name="TICKET_TIME_LEFT" /></translation>
-<translation id="1436671784520050284">Продължаване с настройването</translation>
 <translation id="1436784010935106834">Премахнато</translation>
 <translation id="1437986450143295708">Опишете проблема подробно</translation>
 <translation id="144283815522798837">Избрахте <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
@@ -1357,7 +1356,6 @@
 <translation id="2392369802118427583">Активиране</translation>
 <translation id="2393136602862631930">Настройте <ph name="APP_NAME" /> на своя Chromebook</translation>
 <translation id="2395616325548404795">Устройството ви <ph name="DEVICE_TYPE" /> е успешно записано за корпоративно управление, но не успя да изпрати идентификатора на актива и информацията за местоположението си. Моля, въведете ръчно съответните данни от Admin Console.</translation>
-<translation id="2396387085693598316">Администраторът ви е блокирал <ph name="EXTENSION_NAME" /></translation>
 <translation id="2396783860772170191">Въведете 4-цифрен ПИН (0000 – 9999)</translation>
 <translation id="2398546389094871088">Извършването на Powerwash на устройството ви няма да премахне потребителските профили за електронната SIM карта. За да ги премахнете ръчно, отворете <ph name="LINK_BEGIN" />Настройки за мобилни устройства<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Известията са включени</translation>
@@ -1482,7 +1480,6 @@
 <translation id="252219247728877310">Компонентът не е актуализиран</translation>
 <translation id="2523184218357549926">Изпраща до Google URL адресите на страниците, които посещавате</translation>
 <translation id="252502352004572774">Chrome проверява компютъра ви за опасен софтуер...</translation>
-<translation id="2526277209479171883">Инсталиране и продължаване</translation>
 <translation id="2526590354069164005">Работен плот</translation>
 <translation id="2526619973349913024">Проверка за актуализации</translation>
 <translation id="2527167509808613699">Каквато и да е връзка</translation>
@@ -2577,7 +2574,6 @@
 <translation id="3711931198657368127">Пост&amp;авяне и отваряне на <ph name="URL" /></translation>
 <translation id="3711945201266135623">В сървъра за отпечатване бяха открити <ph name="NUM_PRINTERS" /> принтера</translation>
 <translation id="3712050472459130149">Изисква се актуализиране на профила</translation>
-<translation id="3712217561553024354">Позволете на това устройство да намира други устройства с профила ви в Google, които имат връзка за пренос на мобилни данни</translation>
 <translation id="3712897371525859903">&amp;Запазване на страницата като...</translation>
 <translation id="371300529209814631">Назад/напред</translation>
 <translation id="3713047097299026954">В този ключ за сигурност няма данни за вход</translation>
@@ -2634,7 +2630,6 @@
 <translation id="377050016711188788">Сладолед</translation>
 <translation id="3771290962915251154">Тази настройка е деактивирана, защото родителските контроли са включени</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
-<translation id="3772609330847318323">Актуализиране на паролата за <ph name="ORIGIN" /></translation>
 <translation id="3775432569830822555">Сертификат на SSL сървър</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
 <translation id="3776508619697147021">Сайтовете могат да извеждат запитвания за автоматично изтегляне на няколко файла</translation>
@@ -2783,6 +2778,7 @@
 <translation id="3905761538810670789">Поправяне на приложението</translation>
 <translation id="3908393983276948098">Приставката <ph name="PLUGIN_NAME" /> не е актуална</translation>
 <translation id="3908501907586732282">Активиране на разширението</translation>
+<translation id="3909701002594999354">Показване на всички &amp;контроли</translation>
 <translation id="3909791450649380159">Изрязва&amp;не</translation>
 <translation id="39103738135459590">Код за активиране</translation>
 <translation id="3911824782900911339">Нов раздел в браузъра</translation>
@@ -3241,7 +3237,6 @@
 <translation id="443454694385851356">Наследени (несигурни)</translation>
 <translation id="443475966875174318">Актуализиране или премахване на несъвместими приложения</translation>
 <translation id="4438043733494739848">Прозрачно</translation>
-<translation id="4438639467177774583">Паролата <ph name="MASKED_PASSWORD" /> за <ph name="USERNAME" /> ще бъде запазена в профила ви в Google (<ph name="ACCOUNT" />)</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> изпрати известие до телефона ви. За да потвърдите, че това сте вие, докоснете известието „<ph name="NOTIFICATIONTITLE" />“ и изпълнете стъпките.</translation>
 <translation id="4441124369922430666">Искате ли това приложение да стартира автоматично при включването на компютъра?</translation>
 <translation id="4441147046941420429">За да продължите, премахнете ключа за сигурност от устройството си, след което го поставете отново и го докоснете</translation>
@@ -3522,6 +3517,7 @@
 <translation id="4733793249294335256">Местоположение</translation>
 <translation id="473546211690256853">Този профил се управлява от <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">Системата не успя да определи идентификаторите за това устройство.</translation>
+<translation id="473581466100273252">Превключване на наскоро затворените записи</translation>
 <translation id="4736292055110123391">Синхронизиране на вашите отметки, пароли, история и др. на всичките ви устройства</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="473936925429402449">Избрано. Допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4136,6 +4132,7 @@
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
+<translation id="5433791271511851494">Опциите за споделяне се управляват от организацията ви.</translation>
 <translation id="5434065355175441495">PKCS 1 с RSA шифроване</translation>
 <translation id="5435779377906857208">Достъпът на <ph name="HOST" /> до местоположението ви да е разрешен винаги</translation>
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>
@@ -5175,6 +5172,7 @@
 <translation id="657402800789773160">&amp;Презареждане на тази страница</translation>
 <translation id="6577284282025554716">Изтеглянето е анулирано: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Моментна снимка на състоянието на мрежата</translation>
+<translation id="6579369886355986318">Показване на всички &amp;контроли</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – съдържанието на работния плот е споделено</translation>
 <translation id="6580203076670148210">Скорост на сканиране</translation>
 <translation id="6582080224869403177">Нулирайте устройството си <ph name="DEVICE_TYPE" />, за да надстроите функциите за сигурност.</translation>
@@ -5448,7 +5446,6 @@
 <translation id="6865708901122695652">Регистрационни файлове за събития с WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Тихо</translation>
 <translation id="686664946474413495">Цветна температура</translation>
-<translation id="6867117968986026015">Преглед на настройките за „бисквитките“</translation>
 <translation id="6867400383614725881">Нов раздел „инкогнито“</translation>
 <translation id="6868934826811377550">Преглед на подробностите</translation>
 <translation id="6871644448911473373">OCSP респондер: <ph name="LOCATION" /></translation>
@@ -5489,7 +5486,6 @@
 <translation id="6921104647315081813">Изчистване на активностите</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> не можа да се отвори</translation>
 <translation id="6922128026973287222">Използвайте по-малко данни и сърфирайте по-бързо посредством Google Икономия на данни. Кликнете, за да научите повече.</translation>
-<translation id="6922570474772078053">Изключва се</translation>
 <translation id="6922745772873733498">Въведете ПИН, за да отпечатате</translation>
 <translation id="6922763095098248079">Устройството ви се управлява от организацията ви. Администраторите имат достъп до данните в потребителските профили на това устройство.</translation>
 <translation id="6923132443355966645">Превъртане/кликване</translation>
@@ -5616,6 +5612,7 @@
 <translation id="7044124535091449260">Научете повече за достъпа на сайта</translation>
 <translation id="7044606776288350625">Синхронизиране на данните</translation>
 <translation id="7047059339731138197">Изберете фон</translation>
+<translation id="7048457618657122233">Споделяне на връзката към <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Да се запази ли файлът?</translation>
 <translation id="7052237160939977163">Да се изпратят данните от проследяването на ефективността</translation>
 <translation id="7053983685419859001">Блокиране</translation>
@@ -5713,7 +5710,6 @@
 <translation id="7170236477717446850">Снимка на потребителския профил</translation>
 <translation id="7171000599584840888">Добавяне на потребителски профил...</translation>
 <translation id="7171259390164035663">Без регистриране</translation>
-<translation id="7171559745792467651">Инсталиране на приложения от другите ви устройства</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
 <translation id="7173114856073700355">Към настройките</translation>
 <translation id="7174199383876220879">Ново! Управлявайте своите музика, видеоклипове и др.</translation>
@@ -5734,7 +5730,6 @@
 <translation id="7196020411877309443">Защо се показва това?</translation>
 <translation id="7196913789568937443">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството или да го замените с друго. Резервните ви копия включват данните на приложенията, качени са в Google и са шифровани посредством паролата за профила ви в Google. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Възползвайте се от интелигентните функции на Търсене и Google всеки път, когато сърфирате</translation>
-<translation id="7197632491113152433">Открихме <ph name="NUMBER_OF_APPS" /> приложения от профила ви, които могат да се използват на това устройство.</translation>
 <translation id="7198503619164954386">Трябва да използвате корпоративно устройство</translation>
 <translation id="7199158086730159431">Получаване на помощ</translation>
 <translation id="7200083590239651963">Избиране на конфигурация</translation>
@@ -5895,7 +5890,6 @@
 <translation id="7377451353532943397">Достъпът до сензорите да продължи да се блокира</translation>
 <translation id="7378611153938412599">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни. <ph name="BEGIN_LINK" />Вижте още съвети за сигурност<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Отваряне на уеб магазина на Chrome</translation>
-<translation id="7378812711085314936">Получаване на връзка за пренос на данни</translation>
 <translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>
 <translation id="7380768571499464492">Актуализирането на <ph name="PRINTER_NAME" /> завърши</translation>
 <translation id="73843634555824551">Въвеждане и клавиатури</translation>
@@ -6339,7 +6333,6 @@
 <translation id="782590969421016895">Използване на текущите страници</translation>
 <translation id="7826249772873145665">Отстраняването на грешки през ADB бе деактивирано</translation>
 <translation id="7826254698725248775">Идентификаторът на устройството е несъвместим.</translation>
-<translation id="7826346148677309647">В Google Play Магазин можете да намерите още приложения за устройството си.</translation>
 <translation id="7826790948326204519"><ph name="BEGIN_H3" />Функции за отстраняване на грешки<ph name="END_H3" />
     <ph name="BR" />
 Можете да активирате функциите за отстраняване на грешки на устройството си с Chrome OS, за да го използвате за инсталиране и тестване на персонализиран код. Това ще ви позволи:<ph name="BR" />

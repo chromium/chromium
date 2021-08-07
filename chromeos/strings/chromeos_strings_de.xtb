@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Akku voll</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
+<translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Seite noch einmal scannen}=1{Seite {PAGE_NUMBER} noch einmal scannen}other{Seite {PAGE_NUMBER} noch einmal scannen}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
@@ -296,6 +297,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="65587193855025101">Flachbett</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
 <translation id="6574762126505704998">Ausfüllen</translation>
+<translation id="6575134580692778371">Nicht konfiguriert</translation>
 <translation id="6579235177984085399">Neue Zeichen- und Designtools entdecken</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6603230386432466813">Sie haben Probleme beim Herstellen einer Verbindung?</translation>
@@ -415,6 +417,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="8818152010000655963">Hintergrund</translation>
+<translation id="8834539327799336565">Derzeit verbunden</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>

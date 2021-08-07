@@ -177,6 +177,7 @@
 <translation id="2322173485024759474">Бір әріпке артқа жылжу</translation>
 <translation id="2339073806695260576">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Лазерлік меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="2341729377289034582">Тік қалыпта құлыпталды</translation>
+<translation id="2350794187831162545">Мына тілдегі сөз құрылғыда өңделеді және офлайн қолжетімді: <ph name="LANGUAGE" />. Мәтінді дауыспен енгізу тілін "Параметрлер &gt; Арнайы мүмкіндіктер" бөлімінен өзгерте аласыз.</translation>
 <translation id="2352467521400612932">Стилус параметрлері</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> белсендіру</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
@@ -207,7 +208,6 @@
 <translation id="2595239820337756193">5 км неше миляға тең</translation>
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2607678425161541573">Онлайн кіру қажет</translation>
-<translation id="2617342710774726426">SIM картасы құлыпталған</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
 <translation id="2653019840645008922">Терезені түсіру</translation>
 <translation id="2653659639078652383">Жіберу</translation>
@@ -437,6 +437,7 @@
 <translation id="4379531060876907730">Стилус құралдары</translation>
 <translation id="4389184120735010762">Бекітілген ұлғайтқышқа арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="439598569299422042">Кідіртілді, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Жалғанған перифериялық құрылғы түріне қолдау көрсетілмейді.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
 <translation id="4421231901400348175">Remote Assistance арқылы <ph name="HELPER_NAME" /> пайдаланушысымен экранды бөлісіп басқару.</translation>
 <translation id="4424159417645388645">5-ші жұмыс үстелі</translation>
@@ -741,7 +742,6 @@
 <translation id="6850010208275816200">Ағымдағы қолданба толық экран режимінде пайдаланылады. Егер қолданба құпия сөзді сұраса, толық экран режимінен шығыңыз.</translation>
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
-<translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> белсендіру</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>
 <translation id="6878400149835617132">Таңбаша өшірілді</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> құрылғысы нашар жұмыс істеуі мүмкін. Сертификаты бар <ph name="PREFERRED_MINIMUM_POWER" /> Вт немесе одан жоғары кернеулі USB-C қуат адаптерін пайдаланыңыз.</translation>
@@ -942,7 +942,6 @@
 <translation id="8433186206711564395">Желі параметрлері</translation>
 <translation id="8433977262951327081">Сөредегі енгізу опцияларының қалқымалы анықтамасын шығаратын пернелер тіркесі өзгерді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> тіркесін қолданыңыз.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> үстелі іске қосылды.</translation>
-<translation id="8452135315243592079">SIM картасы жоқ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Select-to-Speak функциясын жабу</translation>
 <translation id="847056008324733326">Дисплей масштабы параметрлері</translation>

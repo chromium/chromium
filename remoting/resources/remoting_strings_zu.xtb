@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Kuvele iphutha elingaziwa. Sicela ubike le nkinga konjiniyela.</translation>
 <translation id="1697532407822776718">Senisethiwe nonke!</translation>
 <translation id="1742469581923031760">Iyaxhumeka…</translation>
+<translation id="177040763384871009">Ukuvumela amalinki achofoziwe kudivayisi ekude ukuthi avulwe ku-browser yeklayenti, kudingeka ushitshe isistimu ye-browser ibe yi-"<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">I-IP yesiteshi yeklayenti: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Susa</translation>
 <translation id="2009755455353575666">Ukuxhumeka kuhlulekile</translation>
@@ -56,6 +57,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="369442766917958684">Okungaxhunyiwe kwi-inthanethi.</translation>
 <translation id="3695446226812920698">Funda ukuthi kanjani</translation>
 <translation id="3776024066357219166">Iseshini yakho yedeskithophu ye-Chrome ekude iphelile.</translation>
+<translation id="3858860766373142691">Igama</translation>
 <translation id="3897092660631435901">Imenyu</translation>
 <translation id="3905196214175737742">Isizinda somnikazi wosokhaya asivumelekile.</translation>
 <translation id="3931191050278863510">Usokhaya uvinjiwe.</translation>
@@ -141,6 +143,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="7434397035092923453">Ukufinyelela kunqatshelwe kuklayenti: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Iklayenti lixhumekile: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Shintsha i-akhawunti</translation>
+<translation id="7535110896613603182">Vula Amasethingi we-App Azenzakalelayo</translation>
 <translation id="7628469622942688817">Khumbula iphinikhodi yami kule divayisi.</translation>
 <translation id="7649070708921625228">Usizo</translation>
 <translation id="7658239707568436148">Khansela</translation>

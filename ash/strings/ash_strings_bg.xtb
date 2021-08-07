@@ -177,6 +177,7 @@
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
 <translation id="2339073806695260576">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате лазерната показалка или лупата.</translation>
 <translation id="2341729377289034582">Заключено във вертикална ориентация</translation>
+<translation id="2350794187831162545">Диктуването на <ph name="LANGUAGE" /> се обработва локално и работи офлайн. Можете да промените езика за диктуване от „Настройки &gt; Достъпност“.</translation>
 <translation id="2352467521400612932">Настройки за писалката</translation>
 <translation id="2354174487190027830">„<ph name="NAME" />“ се активира</translation>
 <translation id="2359808026110333948">Напред</translation>
@@ -207,7 +208,6 @@
 <translation id="2595239820337756193">5 km in miles</translation>
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
 <translation id="2607678425161541573">Изисква се онлайн вход</translation>
-<translation id="2617342710774726426">SIM картата е заключена</translation>
 <translation id="2621713457727696555">защитена</translation>
 <translation id="2653019840645008922">Заснемане на прозореца</translation>
 <translation id="2653659639078652383">Изпращане</translation>
@@ -437,6 +437,7 @@
 <translation id="4379531060876907730">Това са инструментите ви за писане</translation>
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
 <translation id="439598569299422042">На пауза, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Типът на свързаното периферно устройство не се поддържа</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
 <translation id="4421231901400348175">Споделяте с/ъс <ph name="HELPER_NAME" /> контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="4424159417645388645">Работен кът 5</translation>
@@ -741,7 +742,6 @@
 <translation id="6850010208275816200">Текущото приложение е в режим на цял екран. Ако то поиска да въведете паролата си, първо излезте от този режим.</translation>
 <translation id="6852052252232534364">Кликнете за активиране</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
-<translation id="6857811139397017780">Активиране на <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
@@ -942,7 +942,6 @@
 <translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="8433977262951327081">Комбинацията за показване в лавицата на балончето с менюто за опциите за въвеждане е променена. Моля, използвайте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Работен кът <ph name="DESK_TITILE" /> е активиран</translation>
-<translation id="8452135315243592079">SIM картата липсва</translation>
 <translation id="8456543082656546101">„<ph name="SHORTCUT_KEY_NAME" />“ + V</translation>
 <translation id="8462305545768648477">Затваряне на функцията „Прочитане на глас“</translation>
 <translation id="847056008324733326">Настройки за мащаба на показване</translation>

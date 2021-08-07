@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">एक अनपेक्षित गड़बड़ी आई. कृपया इस समस्या की रिपोर्ट डेवलपर से करें.</translation>
 <translation id="1697532407822776718">आप बिल्कुल तैयार हैं!</translation>
 <translation id="1742469581923031760">कनेक्ट हो रहा है...</translation>
+<translation id="177040763384871009">रिमोट डिवाइस पर क्लिक किए गए लिंकों को क्लाइंट ब्राउज़र पर खोलने की अनुमति देने के लिए, आपको "<ph name="URL_FORWARDER_NAME" />" को सिस्टम का डिफ़ॉल्ट वेब ब्राउज़र बनाना होगा.</translation>
 <translation id="177096447311351977">क्लाइंट के लिए चैनल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">मिटाएं</translation>
 <translation id="2009755455353575666">कनेक्‍शन विफल रहा</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">ऑफ़लाइन.</translation>
 <translation id="3695446226812920698">तरीका जानें</translation>
 <translation id="3776024066357219166">आपका Chrome दूरस्थ डेस्कटॉप सत्र खत्म हो चुका है.</translation>
+<translation id="3858860766373142691">नाम</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3905196214175737742">अमान्‍य होस्‍ट मालिक डोमेन.</translation>
 <translation id="3931191050278863510">होस्‍ट बंद हो गया है.</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453">क्लाइंट की एक्सेस अस्वीकार की गई: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">क्लाइंट कनेक्ट किया गया: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">खाता बदलें</translation>
+<translation id="7535110896613603182">डिफ़ॉल्ट ऐप्लिकेशन की सेटिंग खोलें</translation>
 <translation id="7628469622942688817">इस डिवाइस पर मेरा पिन याद रखें.</translation>
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>

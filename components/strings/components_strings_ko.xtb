@@ -1001,8 +1001,10 @@
 <translation id="4451135742916150903">HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="4460315069258617173">이 사이트의 탭을 닫을 때까지 허용</translation>
 <translation id="4464826014807964867">조직의 정보가 포함된 웹사이트</translation>
+<translation id="4465818729556336129">기밀 문서이므로 관리자가 문서 인쇄를 권장하지 않습니다.</translation>
 <translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
 <translation id="4477350412780666475">다음 트랙</translation>
+<translation id="4481394504112738036">기밀 파일</translation>
 <translation id="4482953324121162758">이 사이트는 번역되지 않습니다.</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
@@ -1664,7 +1666,6 @@
 <translation id="6945221475159498467">선택</translation>
 <translation id="6948051842255602737">게임 종료, 점수는 <ph name="SCORE" />점입니다.</translation>
 <translation id="6948701128805548767">수령 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
-<translation id="6949479070119158594">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다.</translation>
 <translation id="6949872517221025916">비밀번호 재설정</translation>
 <translation id="6950684638814147129">JSON 값을 파싱하는 중에 오류가 발생했습니다. <ph name="ERROR" /></translation>
 <translation id="695140971690006676">모두 재설정</translation>
@@ -2032,7 +2033,6 @@
 <translation id="8190193880870196235">확장 프로그램에서 관리</translation>
 <translation id="8193086767630290324">기밀로 표시된 데이터에 대한 작업</translation>
 <translation id="8194797478851900357">이동 실행 취소(&amp;U)</translation>
-<translation id="8199274926193258625">결제 인증을 위해 <ph name="HOSTNAME" />에서 추가 단계를 진행해야 할 수 있습니다.</translation>
 <translation id="8201077131113104583">ID가 '<ph name="EXTENSION_ID" />'인 확장 프로그램에 대한 잘못된 업데이트 URL</translation>
 <translation id="8202097416529803614">주문 요약</translation>
 <translation id="8202370299023114387">충돌</translation>

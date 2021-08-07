@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Došlo k neočekávané chybě. Nahlaste prosím tento problém vývojářům.</translation>
 <translation id="1697532407822776718">Vše je nastaveno!</translation>
 <translation id="1742469581923031760">Připojování...</translation>
+<translation id="177040763384871009">Aby bylo možné v prohlížeči klienta otevírat odkazy, na které kliknete na vzdáleném zařízení, bude nutné změnit webový prohlížeč systému na <ph name="URL_FORWARDER_NAME" />.</translation>
 <translation id="177096447311351977">IP adresa kanálu pro klienta: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Smazat</translation>
 <translation id="2009755455353575666">Připojení se nezdařilo</translation>
@@ -56,6 +57,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Postup</translation>
 <translation id="3776024066357219166">Relace Vzdálené plochy Chrome byla ukončena.</translation>
+<translation id="3858860766373142691">Název</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3905196214175737742">Neplatná doména vlastníka hostitele.</translation>
 <translation id="3931191050278863510">Hostitel byl zastaven.</translation>
@@ -141,6 +143,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="7434397035092923453">Přístup klienta zamítnut: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klient připojen: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Změnit účet</translation>
+<translation id="7535110896613603182">Otevřít výchozí nastavení aplikací</translation>
 <translation id="7628469622942688817">Pamatovat si na tomto zařízení můj PIN.</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>

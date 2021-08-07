@@ -66,6 +66,7 @@
 <translation id="1509960214886564027">ဝဘ်ဆိုက်အတော်များများရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်သည်</translation>
 <translation id="152234381334907219">ဘယ်တော့မှ သိမ်းဆည်းခြင်းမပြုပါ</translation>
 <translation id="1523341279170789507">ကွတ်ကီးအားလုံးကို ခွင့်ပြုရန်</translation>
+<translation id="1524563461097350801">မလိုပါ</translation>
 <translation id="1535268707340844072">သင့်လက်ရှိဆက်တင်များသည် အချို့ဝဘ်ဆိုက်များ အလုပ်လုပ်ခြင်းမှရပ်တန့်သွားစေနိုင်သည်။ ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ကွတ်ကီးဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="1540800554400757039">လိပ်စာ: 1</translation>
 <translation id="1545749641540134597">QR ကုဒ်ကို ဖတ်ပါ</translation>
@@ -283,6 +284,7 @@
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />သို့ စာညှပ်ကို ထည့်ထားပါသည်</translation>
 <translation id="3709582977625132201">မဖတ်ရသေးအဖြစ် မှတ်သားရန်</translation>
 <translation id="3740397331642243698">ထည့်သွင်းထားသော URL များကို Google Chrome ရုပ်ဖျက်မုဒ်တွင် ဖွင့်သည်။</translation>
+<translation id="3762232513783804601">သင့် iPad အတွက် ပြုလုပ်ထားသည်</translation>
 <translation id="3771033907050503522">ကိုယ်ပျောက် တဲဘ်များ</translation>
 <translation id="3775743491439407556">စင့်ခ်လုပ်၍ မရပါ</translation>
 <translation id="3779810277399252432">အင်တာနက် ချိတ်ဆက်မှု မရှိပါ။</translation>
@@ -339,6 +341,7 @@
 <translation id="4389019817280890563">ဘာသာစကားပြောင်းရန်အတွက် တို့ပါ</translation>
 <translation id="4454246407045105932">ဘာသာစကား ထည့်ခြင်း</translation>
 <translation id="4469418912670346607">စနစ်ထည့်သွင်းမှု ဆက်လက်ပြုလုပ်ရန်</translation>
+<translation id="4474494258097106883">သင့် iPhone အတွက် ပြုလုပ်ထားသည်</translation>
 <translation id="4476574785019001431">ဆက်တင်များ</translation>
 <translation id="4496373720959965247">စာမျက်နှာများအကြားတွင် တက်ဘ်များထည့်ပြီး ပြောင်းပါ</translation>
 <translation id="4502566650163919158">ယခု စစ်ကြည့်ရန်</translation>

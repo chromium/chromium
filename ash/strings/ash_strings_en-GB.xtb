@@ -177,6 +177,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2322173485024759474">Back by letter</translation>
 <translation id="2339073806695260576">Tap the stylus button on the shelf to take a note, screenshot, use the laser pointer or magnifying glass.</translation>
 <translation id="2341729377289034582">Locked to vertical</translation>
+<translation id="2350794187831162545"><ph name="LANGUAGE" /> speech is now processed locally and works offline. You can change your dictation language in Settings &gt; Accessibility.</translation>
 <translation id="2352467521400612932">Stylus settings</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continue</translation>
@@ -207,7 +208,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
-<translation id="2617342710774726426">SIM card is locked</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="2653019840645008922">Window capture</translation>
 <translation id="2653659639078652383">Submit</translation>
@@ -437,6 +437,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
 <translation id="4389184120735010762">You pressed the keyboard shortcut for the docked magnifier. Do you want to turn it on?</translation>
 <translation id="439598569299422042">Paused, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">The connected peripheral type is not supported</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
@@ -741,7 +742,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="6850010208275816200">Your current app is full screen. If the app asks for your password, exit full screen first.</translation>
 <translation id="6852052252232534364">Click to activate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
-<translation id="6857811139397017780">Activate <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
@@ -942,7 +942,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8433186206711564395">Network settings</translation>
 <translation id="8433977262951327081">The shortcut to show the input options menu bubble in the shelf has changed. Please use <ph name="NEW_SHORTCUT" /> instead of <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Desk <ph name="DESK_TITILE" /> activated</translation>
-<translation id="8452135315243592079">Missing SIM card</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Close Select to Speak</translation>
 <translation id="847056008324733326">Display scale settings</translation>

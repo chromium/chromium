@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Hitilafu isiyotarajiwa imetokea. Tafadhali ripoti tatizo hili kwa wasanidi programu.</translation>
 <translation id="1697532407822776718">Mko tayari nyote!</translation>
 <translation id="1742469581923031760">Inaunganisha...</translation>
+<translation id="177040763384871009">Ili uruhusu viungo vinavyobofywa kwenye kifaa cha mbali vifunguliwe kwenye kivinjari teja, unahitaji kubadilisha kivinjari cha mfumo kiwe "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP ya Kituo cha kiteja: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' ip ya mpangishi='<ph name="HOST_IP_ADDRESS_AND_PORT" />' kituo='<ph name="CHANNEL_TYPE" />' muunganisho='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Futa</translation>
 <translation id="2009755455353575666">Muunganisho haujafaulu</translation>
@@ -56,6 +57,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="369442766917958684">Nje ya mtandao.</translation>
 <translation id="3695446226812920698">Pata maelezo</translation>
 <translation id="3776024066357219166">Kipindi chako cha Eneo-kazi la Mbali la Chrome kimekamilika.</translation>
+<translation id="3858860766373142691">Jina</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3905196214175737742">Kikoa cha mmiliki wa seva pangishi si sahihi.</translation>
 <translation id="3931191050278863510">Mpangishi amesimamishwa.</translation>
@@ -141,6 +143,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="7434397035092923453">Kiteja kimenyimwa idhini ya kufikia: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Kiteja kimeunganishwa: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Badilisha akaunti</translation>
+<translation id="7535110896613603182">Fungua Mipangilio ya Programu Chaguomsingi</translation>
 <translation id="7628469622942688817">Kumbuka PIN yangu kwenye kifaa hiki.</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>

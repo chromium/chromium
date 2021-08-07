@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Se produjo un error inesperado. Informa este problema a los programadores.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
 <translation id="1742469581923031760">Conectando…</translation>
+<translation id="177040763384871009">Si quieres permitir que los vínculos que seleccionas en el dispositivo remoto se abran en el navegador del cliente, deberás cambiar el navegador web del sistema a "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP de canal para cliente: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Borrar</translation>
 <translation id="2009755455353575666">Error de conexión</translation>
@@ -56,6 +57,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="369442766917958684">Sin conexión</translation>
 <translation id="3695446226812920698">Más información</translation>
 <translation id="3776024066357219166">Se cerró tu sesión en Escritorio remoto de Chrome.</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3905196214175737742">Dominio del propietario del host no válido</translation>
 <translation id="3931191050278863510">Se detuvo el host.</translation>
@@ -141,6 +143,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="7434397035092923453">Acceso rechazado para cliente: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">Cliente conectado: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7526139040829362392">Cambiar cuenta</translation>
+<translation id="7535110896613603182">Abrir la configuración de apps predeterminadas</translation>
 <translation id="7628469622942688817">Recordar mi PIN en este dispositivo</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>

@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2717722538473713889">Имейл адреси</translation>
+<translation id="2785051990912111074">Така ще се изчистят „бисквитките“ за <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Наистина ли искате да зададете повторно всички разрешения за сайта за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">Последно посещение: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Няма намерени контакти</translation>
 <translation id="4996978546172906250">Споделяне чрез</translation>
+<translation id="5014906230196386306">Да се изчистят ли „бисквитките“?</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5048398596102334565">Разрешаване на достъпа на сайтовете до сензорите за движение (препоръчително)</translation>
 <translation id="5050380848339752099">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">Съхраняваните от сайтовете данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и още 1)}other{(и още #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
+<translation id="5438097262470833822">Така ще се нулират разрешенията за <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Изминало време: <ph name="ELAPSED_TIME" /> от <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокиране на рекламите от сайтове, на които се показват натрапчиви или подвеждащи реклами</translation>
 <translation id="5502860503640766021">Достъпът до <ph name="PERMISSION_1" /> е разрешен, а до <ph name="PERMISSION_2" /> е блокиран</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">Снимки на потребителския профил</translation>
 <translation id="6697925417670533197">Активни изтегляния</translation>
 <translation id="6746124502594467657">Придвижване надолу</translation>
+<translation id="6749077623962119521">Да се нулират ли разрешенията?</translation>
 <translation id="6766622839693428701">Прекарайте пръст надолу, за да затворите.</translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>

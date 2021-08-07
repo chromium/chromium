@@ -10,6 +10,7 @@
 <translation id="1546934824884762070">Nepričakovana napaka. O tem obvestite razvijalce.</translation>
 <translation id="1697532407822776718">Pripravljeni ste.</translation>
 <translation id="1742469581923031760">Vzpostavljanje povezave ...</translation>
+<translation id="177040763384871009">Če želite dovoliti, da se povezave, kliknjene v oddaljeni napravi, odprejo v brskalniku odjemalca, morate spremeniti brskalnik sistema v »<ph name="URL_FORWARDER_NAME" />«.</translation>
 <translation id="177096447311351977">IP kanala za odjemalca: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Izbriši</translation>
 <translation id="2009755455353575666">Vzpostavitev povezave ni uspela</translation>
@@ -54,6 +55,7 @@
 <translation id="369442766917958684">Brez povezave.</translation>
 <translation id="3695446226812920698">Oglejte si navodila</translation>
 <translation id="3776024066357219166">Seja Oddaljenega namizja za Chrome je končana.</translation>
+<translation id="3858860766373142691">Ime</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3905196214175737742">Neveljavna domena lastnika gostitelja.</translation>
 <translation id="3931191050278863510">Gostitelj se je ustavil.</translation>
@@ -129,6 +131,7 @@
 <translation id="7434397035092923453">Dostop zavrnjen za odjemalca: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Odjemalec povezan: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Sprememba računa</translation>
+<translation id="7535110896613603182">Odpri nastavitve privzetih aplikacij</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>

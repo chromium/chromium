@@ -1676,7 +1676,6 @@ Del</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6948051842255602737">המשחק נגמר, הניקוד שלך הוא <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">עליך לבחור כתובת כדי לראות שיטות איסוף ודרישות</translation>
-<translation id="6949479070119158594">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS.</translation>
 <translation id="6949872517221025916">איפוס סיסמה</translation>
 <translation id="6950684638814147129">‏קרתה שגיאה בזמן ניתוח ערך JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">איפוס של הכול</translation>
@@ -2045,7 +2044,6 @@ Del</translation>
 <translation id="8190193880870196235">מנוהלת על-ידי תוסף</translation>
 <translation id="8193086767630290324">פעולות שנעשו בנתונים שמסומנים כסודיים</translation>
 <translation id="8194797478851900357">&amp;ביטול העברה</translation>
-<translation id="8199274926193258625">ייתכן שיידרשו שלבים נוספים לאימות התשלום שלך על ידי <ph name="HOSTNAME" /></translation>
 <translation id="8201077131113104583">כתובת אתר לא חוקית לעדכון עבור תוסף עם המזהה "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">סיכום הזמנה</translation>
 <translation id="8202370299023114387">התנגשות</translation>

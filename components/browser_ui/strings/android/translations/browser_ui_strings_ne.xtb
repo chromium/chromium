@@ -69,6 +69,7 @@
 <translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
 <translation id="2717722538473713889">इमेल ठेगानाहरू</translation>
+<translation id="2785051990912111074">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> का कुकीहरू मेटाइने छन्</translation>
 <translation id="2822354292072154809">तपाईं साँच्चिकै <ph name="CHOSEN_OBJECT_NAME" /> का साइटसम्बन्धी सम्पूर्ण अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
@@ -138,6 +139,7 @@
 <translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">कुनै पनि सम्पर्क ठेगाना भेटिएन</translation>
 <translation id="4996978546172906250">मार्फत साझा गर्नुहोस्</translation>
+<translation id="5014906230196386306">कुकीहरू मेटाउने हो?</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5048398596102334565">साइटहरूलाई चालसम्बन्धी सेन्सरहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्‌ (सिफारिस गरिएको)</translation>
 <translation id="5050380848339752099">यो साइटले इन्कोग्निटो मोडबाहिरको एपसँग जानकारी सेयर गर्न लागिरहेको छ।</translation>
@@ -157,6 +159,7 @@
 <translation id="5354152178998424783">यस कार्यले साइटहरूले भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटाउने छ।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
 <translation id="5403592356182871684">नामहरू</translation>
+<translation id="5438097262470833822">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> लाई दिइएका अनुमतिहरू रिसेट गरिने छन्</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> मध्ये <ph name="ELAPSED_TIME" /> समय बित्यो।</translation>
 <translation id="5494752089476963479">हस्तक्षेपकारी वा भ्रामक विज्ञापन देखाउने साइटका विज्ञापनहरूलाई रोक लगाउनुहोस्</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ, <ph name="PERMISSION_2" /> ब्लक गरिएको छ</translation>
@@ -213,6 +216,7 @@
 <translation id="6689172468748959065">प्रोफाइल तस्बिरहरू</translation>
 <translation id="6697925417670533197">जारी डाउनलोडहरू</translation>
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
+<translation id="6749077623962119521">अनुमति रिसेट गर्ने हो?</translation>
 <translation id="6766622839693428701">बन्द गर्न तलतिर स्वाइप गर्नुहोस्।</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6818926723028410516">वस्तुहरू छनाैट गर्नुहोस्</translation>

@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
+<translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{पेज दोबारा स्कैन करें}=1{{PAGE_NUMBER} पेज दोबारा स्कैन करें}one{{PAGE_NUMBER} पेज दोबारा स्कैन करें}other{{PAGE_NUMBER} पेज दोबारा स्कैन करें}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
@@ -296,6 +297,7 @@
 <translation id="65587193855025101">फ़्लैटबेड</translation>
 <translation id="6564646048574748301">प्रिंट नहीं हो पाया - प्रिंटर से कनेक्ट नहीं हो पा रहा है</translation>
 <translation id="6574762126505704998">भरें</translation>
+<translation id="6575134580692778371">कॉन्फ़िगर नहीं है</translation>
 <translation id="6579235177984085399">ड्रॉइंग और डिज़ाइन के नए टूल खोजें</translation>
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6603230386432466813">क्या आपको ईथरनेट कनेक्शन से जुड़ने में समस्या हो रही है?</translation>
@@ -415,6 +417,7 @@
 <translation id="8798441408945964110">कंपनी का नाम</translation>
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
+<translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>

@@ -1673,7 +1673,6 @@
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6948051842255602737">गेम संपला, तुमचा स्कोअर <ph name="SCORE" /> आहे.</translation>
 <translation id="6948701128805548767">पिकअप पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
-<translation id="6949479070119158594">ही साइट HTTPS ला सपोर्ट करत नसल्यामुळे तुम्हाला ही चेतावणी दिसत आहे.</translation>
 <translation id="6949872517221025916">पासवर्ड रीसेट करा</translation>
 <translation id="6950684638814147129">JSON मूल्य पार्स करताना एरर आली: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">सर्व रीसेट करा</translation>
@@ -2042,7 +2041,6 @@
 <translation id="8190193880870196235">एक्स्टेंशनद्वारे व्यवस्थापित</translation>
 <translation id="8193086767630290324">डेटाशी संबंधित कृती गोपनीय म्हणून फ्लॅग केल्या</translation>
 <translation id="8194797478851900357">&amp;हलवा पूर्ववत करा</translation>
-<translation id="8199274926193258625">तुमच्या पेमेंटची पडताळणी करण्यासाठी <ph name="HOSTNAME" /> ने अतिरिक्त पावले उचलणे आवश्यक असू शकते</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />"असलेल्या एक्स्टेंशनसाठी अवैध अपडेट URL.</translation>
 <translation id="8202097416529803614">ऑर्डर सारांश</translation>
 <translation id="8202370299023114387">विरोध</translation>

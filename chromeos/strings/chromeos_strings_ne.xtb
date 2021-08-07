@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
+<translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{पेज पुनः स्क्यान गर्नुहोस्}=1{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्नुहोस्}other{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्नुहोस्}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
 <translation id="3748026146096797577">कनेक्ट गरिएको छैन</translation>
@@ -295,6 +296,7 @@
 <translation id="65587193855025101">फ्याल्टबेड</translation>
 <translation id="6564646048574748301">प्रिन्ट गर्न सकिएन - प्रिन्टरमा कनेक्ट भइरहेको छैन</translation>
 <translation id="6574762126505704998">भर्नुहोस्</translation>
+<translation id="6575134580692778371">विन्यास गरिएको छैन</translation>
 <translation id="6579235177984085399">रेखाचित्र र डिजाइनसम्बन्धी नयाँ संयन्त्रहरू खोज्नुहोस्</translation>
 <translation id="6596816719288285829">IP ​​ठेगाना</translation>
 <translation id="6603230386432466813">कनेक्ट गर्ने क्रममा समस्या भइरहेको छ?</translation>
@@ -414,6 +416,7 @@
 <translation id="8798441408945964110">प्रदायकको नाम</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">वालपेपर</translation>
+<translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>

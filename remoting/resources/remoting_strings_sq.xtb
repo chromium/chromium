@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Ka ndodhur një gabim i papritur. Raportoje këtë problem te zhvilluesit.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
 <translation id="1742469581923031760">Po lidhet…</translation>
+<translation id="177040763384871009">Për të lejuar hapjen e lidhjeve të klikuara në pajisjen e telekomandës në shfletuesin e klientit, duhet të ndryshosh shfletuesin e uebit të sistemit në "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP-ja e kanalit për klientin: <ph name="CLIENT_GAIA_IDENTIFIER" /> adresa IP="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" adresa IP e strehuesit="<ph name="HOST_IP_ADDRESS_AND_PORT" />" kanali="<ph name="CHANNEL_TYPE" />" lidhja="<ph name="CONNECTION_TYPE" />".</translation>
 <translation id="1897488610212723051">Fshi</translation>
 <translation id="2009755455353575666">Lidhja dështoi</translation>
@@ -56,6 +57,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="369442766917958684">Jashtë linje.</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3776024066357219166">Sesioni yt i "Desktopit në distancë të Chrome" ka përfunduar.</translation>
+<translation id="3858860766373142691">Emri</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3905196214175737742">Domen i pavlefshëm i zotëruesit të strehimit.</translation>
 <translation id="3931191050278863510">Strehuesi ndaloi.</translation>
@@ -141,6 +143,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="7434397035092923453">Qasja u refuzua për klientin: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klienti i lidhur: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Ndrysho llogarinë</translation>
+<translation id="7535110896613603182">Hap cilësimet e aplikacioneve të parazgjedhura</translation>
 <translation id="7628469622942688817">Kujtoje kodin tim PIN në këtë pajisje.</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7658239707568436148">Anulo</translation>

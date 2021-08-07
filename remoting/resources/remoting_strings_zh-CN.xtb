@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">发生意外错误。请将此问题报告给开发者。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
 <translation id="1742469581923031760">正在连接…</translation>
+<translation id="177040763384871009">若要允许远程设备上被点击的链接在客户端浏览器中打开，您需将系统的网络浏览器改为“<ph name="URL_FORWARDER_NAME" />”。</translation>
 <translation id="177096447311351977">客户端信道 IP：<ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'。</translation>
 <translation id="1897488610212723051">删除</translation>
 <translation id="2009755455353575666">连接失败</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">离线。</translation>
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3776024066357219166">您的 Chrome 远程桌面会话已结束。</translation>
+<translation id="3858860766373142691">名称</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3905196214175737742">主机所有者所在网域无效。</translation>
 <translation id="3931191050278863510">主机已停止运行。</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> 访问客户端的请求遭拒。</translation>
 <translation id="7444276978508498879">已连接客户端：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="7526139040829362392">更改帐号</translation>
+<translation id="7535110896613603182">打开默认应用设置</translation>
 <translation id="7628469622942688817">在此设备上记住我的 PIN 码。</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>

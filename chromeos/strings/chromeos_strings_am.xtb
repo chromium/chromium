@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
+<translation id="3708186454126126312">ከዚህ ቀደም የተገናኘ</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{ገጽን እንደገና ቃኝ}=1{ገጽ {PAGE_NUMBER}ን እንደገና ቃኝ}one{ገጽ {PAGE_NUMBER}ን እንደገና ቃኝ}other{ገጽ {PAGE_NUMBER}ን እንደገና ቃኝ}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
@@ -296,6 +297,7 @@
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>
 <translation id="6564646048574748301">አልተሳካም - አታሚ የማይደረስበት ነው</translation>
 <translation id="6574762126505704998">ሙሌት</translation>
+<translation id="6575134580692778371">አልተዋቀረም</translation>
 <translation id="6579235177984085399">አዲስ የስዕል እና የንድፍ መሳሪያዎችን ያግኙ</translation>
 <translation id="6596816719288285829">IP አድራሻ</translation>
 <translation id="6603230386432466813">መገናኘት ላይ ችግር እያጋጠመዎት ነው?</translation>
@@ -415,6 +417,7 @@
 <translation id="8798441408945964110">የአቅራቢ ስም</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ልጣፍ</translation>
+<translation id="8834539327799336565">አሁን ላይ ተገናኝቷል</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>

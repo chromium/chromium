@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">Bateria beteta dago</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
+<translation id="3708186454126126312">Aurretik konektatutakoak</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Eskaneatu berriro orria}=1{Eskaneatu berriro {PAGE_NUMBER}. orria}other{Eskaneatu berriro {PAGE_NUMBER}. orria}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> iritzi)</translation>
 <translation id="3748026146096797577">Konektatu gabe</translation>
@@ -296,6 +297,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="65587193855025101">Eskaner horizontala</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
 <translation id="6574762126505704998">Bete</translation>
+<translation id="6575134580692778371">Konfiguratu gabe</translation>
 <translation id="6579235177984085399">Ezagutu marrazketa- eta diseinu-tresna berriak</translation>
 <translation id="6596816719288285829">IP helbidea</translation>
 <translation id="6603230386432466813">Arazoak dituzu konektatzeko?</translation>
@@ -415,6 +417,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8798441408945964110">Hornitzailearen izena</translation>
 <translation id="8814190375133053267">Wi-Fi konexioa</translation>
 <translation id="8818152010000655963">Horma-papera</translation>
+<translation id="8834539327799336565">Konektatuta daudenak</translation>
 <translation id="8845001906332463065">Lortu laguntza</translation>
 <translation id="8868741746785112895">GUIDa</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>

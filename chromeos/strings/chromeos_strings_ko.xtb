@@ -124,6 +124,7 @@
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
+<translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="373232531963562220">{PAGE_NUMBER,plural, =0{페이지 다시 스캔}=1{{PAGE_NUMBER}페이지 다시 스캔}other{{PAGE_NUMBER}페이지 다시 스캔}}</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
@@ -296,6 +297,7 @@
 <translation id="65587193855025101">평판</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
 <translation id="6574762126505704998">채우기</translation>
+<translation id="6575134580692778371">설정되지 않음</translation>
 <translation id="6579235177984085399">새로운 그리기 및 디자인 도구 살펴보기</translation>
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6603230386432466813">연결하는 데 문제가 있나요?</translation>
@@ -415,6 +417,7 @@
 <translation id="8798441408945964110">공급자 이름</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">배경화면</translation>
+<translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">테스트 성공</translation>

@@ -207,7 +207,6 @@
 <translation id="2595239820337756193">5 கிமீ எத்தனை மைல்?</translation>
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2607678425161541573">ஆன்லைன் உள்நுழைவு அவசியம்</translation>
-<translation id="2617342710774726426">சிம் கார்டு பூட்டப்பட்டுள்ளது</translation>
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
 <translation id="2653019840645008922">சாளரத்தைப் படமெடுக்கும்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
@@ -741,7 +740,6 @@
 <translation id="6850010208275816200">தற்போதைய ஆப்ஸ் முழுத்திரையில் உள்ளது. கடவுச்சொல்லை உள்ளிடுமாறு ஆப்ஸில் கேட்கப்பட்டால் முதலில் முழுத்திரையிலிருந்து வெளியேறவும்.</translation>
 <translation id="6852052252232534364">இயக்க கிளிக் செய்யவும்</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> வி</translation>
-<translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> ஐ செயல்படுத்து</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{இன்னும் ஓர் இலக்கத்தை உள்ளிட வேண்டும்}other{இன்னும் # இலக்கங்களை உள்ளிட வேண்டும்}}</translation>
 <translation id="6878400149835617132">ஷார்ட்கட் முடக்கப்பட்டுள்ளது</translation>
 <translation id="6886172995547742638">உங்கள் <ph name="DEVICE_TYPE" /> இன் செயல்திறன் குறையலாம். சான்றளிக்கப்பட்ட <ph name="PREFERRED_MINIMUM_POWER" />W அல்லது அதற்கும் அதிகமான USB-C பவர் அடாப்டரைப் பயன்படுத்தவும்.</translation>
@@ -942,7 +940,6 @@
 <translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="8433977262951327081">உள்ளீட்டு விருப்பங்கள் மெனு குமிழியை அடுக்கில் காட்டுவதற்கான ஷார்ட்கட் மாறியுள்ளது. <ph name="OLD_SHORTCUT" />க்குப் பதிலாக <ph name="NEW_SHORTCUT" />ஐப் பயன்படுத்தவும்.</translation>
 <translation id="8444246603146515890">டெஸ்க் <ph name="DESK_TITILE" /> இயக்கப்பட்டது</translation>
-<translation id="8452135315243592079">சிம் கார்டு இல்லை</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">பேசும் திரையை மூடுக</translation>
 <translation id="847056008324733326">திரை அளவு அமைப்புகள்</translation>

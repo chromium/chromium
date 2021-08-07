@@ -177,6 +177,7 @@
 <translation id="2322173485024759474">ერთი ასოთი უკან</translation>
 <translation id="2339073806695260576">რაიმეს ჩასანიშნად, ეკრანის ანაბეჭდის გადასაღებად, ასევე ლაზერული მიმთითებლის ან გამადიდებელი შუშის გამოსაყენებლად შეეხეთ სტილუსის ღილაკს თაროზე.</translation>
 <translation id="2341729377289034582">ჩაკეტილია ვერტიკალურზე</translation>
+<translation id="2350794187831162545"><ph name="LANGUAGE" /> მეტყველება ახლა მუშავდება ადგილობრივად და მუშაობს ხაზგარეშე რეჟიმში. კარნახის ენის შეცვლა შეგიძლიათ აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="2352467521400612932">სტილუსის პარამეტრები</translation>
 <translation id="2354174487190027830"><ph name="NAME" />-ის გააქტიურება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
@@ -207,7 +208,6 @@
 <translation id="2595239820337756193">5K მილებში</translation>
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
 <translation id="2607678425161541573">საჭიროა სიტემაში ონლაინ შესვლა</translation>
-<translation id="2617342710774726426">SIM ბარათი დაბლოკილია</translation>
 <translation id="2621713457727696555">დაცული</translation>
 <translation id="2653019840645008922">ფანჯრის აღბეჭდვა</translation>
 <translation id="2653659639078652383">გაგზავნა</translation>
@@ -437,6 +437,7 @@
 <translation id="4379531060876907730">ეს არის თქვენი სტილუსის ხელსაწყოები</translation>
 <translation id="4389184120735010762">თქვენ დააჭირეთ ჩამაგრებული ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="439598569299422042">დაპაუზებულია, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">დაკავშირებული პერიფერიული მოწყობილობის ტიპი მხარდაუჭერელია</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
 <translation id="4421231901400348175">თქვენი ეკრანის მართვის გაზიარება <ph name="HELPER_NAME" /> დისტანციური დამხმარეს მეშვეობით.</translation>
 <translation id="4424159417645388645">სამუშაო მაგიდა 5</translation>
@@ -741,7 +742,6 @@
 <translation id="6850010208275816200">ამჟამინდელი აპი გაშვებულია სრულეკრანიან რეჟიმში. თუ აპი პაროლს მოითხოვს, გადით სრულეკრანიანი რეჟიმიდან.</translation>
 <translation id="6852052252232534364">დააწკაპუნეთ გასააქტიურებლად</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> წმ</translation>
-<translation id="6857811139397017780">გაააქტიურეთ <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{დარჩენილია 1 ციფრი}other{დარჩენილია # ციფრი}}</translation>
 <translation id="6878400149835617132">მალსახმობი გამოირთო</translation>
 <translation id="6886172995547742638">თქვენმა <ph name="DEVICE_TYPE" />-მა შეიძლება უფრო დაბალი წარმადობით იმუშაოს. გამოიყენეთ სერტიფიცირებული <ph name="PREFERRED_MINIMUM_POWER" /> ვტ-იანი ან უფრო მაღალი სიმძლავრის USB-C ელკვების ადაპტერი.</translation>
@@ -942,7 +942,6 @@
 <translation id="8433186206711564395">ქსელის პარამეტრები</translation>
 <translation id="8433977262951327081">თაროზე შეყვანის ვარიანტების მენიუს ბუშტის გამოჩენის მალსახმობი შეიცვალა. გთხოვთ, გამოიყენოთ <ph name="NEW_SHORTCUT" /> და არა — <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">სამუშაო მაგიდა <ph name="DESK_TITILE" /> გააქტიურებულია</translation>
-<translation id="8452135315243592079">აკლია SIM ბარათი</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">წარმოსათქმელად მონიშვნის დახურვა</translation>
 <translation id="847056008324733326">ჩვენების მასშტაბის პარამეტრები</translation>

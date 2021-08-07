@@ -177,6 +177,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2322173485024759474">Reculer par lettre</translation>
 <translation id="2339073806695260576">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran, et utiliser le pointeur laser ou la loupe.</translation>
 <translation id="2341729377289034582">Verrouillée en position verticale</translation>
+<translation id="2350794187831162545">La langue "<ph name="LANGUAGE" />" est maintenant traitée localement et fonctionne hors connexion. Vous pouvez changer la langue de dictée dans Paramètres &gt; Accessibilité.</translation>
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
 <translation id="2359808026110333948">Continuer</translation>
@@ -207,7 +208,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2595239820337756193">5 km en miles</translation>
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
-<translation id="2617342710774726426">La carte SIM est verrouillée</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="2653019840645008922">Capture de fenêtre</translation>
 <translation id="2653659639078652383">Envoyer</translation>
@@ -437,6 +437,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci clavier de la loupe ancrée. Voulez-vous l'activer ?</translation>
 <translation id="439598569299422042">Suspendu, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Le périphérique connecté n'est pas compatible</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4421231901400348175">Partager le contrôle de votre écran avec <ph name="HELPER_NAME" /> via l'assistance à distance</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
@@ -741,7 +742,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
-<translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
@@ -942,7 +942,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8433977262951327081">Le raccourci pour afficher l'info-bulle du menu des options de saisie dans l'étagère a changé. Veuillez utiliser <ph name="NEW_SHORTCUT" /> au lieu de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Bureau <ph name="DESK_TITILE" /> activé</translation>
-<translation id="8452135315243592079">Carte SIM manquante</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">Fermer Sélectionner pour prononcer</translation>
 <translation id="847056008324733326">Paramètres de l'échelle d'affichage</translation>

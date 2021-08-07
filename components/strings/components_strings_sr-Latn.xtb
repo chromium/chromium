@@ -1010,8 +1010,10 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4451135742916150903">Može da traži da se povezuje sa HID uređajima</translation>
 <translation id="4460315069258617173">Dozvoljeno dok ne zatvorite kartice ovog sajta</translation>
 <translation id="4464826014807964867">Veb-sajtovi sa podacima iz vaše organizacije</translation>
+<translation id="4465818729556336129">Ovaj dokument je poverljiv i administrator ne preporučuje da ga štampate.</translation>
 <translation id="4476953670630786061">Ovaj obrazac nije bezbedan. Automatsko popunjavanje je isključeno.</translation>
 <translation id="4477350412780666475">Sledeća pesma</translation>
+<translation id="4481394504112738036">Poverljiv fajl</translation>
 <translation id="4482953324121162758">Ovaj sajt neće biti preveden.</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifruj sinhronizovane lozinke pomoću Google naloga</translation>
@@ -1672,7 +1674,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6948051842255602737">Igra je završena, vaš rezultat je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Da biste videli načine i zahteve za preuzimanje, izaberite adresu</translation>
-<translation id="6949479070119158594">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS.</translation>
 <translation id="6949872517221025916">Resetujte lozinku</translation>
 <translation id="6950684638814147129">Greška pri raščlanjivanju JSON vrednosti: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Resetuj sve</translation>
@@ -2041,7 +2042,6 @@ Dodatni detalji:
 <translation id="8190193880870196235">Upravlja dodatak</translation>
 <translation id="8193086767630290324">Radnje sa podacima koji su označeni kao poverljivi</translation>
 <translation id="8194797478851900357">&amp;Opozovi premeštanje</translation>
-<translation id="8199274926193258625"><ph name="HOSTNAME" /> treba da obavi dodatne korake radi potvrde plaćanja</translation>
 <translation id="8201077131113104583">Nevažeći URL za ažuriranje za dodatak sa ID-om „<ph name="EXTENSION_ID" />“.</translation>
 <translation id="8202097416529803614">Rezime porudžbine</translation>
 <translation id="8202370299023114387">Neusaglašenost</translation>

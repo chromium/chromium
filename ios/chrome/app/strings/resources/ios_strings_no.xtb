@@ -66,6 +66,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
 <translation id="152234381334907219">Aldri lagret</translation>
 <translation id="1523341279170789507">Tillat alle informasjonskapsler</translation>
+<translation id="1524563461097350801">Nei takk</translation>
 <translation id="1535268707340844072">Den nåværende innstillingen kan medføre at noen nettsteder slutter å fungere. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger for informasjonskapsler<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
@@ -283,6 +284,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="3691593122358196899">Satt som bokmerke i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Merk som ulest</translation>
 <translation id="3740397331642243698">Åpner de oppgitte nettadressene i Google Chrome i inkognitomodus.</translation>
+<translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
@@ -339,6 +341,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4389019817280890563">Trykk for å bytte språk.</translation>
 <translation id="4454246407045105932">Legg til språk</translation>
 <translation id="4469418912670346607">Fortsett konfigureringen</translation>
+<translation id="4474494258097106883">Laget for iPhonen din</translation>
 <translation id="4476574785019001431">Innstillinger</translation>
 <translation id="4496373720959965247">Legg til faner, og bytt mellom sider</translation>
 <translation id="4502566650163919158">Sjekk nå</translation>

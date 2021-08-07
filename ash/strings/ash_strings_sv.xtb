@@ -177,6 +177,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
 <translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
+<translation id="2350794187831162545">Nu behandlas tal på <ph name="LANGUAGE" /> lokalt och kan användas offline. Du kan ändra dikteringsspråk i Inställningar &gt; Tillgänglighet.</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsätt</translation>
@@ -207,7 +208,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
-<translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="2653019840645008922">Skärmbild/skärminspelning av fönster</translation>
 <translation id="2653659639078652383">Skicka</translation>
@@ -437,6 +437,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4379531060876907730">Här är dina verktyg för e-penna</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
 <translation id="439598569299422042">Pausad, <ph name="SIZE_INFO" /></translation>
+<translation id="4405151984121254935">Typen av kringutrustning som är ansluten stöds inte</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
 <translation id="4424159417645388645">Skrivbord 5</translation>
@@ -741,7 +742,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6850010208275816200">Den aktuella appen visas i helskärmsläge. Om du blir ombedd att ange ditt lösenord måste du först stänga helskärmsläget.</translation>
 <translation id="6852052252232534364">Aktivera</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
-<translation id="6857811139397017780">Aktivera <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
@@ -942,7 +942,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8433186206711564395">Nätverksinställningar</translation>
 <translation id="8433977262951327081">Kortkommandot för att visa menybubblan för inmatningsalternativ i hyllan har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skrivbordet <ph name="DESK_TITILE" /> har aktiverats</translation>
-<translation id="8452135315243592079">SIM-kort saknas</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Stäng av textuppläsningen</translation>
 <translation id="847056008324733326">Inställningar för skala på skärmen</translation>

@@ -1668,7 +1668,6 @@
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6948051842255602737">கேம் முடிந்தது, உங்கள் ஸ்கோர்: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">பிக்அப் முறைகளையும் தேவைகளையும் பார்க்க, முகவரியைத் தேர்ந்தெடுக்கவும்</translation>
-<translation id="6949479070119158594">இந்தத் தளம் HTTPSஸை ஆதரிக்காததால் எச்சரிக்கை காட்டப்படுகிறது.</translation>
 <translation id="6949872517221025916">கடவுச்சொல்லை மீட்டமைக்கவும்</translation>
 <translation id="6950684638814147129">JSON மதிப்பைப் பாகுபடுத்தும்போது பிழை நேர்ந்தது: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">அனைத்தையும் மீட்டமை</translation>
@@ -2037,7 +2036,6 @@
 <translation id="8190193880870196235">நீட்டிப்பு மூலம் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8193086767630290324">ரகசியமானது எனக் கொடியிடப்பட்ட தரவில் மேற்கொள்ளப்பட்ட செயல்கள்</translation>
 <translation id="8194797478851900357">&amp;நகர்த்தலைச் செயல்தவிர்</translation>
-<translation id="8199274926193258625">உங்கள் பேமெண்ட்டை உறுதிப்படுத்த <ph name="HOSTNAME" /> தளத்திற்குக் கூடுதல் படிகள் தேவைப்படலாம்</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ஐடியுடன் கூடிய நீட்டிப்பிற்கான தவறான புதுப்பிப்பு URL.</translation>
 <translation id="8202097416529803614">ஆர்டர் பற்றிய சுருக்கவிவரம்</translation>
 <translation id="8202370299023114387">முரண்பாடு</translation>

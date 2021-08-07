@@ -1664,7 +1664,6 @@
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6948051842255602737">Partie terminée, votre pointage est de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Pour voir les exigences et les modes de ramassage, sélectionnez une adresse</translation>
-<translation id="6949479070119158594">Cette mise en garde s'affiche parce que ce site ne prend pas en charge le protocole HTTPS.</translation>
 <translation id="6949872517221025916">Réinitialiser votre mot de passe</translation>
 <translation id="6950684638814147129">Erreur lors de l'analyse de la valeur JSON : <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Tout réinitialiser</translation>
@@ -2033,7 +2032,6 @@ Détails supplémentaires :
 <translation id="8190193880870196235">Gérée par une extension</translation>
 <translation id="8193086767630290324">Actions effectuées avec les données signalées comme confidentielles</translation>
 <translation id="8194797478851900357">&amp;Annuler le déplacement</translation>
-<translation id="8199274926193258625"><ph name="HOSTNAME" /> pourrait devoir prendre des mesures supplémentaires pour vérifier votre paiement</translation>
 <translation id="8201077131113104583">URL de mise à jour non valide pour l'extension avec l'identifiant « ᠎<ph name="EXTENSION_ID" /> ».</translation>
 <translation id="8202097416529803614">Résumé de la commande</translation>
 <translation id="8202370299023114387">Conflit</translation>
