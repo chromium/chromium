@@ -29,7 +29,7 @@ WebAudioMediaStreamSource::~WebAudioMediaStreamSource() {
   EnsureSourceIsStopped();
 }
 
-void WebAudioMediaStreamSource::SetFormat(size_t number_of_channels,
+void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
                                           float sample_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(1) << "WebAudio media stream source changed format to: channels="
@@ -85,7 +85,7 @@ void WebAudioMediaStreamSource::EnsureSourceIsStopped() {
 
 void WebAudioMediaStreamSource::ConsumeAudio(
     const Vector<const float*>& audio_data,
-    size_t number_of_frames) {
+    int number_of_frames) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamSource::ConsumeAudio", "frames",
                number_of_frames);
@@ -97,8 +97,10 @@ void WebAudioMediaStreamSource::ConsumeAudio(
 
   wrapper_bus_->set_frames(number_of_frames);
   DCHECK_EQ(wrapper_bus_->channels(), static_cast<int>(audio_data.size()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    wrapper_bus_->SetChannelData(i, const_cast<float*>(audio_data[i]));
+  for (wtf_size_t i = 0; i < audio_data.size(); ++i) {
+    wrapper_bus_->SetChannelData(static_cast<int>(i),
+                                 const_cast<float*>(audio_data[i]));
+  }
 
   // The following will result in zero, one, or multiple synchronous calls to
   // DeliverRebufferedAudio().

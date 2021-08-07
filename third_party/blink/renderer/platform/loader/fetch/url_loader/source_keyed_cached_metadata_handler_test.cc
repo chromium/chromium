@@ -127,7 +127,7 @@ class MockCachedMetadataSender final : public CachedMetadataSender {
   ::testing::Message msg;
   msg << failure_msg << " for " << actual_expression;
   msg << "\n  Expected: [" << expected.size() << "] { ";
-  for (size_t i = 0; i < expected.size(); ++i) {
+  for (wtf_size_t i = 0; i < expected.size(); ++i) {
     if (i > 0)
       msg << ", ";
     msg << std::hex << static_cast<int>(expected[i]);
@@ -162,7 +162,7 @@ class MockCachedMetadataSender final : public CachedMetadataSender {
                                  actual);
   }
   const uint8_t* actual_data = actual->Data();
-  for (size_t i = 0; i < expected.size(); ++i) {
+  for (wtf_size_t i = 0; i < expected.size(); ++i) {
     if (actual_data[i] != expected[i]) {
       return CachedMetadataFailure("Wrong data", actual_expression, expected,
                                    actual);

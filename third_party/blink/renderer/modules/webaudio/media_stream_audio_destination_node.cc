@@ -68,7 +68,7 @@ MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
           AudioBus::Create(number_of_channels,
                            GetDeferredTaskHandler().RenderQuantumFrames())) {
   SendLogMessage(String::Format("%s", __func__));
-  source_.Lock()->SetAudioFormat(number_of_channels,
+  source_.Lock()->SetAudioFormat(static_cast<int>(number_of_channels),
                                  node.context()->sampleRate());
   SetInternalChannelCountMode(kExplicit);
   Initialize();
@@ -108,7 +108,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
           count, GetDeferredTaskHandler().RenderQuantumFrames());
       // setAudioFormat has an internal lock.  This can cause audio to
       // glitch.  This is outside of our control.
-      source->SetAudioFormat(count, Context()->sampleRate());
+      source->SetAudioFormat(static_cast<int>(count), Context()->sampleRate());
     }
   }
 
@@ -116,7 +116,7 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
 
   // consumeAudio has an internal lock (also used by setAudioFormat).
   // This can cause audio to glitch.  This is outside of our control.
-  source->ConsumeAudio(mix_bus_.get(), number_of_frames);
+  source->ConsumeAudio(mix_bus_.get(), static_cast<int>(number_of_frames));
 }
 
 void MediaStreamAudioDestinationHandler::SetChannelCount(

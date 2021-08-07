@@ -119,7 +119,7 @@ template <
     typename OutElement = decltype(ConvertToBlink(std::declval<InElement>()))>
 Vector<OutElement> ConvertToBlink(const std::vector<InElement>& in) {
   Vector<OutElement> out;
-  out.ReserveCapacity(in.size());
+  out.ReserveCapacity(base::checked_cast<wtf_size_t>(in.size()));
   for (const auto& element : in) {
     out.push_back(ConvertToBlink(element));
   }

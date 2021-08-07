@@ -248,8 +248,9 @@ void SourceKeyedCachedMetadataHandler::SendToPlatform(
       base::span<const uint8_t> data = metadata.value->SerializedData();
       size_t entry_size = data.size();
       serialized_data.Append(reinterpret_cast<const uint8_t*>(&entry_size),
-                             sizeof(entry_size));
-      serialized_data.Append(data.data(), data.size());
+                             static_cast<wtf_size_t>(sizeof(entry_size)));
+      serialized_data.Append(data.data(),
+                             base::checked_cast<wtf_size_t>(data.size()));
     }
     sender_->Send(code_cache_host, serialized_data.data(),
                   serialized_data.size());

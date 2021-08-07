@@ -412,12 +412,13 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
   }
 
   std::vector<uint32_t> spatial_layer_frame_size;
-  size_t max_sl_index = input_image.SpatialIndex().value_or(0);
-  for (size_t i = 0; i <= max_sl_index; i++) {
+  int max_sl_index = input_image.SpatialIndex().value_or(0);
+  for (int i = 0; i <= max_sl_index; i++) {
     auto frame_size = input_image.SpatialLayerFrameSize(i);
     if (!frame_size)
       continue;
-    spatial_layer_frame_size.push_back(*frame_size);
+    spatial_layer_frame_size.push_back(
+        base::checked_cast<uint32_t>(*frame_size));
   }
 
   // Convert to media::DecoderBuffer.

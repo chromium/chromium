@@ -28,7 +28,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead) {
             MOJO_RESULT_OK);
 
   const std::string kData = "Such hospitality. I'm underwhelmed.";
-  uint32_t write_size = kData.size();
+  uint32_t write_size = static_cast<uint32_t>(kData.size());
 
   MojoResult rv = producer_handle->WriteData(kData.c_str(), &write_size,
                                              MOJO_WRITE_DATA_FLAG_NONE);
@@ -56,7 +56,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {
             MOJO_RESULT_OK);
 
   const std::string kData = "Such hospitality. I'm underwhelmed.";
-  uint32_t write_size = kData.size();
+  uint32_t write_size = static_cast<uint32_t>(kData.size());
 
   MojoResult rv = producer_handle->WriteData(kData.c_str(), &write_size,
                                              MOJO_WRITE_DATA_FLAG_NONE);

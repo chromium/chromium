@@ -601,7 +601,7 @@ void ResourceLoader::Run() {
 }
 
 void ResourceLoader::DidReceiveData(base::span<const char> data) {
-  DidReceiveData(data.data(), data.size());
+  DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
 void ResourceLoader::DidFinishLoadingBody() {

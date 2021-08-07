@@ -91,12 +91,12 @@ unsigned Character::ExpansionOpportunityCount(
     const TextJustify text_justify) {
   if (text_justify == TextJustify::kDistribute) {
     is_after_expansion = true;
-    return characters.size();
+    return base::checked_cast<unsigned>(characters.size());
   }
 
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (unsigned i = 0; i < characters.size(); ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       if (TreatAsSpace(characters[i])) {
         count++;
         is_after_expansion = true;
@@ -105,7 +105,7 @@ unsigned Character::ExpansionOpportunityCount(
       }
     }
   } else {
-    for (unsigned i = characters.size(); i > 0; --i) {
+    for (size_t i = characters.size(); i > 0; --i) {
       if (TreatAsSpace(characters[i - 1])) {
         count++;
         is_after_expansion = true;
@@ -125,7 +125,7 @@ unsigned Character::ExpansionOpportunityCount(
     const TextJustify text_justify) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (unsigned i = 0; i < characters.size(); ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       UChar32 character = characters[i];
       if (TreatAsSpace(character)) {
         count++;
@@ -148,7 +148,7 @@ unsigned Character::ExpansionOpportunityCount(
       is_after_expansion = false;
     }
   } else {
-    for (unsigned i = characters.size(); i > 0; --i) {
+    for (size_t i = characters.size(); i > 0; --i) {
       UChar32 character = characters[i - 1];
       if (TreatAsSpace(character)) {
         count++;

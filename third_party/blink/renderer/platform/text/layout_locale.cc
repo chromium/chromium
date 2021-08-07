@@ -42,7 +42,7 @@ PerThreadData& GetPerThreadData() {
 static hb_language_t ToHarfbuzLanguage(const AtomicString& locale) {
   std::string locale_as_latin1 = locale.Latin1();
   return hb_language_from_string(locale_as_latin1.data(),
-                                 locale_as_latin1.length());
+                                 static_cast<int>(locale_as_latin1.length()));
 }
 
 // SkFontMgr uses two/three-letter language code with an optional ISO 15924
@@ -233,7 +233,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
     return string_;
 
   std::string utf8_locale = string_.Utf8();
-  Vector<char> buffer(utf8_locale.length() + 11, 0);
+  Vector<char> buffer(static_cast<wtf_size_t>(utf8_locale.length() + 11), 0);
   memcpy(buffer.data(), utf8_locale.c_str(), utf8_locale.length());
 
   const char* keyword_value = nullptr;

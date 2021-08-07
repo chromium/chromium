@@ -42,9 +42,9 @@ class HTTPHeaderNameListParser {
         return;
       }
 
-      size_t token_start = pos_;
+      wtf_size_t token_start = pos_;
       ConsumeTokenChars();
-      size_t token_size = pos_ - token_start;
+      wtf_size_t token_size = pos_ - token_start;
       if (token_size == 0) {
         output.clear();
         return;
@@ -93,7 +93,7 @@ class HTTPHeaderNameListParser {
   }
 
   const String value_;
-  size_t pos_;
+  wtf_size_t pos_;
 };
 
 }  // namespace

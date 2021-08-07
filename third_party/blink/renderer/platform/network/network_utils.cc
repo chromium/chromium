@@ -133,7 +133,8 @@ Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
                                   &had_charset, &boundary);
   base::TrimString(boundary, " \"", &boundary);
   Vector<char> result;
-  result.Append(boundary.data(), boundary.size());
+  result.Append(boundary.data(),
+                base::checked_cast<wtf_size_t>(boundary.size()));
   return result;
 }
 

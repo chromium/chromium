@@ -214,7 +214,7 @@ class PLATFORM_EXPORT PersistentRegionBase {
   PersistentNode* free_list_head_ = nullptr;
   PersistentNodeSlots* slots_ = nullptr;
 #if DCHECK_IS_ON()
-  size_t used_node_count_ = 0;
+  int used_node_count_ = 0;
 #endif
 };
 
@@ -235,7 +235,7 @@ inline PersistentNode* PersistentRegionBase::AllocateNode(void* self,
 
 void PersistentRegionBase::FreeNode(PersistentNode* persistent_node) {
 #if DCHECK_IS_ON()
-  DCHECK_GT(used_node_count_, 0u);
+  DCHECK_GT(used_node_count_, 0);
 #endif
   persistent_node->SetFreeListNext(free_list_head_);
   free_list_head_ = persistent_node;

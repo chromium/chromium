@@ -84,7 +84,7 @@ class BlobBytesStreamer {
 
  private:
   // The index of the item currently being written.
-  size_t current_item_ = 0;
+  wtf_size_t current_item_ = 0;
   // The offset into the current item of the first byte not yet written to the
   // data pipe.
   size_t current_item_offset_ = 0;
@@ -162,7 +162,8 @@ void BlobBytesProvider::AppendData(base::span<const char> data) {
       data_.back()->length() + data.size() > kMaxConsolidatedItemSizeInBytes) {
     AppendData(RawData::Create());
   }
-  data_.back()->MutableData()->Append(data.data(), data.size());
+  data_.back()->MutableData()->Append(
+      data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
 void BlobBytesProvider::RequestAsReply(RequestAsReplyCallback callback) {
@@ -171,7 +172,7 @@ void BlobBytesProvider::RequestAsReply(RequestAsReplyCallback callback) {
   // to reduce the number of copies of data that are made here.
   Vector<uint8_t> result;
   for (const auto& d : data_)
-    result.Append(d->data(), d->length());
+    result.Append(d->data(), base::checked_cast<wtf_size_t>(d->length()));
   std::move(callback).Run(result);
 }
 
@@ -205,9 +206,9 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
 
   // Find first data item that should be read from (by finding the first offset
   // that starts after the offset we want to start reading from).
-  size_t data_index =
+  wtf_size_t data_index = static_cast<wtf_size_t>(
       std::upper_bound(offsets_.begin(), offsets_.end(), source_offset) -
-      offsets_.begin();
+      offsets_.begin());
 
   // Offset of the current data chunk in the overall stream provided by this
   // provider.

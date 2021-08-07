@@ -302,8 +302,8 @@ Vector<String> RTCStatsMember::ValueSequenceString() const {
   DCHECK(IsDefined());
   const std::vector<std::string>& sequence =
       *member_->cast_to<webrtc::RTCStatsMember<std::vector<std::string>>>();
-  Vector<String> wtf_sequence(sequence.size());
-  for (size_t i = 0; i < sequence.size(); ++i)
+  Vector<String> wtf_sequence(base::checked_cast<wtf_size_t>(sequence.size()));
+  for (wtf_size_t i = 0; i < wtf_sequence.size(); ++i)
     wtf_sequence[i] = String::FromUTF8(sequence[i]);
   return wtf_sequence;
 }

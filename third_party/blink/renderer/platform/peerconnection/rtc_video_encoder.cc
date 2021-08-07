@@ -932,7 +932,7 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
   }
 
   // Immediately provide all output buffers to the VEA.
-  for (size_t i = 0; i < output_buffers_.size(); ++i) {
+  for (wtf_size_t i = 0; i < output_buffers_.size(); ++i) {
     video_encoder_->UseOutputBitstreamBuffer(
         media::BitstreamBuffer(i, output_buffers_[i].first.Duplicate(),
                                output_buffers_[i].first.GetSize()));

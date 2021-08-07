@@ -303,15 +303,16 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
   }
   Statistics stats = ComputeStatistics();
   base::UmaHistogramCounts100000("Memory.ParkableString.TotalSizeKb.5min",
-                                 stats.original_size / 1000);
-  base::UmaHistogramCounts100000("Memory.ParkableString.CompressedSizeKb.5min",
-                                 stats.compressed_size / 1000);
+                                 static_cast<int>(stats.original_size / 1000));
+  base::UmaHistogramCounts100000(
+      "Memory.ParkableString.CompressedSizeKb.5min",
+      static_cast<int>(stats.compressed_size / 1000));
   size_t savings = stats.compressed_original_size - stats.compressed_size;
   base::UmaHistogramCounts100000("Memory.ParkableString.SavingsKb.5min",
-                                 savings / 1000);
+                                 static_cast<int>(savings / 1000));
   if (stats.compressed_original_size != 0) {
-    size_t ratio_percentage =
-        (100 * stats.compressed_size) / stats.compressed_original_size;
+    int ratio_percentage = static_cast<int>((100 * stats.compressed_size) /
+                                            stats.compressed_original_size);
     base::UmaHistogramPercentageObsoleteDoNotUse(
         "Memory.ParkableString.CompressionRatio.5min", ratio_percentage);
   }
@@ -332,7 +333,7 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
         "Memory.ParkableString.MemorySavingsKb.5min",
         std::max(0, static_cast<int>(stats.savings_size)) / 1000);
     base::UmaHistogramCounts100000("Memory.ParkableString.OnDiskSizeKb.5min",
-                                   stats.on_disk_size / 1000);
+                                   static_cast<int>(stats.on_disk_size / 1000));
     base::UmaHistogramCounts100000(
         "Memory.ParkableString.OnDiskFootprintKb.5min",
         static_cast<int>(data_allocator().disk_footprint()) / 1000);

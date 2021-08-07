@@ -41,7 +41,7 @@ static inline void Append(Vector<char>& buffer, const char* string) {
 }
 
 static inline void Append(Vector<char>& buffer, const std::string& string) {
-  buffer.Append(string.data(), string.length());
+  buffer.Append(string.data(), base::checked_cast<wtf_size_t>(string.length()));
 }
 
 static inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
@@ -229,8 +229,8 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
   static const char kSafeCharacters[] = "-._*";
 
   // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
-  unsigned length = string.length();
-  for (unsigned i = 0; i < length; ++i) {
+  size_t length = string.length();
+  for (size_t i = 0; i < length; ++i) {
     unsigned char c = string.data()[i];
 
     if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||

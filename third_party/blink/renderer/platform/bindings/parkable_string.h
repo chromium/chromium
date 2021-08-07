@@ -88,7 +88,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
 
     return metadata_->length_;
   }
-  unsigned CharactersSizeInBytes() const;
+  size_t CharactersSizeInBytes() const;
   size_t MemoryFootprintForDump() const;
 
   // Returns true iff the string can be parked. This does not mean that the
@@ -319,7 +319,7 @@ class PLATFORM_EXPORT ParkableString final {
   // The string is guaranteed to be valid for
   // max(lifetime of a copy of the returned reference, current thread task).
   const String& ToString() const;
-  wtf_size_t CharactersSizeInBytes() const;
+  size_t CharactersSizeInBytes() const;
 
   // Causes the string to be unparked. Note that the pointer must not be
   // cached.

@@ -55,9 +55,9 @@ enum class ParkingAction { kParked, kUnparked, kWritten, kRead };
 void RecordStatistics(size_t size,
                       base::TimeDelta duration,
                       ParkingAction action) {
-  size_t throughput_mb_s =
-      static_cast<size_t>(size / duration.InSecondsF()) / 1000000;
-  size_t size_kb = size / 1000;
+  int throughput_mb_s =
+      base::ClampRound(size / duration.InSecondsF() / 1000000);
+  int size_kb = static_cast<int>(size / 1000);
 
   const char *size_histogram, *latency_histogram, *throughput_histogram;
   switch (action) {
@@ -346,7 +346,7 @@ const String& ParkableStringImpl::ToString() {
   return string_;
 }
 
-unsigned ParkableStringImpl::CharactersSizeInBytes() const {
+size_t ParkableStringImpl::CharactersSizeInBytes() const {
   AssertOnValidThread();
   if (!may_be_parked())
     return string_.CharactersSizeInBytes();
@@ -546,7 +546,8 @@ String ParkableStringImpl::UnparkInternal() {
     base::ElapsedTimer disk_read_timer;
     DCHECK(has_on_disk_data());
     metadata_->compressed_ = std::make_unique<Vector<uint8_t>>();
-    metadata_->compressed_->Grow(metadata_->on_disk_metadata_->size());
+    metadata_->compressed_->Grow(
+        base::checked_cast<wtf_size_t>(metadata_->on_disk_metadata_->size()));
     manager.data_allocator().Read(*metadata_->on_disk_metadata_,
                                   metadata_->compressed_->data());
     base::TimeDelta elapsed = disk_read_timer.Elapsed();
@@ -674,7 +675,7 @@ void ParkableStringImpl::CompressInBackground(
       // Not using realloc() as we want the compressed data to be a regular
       // WTF::Vector.
       compressed->Append(reinterpret_cast<const uint8_t*>(buffer.data()),
-                         compressed_size);
+                         base::checked_cast<wtf_size_t>(compressed_size));
     }
   }
   base::TimeDelta thread_elapsed = thread_timer.Elapsed();
@@ -846,7 +847,7 @@ const String& ParkableString::ToString() const {
   return impl_ ? impl_->ToString() : g_empty_string;
 }
 
-wtf_size_t ParkableString::CharactersSizeInBytes() const {
+size_t ParkableString::CharactersSizeInBytes() const {
   return impl_ ? impl_->CharactersSizeInBytes() : 0;
 }
 

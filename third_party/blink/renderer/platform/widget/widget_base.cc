@@ -1098,7 +1098,7 @@ bool WidgetBase::ShouldUpdateCompositionInfo(const gfx::Range& range,
     return true;
   if (bounds.size() != composition_character_bounds_.size())
     return true;
-  for (size_t i = 0; i < bounds.size(); ++i) {
+  for (wtf_size_t i = 0; i < bounds.size(); ++i) {
     if (bounds[i] != composition_character_bounds_[i])
       return true;
   }

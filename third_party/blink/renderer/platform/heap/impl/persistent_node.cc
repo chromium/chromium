@@ -29,7 +29,7 @@ PersistentRegionBase::~PersistentRegionBase() {
 }
 
 int PersistentRegionBase::NodesInUse() const {
-  size_t persistent_count = 0;
+  int persistent_count = 0;
   for (PersistentNodeSlots* slots = slots_; slots; slots = slots->next) {
     for (int i = 0; i < PersistentNodeSlots::kSlotCount; ++i) {
       if (!slots->slot[i].IsUnused())
@@ -58,7 +58,7 @@ void PersistentRegionBase::EnsureNodeSlots() {
 void PersistentRegionBase::TraceNodesImpl(Visitor* visitor,
                                           ShouldTraceCallback should_trace) {
   free_list_head_ = nullptr;
-  size_t persistent_count = 0;
+  int persistent_count = 0;
   PersistentNodeSlots** prev_next = &slots_;
   PersistentNodeSlots* slots = slots_;
   while (slots) {
@@ -131,7 +131,7 @@ void PersistentRegion::PrepareForThreadStateTermination(ThreadState* state) {
     slots = slots->next;
   }
 #if DCHECK_IS_ON()
-  DCHECK_EQ(used_node_count_, 0u);
+  DCHECK_EQ(used_node_count_, 0);
 #endif
 }
 
@@ -186,7 +186,7 @@ void CrossThreadPersistentRegion::UnpoisonCrossThreadPersistents() {
 #if DCHECK_IS_ON()
   ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
 #endif
-  size_t persistent_count = 0;
+  int persistent_count = 0;
   for (PersistentNodeSlots* slots = slots_; slots; slots = slots->next) {
     for (int i = 0; i < PersistentNodeSlots::kSlotCount; ++i) {
       const PersistentNode& node = slots->slot[i];

@@ -140,7 +140,8 @@ void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {
   // Doesn't need locking as files support concurrent access, and we don't
   // update metadata.
   char* data_char = reinterpret_cast<char*>(data);
-  DoRead(metadata.start_offset(), data_char, metadata.size());
+  DoRead(metadata.start_offset(), data_char,
+         base::checked_cast<int>(metadata.size()));
 
 #if DCHECK_IS_ON()
   {
