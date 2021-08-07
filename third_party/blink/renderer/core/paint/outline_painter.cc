@@ -299,18 +299,6 @@ FloatSize GetRadiiCorner(const FloatRoundedRect::Radii& radii,
   return p2.y() < p3.y() ? radii.TopLeft() : radii.BottomLeft();
 }
 
-SkPathDirection CornerArcDirection(const FloatRoundedRect::Radii& radii,
-                                   const SkPoint& p1,
-                                   const SkPoint& p2,
-                                   const SkPoint& p3) {
-  if (p1.x() == p2.x()) {
-    return (p1.y() < p2.y()) == (p2.x() < p3.x()) ? SkPathDirection::kCCW
-                                                  : SkPathDirection::kCW;
-  }
-  return (p1.x() < p2.x()) == (p2.y() < p3.y()) ? SkPathDirection::kCW
-                                                : SkPathDirection::kCCW;
-}
-
 struct Line {
   SkPoint start;
   SkPoint end;
@@ -392,45 +380,43 @@ void AddCornerRadiiToPath(SkPath& path, const FloatRoundedRect::Radii& radii) {
       case SkPath::kMove_Verb:
         DCHECK(lines.IsEmpty());
         break;
-      case SkPath::kLine_Verb: {
-        Line new_line{points[0], points[1]};
-        if (lines.IsEmpty() || !MergeLineIfPossible(lines.back(), new_line))
-          lines.push_back(new_line);
+      case SkPath::kLine_Verb:
+        if (points[0] != points[1]) {
+          Line new_line{points[0], points[1]};
+          if (lines.IsEmpty() || !MergeLineIfPossible(lines.back(), new_line)) {
+            lines.push_back(new_line);
+            DCHECK(lines.size() == 1 ||
+                   lines.back().start == lines[lines.size() - 2].end);
+          }
+        }
         break;
-      }
       case SkPath::kClose_Verb: {
         DCHECK_GE(lines.size(), 4u);
         if (MergeLineIfPossible(lines.back(), lines.front())) {
           lines.front() = lines.back();
           lines.pop_back();
         }
-        Vector<SkPathDirection> arc_directions(lines.size());
-        // Save the first line before adjustment because we may adjust the line
-        // to zero length which loses direction. Will be used to adjust the last
-        // line.
-        Line original_first_line = lines.front();
+        DCHECK(lines.front().start == lines.back().end);
+        auto new_lines = lines;
         for (wtf_size_t i = 0; i < lines.size(); i++) {
           const SkPoint& prev_point =
               lines[i == 0 ? lines.size() - 1 : i - 1].start;
-          const Line& next_line =
-              i == lines.size() - 1 ? original_first_line : lines[i + 1];
-          DCHECK(lines[i].end == next_line.start);
-          arc_directions[i] = CornerArcDirection(
-              radii, lines[i].start, next_line.start, next_line.end);
-          AdjustLineBetweenCorners(lines[i], radii, prev_point, next_line.end);
+          const SkPoint& next_point =
+              lines[i == lines.size() - 1 ? 0 : i + 1].end;
+          AdjustLineBetweenCorners(new_lines[i], radii, prev_point, next_point);
         }
-        // Generate the new contour into |result|.
-        path.moveTo(lines[0].start);
-        for (wtf_size_t i = 0; i < lines.size(); i++) {
-          const Line& line = lines[i];
+        // Generate the new contour into |path|.
+        path.moveTo(new_lines[0].start);
+        for (wtf_size_t i = 0; i < new_lines.size(); i++) {
+          const Line& line = new_lines[i];
           if (line.end != line.start)
             path.lineTo(line.end);
-          const Line& next_line = lines[i == lines.size() - 1 ? 0 : i + 1];
+          const Line& next_line = new_lines[i == lines.size() - 1 ? 0 : i + 1];
           if (line.end != next_line.start) {
-            path.arcTo(std::abs(next_line.start.x() - line.end.x()),
-                       std::abs(next_line.start.y() - line.end.y()), 0,
-                       SkPath::kSmall_ArcSize, arc_directions[i],
-                       next_line.start.x(), next_line.start.y());
+            constexpr float kCornerConicWeight = 0.707106781187;  // 1/sqrt(2)
+            // This produces a 90 degree arc from line.end towards lines[i].end
+            // to next_line.start.
+            path.conicTo(lines[i].end, next_line.start, kCornerConicWeight);
           }
         }
         lines.clear();
