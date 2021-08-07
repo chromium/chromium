@@ -415,6 +415,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface EncodedAudioChunk
 [Worker]     attribute @@toStringTag
 [Worker]     getter byteLength
+[Worker]     getter duration
 [Worker]     getter timestamp
 [Worker]     getter type
 [Worker]     method constructor

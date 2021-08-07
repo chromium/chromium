@@ -15,6 +15,7 @@ enum EncodedAudioChunkType {
   readonly attribute EncodedAudioChunkType type;
   readonly attribute long long timestamp;  // microseconds
   readonly attribute unsigned long byteLength;
+  readonly attribute unsigned long long? duration;
   [RaisesException]
   void copyTo([AllowShared] BufferSource destination);
 };

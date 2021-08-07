@@ -4,9 +4,11 @@
 test(t => {
   let chunk = new EncodedAudioChunk({type: 'key',
                                      timestamp: 10,
+                                     duration: 123,
                                      data: new Uint8Array([0x0A, 0x0B, 0x0C])});
   assert_equals(chunk.type, 'key', 'type');
   assert_equals(chunk.timestamp, 10, 'timestamp');
+  assert_equals(chunk.duration, 123, 'duration');
   assert_equals(chunk.byteLength, 3, 'byteLength');
   let copyDest = new Uint8Array(3);
   chunk.copyTo(copyDest);
@@ -20,6 +22,7 @@ test(t => {
                                  data: new Uint8Array([0x00, 0x01])});
   assert_equals(chunk.type, 'delta', 'type');
   assert_equals(chunk.timestamp, 100, 'timestamp');
+  assert_equals(chunk.duration, null, 'missing duration');
   assert_equals(chunk.byteLength, 2, 'byteLength');
   copyDest = new Uint8Array(2);
   chunk.copyTo(copyDest);
@@ -37,5 +40,5 @@ test(t => {
 
   assert_throws_js(
     TypeError,
-    () => chunk.copyTo(makeDetachedArrayBuffer()), 'destiation is detached');
-}, 'Test copyTo() exception if destiation invalid');
+    () => chunk.copyTo(makeDetachedArrayBuffer()), 'destination is detached');
+}, 'Test copyTo() exception if destination invalid');

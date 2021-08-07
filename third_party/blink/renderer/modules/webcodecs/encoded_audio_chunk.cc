@@ -31,7 +31,18 @@ EncodedAudioChunk* EncodedAudioChunk::Create(
     timestamp = base::TimeDelta::FiniteMax();
   buffer->set_timestamp(timestamp);
 
-  buffer->set_duration(media::kNoTimestamp);
+  // media::kNoTimestamp corresponds to base::TimeDelta::Min(), and internally
+  // denotes the absence of duration. We use base::TimeDelta::FiniteMax() -
+  // which is one less than base::TimeDelta::Max() - because
+  // base::TimeDelta::Max() is reserved for media::kInfiniteDuration, and is
+  // handled differently.
+  buffer->set_duration(
+      init->hasDuration()
+          ? base::TimeDelta::FromMicroseconds(std::min(
+                uint64_t{base::TimeDelta::FiniteMax().InMicroseconds()},
+                init->duration()))
+          : media::kNoTimestamp);
+
   buffer->set_is_key_frame(init->type() == "key");
   return MakeGarbageCollected<EncodedAudioChunk>(std::move(buffer));
 }
@@ -45,6 +56,12 @@ String EncodedAudioChunk::type() const {
 
 int64_t EncodedAudioChunk::timestamp() const {
   return buffer_->timestamp().InMicroseconds();
+}
+
+absl::optional<uint64_t> EncodedAudioChunk::duration() const {
+  if (buffer_->duration() == media::kNoTimestamp)
+    return absl::nullopt;
+  return buffer_->duration().InMicroseconds();
 }
 
 uint64_t EncodedAudioChunk::byteLength() const {

@@ -2495,6 +2495,7 @@ interface ElementInternals
 interface EncodedAudioChunk
     attribute @@toStringTag
     getter byteLength
+    getter duration
     getter timestamp
     getter type
     method constructor

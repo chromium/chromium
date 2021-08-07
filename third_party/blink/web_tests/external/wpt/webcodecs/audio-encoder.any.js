@@ -112,6 +112,7 @@ promise_test(async t => {
   for (chunk of outputs) {
     assert_greater_than(chunk.byteLength, 0);
     assert_greater_than_equal(timestamp_us, chunk.timestamp);
+    assert_greater_than_equal(chunk.duration, 0);
   }
 }, 'Simple audio encoding');
 

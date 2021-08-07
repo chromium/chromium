@@ -75,6 +75,8 @@ message EncodedAudioChunk {
 
   optional uint64 timestamp = 2;
 
+  optional uint64 duration = 3;
+
   optional bytes data = 4;
 }
 

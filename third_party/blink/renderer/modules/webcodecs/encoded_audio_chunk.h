@@ -29,6 +29,7 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   String type() const;
   int64_t timestamp() const;
   uint64_t byteLength() const;
+  absl::optional<uint64_t> duration() const;
   void copyTo(const V8BufferSource* destination,
               ExceptionState& exception_state);
 

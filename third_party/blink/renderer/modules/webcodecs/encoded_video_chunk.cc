@@ -31,11 +31,16 @@ EncodedVideoChunk* EncodedVideoChunk::Create(EncodedVideoChunkInit* init) {
     timestamp = base::TimeDelta::FiniteMax();
   buffer->set_timestamp(timestamp);
 
+  // media::kNoTimestamp corresponds to base::TimeDelta::Min(), and internally
+  // denotes the absence of duration. We use base::TimeDelta::FiniteMax() --
+  // which is one less than base::TimeDelta::Max() -- because
+  // base::TimeDelta::Max() is reserved for media::kInfiniteDuration, and is
+  // handled differently.
   buffer->set_duration(
       init->hasDuration()
-          ? base::TimeDelta::FromMicroseconds(
-                std::min(uint64_t{std::numeric_limits<int64_t>::max() - 1},
-                         init->duration()))
+          ? base::TimeDelta::FromMicroseconds(std::min(
+                uint64_t{base::TimeDelta::FiniteMax().InMicroseconds()},
+                init->duration()))
           : media::kNoTimestamp);
 
   buffer->set_is_key_frame(init->type() == "key");

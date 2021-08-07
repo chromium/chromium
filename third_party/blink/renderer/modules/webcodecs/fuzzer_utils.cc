@@ -173,8 +173,11 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(proto.timestamp());
   init->setType(ToChunkType(proto.type()));
-  init->setDuration(proto.duration());
   init->setData(data);
+
+  if (proto.has_duration())
+    init->setDuration(proto.duration());
+
   return EncodedVideoChunk::Create(init);
 }
 
@@ -187,6 +190,10 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
   init->setTimestamp(proto.timestamp());
   init->setType(ToChunkType(proto.type()));
   init->setData(data);
+
+  if (proto.has_duration())
+    init->setDuration(proto.duration());
+
   return EncodedAudioChunk::Create(init);
 }
 
