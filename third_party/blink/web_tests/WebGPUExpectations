@@ -112,6 +112,9 @@ crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_p
 # maxInterStageShaderComponents 64 -> 60 (crbug.com/dawn/759 [ Linux ][ Failure ] on NVIDIA will be recovered after the tests are fixed)
 crbug.com/dawn/802 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Skip ]
 
+# Deprecated values temporarily cause the wrong count.
+wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:TextureUsage,count:* [ Failure ]
+
 ###
 ### Test bugs (fixed upstream)
 ###
