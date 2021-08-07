@@ -56,6 +56,7 @@ enum DCLayerResult {
 };
 
 enum : size_t {
+  kStreamVideoResourceIndex = 0,
   kTextureResourceIndex = 0,
   kYPlaneResourceIndex = 0,
   kUVPlaneResourceIndex = 1,
@@ -168,10 +169,7 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
 void FromStreamVideoQuad(const StreamVideoDrawQuad* quad,
                          const gfx::Transform& transform_to_root_target,
                          DCLayerOverlay* dc_layer) {
-  dc_layer->resources[kYPlaneResourceIndex] = quad->resource_id();
-  // UV resource ID needs to be populated for checks in GLRenderer, even though
-  // it is not used with Media Foundation DirectComposition images.
-  dc_layer->resources[kUVPlaneResourceIndex] = quad->resource_id();
+  dc_layer->resources[kStreamVideoResourceIndex] = quad->resource_id();
   dc_layer->quad_rect = quad->rect;
   // Quad rect is in quad content space so both quad to target, and target to
   // root transforms must be applied to it.
