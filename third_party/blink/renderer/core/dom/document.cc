@@ -2024,7 +2024,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     return;
   }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   if (HTMLFrameOwnerElement* owner = LocalOwner()) {
     DCHECK(!owner->GetDocument()
                 .GetSlotAssignmentEngine()
@@ -2032,7 +2032,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     DCHECK(!owner->GetDocument().NeedsLayoutTreeUpdate());
     AssertLayoutTreeUpdated(owner->GetDocument());
   }
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   SCOPED_UMA_AND_UKM_TIMER(View()->EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kStyle);
