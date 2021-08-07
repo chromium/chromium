@@ -23,10 +23,12 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.ntp.LegacyIncognitoDescriptionView;
+import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -46,7 +48,7 @@ class TasksView extends CoordinatorLayoutForPointer {
     private AppBarLayout mHeaderView;
     private AppBarLayout.OnOffsetChangedListener mFakeSearchBoxShrinkAnimation;
     private SearchBoxCoordinator mSearchBoxCoordinator;
-    private LegacyIncognitoDescriptionView mIncognitoDescriptionView;
+    private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
     private boolean mIncognitoCookieControlsCardIsVisible;
     private boolean mIncognitoCookieControlsToggleIsChecked;
@@ -184,8 +186,19 @@ class TasksView extends CoordinatorLayoutForPointer {
             containerView.setFocusable(true);
             containerView.setFocusableInTouchMode(true);
         }
-        mIncognitoDescriptionView = (LegacyIncognitoDescriptionView) containerView.findViewById(
-                R.id.new_tab_incognito_container);
+
+        ViewStub incognitoDescriptionViewStub =
+                (ViewStub) findViewById(R.id.task_view_incognito_layout_stub);
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)) {
+            incognitoDescriptionViewStub.setLayoutResource(
+                    R.layout.revamped_incognito_description_layout);
+        } else {
+            incognitoDescriptionViewStub.setLayoutResource(R.layout.incognito_description_layout);
+        }
+
+        mIncognitoDescriptionView =
+                (IncognitoDescriptionView) incognitoDescriptionViewStub.inflate();
         if (mIncognitoDescriptionLearnMoreListener != null) {
             setIncognitoDescriptionLearnMoreClickListener(mIncognitoDescriptionLearnMoreListener);
         }
@@ -206,7 +219,7 @@ class TasksView extends CoordinatorLayoutForPointer {
      * @param isVisible Whether it's visible or not.
      */
     void setIncognitoDescriptionVisibility(boolean isVisible) {
-        mIncognitoDescriptionView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        ((View) mIncognitoDescriptionView).setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -216,7 +229,7 @@ class TasksView extends CoordinatorLayoutForPointer {
     void setIncognitoDescriptionLearnMoreClickListener(View.OnClickListener listener) {
         mIncognitoDescriptionLearnMoreListener = listener;
         if (mIncognitoDescriptionView != null) {
-            mIncognitoDescriptionView.findViewById(R.id.learn_more).setOnClickListener(listener);
+            mIncognitoDescriptionView.setLearnMoreOnclickListener(listener);
             mIncognitoDescriptionLearnMoreListener = null;
         }
     }
