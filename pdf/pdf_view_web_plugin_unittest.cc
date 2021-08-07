@@ -27,11 +27,14 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
 
-using testing::Pointwise;
-
 namespace chrome_pdf {
 
 namespace {
+
+using ::testing::InSequence;
+using ::testing::Invoke;
+using ::testing::MockFunction;
+using ::testing::Pointwise;
 
 // `kCanvasSize` needs to be big enough to hold plugin's snapshots during
 // testing.
@@ -80,7 +83,11 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
  public:
   explicit FakeContainerWrapper(PdfViewWebPlugin* web_plugin)
       : web_plugin_(web_plugin) {
-    UpdateTextInputState();
+    ON_CALL(*this, UpdateTextInputState)
+        .WillByDefault(Invoke(
+            this, &FakeContainerWrapper::UpdateTextInputStateFromPlugin));
+
+    UpdateTextInputStateFromPlugin();
   }
 
   FakeContainerWrapper(const FakeContainerWrapper&) = delete;
@@ -120,9 +127,9 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
               (const blink::WebAssociatedURLLoaderOptions&),
               (override));
 
-  void UpdateTextInputState() override {
-    widget_text_input_type_ = web_plugin_->GetPluginTextInputType();
-  }
+  MOCK_METHOD(void, UpdateTextInputState, (), (override));
+
+  MOCK_METHOD(void, UpdateSelectionBounds, (), (override));
 
   blink::WebLocalFrame* GetFrame() override { return nullptr; }
 
@@ -143,6 +150,10 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   void set_device_scale(float device_scale) { device_scale_ = device_scale; }
 
  private:
+  void UpdateTextInputStateFromPlugin() {
+    widget_text_input_type_ = web_plugin_->GetPluginTextInputType();
+  }
+
   float device_scale_ = 1.0f;
 
   // Represents the frame widget's text input type.
@@ -348,9 +359,19 @@ TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
   ASSERT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
             wrapper_ptr_->widget_text_input_type());
 
+  MockFunction<void()> checkpoint;
+  {
+    InSequence sequence;
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(checkpoint, Call);
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+  }
+
   plugin_->FormTextFieldFocusChange(true);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
             wrapper_ptr_->widget_text_input_type());
+
+  checkpoint.Call();
 
   plugin_->FormTextFieldFocusChange(false);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
@@ -376,6 +397,47 @@ TEST_F(PdfViewWebPluginTest, SearchString) {
         plugin_->SearchString(kTarget, kPattern, /*case_sensitive=*/false),
         Pointwise(SearchStringResultEq(), kExpectation));
   }
+}
+
+TEST_F(PdfViewWebPluginTest, UpdateFocus) {
+  MockFunction<void(int checkpoint_num)> checkpoint;
+
+  {
+    InSequence sequence;
+
+    // Focus false -> true: Triggers updates.
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*wrapper_ptr_, UpdateSelectionBounds);
+    EXPECT_CALL(checkpoint, Call(1));
+
+    // Focus true -> true: No updates.
+    EXPECT_CALL(checkpoint, Call(2));
+
+    // Focus true -> false: Triggers updates. `UpdateTextInputState` is called
+    // twice because it also gets called due to
+    // `PDFiumEngine::UpdateFocus(false)`.
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState).Times(2);
+    EXPECT_CALL(*wrapper_ptr_, UpdateSelectionBounds);
+    EXPECT_CALL(checkpoint, Call(3));
+
+    // Focus false -> false: No updates.
+    EXPECT_CALL(checkpoint, Call(4));
+
+    // Focus false -> true: Triggers updates.
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*wrapper_ptr_, UpdateSelectionBounds);
+  }
+
+  // The focus type does not matter in this test.
+  plugin_->UpdateFocus(/*focused=*/true, blink::mojom::FocusType::kNone);
+  checkpoint.Call(1);
+  plugin_->UpdateFocus(/*focused=*/true, blink::mojom::FocusType::kNone);
+  checkpoint.Call(2);
+  plugin_->UpdateFocus(/*focused=*/false, blink::mojom::FocusType::kNone);
+  checkpoint.Call(3);
+  plugin_->UpdateFocus(/*focused=*/false, blink::mojom::FocusType::kNone);
+  checkpoint.Call(4);
+  plugin_->UpdateFocus(/*focused=*/true, blink::mojom::FocusType::kNone);
 }
 
 }  // namespace chrome_pdf

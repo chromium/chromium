@@ -42,6 +42,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -68,6 +69,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/screen_info.h"
 #include "ui/events/blink/blink_event_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/scroll_offset.h"
@@ -200,6 +202,13 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
       widget->UpdateTextInputState();
   }
 
+  void UpdateSelectionBounds() override {
+    // `widget` is null in Print Preview.
+    auto* widget = GetFrame()->FrameWidget();
+    if (widget)
+      widget->UpdateSelectionBounds();
+  }
+
   blink::WebLocalFrame* GetFrame() override {
     return container_->GetDocument().GetFrame();
   }
@@ -316,6 +325,10 @@ v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
   return scriptable_receiver_.Get(isolate);
 }
 
+bool PdfViewWebPlugin::SupportsKeyboardFocus() const {
+  return !IsPrintPreview();
+}
+
 void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
@@ -356,7 +369,31 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 }
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
-                                   blink::mojom::FocusType focus_type) {}
+                                   blink::mojom::FocusType focus_type) {
+  if (has_focus_ != focused) {
+    engine()->UpdateFocus(focused);
+    container_wrapper_->UpdateTextInputState();
+    container_wrapper_->UpdateSelectionBounds();
+  }
+  has_focus_ = focused;
+
+  if (!has_focus_ || !SupportsKeyboardFocus())
+    return;
+
+  if (focus_type != blink::mojom::FocusType::kBackward &&
+      focus_type != blink::mojom::FocusType::kForward) {
+    return;
+  }
+
+  const int modifiers = focus_type == blink::mojom::FocusType::kForward
+                            ? blink::WebInputEvent::kNoModifiers
+                            : blink::WebInputEvent::kShiftKey;
+
+  blink::WebKeyboardEvent simulated_event(blink::WebInputEvent::Type::kKeyDown,
+                                          modifiers, base::TimeTicks());
+  simulated_event.windows_key_code = ui::KeyboardCode::VKEY_TAB;
+  PdfViewPluginBase::HandleInputEvent(simulated_event);
+}
 
 void PdfViewWebPlugin::UpdateVisibility(bool visibility) {}
 

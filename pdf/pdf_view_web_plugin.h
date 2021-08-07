@@ -100,6 +100,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Notifies the frame widget about the text input type change.
     virtual void UpdateTextInputState() = 0;
 
+    // Notifies the frame widget about the selection bound change.
+    virtual void UpdateSelectionBounds() = 0;
+
     // Returns the local frame to which the web plugin container belongs.
     virtual blink::WebLocalFrame* GetFrame() = 0;
 
@@ -138,6 +141,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void Destroy() override;
   blink::WebPluginContainer* Container() const override;
   v8::Local<v8::Object> V8ScriptableObject(v8::Isolate* isolate) override;
+  bool SupportsKeyboardFocus() const override;
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason reason) override;
   void Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) override;
   void UpdateGeometry(const gfx::Rect& window_rect,
@@ -293,6 +297,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
+
+  // Whether the plugin element currently has focus.
+  bool has_focus_ = false;
 
   blink::WebPluginParams initial_params_;
 
