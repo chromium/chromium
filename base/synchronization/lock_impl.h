@@ -12,12 +12,12 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include "base/win/windows_types.h"
+  #include "base/win/windows_types.h"
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#include <errno.h>
-#include <pthread.h>
-#include <string.h>
-#include <ostream>
+  #include <errno.h>
+  #include <pthread.h>
+  #include <string.h>
+  #include <ostream>
 #endif
 
 namespace base {

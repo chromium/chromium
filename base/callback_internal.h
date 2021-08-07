@@ -120,8 +120,12 @@ class BASE_EXPORT CallbackBase {
   CallbackBase& operator=(CallbackBaseCopyable&& c) noexcept;
 
   // Returns true if Callback is null (doesn't refer to anything).
-  bool is_null() const { return !bind_state_; }
-  explicit operator bool() const { return !is_null(); }
+  bool is_null() const { 
+    return !bind_state_;
+  }
+  explicit operator bool() const {
+    return !is_null();
+  }
 
   // Returns true if the callback invocation will be nop due to an cancellation.
   // It's invalid to call this on uninitialized callback.

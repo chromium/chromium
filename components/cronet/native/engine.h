@@ -18,7 +18,6 @@
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
 extern "C" typedef struct stream_engine stream_engine;
-
 namespace net {
 class CertVerifier;
 }
@@ -41,9 +40,11 @@ class Cronet_EngineImpl : public Cronet_Engine {
   Cronet_String GetVersionString() override;
   Cronet_String GetDefaultUserAgent() override;
   Cronet_RESULT Shutdown() override LOCKS_EXCLUDED(lock_);
+  
   void AddRequestFinishedListener(
       Cronet_RequestFinishedInfoListenerPtr listener,
       Cronet_ExecutorPtr executor) override;
+  
   void RemoveRequestFinishedListener(
       Cronet_RequestFinishedInfoListenerPtr listener) override;
 

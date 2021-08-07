@@ -52,8 +52,7 @@ net::RequestPriority ConvertRequestPriority(
   return net::DEFAULT_PRIORITY;
 }
 
-net::Idempotency ConvertIdempotency(
-    Cronet_UrlRequestParams_IDEMPOTENCY idempotency) {
+net::Idempotency ConvertIdempotency(Cronet_UrlRequestParams_IDEMPOTENCY idempotency) {
   switch (idempotency) {
     case Cronet_UrlRequestParams_IDEMPOTENCY_DEFAULT_IDEMPOTENCY:
       return net::DEFAULT_IDEMPOTENCY;

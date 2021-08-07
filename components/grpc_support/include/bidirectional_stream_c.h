@@ -19,9 +19,12 @@ extern "C" {
 
 /* Engine API. */
 
-/* Opaque object representing a Bidirectional stream creating engine. Created
+/**
+ * Opaque object representing a Bidirectional stream creating engine. Created
  * and configured outside of this API to facilitate sharing with other
- * components */
+ * components 
+ * 表示双向流创建引擎的不透明对象。 在此 API 之外创建和配置，以方便与其他组件共享。
+ */
 typedef struct stream_engine {
   void* obj;
   void* annotation;

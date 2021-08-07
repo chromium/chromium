@@ -37,7 +37,7 @@ class TestUtil;
 // done on the network thread. CronetUrlRequest client is expected to initiate
 // the next step like FollowDeferredRedirect, ReadData or Destroy. Public
 // methods can be called on any thread.
-class CronetURLRequest {
+class CronetURLRequest { // 发起网络请求
  public:
   // Callback implemented by CronetURLRequest() caller and owned by
   // CronetURLRequest::NetworkTasks. All callback methods are invoked on network

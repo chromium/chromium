@@ -7,9 +7,11 @@
 
 namespace base {
 
+//1次callback接口
 template <typename Signature>
 class OnceCallback;
 
+//重复次callback接口
 template <typename Signature>
 class RepeatingCallback;
 

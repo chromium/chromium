@@ -46,7 +46,7 @@ class TestUtil;
 struct URLRequestContextConfig;
 
 // Wrapper around net::URLRequestContext.
-class CronetURLRequestContext {
+class CronetURLRequestContext { // Cronet引擎上下文
  public:
   // Callback implemented by CronetURLRequestContext() caller and owned by
   // CronetURLRequestContext::NetworkTasks.

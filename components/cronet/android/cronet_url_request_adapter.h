@@ -36,6 +36,12 @@ class TestUtil;
 // done on the network thread. Java CronetUrlRequest is expected to initiate the
 // next step like FollowDeferredRedirect, ReadData or Destroy. Public methods
 // can be called on any thread.
+// 从 Java CronetUrlRequest 对象到本地(Native) CronetURLRequest 的适配器。
+// 从 Java 线程创建和配置。 Start、ReadData 和 Destroy 被发布到network线程，所有对 
+// Java CronetUrlRequest 的回调都是在network线程上完成的。 Java CronetUrlRequest 预计将启动
+// 下一步，如 FollowDeferredRedirect、ReadData 或 Destroy。 可以在任何线程上调用公共方法。
+// 将请求抛到内核network线程执行、对C++/Java进行数据转换、创建 IOBufferWithByteBuffer 
+// 将返回数据直接放在 Java ByteBuffer 中避免拷贝。
 class CronetURLRequestAdapter : public CronetURLRequest::Callback {
  public:
   // Bypasses cache if |jdisable_cache| is true. If context is not set up to
