@@ -4,8 +4,6 @@
 
 #include "pdf/pdf_view_plugin_base.h"
 
-#include <stdint.h>
-
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -314,12 +312,31 @@ std::unique_ptr<UrlLoader> PdfViewPluginBase::CreateUrlLoader() {
 }
 
 void PdfViewPluginBase::DocumentLoadComplete() {
-  // This method may be called in a `blink::ScriptForbiddenScope` context, which
-  // prevents posting messages, so complete the work asynchronously.
-  ScheduleTaskOnMainThread(
-      FROM_HERE,
-      base::BindOnce(&PdfViewPluginBase::DoDocumentLoadComplete, GetWeakPtr()),
-      /*result=*/0, base::TimeDelta());
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
+  document_load_state_ = DocumentLoadState::kComplete;
+
+  UserMetricsRecordAction("PDF.LoadSuccess");
+  RecordDocumentMetrics();
+
+  // Clear the focus state for on-screen keyboards.
+  FormTextFieldFocusChange(false);
+
+  if (IsPrintPreview())
+    OnPrintPreviewLoaded();
+
+  SendAttachments();
+  SendBookmarks();
+  SendMetadata();
+  SendLoadingProgress(/*percentage=*/100);
+
+  if (accessibility_state_ == AccessibilityState::kPending)
+    LoadAccessibility();
+
+  if (!full_frame_)
+    return;
+
+  DidStopLoading();
+  SetContentRestrictions(GetContentRestrictions());
 }
 
 void PdfViewPluginBase::DocumentLoadFailed() {
@@ -1351,35 +1368,6 @@ void PdfViewPluginBase::ClearDeferredInvalidates(
   for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();
-}
-
-void PdfViewPluginBase::DoDocumentLoadComplete(
-    int32_t /*unused_but_required*/) {
-  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
-  document_load_state_ = DocumentLoadState::kComplete;
-
-  UserMetricsRecordAction("PDF.LoadSuccess");
-  RecordDocumentMetrics();
-
-  // Clear the focus state for on-screen keyboards.
-  FormTextFieldFocusChange(false);
-
-  if (IsPrintPreview())
-    OnPrintPreviewLoaded();
-
-  SendAttachments();
-  SendBookmarks();
-  SendMetadata();
-  SendLoadingProgress(/*percentage=*/100);
-
-  if (accessibility_state_ == AccessibilityState::kPending)
-    LoadAccessibility();
-
-  if (!full_frame_)
-    return;
-
-  DidStopLoading();
-  SetContentRestrictions(GetContentRestrictions());
 }
 
 void PdfViewPluginBase::SendAttachments() {

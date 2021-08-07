@@ -586,13 +586,20 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
   CancelPaints();
 
   plugin_size_ = size;
+  CalculateVisiblePages();
+  OnSelectionPositionChanged();
 
   if (document_pending_) {
+    // This method may be called in a `blink::ScriptForbiddenScope` context,
+    // which imposes certain restrictions on clients. Complete the work
+    // asynchronously to avoid observable differences between this path and the
+    // normal loading path.
     document_pending_ = false;
-    FinishLoadingDocument();
-  } else {
-    CalculateVisiblePages();
-    OnSelectionPositionChanged();
+    client_->ScheduleTaskOnMainThread(
+        FROM_HERE,
+        base::BindOnce(&PDFiumEngine::FinishLoadingDocument,
+                       weak_factory_.GetWeakPtr()),
+        /*result=*/0, base::TimeDelta());
   }
 }
 
@@ -819,7 +826,7 @@ void PDFiumEngine::OnNewDataReceived() {
 
 void PDFiumEngine::OnDocumentComplete() {
   if (doc())
-    return FinishLoadingDocument();
+    return FinishLoadingDocument(0);
 
   document_->file_access().m_FileLen = doc_loader_->GetDocumentSize();
   if (!fpdf_availability()) {
@@ -836,7 +843,7 @@ void PDFiumEngine::OnDocumentCanceled() {
     OnDocumentComplete();
 }
 
-void PDFiumEngine::FinishLoadingDocument() {
+void PDFiumEngine::FinishLoadingDocument(int32_t /*unused_but_required*/) {
   // Note that doc_loader_->IsDocumentComplete() may not be true here if
   // called via `OnDocumentCanceled()`.
   DCHECK(doc());
@@ -2784,7 +2791,7 @@ void PDFiumEngine::ContinueLoadingDocument(const std::string& password) {
   LoadBody();
 
   if (doc_loader_->IsDocumentComplete())
-    FinishLoadingDocument();
+    FinishLoadingDocument(0);
 }
 
 void PDFiumEngine::LoadPageInfo() {

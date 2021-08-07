@@ -65,13 +65,13 @@ std::unique_ptr<PDFiumEngine> PDFiumTestBase::InitializeEngine(
   InitializeEngineResult result =
       InitializeEngineWithoutLoading(client, pdf_name);
   if (result.engine) {
+    // Simulate initializing plugin geometry.
+    result.engine->PluginSizeUpdated({});
+
     // Incrementally read the PDF. To detect linearized PDFs, the first read
     // should be at least 1024 bytes.
     while (result.document_loader->SimulateLoadData(1024))
       continue;
-
-    // Simulate initializing plugin geometry.
-    result.engine->PluginSizeUpdated({});
   }
   return std::move(result.engine);
 }
