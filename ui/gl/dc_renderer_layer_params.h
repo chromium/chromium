@@ -56,9 +56,6 @@ struct GL_EXPORT DCRendererLayerParams {
       gfx::ProtectedVideoType::kClear;
 
   gfx::HDRMetadata hdr_metadata;
-
-  // Ends access should this get accesssed from a shared image.
-  std::array<base::OnceClosure, kNumImages> release_image_cb;
 };
 
 }  // namespace ui

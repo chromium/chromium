@@ -886,13 +886,6 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
   if (swap_chain_image && !swap_chain_image->swap_chain())
     swap_chain_image = nullptr;
 
-  // Ensure release CB is called at exit.
-  std::array<base::ScopedClosureRunner, ui::DCRendererLayerParams::kNumImages>
-      release_runners;
-  for (unsigned int i = 0; i < ui::DCRendererLayerParams::kNumImages; i++) {
-    release_runners[i] =
-        base::ScopedClosureRunner(std::move(params.release_image_cb[i]));
-  }
   if (!image_dxgi && !image_d3d && (!y_image_memory || !uv_image_memory) &&
       !swap_chain_image) {
     DLOG(ERROR) << "Video GLImages are missing";
