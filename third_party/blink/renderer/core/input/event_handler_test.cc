@@ -1162,8 +1162,11 @@ TEST_F(EventHandlerTooltipTest, mouseLeaveClearsTooltip) {
 #endif
 TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromKeyboardUpdatesTooltip) {
   SetHtmlInnerHTML(
-      "<button id='b1' title='my tooltip 1'>button 1</button><button id='b2' "
-      "title='my tooltip 2' accessKey='a'>button 2</button>");
+      R"HTML(
+        <button id='b1' title='my tooltip 1'>button 1</button>
+        <button id='b2'>button 2</button>
+        <button id='b3' title='my tooltip 3' accessKey='a'>button 3</button>
+      )HTML");
 
   EXPECT_EQ(WTF::String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
@@ -1180,6 +1183,14 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromKeyboardUpdatesTooltip) {
     Element* element = GetDocument().getElementById("b1");
     EXPECT_EQ("my tooltip 1", LastToolTipText());
     EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+
+    // Doing the same but for a button that doesn't have a tooltip text should
+    // still trigger a tooltip update. The browser-side TooltipController will
+    // handle this case.
+    GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+    element = GetDocument().getElementById("b2");
+    EXPECT_TRUE(LastToolTipText().IsNull());
+    EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
   }
 
   ResetTooltip();
@@ -1192,8 +1203,8 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromKeyboardUpdatesTooltip) {
     e.unmodified_text[0] = 'a';
     GetDocument().GetFrame()->GetEventHandler().HandleAccessKey(e);
 
-    Element* element = GetDocument().getElementById("b2");
-    EXPECT_EQ("my tooltip 2", LastToolTipText());
+    Element* element = GetDocument().getElementById("b3");
+    EXPECT_EQ("my tooltip 3", LastToolTipText());
     EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
   }
 
@@ -1228,10 +1239,10 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromKeyboardUpdatesTooltip) {
 
   ResetTooltip();
 
-  // 5. Setting the focus to an element with a script action (FocusType::kNone
+  // 5. Moving the focus to an element with a script action (FocusType::kNone
   // means that the focus was set from a script) shouldn't update the tooltip.
   {
-    Element* element = GetDocument().getElementById("b2");
+    Element* element = GetDocument().getElementById("b3");
     element->focus();
 
     EXPECT_EQ("", LastToolTipText());
