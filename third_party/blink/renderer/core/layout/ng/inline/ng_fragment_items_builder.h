@@ -70,6 +70,7 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   // |NGFragmentItemsBuilder| allocates new instance for each line, and keeps
   // them alive until |AddLine|.
   NGLogicalLineItems* AcquireLogicalLineItems();
+  void ReleaseCurrentLogicalLineItems();
   void AssociateLogicalLineItems(NGLogicalLineItems* line_items,
                                  const NGPhysicalFragment& line_fragment);
   void AddLine(const NGPhysicalLineBoxFragment& line,
@@ -142,7 +143,6 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   void ToFragmentItems(const PhysicalSize& outer_size, void* data);
 
  private:
-  void ReleaseCurrentLogicalLineItems();
   void MoveCurrentLogicalLineItemsToMap();
 
   void AddItems(NGLogicalLineItem* child_begin, NGLogicalLineItem* child_end);
