@@ -393,11 +393,14 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
 
     const int64_t flat_timespec =
         base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
-    DCHECK(base::Contains(encoding_timestamps_, flat_timespec));
-    UMA_HISTOGRAM_TIMES(
-        "Media.PlatformVideoDecoding.Decode",
-        base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);
-    encoding_timestamps_.erase(flat_timespec);
+    // TODO(b/190615065) |flat_timespec| might be repeated with H.264
+    // bitstreams, investigate why, and change the if() to DCHECK().
+    if (base::Contains(encoding_timestamps_, flat_timespec)) {
+      UMA_HISTOGRAM_TIMES(
+          "Media.PlatformVideoDecoding.Decode",
+          base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);
+      encoding_timestamps_.erase(flat_timespec);
+    }
 
     scoped_refptr<VideoFrame> frame;
 
