@@ -112,7 +112,6 @@ TestNavigationObserver::~TestNavigationObserver() {
 }
 
 void TestNavigationObserver::Wait() {
-  was_event_consumed_ = false;
   TRACE_EVENT1("test", "TestNavigationObserver::Wait", "params",
                [&](perfetto::TracedValue ctx) {
                  // TODO(crbug.com/1183371): Replace this with passing more
@@ -245,16 +244,8 @@ void TestNavigationObserver::OnDidFinishNavigation(
 
   WebContentsState* web_contents_state =
       GetWebContentsState(navigation_handle->GetWebContents());
-
-  // TODO(crbug.com/1233764): It is generally the case that we've received load
-  // started events by this point, but we don't send load events for prerendered
-  // pages (by design). In general, we should move away from NotificationService
-  // and related events. We also only enforce this check if we haven't already
-  // called EventTriggered (since this will reset navigation_started and can
-  // cause errors in subsequent DidFinishNavigation calls).
-  DCHECK(was_event_consumed_ || navigation_handle->IsInPrerenderedMainFrame() ||
-         web_contents_state->navigation_started);
-
+  if (!web_contents_state->navigation_started)
+    return;
   if (HasFilter())
     web_contents_state->last_navigation_matches_filter = true;
 
@@ -286,7 +277,6 @@ void TestNavigationObserver::EventTriggered(
     return;
   }
 
-  was_event_consumed_ = true;
   web_contents_state->navigation_started = false;
   message_loop_runner_->Quit();
 }
