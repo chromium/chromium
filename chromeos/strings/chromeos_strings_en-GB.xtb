@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">My files</translation>
 <translation id="3199982728237701504">Document feeder (two-sided)</translation>
 <translation id="3226405216343213872">Looking for scanners</translation>
+<translation id="3228433892370472777">Default connection</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit files}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
+<translation id="491836528011451486">Place your document on the scanner and select Rescan to scan and replace page <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
@@ -331,6 +333,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
+<translation id="7257889006063274246">Are you sure that you want to remove page <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>

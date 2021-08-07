@@ -139,6 +139,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1422930527989633628">Can ask to discover nearby Bluetooth devices</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1428146450423315676">Stacker 7</translation>
+<translation id="1428729058023778569">You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
@@ -647,6 +648,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3282497668470633863">Add name on card</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Download when online</translation>
+<translation id="3288238092761586174"><ph name="URL" /> may need to take additional steps to verify your payment</translation>
 <translation id="3293642807462928945">Learn more about <ph name="POLICY_NAME" /> policy</translation>
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
 <translation id="3303855915957856445">No search results found</translation>

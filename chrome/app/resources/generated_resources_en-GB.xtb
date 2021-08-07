@@ -446,6 +446,7 @@
 <translation id="1476088332184200792">Copy to Your Device</translation>
 <translation id="1476607407192946488">&amp;Language Settings</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
+<translation id="1477654881618305065">Your organisation doesn't allow you to share this content. If you need help, contact your administrator.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installation is not enabled</translation>
 <translation id="1480571698637441426">To get tailored responses when you ask questions, let your Assistant access a screenshot of what’s on your screen. This may also include info about songs or videos that are playing.</translation>
@@ -621,6 +622,7 @@
 <translation id="1643921258693943800">To use Nearby Share, turn on Bluetooth and Wi-Fi</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1645516838734033527">To keep your <ph name="DEVICE_TYPE" /> safe, Smart Lock requires a screen lock on your phone.</translation>
+<translation id="1646793251510634025">Review settings for search and browsing optimisation</translation>
 <translation id="1646982517418478057">Please enter a password to encrypt this certificate</translation>
 <translation id="1648528859488547844">Use Wi-Fi or mobile networks to determine location</translation>
 <translation id="164936512206786300">Unpair Bluetooth device</translation>
@@ -1476,6 +1478,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2514326558286966059">Unlock faster with your fingerprint</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2515807442171220586">Assign one more switch</translation>
+<translation id="251722524540674480">Confirm your username</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2518024842978892609">Use your client certificates</translation>
 <translation id="2519517390894391510">Certificate profile name</translation>
@@ -2180,6 +2183,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3288047731229977326">Extensions running in developer mode can harm your computer. If you're not a developer, you should disable these extensions running in developer mode to stay safe.</translation>
 <translation id="3289668031376215426">Auto-capitalisation</translation>
 <translation id="3289856944988573801">To check for updates, please use Ethernet or Wi-Fi.</translation>
+<translation id="3291436823898732747">Improved browsing: For example, suggestions in the omnibox before you start typing</translation>
 <translation id="3293644607209440645">Send this page</translation>
 <translation id="32939749466444286">The Linux container didn't start. Please try again.</translation>
 <translation id="3294437725009624529">Guest</translation>
@@ -4217,6 +4221,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5505307013568720083">Out of ink</translation>
 <translation id="5505794066310932198">Toggle Commander</translation>
 <translation id="5507756662695126555">Non-repudiation</translation>
+<translation id="5507795078844206688">URL of the pages that you visit, e.g. https://www.google.com</translation>
 <translation id="5509693895992845810">Save &amp;As...</translation>
 <translation id="5509914365760201064">Issuer: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Get Image Descriptions from Google</translation>
@@ -4533,6 +4538,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5870086504539785141">Close accessibility menu</translation>
 <translation id="5870155679953074650">Hard faults</translation>
+<translation id="5875534259258494936">Screen sharing has ended</translation>
 <translation id="5876576639916258720">Running…</translation>
 <translation id="5876851302954717356">New Tab to the Right</translation>
 <translation id="5877064549588274448">Channel changed. Restart your device to apply changes.</translation>
@@ -5392,6 +5398,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> cannot be run as root.</translation>
 <translation id="6812841287760418429">Keep changes</translation>
 <translation id="6813907279658683733">Entire screen</translation>
+<translation id="6814033694018386318">What you share with Google</translation>
 <translation id="6817174620439930047">Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)</translation>
 <translation id="6818198425579322765">Page language to translate</translation>
 <translation id="6818802132960437751">Built-in virus protection</translation>
@@ -5887,6 +5894,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7374376573160927383">Manage USB devices</translation>
 <translation id="7374461526650987610">Protocol Handlers</translation>
 <translation id="7375235221357833624">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
+<translation id="7376543451826039186">Faster browsing: For example, proactively load specific further content based on the current page</translation>
 <translation id="7376553024552204454">Highlight the mouse cursor when it's moving</translation>
 <translation id="737728204345822099">A record of your visit to this site may be kept on your security key.</translation>
 <translation id="7377451353532943397">Continue blocking sensor access</translation>
@@ -5944,6 +5952,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7427798576651127129">Call from <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">No HID devices found</translation>
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
+<translation id="7432200167665670017">Your admin has blocked '<ph name="EXTENSION_NAME" />' – app ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insert smart card to keep using your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Keep it</translation>
 <translation id="7434509671034404296">Developer</translation>
@@ -5973,6 +5982,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7460045493116006516">Current theme that you have installed</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Next time, your phone will unlock your <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
+<translation id="7464637891177137294">Save it in your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# open tab; press to toggle tab strip}other{# open tabs; press to toggle tab strip}}</translation>
 <translation id="7465635034594602553">Something went wrong. Please wait a few minutes and run <ph name="APP_NAME" /> again.</translation>
 <translation id="7465778193084373987">Netscape Certificate Revocation URL</translation>
@@ -6036,6 +6046,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7525625923260515951">Hear selected text</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 more}other{{NUM_DOWNLOADS} more}}</translation>
 <translation id="7526989658317409655">Placeholder</translation>
+<translation id="7527758104894292229">Update it in your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="7529411698175791732">Check your Internet connection. If the problem continues, try signing out and signing in again.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Close guest}other{Close guest}}</translation>
 <translation id="7530016656428373557">Discharge Rate in Watts</translation>
@@ -6423,6 +6434,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7898725031477653577">Always translate</translation>
 <translation id="790040513076446191">Manipulate privacy-related settings</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901914889562552258">Improved Chrome using page metrics</translation>
 <translation id="7903345046358933331">The page has become unresponsive. You can wait for it to become responsive or close it.</translation>
 <translation id="7903742244674067440">You have certificates on file that identify these certificate authorities</translation>
 <translation id="7903859912536385558">stable (trusted tester)</translation>
@@ -6889,6 +6901,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8392364544846746346">Ask when a site wants to edit files or folders on your device</translation>
 <translation id="8392451568018454956">Options menu for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8393511274964623038">Stop plug-in</translation>
+<translation id="839363317075970734">Bluetooth device details</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8397825320644530257">Disconnect connected phone</translation>
 <translation id="8398877366907290961">Proceed anyway</translation>
@@ -7139,6 +7152,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8681614230122836773">Chrome found harmful software on your computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is connected and ready</translation>
 <translation id="8683081248374354009">Reset group</translation>
+<translation id="8683526617475118045">What you get</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="8690129572193755009">Sites can ask to handle protocols</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>
@@ -7192,6 +7206,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8737685506611670901">Open <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Choose the language into which you want to translate the page</translation>
+<translation id="8737916108453753541">The URLs are shared with Google to understand the browsing behaviour</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
 <translation id="8741944563400125534">Switch access setup guide</translation>
 <translation id="8742998548129056176">This is general information about your device and how you use it (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, to make their apps and products better.</translation>

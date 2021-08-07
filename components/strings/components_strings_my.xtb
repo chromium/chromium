@@ -139,6 +139,7 @@
 <translation id="1422930527989633628">အနီးရှိ ဘလူးတုသ်သုံးစက်များ ရှာဖွေရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1428146450423315676">စီထည့်သည့်ပုံး ၇</translation>
+<translation id="1428729058023778569">ဤဝဘ်ဆိုက်သည် HTTPS မပံ့ပိုးသည့်အတွက် ဤသတိပေးချက်ကို မြင်နေရခြင်းဖြစ်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1436185428532214179">သင့်စက်ပေါ်ရှိ ဖိုင်နှင့် ဖိုင်တွဲများ တည်းဖြတ်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1442386063175183758">ညာတံခါးရွက်ပုံစံ ခေါက်ရန်</translation>
@@ -650,6 +651,7 @@
 <translation id="3282497668470633863">ကတ်ပေါ်ရှိ အမည်ကို ထည့်ပါ</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
 <translation id="3287510313208355388">အွန်လိုင်းတက်သည့်အချိန် ဒေါင်းလုဒ်လုပ်ရန်</translation>
+<translation id="3288238092761586174">သင့်ပေးချေမှုကို အတည်ပြုရန်အတွက် <ph name="URL" /> က နောက်ထပ်အဆင့်များ လုပ်ဆောင်ရန် လိုအပ်နိုင်သည်</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> မူဝါဒအကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="3295444047715739395">Chrome ဆက်တင်များတွင် သင့်စကားဝှက်များကို ကြည့်ရှုစီမံပါ</translation>
 <translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>

@@ -102,6 +102,7 @@
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
+<translation id="3228433892370472777">ပုံမှန်ချိတ်ဆက်မှု</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
 <translation id="3283504360622356314">{0,plural, =1{ဖိုင် တည်းဖြတ်ရန်}other{ဖိုင်များ တည်းဖြတ်ရန်}}</translation>
@@ -200,6 +201,7 @@
 <translation id="4891842000192098784">ဖိအား</translation>
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
+<translation id="491836528011451486">စာမျက်နှာ <ph name="CURRENT_PAGE" /> ကို အစားထိုး စကင်ဖတ်ရန် စာရွက်စာတမ်းကို စကင်ဖတ်စက်ပေါ်တင်ပြီး 'Rescan' ကို ရွေးပါ။</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
 <translation id="498186245079027698">စကင်ဖတ်စက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။ စကင်ဖတ်ထားသောဖိုင်များကို သိမ်းရန် စက်တွင်းနေရာ လုံလောက်ကြောင်း သေချာပါစေ။</translation>
@@ -330,6 +332,7 @@
 <translation id="7177485034254901881">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက စက်ပစ္စည်းကို အဝေးမှ စီစဉ်သတ်မှတ်နိုင်သည်။</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="7257889006063274246">စာမျက်နှာ <ph name="CURRENT_PAGE" /> ကို ဖယ်ရှားလိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">နောက်ခံပုံ စုစည်းမှုများ</translation>

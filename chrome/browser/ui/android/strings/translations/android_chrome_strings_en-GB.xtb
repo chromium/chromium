@@ -4,6 +4,7 @@
 <translation id="1016498331642356377">Quickly search with your voice. To edit this shortcut, touch and hold.</translation>
 <translation id="1028699632127661925">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Also clear data from these sites &amp; apps?</translation>
+<translation id="1034259925032978114">Window is open</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1036727731225946849">Adding <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Also clear data from these sites?</translation>
@@ -187,6 +188,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2195339740518523951">Get Chrome’s strongest security</translation>
 <translation id="2200113223741723867">Manage usage data sharing</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230777942707397948">Empty window</translation>
 <translation id="2239812875700136898">Control your stories from the 'Options for Discover' button</translation>
 <translation id="2259659629660284697">Export passwords…</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
@@ -338,6 +340,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3157842584138209013">See how much data you've saved from the More Options button</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
+<translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3205824638308738187">Almost finished!</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
@@ -416,6 +419,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3587596251841506391">Help improve security on the web</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3622349720008044802">Manage windows</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
 <translation id="3632295766818638029">Unmask password</translation>
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
@@ -431,6 +435,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3737319253362202215">Translation settings</translation>
 <translation id="3738139272394829648">Touch to Search</translation>
 <translation id="3739899004075612870">Bookmarked in <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740525748616366977">Voice search is not available on this device</translation>
 <translation id="3749259744154402564">Unsupported</translation>
 <translation id="3771001275138982843">Couldn’t download the update</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
@@ -439,6 +444,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3773856050682458546">Basic data plus information about the websites that you visit and apps that you use</translation>
 <translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3778956594442850293">Added to Home screen</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="3803784507854318295">Manage auto-play</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
@@ -459,6 +465,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3934366560681368531">'</translation>
 <translation id="393697183122708255">No enabled voice search available</translation>
 <translation id="395377504920307820">Use without an account</translation>
+<translation id="3958287878205277013">To clear Incognito browsing history from your device, close all incognito tabs.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome will load your page when ready}other{Chrome will load your pages when ready}}</translation>
 <translation id="3962957115499249330">You’ll see a notification when this download starts on Wi-Fi.</translation>
 <translation id="3963007978381181125">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -544,6 +551,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 Your Google Account may have other forms of browsing history such as searches and activity from other Google services at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4532845899244822526">Choose folder</translation>
 <translation id="4538018662093857852">Turn on Lite mode</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4550003330909367850">To view or copy your password here, set screen lock on this device.</translation>
 <translation id="4554077758708533499">Connected with USB cable</translation>
 <translation id="4557685098773234337">To get here quicker, add this page to your home screen</translation>
@@ -609,6 +617,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4885273946141277891">Unsupported number of Chrome instances.</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">Payment apps</translation>
+<translation id="4912413785358399818">Move tab</translation>
 <translation id="4913161338056004800">Reset statistics</translation>
 <translation id="4913169188695071480">Stop refreshing</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# Page}other{# Pages}}</translation>
@@ -634,7 +643,9 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Other forms of activity<ph name="END_LINK1" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="5061533557687621530">To check the weather, tap the mic and say 'What’s the weather today?'</translation>
+<translation id="506254248375231072">No tabs</translation>
 <translation id="5087580092889165836">Add card</translation>
+<translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="5091249083535528968">Extended usage data</translation>
 <translation id="509429900233858213">An error occurred.</translation>
 <translation id="510275257476243843">1 hour left</translation>
@@ -694,6 +705,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
+<translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Clear data</translation>
@@ -750,6 +762,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="5810864297166300463">Web assistance</translation>
 <translation id="5814131985548525293">Type here or tap the voice icon to start</translation>
+<translation id="5814749351757353073">Keep up with your favourite sites</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5834764604050996579">To scan a QR code, let Chrome use your camera</translation>
@@ -824,6 +837,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites that you’ve visited. Many websites will still collect and use your browsing data – for example to improve security, to provide content, ads and recommendations and to generate reporting statistics.</translation>
 <translation id="624789221780392884">Update ready</translation>
+<translation id="6264376385120300461">Download anyway</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6292420053234093573">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
@@ -881,10 +895,12 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6539092367496845964">Something went wrong. Try again later.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Checked 1 hour ago}other{Checked # hours ago}}</translation>
 <translation id="6545017243486555795">Clear All Data</translation>
+<translation id="6546511553472444032">File might be harmful</translation>
 <translation id="6560414384669816528">Search with Sogou</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6565959834589222080">Wi-Fi is used when available</translation>
 <translation id="6566259936974865419">Chrome has saved you <ph name="GIGABYTES" /> GB</translation>
+<translation id="6569373978618239158">You'll now see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="6573096386450695060">Always allow</translation>
 <translation id="6573431926118603307">Tabs that you've opened in Chrome on your other devices will appear here.</translation>
 <translation id="6583199322650523874">Bookmark the current page</translation>
@@ -950,6 +966,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="696447261358045621">Leave Incognito mode</translation>
 <translation id="6979737339423435258">All time</translation>
 <translation id="6981982820502123353">Accessibility</translation>
+<translation id="6987047470128880212">Incognito is not available on this device</translation>
 <translation id="6989267951144302301">Couldn’t download</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
 <translation id="7001056293070445572">This file is large (<ph name="FILE_SIZE" />)</translation>
@@ -1026,6 +1043,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7482656565088326534">Preview tab</translation>
 <translation id="7484997419527351112">Discover – off</translation>
 <translation id="7485033510383818941">To refresh the feed content, pull down the page</translation>
+<translation id="749294055653435199">Google Lens is not available on this device</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">data saved</translation>
 <translation id="7498271377022651285">Please wait…</translation>
@@ -1127,6 +1145,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8037801708772278989">Checked just now</translation>
 <translation id="8040831032425909005">Quick action Search widget icon</translation>
 <translation id="804335162455518893">SD card not found</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab}other{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB available</translation>
 <translation id="8058746566562539958">Open in new Chrome tab</translation>
 <translation id="8063895661287329888">Failed to add bookmark.</translation>
@@ -1225,6 +1244,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8621068256433641644">phone</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8641930654639604085">Try to block mature sites</translation>
+<translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8655129584991699539">You can clear the data in Chrome Settings</translation>
 <translation id="8656747343598256512">Sign in to this site and Chrome with your Google Account. You can turn on sync later.</translation>
 <translation id="8659579665266920523">How to search with Chrome</translation>
@@ -1313,6 +1333,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">Remove your Chrome activity from Digital Wellbeing</translation>
 <translation id="927968626442779827">Use lite mode on Google Chrome</translation>
+<translation id="928550791203542716">Following <ph name="SITE_NAME" /></translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Enter passphrase</translation>

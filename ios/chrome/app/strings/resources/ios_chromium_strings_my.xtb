@@ -22,6 +22,8 @@
 <translation id="2168108852149185974">အချို့ အပိုပရိုဂရမ်များသည် Chromium ကို ရပ်တန့်သွားစေပါသည်။ အောက်ပါတို့ကို ဖယ်ရှားပါ−</translation>
 <translation id="2178608107313874732">Chromium သည် သင့်ကင်မရာကို ယခု အသုံးပြု၍မရပါ</translation>
 <translation id="2195025571279539885">ဤဆိုက်မှ <ph name="LANGUAGE_NAME" /> စာမျက်နှာများကို နောက်တစ်ကြိမ်တွင် ဘာသာပြန်ရန် Chromium မှကမ်းလှမ်းစေလိုပါသလား။</translation>
+<translation id="2450140762465183767">ယခုအချိန်တွင် မက်ဆေ့ဂျ်များ၊ စာရွက်စာတမ်းများနှင့် အခြားအက်ပ်များတွင် အချိန်မရွေး လင့်ခ်များကို တို့ပြီး Chromium ကို အသုံးပြုနိုင်သည်။</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> ကို ရွေးပါ</translation>
 <translation id="2567507405773541360">ရိုးရှင်း လုံခြုံပြီး ယခင်ထက်ပိုမြန်သော Chromium ဖြင့် ပိုမိုလုပ်ဆောင်လိုက်ပါ</translation>
 <translation id="2590893390871230428">သင်၏ Chromium ဒေတာများကို စင့်ခ်လုပ်ရန်</translation>
 <translation id="2650312721222849884">Chromium အသုံးပြုသည့် နေရာမှန်သမျှမှ သင့်တဘ်များကိုကြည့်ရန် စင့်ခ်လုပ်ခြင်း ဖွင့်ပါ</translation>
@@ -100,6 +102,7 @@
 <translation id="894437814105052438">သင်အကောင့်မှထွက်သောအခါ Chromium သည် သင့် Google Account သို့ ဒေတာအသစ်များကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။ ယခင်က စင့်ခ်လုပ်ထားသောဒေတာများ အကောင့်တွင် ဆက်ရှိနေပါမည်။</translation>
 <translation id="9022552996538154597">Chromium ကို လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="9089354809943900324">Chromium မှာ ဟောင်းသွားပြီ</translation>
+<translation id="9110075932708282655">Chromium ကို ပုံသေသုံးပါ</translation>
 <translation id="921174536258924340">Chromium က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ သို့မဟုတ် <ph name="BEGIN_LINK" />သင်၏ Google Account ရှိ စကားဝှက်များကို စစ်ဆေးပါ။<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium စာရေးသူများ</translation>
 </translationbundle>

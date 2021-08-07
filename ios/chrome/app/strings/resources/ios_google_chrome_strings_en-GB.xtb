@@ -28,6 +28,7 @@
 <translation id="2732745070297234559">Chrome couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2919738076569633423">By using Chrome, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Select <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="3167189358072330585">Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
 <translation id="3173834708294760622">Google Chrome page</translation>
@@ -61,6 +62,7 @@
 <translation id="5716154293141027663">Open Chrome whenever you tap on links in other apps</translation>
 <translation id="5854621639439811139">Chrome tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="5876773482963502140">If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
+<translation id="6054613632208573261">Use Chrome by default</translation>
 <translation id="6063091872902370735">Allow Chrome Sign-in</translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
@@ -86,6 +88,7 @@
 <translation id="7626032353295482388">Welcome to Chrome</translation>
 <translation id="7662994914830945754">To see your tabs from wherever you use Chrome, sign in and turn on sync</translation>
 <translation id="766361182512894255">Your password was exposed in a data breach. Chrome recommends changing the password now.</translation>
+<translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
