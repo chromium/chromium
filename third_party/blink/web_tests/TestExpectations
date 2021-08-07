@@ -4974,10 +4974,11 @@ crbug.com/1207342 http/tests/devtools/persistence/persistence-sync-content.js [ 
 crbug.com/1207342 http/tests/devtools/search/sources-search-scope-in-files.js [ Crash Failure Pass ]
 crbug.com/1207342 http/tests/devtools/search/sources-search-scope-many-projects.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass Timeout ]
+crbug.com/1207342 http/tests/devtools/changes/changes-sidebar.js [ Failure Pass ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
