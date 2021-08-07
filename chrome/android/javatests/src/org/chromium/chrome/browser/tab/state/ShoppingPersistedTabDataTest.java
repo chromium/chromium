@@ -111,6 +111,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.PRICE_MICROS, null);
         shoppingPersistedTabData.setCurrencyCode(
                 ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE);
+        shoppingPersistedTabData.setPriceDropGurl(new GURL("https://www.google.com"));
         ByteBuffer serialized = shoppingPersistedTabData.getSerializeSupplier().get();
         ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
         deserialized.deserialize(serialized);
@@ -120,6 +121,8 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabData.NO_PRICE_KNOWN, deserialized.getPreviousPriceMicros());
         Assert.assertEquals(ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE,
                 deserialized.getCurrencyCode());
+        Assert.assertEquals(
+                new GURL("https://www.google.com"), deserialized.getPriceDropDataForTesting().gurl);
         MetricsResult metricsResult =
                 deserialized.getPriceDropMetricsLoggerForTesting().getMetricsResultForTesting();
         Assert.assertFalse(metricsResult.isProductDetailPage);
@@ -496,6 +499,8 @@ public class ShoppingPersistedTabDataTest {
                 shoppingPersistedTabData.setPriceMicros(42_000_000L);
                 shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
                 shoppingPersistedTabData.setCurrencyCode("USD");
+                shoppingPersistedTabData.setPriceDropGurl(
+                        ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
                 Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
                 doReturn(isInPrimaryMainFrame).when(navigationHandle).isInPrimaryMainFrame();
                 doReturn(isSameDocument).when(navigationHandle).isSameDocument();
@@ -538,6 +543,7 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.setPriceMicros(42_000_000L);
         shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
         shoppingPersistedTabData.setCurrencyCode("USD");
+        shoppingPersistedTabData.setPriceDropGurl(gurl1);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
         shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidStartNavigation(
                 tab, navigationHandle);
@@ -575,6 +581,7 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.setPriceMicros(42_000_000L);
         shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
         shoppingPersistedTabData.setCurrencyCode("USD");
+        shoppingPersistedTabData.setPriceDropGurl(ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
         shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
                 tab, navigationHandle);
@@ -632,9 +639,11 @@ public class ShoppingPersistedTabDataTest {
     @UiThreadTest
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testSPTDNullUponUnsuccessfulResponse() {
         final Semaphore semaphore = new Semaphore(0);
-        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+        MockTab tab = (MockTab) ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
@@ -643,7 +652,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.BUYABLE_PRODUCT_EMPTY);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                Assert.assertNull(shoppingPersistedTabData);
+                Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
                 semaphore.release();
             });
         });
@@ -806,6 +815,31 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabData.NO_PRICE_KNOWN, shoppingPersistedTabData.getPriceMicros());
         Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
                 shoppingPersistedTabData.getPreviousPriceMicros());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
+    public void testPriceDropURLTabURLMisMatch() {
+        MockTab tab = (MockTab) ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        tab.setIsInitialized(true);
+        tab.setGurlOverrideForTesting(new GURL("https://www.google.com"));
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        shoppingPersistedTabData.setPriceMicros(42_000_000L);
+        shoppingPersistedTabData.setPreviousPriceMicros(60_000_000L);
+        shoppingPersistedTabData.setPriceDropGurl(new GURL("https://www.google.com"));
+        shoppingPersistedTabData.setLastPriceChangeTimeMsForTesting(System.currentTimeMillis());
+        shoppingPersistedTabData.setCurrencyCode("USD");
+        shoppingPersistedTabData.setLastUpdatedMs(System.currentTimeMillis());
+        Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
+        Assert.assertFalse(shoppingPersistedTabData.needsUpdate());
+        shoppingPersistedTabData.setPriceDropGurl(new GURL("https://www.yahoo.com"));
+        Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+        Assert.assertTrue(shoppingPersistedTabData.needsUpdate());
     }
 
     @UiThreadTest

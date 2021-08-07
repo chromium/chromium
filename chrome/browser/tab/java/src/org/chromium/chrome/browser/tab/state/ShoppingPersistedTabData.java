@@ -134,11 +134,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * Raw price drop data acquired from backend service. This is converted to formatted
      * price strings in the public API getPriceDrop().
      */
-    private static class PriceDropData {
+    @VisibleForTesting
+    protected static class PriceDropData {
         public long priceMicros;
         public long previousPriceMicros;
         public String currencyCode;
         public String offerId;
+        public GURL gurl;
 
         PriceDropData() {
             this.priceMicros = NO_PRICE_KNOWN;
@@ -511,6 +513,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             res.setCurrencyCode(productPriceUpdate.getCurrencyCode());
             res.setLastUpdatedMs(System.currentTimeMillis());
             res.setMainOfferId(buyableProduct.getOfferId());
+            res.setPriceDropGurl(tab.getUrl());
             foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE;
         } else if (buyableProduct != null) {
             res.setPriceMicros(
@@ -518,6 +521,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             res.setCurrencyCode(buyableProduct.getCurrencyCode());
             res.setLastUpdatedMs(System.currentTimeMillis());
             res.setMainOfferId(buyableProduct.getOfferId());
+            res.setPriceDropGurl(tab.getUrl());
             foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
         }
 
@@ -550,6 +554,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             setCurrencyCode(productUpdate.getOldPrice().getCurrencyCode());
             setLastUpdatedMs(System.currentTimeMillis());
             setMainOfferId(String.valueOf(buyableProduct.getOfferId()));
+            setPriceDropGurl(tab.getUrl());
             foundBuyableProduct = FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE;
         } else if (hasPrice(priceTrackingData)) {
             setPriceMicros(buyableProduct.getCurrentPrice().getAmountMicros(),
@@ -557,6 +562,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             setCurrencyCode(buyableProduct.getCurrentPrice().getCurrencyCode());
             setLastUpdatedMs(System.currentTimeMillis());
             setMainOfferId(String.valueOf(buyableProduct.getOfferId()));
+            setPriceDropGurl(tab.getUrl());
             foundBuyableProduct = FoundBuyableProduct.FOUND;
         }
 
@@ -642,6 +648,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     @VisibleForTesting
+    protected void setPriceDropGurl(GURL gurl) {
+        mPriceDropData.gurl = gurl;
+        save();
+    }
+
+    @VisibleForTesting
     protected String getCurrencyCode() {
         return mPriceDropData.currencyCode;
     }
@@ -722,7 +734,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public PriceDrop getPriceDrop() {
         assert mPriceDropMethod == PriceDropMethod.NEW;
-        if (!isValidPriceDropUpdate() || isPriceChangeStale()) {
+        if (!isValidPriceDropUpdate() || isPriceChangeStale()
+                || !mTab.getUrl().equals(mPriceDropData.gurl)) {
             return null;
         }
         return createPriceDrop(mPriceDropData.priceMicros, mPriceDropData.previousPriceMicros);
@@ -740,7 +753,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (formattedPrice.equals(formattedPreviousPrice)) {
             return null;
         }
-
         return new PriceDrop(formattedPrice, formattedPreviousPrice);
     }
 
@@ -814,6 +826,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             builder.setPriceCurrencyCode(mPriceDropData.currencyCode);
         }
 
+        if (mPriceDropData.gurl != null) {
+            builder.setSerializedGurl(mPriceDropData.gurl.serialize());
+        }
+
         return () -> {
             return builder.build().toByteString().asReadOnlyByteBuffer();
         };
@@ -836,6 +852,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mLastPriceChangeTimeMs = shoppingPersistedTabDataProto.getLastPriceChangeTimeMs();
             mPriceDropData.offerId = shoppingPersistedTabDataProto.getMainOfferId();
             mPriceDropData.currencyCode = shoppingPersistedTabDataProto.getPriceCurrencyCode();
+            mPriceDropData.gurl =
+                    GURL.deserialize(shoppingPersistedTabDataProto.getSerializedGurl());
             mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
             return true;
         } catch (InvalidProtocolBufferException e) {
@@ -871,6 +889,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public void setLastPriceChangeTimeMsForTesting(long lastPriceChangeTimeMs) {
         mLastPriceChangeTimeMs = lastPriceChangeTimeMs;
+    }
+
+    @Override
+    protected boolean needsUpdate() {
+        if (!mTab.getUrl().equals(mPriceDropData.gurl)) {
+            return true;
+        }
+        return super.needsUpdate();
     }
 
     @Override
