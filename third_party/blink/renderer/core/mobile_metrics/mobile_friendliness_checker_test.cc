@@ -124,6 +124,34 @@ TEST_F(MobileFriendlinessCheckerTest, DeviceWidthWithInitialScale05) {
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 5);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, AllowUserScalableWithSmallMaxZoom) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+    <head>
+      <meta name="viewport" content="user-scalable=yes, maximum-scale=1.1">
+    </head>
+  )");
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kNo);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, AllowUserScalableWithLargeMaxZoom) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+    <head>
+      <meta name="viewport" content="user-scalable=yes, maximum-scale=2.0">
+    </head>
+  )");
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+}
+
+TEST_F(MobileFriendlinessCheckerTest,
+       AllowUserScalableWithLargeMaxZoomAndLargeInitialScale) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+    <head>
+      <meta name="viewport" content="user-scalable=yes, maximum-scale=2.0, initial-scale=1.9">
+    </head>
+  )");
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kNo);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, UserZoom) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForFile(
       "viewport-initial-scale-and-user-scalable-no.html");

@@ -28,6 +28,10 @@ using mojom::blink::ViewportStatus;
 static constexpr int kSmallFontThreshold = 9;
 static constexpr int kTimeBudgetExceeded = -2;
 
+// Values of maximum-scale smaller than this threshold will be considered to
+// prevent the user from scaling the page as if user-scalable=no was set.
+static constexpr double kMaximumScalePreventsZoomingThreshold = 1.2;
+
 // Finding bad tap targets may takes too time for big page and should abort if
 // it takes more than 5ms.
 static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
@@ -347,6 +351,8 @@ void MobileFriendlinessChecker::EvaluateNow() {
 
 void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
+  const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
+
   switch (viewport.type) {
     case ViewportDescription::Type::kUserAgentStyleSheet:
       if (mobile_friendliness_.viewport_device_width ==
@@ -374,6 +380,10 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
       if (viewport.user_zoom_is_explicit) {
         mobile_friendliness_.allow_user_zoom =
             viewport.user_zoom ? ViewportStatus::kYes : ViewportStatus::kNo;
+      }
+      if (viewport.max_zoom_is_explicit &&
+          viewport.max_zoom / zoom < kMaximumScalePreventsZoomingThreshold) {
+        mobile_friendliness_.allow_user_zoom = ViewportStatus::kNo;
       }
       break;
     default:
