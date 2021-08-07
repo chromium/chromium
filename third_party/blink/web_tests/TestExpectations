@@ -406,8 +406,6 @@ crbug.com/882975 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gestur
 
 crbug.com/898394 virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html [ Failure Timeout ]
 
-crbug.com/1024151 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
-
 # Subpixel rounding differences that are incorrect.
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Flaky subpixel AA difference (not necessarily incorrect, but flaky)
@@ -4760,6 +4758,7 @@ crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/set-condition
 crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/picture-in-picture-event-listener-breakpoints.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/possible-breakpoints.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/debugger-set-breakpoint-regex.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/dynamic-scripts-breakpoints.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-async/async-callstack-post-message.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-async/async-callstack-web-sql.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-async/async-callstack-reload-no-crash.js [ Failure Pass ]
@@ -4967,6 +4966,18 @@ crbug.com/1207342 http/tests/devtools/extensions/extensions-network.js [ Failure
 crbug.com/1207342 http/tests/devtools/extensions/extensions-reload.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/extensions/extensions-useragent.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/extensions/multiple-extensions.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/network/network-persistence-filename-safety.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/overrides/files-save-without-hash.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/persistence/persistence-search-across-all-files.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/persistence/persistence-sync-content-nodejs.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/persistence/persistence-sync-content.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/search/sources-search-scope-in-files.js [ Crash Failure Pass ]
+crbug.com/1207342 http/tests/devtools/search/sources-search-scope-many-projects.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
@@ -5153,7 +5164,6 @@ crbug.com/922951 [ Linux ] virtual/scalefactor150/fast/events/synthetic-events/t
 crbug.com/922951 [ Win ] virtual/scalefactor150/fast/events/synthetic-events/tap-on-scaled-screen.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/frame-model-instrumentation.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-reason.js [ Crash Failure Pass Timeout ]
-crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-record-reload.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Crash Failure Pass Timeout ]
 
@@ -5426,7 +5436,6 @@ crbug.com/994034 [ Win ] http/tests/devtools/elements/styles-3/styles-add-new-ru
 crbug.com/995669 [ Win ] http/tests/media/video-throttled-load-metadata.html [ Crash Failure Pass ]
 
 # Sheriff 2019-08-26
-crbug.com/997669 [ Win ] http/tests/devtools/search/sources-search-scope-in-files.js [ Crash Pass ]
 crbug.com/626703 external/wpt/css/css-paint-api/custom-property-animation-on-main-thread.https.html [ Failure Pass ]
 
 crbug.com/1015130 external/wpt/largest-contentful-paint/first-paint-equals-lcp-text.html [ Failure Pass ]
@@ -5459,7 +5468,6 @@ crbug.com/1003715 [ Win10.20h2 ] http/tests/notifications/serviceworker-notifica
 
 
 # Sheriff 2019-10-01
-crbug.com/1010013 [ Win10.1909 ] virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure ]
 crbug.com/1010032 [ Win7 ] virtual/text-antialias/fallback-traits-fixup.html [ Failure ]
 crbug.com/1010032 [ Win7 ] virtual/text-antialias/international/bold-bengali.html [ Failure ]
 crbug.com/1010032 [ Win7 ] virtual/text-antialias/selection/khmer-selection.html [ Failure ]
@@ -6045,9 +6053,6 @@ crbug.com/1094436 http/tests/devtools/sources/debugger/navigator-view.js [ Crash
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
 # Sheriff 2020-07-20
-crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Failure Pass ]
-crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
-crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 crbug.com/1107722 [ Mac ] http/tests/devtools/tracing/timeline-time/timeline-time.js [ Failure Pass ]
 
 # Sheriff 2020-07-22
@@ -6884,7 +6889,6 @@ crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failu
 # Sheriff 2021-5-19
 # Flaky on Webkit Linux Leak
 crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger-step/debugger-step-out-document-write.js [ Failure Pass ]
-crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/dynamic-scripts-breakpoints.js [ Failure Pass ]
 crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger/debug-inlined-scripts-fragment-id.js [ Failure Pass ]
 # The wpt_flags=h2 variants of these tests fail, but the other variants pass. We
 # can't handle this difference with -expected.txt files, so we have to list them
