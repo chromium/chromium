@@ -62,4 +62,25 @@ export function acceleratorEditViewTest() {
         editViewElement.shadowRoot.querySelector('#cancelButtonContainer')
             .hidden);
   });
+
+  test('LockedAccelerator', async () => {
+    /** @type {!AcceleratorInfo} */
+    const acceleratorInfo = CreateDefaultAccelerator(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*key_display=*/ 'g',
+        /*locked=*/ true);
+
+    editViewElement.acceleratorInfo = acceleratorInfo;
+    await flush();
+
+    // Check that the edit buttons are not visible.
+    assertFalse(
+        !!editViewElement.shadowRoot.querySelector('#editButtonsContainer'));
+    assertFalse(
+        !!editViewElement.shadowRoot.querySelector('#cancelButtonContainer'));
+    // Lock icon should be visible.
+    assertFalse(
+        editViewElement.shadowRoot.querySelector('#lockContainer').hidden);
+  });
 }

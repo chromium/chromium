@@ -9,10 +9,11 @@ import './shortcut_customization_shared_css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorKeys, AcceleratorInfo, AcceleratorState, AcceleratorType} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -34,7 +35,16 @@ export class AcceleratorEditViewElement extends PolymerElement {
       /** @type {!AcceleratorInfo} */
       acceleratorInfo: {
         type: Object,
-        value: () => {},
+        value: /** @type {!AcceleratorInfo} */ ({
+            accelerator: /** @type {!AcceleratorKeys} */ ({
+              modifiers: 0,
+              key: 0,
+              key_display: '',
+            }),
+            type: AcceleratorType.kDefault,
+            state: AcceleratorState.kEnabled,
+            locked: false,
+        }),
       },
 
       isEditView: {

@@ -35,7 +35,7 @@
       Press 1-4 modifiers and 1 other key on your keyboard
     </div>
   </div>
-  <div id="buttonContainer">
+  <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
     <div id="editButtonsContainer" hidden=[[isEditView]]>
       <cr-icon-button id="editButton"
           iron-icon="shortcut-customization:cancel"
@@ -54,4 +54,9 @@
         cancel
       </cr-button>
     </div>
+  </template>
+  <div id="lockContainer" hidden="[[!acceleratorInfo.locked]]">
+    <iron-icon id="lockedIcon" icon="shortcut-customization:lock">
+    </iron-icon>
+  </div>
 </div>
