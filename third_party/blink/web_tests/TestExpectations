@@ -4932,6 +4932,15 @@ crbug.com/1207342 http/tests/devtools/tracing/timeline-misc/timeline-window-filt
 crbug.com/1207342 http/tests/devtools/debugger/stop-on-debugger-from-detached-iframe.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/version-controller.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/components/throttler.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/stylesheet-source-mapping.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/console/console-linkify-message-location.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/elements/styles-1/edit-resource-referred-by-multiple-styletags.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/elements/styles-4/styles-live-locations-leak.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/sources/sourcemap-hot-reload.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/breakpoints-in-ui-source-frame.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/sources/debugger-breakpoints/restore-locations-for-breakpoint-with-broken-source-map.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-patterns.js [ Failure Pass ]
+crbug.com/1207342 http/tests/devtools/tracing/timeline-js/timeline-js-ignore-list.js [ Failure Pass ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
