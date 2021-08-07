@@ -247,4 +247,39 @@ export function scanPreviewTest() {
           scanPreview.$$('#dialogConfirmationText').textContent.trim());
     });
   });
+
+  // Tests that the scan preview viewport is force scrolled to the bottom for
+  // new images during multi-page scans.
+  test('scrollToBottomForMultiPageScans', () => {
+    const previewDiv = scanPreview.$$('#previewDiv');
+    scanPreview.multiPageScanChecked = true;
+    scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
+    return flushTasks()
+        .then(() => {
+          scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
+          scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+          return flushTasks();
+        })
+        .then(() => {
+          scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
+          return flushTasks();
+        })
+        .then(() => {
+          // With two scanned images the viewport should be scrolled to the
+          // bottom.
+          assertEquals(
+              previewDiv.scrollHeight - previewDiv.offsetHeight,
+              previewDiv.scrollTop);
+
+          // Scroll to the top again before adding a third page.
+          previewDiv.scrollTop = 0;
+          scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              previewDiv.scrollHeight - previewDiv.offsetHeight,
+              previewDiv.scrollTop);
+        });
+  });
 }

@@ -272,7 +272,12 @@ Polymer({
    * @private
    */
   onScannedImagesScroll_() {
-    const imageHeight = this.$$('.scanned-image').height;
+    const scannedImage = this.$$('.scanned-image');
+    if (!scannedImage) {
+      return;
+    }
+
+    const imageHeight = scannedImage.height;
     const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
     assert(this.currentPageInView_ > 0);
     this.previousPageInView_ = this.currentPageInView_;
@@ -321,6 +326,8 @@ Polymer({
     if (!this.scanAppMultiPageScanEnabled_) {
       return;
     }
+
+    this.forceScrollToBottom_();
 
     // If the position was already set after the first scanned image loaded,
     // there's no need to position it again.
@@ -407,5 +414,14 @@ Polymer({
               // Once strings are loaded, open the dialog.
               this.$$('#scanPreviewDialog').showModal();
             });
+  },
+
+  /**
+   * Scrolls down to the last scanned image in the viewport.
+   * @private
+   */
+  forceScrollToBottom_() {
+    const previewDiv = this.$$('#previewDiv');
+    previewDiv.scrollTop = previewDiv.scrollHeight;
   },
 });
