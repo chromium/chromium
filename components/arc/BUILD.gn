@@ -380,6 +380,8 @@ static_library("arc_test_support") {
     "test/fake_accessibility_helper_instance.h",
     "test/fake_adbd_monitor_instance.cc",
     "test/fake_adbd_monitor_instance.h",
+    "test/fake_app_host.cc",
+    "test/fake_app_host.h",
     "test/fake_app_instance.cc",
     "test/fake_app_instance.h",
     "test/fake_apps_tracker.cc",
