@@ -1497,6 +1497,42 @@ public class ContextualSearchManagerTest {
                         + "in the Search.RelatedSearches.CTR histogram!",
                 relatedSearchesCount,
                 RecordHistogram.getHistogramValueCountForTesting("Search.RelatedSearches.CTR", 1));
+        Assert.assertEquals("Failed to log that the carousel is shown and it was not scrolled "
+                        + "in the Search.RelatedSearches.CarouselScrolled histogram!",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.RelatedSearches.CarouselScrolled", 0));
+        Assert.assertEquals(
+                "Failed to log that the carousel is shown and its scroll and click status "
+                        + "in the Search.RelatedSearches.CarouselScrollAndClick histogram!",
+                1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.CarouselScrollAndClick"));
+        if (relatedSearchesCount > 0) {
+            Assert.assertEquals(
+                    "Failed to log that the carousel is shown and it was not scrolled and clicked "
+                            + "in the Search.RelatedSearches.CarouselScrollAndClick histogram!",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Search.RelatedSearches.CarouselScrollAndClick",
+                            1 /* int NO_SCROLL_CLICKED = 1 */));
+        } else {
+            Assert.assertEquals(
+                    "Failed to log that the carousel is shown and it was not scrolled and not "
+                            + "clicked in the "
+                            + "Search.RelatedSearches.CarouselScrollAndClick histogram!",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Search.RelatedSearches.CarouselScrollAndClick",
+                            0 /* int NO_SCROLL_NO_CLICK = 0 */));
+        }
+        Assert.assertTrue(
+                "Failed to log the last visible position index for a chip in the carousel "
+                        + "in the Search.RelatedSearches.CarouselLastVisibleItemPosition "
+                        + "histogram!",
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.RelatedSearches.CarouselLastVisibleItemPosition")
+                        >= 0);
     }
 
     /** Forgets all the histograms that we care about. */
@@ -1510,6 +1546,10 @@ public class ContextualSearchManagerTest {
         RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CTR");
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.TranslationNeeded");
         RecordHistogram.forgetHistogramForTesting("Search.ContextualSearch.OutcomesDuration");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CarouselScrolled");
+        RecordHistogram.forgetHistogramForTesting("Search.RelatedSearches.CarouselScrollAndClick");
+        RecordHistogram.forgetHistogramForTesting(
+                "Search.RelatedSearches.CarouselLastVisibleItemPosition");
     }
 
     //============================================================================================
