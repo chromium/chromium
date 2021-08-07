@@ -36,7 +36,6 @@ class ImageModel;
 namespace web_app {
 
 class WebAppBrowserController;
-class WebAppProvider;
 enum class SystemAppType;
 
 // Returns true if |app_url| and |page_url| are the same origin. To avoid
@@ -246,7 +245,6 @@ class AppBrowserController : public TabStripModelObserver,
   absl::optional<SkColor> last_background_color_;
 
   absl::optional<SystemAppType> system_app_type_;
-  WebAppProvider* provider_;
 
   const bool has_tab_strip_;
 
