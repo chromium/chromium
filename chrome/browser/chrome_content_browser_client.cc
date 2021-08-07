@@ -3710,7 +3710,21 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
 
 std::wstring
 ChromeContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
-  return std::wstring(L"lpacChromeNetworkSandbox");
+  // Use a different LPAC capability name for each Chrome channel so network
+  // service data between hannels is isolated.
+  version_info::Channel channel = chrome::GetChannel();
+  switch (channel) {
+    case version_info::Channel::CANARY:
+      return std::wstring(L"lpacChromeCanaryNetworkSandbox");
+    case version_info::Channel::BETA:
+      return std::wstring(L"lpacChromeBetaNetworkSandbox");
+    case version_info::Channel::DEV:
+      return std::wstring(L"lpacChromeDevNetworkSandbox");
+    case version_info::Channel::STABLE:
+      return std::wstring(L"lpacChromeStableNetworkSandbox");
+    case version_info::Channel::UNKNOWN:
+      return std::wstring(L"lpacChromeNetworkSandbox");
+  }
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.
