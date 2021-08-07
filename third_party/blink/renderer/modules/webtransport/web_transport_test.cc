@@ -375,6 +375,7 @@ TEST_F(WebTransportTest, FailWithURLFragment) {
 
 TEST_F(WebTransportTest, FailByCSP) {
   V8TestingScope scope;
+  auto& exception_state = scope.GetExceptionState();
   scope.GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
       ->AddPolicies(ParseContentSecurityPolicies(
@@ -382,19 +383,13 @@ TEST_F(WebTransportTest, FailByCSP) {
           network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP,
           *(scope.GetExecutionContext()->GetSecurityOrigin())));
-  auto* web_transport = WebTransport::Create(
-      scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
-      ASSERT_NO_EXCEPTION);
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
-  ScriptPromiseTester closed_tester(scope.GetScriptState(),
-                                    web_transport->closed());
-
-  test::RunPendingTasks();
-
-  EXPECT_FALSE(web_transport->HasPendingActivity());
-  EXPECT_TRUE(ready_tester.IsRejected());
-  EXPECT_TRUE(closed_tester.IsRejected());
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       EmptyOptions(), exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSecurityError),
+            exception_state.Code());
+  EXPECT_EQ("Failed to connect to 'https://example.com/'",
+            exception_state.Message());
 }
 
 TEST_F(WebTransportTest, PassCSP) {
@@ -402,6 +397,7 @@ TEST_F(WebTransportTest, PassCSP) {
   // This doesn't work without the https:// prefix, even thought it should
   // according to
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src.
+  auto& exception_state = scope.GetExceptionState();
   scope.GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
       ->AddPolicies(ParseContentSecurityPolicies(
@@ -409,15 +405,9 @@ TEST_F(WebTransportTest, PassCSP) {
           network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP,
           *(scope.GetExecutionContext()->GetSecurityOrigin())));
-  auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com/");
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
-
-  EXPECT_TRUE(web_transport->HasPendingActivity());
-
-  ready_tester.WaitUntilSettled();
-  EXPECT_TRUE(ready_tester.IsFulfilled());
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       EmptyOptions(), exception_state);
+  EXPECT_FALSE(exception_state.HadException());
 }
 
 TEST_F(WebTransportTest, SendConnect) {
