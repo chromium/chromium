@@ -563,7 +563,7 @@ const base::Feature kSubresourceRedirectSrcVideo{
 // When enabled, enforces new interoperable semantics for 3D transforms.
 // See crbug.com/1008483.
 const base::Feature kTransformInterop{"TransformInterop",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kBackfaceVisibilityInterop{
     "BackfaceVisibilityInterop", base::FEATURE_DISABLED_BY_DEFAULT};
 
