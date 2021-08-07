@@ -1008,10 +1008,11 @@ ConvertPaintedSelectionBoundToLayerSelectionBound(
   return layer_bound;
 }
 
-static void UpdateLayerSelection(cc::Layer& layer,
-                                 const PropertyTreeState& layer_state,
-                                 const PaintChunkSubset& chunks,
-                                 cc::LayerSelection& layer_selection) {
+void PaintChunksToCcLayer::UpdateLayerSelection(
+    cc::Layer& layer,
+    const PropertyTreeState& layer_state,
+    const PaintChunkSubset& chunks,
+    cc::LayerSelection& layer_selection) {
   gfx::Vector2dF cc_layer_offset = layer.offset_to_transform_parent();
   FloatPoint layer_offset(cc_layer_offset.x(), cc_layer_offset.y());
   for (const auto& chunk : chunks) {
@@ -1040,12 +1041,10 @@ static void UpdateLayerSelection(cc::Layer& layer,
 void PaintChunksToCcLayer::UpdateLayerProperties(
     cc::Layer& layer,
     const PropertyTreeState& layer_state,
-    const PaintChunkSubset& chunks,
-    cc::LayerSelection& layer_selection) {
+    const PaintChunkSubset& chunks) {
   UpdateBackgroundColor(layer, layer_state.Effect(), chunks);
   UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
       layer, layer_state, chunks);
-  UpdateLayerSelection(layer, layer_state, chunks, layer_selection);
 }
 
 }  // namespace blink

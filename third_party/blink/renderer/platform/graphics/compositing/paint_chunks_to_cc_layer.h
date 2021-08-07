@@ -69,10 +69,13 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
       cc::DisplayItemList::UsageHint,
       RasterUnderInvalidationCheckingParams* = nullptr);
 
+  static void UpdateLayerSelection(cc::Layer& layer,
+                                   const PropertyTreeState& layer_state,
+                                   const PaintChunkSubset&,
+                                   cc::LayerSelection& layer_selection);
   static void UpdateLayerProperties(cc::Layer& layer,
                                     const PropertyTreeState& layer_state,
-                                    const PaintChunkSubset&,
-                                    cc::LayerSelection& layer_selection);
+                                    const PaintChunkSubset&);
 };
 
 }  // namespace blink

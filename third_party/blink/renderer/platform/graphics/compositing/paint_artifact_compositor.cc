@@ -809,7 +809,8 @@ void PaintArtifactCompositor::Update(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,
         new_scrollbar_layers);
 
-    UpdateLayerProperties(*layer, pending_layer, layer_selection);
+    UpdateLayerProperties(*layer, pending_layer);
+    UpdateLayerSelection(*layer, pending_layer, layer_selection);
 
     layer->SetLayerTreeHost(root_layer_->layer_tree_host());
 
@@ -915,8 +916,7 @@ void PaintArtifactCompositor::Update(
 
 void PaintArtifactCompositor::UpdateLayerProperties(
     cc::Layer& layer,
-    const PendingLayer& pending_layer,
-    cc::LayerSelection& layer_selection) {
+    const PendingLayer& pending_layer) {
   // Properties of foreign layers are managed by their owners.
   if (pending_layer.GetCompositingType() == PendingLayer::kForeignLayer)
     return;
@@ -927,9 +927,30 @@ void PaintArtifactCompositor::UpdateLayerProperties(
                                 ->GetPaintController()
                                 .GetPaintArtifactShared());
     PaintChunksToCcLayer::UpdateLayerProperties(
-        layer, pending_layer.GetPropertyTreeState(), chunks, layer_selection);
+        layer, pending_layer.GetPropertyTreeState(), chunks);
   } else {
     PaintChunksToCcLayer::UpdateLayerProperties(
+        layer, pending_layer.GetPropertyTreeState(), pending_layer.Chunks());
+  }
+}
+
+void PaintArtifactCompositor::UpdateLayerSelection(
+    cc::Layer& layer,
+    const PendingLayer& pending_layer,
+    cc::LayerSelection& layer_selection) {
+  // Foreign layers cannot contain selection.
+  if (pending_layer.GetCompositingType() == PendingLayer::kForeignLayer)
+    return;
+
+  if (pending_layer.GetGraphicsLayer() &&
+      pending_layer.GetGraphicsLayer()->PaintsContentOrHitTest()) {
+    PaintChunkSubset chunks(pending_layer.GetGraphicsLayer()
+                                ->GetPaintController()
+                                .GetPaintArtifactShared());
+    PaintChunksToCcLayer::UpdateLayerSelection(
+        layer, pending_layer.GetPropertyTreeState(), chunks, layer_selection);
+  } else {
+    PaintChunksToCcLayer::UpdateLayerSelection(
         layer, pending_layer.GetPropertyTreeState(), pending_layer.Chunks(),
         layer_selection);
   }
@@ -937,19 +958,12 @@ void PaintArtifactCompositor::UpdateLayerProperties(
 
 void PaintArtifactCompositor::UpdateRepaintedContentLayerClient(
     const PendingLayer& pending_layer,
+    bool pending_layer_chunks_unchanged,
     ContentLayerClientImpl& content_layer_client) {
-  bool all_moved_from_cached_subsequence = true;
-  for (const auto& chunk : pending_layer.Chunks()) {
-    if (!chunk.is_moved_from_cached_subsequence) {
-      all_moved_from_cached_subsequence = false;
-      break;
-    }
-  }
-
-  // Checking |all_moved_from_cached_subsequence| is an optimization to
-  // avoid the expensive call to |UpdateCcPictureLayer| when no repainting
-  // occurs for this PendingLayer.
-  if (all_moved_from_cached_subsequence) {
+  // Checking |pending_layer_chunks_unchanged| is an optimization to avoid the
+  // expensive call to |UpdateCcPictureLayer| when no repainting occurs for this
+  // PendingLayer.
+  if (pending_layer_chunks_unchanged) {
     // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
     content_layer_client.GetRasterInvalidator().SetOldPaintArtifact(
         &pending_layer.Chunks().GetPaintArtifact());
@@ -1045,12 +1059,14 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
         !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       // These layers are fully managed externally and do not need an update.
     } else if (compositing_type == PendingLayer::kPreCompositedLayer) {
-      // These are Pre-CompositeAfterPaint layers where the raster invalidation
-      // has already occurred and we just need to update the layer properties.
+      // These are Pre-CompositeAfterPaint layers where raster invalidation has
+      // already occurred and we just need to update layer properties&selection.
       DCHECK(pending_layer_it->GetGraphicsLayer());
       if (pending_layer_it->GetGraphicsLayer()->Repainted()) {
         UpdateLayerProperties(pending_layer_it->GetGraphicsLayer()->CcLayer(),
-                              *pending_layer_it, layer_selection);
+                              *pending_layer_it);
+        UpdateLayerSelection(pending_layer_it->GetGraphicsLayer()->CcLayer(),
+                             *pending_layer_it, layer_selection);
       }
     } else {
       // These are CompositeAfterPaint (or CompositeSVG) layers and we need to
@@ -1082,6 +1098,14 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
                 repainted_artifact.PaintChunks().size());
       pending_layer_it->SetPaintArtifact(&repainted_artifact);
 
+      bool pending_layer_chunks_unchanged = true;
+      for (const auto& chunk : pending_layer_it->Chunks()) {
+        if (!chunk.is_moved_from_cached_subsequence) {
+          pending_layer_chunks_unchanged = false;
+          break;
+        }
+      }
+
       cc::Layer* cc_layer = nullptr;
       switch (pending_layer_it->GetCompositingType()) {
         case PendingLayer::kPreCompositedLayer:
@@ -1099,13 +1123,17 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
           break;
         default:
           UpdateRepaintedContentLayerClient(*pending_layer_it,
+                                            pending_layer_chunks_unchanged,
                                             **content_layer_client_it);
           cc_layer = &(*content_layer_client_it)->Layer();
           ++content_layer_client_it;
           break;
       }
       DCHECK(cc_layer);
-      UpdateLayerProperties(*cc_layer, *pending_layer_it, layer_selection);
+
+      if (!pending_layer_chunks_unchanged)
+        UpdateLayerProperties(*cc_layer, *pending_layer_it);
+      UpdateLayerSelection(*cc_layer, *pending_layer_it, layer_selection);
     }
   }
 
