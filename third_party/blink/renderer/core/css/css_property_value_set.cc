@@ -683,8 +683,9 @@ unsigned CSSPropertyValueSet::AverageSizeInBytes() {
   // Please update this if the storage scheme changes so that this longer
   // reflects the actual size.
   return sizeof(ImmutableCSSPropertyValueSet) +
-         AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(4)
-             .value;
+         static_cast<wtf_size_t>(
+             AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(4)
+                 .value);
 }
 
 // See the function above if you need to update this.
