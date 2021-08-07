@@ -221,26 +221,18 @@ std::unique_ptr<views::View> CreatePolicyRestrictedView() {
   policy_label->SetMultiLine(true);
   policy_label->SetText(
       l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_MANAGED));
+  policy_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto policy_view = std::make_unique<views::View>();
+  views::BoxLayout* layout =
+      policy_view->SetLayoutManager(std::make_unique<views::BoxLayout>());
+
   int text_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
+  layout->set_between_child_spacing(text_padding);
 
-  views::GridLayout* layout =
-      policy_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  views::ColumnSet* columnset = layout->AddColumnSet(0);
-  columnset->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columnset->AddPaddingColumn(views::GridLayout::kFixedSize, text_padding);
-  columnset->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(std::move(icon));
-  layout->AddView(std::move(policy_label));
+  policy_view->AddChildView(std::move(icon));
+  policy_view->AddChildView(std::move(policy_label));
 
   return policy_view;
 }
@@ -466,15 +458,15 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                                    params.app_name, params.target_name));
   }
 
-  if (params.restricted_by_policy) {
-    AddChildView(CreatePolicyRestrictedView());
-  }
-
   DCHECK(!categories_.empty());
 
   previously_selected_category_ = GetSelectedTabIndex();
   if (audio_requested_) {
     SetAudioCheckboxAt(previously_selected_category_);
+  }
+
+  if (params.restricted_by_policy) {
+    AddChildView(CreatePolicyRestrictedView());
   }
 
   // If |params.web_contents| is set and it's not a background page then the
@@ -605,7 +597,7 @@ void DesktopMediaPickerDialogView::DetachParent() {
 }
 
 gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
-  static const size_t kDialogViewWidth = 600;
+  static constexpr size_t kDialogViewWidth = 600;
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 

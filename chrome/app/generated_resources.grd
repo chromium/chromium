@@ -10250,7 +10250,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         {SCREEN_INDEX, plural, =1{Screen #} other{Screen #}}
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_MANAGED" desc="Text to display when picker choices have been limited by enterprise policies.">
-        Options for sharing are managed by your organization.
+        Options for sharing are managed by your organization. Some items may be hidden.
       </message>
       <if expr="toolkit_views">
         <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB" desc="Text for one of the dialog-tabs on the media picker dialog. This dialog-tab controls sharing the current tab.">
