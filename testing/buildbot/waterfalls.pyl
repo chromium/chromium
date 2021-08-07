@@ -897,7 +897,6 @@
           'walleye',
         ],
         'additional_compile_targets': [
-          'validate_expectations',
           'monochrome_static_initializers',
           'weblayer_shell',
         ],

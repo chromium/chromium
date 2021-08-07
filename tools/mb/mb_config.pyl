@@ -1494,6 +1494,7 @@
     'android_release_trybot_arm64_webview_google_expectations_fastbuild': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_google', 'fail_on_android_expectations',
+      'no_secondary_abi',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after
@@ -3623,6 +3624,10 @@
 
     'strip_debug_info': {
       'gn_args': 'strip_debug_info=true',
+    },
+
+    'no_secondary_abi': {
+      'gn_args': 'skip_secondary_abi_for_cq=true',
     },
 
     'strip_absolute_paths_from_debug_symbols': {

@@ -2015,6 +2015,20 @@
     "script": "//android_webview/tools/run_cts.py",
     "type": "script",
   },
+  "webview_64_cts_tests": {
+    "args": [
+      "--skip-expected-failures",
+      "--use-webview-provider",
+      "apks/SystemWebView64.apk",
+      "--apk-under-test",
+      "apks/SystemWebView64.apk",
+      "--use-apk-under-test-flags-file",
+      "-v",
+    ],
+    "label": "//android_webview/test:webview_64_cts_tests",
+    "script": "//android_webview/tools/run_cts.py",
+    "type": "script",
+  },
   "webview_instrumentation_test_apk": {
     "label": "//android_webview/test:webview_instrumentation_test_apk",
     "type": "console_test_launcher",

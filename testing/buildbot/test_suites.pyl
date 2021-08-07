@@ -5388,6 +5388,21 @@
       },
     },
 
+    'webview_64_cts_tests_gtest': {
+      'webview_64_cts_tests': {
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'ai8Ig4HlO0vG6aP_JP2uhyruE2yPzze8PFP1g8Z4_hgC',
+            }
+          ]
+        },
+      },
+    },
+
     'webview_bot_instrumentation_test_apk_gtest': {
       'webview_instrumentation_test_apk': {
         'swarming': {
@@ -5818,7 +5833,7 @@
     #   'vr_platform_specific_chromium_gtests',
     #   'weblayer_android_gtests',
       'weblayer_gtests',
-      'webview_cts_tests_gtest',
+      'webview_64_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
 

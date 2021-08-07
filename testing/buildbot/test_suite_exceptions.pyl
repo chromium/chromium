@@ -3227,6 +3227,21 @@
       },
     },
   },
+  'webview_64_cts_tests': {
+    'modifications': {
+      'android-pie-arm64-rel': {
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        },
+      },
+    },
+  },
   'webview_cts_tests': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280

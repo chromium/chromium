@@ -48981,7 +48981,6 @@
   },
   "android-pie-arm64-rel": {
     "additional_compile_targets": [
-      "validate_expectations",
       "monochrome_static_initializers",
       "weblayer_shell"
     ],
@@ -49722,7 +49721,7 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_cts_tests"
+            "webview_64_cts_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
@@ -49766,8 +49765,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "webview_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_cts_tests/"
+        "test": "webview_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/"
       },
       {
         "args": [
