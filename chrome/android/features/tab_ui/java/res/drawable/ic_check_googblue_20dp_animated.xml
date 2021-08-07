@@ -21,7 +21,7 @@
                 android:name="ic_check"
                 android:pathData="M4.12,12.705 l4.88,4.88 l11.295,-11.29"
                 android:strokeWidth="2"
-                android:strokeColor="@color/default_icon_color_blue"/>
+                android:strokeColor="?attr/default_icon_color_blue"/>
         </vector>
     </aapt:attr>
 

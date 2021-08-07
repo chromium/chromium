@@ -43,7 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_drive_file_24dp"
-                    app:tint="@color/default_icon_color"
+                    app:tint="?attr/default_icon_color"
                     style="@style/ListItemStartIcon" />
 
                 <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
@@ -79,7 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_folder_blue_24dp"
-                    app:tint="@color/default_icon_color"
+                    app:tint="?attr/default_icon_color"
                     style="@style/ListItemStartIcon" />
 
                 <Spinner

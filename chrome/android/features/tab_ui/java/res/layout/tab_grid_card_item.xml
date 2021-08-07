@@ -106,7 +106,7 @@
             android:id="@+id/action_button"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="@color/default_icon_color"
+            android:tint="?attr/default_icon_color"
             style="?attr/tabGridActionButtonStyle"/>
     </FrameLayout>
 </merge>

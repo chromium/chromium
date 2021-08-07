@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
@@ -36,6 +35,7 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.ArrayList;
@@ -82,8 +82,9 @@ public class AppMenuAdapterTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static ThemedDummyUiActivityTestRule<DummyUiActivity> activityTestRule =
+            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class,
+                    org.chromium.chrome.R.style.ColorOverlay_ChromiumAndroid);
 
     private static Activity sActivity;
 

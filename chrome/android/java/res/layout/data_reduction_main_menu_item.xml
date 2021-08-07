@@ -33,7 +33,7 @@
             android:layout_width="@dimen/data_reduction_main_menu_icon_width"
             android:layout_height="match_parent"
             android:layout_gravity="start|center_vertical"
-            app:tint="@color/default_icon_color_blue" />
+            app:tint="?attr/default_icon_color_blue" />
 
         <LinearLayout
             android:layout_width="wrap_content"

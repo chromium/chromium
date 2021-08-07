@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_visibility_off_black"
         android:visibility="invisible"
-        app:tint="@color/default_icon_color_disabled"
+        app:tint="?attr/default_icon_color_disabled"
         android:tintMode="multiply"
         tools:ignore="contentDescription" />
 

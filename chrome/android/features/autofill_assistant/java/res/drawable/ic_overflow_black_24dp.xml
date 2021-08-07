@@ -11,6 +11,6 @@
     android:viewportHeight="24"
     tools:targetApi="21">
     <path
-        android:fillColor="@color/default_icon_color"
+        android:fillColor="?attr/default_icon_color"
         android:pathData="M12 8c1.1 0 2 -0.9 2 -2s-0.9 -2 -2 -2 -2 0.9 -2 2 0.9 2 2 2zm0 2c-1.1 0 -2 0.9 -2 2s0.9 2 2 2 2 -0.9 2 -2 -0.9 -2 -2 -2zm0 6c-1.1 0 -2 0.9 -2 2s0.9 2 2 2 2 -0.9 2 -2 -0.9 -2 -2 -2z"/>
 </vector>

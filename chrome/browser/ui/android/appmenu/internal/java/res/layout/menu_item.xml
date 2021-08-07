@@ -26,5 +26,5 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:gravity="center_vertical"
-        android:tint="@color/default_icon_color_secondary" />
+        android:tint="?attr/default_icon_color_secondary" />
 </LinearLayout>

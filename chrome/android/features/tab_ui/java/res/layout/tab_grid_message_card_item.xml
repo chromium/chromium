@@ -42,5 +42,5 @@
         android:layout_height="match_parent"
         style="@style/BottomToolbarButton"
         android:contentDescription="@string/close"
-        android:tint="@color/default_icon_color" />
+        android:tint="?attr/default_icon_color" />
 </org.chromium.chrome.browser.tasks.tab_management.MessageCardView>

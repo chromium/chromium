@@ -29,7 +29,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/plus"
-            app:tint="@color/default_icon_color_blue"/>
+            app:tint="?attr/default_icon_color_blue"/>
         <Space android:layout_width="8dp" android:layout_height="0dp"/>
         <TextView android:id="@+id/section_title_add_button_label"
                   android:layout_width="wrap_content"

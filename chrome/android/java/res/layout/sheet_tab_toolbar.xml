@@ -61,7 +61,7 @@
                 android:layout_marginBottom="6dp"
                 android:src="@drawable/btn_close"
                 android:contentDescription="@string/close"
-                app:tint="@color/default_icon_color" />
+                app:tint="?attr/default_icon_color" />
 
             <org.chromium.ui.widget.ChromeImageView
                 android:id="@+id/open_in_new_tab"
@@ -78,7 +78,7 @@
                 android:src="@drawable/open_in_new_tab"
                 android:contentDescription="@string/contextmenu_open_in_new_tab"
                 android:visibility="gone"
-                app:tint="@color/default_icon_color" />
+                app:tint="?attr/default_icon_color" />
 
             <TextView
                 android:id="@+id/title"
@@ -100,7 +100,7 @@
                 android:layout_alignStart="@id/title"
                 android:layout_below="@id/title"
                 android:layout_marginTop="3dp"
-                app:tint="@color/default_icon_color" />
+                app:tint="?attr/default_icon_color" />
 
             <TextView
                 android:id="@+id/origin"
