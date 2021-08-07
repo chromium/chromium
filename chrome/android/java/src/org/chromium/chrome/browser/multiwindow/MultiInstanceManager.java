@@ -506,8 +506,10 @@ public class MultiInstanceManager
      * Assigned an ID for the current activity instance.
      * @param windowId Instance ID explicitly given for assignment.
      * @param taskId Task ID of the activity.
+     * @param preferNew Boolean indicating a fresh new instance is preferred
+     *        over the one that will load previous tab files from disk.
      */
-    public int allocInstanceId(int windowId, int taskId) {
+    public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
         return 0; // Use a default index 0.
     }
 

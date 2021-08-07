@@ -1920,7 +1920,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else if (mMultiInstanceManager != null) {
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task
             // to pre-inflation startup.
-            mWindowId = mMultiInstanceManager.allocInstanceId(windowId, getTaskId());
+            boolean preferNew = getExtraPreferNewFromIntent(intent);
+            mWindowId = mMultiInstanceManager.allocInstanceId(windowId, getTaskId(), preferNew);
         }
         if (mWindowId == TabWindowManager.INVALID_WINDOW_INDEX) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
@@ -1939,6 +1940,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private static int getExtraWindowIdFromIntent(Intent intent) {
         return IntentUtils.safeGetIntExtra(
                 intent, IntentHandler.EXTRA_WINDOW_ID, TabWindowManager.INVALID_WINDOW_INDEX);
+    }
+
+    private static boolean getExtraPreferNewFromIntent(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PREFER_NEW, false);
     }
 
     @Override

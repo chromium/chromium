@@ -232,7 +232,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *
      */
     public static Intent createNewWindowIntent(
-            Activity activity, int instanceId, boolean openAdjacently) {
+            Activity activity, int instanceId, boolean preferNew, boolean openAdjacently) {
         assert instanceSwitcherEnabled();
         Intent intent = new Intent(activity, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -240,6 +240,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (instanceId != INVALID_INSTANCE_ID) {
             intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
         }
+        if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
         if (openAdjacently) intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);

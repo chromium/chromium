@@ -609,6 +609,8 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.MultiInstance.TabCount.*"); // Normal tab count
     public static final KeyPrefix MULTI_INSTANCE_TITLE =
             new KeyPrefix("Chrome.MultiInstance.Title.*");
+    public static final KeyPrefix MULTI_INSTANCE_LAST_ACCESSED_TIME =
+            new KeyPrefix("Chrome.MultiInstance.LastAccessedTime.*");
     public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
 
     public static final String NOTIFICATIONS_CHANNELS_VERSION = "channels_version_key";
@@ -1081,6 +1083,7 @@ public final class ChromePreferenceKeys {
                 LAST_SESSION_APPLICATION_STATE,
                 MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
                 MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),
+                MULTI_INSTANCE_LAST_ACCESSED_TIME.pattern(),
                 MULTI_INSTANCE_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_TASK_MAP.pattern(),
                 MULTI_INSTANCE_TITLE.pattern(),

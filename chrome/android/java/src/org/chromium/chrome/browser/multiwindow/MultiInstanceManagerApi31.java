@@ -21,6 +21,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -108,7 +109,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         } else {
             onMultiInstanceModeStarted();
             Intent intent = MultiWindowUtils.createNewWindowIntent(
-                    mActivity, info.instanceId, /*openAdjacently=*/true);
+                    mActivity, info.instanceId, /*preferNew=*/false, /*openAdjacently=*/true);
             ReparentingTask.from(tab).begin(mActivity, intent,
                     mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
         }
@@ -132,13 +133,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
 
     @Override
     protected void openNewWindow() {
-        // TODO: Check if we already reached the maximum # of instances.
         Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
         onMultiInstanceModeStarted();
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(
                 intent, mActivity, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
         if (mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
@@ -187,13 +188,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     }
 
     @Override
-    public int allocInstanceId(int windowId, int taskId) {
+    public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
         removeInvalidEntriesFromTaskMap();
 
-        // Explicitly specific window ID should be preferred. This comes from user selecting
+        // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI. This method would never be called if there were an instance
-        // already mapped to the task. Check it with an assert.
-        if (windowId != INVALID_INSTANCE_ID) {
+        // already mapped to the task. Check it with an assert. When out of range, ignore the ID
+        // and apply the normal allocation logic below.
+        if (windowId >= 0 && windowId < mMaxInstances) {
             assert getInstanceByTask(taskId) == INVALID_INSTANCE_ID;
             return windowId;
         }
@@ -204,14 +206,27 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         int instanceId = getInstanceByTask(taskId);
         if (instanceId != INVALID_INSTANCE_ID) return instanceId;
 
-        for (int i = 0; i < mMaxInstances; ++i) {
-            // The index is available for the assignment if:
-            // 1) the corresponding state does not exist, or
-            // 2) there is no associated task.
-            // TODO: Prefer 2 to 1, and consider returning the most recently used one.
-            if (readUrl(i) == null || getTaskFromMap(i) == INVALID_TASK_ID) return i;
+        // If asked to always create a fresh new instance, not from persistent state, do it here.
+        if (preferNew) {
+            for (int i = 0; i < mMaxInstances; ++i) {
+                if (readUrl(i) == null) return i;
+            }
+            return INVALID_INSTANCE_ID;
         }
-        return INVALID_INSTANCE_ID;
+
+        // Search for an unassigned ID. The index is available for the assignment if:
+        // a) there is no associated task, or
+        // b) the corresponding persistent state does not exist.
+        // Prefer a over b. Pick the MRU instance if there is more than one. Type b returns 0
+        // for |readLastAccessedTime|, so can be regarded as the least favored.
+        int id = INVALID_INSTANCE_ID;
+        for (int i = 0; i < mMaxInstances; ++i) {
+            if (getTaskFromMap(i) != INVALID_TASK_ID) continue;
+            if (id == INVALID_INSTANCE_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
+                id = i;
+            }
+        }
+        return id;
     }
 
     @Override
@@ -266,7 +281,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static int getTaskFromMap(int index) {
+    static int getTaskFromMap(int index) {
         return SharedPreferencesManager.getInstance().readInt(taskMapKey(index), INVALID_TASK_ID);
     }
 
@@ -330,6 +345,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                 incognitoSelectedKey(index), tab.isIncognito());
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static boolean readIncognitoSelected(int index) {
         return SharedPreferencesManager.getInstance().readBoolean(
                 incognitoSelectedKey(index), false);
@@ -407,6 +423,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         }
     }
 
+    private static String lastAccessedTimeKey(int index) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
+                String.valueOf(index));
+    }
+
+    private static long readLastAccessedTime(int index) {
+        return SharedPreferencesManager.getInstance().readLong(lastAccessedTimeKey(index));
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void writeLastAccessedTime(int index) {
+        SharedPreferencesManager.getInstance().writeLong(
+                lastAccessedTimeKey(index), System.currentTimeMillis());
+    }
+
     /**
      * Open or launch a given instance.
      * @param instanceId ID of the instance to open.
@@ -424,8 +455,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         onMultiInstanceModeStarted();
         // TODO: Pass this flag from UI to control the window to open.
         boolean openAdjacently = true;
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(mActivity, instanceId, openAdjacently);
+        Intent intent = MultiWindowUtils.createNewWindowIntent(
+                mActivity, instanceId, /*preferNew=*/false, openAdjacently);
         if (openAdjacently) {
             mActivity.startActivity(
                     intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
@@ -463,9 +494,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         prefs.removeKey(urlKey(index));
         prefs.removeKey(titleKey(index));
         prefs.removeKey(tabCountKey(index));
+        prefs.removeKey(incognitoTabCountKey(index));
+        prefs.removeKey(incognitoSelectedKey(index));
+        prefs.removeKey(lastAccessedTimeKey(index));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Override
+    public void onResumeWithNative() {
+        super.onResumeWithNative();
+        writeLastAccessedTime(mInstanceId);
+    }
+
+    @VisibleForTesting
     TabModelSelectorTabModelObserver getTabModelObserverForTesting() {
         return mTabModelObserver;
     }

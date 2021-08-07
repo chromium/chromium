@@ -121,6 +121,8 @@ public class MultiInstanceManagerApi31UnitTest {
     Activity mActivityTask60;
     @Mock
     Activity mActivityTask61;
+    @Mock
+    Activity mActivityTask62;
 
     final Activity mCurrentActivity = mActivityTask56;
 
@@ -307,6 +309,59 @@ public class MultiInstanceManagerApi31UnitTest {
         // Take always the the passed ID if valid. This can be from switcher UI, explicitly
         // chosen by a user.
         assertEquals(PASSED_ID_2, allocInstanceIndex(PASSED_ID_2, mActivityTask58));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAllocInstanceId_ignoreWrongPassedInstanceID() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+
+        // Go through the ordinary allocation logic if the passed ID is out of range.
+        assertEquals(1, allocInstanceIndex(10, mActivityTask59));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAllocInstanceId_createFreshNewInstance() {
+        int index = 0;
+        final int finalIndex = mMultiInstanceManager.mMaxInstances - 1;
+
+        // Allocate all except |finalIndex|.
+        for (; index < finalIndex; ++index) {
+            assertEquals(index, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[index]));
+        }
+
+        removeTaskOnRecentsScreen(mActivityPool[1]);
+
+        // New instantiation picks up the one without persistent state data if asked to do so.
+        // Note that ID for mActivityPool[1] is not chosen since it is still mapped to a task
+        // internally.
+        assertEquals(finalIndex,
+                allocInstanceIndex(PASSED_ID_INVALID, mActivityTask61, /*preferNew=*/true));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testAllocInstance_pickMruInstance() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        removeTaskOnRecentsScreen(mActivityTask57);
+        removeTaskOnRecentsScreen(mActivityTask58);
+
+        // New instantiation picks up the most recently used one.
+        MultiInstanceManagerApi31.writeLastAccessedTime(1);
+        MultiInstanceManagerApi31.writeLastAccessedTime(2); // Accessed most recently.
+
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59));
+        removeTaskOnRecentsScreen(mActivityTask59);
+
+        MultiInstanceManagerApi31.writeLastAccessedTime(1); // instance ID 1 is now the MRU.
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask60));
     }
 
     @Test
@@ -546,7 +601,12 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     private int allocInstanceIndex(int passedId, Activity activity) {
-        int index = mMultiInstanceManager.allocInstanceId(passedId, activity.getTaskId());
+        return allocInstanceIndex(passedId, activity, /*preferNew=*/false);
+    }
+
+    private int allocInstanceIndex(int passedId, Activity activity, boolean preferNew) {
+        int index =
+                mMultiInstanceManager.allocInstanceId(passedId, activity.getTaskId(), preferNew);
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =

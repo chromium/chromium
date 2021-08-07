@@ -205,6 +205,12 @@ public class IntentHandler {
             "com.android.chrome.from_open_in_browser";
 
     /**
+     * A boolean to indicate that the Intent prefer a fresh new Chrome instance, not with tabs
+     * from one of the existing disk files.
+     */
+    public static final String EXTRA_PREFER_NEW = "com.android.chrome.prefer_new";
+
+    /**
      * Interested entities within Chrome relying on launching Incognito CCT should set this in their
      *{@link CustomTabIntent} in order to identify themselves for metric purposes.
      **/
