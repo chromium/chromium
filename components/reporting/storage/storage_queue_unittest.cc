@@ -46,11 +46,12 @@ using ::testing::WithoutArgs;
 namespace reporting {
 namespace {
 
-// Metadata file name prefix.
-const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 constexpr size_t kCompressionThreshold = 2;
 const CompressionInformation::CompressionAlgorithm kCompressionType =
     CompressionInformation::COMPRESSION_SNAPPY;
+
+// Metadata file name prefix.
+const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
 
 class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
  public:
@@ -484,7 +485,8 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
 }
 
 // TODO(crbug.com/1233846): This test is very flaky.
-TEST_P(StorageQueueTest, DISABLED_WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
+TEST_P(StorageQueueTest,
+       DISABLED_WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
@@ -562,16 +564,56 @@ TEST_P(
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-// TODO(crbug.com/1194878) - Test is flaky on CrOS and Linux.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
-  DISABLED_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
-  WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
-#endif
-TEST_P(StorageQueueTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+// TODO(crbug.com/1194878) - this is very flaky on all platforms.
+TEST_P(
+    StorageQueueTest,
+    DISABLED_WriteIntoNewStorageQueueReopenWithMissingLastMetadataWriteMoreAndUpload) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
+
+  // Save copy of options.
+  const QueueOptions options = storage_queue_->options();
+
+  ResetTestStorageQueue();
+
+  // Delete all metadata files.
+  base::FileEnumerator dir_enum(
+      options.directory(),
+      /*recursive=*/false, base::FileEnumerator::FILES,
+      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".2")}));
+  base::FilePath full_name = dir_enum.Next();
+  ASSERT_FALSE(full_name.empty());
+  base::DeleteFile(full_name);
+  ASSERT_TRUE(dir_enum.Next().empty());
+
+  // Reopen, starting a new generation.
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
+  WriteStringOrDie(kMoreData[2]);
+
+  // Set uploader expectations. Previous data is all lost.
+  test::TestCallbackAutoWaiter waiter;
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client, &waiter)
+            .Required(0, kMoreData[0])
+            .Required(1, kMoreData[1])
+            .Required(2, kMoreData[2]);
+        return Status::StatusOK();
+      }))
+      .WillRepeatedly(Invoke(&DoNotUpload));
+
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+// TODO(crbug.com/1194878) - this is very flaky on all platforms.
+TEST_P(
+    StorageQueueTest,
+    DISABLED_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);

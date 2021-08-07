@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <list>
 #include <map>
 #include <memory>
@@ -168,14 +169,12 @@ Status StorageQueue::Init() {
             {"Storage queue directory '", options_.directory().MaybeAsASCII(),
              "' does not exist, error=", base::File::ErrorToString(error)}));
   }
+  DCHECK_LE(generation_id_, 0);  // Not set yet - valid range [1, max_int64]
+  base::flat_set<base::FilePath> used_files_set;
   // Enumerate data files and scan the last one to determine what sequence
   // ids do we have (first and last).
-  base::flat_set<base::FilePath> used_files_set;
   RETURN_IF_ERROR(EnumerateDataFiles(&used_files_set));
   RETURN_IF_ERROR(ScanLastFile());
-  // In case of inavaliability default to a new generation id being a random
-  // number [1, max_int64]
-  generation_id_ = 1 + base::RandGenerator(std::numeric_limits<int64_t>::max());
   if (next_sequencing_id_ > 0) {
     // Enumerate metadata files to determine what sequencing ids have
     // last record digest. They might have metadata for sequencing ids
@@ -184,8 +183,8 @@ Status StorageQueue::Init() {
     // removed once data is written. So we are picking the metadata matching the
     // last sequencing id and load both digest and generation id from there.
     const Status status = RestoreMetadata(&used_files_set);
-    // If there is no match, clear up everything we've found before and start
-    // a new generation from scratch.
+    // If there is no match and we cannot recover generation id, clear up
+    // everything we've found before and start a new generation from scratch.
     // In the future we could possibly consider preserving the previous
     // generation data, but will need to resolve multiple issues:
     // 1) we would need to send the old generation before starting to send
@@ -200,15 +199,25 @@ Status StorageQueue::Init() {
     // and start the new one from scratch.
     if (!status.ok()) {
       LOG(ERROR) << "Failed to restore metadata, status=" << status;
-      // Reset all parameters as they were at the beginning of Init().
-      // Some of them might have been changed earlier.
-      next_sequencing_id_ = 0;
-      first_sequencing_id_ = 0;
-      first_unconfirmed_sequencing_id_ = absl::nullopt;
-      last_record_digest_ = absl::nullopt;
-      ReleaseAllFileInstances();
-      used_files_set.clear();
+      // If generation id is also unknown, reset all parameters as they were
+      // at the beginning of Init(). Some of them might have been changed
+      // earlier.
+      if (generation_id_ <= 0) {
+        LOG(ERROR) << "Unable to retrieve generation id, performing full reset";
+        next_sequencing_id_ = 0;
+        first_sequencing_id_ = 0;
+        first_unconfirmed_sequencing_id_ = absl::nullopt;
+        last_record_digest_ = absl::nullopt;
+        ReleaseAllFileInstances();
+        used_files_set.clear();
+      }
     }
+  }
+  // In case of inavaliability default to a new generation id being a random
+  // number [1, max_int64].
+  if (generation_id_ <= 0) {
+    generation_id_ =
+        1 + base::RandGenerator(std::numeric_limits<int64_t>::max());
   }
   // Delete all files except used ones.
   DeleteUnusedFiles(used_files_set);
@@ -235,18 +244,45 @@ absl::optional<std::string> StorageQueue::GetLastRecordDigest() const {
 StatusOr<int64_t> StorageQueue::AddDataFile(
     const base::FilePath& full_name,
     const base::FileEnumerator::FileInfo& file_info) {
-  const auto extension = full_name.Extension();
+  const auto extension = full_name.FinalExtension();
   if (extension.empty()) {
     return Status(error::INTERNAL,
                   base::StrCat({"File has no extension: '",
                                 full_name.MaybeAsASCII(), "'"}));
   }
   int64_t file_sequencing_id = 0;
-  bool success = base::StringToInt64(extension.substr(1), &file_sequencing_id);
+  const bool success =
+      base::StringToInt64(extension.substr(1), &file_sequencing_id);
   if (!success) {
     return Status(error::INTERNAL,
                   base::StrCat({"File extension does not parse: '",
                                 full_name.MaybeAsASCII(), "'"}));
+  }
+  // Data file should have generation id as an extension too.
+  // For backwards compatibility we allow it to not be included.
+  // TODO(b/195786943): Encapsulate file naming assumptions in objects.
+  const auto generation_extension =
+      full_name.RemoveFinalExtension().FinalExtension();
+  if (!generation_extension.empty()) {
+    int64_t file_generation_id = 0;
+    const bool success = base::StringToInt64(generation_extension.substr(1),
+                                             &file_generation_id);
+    if (success && file_generation_id > 0) {
+      // Found valid generation [1, int64_max] in the data file name.
+      if (generation_id_ > 0) {
+        // Generation was already set, data file must match.
+        if (file_generation_id != generation_id_) {
+          return Status(error::DATA_LOSS,
+                        base::StrCat({"Data file generation does not match: '",
+                                      full_name.MaybeAsASCII(), "', expected=",
+                                      base::NumberToString(generation_id_)}));
+        }
+      } else {
+        // No generation set in the queue. Use the one from this file and expect
+        // all other files to match.
+        generation_id_ = file_generation_id;
+      }
+    }
   }
   auto file_or_status = SingleFile::Create(full_name, file_info.GetSize());
   if (!file_or_status.ok()) {
@@ -389,6 +425,7 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
         SingleFile::Create(
             options_.directory()
                 .Append(options_.file_prefix())
+                .AddExtensionASCII(base::NumberToString(generation_id_))
                 .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
             /*size=*/0));
     next_sequencing_id_ = 0;
@@ -418,6 +455,7 @@ StorageQueue::OpenNewWriteableFile() {
       SingleFile::Create(
           options_.directory()
               .Append(options_.file_prefix())
+              .AddExtensionASCII(base::NumberToString(generation_id_))
               .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
           /*size=*/0));
   RETURN_IF_ERROR(new_file->Open(/*read_only=*/false));
@@ -509,6 +547,9 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
         base::StrCat({"Not enough disk space available to write into file=",
                       meta_file->name()}));
   }
+  // Metadata file format is:
+  // - generation id (8 bytes)
+  // - last record digest (crypto::kSHA256Length bytes)
   // Write generation id.
   auto append_result = meta_file->Append(base::StringPiece(
       reinterpret_cast<const char*>(&generation_id_), sizeof(generation_id_)));
@@ -542,6 +583,71 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
   return Status::StatusOK();
 }
 
+Status StorageQueue::ReadMetadata(
+    const base::FilePath& meta_file_path,
+    size_t size,
+    int64_t sequencing_id,
+    base::flat_set<base::FilePath>* used_files_set) {
+  ASSIGN_OR_RETURN(scoped_refptr<SingleFile> meta_file,
+                   SingleFile::Create(meta_file_path, size));
+  RETURN_IF_ERROR(meta_file->Open(/*read_only=*/true));
+  // Metadata file format is:
+  // - generation id (8 bytes)
+  // - last record digest (crypto::kSHA256Length bytes)
+  // Read generation id.
+  constexpr size_t max_buffer_size =
+      sizeof(generation_id_) + crypto::kSHA256Length;
+  auto read_result =
+      meta_file->Read(/*pos=*/0, sizeof(generation_id_), max_buffer_size);
+  if (!read_result.ok() ||
+      read_result.ValueOrDie().size() != sizeof(generation_id_)) {
+    return Status(error::DATA_LOSS,
+                  base::StrCat({"Cannot read metafile=", meta_file->name(),
+                                " status=", read_result.status().ToString()}));
+  }
+  const int64_t generation_id =
+      *reinterpret_cast<const int64_t*>(read_result.ValueOrDie().data());
+  if (generation_id <= 0) {
+    // Generation is not in [1, max_int64] range - file corrupt or empty.
+    return Status(error::DATA_LOSS,
+                  base::StrCat({"Corrupt or empty metafile=", meta_file->name(),
+                                " - invalid generation ",
+                                base::NumberToString(generation_id)}));
+  }
+  if (generation_id_ > 0 && generation_id != generation_id_) {
+    // Generation has already been set, and meta file does not match it - file
+    // corrupt or empty.
+    return Status(
+        error::DATA_LOSS,
+        base::StrCat({"Corrupt or empty metafile=", meta_file->name(),
+                      " - generation mismatch ",
+                      base::NumberToString(generation_id),
+                      ", expected=", base::NumberToString(generation_id_)}));
+  }
+  // Read last record digest.
+  read_result = meta_file->Read(/*pos=*/sizeof(generation_id),
+                                crypto::kSHA256Length, max_buffer_size);
+  if (!read_result.ok() ||
+      read_result.ValueOrDie().size() != crypto::kSHA256Length) {
+    return Status(error::DATA_LOSS,
+                  base::StrCat({"Cannot read metafile=", meta_file->name(),
+                                " status=", read_result.status().ToString()}));
+  }
+  // Everything read successfully, set the queue up.
+  if (generation_id_ <= 0) {
+    generation_id_ = generation_id;
+  }
+  if (sequencing_id == next_sequencing_id_ - 1) {
+    // Record last digest only if the metadata matches
+    // the latest sequencing id.
+    last_record_digest_.emplace(read_result.ValueOrDie());
+  }
+  meta_file_ = std::move(meta_file);
+  // Store used metadata file.
+  used_files_set->emplace(meta_file_path);
+  return Status::StatusOK();
+}
+
 Status StorageQueue::RestoreMetadata(
     base::flat_set<base::FilePath>* used_files_set) {
   // Enumerate all meta-files into a map sequencing_id->file_path.
@@ -558,7 +664,8 @@ Status StorageQueue::RestoreMetadata(
     }
     int64_t sequencing_id = 0;
     bool success = base::StringToInt64(
-        dir_enum.GetInfo().GetName().Extension().substr(1), &sequencing_id);
+        dir_enum.GetInfo().GetName().FinalExtension().substr(1),
+        &sequencing_id);
     if (!success) {
       continue;
     }
@@ -569,50 +676,34 @@ Status StorageQueue::RestoreMetadata(
   // See whether we have a match for next_sequencing_id_ - 1.
   DCHECK_GT(next_sequencing_id_, 0u);
   auto it = meta_files.find(next_sequencing_id_ - 1);
-  if (it == meta_files.end()) {
-    // For now we fail in this case. Later on we will provide a generation
-    // switch.
-    return Status(
-        error::DATA_LOSS,
-        base::StrCat({"Cannot recover last record digest at ",
-                      base::NumberToString(next_sequencing_id_ - 1)}));
+  if (it != meta_files.end()) {
+    // Match found. Attempt to load the metadata.
+    const auto status =
+        ReadMetadata(/*meta_file_path=*/it->second.first,
+                     /*size=*/it->second.second,
+                     /*sequencing_id=*/next_sequencing_id_ - 1, used_files_set);
+    if (status.ok()) {
+      return status;
+    }
+    // Failed to load, remove it from the candidates.
+    meta_files.erase(it);
   }
-  // Match found. Load the metadata.
-  const base::FilePath meta_file_path = it->second.first;
-  ASSIGN_OR_RETURN(scoped_refptr<SingleFile> meta_file,
-                   SingleFile::Create(meta_file_path,
-                                      /*size=*/it->second.second));
-  RETURN_IF_ERROR(meta_file->Open(/*read_only=*/true));
-  // Read generation id.
-  constexpr size_t max_buffer_size =
-      sizeof(generation_id_) + crypto::kSHA256Length;
-  auto read_result =
-      meta_file->Read(/*pos=*/0, sizeof(generation_id_), max_buffer_size);
-  if (!read_result.ok() ||
-      read_result.ValueOrDie().size() != sizeof(generation_id_)) {
-    return Status(error::DATA_LOSS,
-                  base::StrCat({"Cannot read metafile=", meta_file->name(),
-                                " status=", read_result.status().ToString()}));
+  // No match or failed to load. Let's locate any valid metadata file (from
+  // latest to earilest) and use generation from there (last record digest is
+  // useless in that case).
+  for (auto rit = meta_files.rbegin(); rit != meta_files.rend(); ++rit) {
+    const auto status = ReadMetadata(
+        /*meta_file_path=*/rit->second.first, /*size=*/rit->second.second,
+        /*sequencing_id=*/rit->first, used_files_set);
+    if (status.ok()) {
+      return status;
+    }
   }
-  const int64_t generation_id =
-      *reinterpret_cast<const int64_t*>(read_result.ValueOrDie().data());
-  // Read last record digest.
-  read_result = meta_file->Read(/*pos=*/sizeof(generation_id_),
-                                crypto::kSHA256Length, max_buffer_size);
-  if (!read_result.ok() ||
-      read_result.ValueOrDie().size() != crypto::kSHA256Length) {
-    return Status(error::DATA_LOSS,
-                  base::StrCat({"Cannot read metafile=", meta_file->name(),
-                                " status=", read_result.status().ToString()}));
-  }
-  // Everything read successfully, set the queue up.
-  generation_id_ = generation_id;
-  last_record_digest_.emplace(read_result.ValueOrDie());
-  meta_file_ = std::move(meta_file);
-  // Store used metadata file.
-  used_files_set->emplace(meta_file_path);
-  return Status::StatusOK();
-}
+  // No valid metadata found. Cannot recover from that.
+  return Status(error::DATA_LOSS,
+                base::StrCat({"Cannot recover last record digest at ",
+                              base::NumberToString(next_sequencing_id_ - 1)}));
+}  // namespace reporting
 
 void StorageQueue::DeleteUnusedFiles(
     const base::flat_set<base::FilePath>& used_files_setused_files_set) {
@@ -638,13 +729,14 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
       base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
   base::FilePath full_name;
   while (full_name = dir_enum.Next(), !full_name.empty()) {
-    const auto extension = dir_enum.GetInfo().GetName().Extension();
+    const auto extension = dir_enum.GetInfo().GetName().FinalExtension();
     if (extension.empty()) {
       continue;
     }
     int64_t sequencing_id = 0;
     bool success = base::StringToInt64(
-        dir_enum.GetInfo().GetName().Extension().substr(1), &sequencing_id);
+        dir_enum.GetInfo().GetName().FinalExtension().substr(1),
+        &sequencing_id);
     if (!success) {
       continue;
     }
@@ -1240,9 +1332,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     storage_queue_->compression_module_->CompressRecord(
         serialized_record,
         base::BindOnce(&WriteContext::OnCompressedRecordReady,
-                       base::Unretained(this))
-
-    );
+                       base::Unretained(this)));
   }
 
   void OnCompressedRecordReady(
