@@ -45,7 +45,7 @@ namespace web_app {
 WebAppBrowserController::WebAppBrowserController(Browser* browser)
     : AppBrowserController(browser,
                            GetAppIdFromApplicationName(browser->app_name())),
-      provider_(*WebAppProvider::Get(browser->profile())) {
+      provider_(*WebAppProvider::GetForLocalApps(browser->profile())) {
   registrar_observation_.Observe(&provider_.registrar());
   PerformDigitalAssetLinkVerification(browser);
   DCHECK(HasAppId());

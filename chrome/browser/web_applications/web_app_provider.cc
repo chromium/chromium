@@ -93,6 +93,11 @@ WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
 }
 
 // static
+WebAppProvider* WebAppProvider::GetForLocalApps(Profile* profile) {
+  return WebAppProviderFactory::GetForProfile(profile);
+}
+
+// static
 WebAppProvider* WebAppProvider::GetForWebContents(
     content::WebContents* web_contents) {
   Profile* profile =

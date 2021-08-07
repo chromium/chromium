@@ -71,6 +71,13 @@ class WebAppProvider : public KeyedService {
   // On other platforms, always returns a WebAppProvider.
   static WebAppProvider* GetForSystemWebApps(Profile* profile);
 
+  // Always returns a WebAppProvider.
+  // In Ash: Returns the WebAppProvider that hosts System Web Apps.
+  // In Lacros: Returns the WebAppProvider that hosts non-system Web Apps.
+  // This function should only be used in code that is shared between system and
+  // non-system Web Apps.
+  static WebAppProvider* GetForLocalApps(Profile* profile);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Enables System Web Apps WebAppProvider so we can test SWA features in
   // Lacros, even we don't have actual SWAs in Lacros. After calling this,

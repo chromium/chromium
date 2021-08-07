@@ -108,7 +108,7 @@ AppBrowserController::MaybeCreateWebAppController(Browser* browser) {
   std::unique_ptr<AppBrowserController> controller;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const AppId app_id = GetAppIdFromApplicationName(browser->app_name());
-  auto* provider = WebAppProvider::Get(browser->profile());
+  auto* provider = WebAppProvider::GetForLocalApps(browser->profile());
   if (provider && provider->registrar().IsInstalled(app_id))
     controller = std::make_unique<WebAppBrowserController>(browser);
   if (!controller) {
@@ -161,10 +161,10 @@ AppBrowserController::AppBrowserController(Browser* browser,
       browser_(browser),
       theme_provider_(
           ThemeService::CreateBoundThemeProvider(browser_->profile(), this)),
-      system_app_type_(HasAppId() ? WebAppProvider::Get(browser->profile())
-                                        ->system_web_app_manager()
-                                        .GetSystemAppTypeForAppId(GetAppId())
-                                  : absl::nullopt),
+      system_app_type_(
+          HasAppId()
+              ? GetSystemWebAppTypeForAppId(browser_->profile(), GetAppId())
+              : absl::nullopt),
       has_tab_strip_(
           (system_app_type_.has_value() &&
            WebAppProvider::Get(browser->profile())

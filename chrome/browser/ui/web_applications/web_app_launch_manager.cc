@@ -98,7 +98,8 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     auto* user_manager = user_manager::UserManager::Get();
     bool is_kiosk = user_manager && user_manager->IsLoggedInAsAnyKioskApp();
     AppBrowserController* app_controller = browser->app_controller();
-    WebAppProvider* web_app_provider = WebAppProvider::Get(browser->profile());
+    WebAppProvider* web_app_provider =
+        WebAppProvider::GetForLocalApps(browser->profile());
     TRACE_EVENT_INSTANT(
         "system_apps", "BadNavigate", [&](perfetto::EventContext ctx) {
           auto* bad_navigate =
@@ -229,7 +230,7 @@ content::WebContents* NavigateWebApplicationWindow(
 }
 
 WebAppLaunchManager::WebAppLaunchManager(Profile* profile)
-    : profile_(profile), provider_(WebAppProvider::Get(profile)) {}
+    : profile_(profile), provider_(WebAppProvider::GetForLocalApps(profile)) {}
 
 WebAppLaunchManager::~WebAppLaunchManager() = default;
 
@@ -477,7 +478,7 @@ void WebAppLaunchManager::LaunchWebApplication(
 }
 
 void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {
-  WebAppProvider* provider = WebAppProvider::Get(profile);
+  WebAppProvider* provider = WebAppProvider::GetForLocalApps(profile);
   if (!provider)
     return;
 
